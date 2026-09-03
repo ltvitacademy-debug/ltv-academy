@@ -23,7 +23,7 @@ const CHAPTERS: Chapter[] = [
     ),
     sentence:
       "Reports developers, ETL developers, BI developers — ordinary people do this work every day, and most of us were simply never shown the door in.",
-    plateNote: "PHOTO PLATE — a veil, a doorway, or a student's first day",
+    photo: { src: "/photos/chapter-veil.jpg", alt: "A crimson curtain drawn aside, golden light pouring through a doorway" },
   },
   {
     eyebrow: "Chapter Two · The Work",
@@ -45,7 +45,7 @@ const CHAPTERS: Chapter[] = [
     ),
     sentence:
       "Classes meet on weeknights and Saturday mornings, live on the web — and every session is recorded, so missing one never means falling behind.",
-    plateNote: "PHOTO PLATE — a live class in session",
+    photo: { src: "/photos/chapter-class.jpg", alt: "An evening coding class, students at laptops facing a lit screen" },
   },
   {
     eyebrow: "Chapter Four · The Interview",
@@ -56,7 +56,7 @@ const CHAPTERS: Chapter[] = [
     ),
     sentence:
       "Every track ends in a technical interview — pass it, and you've earned your certificate of completion.",
-    plateNote: "PHOTO PLATE — a mock interview across a table",
+    photo: { src: "/photos/chapter-interview.jpg", alt: "A technical interview across a table in golden-hour light" },
   },
   {
     eyebrow: "Chapter Five · The Job",
@@ -67,7 +67,7 @@ const CHAPTERS: Chapter[] = [
     ),
     sentence:
       "Reports Developer. ETL Developer. Business Intelligence Developer. No guarantees — just training that holds up in the room.",
-    plateNote: "PHOTO PLATE — a graduate at work, first week on the job",
+    photo: { src: "/photos/chapter-job.jpg", alt: "A developer at dual monitors in warm morning light" },
   },
 ];
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Seal from "./Seal";
 
 const NAV = [
-  { label: "The nine tracks", href: "/#tracks" },
+  { label: "Tracks", href: "/#tracks" },
   { label: "Schedule", href: "/#schedule" },
   { label: "Pricing", href: "/#pricing" },
   { label: "Bill Green", href: "/#bill" },

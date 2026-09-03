@@ -1,7 +1,7 @@
 /*
- * The animated brand seal. Plays once on load (no loop), holds its last
- * frame; the poster and a prefers-reduced-motion fallback show the circular
- * still so the video's black corners never appear.
+ * The animated brand seal, looping continuously; the poster and a
+ * prefers-reduced-motion fallback show the circular still so the video's
+ * black corners never appear.
  */
 export default function Seal({
   size = 44,
@@ -20,6 +20,7 @@ export default function Seal({
       <video
         className="seal-video"
         autoPlay
+        loop
         muted
         playsInline
         preload="auto"
