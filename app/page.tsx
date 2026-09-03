@@ -7,10 +7,12 @@ import Schedule from "@/components/home/Schedule";
 import Pricing from "@/components/home/Pricing";
 import Faq from "@/components/home/Faq";
 import FinalCta from "@/components/home/FinalCta";
+import StructuredData from "@/components/StructuredData";
 
 export default function HomePage() {
   return (
     <main>
+      <StructuredData />
       <Hero />
       <Chapters />
       <Tracks />
