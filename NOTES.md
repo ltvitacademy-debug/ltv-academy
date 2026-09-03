@@ -7,9 +7,29 @@
 - 2026-09-02 — Netlify site `ltv-academy` created via MCP connector before any build, per
   Bill's instruction, so database/member-area env vars and deploys have a home from day one.
 
+- 2026-09-02 — Real copy scraped from live Wix site into `.firecrawl/home.txt` (git-ignored);
+  structured into `lib/copy.ts`. Classroom photo (DSC08163) downloaded full-res from Wix CDN →
+  `public/photos/classroom.jpg`. A stock laptop/code photo from the live site reused as the
+  "The Work" chapter plate.
+- 2026-09-02 — Testimonials on the source site do not state which track each graduate took,
+  so pull-quotes are attributed "name, graduate" only (spec asked for name + track; not
+  inventing tracks per the no-invention rule).
+- 2026-09-02 — Booker T. quote 1 in hero, quote 2 opens the final CTA panel.
+- 2026-09-02 — FAQ accordion uses native `<details>` (no JS); mobile nav is the only client
+  component besides nothing else on the page.
+
 ## Open questions
 
-- [ ] **Netlify ↔ GitHub link**: the MCP connector cannot link a repo to the site. One-time
-  manual step in the Netlify UI (Project → Configuration → Build & deploy → Link repository)
-  to get auto-deploy on push. Until then, deploys go through the MCP `deploy-site` token flow.
-- [ ] Custom domain cutover (www.ltvacademy.com) — timing TBD; current site is live on Wix(?).
+- [x] **Netlify ↔ GitHub link** — Bill linked the repo in the Netlify UI 2026-09-02;
+  auto-deploy on push to `main` is live.
+- [ ] Custom domain cutover (www.ltvacademy.com) — timing TBD; current site is live on Wix.
+- [ ] **6-Month tier price is nowhere on the source site** — pricing card shows
+  "Call for current rate" until Bill supplies the number. Needed before Stripe products (step 3).
+- [ ] **Bill's portrait photo** — no portrait on the source site; Instructor section renders a
+  marked photo plate. Need a real portrait from Bill. Same for chapter plates 1, 4, 5.
+- [ ] **DSC08163 is not a classroom photo** — the Wix site's DSC08163.JPG is a portrait of a
+  man (Bill?) in front of a storefront. Used in the hero (aspirational, real site asset), but
+  "The Class" chapter renders a marked plate instead. Need a real classroom photo from Bill —
+  and confirm whether DSC08163 is actually Bill (if so it can also serve the portrait section).
+- [ ] **Seal vs. copy founding year** — the seal artwork reads "Founded in MMXVIII" (2018) but
+  all site copy (and the spec) says Est. 2017. Ask Bill which is right.
