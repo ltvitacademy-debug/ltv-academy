@@ -9,12 +9,12 @@ export default function Hero() {
       <img
         src="/photos/dsc08163.jpg"
         alt="Photo from the Lifting the Veil Academy site"
-        className="absolute inset-0 h-full w-full object-cover object-[50%_15%] lg:object-[50%_35%]"
+        className="absolute inset-x-0 bottom-0 top-[270px] w-full object-cover object-[50%_15%] lg:inset-0 lg:object-[50%_35%]"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-ink/20 via-ink/40 to-ink/90" />
 
       {/* The animated seal: top-center on mobile (in flow, can't overlap), upper right on desktop */}
-      <div className="relative mx-auto pt-24 lg:hidden">
+      <div className="relative mx-auto pt-8 lg:hidden">
         <Seal size={210} src="/brand/ltv-seal-320.mp4" />
       </div>
       <div className="absolute right-10 top-24 hidden lg:block xl:right-16 xl:top-24">
