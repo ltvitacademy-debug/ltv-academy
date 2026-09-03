@@ -4,21 +4,24 @@ import { QUOTES } from "@/lib/copy";
 
 export default function Hero() {
   return (
-    <section className="relative flex min-h-[92svh] items-end overflow-hidden bg-crimson-deep">
+    <section className="relative flex min-h-[92svh] flex-col justify-between overflow-hidden bg-crimson-deep lg:justify-end">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/photos/dsc08163.jpg"
         alt="Photo from the Lifting the Veil Academy site"
-        className="absolute inset-0 h-full w-full object-cover object-[50%_18%]"
+        className="absolute inset-0 h-full w-full object-cover object-[50%_35%]"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-ink/20 via-ink/40 to-ink/90" />
 
-      {/* The animated seal, played large on the right of the hero */}
-      <div className="absolute right-10 top-24 hidden lg:block xl:right-20 xl:top-28">
-        <Seal size={280} src="/brand/ltv-seal-544.mp4" />
+      {/* The animated seal: top-center on mobile (in flow, can't overlap), upper right on desktop */}
+      <div className="relative mx-auto pt-14 lg:hidden">
+        <Seal size={160} src="/brand/ltv-seal-320.mp4" />
+      </div>
+      <div className="absolute right-10 top-24 hidden lg:block xl:right-16 xl:top-24">
+        <Seal size={380} src="/brand/ltv-seal-544.mp4" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-6xl px-4 pb-20 pt-40 sm:px-6">
+      <div className="relative mx-auto w-full max-w-6xl px-4 pb-20 pt-10 sm:px-6 lg:pt-40">
         <p className="eyebrow mb-5">
           Live classes · Nightly and Saturday mornings
         </p>
