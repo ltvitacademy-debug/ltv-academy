@@ -21,7 +21,7 @@ export default function Footer() {
         <div className="text-sm">
           <p className="eyebrow mb-3">Explore</p>
           <ul className="space-y-2">
-            <li><Link href="/#tracks" className="hover:text-gold-pale">The nine tracks</Link></li>
+            <li><Link href="/#tracks" className="hover:text-gold-pale">Tracks</Link></li>
             <li><Link href="/#schedule" className="hover:text-gold-pale">Schedule</Link></li>
             <li><Link href="/#pricing" className="hover:text-gold-pale">Pricing</Link></li>
             <li><Link href="/#faq" className="hover:text-gold-pale">FAQ</Link></li>
