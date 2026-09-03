@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Seal from "@/components/Seal";
 import { QUOTES } from "@/lib/copy";
 
 export default function Hero() {
@@ -8,9 +9,14 @@ export default function Hero() {
       <img
         src="/photos/dsc08163.jpg"
         alt="Photo from the Lifting the Veil Academy site"
-        className="absolute inset-0 h-full w-full object-cover object-center"
+        className="absolute inset-0 h-full w-full object-cover object-[50%_18%]"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-ink/20 via-ink/40 to-ink/90" />
+
+      {/* The animated seal, played large on the right of the hero */}
+      <div className="absolute right-10 top-24 hidden lg:block xl:right-20 xl:top-28">
+        <Seal size={280} src="/brand/ltv-seal-544.mp4" />
+      </div>
 
       <div className="relative mx-auto w-full max-w-6xl px-4 pb-20 pt-40 sm:px-6">
         <p className="eyebrow mb-5">
