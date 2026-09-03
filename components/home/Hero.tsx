@@ -11,6 +11,19 @@ export default function Hero() {
         alt="Photo from the Lifting the Veil Academy site"
         className="absolute inset-0 h-full w-full object-cover object-[50%_35%] max-lg:origin-top max-lg:scale-[1.35] max-lg:object-top"
       />
+      {/* Cinemagraph layer: ambient background motion over the still (which
+          remains the poster, loading fallback, and reduced-motion version) */}
+      <video
+        className="motion-video absolute inset-0 h-full w-full object-cover object-[50%_35%] max-lg:origin-top max-lg:scale-[1.35] max-lg:object-top"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster="/photos/dsc08163.jpg"
+        src="/photos/hero-cinemagraph.mp4"
+        aria-hidden="true"
+      />
       <div className="absolute inset-0 bg-gradient-to-b from-ink/20 via-ink/40 to-ink/90" />
 
       {/* The animated seal: top-center on mobile (in flow, can't overlap), upper right on desktop */}
