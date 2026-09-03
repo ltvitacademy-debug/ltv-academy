@@ -10,10 +10,13 @@ export default function Instructor() {
   return (
     <section id="bill" className="scroll-mt-20 bg-parchment">
       <div className="mx-auto grid max-w-6xl gap-12 px-4 py-24 sm:px-6 lg:grid-cols-[2fr_3fr]">
-        <div className="photo-plate min-h-[24rem] rounded-[2px]">
-          <span className="absolute right-3 top-3 rounded-[2px] border border-gold/50 px-2 py-1 text-[0.6rem] uppercase tracking-[0.18em] text-gold/80">
-            PHOTO PLATE — Bill Green portrait
-          </span>
+        <div className="relative min-h-[24rem] overflow-hidden rounded-[2px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/photos/bill-portrait.jpg"
+            alt="Bill Green, founder and course instructor"
+            className="absolute inset-0 h-full w-full object-cover object-top"
+          />
         </div>
 
         <div>
