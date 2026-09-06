@@ -32,6 +32,9 @@ worth your study time.
 | **Power BI service** | Cloud platform (app.powerbi.com) | Publish, share, collaborate, schedule refresh |
 | **Power BI Mobile** | Phone/tablet apps | Consume reports and dashboards anywhere |
 
+![Diagram of Power BI Desktop, the Power BI service, and Power BI Mobile working together.](/courses/power-bi/ch01/01-what-is-power-bi/overview-blocks.png)
+*Build in Desktop, publish to the service, consume anywhere — the flow behind everything in this course.*
+
 The rhythm of real work: **build in Desktop → publish to the service → consume
 in a browser or on mobile.**
 
@@ -43,6 +46,15 @@ Two facts worth internalizing early:
    report design happen in Desktop. Sharing, permissions, apps, scheduled
    refresh, and dashboards live in the service.
 
+![Power BI Desktop's start screen, offering a blank report or a connection to data.](/courses/power-bi/ch01/01-what-is-power-bi/desktop-splash.png)
+*Power BI Desktop's start screen — the same free tool every professional uses. There's no paid tier that unlocks extra features here.*
+
+![The Power BI Desktop report canvas, with the ribbon on top and Filters, Visualizations, and Fields panes on the right.](/courses/power-bi/ch01/01-what-is-power-bi/desktop-report-view.png)
+*Desktop's report-building workspace — the exact interface Lesson 3 takes apart piece by piece.*
+
+![A gallery of Power BI visual types: bar, line, map, card, table, and more.](/courses/power-bi/ch01/01-what-is-power-bi/viz-types.png)
+*Thirty-plus visuals ship with Desktop out of the box; the marketplace adds hundreds more.*
+
 ## The three building blocks
 
 - **Semantic model** — your prepared, related data published as a reusable
@@ -53,6 +65,12 @@ Two facts worth internalizing early:
 - **Dashboard** — a single screen of tiles pinned from one *or many* reports,
   assembled in the service. Dashboards are for monitoring; reports are for
   exploring.
+
+![A Power BI dashboard in the service, showing several report visuals pinned together on one screen.](/courses/power-bi/ch01/01-what-is-power-bi/service-dashboard.png)
+*A dashboard in the Power BI service — dashboards that update as the data changes, shared and secured down to the row.*
+
+![A Power BI service workspace listing semantic models, reports, and dashboards together.](/courses/power-bi/ch01/01-what-is-power-bi/service-content.png)
+*The three building blocks together in a workspace: semantic model, report, dashboard.*
 
 ## The five-step workflow
 

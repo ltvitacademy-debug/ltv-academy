@@ -46,7 +46,15 @@ specifically requires the .exe. It is the simplest path and keeps itself updated
    already signed into the Power BI service at app.powerbi.com, select the
    **Download** icon in the top-right corner and choose **Power BI Desktop** from
    the menu.
+
+   ![The Download menu in the Power BI service, with Power BI Desktop highlighted.](/courses/power-bi/ch01/02-installing-power-bi-desktop/getpbid_downloads.png)
+   *From the Power BI service, the Download icon offers Power BI Desktop directly.*
+
 2. On the Power BI Desktop page in the Store, select **Install**.
+
+   ![The Power BI Desktop page in the Microsoft Store, with the Install button highlighted.](/courses/power-bi/ch01/02-installing-power-bi-desktop/getpbid_04.png)
+   *One click to Install — Windows handles the rest, including future updates.*
+
 3. Windows downloads and installs it automatically — no setup wizard to click
    through.
 
@@ -56,13 +64,23 @@ specifically requires the .exe. It is the simplest path and keeps itself updated
    and select **Download**.
 2. Choose **PBIDesktopSetup_x64.exe** (the 64-bit version). The 32-bit build is
    no longer supported — always take 64-bit.
+
+   ![The Download Center's file picker, with the 64-bit Power BI Desktop installer selected.](/courses/power-bi/ch01/02-installing-power-bi-desktop/download-desktop-exe.png)
+   *Always choose the 64-bit file — the 32-bit build is no longer supported.*
+
 3. Run the downloaded file. A setup wizard opens; step through it (choose your
    language, accept the license, keep the defaults) to install.
+
+   ![The Power BI Desktop setup wizard's welcome screen, with a language dropdown and Next button.](/courses/power-bi/ch01/02-installing-power-bi-desktop/desktop-install-01.png)
+   *The setup wizard — direct-download only. The Store version skips this screen entirely.*
 
 Either path ends the same way: launch Power BI Desktop, and a start screen
 appears with **Blank report**, **Excel workbook**, **SQL Server**, and other
 options for beginning your first report — which is exactly where Lesson 4 picks
 up.
+
+![Power BI Desktop's start screen right after first launch, offering a blank report or a direct data connection.](/courses/power-bi/ch01/02-installing-power-bi-desktop/desktop-splash-screen.png)
+*Your first launch. Don't click anything yet — Lesson 3 takes this exact screen apart, piece by piece.*
 
 ## Minimum system requirements
 

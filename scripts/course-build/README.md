@@ -1,7 +1,7 @@
 # Course video build pipeline
 
 Produces one lesson video from slides + per-segment ElevenLabs narration.
-Proven on Power BI Lesson 1 (see `content/powerbi/ch01/01-what-is-power-bi/`).
+Proven on Power BI Lessons 1 and 2 (see `content/powerbi/ch01/`).
 
 ## Prerequisites
 
@@ -29,13 +29,22 @@ Proven on Power BI Lesson 1 (see `content/powerbi/ch01/01-what-is-power-bi/`).
    `node gen-slides.js <abs lesson dir> <abs path to public/brand/ltv-logo-still.png>`
    → writes `slides/s1..sN.png` (1920x1080, LTV brand). The renderer itself is
    generic and shared across lessons — only `slides.json` changes per lesson.
-4. Put the narration segments (1:1 with slides) in `segments.json` **inside the
+4. Embed the pertinent screenshots in `guide.md` too, not just the video, so the
+   written guide stands on its own. Run:
+   `node copy-guide-images.js <abs lesson dir> <contentDir, e.g. ch01/02-slug>`
+   → copies every screenshot referenced in `slides.json` into
+   `public/courses/power-bi/<contentDir>/` (the only images that need to be
+   web-servable — everything else stays under `content/`, which the app never
+   serves directly). Then reference them in `guide.md` at the matching point in
+   the text: `![alt text](/courses/power-bi/<contentDir>/<file>.png)` followed
+   by an italic one-line caption.
+5. Put the narration segments (1:1 with slides) in `segments.json` **inside the
    lesson folder** (next to `guide.md`); run:
    `node build-lesson.js <abs lesson dir>`
    → TTS each segment, measures real duration with ffprobe, muxes each
    slide+audio chunk (apad), concats to `lesson.mp4`. Sync is structural —
    a slide's first frame IS its narration's first sample.
-5. Upload `lesson.mp4` to Cloudinary (folder `ltv-powerbi/`), then add the
+6. Upload `lesson.mp4` to Cloudinary (folder `ltv-powerbi/`), then add the
    `videoUrl`, `contentDir`, and `durationLabel` to `lib/powerbi-outline.ts`.
 
 Videos/audio are git-ignored; Cloudinary is the distribution copy.
