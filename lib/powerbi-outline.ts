@@ -36,7 +36,12 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788737301/ltv-powerbi/ch01-02-installing-power-bi-desktop.mp4",
         durationLabel: "2 min 48 s",
       }),
-      L(3, "desktop-interface-tour", "Power BI Desktop Interface Tour"),
+      L(3, "desktop-interface-tour", "Power BI Desktop Interface Tour", {
+        contentDir: "ch01/03-desktop-interface-tour",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788738811/ltv-powerbi/ch01-03-desktop-interface-tour.mp4",
+        durationLabel: "2 min 47 s",
+      }),
       L(4, "your-first-report", "Your First Power BI Report"),
       L(5, "the-power-bi-workflow", "The Power BI Workflow: Get → Transform → Model → Visualize → Publish"),
     ],
