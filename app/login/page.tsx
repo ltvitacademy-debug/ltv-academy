@@ -12,12 +12,20 @@ export default function LoginPage() {
         of this build. In the meantime, call us at 678-627-2796 with any
         questions about your membership.
       </p>
-      <Link
-        href="/"
-        className="mt-8 rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep transition-colors"
-      >
-        Back to the homepage
-      </Link>
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-5">
+        <Link
+          href="/app"
+          className="rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep transition-colors"
+        >
+          Enter the learning center (preview)
+        </Link>
+        <Link
+          href="/"
+          className="text-sm text-stone underline underline-offset-4 hover:text-crimson"
+        >
+          Back to the homepage
+        </Link>
+      </div>
     </main>
   );
 }
