@@ -72,12 +72,12 @@ like a book page beneath. It must not look like Teachable.
 
 ## DEPLOYMENT ARCHITECTURE
 
-- **GitHub repo**: https://github.com/wagreen3629/ltv-academy (private) — origin `main`.
+- **GitHub repo**: https://github.com/ltvitacademy-debug/ltv-academy (private) — origin `main`.
   Push via HTTPS; Git Credential Manager on this machine already holds working credentials.
-- **Netlify site**: `ltv-academy` — https://ltv-academy.netlify.app
-  - Project ID: `62272593-888b-49d5-b85e-e7d3031209fd`
-  - Team: `wagreen3629` (account ID `67d594287a0d631cb98eab5d`)
-  - Admin: https://app.netlify.com/projects/ltv-academy
+- **Netlify site**: `ltv-it-academy` — https://ltv-it-academy.netlify.app
+  - Project ID: `61a2aa5f-5797-4129-bb62-a5a86c659ec8`
+  - Team: `ltv-it-academy's team` (account email `ltv.it.academy@gmail.com`)
+  - Admin: https://app.netlify.com/projects/ltv-it-academy
 - **Deploy flow**: connect the GitHub repo to the Netlify site for auto-deploy on push to
   `main` (the MCP connector cannot link a repo — one-time link happens in the Netlify UI:
   Project → Configuration → Build & deploy → Link repository). Until linked, deploy via the

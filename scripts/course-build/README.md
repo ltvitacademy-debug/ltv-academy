@@ -6,10 +6,12 @@ Proven on Power BI Lesson 1 (see `content/powerbi/ch01/01-what-is-power-bi/`).
 ## Prerequisites
 
 - Node 18+ (`npm install sharp` in this folder before first run)
-- ffmpeg/ffprobe on disk — set the `FFMPEG` path at the top of both scripts
-  (currently the winget Gyan build path on the original machine)
-- `ELEVENLABS_API_KEY` env var, and `LTV_VOICE_ID` (the "Bill Green" cloned
-  voice lives on Bill's ElevenLabs account: `XGWwpWvcCCZaFwBliPC2`)
+- ffmpeg/ffprobe on disk — `build-lesson.js` reads the path from the `FFMPEG_PATH`
+  env var, falling back to the winget Gyan build path on this machine
+- `ELEVENLABS_API_KEY` env var, and `LTV_VOICE_ID` (currently `XGWwpWvcCCZaFwBliPC2`,
+  "Bill Narrator For Book" — a placeholder/testing voice on Bill's ElevenLabs
+  account. Bill is recording his own cloned voice separately; swap `LTV_VOICE_ID`
+  when he provides it.)
 
 ## The flow per lesson
 
@@ -21,10 +23,14 @@ Proven on Power BI Lesson 1 (see `content/powerbi/ch01/01-what-is-power-bi/`).
    download the current file from
    `https://learn.microsoft.com/en-us/power-bi/<area>/media/<article>/<file>.png`.
    Record every URL in `sources.json` (see `content/powerbi/ATTRIBUTION.md`).
-3. Edit `gen-slides.js` slide config; run:
+3. Write `slides.json` in the lesson folder — an ordered list of slide specs
+   (`title`, `screenshot`, `steps`, or `outro`; see the header comment in
+   `gen-slides.js` for each shape). Run:
    `node gen-slides.js <abs lesson dir> <abs path to public/brand/ltv-logo-still.png>`
-   → writes `slides/s1..sN.png` (1920x1080, LTV brand).
-4. Put the narration segments (1:1 with slides) in `segments.json`; run:
+   → writes `slides/s1..sN.png` (1920x1080, LTV brand). The renderer itself is
+   generic and shared across lessons — only `slides.json` changes per lesson.
+4. Put the narration segments (1:1 with slides) in `segments.json` **inside the
+   lesson folder** (next to `guide.md`); run:
    `node build-lesson.js <abs lesson dir>`
    → TTS each segment, measures real duration with ffprobe, muxes each
    slide+audio chunk (apad), concats to `lesson.mp4`. Sync is structural —

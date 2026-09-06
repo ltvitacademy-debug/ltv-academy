@@ -10,14 +10,14 @@ const https = require("https");
 const fs = require("fs");
 const path = require("path");
 
-const FFMPEG = "C:\\Users\\willi\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-9.0-full_build\\bin\\ffmpeg.exe";
+const FFMPEG = process.env.FFMPEG_PATH || "C:\\Users\\subze\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-9.0.1-full_build\\bin\\ffmpeg.exe";
 const FFPROBE = FFMPEG.replace("ffmpeg.exe", "ffprobe.exe");
 const KEY = process.env.ELEVENLABS_API_KEY;
 const VOICE = process.env.LTV_VOICE_ID;
 const LESSON = process.argv[2];
 const PAUSE = 0.7; // breathing gap after each narration segment
 
-const segs = JSON.parse(fs.readFileSync(path.join(__dirname, "segments.json"), "utf8"));
+const segs = JSON.parse(fs.readFileSync(path.join(LESSON, "segments.json"), "utf8"));
 const AUD = path.join(LESSON, "audio");
 const CHUNKS = path.join(LESSON, "chunks");
 fs.mkdirSync(AUD, { recursive: true });
