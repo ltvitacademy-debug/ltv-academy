@@ -9,7 +9,7 @@ Proven on Power BI Lesson 1 (see `content/powerbi/ch01/01-what-is-power-bi/`).
 - ffmpeg/ffprobe on disk — set the `FFMPEG` path at the top of both scripts
   (currently the winget Gyan build path on the original machine)
 - `ELEVENLABS_API_KEY` env var, and `LTV_VOICE_ID` (the "Bill Green" cloned
-  voice lives on Bill's ElevenLabs account: `ZlKKCMfyACIlYZs6u1Ov`)
+  voice lives on Bill's ElevenLabs account: `XGWwpWvcCCZaFwBliPC2`)
 
 ## The flow per lesson
 
