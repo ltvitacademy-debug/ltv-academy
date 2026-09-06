@@ -27,7 +27,7 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
       L(1, "what-is-power-bi", "What Is Power BI?", {
         contentDir: "ch01/01-what-is-power-bi",
         videoUrl:
-          "https://res.cloudinary.com/dd9en3k2r/video/upload/v1788660582/ltv-powerbi/ch01-01-what-is-power-bi.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788733128/ltv-powerbi/ch01-01-what-is-power-bi.mp4",
         durationLabel: "3 min 18 s",
       }),
       L(2, "installing-power-bi-desktop", "Installing Power BI Desktop"),
