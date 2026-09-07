@@ -522,37 +522,132 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
     n: 10,
     title: "Refresh & Gateways",
     lessons: [
-      L(75, "how-refresh-works", "How Power BI Refresh Works"),
-      L(76, "data-gateway", "Installing & Configuring the Data Gateway"),
-      L(77, "scheduled-refresh", "Scheduled Refresh"),
-      L(78, "troubleshooting-refresh", "Troubleshooting Refresh Problems"),
+      L(75, "how-refresh-works", "How Power BI Refresh Works", {
+        contentDir: "ch10/75-how-refresh-works",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804696/ltv-powerbi/ch10-75-how-refresh-works.mp4",
+        durationLabel: "1 min",
+      }),
+      L(76, "data-gateway", "Installing & Configuring the Data Gateway", {
+        contentDir: "ch10/76-data-gateway",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804698/ltv-powerbi/ch10-76-data-gateway.mp4",
+        durationLabel: "1 min",
+      }),
+      L(77, "scheduled-refresh", "Scheduled Refresh", {
+        contentDir: "ch10/77-scheduled-refresh",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804700/ltv-powerbi/ch10-77-scheduled-refresh.mp4",
+        durationLabel: "1 min",
+      }),
+      L(78, "troubleshooting-refresh", "Troubleshooting Refresh Problems", {
+        contentDir: "ch10/78-troubleshooting-refresh",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804702/ltv-powerbi/ch10-78-troubleshooting-refresh.mp4",
+        durationLabel: "1 min",
+      }),
     ],
   },
   {
     n: 11,
     title: "Security",
     lessons: [
-      L(79, "rls-fundamentals", "Row-Level Security Fundamentals"),
-      L(80, "rls-roles", "Creating RLS Roles"),
-      L(81, "rls-in-service", "RLS in Power BI Service"),
-      L(82, "dynamic-rls", "Dynamic Row-Level Security"),
-      L(83, "rls-complex-models", "RLS With Complex Data Models"),
+      L(79, "rls-fundamentals", "Row-Level Security Fundamentals", {
+        contentDir: "ch11/79-rls-fundamentals",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804709/ltv-powerbi/ch11-79-rls-fundamentals.mp4",
+        durationLabel: "1 min",
+      }),
+      L(80, "rls-roles", "Creating RLS Roles", {
+        contentDir: "ch11/80-rls-roles",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804710/ltv-powerbi/ch11-80-rls-roles.mp4",
+        durationLabel: "1 min",
+      }),
+      L(81, "rls-in-service", "RLS in Power BI Service", {
+        contentDir: "ch11/81-rls-in-service",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804713/ltv-powerbi/ch11-81-rls-in-service.mp4",
+        durationLabel: "1 min",
+      }),
+      L(82, "dynamic-rls", "Dynamic Row-Level Security", {
+        contentDir: "ch11/82-dynamic-rls",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804715/ltv-powerbi/ch11-82-dynamic-rls.mp4",
+        durationLabel: "1 min",
+      }),
+      L(83, "rls-complex-models", "RLS With Complex Data Models", {
+        contentDir: "ch11/83-rls-complex-models",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804717/ltv-powerbi/ch11-83-rls-complex-models.mp4",
+        durationLabel: "1 min",
+      }),
     ],
   },
   {
     n: 12,
     title: "Capstone Project",
     lessons: [
-      L(84, "capstone-requirements", "Business Requirements"),
-      L(85, "capstone-import", "Import the Raw Data"),
-      L(86, "capstone-power-query", "Clean & Transform With Power Query"),
-      L(87, "capstone-star-schema", "Build the Star Schema"),
-      L(88, "capstone-dax", "Create DAX Measures"),
-      L(89, "capstone-report", "Build the Report"),
-      L(90, "capstone-interactivity", "Add Interactivity"),
-      L(91, "capstone-publish", "Publish to Power BI Service"),
-      L(92, "capstone-security-refresh", "Configure Security & Refresh"),
-      L(93, "capstone-present", "Present the Final Dashboard"),
+      L(84, "capstone-requirements", "Business Requirements", {
+        contentDir: "ch12/84-capstone-requirements",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805684/ltv-powerbi/ch12-84-capstone-requirements.mp4",
+        durationLabel: "1 min",
+      }),
+      L(85, "capstone-import", "Import the Raw Data", {
+        contentDir: "ch12/85-capstone-import",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805688/ltv-powerbi/ch12-85-capstone-import.mp4",
+        durationLabel: "1 min",
+      }),
+      L(86, "capstone-power-query", "Clean & Transform With Power Query", {
+        contentDir: "ch12/86-capstone-power-query",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805690/ltv-powerbi/ch12-86-capstone-power-query.mp4",
+        durationLabel: "1 min",
+      }),
+      L(87, "capstone-star-schema", "Build the Star Schema", {
+        contentDir: "ch12/87-capstone-star-schema",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805693/ltv-powerbi/ch12-87-capstone-star-schema.mp4",
+        durationLabel: "1 min",
+      }),
+      L(88, "capstone-dax", "Create DAX Measures", {
+        contentDir: "ch12/88-capstone-dax",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805695/ltv-powerbi/ch12-88-capstone-dax.mp4",
+        durationLabel: "1 min",
+      }),
+      L(89, "capstone-report", "Build the Report", {
+        contentDir: "ch12/89-capstone-report",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805701/ltv-powerbi/ch12-89-capstone-report.mp4",
+        durationLabel: "1 min",
+      }),
+      L(90, "capstone-interactivity", "Add Interactivity", {
+        contentDir: "ch12/90-capstone-interactivity",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805704/ltv-powerbi/ch12-90-capstone-interactivity.mp4",
+        durationLabel: "1 min",
+      }),
+      L(91, "capstone-publish", "Publish to Power BI Service", {
+        contentDir: "ch12/91-capstone-publish",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805706/ltv-powerbi/ch12-91-capstone-publish.mp4",
+        durationLabel: "1 min",
+      }),
+      L(92, "capstone-security-refresh", "Configure Security & Refresh", {
+        contentDir: "ch12/92-capstone-security-refresh",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805708/ltv-powerbi/ch12-92-capstone-security-refresh.mp4",
+        durationLabel: "1 min",
+      }),
+      L(93, "capstone-present", "Present the Final Dashboard", {
+        contentDir: "ch12/93-capstone-present",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805710/ltv-powerbi/ch12-93-capstone-present.mp4",
+        durationLabel: "1 min",
+      }),
     ],
   },
 ];
