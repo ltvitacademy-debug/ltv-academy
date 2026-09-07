@@ -16,7 +16,9 @@ export const PYTHON_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Getting Started",
     lessons: [
-      L(1, "what-is-python", "What Is Python & Why Use It in Power BI?"),
+      L(1, "what-is-python", "What Is Python & Why Use It in Power BI?", {
+        contentDir: "ch01/01-what-is-python",
+      }),
       L(2, "installing-python", "Installing Python for Power BI"),
       L(3, "connecting-python", "Connecting Power BI to Python"),
     ],

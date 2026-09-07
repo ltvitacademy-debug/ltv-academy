@@ -23,7 +23,7 @@ export default async function LessonPage({
   const found = findLesson(course, lessonSlug);
   if (!found) notFound();
   const { chapter, lesson } = found;
-  const content = loadLessonContent(lesson);
+  const content = loadLessonContent(lesson, course.contentBase ?? course.slug);
 
   // Previous/next within the flat lesson order
   const flat = course.chapters.flatMap((ch) => ch.lessons);

@@ -32,6 +32,10 @@ export type CourseMeta = {
   tagline: string;
   status: "available" | "coming-soon";
   chapters?: ChapterMeta[];
+  // Folder name under content/ and public/courses/. Defaults to slug —
+  // only power-bi overrides this, since its content folder predates the
+  // slug-matching convention (content/powerbi/, not content/power-bi/).
+  contentBase?: string;
 };
 
 // The catalog the learning center renders. Power BI is the first live course;
@@ -44,6 +48,7 @@ export const COURSES: CourseMeta[] = [
       "From raw data to published, secured dashboards — twelve chapters ending in a full capstone project.",
     status: "available",
     chapters: POWERBI_CHAPTERS,
+    contentBase: "powerbi",
   },
   {
     slug: "python-for-power-bi",
@@ -79,11 +84,11 @@ export type Quiz = {
   questions: { q: string; options: string[]; answer: number; explain: string }[];
 };
 
-// Lesson content lives on disk under content/powerbi/ (moves to the database
-// when the backend lands). Only lessons with a contentDir have content.
-export function loadLessonContent(lesson: LessonMeta) {
+// Lesson content lives on disk under content/<contentBase>/ (moves to the
+// database when the backend lands). Only lessons with a contentDir have content.
+export function loadLessonContent(lesson: LessonMeta, contentBase: string) {
   if (!lesson.contentDir) return null;
-  const dir = path.join(process.cwd(), "content", "powerbi", lesson.contentDir);
+  const dir = path.join(process.cwd(), "content", contentBase, lesson.contentDir);
   const guidePath = path.join(dir, "guide.md");
   const quizPath = path.join(dir, "quiz.json");
   const guideHtml = fs.existsSync(guidePath)
