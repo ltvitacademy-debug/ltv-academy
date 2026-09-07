@@ -330,11 +330,36 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
     n: 6,
     title: "Dates & Time Intelligence",
     lessons: [
-      L(47, "date-table", "Building a Date Table"),
-      L(48, "calendar-functions", "CALENDAR and Date Functions"),
-      L(49, "dateadd", "DATEADD"),
-      L(50, "ytd-mtd-qtd", "YTD, MTD & QTD"),
-      L(51, "datesytd-totalytd", "DATESYTD, TOTALYTD & DATESBETWEEN"),
+      L(47, "date-table", "Building a Date Table", {
+        contentDir: "ch06/47-date-table",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788797520/ltv-powerbi/ch06-47-date-table.mp4",
+        durationLabel: "1 min",
+      }),
+      L(48, "calendar-functions", "CALENDAR and Date Functions", {
+        contentDir: "ch06/48-calendar-functions",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788797655/ltv-powerbi/ch06-48-calendar-functions.mp4",
+        durationLabel: "1 min",
+      }),
+      L(49, "dateadd", "DATEADD", {
+        contentDir: "ch06/49-dateadd",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788797794/ltv-powerbi/ch06-49-dateadd.mp4",
+        durationLabel: "1 min",
+      }),
+      L(50, "ytd-mtd-qtd", "YTD, MTD & QTD", {
+        contentDir: "ch06/50-ytd-mtd-qtd",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788797925/ltv-powerbi/ch06-50-ytd-mtd-qtd.mp4",
+        durationLabel: "1 min",
+      }),
+      L(51, "datesytd-totalytd", "DATESYTD, TOTALYTD & DATESBETWEEN", {
+        contentDir: "ch06/51-datesytd-totalytd",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788798077/ltv-powerbi/ch06-51-datesytd-totalytd.mp4",
+        durationLabel: "1 min",
+      }),
     ],
   },
   {
