@@ -78,12 +78,12 @@ this decision directly.
 
 ## Lab
 
-1. Open a Power BI file with a table that has two text columns you could
-   combine (like City and State, or First Name and Last Name).
-2. Create a calculated column that concatenates them, following the
-   `[ColumnA] & "," & [ColumnB]` pattern.
-3. Add your new column to a table or map visual and confirm it displays
-   correctly.
+1. Import **AdventureWorks2012**'s `Person.Person` table, which has
+   separate `FirstName` and `LastName` columns.
+2. Create a calculated column named `FullName` that concatenates them:
+   `FullName = [FirstName] & " " & [LastName]`.
+3. Add your new column to a table visual and confirm it displays
+   correctly for every row.
 
 ## Check yourself
 

@@ -38,6 +38,7 @@ export default function Quiz({
           <div className="mt-3 space-y-2">
             {question.options.map((opt, oi) => {
               const chosen = picks[qi] === oi;
+              const missed = submitted && picks[qi] !== question.answer;
               const correct = submitted && oi === question.answer;
               const wrong = submitted && chosen && oi !== question.answer;
               return (
@@ -45,7 +46,9 @@ export default function Quiz({
                   key={oi}
                   className={`flex cursor-pointer items-baseline gap-3 border p-3 text-sm transition-colors ${
                     correct
-                      ? "border-gold bg-gold/10"
+                      ? missed
+                        ? "border-crimson bg-crimson/10"
+                        : "border-gold bg-gold/10"
                       : wrong
                         ? "border-crimson bg-crimson/5"
                         : chosen
@@ -63,7 +66,9 @@ export default function Quiz({
                       setPicks((p) => p.map((v, i) => (i === qi ? oi : v)))
                     }
                   />
-                  <span>{opt}</span>
+                  <span className={correct && missed ? "font-semibold text-crimson" : undefined}>
+                    {opt}
+                  </span>
                 </label>
               );
             })}

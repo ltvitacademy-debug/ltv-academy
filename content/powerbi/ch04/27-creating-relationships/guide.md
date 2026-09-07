@@ -82,11 +82,17 @@ natural; they all edit the same relationship.
 
 ## Lab
 
-1. Open the file from Lesson 24's lab — the one with two unrelated tables.
-2. Use **Manage relationships** → **New** to connect them manually,
-   picking the columns that share matching values.
-3. Rebuild the visual that failed in Lesson 24 and confirm the numbers now
-   split correctly instead of repeating the grand total.
+1. Open the file from Lesson 24's lab — `Person.Person` and
+   `Sales.SalesOrderHeader` from **AdventureWorks2012**, still
+   unrelated.
+2. Use **Manage relationships** → **New** to connect them manually.
+   `Person.Person`'s `BusinessEntityID` matches
+   `Sales.SalesOrderHeader`'s `CustomerID` only indirectly (through the
+   `Sales.Customer` table) — so for practice, instead import
+   **Northwind**'s `Customers` and `Orders` tables, which relate
+   directly on `CustomerID`, and connect those manually.
+3. Rebuild a simple visual (like order count by customer) and confirm
+   the numbers now split correctly instead of repeating the grand total.
 
 ## Check yourself
 

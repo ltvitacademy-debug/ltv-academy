@@ -81,13 +81,19 @@ once, no matter how many thousands of sales reference that product.
 
 ## Lab
 
-1. Open any denormalized export you have — even a CSV with repeated
-   category or region columns on every row.
-2. In Power Query, identify which columns describe a *thing* (dimension
-   candidates) versus which describe an *event* (fact candidates).
-3. Sketch — on paper or in a notes app — what a normalized version would
-   look like: one dimension table per "thing," one fact table for the
-   events, connected by key columns.
+Connect Power BI to your SQL Server instance and import
+**AdventureWorksDW2014** — Microsoft's own data warehouse, already
+split into exactly this shape.
+
+1. Import `FactInternetSales` and `DimProduct`. Look at each table's
+   columns: `FactInternetSales` holds order quantities and sales
+   amounts (events); `DimProduct` holds product names, colors, and
+   categories (things).
+2. In Power Query, identify which columns in each table are keys versus
+   descriptive attributes.
+3. Sketch — on paper or in a notes app — why `FactInternetSales` counts
+   as the fact table here and `DimProduct` counts as the dimension,
+   using the definitions from this lesson.
 
 ## Check yourself
 

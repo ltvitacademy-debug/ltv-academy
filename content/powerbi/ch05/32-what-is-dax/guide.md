@@ -89,11 +89,14 @@ blocks more than it rewards memorizing long formulas.
 
 ## Lab
 
-1. Open any Power BI file and drag a numeric column onto a card visual —
-   confirm it sums automatically, no DAX involved.
-2. Think of one question about your data that a single dragged field
-   couldn't answer (a comparison, a ratio, a filtered subset). Keep it in
-   mind — you'll be able to build it by the end of this chapter.
+1. Connect Power BI to your SQL Server instance and import
+   **AdventureWorksDW2014**'s `FactInternetSales` table. Drag
+   `SalesAmount` onto a card visual — confirm it sums automatically, no
+   DAX involved.
+2. Think of one question this table could answer that a single dragged
+   field couldn't — like sales for a specific prior period, using its
+   `OrderDateKey` column. Keep it in mind — you'll be able to build it
+   by the end of this chapter.
 
 ## Check yourself
 

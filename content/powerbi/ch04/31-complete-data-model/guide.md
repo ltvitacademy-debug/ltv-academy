@@ -91,14 +91,16 @@ makes DAX trustworthy once you get there.
 
 ## Lab
 
-1. Take any two or three raw tables — your own, or ones from earlier
-   chapters — and build a complete model from scratch using the six-step
+1. Starting from a blank Power BI file, connect to your SQL Server
+   instance and import **AdventureWorksDW2014**'s `FactInternetSales`,
+   `DimProduct`, `DimCustomer`, `DimDate`, and `DimSalesTerritory` —
+   then build the complete model from scratch using the six-step
    checklist above.
 2. Open Model view and confirm the shape looks like a star, not a chain
    or a loop.
-3. Test it: build one visual that combines a measure from your fact table
-   with a filter from each dimension table, and confirm every number
-   changes the way you expect.
+3. Test it: build one visual that combines a measure summing
+   `FactInternetSales[SalesAmount]` with a filter from each dimension
+   table, and confirm every number changes the way you expect.
 
 ## Check yourself
 

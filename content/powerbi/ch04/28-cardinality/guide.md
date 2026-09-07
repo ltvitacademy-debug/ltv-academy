@@ -73,13 +73,15 @@ aggregate the way you expect.
 
 ## Lab
 
-1. Open **Manage relationships** on any model with at least one
-   relationship, and select **Edit** on one of them.
-2. Note what Cardinality is currently set to, and why — look at whether
-   either column actually holds unique values.
-3. If you have two tables where each value appears only once on both
-   sides, create a relationship between them and confirm Power BI defaults
-   it to One to one.
+1. From **AdventureWorks2012**, import `Sales.SalesOrderHeader` and
+   `Sales.SalesOrderDetail`. Create a relationship on `SalesOrderID` and
+   open **Manage relationships** → **Edit** on it — confirm Power BI set
+   Cardinality to **One to many**, since one order header has many
+   detail lines.
+2. Note why: `SalesOrderHeader.SalesOrderID` holds unique values, while
+   the same ID repeats on every line of `SalesOrderDetail`.
+3. From **Northwind**, import `Customers` and `Orders` and confirm the
+   same pattern: one customer, many orders.
 
 ## Check yourself
 

@@ -73,14 +73,18 @@ filter direction — are all about building that path correctly.
 
 ## Lab
 
-1. Open Model view in a Power BI file with two or more tables (**View** →
-   **Model view**, or the Model icon on the left rail).
-2. Rearrange the tables so any fact table sits in the center with its
-   dimension tables around it — you're not changing anything functional,
-   just making the star shape visible to yourself.
-3. If you have a dimension table with a natural drill-down (like
-   Category → Subcategory → Product), note which columns would form that
-   hierarchy — you'll build one for real later in the course.
+1. Connect to your SQL Server instance and import **AdventureWorksDW2014**'s
+   `FactInternetSales`, `DimProduct`, `DimCustomer`, `DimDate`, and
+   `DimSalesTerritory` — five tables, already shaped as a real star schema.
+2. Open Model view (**View** → **Model view**, or the Model icon on the
+   left rail) and arrange the tables with `FactInternetSales` in the
+   center and the four `Dim` tables around it — the shape should already
+   look familiar.
+3. Note that AdventureWorksDW2014 actually stores `DimProductCategory`,
+   `DimProductSubcategory`, and `DimProduct` as three separate related
+   tables — a real-world snowflake dimension. You'll build a
+   single-table hierarchy for real later in the course; for now, just
+   identify the three tables and how they chain together.
 
 ## Check yourself
 

@@ -258,17 +258,72 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788794872/ltv-powerbi/ch05-35-measures.mp4",
         durationLabel: "1 min",
       }),
-      L(36, "measures-vs-columns", "Measures vs. Calculated Columns"),
-      L(37, "basic-aggregations", "SUM, COUNT, DISTINCTCOUNT & Basic Aggregations"),
-      L(38, "row-vs-filter-context", "Row Context vs. Filter Context"),
-      L(39, "calculate", "CALCULATE Explained"),
-      L(40, "context-transition", "Context Transition"),
-      L(41, "iterators", "Iterator Functions — SUMX and Friends"),
-      L(42, "calculate-modifiers", "CALCULATE Filter Modifiers"),
-      L(43, "filter-function", "FILTER & Table Filter Expressions"),
-      L(44, "all-allexcept", "ALL & ALLEXCEPT"),
-      L(45, "allselected", "ALLSELECTED"),
-      L(46, "variables-best-practices", "Variables & DAX Best Practices"),
+      L(36, "measures-vs-columns", "Measures vs. Calculated Columns", {
+        contentDir: "ch05/36-measures-vs-columns",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795058/ltv-powerbi/ch05-36-measures-vs-columns.mp4",
+        durationLabel: "1 min",
+      }),
+      L(37, "basic-aggregations", "SUM, COUNT, DISTINCTCOUNT & Basic Aggregations", {
+        contentDir: "ch05/37-basic-aggregations",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795182/ltv-powerbi/ch05-37-basic-aggregations.mp4",
+        durationLabel: "1 min",
+      }),
+      L(38, "row-vs-filter-context", "Row Context vs. Filter Context", {
+        contentDir: "ch05/38-row-vs-filter-context",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795332/ltv-powerbi/ch05-38-row-vs-filter-context.mp4",
+        durationLabel: "2 min",
+      }),
+      L(39, "calculate", "CALCULATE Explained", {
+        contentDir: "ch05/39-calculate",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795465/ltv-powerbi/ch05-39-calculate.mp4",
+        durationLabel: "1 min",
+      }),
+      L(40, "context-transition", "Context Transition", {
+        contentDir: "ch05/40-context-transition",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795613/ltv-powerbi/ch05-40-context-transition.mp4",
+        durationLabel: "1 min",
+      }),
+      L(41, "iterators", "Iterator Functions — SUMX and Friends", {
+        contentDir: "ch05/41-iterators",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795746/ltv-powerbi/ch05-41-iterators.mp4",
+        durationLabel: "1 min",
+      }),
+      L(42, "calculate-modifiers", "CALCULATE Filter Modifiers", {
+        contentDir: "ch05/42-calculate-modifiers",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795876/ltv-powerbi/ch05-42-calculate-modifiers.mp4",
+        durationLabel: "1 min",
+      }),
+      L(43, "filter-function", "FILTER & Table Filter Expressions", {
+        contentDir: "ch05/43-filter-function",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795986/ltv-powerbi/ch05-43-filter-function.mp4",
+        durationLabel: "1 min",
+      }),
+      L(44, "all-allexcept", "ALL & ALLEXCEPT", {
+        contentDir: "ch05/44-all-allexcept",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788796100/ltv-powerbi/ch05-44-all-allexcept.mp4",
+        durationLabel: "1 min",
+      }),
+      L(45, "allselected", "ALLSELECTED", {
+        contentDir: "ch05/45-allselected",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788796300/ltv-powerbi/ch05-45-allselected.mp4",
+        durationLabel: "1 min",
+      }),
+      L(46, "variables-best-practices", "Variables & DAX Best Practices", {
+        contentDir: "ch05/46-variables-best-practices",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788796434/ltv-powerbi/ch05-46-variables-best-practices.mp4",
+        durationLabel: "1 min",
+      }),
     ],
   },
   {

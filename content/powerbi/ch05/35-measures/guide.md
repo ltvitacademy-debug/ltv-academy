@@ -79,12 +79,16 @@ yourself yet.
 
 ## Lab
 
-1. Create a simple measure using **SUM** or **AVERAGE** on any numeric
-   column, and add it to a visual.
-2. Filter the report by a slicer and confirm the measure's value updates
-   — unlike a calculated column, nothing here was stored ahead of time.
-3. Try a quick measure (right-click a table → **New quick measure**), then
-   open it afterward to read the DAX formula it generated.
+1. Import **AdventureWorksDW2014**'s `FactResellerSales` table and
+   create `Total Reseller Sales = SUM(FactResellerSales[SalesAmount])`,
+   then add it to a visual.
+2. Add a slicer on `DimSalesTerritory[SalesTerritoryRegion]` (import
+   that table too) and confirm your measure's value updates as you
+   change the selection — unlike a calculated column, nothing here was
+   stored ahead of time.
+3. Try a quick measure (right-click `FactResellerSales` → **New quick
+   measure**), then open it afterward to read the DAX formula it
+   generated.
 
 ## Check yourself
 

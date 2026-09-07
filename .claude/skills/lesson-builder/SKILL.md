@@ -14,8 +14,13 @@ different approach; the gotchas below were each discovered the hard way.
 - `scripts/course-build/README.md` — the authoritative pipeline reference.
   If it and this skill ever disagree, the README wins; update this skill to
   match.
-- `lib/powerbi-outline.ts` — the full 12-chapter, 86-lesson outline. Find the
-  lesson's chapter number, slug, and title here before starting.
+- `lib/powerbi-outline.ts` — the full 12-chapter, 93-lesson outline. Find the
+  lesson's chapter number, slug, and title here before starting. If a chapter
+  turns out to need more granular lessons than originally planned (this
+  happened to Chapter 5, DAX Fundamentals — expanded from 8 to 15), renumber
+  every subsequent `L(n, ...)` by the same offset in one pass (see git history
+  for the sed-like Node script used) rather than leaving gaps or reusing
+  numbers.
 - `CLAUDE.md` (repo root) — overall site/course design. Don't re-derive it.
 - Any existing `content/powerbi/chNN/*/` folder — the best style reference
   for guide.md/script.md tone and structure is always the most recently
@@ -90,6 +95,23 @@ renderer in `lib/courses.ts` plus `.book-page a` / `.book-page a.download-link`
 in `app/globals.css`. Nothing to do per-lesson here either; just use the
 `/downloads/power-bi/...` path convention and the styling follows.
 
+**Labs, from Chapter 4 onward: use real SQL Server databases, not invented
+data.** Students already have SSMS access to `AdventureWorks2012`,
+`AdventureWorksDW2014`, and `Northwind` on their own SQL Server instance,
+and have been writing T-SQL against them in a parallel course. Write each
+lesson's Lab section against these — connect via the SQL Server connector
+(Chapter 2, Lesson 9) and name specific real tables/columns, not a
+hypothetical "your table" placeholder. Rough guide to which fits which
+topic: `AdventureWorksDW2014` (already a real star schema — `Fact*`/`Dim*`
+tables) for anything about fact/dimension tables, relationships, star
+schema, or DAX measures; `AdventureWorks2012` (normalized OLTP) for
+calculated-column/row-context examples and for demonstrating the
+"no-relationship" problem before it's fixed; `Northwind` when a small,
+simple schema teaches the point more clearly than AdventureWorks' scale.
+`FactInternetSales`'s three `Dim*Date` keys (Order/Due/Ship) are the
+textbook real-world example for active/inactive relationships and
+`USERELATIONSHIP` — use them there specifically.
+
 **3. Write the content**, in `content/powerbi/chNN/NN-slug/`:
 - `sources.json` — every image's exact source URL, a `research` array of the
   doc URLs used, and a `verified` date.
@@ -98,6 +120,9 @@ in `app/globals.css`. Nothing to do per-lesson here either; just use the
   the point in the text they illustrate (each followed by a one-line italic
   caption), a "Key terms" table, a "Lab," a "Check yourself" closer.
 - `quiz.json` — 5 questions, each `{q, options[4], answer (index), explain}`.
+  The site already shows `explain` in crimson/bold next to the correct
+  answer when a student grades a wrong pick (`components/app/Quiz.tsx`) —
+  nothing extra to do per-lesson for that.
 - `script.md` — voiceover, segments numbered to match the slides you'll
   define next, ~3-4 minutes of narration total, same warm-direct teaching
   voice as existing lessons (read one to calibrate tone before writing).
@@ -107,6 +132,17 @@ in `app/globals.css`. Nothing to do per-lesson here either; just use the
 `outro` slide teasing the next lesson. Exact field shapes are documented in
 the header comment of `scripts/course-build/gen-slides.js` — read it rather
 than guessing the schema.
+
+**No real screenshot for this slide? Use a `code` slide, don't fake one.**
+Some topics (most of DAX) have no Power BI UI to screenshot — the content
+*is* a formula. For those, use `{ "type": "code", "eyebrow", "code"
+(\n-separated lines), "caption" }`, a brand-styled formula card (same
+category as `steps` — an original LTV-authored graphic, never a claimed
+screenshot). It auto-highlights known DAX keywords/functions in crimson and
+auto-shrinks font size to fit long lines; multi-line code with leading
+indentation renders correctly (the generator handles the `xml:space`
+whitespace-collapsing gotcha for you). Never invent a fake Power BI
+screenshot for a DAX-only lesson — a `code` card is the honest alternative.
 
 **5. Copy the guide images:**
 ```

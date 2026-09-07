@@ -82,11 +82,11 @@ building blocks.
 
 ## Lab
 
-1. Open any measure you've seen in a Power BI file (or write a simple
-   `SUM` measure yourself) and identify each of the six syntax elements
-   from this lesson in it.
-2. Try typing a formula in the formula bar and deliberately misspell a
-   column name — observe how DAX flags the error, and how the
+1. In a file connected to **AdventureWorksDW2014**, write
+   `Total Sales = SUM(FactInternetSales[SalesAmount])` and identify each
+   of the six syntax elements from this lesson in it.
+2. Try typing the formula again in the formula bar and deliberately
+   misspell `SalesAmount` — observe how DAX flags the error, and how the
    suggestions feature would have prevented it.
 
 ## Check yourself

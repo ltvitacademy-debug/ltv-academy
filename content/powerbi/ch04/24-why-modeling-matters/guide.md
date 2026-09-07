@@ -83,8 +83,16 @@ building a model in the first place.
 
 ## Lab
 
-1. Open a Power BI file with two or more tables that don't yet have a
-   relationship between them (or use one from an earlier lesson).
+You already have SQL Server access with **AdventureWorks2012** and
+**Northwind** installed, and you've been writing T-SQL against them.
+Time to point Power BI at the same server (the SQL Server connector from
+Chapter 2, Lesson 9).
+
+1. In Power BI Desktop, connect to your SQL Server instance and import
+   two **AdventureWorks2012** tables that don't share an obviously
+   matching column name — `Person.Person` and `Sales.SalesOrderHeader`
+   work well, since nothing about their columns tells Power BI they're
+   related.
 2. Try building a visual that uses a column from each table. Notice what
    happens — or doesn't — without a relationship connecting them.
 3. Keep this file open. You'll use it again in Lesson 27 to create the

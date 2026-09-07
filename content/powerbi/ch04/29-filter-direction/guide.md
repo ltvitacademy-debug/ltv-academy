@@ -82,13 +82,17 @@ blocks. Two fixes:
 
 ## Lab
 
-1. Open **Manage relationships** on a model with a central fact table and
-   two or more dimension tables.
-2. Edit one relationship and toggle Cross filter direction between
-   **Single** and **Both** — watch how a visual using both connected
-   dimension tables changes (or doesn't).
-3. If your model has any loop-shaped section, note it — you'll fix
-   exactly this kind of ambiguity in Lesson 30.
+1. Import **AdventureWorksDW2014**'s `FactInternetSales`, `DimDate`, and
+   `DimSalesTerritory` — a real star with `FactInternetSales` in the
+   center.
+2. Edit the `DimDate` relationship and toggle Cross filter direction
+   between **Single** and **Both**. Build a visual with a `DimDate`
+   column and a `DimSalesTerritory` column, both filtering
+   `FactInternetSales` — watch how the result changes (or doesn't)
+   between the two settings.
+3. Also import `FactResellerSales`, which shares `DimSalesTerritory`
+   with `FactInternetSales` — that shared dimension is a loop. You'll
+   fix exactly this kind of ambiguity in Lesson 30.
 
 ## Check yourself
 

@@ -70,13 +70,19 @@ means "available on request," not "unused."
 
 ## Lab
 
-1. Open **Manage relationships** on a model where two tables share more
-   than one possible relationship (or imagine the ProjectTickets example
-   above).
-2. Note which relationship is currently active, and confirm it's the one
-   your reports actually need.
-3. Practice switching it: uncheck the active one, check the other, and
-   observe how a report built on those tables changes.
+**AdventureWorksDW2014**'s `FactInternetSales` table is the textbook
+example of this problem: it has `OrderDateKey`, `DueDateKey`, and
+`ShipDateKey`, all three pointing at `DimDate`.
+
+1. Import `FactInternetSales` and `DimDate`, then create all three
+   relationships — Order Date, Due Date, and Ship Date — to `DimDate`.
+   Power BI will only allow one active at a time; confirm which one it
+   picked.
+2. Open **Manage relationships** and note which relationship is active,
+   and confirm it's the one a typical "sales by order date" report needs.
+3. Practice switching it: uncheck the active one, check Ship Date
+   instead, and observe how a report built on `FactInternetSales` and
+   `DimDate` changes.
 
 ## Check yourself
 
