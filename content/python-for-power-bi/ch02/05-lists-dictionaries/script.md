@@ -1,0 +1,48 @@
+# Lesson 5 — Lists & Dictionaries · Voiceover script
+
+Segments map 1:1 to slides. Target: 2-3 minutes — aim for 320-360 words at
+this voice's ~120 words/min pace.
+
+---
+
+## S1 · TITLE CARD
+
+Two more building blocks before Pandas makes any sense at all — lists and
+dictionaries, and specifically why Pandas is built entirely out of both of
+them.
+
+## S2 · CODE: products = ["Widget A", "Widget B", "Widget C"]
+
+A list holds multiple values in order, inside square brackets. You access
+an item by its position, called its index, and counting starts at zero,
+not one. Negative one always means the last item, however long the list
+actually is — no need to know its exact length first.
+
+## S3 · CODE: products.append("Widget D") -> len(products)
+
+Add a new item to the end with dot append, and check how many items a
+list holds with len. Both of these show up constantly once you're
+actually cleaning real data in later lessons, so get comfortable with
+them now.
+
+## S4 · CODE: customer = {"name": "Alex Rivera", "region": "West"}
+
+A dictionary pairs each value with a name, called a key, instead of a
+position — in curly braces instead of square ones. You look a value up by
+that key directly, like customer bracket quote name, not by counting
+position the way a list works.
+
+## S5 · CODE: customer["total_orders"] = 13
+
+Update a dictionary value by assigning straight to its key — no append
+needed, since a dictionary isn't ordered the way a list is. This exact
+pattern, updating one named field without touching the rest, is something
+you'll do constantly once real customer or product records show up.
+
+## S6 · OUTRO CARD
+
+Here's why this actually matters: a Pandas Series behaves like a list
+with labels attached, and a DataFrame behaves like a dictionary of lists,
+one per column. Lesson 6 introduces Pandas itself, and every DataFrame
+you'll ever see is really just lists and dictionaries wearing a table's
+clothing.
