@@ -18,6 +18,9 @@ export const PYTHON_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "what-is-python", "What Is Python & Why Use It in Power BI?", {
         contentDir: "ch01/01-what-is-python",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788813628/ltv-python/ch01-01-what-is-python.mp4",
+        durationLabel: "2 min 10 s",
       }),
       L(2, "installing-python", "Installing Python for Power BI"),
       L(3, "connecting-python", "Connecting Power BI to Python"),
