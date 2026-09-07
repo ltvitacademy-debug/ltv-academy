@@ -42,8 +42,18 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788738811/ltv-powerbi/ch01-03-desktop-interface-tour.mp4",
         durationLabel: "2 min 47 s",
       }),
-      L(4, "your-first-report", "Your First Power BI Report"),
-      L(5, "the-power-bi-workflow", "The Power BI Workflow: Get → Transform → Model → Visualize → Publish"),
+      L(4, "your-first-report", "Your First Power BI Report", {
+        contentDir: "ch01/04-your-first-report",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788740412/ltv-powerbi/ch01-04-your-first-report.mp4",
+        durationLabel: "2 min 44 s",
+      }),
+      L(5, "the-power-bi-workflow", "The Power BI Workflow: Get → Transform → Model → Visualize → Publish", {
+        contentDir: "ch01/05-power-bi-workflow",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788740416/ltv-powerbi/ch01-05-power-bi-workflow.mp4",
+        durationLabel: "3 min 3 s",
+      }),
     ],
   },
   {
