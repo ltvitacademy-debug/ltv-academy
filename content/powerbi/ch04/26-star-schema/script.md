@@ -1,0 +1,36 @@
+# Lesson 26 — Star Schema · Voiceover script
+
+Segments map 1:1 to slides. Each segment is one TTS call so slide timing follows
+the audio. Target: ~2 minutes total.
+
+---
+
+## S1 · TITLE CARD (SVG: lesson title, LTV brand)
+
+Fact tables that summarize, dimension tables that filter. Connect them the
+recommended way, and you get a shape with a name: star schema.
+
+## S2 · IMAGE: relationships-options-03.png (Model view, real star layout)
+
+This is Model view — Power BI's own diagram of your relationships. One
+fact table in the middle, dimension tables around it, each one connected
+directly. The shape is obvious even in the tool itself.
+
+## S3 · IMAGE: candmrel_crossfilterstarschema.png (cross filter diagram)
+
+It's not just aesthetics. When a question spans two dimension tables,
+the query has to travel through the fact table to connect them. In a star
+schema, filters flow inward from every dimension along a single,
+predictable path — no ambiguity about which way to go.
+
+## S4 · IMAGE: hierarchy.svg (dimension hierarchy diagram)
+
+Because a dimension table holds everything about one kind of entity, it's
+also the natural place to build a hierarchy — Category, Subcategory,
+Product — letting report visuals drill down through them. Split those
+levels across separate tables, and you lose that ability.
+
+## S5 · OUTRO CARD (SVG: next lesson, LTV seal)
+
+Star schema is the shape. Next, we build it for real: creating the
+relationships that connect your tables.

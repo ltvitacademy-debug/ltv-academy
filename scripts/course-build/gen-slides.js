@@ -11,9 +11,12 @@
  *   { "type": "screenshot", "file", "eyebrow", "caption" }
  *   { "type": "steps", "eyebrow", "titlePlain", "titleEmphasis"?, "titleSuffix"?,
  *     "steps": [{ "label", "sub" }, ...] }
+ *   { "type": "code", "eyebrow", "code" (string, \n-separated lines), "caption" }
  * "title" and "outro" both render the full-bleed brand bookend card (with the
  * seal composited on) — "title" uses the larger opening-card type scale,
- * "outro" the slightly smaller closing-card scale.
+ * "outro" the slightly smaller closing-card scale. "code" is an original,
+ * LTV-authored formula card (like "steps") — not a claimed screenshot — used
+ * for DAX lessons where there's no real Power BI UI to show.
  */
 const sharp = require("sharp");
 const fs = require("fs");
@@ -104,6 +107,73 @@ function stepsCard(spec) {
 </svg>`;
 }
 
+// ---- code / formula card -----------------------------------------------------
+// Parchment frame like a screenshot slide, but with a rendered DAX formula
+// in a white "formula bar" style box instead of an image. Known DAX
+// keywords/functions are highlighted crimson to loosely mirror the real
+// editor's syntax coloring.
+const DAX_KEYWORDS = [
+  "CALCULATE", "CALCULATETABLE", "SUM", "SUMX", "AVERAGE", "AVERAGEX", "COUNT",
+  "COUNTX", "COUNTROWS", "COUNTA", "DISTINCTCOUNT", "MIN", "MINX", "MAX", "MAXX",
+  "RANKX", "FILTER", "ALL", "ALLEXCEPT", "ALLSELECTED", "ALLNOBLANKROW",
+  "REMOVEFILTERS", "KEEPFILTERS", "USERELATIONSHIP", "CROSSFILTER", "RELATED",
+  "RELATEDTABLE", "DIVIDE", "IF", "SWITCH", "VAR", "RETURN", "EARLIER",
+  "CALENDAR", "CALENDARAUTO", "DATEADD", "DATESYTD", "TOTALYTD", "DATESBETWEEN",
+  "SAMEPERIODLASTYEAR", "PARALLELPERIOD",
+];
+const KEYWORD_RE = new RegExp(`\\b(${DAX_KEYWORDS.join("|")})\\b`, "g");
+
+function highlightDaxLine(line) {
+  const parts = [];
+  let last = 0;
+  let m;
+  const re = new RegExp(KEYWORD_RE.source, "g");
+  while ((m = re.exec(line))) {
+    if (m.index > last) parts.push({ t: line.slice(last, m.index), kw: false });
+    parts.push({ t: m[0], kw: true });
+    last = m.index + m[0].length;
+  }
+  if (last < line.length) parts.push({ t: line.slice(last), kw: false });
+  return parts
+    .map((p) =>
+      p.kw
+        ? `<tspan fill="${C.crimson}" font-weight="700">${esc(p.t)}</tspan>`
+        : `<tspan fill="${C.ink}">${esc(p.t)}</tspan>`
+    )
+    .join("");
+}
+
+function codeCard(spec, n) {
+  const lines = String(spec.code).split("\n");
+  const longest = Math.max(...lines.map((l) => l.length));
+  let fontSize = 44;
+  const boxW = 1600;
+  const padX = 56;
+  while (fontSize > 26 && longest * fontSize * 0.6 > boxW - padX * 2) fontSize -= 2;
+  const lineH = fontSize * 1.55;
+  const boxH = Math.min(640, lines.length * lineH + 80);
+  const boxX = (W - boxW) / 2;
+  const boxY = 200 + (640 - boxH) / 2;
+  const MONO = "Consolas, 'Courier New', monospace";
+
+  let codeLines = "";
+  lines.forEach((line, i) => {
+    const y = boxY + 60 + i * lineH;
+    codeLines += `<text x="${boxX + padX}" y="${y}" xml:space="preserve" font-family="${MONO}" font-size="${fontSize}">${highlightDaxLine(line)}</text>`;
+  });
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+  <rect width="${W}" height="${H}" fill="${C.parchment}"/>
+  <rect x="0" y="0" width="${W}" height="6" fill="${C.gold}"/>
+  ${eyebrow(160, 120, spec.eyebrow)}
+  <text x="${W - 160}" y="120" text-anchor="end" font-family="${SERIF}" font-size="44" fill="${C.crimson}">${n}</text>
+  <rect x="${boxX}" y="${boxY}" width="${boxW}" height="${boxH}" rx="10" fill="#ffffff" stroke="${C.ink}" stroke-opacity="0.18" stroke-width="1.5"/>
+  ${codeLines}
+  <line x1="160" y1="930" x2="${W - 160}" y2="930" stroke="${C.ink}" stroke-opacity="0.15"/>
+  <text x="160" y="985" font-family="${SERIF}" font-size="38" fill="${C.ink}">${esc(spec.caption)}</text>
+</svg>`;
+}
+
 // ---- screenshot slides ------------------------------------------------------
 // Parchment frame, screenshot fitted, gold eyebrow, ink caption bottom.
 async function screenshotSlide(spec, n) {
@@ -149,6 +219,8 @@ async function screenshotSlide(spec, n) {
         .toFile(outFile);
     } else if (spec.type === "steps") {
       await sharp(Buffer.from(stepsCard(spec))).png().toFile(outFile);
+    } else if (spec.type === "code") {
+      await sharp(Buffer.from(codeCard(spec, badge))).png().toFile(outFile);
     } else if (spec.type === "screenshot") {
       const s = await screenshotSlide(spec, badge);
       await s.toFile(outFile);
