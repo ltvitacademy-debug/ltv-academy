@@ -432,11 +432,36 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
     n: 8,
     title: "Dashboard Design & Storytelling",
     lessons: [
-      L(62, "business-requirements", "Gathering Business Requirements"),
-      L(63, "choosing-kpis", "Choosing KPIs"),
-      L(64, "layout-hierarchy", "Dashboard Layout & Visual Hierarchy"),
-      L(65, "storytelling", "Storytelling With Data"),
-      L(66, "executive-dashboard", "Building a Professional Executive Dashboard"),
+      L(62, "business-requirements", "Gathering Business Requirements", {
+        contentDir: "ch08/62-business-requirements",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788800379/ltv-powerbi/ch08-62-business-requirements.mp4",
+        durationLabel: "1 min",
+      }),
+      L(63, "choosing-kpis", "Choosing KPIs", {
+        contentDir: "ch08/63-choosing-kpis",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788800516/ltv-powerbi/ch08-63-choosing-kpis.mp4",
+        durationLabel: "1 min",
+      }),
+      L(64, "layout-hierarchy", "Dashboard Layout & Visual Hierarchy", {
+        contentDir: "ch08/64-layout-hierarchy",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788800674/ltv-powerbi/ch08-64-layout-hierarchy.mp4",
+        durationLabel: "1 min",
+      }),
+      L(65, "storytelling", "Storytelling With Data", {
+        contentDir: "ch08/65-storytelling",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788800848/ltv-powerbi/ch08-65-storytelling.mp4",
+        durationLabel: "2 min",
+      }),
+      L(66, "executive-dashboard", "Building a Professional Executive Dashboard", {
+        contentDir: "ch08/66-executive-dashboard",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788801008/ltv-powerbi/ch08-66-executive-dashboard.mp4",
+        durationLabel: "2 min",
+      }),
     ],
   },
   {
