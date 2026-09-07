@@ -66,11 +66,36 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788741491/ltv-powerbi/ch02-06-data-sources.mp4",
         durationLabel: "2 min 30 s",
       }),
-      L(7, "connecting-to-excel", "Connecting to Excel"),
-      L(8, "connecting-to-csv", "Connecting to CSV/Text Files"),
-      L(9, "connecting-to-sql", "Connecting to SQL Databases"),
-      L(10, "web-json-rest", "Connecting to Web, JSON & REST API Data"),
-      L(11, "import-vs-directquery", "Import vs. DirectQuery"),
+      L(7, "connecting-to-excel", "Connecting to Excel", {
+        contentDir: "ch02/07-connecting-to-excel",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788746010/ltv-powerbi/ch02-07-connecting-to-excel.mp4",
+        durationLabel: "1 min 58 s",
+      }),
+      L(8, "connecting-to-csv", "Connecting to CSV/Text Files", {
+        contentDir: "ch02/08-connecting-to-csv-text",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788746259/ltv-powerbi/ch02-08-connecting-to-csv-text.mp4",
+        durationLabel: "2 min 9 s",
+      }),
+      L(9, "connecting-to-sql", "Connecting to SQL Databases", {
+        contentDir: "ch02/09-connecting-to-sql",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788746568/ltv-powerbi/ch02-09-connecting-to-sql.mp4",
+        durationLabel: "2 min 18 s",
+      }),
+      L(10, "web-json-rest", "Connecting to Web, JSON & REST API Data", {
+        contentDir: "ch02/10-connecting-to-web-json-rest",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788746852/ltv-powerbi/ch02-10-connecting-to-web-json-rest.mp4",
+        durationLabel: "2 min 30 s",
+      }),
+      L(11, "import-vs-directquery", "Import vs. DirectQuery", {
+        contentDir: "ch02/11-import-vs-directquery",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788747141/ltv-powerbi/ch02-11-import-vs-directquery.mp4",
+        durationLabel: "2 min 32 s",
+      }),
     ],
   },
   {
