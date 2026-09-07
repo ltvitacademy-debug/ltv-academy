@@ -60,7 +60,12 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "Connecting to Data",
     lessons: [
-      L(6, "data-sources", "Understanding Power BI Data Sources"),
+      L(6, "data-sources", "Understanding Power BI Data Sources", {
+        contentDir: "ch02/06-data-sources",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788741491/ltv-powerbi/ch02-06-data-sources.mp4",
+        durationLabel: "2 min 30 s",
+      }),
       L(7, "connecting-to-excel", "Connecting to Excel"),
       L(8, "connecting-to-csv", "Connecting to CSV/Text Files"),
       L(9, "connecting-to-sql", "Connecting to SQL Databases"),

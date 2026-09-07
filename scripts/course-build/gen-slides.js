@@ -46,11 +46,24 @@ function headline(x, y, size, plain, emphasis, suffix, fill = C.parchment) {
   return `<text x="${x}" y="${y}" font-family="${SERIF}" font-size="${size}" fill="${fill}">${esc(plain)}${em}${esc(suffix || "")}</text>`;
 }
 
+// Crude but effective: shrink font-size until the (mixed regular/italic serif)
+// headline should fit maxWidth, rather than letting long lesson titles run
+// off the canvas at a fixed size. ~0.52em average advance covers this font.
+function fitHeadlineSize(text, maxWidth, startSize, minSize) {
+  const avgCharWidth = 0.52;
+  let size = startSize;
+  while (size > minSize && text.length * size * avgCharWidth > maxWidth) {
+    size -= 4;
+  }
+  return size;
+}
+
 // ---- full-card bookend (title / outro) --------------------------------------
 function bookendCard(spec, big) {
   const ebY = big ? 320 : 350;
   const titleY = big ? 440 : 470;
-  const titleSize = big ? 104 : 88;
+  const combinedTitle = (spec.titlePlain || "") + (spec.titleEmphasis || "") + (spec.titleSuffix || "");
+  const titleSize = fitHeadlineSize(combinedTitle, 1920 - 160 - 380, big ? 104 : 88, big ? 56 : 48);
   const subY = big ? 530 : 560;
   const subSize = big ? 34 : 32;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
@@ -86,7 +99,7 @@ function stepsCard(spec) {
   <rect width="${W}" height="${H}" fill="${C.deep}"/>
   <rect x="0" y="${H - 6}" width="${W}" height="6" fill="${C.gold}"/>
   ${eyebrow(160, 250, spec.eyebrow)}
-  ${headline(160, 360, 76, spec.titlePlain, spec.titleEmphasis, spec.titleSuffix)}
+  ${headline(160, 360, fitHeadlineSize((spec.titlePlain || "") + (spec.titleEmphasis || "") + (spec.titleSuffix || ""), 1920 - 320, 76, 40), spec.titlePlain, spec.titleEmphasis, spec.titleSuffix)}
   ${nodes}
 </svg>`;
 }
