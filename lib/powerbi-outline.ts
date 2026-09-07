@@ -102,18 +102,78 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Power Query & Data Cleaning",
     lessons: [
-      L(12, "power-query-editor", "Power Query Editor Explained"),
-      L(13, "changing-data-types", "Changing Data Types"),
-      L(14, "rows", "Removing, Filtering & Editing Rows"),
-      L(15, "replacing-values-errors", "Replacing Values and Handling Errors"),
-      L(16, "columns", "Splitting, Merging & Extracting Columns"),
-      L(17, "conditional-columns", "Conditional Columns & Columns From Examples"),
-      L(18, "pivot-unpivot", "Pivoting & Unpivoting"),
-      L(19, "group-by", "Group By & Aggregations"),
-      L(20, "merging-queries", "Merging Queries"),
-      L(21, "appending-queries", "Appending Queries"),
-      L(22, "parameters", "Parameters"),
-      L(23, "power-query-best-practices", "Power Query Best Practices & Performance"),
+      L(12, "power-query-editor", "Power Query Editor Explained", {
+        contentDir: "ch03/12-power-query-editor",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788748070/ltv-powerbi/ch03-12-power-query-editor.mp4",
+        durationLabel: "2 min 45 s",
+      }),
+      L(13, "changing-data-types", "Changing Data Types", {
+        contentDir: "ch03/13-changing-data-types",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788748314/ltv-powerbi/ch03-13-changing-data-types.mp4",
+        durationLabel: "2 min 8 s",
+      }),
+      L(14, "rows", "Removing, Filtering & Editing Rows", {
+        contentDir: "ch03/14-rows",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788748561/ltv-powerbi/ch03-14-rows.mp4",
+        durationLabel: "2 min 18 s",
+      }),
+      L(15, "replacing-values-errors", "Replacing Values and Handling Errors", {
+        contentDir: "ch03/15-replacing-values-errors",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788748790/ltv-powerbi/ch03-15-replacing-values-errors.mp4",
+        durationLabel: "2 min 10 s",
+      }),
+      L(16, "columns", "Splitting, Merging & Extracting Columns", {
+        contentDir: "ch03/16-columns",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788749055/ltv-powerbi/ch03-16-columns.mp4",
+        durationLabel: "2 min 12 s",
+      }),
+      L(17, "conditional-columns", "Conditional Columns & Columns From Examples", {
+        contentDir: "ch03/17-conditional-columns",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788749306/ltv-powerbi/ch03-17-conditional-columns.mp4",
+        durationLabel: "2 min 20 s",
+      }),
+      L(18, "pivot-unpivot", "Pivoting & Unpivoting", {
+        contentDir: "ch03/18-pivot-unpivot",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788749548/ltv-powerbi/ch03-18-pivot-unpivot.mp4",
+        durationLabel: "2 min 6 s",
+      }),
+      L(19, "group-by", "Group By & Aggregations", {
+        contentDir: "ch03/19-group-by",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788749764/ltv-powerbi/ch03-19-group-by.mp4",
+        durationLabel: "1 min 55 s",
+      }),
+      L(20, "merging-queries", "Merging Queries", {
+        contentDir: "ch03/20-merging-queries",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788749990/ltv-powerbi/ch03-20-merging-queries.mp4",
+        durationLabel: "2 min 9 s",
+      }),
+      L(21, "appending-queries", "Appending Queries", {
+        contentDir: "ch03/21-appending-queries",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788750212/ltv-powerbi/ch03-21-appending-queries.mp4",
+        durationLabel: "2 min 2 s",
+      }),
+      L(22, "parameters", "Parameters", {
+        contentDir: "ch03/22-parameters",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788750459/ltv-powerbi/ch03-22-parameters.mp4",
+        durationLabel: "2 min",
+      }),
+      L(23, "power-query-best-practices", "Power Query Best Practices & Performance", {
+        contentDir: "ch03/23-power-query-best-practices",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788750922/ltv-powerbi/ch03-23-power-query-best-practices.mp4",
+        durationLabel: "2 min",
+      }),
     ],
   },
   {
