@@ -37,8 +37,8 @@ dozens of them, which is exactly what Chapter 2 is about. For today, choose
 ![Screenshot of the Get Data dialog box with Excel Workbook highlighted in the list of connectors.](/courses/power-bi/ch01/04-your-first-report/qs-connect-data_03.png)
 *Excel is one connector among many. Chapter 2 covers CSV, SQL databases, and web/REST sources too.*
 
-Browse to an Excel file (Microsoft's free [Financial Sample workbook](https://go.microsoft.com/fwlink/?LinkID=521962)
-is a good one to practice on) and select **Open**.
+Browse to an Excel file — download our [Financial Sample workbook](/downloads/power-bi/financial-sample.xlsx)
+if you don't have one of your own handy — and select **Open**.
 
 ## Step 2: Choose your tables
 
@@ -102,7 +102,7 @@ own step in the workflow, covered properly in Chapter 9.
 
 ## Lab
 
-1. Download the free [Financial Sample Excel workbook](https://go.microsoft.com/fwlink/?LinkID=521962)
+1. Download our [Financial Sample Excel workbook](/downloads/power-bi/financial-sample.xlsx)
    (or use any Excel file with a few numeric and text columns you have handy).
 2. Connect to it with **Get data > Excel**, and load at least one table.
 3. Build one chart by dragging two fields onto the canvas.

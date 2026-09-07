@@ -4,6 +4,27 @@ import { marked } from "marked";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 
+// Every external link in a lesson guide should open in a new tab, so a
+// student never loses their place in the course. Applied once, here, so
+// guide.md files just use normal markdown links — no per-lesson HTML needed.
+// Self-hosted sample-data downloads (see LessonBuilder skill / ATTRIBUTION.md)
+// get a "download-link" class so CSS can call them out visually (bold, in
+// addition to every link's underline) — students kept missing plain-text
+// links entirely.
+marked.use({
+  renderer: {
+    link({ href, title, tokens }) {
+      const text = this.parser.parseInline(tokens);
+      const isExternal = /^https?:\/\//i.test(href);
+      const isDownload = href.startsWith("/downloads/");
+      const titleAttr = title ? ` title="${title}"` : "";
+      const targetAttr = isExternal ? ` target="_blank" rel="noopener noreferrer"` : "";
+      const classAttr = isDownload ? ` class="download-link"` : "";
+      return `<a href="${href}"${titleAttr}${targetAttr}${classAttr}>${text}</a>`;
+    },
+  },
+});
+
 export type CourseMeta = {
   slug: string;
   title: string;

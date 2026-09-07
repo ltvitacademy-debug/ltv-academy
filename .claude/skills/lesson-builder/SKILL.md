@@ -62,6 +62,34 @@ into `content/powerbi/chNN/NN-slug/source-images/`. Verify each with `file`
 and spot-check at least two or three with Read before trusting them — a
 caption written against the wrong screenshot is worse than no screenshot.
 
+**Sample data downloads — self-host them, don't link out.** If the lesson
+has students practice on a Microsoft-provided dataset (a sample Excel
+workbook, CSV, or `.pbix`), download it too and serve it from this site
+instead of sending students to Microsoft's site to get it: save it under
+`public/downloads/power-bi/<descriptive-name>.<ext>`, record the original
+Microsoft URL in `sources.json` under a `downloads` key (see
+`content/powerbi/ATTRIBUTION.md` for the reasoning), and link to the
+self-hosted copy (`/downloads/power-bi/<file>`) in `guide.md` — never the
+Microsoft URL. The rule for every lesson, not just this one: don't send a
+student to an outside site for something the course can just hand them
+directly. A link to Microsoft's own product pages (the Power BI Desktop
+download/install page, for instance) is the kind of exception where leaving
+the site is genuinely unavoidable — installing the actual product has to
+happen on Microsoft's site. Everything else, prefer hosting it here.
+
+You don't need to hand-write `target="_blank"` on any link — `lib/courses.ts`
+already rewrites every absolute `http(s)` link in a rendered guide to open in
+a new tab automatically, so a student never loses their place in the lesson.
+Just write normal markdown links; a same-origin `/downloads/...` link doesn't
+get (or need) that treatment since it triggers a file download rather than a
+navigation. All links in a guide render underlined and colored so they're
+never mistaken for plain text (students missed this before it was styled),
+and `/downloads/...` links additionally render bold to stand out as the
+thing they need to grab before doing the lab — also automatic, from the same
+renderer in `lib/courses.ts` plus `.book-page a` / `.book-page a.download-link`
+in `app/globals.css`. Nothing to do per-lesson here either; just use the
+`/downloads/power-bi/...` path convention and the styling follows.
+
 **3. Write the content**, in `content/powerbi/chNN/NN-slug/`:
 - `sources.json` — every image's exact source URL, a `research` array of the
   doc URLs used, and a `verified` date.
