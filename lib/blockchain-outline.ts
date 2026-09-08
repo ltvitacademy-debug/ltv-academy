@@ -308,19 +308,31 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788905278/ltv-blockchain/ch06-12-how-tokens-get-traded.mp4",
         durationLabel: "11 min 53 s",
       }),
+      L(44, "what-is-erc721", "What Is ERC-721? Understanding NFTs", {
+        contentDir: "ch06/13-what-is-erc721",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788905733/ltv-blockchain/ch06-13-what-is-erc721.mp4",
+        durationLabel: "9 min 44 s",
+      }),
+      L(45, "erc721-building", "Building an ERC-721 Contract: State, Events & Minting", {
+        contentDir: "ch06/14-erc721-building",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788905739/ltv-blockchain/ch06-14-erc721-building.mp4",
+        durationLabel: "20 min 24 s",
+      }),
     ],
   },
   {
     n: 7,
     title: "Testing & Tooling (Foundry)",
     lessons: [
-      L(44, "imports-libraries-openzeppelin", "Imports, Libraries & OpenZeppelin", {
+      L(46, "imports-libraries-openzeppelin", "Imports, Libraries & OpenZeppelin", {
         contentDir: "ch07/01-imports-libraries-openzeppelin",
         videoUrl:
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788903894/ltv-blockchain/ch07-01-imports-libraries-openzeppelin.mp4",
         durationLabel: "33 min 11 s",
       }),
-      L(45, "terminal-git-npm", "Command Line Basics: npm, git & the Terminal", {
+      L(47, "terminal-git-npm", "Command Line Basics: npm, git & the Terminal", {
         contentDir: "ch07/02-terminal-git-npm",
         videoUrl:
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788904265/ltv-blockchain/ch07-02-terminal-git-npm.mp4",
@@ -332,13 +344,13 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
     n: 8,
     title: "Full-Stack DApp Development",
     lessons: [
-      L(46, "ether-wallet", "Building an Ether Wallet", {
+      L(48, "ether-wallet", "Building an Ether Wallet", {
         contentDir: "ch08/01-ether-wallet",
         videoUrl:
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788904581/ltv-blockchain/ch08-01-ether-wallet.mp4",
         durationLabel: "5 min 17 s",
       }),
-      L(47, "multisig-wallet-setup", "The Multi-Signature Wallet: Setting Up Shared Control", {
+      L(49, "multisig-wallet-setup", "The Multi-Signature Wallet: Setting Up Shared Control", {
         contentDir: "ch08/02-multisig-wallet-setup",
         videoUrl:
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788904586/ltv-blockchain/ch08-02-multisig-wallet-setup.mp4",
