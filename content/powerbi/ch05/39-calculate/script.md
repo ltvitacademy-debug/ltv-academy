@@ -1,37 +1,45 @@
 # Lesson 39 — CALCULATE Explained · Voiceover script
 
-Segments map 1:1 to slides. Each segment is one TTS call so slide timing follows
-the audio. Target: ~2 minutes total.
+Segments map 1:1 to slides. Target: 2-3 minutes — write for 320-360 words.
 
 ---
 
-## S1 · TITLE CARD (SVG: lesson title, LTV brand)
+## S1 · TITLE CARD
 
-One function, one sentence: CALCULATE evaluates an expression inside a
-modified filter context. Nearly everything advanced in DAX is built on
-top of it.
+One function, described in one sentence: CALCULATE evaluates an
+expression inside a deliberately modified filter context. Nearly
+everything genuinely advanced anywhere in DAX gets built directly on top
+of this single function.
 
 ## S2 · CODE: CALCULATE(<expression>, <filter1>, <filter2>, ...)
 
-An expression to calculate — almost always a measure or a SUM. Then any
-number of filters, each one narrowing or changing the filter context
-that expression sees. Call it with no filters, and it just behaves like
-the expression alone.
+It takes an expression to calculate first — almost always a measure or a
+plain SUM — and then any number of filters after that, each one
+narrowing down or actively changing the filter context that expression
+ends up seeing. Call it with absolutely no filters at all, and it simply
+behaves exactly like the expression alone would, with no change
+whatsoever.
 
 ## S3 · CODE: Blue Revenue = CALCULATE(SUM(Sales[SalesAmount]), 'Product'[Color] = "Blue")
 
-Here it is doing real work: summing sales, but only for rows where the
-product color is blue. Same underlying SUM, one added filter — layered
-on top of whatever the report is already filtering by.
+Here it is doing genuinely real work: summing sales, but restricted only
+to rows where the product's color happens to be blue. It's the exact
+same underlying SUM you already know, with just one filter layered
+directly on top of it — on top of whatever else the report itself is
+already filtering by, all at once.
 
-## S4 · CODE: New filter on unfiltered column -> added. New filter on already-filtered column -> overwrites.
+## S4 · CODE: Unfiltered column -> filter is added | Already filtered -> filter overwrites it
 
-And here's the default behavior worth knowing cold: if the column isn't
-already filtered, CALCULATE's filter gets added. If it already is —
-say, by a slicer — CALCULATE's filter overwrites it. That overwrite is
-what makes the function so powerful.
+Here's the default behavior genuinely worth knowing cold: if a column
+isn't already filtered by anything else, CALCULATE's filter simply gets
+added on top. But if it's already filtered — say, by a slicer sitting on
+the report page — CALCULATE's filter actually overwrites that existing
+one entirely. That overwrite behavior specifically is what makes this
+function so genuinely powerful.
 
-## S5 · OUTRO CARD (SVG: next lesson, LTV seal)
+## S5 · OUTRO CARD
 
-Next: what happens when CALCULATE runs inside row context instead of
-filter context — a bridge called context transition.
+Next: what actually happens when CALCULATE runs inside row context
+instead of filter context — a genuinely important bridge between the
+two called context transition, and it explains formulas that otherwise
+look nearly impossible.

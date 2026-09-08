@@ -1,31 +1,40 @@
-# Lesson 44 — ALL & ALLEXCEPT · Voiceover script
+# Lesson 44 — ALL and ALLEXCEPT · Voiceover script
 
-Segments map 1:1 to slides. Each segment is one TTS call so slide timing follows
-the audio. Target: ~1.5 minutes total.
+Segments map 1:1 to slides. Target: 2-3 minutes — write for 340-380 words.
 
 ---
 
-## S1 · TITLE CARD (SVG: lesson title, LTV brand)
+## S1 · TITLE CARD
 
-Sometimes you want a formula to deliberately ignore the filters around
-it. ALL and ALLEXCEPT are how.
+Sometimes you genuinely want a formula to deliberately ignore whatever
+filters happen to be surrounding it at the moment, on purpose. ALL and
+ALLEXCEPT are specifically how you accomplish exactly that, in two
+slightly different ways.
 
-## S2 · CODE: SUMX(ResellerSales, [SalesAmount]) / SUMX(ALL(ResellerSales), [SalesAmount])
+## S2 · CODE: DIVIDE(SUM(Sales[Amount]), CALCULATE(SUM(Sales[Amount]), ALL(Sales)))
 
-The classic use: ratio to grand total. The numerator respects whatever's
-filtered. The denominator uses ALL to ignore every filter on that
-table entirely — always the full total. Divide one by the other, and
-every cell shows its real percentage of the whole.
+The classic use case here: a ratio against the grand total. The
+numerator genuinely respects whatever's currently filtered on the
+report, whatever a viewer happens to be looking at. The denominator uses
+ALL specifically to ignore every single filter on that entire table —
+always producing the full, unfiltered total no matter what's selected
+anywhere. Divide one by the other, and suddenly every single cell in the
+visual shows its real, honest percentage of the overall whole.
 
-## S3 · CODE: CALCULATE(SUM(Sales[SalesAmount]), ALLEXCEPT(Customer, Customer[CustomerKey]))
+## S3 · CODE: ALLEXCEPT(Customer, Customer[CustomerKey])
 
-ALLEXCEPT takes the opposite approach: name what to keep, clear
-everything else. Convenient when a table has many columns and you only
-want to preserve one or two — you saw this exact formula back in the
-context transition lesson.
+ALLEXCEPT takes the genuinely opposite approach: name specifically what
+you want to keep, and it clears away everything else automatically on
+your behalf. This is especially convenient when a table has many, many
+columns and you only actually want to preserve one or two of them,
+rather than listing out everything you want removed one at a time — and
+you already saw this exact formula once before, back in the context
+transition lesson.
 
-## S4 · OUTRO CARD (SVG: next lesson, LTV seal)
+## S4 · OUTRO CARD
 
-Pick whichever list is shorter — columns to clear, or columns to keep —
-and that's usually the more readable formula. Next: ALLSELECTED, for
-when you need to respect some filters but not others.
+Pick whichever list ends up genuinely shorter — the columns to clear
+away, or the columns to actually keep — and that's usually going to be
+the more readable, more maintainable formula between the two available
+options. Next: ALLSELECTED, for the specific situations where you need
+to respect some filters while still deliberately ignoring others.

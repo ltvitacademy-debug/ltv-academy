@@ -237,92 +237,92 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
       L(32, "what-is-dax", "What Is DAX?", {
         contentDir: "ch05/32-what-is-dax",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788794499/ltv-powerbi/ch05-32-what-is-dax.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826090/ltv-powerbi/ch05-32-what-is-dax.mp4",
+        durationLabel: "2 min 29 s",
       }),
       L(33, "dax-syntax", "DAX Syntax Basics", {
         contentDir: "ch05/33-dax-syntax",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788794615/ltv-powerbi/ch05-33-dax-syntax.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826093/ltv-powerbi/ch05-33-dax-syntax.mp4",
+        durationLabel: "2 min 23 s",
       }),
       L(34, "calculated-columns", "Calculated Columns", {
         contentDir: "ch05/34-calculated-columns",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788794734/ltv-powerbi/ch05-34-calculated-columns.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826095/ltv-powerbi/ch05-34-calculated-columns.mp4",
+        durationLabel: "2 min 5 s",
       }),
       L(35, "measures", "Measures", {
         contentDir: "ch05/35-measures",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788794872/ltv-powerbi/ch05-35-measures.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826098/ltv-powerbi/ch05-35-measures.mp4",
+        durationLabel: "2 min 18 s",
       }),
       L(36, "measures-vs-columns", "Measures vs. Calculated Columns", {
         contentDir: "ch05/36-measures-vs-columns",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795058/ltv-powerbi/ch05-36-measures-vs-columns.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826101/ltv-powerbi/ch05-36-measures-vs-columns.mp4",
+        durationLabel: "1 min 49 s",
       }),
       L(37, "basic-aggregations", "SUM, COUNT, DISTINCTCOUNT & Basic Aggregations", {
         contentDir: "ch05/37-basic-aggregations",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795182/ltv-powerbi/ch05-37-basic-aggregations.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826109/ltv-powerbi/ch05-37-basic-aggregations.mp4",
+        durationLabel: "2 min 4 s",
       }),
       L(38, "row-vs-filter-context", "Row Context vs. Filter Context", {
         contentDir: "ch05/38-row-vs-filter-context",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795332/ltv-powerbi/ch05-38-row-vs-filter-context.mp4",
-        durationLabel: "2 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826112/ltv-powerbi/ch05-38-row-vs-filter-context.mp4",
+        durationLabel: "2 min 9 s",
       }),
       L(39, "calculate", "CALCULATE Explained", {
         contentDir: "ch05/39-calculate",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795465/ltv-powerbi/ch05-39-calculate.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826114/ltv-powerbi/ch05-39-calculate.mp4",
+        durationLabel: "2 min 1 s",
       }),
       L(40, "context-transition", "Context Transition", {
         contentDir: "ch05/40-context-transition",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795613/ltv-powerbi/ch05-40-context-transition.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826116/ltv-powerbi/ch05-40-context-transition.mp4",
+        durationLabel: "1 min 54 s",
       }),
       L(41, "iterators", "Iterator Functions — SUMX and Friends", {
         contentDir: "ch05/41-iterators",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795746/ltv-powerbi/ch05-41-iterators.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826125/ltv-powerbi/ch05-41-iterators.mp4",
+        durationLabel: "2 min 7 s",
       }),
       L(42, "calculate-modifiers", "CALCULATE Filter Modifiers", {
         contentDir: "ch05/42-calculate-modifiers",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795876/ltv-powerbi/ch05-42-calculate-modifiers.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826128/ltv-powerbi/ch05-42-calculate-modifiers.mp4",
+        durationLabel: "1 min 55 s",
       }),
       L(43, "filter-function", "FILTER & Table Filter Expressions", {
         contentDir: "ch05/43-filter-function",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788795986/ltv-powerbi/ch05-43-filter-function.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826130/ltv-powerbi/ch05-43-filter-function.mp4",
+        durationLabel: "2 min 4 s",
       }),
       L(44, "all-allexcept", "ALL & ALLEXCEPT", {
         contentDir: "ch05/44-all-allexcept",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788796100/ltv-powerbi/ch05-44-all-allexcept.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826133/ltv-powerbi/ch05-44-all-allexcept.mp4",
+        durationLabel: "1 min 52 s",
       }),
       L(45, "allselected", "ALLSELECTED", {
         contentDir: "ch05/45-allselected",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788796300/ltv-powerbi/ch05-45-allselected.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826142/ltv-powerbi/ch05-45-allselected.mp4",
+        durationLabel: "2 min 6 s",
       }),
       L(46, "variables-best-practices", "Variables & DAX Best Practices", {
         contentDir: "ch05/46-variables-best-practices",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788796434/ltv-powerbi/ch05-46-variables-best-practices.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788826144/ltv-powerbi/ch05-46-variables-best-practices.mp4",
+        durationLabel: "1 min 58 s",
       }),
     ],
   },

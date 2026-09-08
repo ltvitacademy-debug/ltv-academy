@@ -1,32 +1,38 @@
 # Lesson 40 — Context Transition · Voiceover script
 
-Segments map 1:1 to slides. Each segment is one TTS call so slide timing follows
-the audio. Target: ~2 minutes total.
+Segments map 1:1 to slides. Target: 2-3 minutes — write for 320-360 words.
 
 ---
 
-## S1 · TITLE CARD (SVG: lesson title, LTV brand)
+## S1 · TITLE CARD
 
-Row context and filter context are two different things. Context
-transition is the bridge between them — and the trigger is simple:
-CALCULATE, evaluated inside row context.
+Row context and filter context are two genuinely different things, as
+the last two lessons covered. Context transition is the actual bridge
+between them, and the trigger for it is simple: CALCULATE, evaluated
+while sitting inside row context.
 
-## S2 · CODE: measure reference inside a calculated column (implicit CALCULATE)
+## S2 · CODE: Referencing [Total Sales] inside a calculated column
 
-The automatic case: reference a measure from inside a calculated column,
-and context transition happens with no CALCULATE visible at all. Every
-measure is secretly wrapped in its own CALCULATE — that's why it quietly
-respects the current row.
+Here's the automatic case, the one people miss most often: reference a
+measure from inside a calculated column, and context transition happens
+completely automatically, with no visible CALCULATE anywhere in the
+formula at all. Every single measure is secretly wrapped in its own
+implicit CALCULATE — that's genuinely why it quietly respects whatever
+row it's currently sitting in, without you ever writing that explicitly.
 
-## S3 · CODE: Customer Segment = IF(CALCULATE(SUM(Sales[Sales Amount]), ALLEXCEPT(Customer, Customer[CustomerKey])) < 2500, "Low", "High")
+## S3 · CODE: Customer Segment = IF(CALCULATE(...) < 2500, "Low", "High")
 
-The explicit case. For one customer row: row context starts things off.
-CALCULATE triggers context transition — that one customer becomes a
-filter. ALLEXCEPT keeps just that filter. SUM totals their sales. IF
-labels the row. Every customer repeats this independently.
+Now the explicit case, spelled out step by step. For one particular
+customer row: row context starts everything off. CALCULATE then triggers
+context transition — that single customer becomes an actual filter.
+ALLEXCEPT keeps just that one filter and clears the rest. SUM totals
+their sales under that filter. IF labels the row Low or High based on
+the result. And every single customer repeats this exact same process
+completely independently of every other customer.
 
-## S4 · OUTRO CARD (SVG: next lesson, LTV seal)
+## S4 · OUTRO CARD
 
-Row context in, filter context out — that's the whole trick behind
-formulas that otherwise look impossible. Next: iterator functions, which
-lean on this exact mechanism to calculate row by row.
+Row context goes in, filter context comes out — that's genuinely the
+entire trick behind formulas that otherwise look nearly impossible to
+write. Next: iterator functions, which lean on this exact same mechanism
+to calculate results row by row across an entire table.

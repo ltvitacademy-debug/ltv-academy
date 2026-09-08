@@ -1,37 +1,43 @@
-# Lesson 42 — CALCULATE Filter Modifiers · Voiceover script
+# Lesson 42 — CALCULATE's Filter Modifiers · Voiceover script
 
-Segments map 1:1 to slides. Each segment is one TTS call so slide timing follows
-the audio. Target: ~2 minutes total.
+Segments map 1:1 to slides. Target: 2-3 minutes — write for 320-360 words.
 
 ---
 
-## S1 · TITLE CARD (SVG: lesson title, LTV brand)
+## S1 · TITLE CARD
 
-Beyond simple conditions, CALCULATE accepts functions that change how
-filtering itself behaves. Three worth knowing well.
+Beyond simple conditions like column equals value, CALCULATE also
+accepts entire functions that change how the filtering itself actually
+behaves underneath. Three of them are genuinely worth knowing well.
 
-## S2 · CODE: %Sales = DIVIDE([TotalSales], CALCULATE([TotalSales], REMOVEFILTERS()))
+## S2 · CODE: REMOVEFILTERS
 
-REMOVEFILTERS clears filters — from one column, or everywhere. Here it
-strips every filter for the denominator, giving you the grand total no
-matter what's selected. Divide the filtered total by that, and you get
-percent of total — a pattern you'll use constantly.
+REMOVEFILTERS clears filters away — either from one specific column, or
+from absolutely everywhere at once. Here it strips every single filter
+away for the denominator specifically, giving you the true grand total
+no matter what's currently selected anywhere on the report. Divide the
+filtered total by that grand total, and you get percent of total — a
+pattern you'll genuinely use constantly for the rest of your DAX career.
 
-## S3 · CODE: CALCULATE(..., KEEPFILTERS('Geography'[State] = "WA" || ... = "OR"))
+## S3 · CODE: KEEPFILTERS
 
-Remember: CALCULATE normally overwrites an existing filter on the same
-column. KEEPFILTERS changes that — the new filter intersects with what's
-already active instead of replacing it. Reach for it when you want to
-add a constraint, not swap one out.
+Remember from earlier: CALCULATE normally just overwrites an existing
+filter sitting on the same column. KEEPFILTERS changes that default
+behavior — the new filter now intersects with whatever's already active
+instead of replacing it outright. Reach for this specifically when you
+want to add an additional constraint on top, not swap one filter out for
+a completely different one.
 
-## S4 · CODE: CALCULATE(SUM(Sales[SalesAmount]), USERELATIONSHIP(Sales[ShipDateKey], 'Date'[DateKey]))
+## S4 · CODE: USERELATIONSHIP
 
-And USERELATIONSHIP reaches an inactive relationship for one
-calculation — the exact mechanism behind a single Date table filtering a
-fact table three different ways, with only one relationship active by
-default.
+And USERELATIONSHIP activates an otherwise inactive relationship, just
+for one single calculation. This is the exact mechanism behind a single
+Date table filtering a fact table three genuinely different ways, even
+though only one of those three relationships is ever active by default
+at any given moment.
 
-## S5 · OUTRO CARD (SVG: next lesson, LTV seal)
+## S5 · OUTRO CARD
 
-Next: FILTER itself — the function that builds the table expressions
-CALCULATE and SUMX both rely on.
+Next: FILTER itself, the actual function that builds the table
+expressions both CALCULATE and SUMX have been quietly relying on this
+entire time.
