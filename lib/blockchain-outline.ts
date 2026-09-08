@@ -280,4 +280,16 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
       }),
     ],
   },
+  {
+    n: 7,
+    title: "Testing & Tooling (Foundry)",
+    lessons: [
+      L(39, "imports-libraries-openzeppelin", "Imports, Libraries & OpenZeppelin", {
+        contentDir: "ch07/01-imports-libraries-openzeppelin",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788903894/ltv-blockchain/ch07-01-imports-libraries-openzeppelin.mp4",
+        durationLabel: "33 min 11 s",
+      }),
+    ],
+  },
 ];
