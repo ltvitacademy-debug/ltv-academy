@@ -104,6 +104,12 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788898156/ltv-blockchain/ch03-04-bitcoin-whitepaper-genesis-block.mp4",
         durationLabel: "3 min 57 s",
       }),
+      L(13, "bitcoin-milestones-halving", "Bitcoin Milestones: Pizza Day to Institutional Adoption", {
+        contentDir: "ch03/05-bitcoin-milestones-halving",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788898450/ltv-blockchain/ch03-05-bitcoin-milestones-halving.mp4",
+        durationLabel: "4 min 23 s",
+      }),
     ],
   },
 ];
