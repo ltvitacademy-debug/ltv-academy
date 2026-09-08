@@ -388,12 +388,42 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
     n: 11,
     title: "Capstone Project",
     lessons: [
-      L(53, "capstone-requirements", "Capstone: Business Requirements"),
-      L(54, "capstone-connect-copy-pipeline", "Capstone: Connect & Build the Copy Pipeline"),
-      L(55, "capstone-control-flow-error-handling", "Capstone: Add Control Flow & Error Handling"),
-      L(56, "capstone-mapping-data-flow", "Capstone: Build the Mapping Data Flow"),
-      L(57, "capstone-schedule-secure-monitor", "Capstone: Schedule, Secure & Monitor"),
-      L(58, "capstone-present", "Capstone: Present the Finished Pipeline"),
+      L(53, "capstone-requirements", "Capstone: Business Requirements", {
+        contentDir: "ch11/53-business-requirements",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788868556/ltv-data-factory/ch11-53-business-requirements.mp4",
+        durationLabel: "2 min 33 s",
+      }),
+      L(54, "capstone-connect-copy-pipeline", "Capstone: Connect & Build the Copy Pipeline", {
+        contentDir: "ch11/54-connect-build-copy-pipeline",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788868559/ltv-data-factory/ch11-54-connect-build-copy-pipeline.mp4",
+        durationLabel: "2 min 20 s",
+      }),
+      L(55, "capstone-control-flow-error-handling", "Capstone: Add Control Flow & Error Handling", {
+        contentDir: "ch11/55-control-flow-error-handling",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788868562/ltv-data-factory/ch11-55-control-flow-error-handling.mp4",
+        durationLabel: "2 min 49 s",
+      }),
+      L(56, "capstone-mapping-data-flow", "Capstone: Build the Mapping Data Flow", {
+        contentDir: "ch11/56-build-mapping-data-flow",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788868569/ltv-data-factory/ch11-56-build-mapping-data-flow.mp4",
+        durationLabel: "2 min 57 s",
+      }),
+      L(57, "capstone-schedule-secure-monitor", "Capstone: Schedule, Secure & Monitor", {
+        contentDir: "ch11/57-schedule-secure-monitor",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788868572/ltv-data-factory/ch11-57-schedule-secure-monitor.mp4",
+        durationLabel: "2 min 29 s",
+      }),
+      L(58, "capstone-present", "Capstone: Present the Finished Pipeline", {
+        contentDir: "ch11/58-present-finished-pipeline",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788868574/ltv-data-factory/ch11-58-present-finished-pipeline.mp4",
+        durationLabel: "2 min 38 s",
+      }),
     ],
   },
 ];
