@@ -206,6 +206,18 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788901433/ltv-blockchain/ch05-10-solidity-data-types.mp4",
         durationLabel: "24 min 25 s",
       }),
+      L(28, "the-constructor", "The Constructor: Initializing Your Contract", {
+        contentDir: "ch05/11-the-constructor",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788901733/ltv-blockchain/ch05-11-the-constructor.mp4",
+        durationLabel: "6 min 3 s",
+      }),
+      L(29, "reading-writing-state-view", "Reading vs. Writing State: the view Keyword", {
+        contentDir: "ch05/12-reading-writing-state-view",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788901736/ltv-blockchain/ch05-12-reading-writing-state-view.mp4",
+        durationLabel: "6 min 7 s",
+      }),
     ],
   },
 ];
