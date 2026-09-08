@@ -130,12 +130,42 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
     n: 4,
     title: "Control Flow & Orchestration",
     lessons: [
-      L(17, "parameters-vs-variables", "Parameters vs. Variables"),
-      L(18, "if-condition-switch", "If Condition & Switch Activities"),
-      L(19, "foreach-activity", "ForEach Activity"),
-      L(20, "until-activity", "Until Activity"),
-      L(21, "execute-pipeline-activity", "Execute Pipeline Activity"),
-      L(22, "expression-language-system-variables", "Expression Language & System Variables"),
+      L(17, "parameters-vs-variables", "Parameters vs. Variables", {
+        contentDir: "ch04/17-parameters-vs-variables",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788861806/ltv-data-factory/ch04-17-parameters-vs-variables.mp4",
+        durationLabel: "2 min 27 s",
+      }),
+      L(18, "if-condition-switch", "If Condition & Switch Activities", {
+        contentDir: "ch04/18-if-condition-switch",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788861807/ltv-data-factory/ch04-18-if-condition-switch.mp4",
+        durationLabel: "2 min 4 s",
+      }),
+      L(19, "foreach-activity", "ForEach Activity", {
+        contentDir: "ch04/19-foreach-activity",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788861809/ltv-data-factory/ch04-19-foreach-activity.mp4",
+        durationLabel: "2 min 18 s",
+      }),
+      L(20, "until-activity", "Until Activity", {
+        contentDir: "ch04/20-until-activity",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788861816/ltv-data-factory/ch04-20-until-activity.mp4",
+        durationLabel: "2 min 28 s",
+      }),
+      L(21, "execute-pipeline-activity", "Execute Pipeline Activity", {
+        contentDir: "ch04/21-execute-pipeline-activity",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788861818/ltv-data-factory/ch04-21-execute-pipeline-activity.mp4",
+        durationLabel: "2 min 2 s",
+      }),
+      L(22, "expression-language-system-variables", "Expression Language & System Variables", {
+        contentDir: "ch04/22-expression-language-system-variables",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788861821/ltv-data-factory/ch04-22-expression-language-system-variables.mp4",
+        durationLabel: "2 min 26 s",
+      }),
     ],
   },
   {
