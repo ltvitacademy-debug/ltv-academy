@@ -248,6 +248,12 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788902704/ltv-blockchain/ch06-02-arrays-enums.mp4",
         durationLabel: "5 min 40 s",
       }),
+      L(34, "arrays-in-practice", "Arrays in Practice: push, pop & removeAtIndex", {
+        contentDir: "ch06/03-arrays-in-practice",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788902915/ltv-blockchain/ch06-03-arrays-in-practice.mp4",
+        durationLabel: "13 min 42 s",
+      }),
     ],
   },
 ];
