@@ -172,13 +172,48 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Mapping Data Flows",
     lessons: [
-      L(23, "what-is-a-mapping-data-flow", "What Is a Mapping Data Flow?"),
-      L(24, "data-flow-debug-mode", "Data Flow Debug Mode"),
-      L(25, "source-sink-transformations", "Source & Sink Transformations"),
-      L(26, "filter-select-derived-column", "Filter, Select & Derived Column"),
-      L(27, "join-aggregate-transformations", "Join & Aggregate Transformations"),
-      L(28, "conditional-split-pivot-unpivot", "Conditional Split, Pivot & Unpivot"),
-      L(29, "data-flow-performance-tuning", "Data Flow Performance Tuning"),
+      L(23, "what-is-a-mapping-data-flow", "What Is a Mapping Data Flow?", {
+        contentDir: "ch05/23-what-is-a-mapping-data-flow",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788862968/ltv-data-factory/ch05-23-what-is-a-mapping-data-flow.mp4",
+        durationLabel: "2 min 15 s",
+      }),
+      L(24, "data-flow-debug-mode", "Data Flow Debug Mode", {
+        contentDir: "ch05/24-data-flow-debug-mode",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788862971/ltv-data-factory/ch05-24-data-flow-debug-mode.mp4",
+        durationLabel: "1 min 58 s",
+      }),
+      L(25, "source-sink-transformations", "Source & Sink Transformations", {
+        contentDir: "ch05/25-source-sink-transformations",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788862974/ltv-data-factory/ch05-25-source-sink-transformations.mp4",
+        durationLabel: "2 min 43 s",
+      }),
+      L(26, "filter-select-derived-column", "Filter, Select & Derived Column", {
+        contentDir: "ch05/26-filter-select-derived-column",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788862983/ltv-data-factory/ch05-26-filter-select-derived-column.mp4",
+        durationLabel: "1 min 50 s",
+      }),
+      L(27, "join-aggregate-transformations", "Join & Aggregate Transformations", {
+        contentDir: "ch05/27-join-aggregate-transformations",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788862986/ltv-data-factory/ch05-27-join-aggregate-transformations.mp4",
+        durationLabel: "2 min 27 s",
+      }),
+      L(28, "conditional-split-pivot-unpivot", "Conditional Split, Pivot & Unpivot", {
+        contentDir: "ch05/28-conditional-split-pivot-unpivot",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788862989/ltv-data-factory/ch05-28-conditional-split-pivot-unpivot.mp4",
+        durationLabel: "2 min 20 s",
+      }),
+      L(29, "data-flow-performance-tuning", "Data Flow Performance Tuning", {
+        contentDir: "ch05/29-data-flow-performance-tuning",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788862992/ltv-data-factory/ch05-29-data-flow-performance-tuning.mp4",
+        durationLabel: "2 min 27 s",
+      }),
     ],
   },
   {
