@@ -220,10 +220,30 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
     n: 6,
     title: "Triggers & Scheduling",
     lessons: [
-      L(30, "schedule-triggers", "Schedule Triggers"),
-      L(31, "tumbling-window-triggers", "Tumbling Window Triggers"),
-      L(32, "event-based-triggers", "Event-Based Triggers"),
-      L(33, "trigger-dependencies-chaining", "Trigger Dependencies & Chaining"),
+      L(30, "schedule-triggers", "Schedule Triggers", {
+        contentDir: "ch06/30-schedule-triggers",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788863684/ltv-data-factory/ch06-30-schedule-triggers.mp4",
+        durationLabel: "2 min 22 s",
+      }),
+      L(31, "tumbling-window-triggers", "Tumbling Window Triggers", {
+        contentDir: "ch06/31-tumbling-window-triggers",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788863686/ltv-data-factory/ch06-31-tumbling-window-triggers.mp4",
+        durationLabel: "2 min 14 s",
+      }),
+      L(32, "event-based-triggers", "Event-Based Triggers", {
+        contentDir: "ch06/32-event-based-triggers",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788863688/ltv-data-factory/ch06-32-event-based-triggers.mp4",
+        durationLabel: "1 min 59 s",
+      }),
+      L(33, "trigger-dependencies-chaining", "Trigger Dependencies & Chaining", {
+        contentDir: "ch06/33-trigger-dependencies-chaining",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788863690/ltv-data-factory/ch06-33-trigger-dependencies-chaining.mp4",
+        durationLabel: "2 min 19 s",
+      }),
     ],
   },
   {
