@@ -26,10 +26,30 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788893801/ltv-blockchain/ch01-01-what-is-a-blockchain.mp4",
         durationLabel: "13 min 8 s",
       }),
-      L(2, "nodes-blocks-block-explorers", "Nodes, Blocks & Block Explorers"),
-      L(3, "hashing-cryptographic-security", "Hashing & Cryptographic Security"),
-      L(4, "consensus-proof-of-work-vs-stake", "Consensus: Proof of Work vs. Proof of Stake"),
-      L(5, "blockchain-in-the-real-world", "Blockchain in the Real World"),
+      L(2, "nodes-blocks-block-explorers", "Nodes, Blocks & Block Explorers", {
+        contentDir: "ch01/02-nodes-blocks-block-explorers",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788896876/ltv-blockchain/ch01-02-nodes-blocks-block-explorers.mp4",
+        durationLabel: "6 min 17 s",
+      }),
+      L(3, "hashing-cryptographic-security", "Hashing & Cryptographic Security", {
+        contentDir: "ch01/03-hashing-cryptographic-security",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788896881/ltv-blockchain/ch01-03-hashing-cryptographic-security.mp4",
+        durationLabel: "10 min 12 s",
+      }),
+      L(4, "consensus-proof-of-work-vs-stake", "Consensus: Proof of Work vs. Proof of Stake", {
+        contentDir: "ch01/04-consensus-proof-of-work-vs-stake",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788896892/ltv-blockchain/ch01-04-consensus-proof-of-work-vs-stake.mp4",
+        durationLabel: "5 min 8 s",
+      }),
+      L(5, "blockchain-in-the-real-world", "Blockchain in the Real World", {
+        contentDir: "ch01/05-blockchain-in-the-real-world",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788896895/ltv-blockchain/ch01-05-blockchain-in-the-real-world.mp4",
+        durationLabel: "3 min 17 s",
+      }),
     ],
   },
 ];
