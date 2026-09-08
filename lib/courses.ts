@@ -4,6 +4,7 @@ import { marked } from "marked";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
+import { DATA_FACTORY_CHAPTERS } from "./data-factory-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -57,6 +58,14 @@ export const COURSES: CourseMeta[] = [
       "Twenty micro-lessons, three minutes or less each — the Python skills that actually move a Power BI project forward.",
     status: "available",
     chapters: PYTHON_CHAPTERS,
+  },
+  {
+    slug: "data-factory",
+    title: "Data Factory",
+    tagline:
+      "Move and transform data at scale — from Azure Data Factory pipelines to Fabric Data Factory, ending in a full capstone pipeline.",
+    status: "available",
+    chapters: DATA_FACTORY_CHAPTERS,
   },
   ...TRACKS.map((t) => ({
     slug: t.slug,
