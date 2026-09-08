@@ -76,4 +76,34 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
       }),
     ],
   },
+  {
+    n: 3,
+    title: "Bitcoin Deep Dive",
+    lessons: [
+      L(9, "signing-verifying-transactions", "Signing & Verifying Blockchain Transactions", {
+        contentDir: "ch03/01-signing-verifying-transactions",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788898137/ltv-blockchain/ch03-01-signing-verifying-transactions.mp4",
+        durationLabel: "7 min 33 s",
+      }),
+      L(10, "pgp-public-key-crypto-real-world", "PGP: Public Key Cryptography in the Real World", {
+        contentDir: "ch03/02-pgp-public-key-crypto-real-world",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788898141/ltv-blockchain/ch03-02-pgp-public-key-crypto-real-world.mp4",
+        durationLabel: "8 min 32 s",
+      }),
+      L(11, "precursors-bit-gold-cypherpunks", "Precursors to Bitcoin: Bit Gold, e-gold & the Cypherpunks", {
+        contentDir: "ch03/03-precursors-bit-gold-cypherpunks",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788898153/ltv-blockchain/ch03-03-precursors-bit-gold-cypherpunks.mp4",
+        durationLabel: "3 min 59 s",
+      }),
+      L(12, "bitcoin-whitepaper-genesis-block", "The Bitcoin Whitepaper & the Genesis Block", {
+        contentDir: "ch03/04-bitcoin-whitepaper-genesis-block",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788898156/ltv-blockchain/ch03-04-bitcoin-whitepaper-genesis-block.mp4",
+        durationLabel: "3 min 57 s",
+      }),
+    ],
+  },
 ];
