@@ -242,6 +242,12 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788902440/ltv-blockchain/ch06-01-mappings.mp4",
         durationLabel: "24 min 12 s",
       }),
+      L(33, "arrays-enums", "Arrays & Enums", {
+        contentDir: "ch06/02-arrays-enums",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788902704/ltv-blockchain/ch06-02-arrays-enums.mp4",
+        durationLabel: "5 min 40 s",
+      }),
     ],
   },
 ];
