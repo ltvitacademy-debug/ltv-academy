@@ -298,4 +298,22 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
       }),
     ],
   },
+  {
+    n: 8,
+    title: "Full-Stack DApp Development",
+    lessons: [
+      L(41, "ether-wallet", "Building an Ether Wallet", {
+        contentDir: "ch08/01-ether-wallet",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788904581/ltv-blockchain/ch08-01-ether-wallet.mp4",
+        durationLabel: "5 min 17 s",
+      }),
+      L(42, "multisig-wallet-setup", "The Multi-Signature Wallet: Setting Up Shared Control", {
+        contentDir: "ch08/02-multisig-wallet-setup",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788904586/ltv-blockchain/ch08-02-multisig-wallet-setup.mp4",
+        durationLabel: "15 min 48 s",
+      }),
+    ],
+  },
 ];
