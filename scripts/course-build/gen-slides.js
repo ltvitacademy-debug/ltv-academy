@@ -80,6 +80,18 @@ function bookendCard(spec, big) {
 }
 
 // ---- steps / process diagram card -------------------------------------------
+// Step labels are short but sometimes multi-word (e.g. "AZURE DATA FACTORY") —
+// shrink the font per-label so long labels don't overflow their box and
+// overlap the next one, the same fitting technique used for headlines.
+function fitLabelSize(text, maxWidth, startSize, minSize) {
+  const avgCharWidth = 0.58;
+  let size = startSize;
+  while (size > minSize && text.length * size * avgCharWidth > maxWidth) {
+    size -= 2;
+  }
+  return size;
+}
+
 function stepsCard(spec) {
   const steps = spec.steps || [];
   const n = steps.length;
@@ -92,8 +104,9 @@ function stepsCard(spec) {
   let nodes = "";
   steps.forEach((s, i) => {
     const x = x0 + i * (bw + gap);
+    const labelSize = fitLabelSize(String(s.label), bw - 32, 40, 18);
     nodes += `<rect x="${x}" y="${y0}" width="${bw}" height="150" fill="none" stroke="${C.gold}" stroke-width="2"/>
-    <text x="${x + bw / 2}" y="${y0 + 62}" text-anchor="middle" font-family="${SERIF}" font-size="40" fill="${C.parchment}">${esc(s.label)}</text>
+    <text x="${x + bw / 2}" y="${y0 + 62}" text-anchor="middle" font-family="${SERIF}" font-size="${labelSize}" fill="${C.parchment}">${esc(s.label)}</text>
     <text x="${x + bw / 2}" y="${y0 + 108}" text-anchor="middle" font-family="${SANS}" font-size="22" fill="${C.goldPale}">${esc(s.sub || "")}</text>
     <text x="${x + bw / 2}" y="${y0 - 30}" text-anchor="middle" font-family="${SERIF}" font-size="34" fill="${C.gold}">0${i + 1}</text>`;
     if (i < n - 1) nodes += `<text x="${x + bw + gap / 2}" y="${y0 + 88}" text-anchor="middle" font-family="${SANS}" font-size="40" fill="${C.gold}">→</text>`;

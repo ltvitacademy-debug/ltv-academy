@@ -16,11 +16,36 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Getting Started",
     lessons: [
-      L(1, "what-is-azure-data-factory", "What Is Azure Data Factory?"),
-      L(2, "etl-vs-elt", "ETL vs. ELT"),
-      L(3, "adf-vs-ssis-vs-fabric", "Data Factory vs. SSIS vs. Fabric Data Factory"),
-      L(4, "creating-a-data-factory", "Creating a Data Factory Instance"),
-      L(5, "studio-tour", "The Data Factory Studio Tour"),
+      L(1, "what-is-azure-data-factory", "What Is Azure Data Factory?", {
+        contentDir: "ch01/01-what-is-azure-data-factory",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788835827/ltv-data-factory/ch01-01-what-is-azure-data-factory.mp4",
+        durationLabel: "3 min 41 s",
+      }),
+      L(2, "etl-vs-elt", "ETL vs. ELT", {
+        contentDir: "ch01/02-etl-vs-elt",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788836007/ltv-data-factory/ch01-02-etl-vs-elt.mp4",
+        durationLabel: "2 min 18 s",
+      }),
+      L(3, "adf-vs-ssis-vs-fabric", "Data Factory vs. SSIS vs. Fabric Data Factory", {
+        contentDir: "ch01/03-adf-vs-ssis-vs-fabric",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788836425/ltv-data-factory/ch01-03-adf-vs-ssis-vs-fabric.mp4",
+        durationLabel: "2 min 29 s",
+      }),
+      L(4, "creating-a-data-factory", "Creating a Data Factory Instance", {
+        contentDir: "ch01/04-creating-a-data-factory",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788836641/ltv-data-factory/ch01-04-creating-a-data-factory.mp4",
+        durationLabel: "2 min 36 s",
+      }),
+      L(5, "studio-tour", "The Data Factory Studio Tour", {
+        contentDir: "ch01/05-studio-tour",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788836868/ltv-data-factory/ch01-05-studio-tour.mp4",
+        durationLabel: "2 min 54 s",
+      }),
     ],
   },
   {
