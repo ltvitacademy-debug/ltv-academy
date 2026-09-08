@@ -250,10 +250,30 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
     n: 7,
     title: "Integration Runtimes",
     lessons: [
-      L(34, "what-is-an-integration-runtime", "What Is an Integration Runtime?"),
-      L(35, "azure-integration-runtime", "Azure Integration Runtime"),
-      L(36, "self-hosted-integration-runtime", "Self-Hosted Integration Runtime"),
-      L(37, "connecting-on-premises-securely", "Connecting to On-Premises Data Securely"),
+      L(34, "what-is-an-integration-runtime", "What Is an Integration Runtime?", {
+        contentDir: "ch07/34-what-is-an-integration-runtime",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788864562/ltv-data-factory/ch07-34-what-is-an-integration-runtime.mp4",
+        durationLabel: "2 min 32 s",
+      }),
+      L(35, "azure-integration-runtime", "Azure Integration Runtime", {
+        contentDir: "ch07/35-azure-integration-runtime",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788864564/ltv-data-factory/ch07-35-azure-integration-runtime.mp4",
+        durationLabel: "2 min 14 s",
+      }),
+      L(36, "self-hosted-integration-runtime", "Self-Hosted Integration Runtime", {
+        contentDir: "ch07/36-self-hosted-integration-runtime",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788864569/ltv-data-factory/ch07-36-self-hosted-integration-runtime.mp4",
+        durationLabel: "2 min 22 s",
+      }),
+      L(37, "connecting-on-premises-securely", "Connecting to On-Premises Data Securely", {
+        contentDir: "ch07/37-connecting-on-premises-securely",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788864572/ltv-data-factory/ch07-37-connecting-on-premises-securely.mp4",
+        durationLabel: "2 min 20 s",
+      }),
     ],
   },
   {
