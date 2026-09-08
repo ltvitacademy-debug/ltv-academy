@@ -525,26 +525,26 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
       L(75, "how-refresh-works", "How Power BI Refresh Works", {
         contentDir: "ch10/75-how-refresh-works",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804696/ltv-powerbi/ch10-75-how-refresh-works.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788830015/ltv-powerbi/ch10-75-how-refresh-works.mp4",
+        durationLabel: "2 min 18 s",
       }),
       L(76, "data-gateway", "Installing & Configuring the Data Gateway", {
         contentDir: "ch10/76-data-gateway",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804698/ltv-powerbi/ch10-76-data-gateway.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788830018/ltv-powerbi/ch10-76-data-gateway.mp4",
+        durationLabel: "2 min 17 s",
       }),
       L(77, "scheduled-refresh", "Scheduled Refresh", {
         contentDir: "ch10/77-scheduled-refresh",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804700/ltv-powerbi/ch10-77-scheduled-refresh.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788830020/ltv-powerbi/ch10-77-scheduled-refresh.mp4",
+        durationLabel: "2 min 19 s",
       }),
       L(78, "troubleshooting-refresh", "Troubleshooting Refresh Problems", {
         contentDir: "ch10/78-troubleshooting-refresh",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804702/ltv-powerbi/ch10-78-troubleshooting-refresh.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788830022/ltv-powerbi/ch10-78-troubleshooting-refresh.mp4",
+        durationLabel: "2 min 13 s",
       }),
     ],
   },
