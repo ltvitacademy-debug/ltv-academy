@@ -278,19 +278,49 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788903607/ltv-blockchain/ch06-07-simple-token-transfer.mp4",
         durationLabel: "4 min 17 s",
       }),
+      L(39, "erc20-interface", "The ERC-20 Interface & Token Metadata", {
+        contentDir: "ch06/08-erc20-interface",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788905265/ltv-blockchain/ch06-08-erc20-interface.mp4",
+        durationLabel: "12 min 23 s",
+      }),
+      L(40, "erc20-transfer-approve", "Implementing Transfer, Approve & TransferFrom", {
+        contentDir: "ch06/09-erc20-transfer-approve",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788905269/ltv-blockchain/ch06-09-erc20-transfer-approve.mp4",
+        durationLabel: "8 min 13 s",
+      }),
+      L(41, "erc20-mint-burn", "Minting & Burning Your Own Tokens", {
+        contentDir: "ch06/10-erc20-mint-burn",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788905272/ltv-blockchain/ch06-10-erc20-mint-burn.mp4",
+        durationLabel: "6 min 47 s",
+      }),
+      L(42, "erc20-openzeppelin", "Building an ERC-20 Token with OpenZeppelin", {
+        contentDir: "ch06/11-erc20-openzeppelin",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788905274/ltv-blockchain/ch06-11-erc20-openzeppelin.mp4",
+        durationLabel: "4 min 28 s",
+      }),
+      L(43, "how-tokens-get-traded", "How Tokens Actually Get Bought and Sold", {
+        contentDir: "ch06/12-how-tokens-get-traded",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788905278/ltv-blockchain/ch06-12-how-tokens-get-traded.mp4",
+        durationLabel: "11 min 53 s",
+      }),
     ],
   },
   {
     n: 7,
     title: "Testing & Tooling (Foundry)",
     lessons: [
-      L(39, "imports-libraries-openzeppelin", "Imports, Libraries & OpenZeppelin", {
+      L(44, "imports-libraries-openzeppelin", "Imports, Libraries & OpenZeppelin", {
         contentDir: "ch07/01-imports-libraries-openzeppelin",
         videoUrl:
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788903894/ltv-blockchain/ch07-01-imports-libraries-openzeppelin.mp4",
         durationLabel: "33 min 11 s",
       }),
-      L(40, "terminal-git-npm", "Command Line Basics: npm, git & the Terminal", {
+      L(45, "terminal-git-npm", "Command Line Basics: npm, git & the Terminal", {
         contentDir: "ch07/02-terminal-git-npm",
         videoUrl:
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788904265/ltv-blockchain/ch07-02-terminal-git-npm.mp4",
@@ -302,13 +332,13 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
     n: 8,
     title: "Full-Stack DApp Development",
     lessons: [
-      L(41, "ether-wallet", "Building an Ether Wallet", {
+      L(46, "ether-wallet", "Building an Ether Wallet", {
         contentDir: "ch08/01-ether-wallet",
         videoUrl:
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788904581/ltv-blockchain/ch08-01-ether-wallet.mp4",
         durationLabel: "5 min 17 s",
       }),
-      L(42, "multisig-wallet-setup", "The Multi-Signature Wallet: Setting Up Shared Control", {
+      L(47, "multisig-wallet-setup", "The Multi-Signature Wallet: Setting Up Shared Control", {
         contentDir: "ch08/02-multisig-wallet-setup",
         videoUrl:
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788904586/ltv-blockchain/ch08-02-multisig-wallet-setup.mp4",
