@@ -52,11 +52,36 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "Connecting to Data",
     lessons: [
-      L(6, "linked-services-explained", "Linked Services Explained"),
-      L(7, "connecting-blob-storage", "Connecting to Azure Blob Storage"),
-      L(8, "connecting-sql-sources", "Connecting to Azure SQL & On-Premises SQL Server"),
-      L(9, "datasets-structure-schema", "Datasets: Structure & Schema"),
-      L(10, "parameterizing-linked-services", "Parameterizing Linked Services & Datasets"),
+      L(6, "linked-services-explained", "Linked Services Explained", {
+        contentDir: "ch02/06-linked-services-explained",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788859764/ltv-data-factory/ch02-06-linked-services-explained.mp4",
+        durationLabel: "2 min 32 s",
+      }),
+      L(7, "connecting-blob-storage", "Connecting to Azure Blob Storage", {
+        contentDir: "ch02/07-connecting-blob-storage",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788859767/ltv-data-factory/ch02-07-connecting-blob-storage.mp4",
+        durationLabel: "2 min 10 s",
+      }),
+      L(8, "connecting-sql-sources", "Connecting to Azure SQL & On-Premises SQL Server", {
+        contentDir: "ch02/08-connecting-sql-sources",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788859769/ltv-data-factory/ch02-08-connecting-sql-sources.mp4",
+        durationLabel: "2 min 9 s",
+      }),
+      L(9, "datasets-structure-schema", "Datasets: Structure & Schema", {
+        contentDir: "ch02/09-datasets-structure-schema",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788859771/ltv-data-factory/ch02-09-datasets-structure-schema.mp4",
+        durationLabel: "2 min 19 s",
+      }),
+      L(10, "parameterizing-linked-services", "Parameterizing Linked Services & Datasets", {
+        contentDir: "ch02/10-parameterizing-linked-services",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788859774/ltv-data-factory/ch02-10-parameterizing-linked-services.mp4",
+        durationLabel: "2 min 14 s",
+      }),
     ],
   },
   {
