@@ -1,35 +1,43 @@
-# Lesson 51 — DATESYTD, TOTALYTD & DATESBETWEEN · Voiceover script
+# Lesson 51 — DATESYTD & TOTALYTD · Voiceover script
 
-Segments map 1:1 to slides. Each segment is one TTS call so slide timing follows
-the audio. Target: ~2.5 minutes total.
+Segments map 1:1 to slides. Target: 2-3 minutes — write for 320-360 words.
 
 ---
 
-## S1 · TITLE CARD (SVG: lesson title, LTV brand)
+## S1 · TITLE CARD
 
-TOTALYTD is shorthand for CALCULATE plus DATESYTD. Here's exactly when
-spelling it out the long way pays off.
+TOTALYTD, from last lesson, is genuinely just shorthand for CALCULATE
+combined with DATESYTD underneath. Here's exactly when spelling that
+combination out the long way actually pays off in practice.
 
-## S2 · CODE: CALCULATE(SUM(FactInternetSales[SalesAmount]), DATESYTD(DimDate[FullDateAlternateKey]), DimSalesTerritory[SalesTerritoryCountry] <> "United States")
+## S2 · CODE: CALCULATE([Total Sales], DATESYTD(Dates[Date]), Sales[Country] <> "US")
 
-TOTALYTD only takes one extra filter. Need a second condition alongside
-year-to-date — like restricting to non-US sales — and DATESYTD spelled
-out inside CALCULATE gives you room for as many filters as you need.
+TOTALYTD only genuinely accepts one single extra filter argument beyond
+the date column itself. Need a second condition running alongside your
+year-to-date calculation — like restricting the whole thing to non-US
+sales specifically — and DATESYTD spelled out explicitly inside
+CALCULATE gives you room for as many additional filters as you actually
+need, with no real limit.
 
-## S3 · CODE: DATESBETWEEN(<dates>, <StartDate>, <EndDate>)
+## S3 · CODE: DATESBETWEEN(Dates[Date], StartDate, EndDate)
 
-And for ranges that don't follow a calendar pattern at all — not a
-year, not a month, just two dates you name — DATESBETWEEN is the tool.
+And for date ranges that genuinely don't follow any calendar pattern at
+all — not a full year, not a calendar month, just two specific dates you
+name explicitly yourself — DATESBETWEEN is genuinely the right tool to
+reach for here instead of any of the YTD-family functions.
 
-## S4 · CODE: Customers LTD = CALCULATE(DISTINCTCOUNT(FactInternetSales[CustomerKey]), DATESBETWEEN(DimDate[FullDateAlternateKey], BLANK(), MAX(DimDate[FullDateAlternateKey])))
+## S4 · CODE: CALCULATE([Total Sales], DATESBETWEEN(Dates[Date], BLANK(), MAX(Dates[Date])))
 
-A life-to-date measure: BLANK finds the earliest date automatically,
-MAX finds the latest date in context. The result never resets — it
-just keeps accumulating since day one.
+A genuine life-to-date measure, built this way: BLANK finds the earliest
+possible date completely automatically, and MAX finds the latest date
+actually sitting in the current context. The result genuinely never
+resets at any point — it simply keeps accumulating continuously, all the
+way since day one of the entire dataset.
 
-## S5 · OUTRO CARD (SVG: chapter complete, LTV seal)
+## S5 · OUTRO CARD
 
-A date table, CALENDAR to build one, DATEADD to shift dates, and the
-YTD family to accumulate them — every function in this chapter is
-CALCULATE, applied to dates. Next up: Chapter Seven, Building Reports
+A date table, CALENDAR to build one from scratch, DATEADD to shift dates
+around, and the whole YTD family to accumulate them properly — every
+single function in this chapter has genuinely just been CALCULATE,
+applied specifically to dates. Next up: Chapter Seven, Building Reports
 and Visualizations.

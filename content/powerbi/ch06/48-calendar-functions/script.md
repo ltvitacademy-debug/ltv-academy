@@ -1,35 +1,42 @@
-# Lesson 48 — CALENDAR and Date Functions · Voiceover script
+# Lesson 48 — CALENDAR Functions · Voiceover script
 
-Segments map 1:1 to slides. Each segment is one TTS call so slide timing follows
-the audio. Target: ~2 minutes total.
+Segments map 1:1 to slides. Target: 2-3 minutes — write for 320-360 words.
 
 ---
 
-## S1 · TITLE CARD (SVG: lesson title, LTV brand)
+## S1 · TITLE CARD
 
-No date table handy? Build one from scratch. Here's CALENDAR, and its
-even lazier cousin.
+No genuinely usable date table handy in your source data? Build one
+completely from scratch instead, right inside DAX. Here's CALENDAR, and
+its even lazier, more automatic cousin.
 
-## S2 · CODE: = CALENDAR(DATE(2015, 1, 1), DATE(2021, 12, 31))
+## S2 · CODE: CALENDAR(<start_date>, <end_date>)
 
-The simplest version: fix a start and end date, get back one row per
-day for every date in between. Exactly the shape a date table needs.
+The simplest version here: fix a specific start date and end date, and
+you get back one row for every single day in between, no exceptions and
+no gaps of any kind. That's genuinely exactly the shape a proper date
+table needs to have before you can mark it and use it the way Lesson 47
+already described.
 
-## S3 · CODE: = CALENDAR(MINX(Sales, [Date]), MAXX(Forecast, [Date]))
+## S3 · CODE: CALENDAR(MIN(Sales[Date]), MAX(Forecast[Date]))
 
-But a fixed range goes stale the moment new data arrives. Derive it
-from your actual data instead — earliest date in Sales, latest date in
-Forecast — and the range adjusts itself automatically as both tables
-grow.
+But a fixed date range genuinely goes stale the moment new data actually
+arrives in your model. Derive the range from your real data instead —
+the earliest date found in Sales, the latest date found in Forecast —
+and the whole range adjusts itself automatically as both of those tables
+naturally grow over time.
 
-## S4 · CODE: CALENDARAUTO([fiscal_year_end_month])
+## S4 · CODE: CALENDARAUTO()
 
-CALENDARAUTO goes further still: no range to specify at all. It scans
-every date column in your entire model and builds a calendar covering
-all of them, rounded out to complete fiscal years.
+CALENDARAUTO goes even further than that: there's genuinely no range to
+specify at all here. It scans every single date column across your
+entire model automatically and builds one calendar covering all of them
+together, rounded out cleanly to complete fiscal years on both ends.
 
-## S5 · OUTRO CARD (SVG: next lesson, LTV seal)
+## S5 · OUTRO CARD
 
-Either function gives you a calculated table — add Year, Quarter, and
-Month columns, then mark it as your date table from Lesson 47. Next:
-DATEADD, for shifting a set of dates forward or back in time.
+Either function hands you back a calculated table — add Year, Quarter,
+and Month columns onto it yourself, then mark it as your date table
+exactly like Lesson 47 already showed you step by step. Next: DATEADD,
+for actually shifting a set of dates forward or backward in time to
+build real period-over-period comparisons.
