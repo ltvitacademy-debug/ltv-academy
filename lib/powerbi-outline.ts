@@ -435,32 +435,32 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
       L(62, "business-requirements", "Gathering Business Requirements", {
         contentDir: "ch08/62-business-requirements",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788800379/ltv-powerbi/ch08-62-business-requirements.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828727/ltv-powerbi/ch08-62-business-requirements.mp4",
+        durationLabel: "1 min 54 s",
       }),
       L(63, "choosing-kpis", "Choosing KPIs", {
         contentDir: "ch08/63-choosing-kpis",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788800516/ltv-powerbi/ch08-63-choosing-kpis.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828729/ltv-powerbi/ch08-63-choosing-kpis.mp4",
+        durationLabel: "2 min 11 s",
       }),
       L(64, "layout-hierarchy", "Dashboard Layout & Visual Hierarchy", {
         contentDir: "ch08/64-layout-hierarchy",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788800674/ltv-powerbi/ch08-64-layout-hierarchy.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828732/ltv-powerbi/ch08-64-layout-hierarchy.mp4",
+        durationLabel: "2 min 21 s",
       }),
       L(65, "storytelling", "Storytelling With Data", {
         contentDir: "ch08/65-storytelling",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788800848/ltv-powerbi/ch08-65-storytelling.mp4",
-        durationLabel: "2 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828735/ltv-powerbi/ch08-65-storytelling.mp4",
+        durationLabel: "2 min 39 s",
       }),
       L(66, "executive-dashboard", "Building a Professional Executive Dashboard", {
         contentDir: "ch08/66-executive-dashboard",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788801008/ltv-powerbi/ch08-66-executive-dashboard.mp4",
-        durationLabel: "2 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828737/ltv-powerbi/ch08-66-executive-dashboard.mp4",
+        durationLabel: "2 min 33 s",
       }),
     ],
   },
