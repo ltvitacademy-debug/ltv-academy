@@ -369,62 +369,62 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
       L(52, "choosing-the-right-visual", "Choosing the Right Visual", {
         contentDir: "ch07/52-choosing-the-right-visual",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788798623/ltv-powerbi/ch07-52-choosing-the-right-visual.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828168/ltv-powerbi/ch07-52-choosing-the-right-visual.mp4",
+        durationLabel: "2 min 46 s",
       }),
       L(53, "tables-matrices", "Tables & Matrices", {
         contentDir: "ch07/53-tables-matrices",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788798765/ltv-powerbi/ch07-53-tables-matrices.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828171/ltv-powerbi/ch07-53-tables-matrices.mp4",
+        durationLabel: "1 min 59 s",
       }),
       L(54, "core-charts", "Bar, Column, Line & Pie Charts", {
         contentDir: "ch07/54-core-charts",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788798924/ltv-powerbi/ch07-54-core-charts.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828174/ltv-powerbi/ch07-54-core-charts.mp4",
+        durationLabel: "2 min 23 s",
       }),
       L(55, "cards-kpis-slicers", "Cards, KPIs & Slicers", {
         contentDir: "ch07/55-cards-kpis-slicers",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788799083/ltv-powerbi/ch07-55-cards-kpis-slicers.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828176/ltv-powerbi/ch07-55-cards-kpis-slicers.mp4",
+        durationLabel: "2 min 13 s",
       }),
       L(56, "formatting", "Formatting & Conditional Formatting", {
         contentDir: "ch07/56-formatting",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788799237/ltv-powerbi/ch07-56-formatting.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828179/ltv-powerbi/ch07-56-formatting.mp4",
+        durationLabel: "2 min 14 s",
       }),
       L(57, "filter-pane", "Filters & the Filter Pane", {
         contentDir: "ch07/57-filter-pane",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788799404/ltv-powerbi/ch07-57-filter-pane.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828186/ltv-powerbi/ch07-57-filter-pane.mp4",
+        durationLabel: "2 min 5 s",
       }),
       L(58, "interactions", "Cross Filtering & Visual Interactions", {
         contentDir: "ch07/58-interactions",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788799576/ltv-powerbi/ch07-58-interactions.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828190/ltv-powerbi/ch07-58-interactions.mp4",
+        durationLabel: "1 min 54 s",
       }),
       L(59, "drill-down-through", "Drill Down & Drill Through", {
         contentDir: "ch07/59-drill-down-through",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788799753/ltv-powerbi/ch07-59-drill-down-through.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828192/ltv-powerbi/ch07-59-drill-down-through.mp4",
+        durationLabel: "2 min 9 s",
       }),
       L(60, "buttons-bookmarks", "Buttons, Bookmarks & Navigation", {
         contentDir: "ch07/60-buttons-bookmarks",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788799904/ltv-powerbi/ch07-60-buttons-bookmarks.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828194/ltv-powerbi/ch07-60-buttons-bookmarks.mp4",
+        durationLabel: "2 min 10 s",
       }),
       L(61, "analytics-forecasting", "Analytics, Forecasting & Advanced Visuals", {
         contentDir: "ch07/61-analytics-forecasting",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788800068/ltv-powerbi/ch07-61-analytics-forecasting.mp4",
-        durationLabel: "2 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828197/ltv-powerbi/ch07-61-analytics-forecasting.mp4",
+        durationLabel: "2 min 37 s",
       }),
     ],
   },
