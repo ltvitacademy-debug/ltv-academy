@@ -182,6 +182,18 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788900719/ltv-blockchain/ch05-06-compiling-to-bytecode.mp4",
         durationLabel: "13 min 39 s",
       }),
+      L(24, "deploying-your-contract", "Deploying Your Contract to a Test Network", {
+        contentDir: "ch05/07-deploying-your-contract",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788900975/ltv-blockchain/ch05-07-deploying-your-contract.mp4",
+        durationLabel: "5 min 1 s",
+      }),
+      L(25, "evm-stack-opcodes", "How the EVM Works: Stack, Opcodes & Gas", {
+        contentDir: "ch05/08-evm-stack-opcodes",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788900979/ltv-blockchain/ch05-08-evm-stack-opcodes.mp4",
+        durationLabel: "10 min",
+      }),
     ],
   },
 ];
