@@ -224,6 +224,24 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788902048/ltv-blockchain/ch05-13-control-flow-if-else.mp4",
         durationLabel: "7 min 13 s",
       }),
+      L(31, "for-while-loops", "For & While Loops: continue and break", {
+        contentDir: "ch05/14-for-while-loops",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788902432/ltv-blockchain/ch05-14-for-while-loops.mp4",
+        durationLabel: "28 min 19 s",
+      }),
+    ],
+  },
+  {
+    n: 6,
+    title: "Token Standards",
+    lessons: [
+      L(32, "mappings", "Mappings: Solidity's Key-Value Store", {
+        contentDir: "ch06/01-mappings",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788902440/ltv-blockchain/ch06-01-mappings.mp4",
+        durationLabel: "24 min 12 s",
+      }),
     ],
   },
 ];
