@@ -356,6 +356,18 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788904586/ltv-blockchain/ch08-02-multisig-wallet-setup.mp4",
         durationLabel: "15 min 48 s",
       }),
+      L(50, "english-auction-setup", "Building an English Auction for NFTs", {
+        contentDir: "ch08/03-english-auction-setup",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788909229/ltv-blockchain/ch08-03-english-auction-setup.mp4",
+        durationLabel: "15 min 23 s",
+      }),
+      L(51, "english-auction-bidding-reentrancy", "Bidding, Withdrawing & Preventing Reentrancy", {
+        contentDir: "ch08/04-english-auction-bidding-reentrancy",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788909235/ltv-blockchain/ch08-04-english-auction-bidding-reentrancy.mp4",
+        durationLabel: "20 min",
+      }),
     ],
   },
 ];
