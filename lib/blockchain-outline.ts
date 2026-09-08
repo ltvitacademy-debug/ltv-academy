@@ -370,4 +370,28 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
       }),
     ],
   },
+  {
+    n: 10,
+    title: "Security Auditing",
+    lessons: [
+      L(52, "understanding-reentrancy-dao-hack", "Understanding Reentrancy: The DAO Hack", {
+        contentDir: "ch10/01-understanding-reentrancy-dao-hack",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788909843/ltv-blockchain/ch10-01-understanding-reentrancy-dao-hack.mp4",
+        durationLabel: "17 min 52 s",
+      }),
+      L(53, "writing-exploiting-vulnerable-contract", "Writing a Vulnerable Contract and Exploiting It", {
+        contentDir: "ch10/02-writing-exploiting-vulnerable-contract",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788909851/ltv-blockchain/ch10-02-writing-exploiting-vulnerable-contract.mp4",
+        durationLabel: "18 min 33 s",
+      }),
+      L(54, "fixing-reentrancy", "Fixing Reentrancy: Checks-Effects-Interactions & the Guard Modifier", {
+        contentDir: "ch10/03-fixing-reentrancy",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788909857/ltv-blockchain/ch10-03-fixing-reentrancy.mp4",
+        durationLabel: "12 min 23 s",
+      }),
+    ],
+  },
 ];
