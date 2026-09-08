@@ -128,6 +128,18 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788899538/ltv-blockchain/ch04-02-gas-fees-on-ethereum.mp4",
         durationLabel: "11 min 57 s",
       }),
+      L(16, "history-of-ethereum", "The History of Ethereum: Whitepaper to Frontier", {
+        contentDir: "ch04/03-history-of-ethereum",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788899793/ltv-blockchain/ch04-03-history-of-ethereum.mp4",
+        durationLabel: "18 min 13 s",
+      }),
+      L(17, "dao-attack-the-merge", "The DAO Attack, the Merge & Ethereum Today", {
+        contentDir: "ch04/04-dao-attack-the-merge",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788899799/ltv-blockchain/ch04-04-dao-attack-the-merge.mp4",
+        durationLabel: "12 min 6 s",
+      }),
     ],
   },
 ];
