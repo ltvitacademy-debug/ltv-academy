@@ -310,12 +310,42 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
     n: 9,
     title: "Fabric Data Factory",
     lessons: [
-      L(42, "fabric-data-factory-overview", "Fabric Data Factory Overview"),
-      L(43, "dataflow-gen2-vs-mapping-data-flows", "Dataflow Gen2 vs. Mapping Data Flows"),
-      L(44, "pipelines-in-fabric", "Pipelines in Fabric"),
-      L(45, "onelake-as-a-destination", "OneLake as a Destination"),
-      L(46, "migrating-adf-to-fabric", "Migrating ADF Pipelines to Fabric"),
-      L(47, "adf-vs-fabric-when-to-choose", "When to Choose ADF vs. Fabric"),
+      L(42, "fabric-data-factory-overview", "Fabric Data Factory Overview", {
+        contentDir: "ch09/42-fabric-data-factory-overview",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788866458/ltv-data-factory/ch09-42-fabric-data-factory-overview.mp4",
+        durationLabel: "2 min 35 s",
+      }),
+      L(43, "dataflow-gen2-vs-mapping-data-flows", "Dataflow Gen2 vs. Mapping Data Flows", {
+        contentDir: "ch09/43-dataflow-gen2-vs-mapping-data-flows",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788866460/ltv-data-factory/ch09-43-dataflow-gen2-vs-mapping-data-flows.mp4",
+        durationLabel: "2 min 32 s",
+      }),
+      L(44, "pipelines-in-fabric", "Pipelines in Fabric", {
+        contentDir: "ch09/44-pipelines-in-fabric",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788866463/ltv-data-factory/ch09-44-pipelines-in-fabric.mp4",
+        durationLabel: "2 min 1 s",
+      }),
+      L(45, "onelake-as-a-destination", "OneLake as a Destination", {
+        contentDir: "ch09/45-onelake-as-a-destination",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788866470/ltv-data-factory/ch09-45-onelake-as-a-destination.mp4",
+        durationLabel: "2 min 39 s",
+      }),
+      L(46, "migrating-adf-to-fabric", "Migrating ADF Pipelines to Fabric", {
+        contentDir: "ch09/46-migrating-adf-pipelines-to-fabric",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788866473/ltv-data-factory/ch09-46-migrating-adf-pipelines-to-fabric.mp4",
+        durationLabel: "2 min 35 s",
+      }),
+      L(47, "adf-vs-fabric-when-to-choose", "When to Choose ADF vs. Fabric", {
+        contentDir: "ch09/47-when-to-choose-adf-vs-fabric",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788866475/ltv-data-factory/ch09-47-when-to-choose-adf-vs-fabric.mp4",
+        durationLabel: "2 min 33 s",
+      }),
     ],
   },
   {
