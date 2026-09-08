@@ -170,6 +170,18 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788900418/ltv-blockchain/ch05-04-immutability-gas-abi.mp4",
         durationLabel: "12 min 37 s",
       }),
+      L(22, "your-first-contract", "Your First Solidity Contract: Pragma, Contracts & Strings", {
+        contentDir: "ch05/05-your-first-contract",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788900715/ltv-blockchain/ch05-05-your-first-contract.mp4",
+        durationLabel: "18 min 2 s",
+      }),
+      L(23, "compiling-to-bytecode", "Compiling Your Contract & Viewing Bytecode", {
+        contentDir: "ch05/06-compiling-to-bytecode",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788900719/ltv-blockchain/ch05-06-compiling-to-bytecode.mp4",
+        durationLabel: "13 min 39 s",
+      }),
     ],
   },
 ];
