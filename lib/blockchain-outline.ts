@@ -260,6 +260,24 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788903138/ltv-blockchain/ch06-04-structs.mp4",
         durationLabel: "16 min 16 s",
       }),
+      L(36, "function-modifiers", "Function Modifiers: onlyOwner & Access Control", {
+        contentDir: "ch06/05-function-modifiers",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788903600/ltv-blockchain/ch06-05-function-modifiers.mp4",
+        durationLabel: "10 min 45 s",
+      }),
+      L(37, "events", "Events: How Contracts Talk to the Outside World", {
+        contentDir: "ch06/06-events",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788903604/ltv-blockchain/ch06-06-events.mp4",
+        durationLabel: "7 min 23 s",
+      }),
+      L(38, "simple-token-transfer", "A Simple Token Transfer Function", {
+        contentDir: "ch06/07-simple-token-transfer",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788903607/ltv-blockchain/ch06-07-simple-token-transfer.mp4",
+        durationLabel: "4 min 17 s",
+      }),
     ],
   },
 ];
