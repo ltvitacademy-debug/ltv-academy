@@ -352,11 +352,36 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
     n: 10,
     title: "Security, DevOps & CI/CD",
     lessons: [
-      L(48, "managed-identities-key-vault", "Managed Identities & Key Vault Integration"),
-      L(49, "role-based-access-control", "Role-Based Access Control (RBAC)"),
-      L(50, "git-integration-source-control", "Git Integration & Source Control"),
-      L(51, "publishing-and-environments", "Publishing & Environments (Dev/Test/Prod)"),
-      L(52, "arm-templates-devops-pipelines", "ARM Templates & Azure DevOps Pipelines"),
+      L(48, "managed-identities-key-vault", "Managed Identities & Key Vault Integration", {
+        contentDir: "ch10/48-managed-identities-key-vault",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788867467/ltv-data-factory/ch10-48-managed-identities-key-vault.mp4",
+        durationLabel: "2 min 32 s",
+      }),
+      L(49, "role-based-access-control", "Role-Based Access Control (RBAC)", {
+        contentDir: "ch10/49-rbac",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788867469/ltv-data-factory/ch10-49-rbac.mp4",
+        durationLabel: "2 min 13 s",
+      }),
+      L(50, "git-integration-source-control", "Git Integration & Source Control", {
+        contentDir: "ch10/50-git-integration-source-control",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788867471/ltv-data-factory/ch10-50-git-integration-source-control.mp4",
+        durationLabel: "2 min 27 s",
+      }),
+      L(51, "publishing-and-environments", "Publishing & Environments (Dev/Test/Prod)", {
+        contentDir: "ch10/51-publishing-environments",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788867478/ltv-data-factory/ch10-51-publishing-environments.mp4",
+        durationLabel: "2 min 47 s",
+      }),
+      L(52, "arm-templates-devops-pipelines", "ARM Templates & Azure DevOps Pipelines", {
+        contentDir: "ch10/52-arm-templates-devops-pipelines",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788867480/ltv-data-factory/ch10-52-arm-templates-devops-pipelines.mp4",
+        durationLabel: "2 min 48 s",
+      }),
     ],
   },
   {
