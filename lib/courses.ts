@@ -5,6 +5,7 @@ import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
 import { DATA_FACTORY_CHAPTERS } from "./data-factory-outline";
+import { BLOCKCHAIN_CHAPTERS } from "./blockchain-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -67,7 +68,15 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: DATA_FACTORY_CHAPTERS,
   },
-  ...TRACKS.map((t) => ({
+  {
+    slug: "blockchain",
+    title: "Blockchain Development",
+    tagline:
+      "Ethereum, Solidity, and decentralized applications — plus the uses for blockchain beyond cryptocurrency.",
+    status: "available",
+    chapters: BLOCKCHAIN_CHAPTERS,
+  },
+  ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,
     title: t.title,
     tagline: t.line,
