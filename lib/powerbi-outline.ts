@@ -555,32 +555,32 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
       L(79, "rls-fundamentals", "Row-Level Security Fundamentals", {
         contentDir: "ch11/79-rls-fundamentals",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804709/ltv-powerbi/ch11-79-rls-fundamentals.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788830621/ltv-powerbi/ch11-79-rls-fundamentals.mp4",
+        durationLabel: "2 min 20 s",
       }),
       L(80, "rls-roles", "Creating RLS Roles", {
         contentDir: "ch11/80-rls-roles",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804710/ltv-powerbi/ch11-80-rls-roles.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788830623/ltv-powerbi/ch11-80-rls-roles.mp4",
+        durationLabel: "2 min 32 s",
       }),
       L(81, "rls-in-service", "RLS in Power BI Service", {
         contentDir: "ch11/81-rls-in-service",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804713/ltv-powerbi/ch11-81-rls-in-service.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788830625/ltv-powerbi/ch11-81-rls-in-service.mp4",
+        durationLabel: "2 min 2 s",
       }),
       L(82, "dynamic-rls", "Dynamic Row-Level Security", {
         contentDir: "ch11/82-dynamic-rls",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804715/ltv-powerbi/ch11-82-dynamic-rls.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788830627/ltv-powerbi/ch11-82-dynamic-rls.mp4",
+        durationLabel: "2 min 25 s",
       }),
       L(83, "rls-complex-models", "RLS With Complex Data Models", {
         contentDir: "ch11/83-rls-complex-models",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788804717/ltv-powerbi/ch11-83-rls-complex-models.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788830629/ltv-powerbi/ch11-83-rls-complex-models.mp4",
+        durationLabel: "1 min 53 s",
       }),
     ],
   },
