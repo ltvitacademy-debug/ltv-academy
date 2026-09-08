@@ -254,6 +254,12 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788902915/ltv-blockchain/ch06-03-arrays-in-practice.mp4",
         durationLabel: "13 min 42 s",
       }),
+      L(35, "structs", "Structs: Grouping Related Data", {
+        contentDir: "ch06/04-structs",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788903138/ltv-blockchain/ch06-04-structs.mp4",
+        durationLabel: "16 min 16 s",
+      }),
     ],
   },
 ];
