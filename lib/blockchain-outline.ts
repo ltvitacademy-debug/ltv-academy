@@ -194,6 +194,18 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788900979/ltv-blockchain/ch05-08-evm-stack-opcodes.mp4",
         durationLabel: "10 min",
       }),
+      L(26, "writing-your-first-function", "Writing Your First Function: setMessage", {
+        contentDir: "ch05/09-writing-your-first-function",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788901424/ltv-blockchain/ch05-09-writing-your-first-function.mp4",
+        durationLabel: "11 min 52 s",
+      }),
+      L(27, "solidity-data-types", "Solidity Data Types: uint, int, bool & address", {
+        contentDir: "ch05/10-solidity-data-types",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788901433/ltv-blockchain/ch05-10-solidity-data-types.mp4",
+        durationLabel: "24 min 25 s",
+      }),
     ],
   },
 ];
