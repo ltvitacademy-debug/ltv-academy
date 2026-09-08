@@ -591,62 +591,62 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
       L(84, "capstone-requirements", "Business Requirements", {
         contentDir: "ch12/84-capstone-requirements",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805684/ltv-powerbi/ch12-84-capstone-requirements.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788831821/ltv-powerbi/ch12-84-capstone-requirements.mp4",
+        durationLabel: "2 min 1 s",
       }),
       L(85, "capstone-import", "Import the Raw Data", {
         contentDir: "ch12/85-capstone-import",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805688/ltv-powerbi/ch12-85-capstone-import.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788831823/ltv-powerbi/ch12-85-capstone-import.mp4",
+        durationLabel: "2 min 6 s",
       }),
       L(86, "capstone-power-query", "Clean & Transform With Power Query", {
         contentDir: "ch12/86-capstone-power-query",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805690/ltv-powerbi/ch12-86-capstone-power-query.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788831825/ltv-powerbi/ch12-86-capstone-power-query.mp4",
+        durationLabel: "2 min 7 s",
       }),
       L(87, "capstone-star-schema", "Build the Star Schema", {
         contentDir: "ch12/87-capstone-star-schema",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805693/ltv-powerbi/ch12-87-capstone-star-schema.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788831828/ltv-powerbi/ch12-87-capstone-star-schema.mp4",
+        durationLabel: "1 min 48 s",
       }),
       L(88, "capstone-dax", "Create DAX Measures", {
         contentDir: "ch12/88-capstone-dax",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805695/ltv-powerbi/ch12-88-capstone-dax.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788831830/ltv-powerbi/ch12-88-capstone-dax.mp4",
+        durationLabel: "1 min 58 s",
       }),
       L(89, "capstone-report", "Build the Report", {
         contentDir: "ch12/89-capstone-report",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805701/ltv-powerbi/ch12-89-capstone-report.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788831837/ltv-powerbi/ch12-89-capstone-report.mp4",
+        durationLabel: "1 min 59 s",
       }),
       L(90, "capstone-interactivity", "Add Interactivity", {
         contentDir: "ch12/90-capstone-interactivity",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805704/ltv-powerbi/ch12-90-capstone-interactivity.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788831839/ltv-powerbi/ch12-90-capstone-interactivity.mp4",
+        durationLabel: "2 min 6 s",
       }),
       L(91, "capstone-publish", "Publish to Power BI Service", {
         contentDir: "ch12/91-capstone-publish",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805706/ltv-powerbi/ch12-91-capstone-publish.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788831842/ltv-powerbi/ch12-91-capstone-publish.mp4",
+        durationLabel: "1 min 53 s",
       }),
       L(92, "capstone-security-refresh", "Configure Security & Refresh", {
         contentDir: "ch12/92-capstone-security-refresh",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805708/ltv-powerbi/ch12-92-capstone-security-refresh.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788831844/ltv-powerbi/ch12-92-capstone-security-refresh.mp4",
+        durationLabel: "1 min 54 s",
       }),
       L(93, "capstone-present", "Present the Final Dashboard", {
         contentDir: "ch12/93-capstone-present",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788805710/ltv-powerbi/ch12-93-capstone-present.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788831847/ltv-powerbi/ch12-93-capstone-present.mp4",
+        durationLabel: "1 min 49 s",
       }),
     ],
   },
