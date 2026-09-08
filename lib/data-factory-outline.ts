@@ -88,12 +88,42 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Pipelines & Activities",
     lessons: [
-      L(11, "what-is-a-pipeline", "What Is a Pipeline?"),
-      L(12, "copy-activity", "The Copy Activity"),
-      L(13, "copy-activity-mapping-schema-drift", "Copy Activity: Mapping & Schema Drift"),
-      L(14, "lookup-stored-procedure-activities", "Lookup & Stored Procedure Activities"),
-      L(15, "web-wait-fail-set-variable", "Web, Wait, Fail & Set Variable Activities"),
-      L(16, "first-end-to-end-pipeline", "Building Your First End-to-End Pipeline"),
+      L(11, "what-is-a-pipeline", "What Is a Pipeline?", {
+        contentDir: "ch03/11-what-is-a-pipeline",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788860776/ltv-data-factory/ch03-11-what-is-a-pipeline.mp4",
+        durationLabel: "2 min 25 s",
+      }),
+      L(12, "copy-activity", "The Copy Activity", {
+        contentDir: "ch03/12-copy-activity",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788860779/ltv-data-factory/ch03-12-copy-activity.mp4",
+        durationLabel: "2 min 18 s",
+      }),
+      L(13, "copy-activity-mapping-schema-drift", "Copy Activity: Mapping & Schema Drift", {
+        contentDir: "ch03/13-copy-activity-mapping-schema-drift",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788860781/ltv-data-factory/ch03-13-copy-activity-mapping-schema-drift.mp4",
+        durationLabel: "2 min 7 s",
+      }),
+      L(14, "lookup-stored-procedure-activities", "Lookup & Stored Procedure Activities", {
+        contentDir: "ch03/14-lookup-stored-procedure-activities",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788860788/ltv-data-factory/ch03-14-lookup-stored-procedure-activities.mp4",
+        durationLabel: "2 min 18 s",
+      }),
+      L(15, "web-wait-fail-set-variable", "Web, Wait, Fail & Set Variable Activities", {
+        contentDir: "ch03/15-web-wait-fail-set-variable",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788860791/ltv-data-factory/ch03-15-web-wait-fail-set-variable.mp4",
+        durationLabel: "2 min 7 s",
+      }),
+      L(16, "first-end-to-end-pipeline", "Building Your First End-to-End Pipeline", {
+        contentDir: "ch03/16-first-end-to-end-pipeline",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788860793/ltv-data-factory/ch03-16-first-end-to-end-pipeline.mp4",
+        durationLabel: "2 min 38 s",
+      }),
     ],
   },
   {
