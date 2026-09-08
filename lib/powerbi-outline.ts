@@ -471,50 +471,50 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
       L(67, "service-vs-desktop", "Power BI Service vs. Desktop", {
         contentDir: "ch09/67-service-vs-desktop",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788802181/ltv-powerbi/ch09-67-service-vs-desktop.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788829474/ltv-powerbi/ch09-67-service-vs-desktop.mp4",
+        durationLabel: "2 min 2 s",
       }),
       L(68, "licenses-fabric", "Understanding Power BI Licenses & Fabric", {
         contentDir: "ch09/68-licenses-fabric",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788802183/ltv-powerbi/ch09-68-licenses-fabric.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788829476/ltv-powerbi/ch09-68-licenses-fabric.mp4",
+        durationLabel: "2 min 7 s",
       }),
       L(69, "workspaces", "Workspaces", {
         contentDir: "ch09/69-workspaces",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788802189/ltv-powerbi/ch09-69-workspaces.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788829479/ltv-powerbi/ch09-69-workspaces.mp4",
+        durationLabel: "2 min 13 s",
       }),
       L(70, "publishing", "Publishing Reports", {
         contentDir: "ch09/70-publishing",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788802191/ltv-powerbi/ch09-70-publishing.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788829483/ltv-powerbi/ch09-70-publishing.mp4",
+        durationLabel: "2 min",
       }),
       L(71, "semantic-models", "Semantic Models", {
         contentDir: "ch09/71-semantic-models",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788802193/ltv-powerbi/ch09-71-semantic-models.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788829486/ltv-powerbi/ch09-71-semantic-models.mp4",
+        durationLabel: "2 min 3 s",
       }),
       L(72, "sharing-access", "Sharing Reports & Managing Access", {
         contentDir: "ch09/72-sharing-access",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788802201/ltv-powerbi/ch09-72-sharing-access.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788829489/ltv-powerbi/ch09-72-sharing-access.mp4",
+        durationLabel: "1 min 58 s",
       }),
       L(73, "apps", "Power BI Apps", {
         contentDir: "ch09/73-apps",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788802204/ltv-powerbi/ch09-73-apps.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788829491/ltv-powerbi/ch09-73-apps.mp4",
+        durationLabel: "2 min 12 s",
       }),
       L(74, "service-dashboards", "Dashboards in Power BI Service", {
         contentDir: "ch09/74-service-dashboards",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788802208/ltv-powerbi/ch09-74-service-dashboards.mp4",
-        durationLabel: "1 min",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788829494/ltv-powerbi/ch09-74-service-dashboards.mp4",
+        durationLabel: "2 min 8 s",
       }),
     ],
   },
