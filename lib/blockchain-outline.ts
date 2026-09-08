@@ -142,4 +142,34 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
       }),
     ],
   },
+  {
+    n: 5,
+    title: "Solidity Programming",
+    lessons: [
+      L(18, "what-is-solidity", "What Is Solidity? High-Level vs. Low-Level Languages", {
+        contentDir: "ch05/01-what-is-solidity",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788900393/ltv-blockchain/ch05-01-what-is-solidity.mp4",
+        durationLabel: "7 min 12 s",
+      }),
+      L(19, "why-solidity-evm-compilation", "Why Solidity? Alternatives, the EVM & Compilation", {
+        contentDir: "ch05/02-why-solidity-evm-compilation",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788900405/ltv-blockchain/ch05-02-why-solidity-evm-compilation.mp4",
+        durationLabel: "19 min 55 s",
+      }),
+      L(20, "solidity-dev-tools-remix", "Solidity Dev Tools: Remix, Foundry & Hardhat", {
+        contentDir: "ch05/03-solidity-dev-tools-remix",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788900412/ltv-blockchain/ch05-03-solidity-dev-tools-remix.mp4",
+        durationLabel: "10 min 46 s",
+      }),
+      L(21, "immutability-gas-abi", "Contract Immutability, Gas & the ABI", {
+        contentDir: "ch05/04-immutability-gas-abi",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788900418/ltv-blockchain/ch05-04-immutability-gas-abi.mp4",
+        durationLabel: "12 min 37 s",
+      }),
+    ],
+  },
 ];
