@@ -290,6 +290,12 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788903894/ltv-blockchain/ch07-01-imports-libraries-openzeppelin.mp4",
         durationLabel: "33 min 11 s",
       }),
+      L(40, "terminal-git-npm", "Command Line Basics: npm, git & the Terminal", {
+        contentDir: "ch07/02-terminal-git-npm",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788904265/ltv-blockchain/ch07-02-terminal-git-npm.mp4",
+        durationLabel: "5 min 34 s",
+      }),
     ],
   },
 ];
