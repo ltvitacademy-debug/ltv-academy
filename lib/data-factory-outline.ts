@@ -280,10 +280,30 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
     n: 8,
     title: "Monitoring & Error Handling",
     lessons: [
-      L(38, "the-monitor-hub", "The Monitor Hub"),
-      L(39, "alerts-metrics-retry-policies", "Alerts, Metrics & Retry Policies"),
-      L(40, "error-handling-patterns", "Error Handling Patterns"),
-      L(41, "logging-to-log-analytics", "Logging to Log Analytics"),
+      L(38, "the-monitor-hub", "The Monitor Hub", {
+        contentDir: "ch08/38-the-monitor-hub",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788865359/ltv-data-factory/ch08-38-the-monitor-hub.mp4",
+        durationLabel: "3 min 5 s",
+      }),
+      L(39, "alerts-metrics-retry-policies", "Alerts, Metrics & Retry Policies", {
+        contentDir: "ch08/39-alerts-metrics-retry-policies",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788865362/ltv-data-factory/ch08-39-alerts-metrics-retry-policies.mp4",
+        durationLabel: "2 min 21 s",
+      }),
+      L(40, "error-handling-patterns", "Error Handling Patterns", {
+        contentDir: "ch08/40-error-handling-patterns",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788865368/ltv-data-factory/ch08-40-error-handling-patterns.mp4",
+        durationLabel: "2 min 51 s",
+      }),
+      L(41, "logging-to-log-analytics", "Logging to Log Analytics", {
+        contentDir: "ch08/41-logging-to-log-analytics",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788865370/ltv-data-factory/ch08-41-logging-to-log-analytics.mp4",
+        durationLabel: "2 min 32 s",
+      }),
     ],
   },
   {
