@@ -218,6 +218,12 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788901736/ltv-blockchain/ch05-12-reading-writing-state-view.mp4",
         durationLabel: "6 min 7 s",
       }),
+      L(30, "control-flow-if-else", "Control Flow: if/else Statements & the Ternary Operator", {
+        contentDir: "ch05/13-control-flow-if-else",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788902048/ltv-blockchain/ch05-13-control-flow-if-else.mp4",
+        durationLabel: "7 min 13 s",
+      }),
     ],
   },
 ];
