@@ -112,4 +112,22 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
       }),
     ],
   },
+  {
+    n: 4,
+    title: "Ethereum & Smart Contracts",
+    lessons: [
+      L(14, "what-is-ethereum-smart-contracts", "What Is Ethereum? Smart Contracts & the EVM", {
+        contentDir: "ch04/01-what-is-ethereum-smart-contracts",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788899530/ltv-blockchain/ch04-01-what-is-ethereum-smart-contracts.mp4",
+        durationLabel: "14 min 47 s",
+      }),
+      L(15, "gas-fees-on-ethereum", "Gas Fees on Ethereum", {
+        contentDir: "ch04/02-gas-fees-on-ethereum",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788899538/ltv-blockchain/ch04-02-gas-fees-on-ethereum.mp4",
+        durationLabel: "11 min 57 s",
+      }),
+    ],
+  },
 ];
