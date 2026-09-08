@@ -52,4 +52,28 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
       }),
     ],
   },
+  {
+    n: 2,
+    title: "Cryptography Basics",
+    lessons: [
+      L(6, "what-is-cryptography", "What Is Cryptography?", {
+        contentDir: "ch02/01-what-is-cryptography",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788897478/ltv-blockchain/ch02-01-what-is-cryptography.mp4",
+        durationLabel: "2 min 54 s",
+      }),
+      L(7, "symmetric-vs-asymmetric-encryption", "Symmetric vs. Asymmetric Encryption", {
+        contentDir: "ch02/02-symmetric-vs-asymmetric-encryption",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788897480/ltv-blockchain/ch02-02-symmetric-vs-asymmetric-encryption.mp4",
+        durationLabel: "1 min 32 s",
+      }),
+      L(8, "digital-signatures-public-key-crypto", "Digital Signatures & Public Key Cryptography", {
+        contentDir: "ch02/03-digital-signatures-public-key-crypto",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788897483/ltv-blockchain/ch02-03-digital-signatures-public-key-crypto.mp4",
+        durationLabel: "4 min 23 s",
+      }),
+    ],
+  },
 ];
