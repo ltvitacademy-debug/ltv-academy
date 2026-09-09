@@ -342,7 +342,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788931869/ltv-t-sql/ch05-49-date-functions.mp4",
         durationLabel: "2 min 1 s",
       }),
-      L(50, "cast-convert", "Converting and Formatting Data (CAST/CONVERT)"),
+      L(50, "cast-convert", "Converting and Formatting Data (CAST/CONVERT)", {
+        contentDir: "ch05/50-cast-convert",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788932007/ltv-t-sql/ch05-50-cast-convert.mp4",
+        durationLabel: "1 min 59 s",
+      }),
       L(51, "deleting-duplicate-rows", "Deleting Duplicate Rows"),
     ],
   },
