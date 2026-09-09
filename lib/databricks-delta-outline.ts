@@ -80,7 +80,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "Delta Lake",
     lessons: [
-      L(13, "what-is-delta-lake", "What Is Delta Lake?"),
+      L(13, "what-is-delta-lake", "What Is Delta Lake?", {
+        contentDir: "ch02/13-what-is-delta-lake",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(14, "delta-tables-vs-parquet-tables", "Delta Tables vs. Parquet Tables"),
       L(15, "creating-a-delta-table", "Creating a Delta Table"),
       L(16, "reading-and-writing-delta-tables", "Reading and Writing Delta Tables"),
