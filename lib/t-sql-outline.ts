@@ -774,7 +774,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788952108/ltv-t-sql/ch12-114-star-schema.mp4",
         durationLabel: "1 min 42 s",
       }),
-      L(115, "snowflake-schema", "Snowflake Schema"),
+      L(115, "snowflake-schema", "Snowflake Schema", {
+        contentDir: "ch12/115-snowflake-schema",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788952280/ltv-t-sql/ch12-115-snowflake-schema.mp4",
+        durationLabel: "1 min 47 s",
+      }),
       L(116, "slowly-changing-dimensions", "Slowly Changing Dimensions (SCD)"),
       L(117, "surrogate-vs-natural-keys", "Surrogate Keys vs. Natural Keys"),
       L(118, "t-sql-in-the-bi-pipeline", "Where T-SQL Fits in the BI/Warehousing Pipeline"),
