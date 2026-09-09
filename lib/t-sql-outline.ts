@@ -54,7 +54,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788925323/ltv-t-sql/ch01-05-column-aliases.mp4",
         durationLabel: "2 min 9 s",
       }),
-      L(6, "string-concatenation", "String Concatenation with +"),
+      L(6, "string-concatenation", "String Concatenation with +", {
+        contentDir: "ch01/06-string-concatenation",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788925468/ltv-t-sql/ch01-06-string-concatenation.mp4",
+        durationLabel: "2 min 9 s",
+      }),
       L(7, "case-simple", "CASE Expressions (Simple)"),
       L(8, "case-searched", "CASE Expressions (Searched)"),
       L(9, "distinct", "DISTINCT"),
