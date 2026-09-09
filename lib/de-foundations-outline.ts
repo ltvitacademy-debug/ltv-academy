@@ -182,7 +182,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/30-spark-architecture",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(31, "driver-and-executors", "Driver and Executors"),
+      L(31, "driver-and-executors", "Driver and Executors", {
+        contentDir: "ch03/31-driver-and-executors",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(32, "clusters-and-nodes", "Clusters and Nodes"),
       L(33, "spark-partitions", "Spark Partitions"),
       L(34, "lazy-evaluation", "Lazy Evaluation"),
