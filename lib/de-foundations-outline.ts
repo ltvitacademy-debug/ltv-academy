@@ -152,7 +152,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/24-processing-json",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(25, "connecting-python-to-sql", "Connecting Python to SQL"),
+      L(25, "connecting-python-to-sql", "Connecting Python to SQL", {
+        contentDir: "ch02/25-connecting-python-to-sql",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(26, "cleaning-data-with-python", "Cleaning Data With Python"),
       L(27, "building-a-simple-python-etl-process", "Building a Simple Python ETL Process"),
     ],
