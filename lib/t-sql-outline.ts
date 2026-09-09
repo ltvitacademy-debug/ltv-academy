@@ -648,7 +648,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 11,
     title: "Database Design Fundamentals",
     lessons: [
-      L(95, "primary-keys", "Primary Keys"),
+      L(95, "primary-keys", "Primary Keys", {
+        contentDir: "ch11/95-primary-keys",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788940117/ltv-t-sql/ch11-95-primary-keys.mp4",
+        durationLabel: "2 min 14 s",
+      }),
       L(96, "foreign-keys", "Foreign Keys"),
       L(97, "unique-constraints", "UNIQUE Constraints"),
       L(98, "not-null-check", "NOT NULL and CHECK Constraints"),
