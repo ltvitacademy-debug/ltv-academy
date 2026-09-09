@@ -254,7 +254,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch05/51-defining-a-pipeline-with-dlt-table",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(52, "expectations-declarative-data-quality", "Expectations — Declarative Data Quality"),
+      L(52, "expectations-declarative-data-quality", "Expectations — Declarative Data Quality", {
+        contentDir: "ch05/52-expectations-declarative-data-quality",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(53, "pipeline-modes-triggered-vs-continuous", "Pipeline Modes: Triggered vs. Continuous"),
       L(54, "lakeflow-jobs-orchestration", "Lakeflow Jobs — Orchestration"),
       L(55, "monitoring-pipeline-runs", "Monitoring Pipeline Runs"),
