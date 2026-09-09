@@ -54,7 +54,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/07-attaching-a-notebook-to-a-cluster",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(8, "dbfs-databricks-file-system", "DBFS — Databricks File System"),
+      L(8, "dbfs-databricks-file-system", "DBFS — Databricks File System", {
+        contentDir: "ch01/08-dbfs-databricks-file-system",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(9, "widgets-and-parameters", "Widgets and Parameters"),
       L(10, "databricks-runtime-and-versions", "Databricks Runtime and Versions"),
       L(11, "jobs-scheduling-notebook-runs", "Jobs — Scheduling Notebook Runs"),
