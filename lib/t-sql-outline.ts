@@ -498,7 +498,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788935785/ltv-t-sql/ch08-72-transactions.mp4",
         durationLabel: "2 min 0 s",
       }),
-      L(73, "acid-properties", "ACID Properties"),
+      L(73, "acid-properties", "ACID Properties", {
+        contentDir: "ch08/73-acid-properties",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788935925/ltv-t-sql/ch08-73-acid-properties.mp4",
+        durationLabel: "1 min 34 s",
+      }),
       L(74, "lock-types", "Lock Types"),
       L(75, "concurrency-blocking", "Concurrency and Blocking"),
       L(76, "try-catch", "TRY/CATCH Error Handling"),
