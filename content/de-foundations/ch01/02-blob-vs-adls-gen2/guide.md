@@ -76,8 +76,12 @@ finishing — no need to actually create one for this lab):
 1. Open **Create a storage account** → the **Advanced** tab.
 2. Find the **Hierarchical Namespace** section and read Microsoft's own
    description of what checking it enables.
-3. Note: this checkbox **cannot be changed after creation** — you decide
-   Blob storage vs. ADLS Gen2 at creation time, not later.
+3. Note: this checkbox is by far the easiest way to get ADLS Gen2 — set
+   it once, at creation time, and never think about it again. Lesson 4
+   covers the harder path: Microsoft does offer an official *upgrade*
+   for an existing Blob-only account, but it's one-way, requires
+   disabling several features first, and isn't guaranteed to pass
+   validation.
 
 ## Check yourself
 

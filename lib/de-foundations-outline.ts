@@ -44,7 +44,12 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788958468/ltv-de-foundations/ch01-03-containers-and-directories.mp4",
         durationLabel: "1 min 31 s",
       }),
-      L(4, "hierarchical-namespace", "Hierarchical Namespace"),
+      L(4, "hierarchical-namespace", "Hierarchical Namespace", {
+        contentDir: "ch01/04-hierarchical-namespace",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788958683/ltv-de-foundations/ch01-04-hierarchical-namespace.mp4",
+        durationLabel: "1 min 43 s",
+      }),
       L(5, "rbac-vs-acls", "RBAC vs. ACLs"),
       L(6, "managed-identities-for-storage", "Managed Identities for Storage"),
       L(7, "sas-tokens", "SAS Tokens"),
