@@ -116,7 +116,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/15-lists-and-dictionaries",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(16, "conditions", "Conditions"),
+      L(16, "conditions", "Conditions", {
+        contentDir: "ch02/16-conditions",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(17, "loops", "Loops"),
       L(18, "functions", "Functions"),
       L(19, "exception-handling", "Exception Handling"),
