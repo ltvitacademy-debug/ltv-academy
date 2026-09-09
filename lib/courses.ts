@@ -6,6 +6,7 @@ import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-o
 import { PYTHON_CHAPTERS } from "./python-outline";
 import { DATA_FACTORY_CHAPTERS } from "./data-factory-outline";
 import { BLOCKCHAIN_CHAPTERS } from "./blockchain-outline";
+import { TSQL_CHAPTERS } from "./t-sql-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -75,6 +76,15 @@ export const COURSES: CourseMeta[] = [
       "Ethereum, Solidity, and decentralized applications — plus the uses for blockchain beyond cryptocurrency.",
     status: "available",
     chapters: BLOCKCHAIN_CHAPTERS,
+  },
+  {
+    slug: "t-sql-development",
+    title: "T-SQL Development",
+    tagline:
+      "From your first SELECT to performance tuning and data warehousing — 118 lessons in real SQL Server Management Studio, working against AdventureWorks2012 and AdventureWorksDW2014.",
+    status: "available",
+    chapters: TSQL_CHAPTERS,
+    contentBase: "t-sql",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,
