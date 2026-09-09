@@ -684,7 +684,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788940851/ltv-t-sql/ch11-100-one-to-many.mp4",
         durationLabel: "1 min 33 s",
       }),
-      L(101, "many-to-many", "Table Relationships: Many-to-Many"),
+      L(101, "many-to-many", "Table Relationships: Many-to-Many", {
+        contentDir: "ch11/101-many-to-many",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788940997/ltv-t-sql/ch11-101-many-to-many.mp4",
+        durationLabel: "1 min 48 s",
+      }),
       L(102, "first-normal-form", "Normalization: 1NF"),
       L(103, "second-third-normal-form", "Normalization: 2NF and 3NF"),
       L(104, "system-databases", "System Databases (master, msdb, tempdb, model)"),
