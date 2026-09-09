@@ -288,7 +288,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Data Types, Strings, and Dates",
     lessons: [
-      L(41, "char-vs-varchar", "CHAR vs. VARCHAR"),
+      L(41, "char-vs-varchar", "CHAR vs. VARCHAR", {
+        contentDir: "ch05/41-char-vs-varchar",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788930682/ltv-t-sql/ch05-41-char-vs-varchar.mp4",
+        durationLabel: "2 min 9 s",
+      }),
       L(42, "nvarchar-unicode", "NVARCHAR and Unicode"),
       L(43, "varchar-max", "VARCHAR(MAX)"),
       L(44, "len-upper-lower", "LEN, UPPER, LOWER"),
