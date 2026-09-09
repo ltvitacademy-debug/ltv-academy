@@ -296,7 +296,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/57-window-functions",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(58, "temporary-views", "Temporary Views"),
+      L(58, "temporary-views", "Temporary Views", {
+        contentDir: "ch04/58-temporary-views",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(59, "spark-sql-with-dataframes", "Spark SQL With DataFrames"),
       L(60, "writing-data", "Writing Data"),
       L(61, "partitioning-output", "Partitioning Output"),
