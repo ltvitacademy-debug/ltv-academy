@@ -198,7 +198,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/34-lazy-evaluation",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(35, "transformations-vs-actions", "Transformations vs. Actions"),
+      L(35, "transformations-vs-actions", "Transformations vs. Actions", {
+        contentDir: "ch03/35-transformations-vs-actions",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(36, "sparksession", "SparkSession"),
       L(37, "spark-dataframes", "Spark DataFrames"),
       L(38, "spark-sql", "Spark SQL"),
