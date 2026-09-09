@@ -672,7 +672,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788940571/ltv-t-sql/ch11-98-not-null-check.mp4",
         durationLabel: "1 min 55 s",
       }),
-      L(99, "one-to-one", "Table Relationships: One-to-One"),
+      L(99, "one-to-one", "Table Relationships: One-to-One", {
+        contentDir: "ch11/99-one-to-one",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788940716/ltv-t-sql/ch11-99-one-to-one.mp4",
+        durationLabel: "2 min 1 s",
+      }),
       L(100, "one-to-many", "Table Relationships: One-to-Many"),
       L(101, "many-to-many", "Table Relationships: Many-to-Many"),
       L(102, "first-normal-form", "Normalization: 1NF"),
