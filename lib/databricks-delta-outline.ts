@@ -220,7 +220,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/44-data-lineage-in-unity-catalog",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(45, "unity-catalog-volumes", "Unity Catalog Volumes"),
+      L(45, "unity-catalog-volumes", "Unity Catalog Volumes", {
+        contentDir: "ch04/45-unity-catalog-volumes",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(46, "delta-sharing-basics", "Delta Sharing Basics"),
       L(47, "unity-catalog-best-practices", "Unity Catalog Best Practices"),
     ],
