@@ -308,7 +308,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/60-writing-data",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(61, "partitioning-output", "Partitioning Output"),
+      L(61, "partitioning-output", "Partitioning Output", {
+        contentDir: "ch04/61-partitioning-output",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(62, "spark-performance-fundamentals", "Spark Performance Fundamentals"),
     ],
   },
