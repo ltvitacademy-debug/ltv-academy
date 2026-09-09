@@ -60,7 +60,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788925468/ltv-t-sql/ch01-06-string-concatenation.mp4",
         durationLabel: "2 min 9 s",
       }),
-      L(7, "case-simple", "CASE Expressions (Simple)"),
+      L(7, "case-simple", "CASE Expressions (Simple)", {
+        contentDir: "ch01/07-case-simple",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788925625/ltv-t-sql/ch01-07-case-simple.mp4",
+        durationLabel: "1 min 58 s",
+      }),
       L(8, "case-searched", "CASE Expressions (Searched)"),
       L(9, "distinct", "DISTINCT"),
       L(10, "comments-formatting", "Comments & Query Formatting"),
