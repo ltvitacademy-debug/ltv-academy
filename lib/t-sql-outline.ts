@@ -144,7 +144,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788927480/ltv-t-sql/ch02-19-top-with-ties.mp4",
         durationLabel: "2 min 10 s",
       }),
-      L(20, "predicates", "Predicates: How SQL Server Filters Data"),
+      L(20, "predicates", "Predicates: How SQL Server Filters Data", {
+        contentDir: "ch02/20-predicates",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788927628/ltv-t-sql/ch02-20-predicates.mp4",
+        durationLabel: "2 min 13 s",
+      }),
     ],
   },
   {
