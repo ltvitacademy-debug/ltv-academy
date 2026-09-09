@@ -492,7 +492,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 8,
     title: "Transactions and Error Handling",
     lessons: [
-      L(72, "transactions", "Transactions: BEGIN/COMMIT/ROLLBACK"),
+      L(72, "transactions", "Transactions: BEGIN/COMMIT/ROLLBACK", {
+        contentDir: "ch08/72-transactions",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788935785/ltv-t-sql/ch08-72-transactions.mp4",
+        durationLabel: "2 min 0 s",
+      }),
       L(73, "acid-properties", "ACID Properties"),
       L(74, "lock-types", "Lock Types"),
       L(75, "concurrency-blocking", "Concurrency and Blocking"),

@@ -1,0 +1,39 @@
+# Lesson 72 — Transactions: BEGIN/COMMIT/ROLLBACK · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Welcome to Chapter 8. Imagine moving stock from one warehouse location
+to another: subtract from location A, add to location B — two
+completely separate statements. If the first succeeds and the second
+fails, for any reason at all, that stock simply vanishes — subtracted
+from A, never actually added to B. This is exactly the problem a
+transaction exists to prevent.
+
+## S2 · CODE CARD (BEGIN TRANSACTION / COMMIT)
+
+Begin transaction marks the start of a group of statements that has to
+succeed together, as a unit. Subtract 10 from location 1, add 10 to
+location 2. Commit transaction then makes both of those changes
+permanent, all at once. Until commit actually runs, these changes are
+provisional — you can see them within your own session, but they aren't
+permanently saved yet.
+
+## S3 · CODE CARD (ROLLBACK example)
+
+And if something goes wrong partway through, ROLLBACK is your safety
+net. Begin transaction, run the first update, and then — say something
+fails, or you simply change your mind — rollback transaction undoes
+every single change made since that begin transaction, completely, as
+if none of it ever happened.
+
+## S4 · OUTRO CARD
+
+A transaction guarantees a group of related changes happens as one
+unit — all of it takes effect, or none of it does. That's essential
+anywhere a partial completion would leave your data in a genuinely
+broken state. Next lesson: ACID, the formal properties transactions are
+actually built to guarantee. See you there.
