@@ -236,7 +236,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/42-reading-parquet",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(43, "defining-schemas", "Defining Schemas"),
+      L(43, "defining-schemas", "Defining Schemas", {
+        contentDir: "ch04/43-defining-schemas",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(44, "select", "select()"),
       L(45, "filter-and-where", "filter() and where()"),
       L(46, "withcolumn", "withColumn()"),
