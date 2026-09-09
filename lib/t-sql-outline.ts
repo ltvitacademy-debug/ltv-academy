@@ -612,7 +612,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788938659/ltv-t-sql/ch10-89-filtered-included-indexes.mp4",
         durationLabel: "2 min 8 s",
       }),
-      L(90, "execution-plans", "Reading Execution Plans: Scans vs. Seeks"),
+      L(90, "execution-plans", "Reading Execution Plans: Scans vs. Seeks", {
+        contentDir: "ch10/90-execution-plans",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788939159/ltv-t-sql/ch10-90-execution-plans.mp4",
+        durationLabel: "2 min 15 s",
+      }),
       L(91, "set-statistics-time-io", "SET STATISTICS TIME and IO in Practice"),
       L(92, "set-statistics-profile-xml", "SET STATISTICS PROFILE and XML"),
       L(93, "temp-tables-vs-variables-vs-ctes", "Temp Tables vs. Table Variables vs. CTEs: Performance Tradeoffs"),
