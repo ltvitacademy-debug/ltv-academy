@@ -210,7 +210,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788928921/ltv-t-sql/ch03-29-cross-apply.mp4",
         durationLabel: "1 min 54 s",
       }),
-      L(30, "outer-apply", "OUTER APPLY"),
+      L(30, "outer-apply", "OUTER APPLY", {
+        contentDir: "ch03/30-outer-apply",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788929054/ltv-t-sql/ch03-30-outer-apply.mp4",
+        durationLabel: "1 min 47 s",
+      }),
       L(31, "choosing-the-right-join", "Choosing the Right Join"),
     ],
   },
