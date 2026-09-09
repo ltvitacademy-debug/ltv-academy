@@ -134,7 +134,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Medallion Architecture",
     lessons: [
-      L(25, "what-is-medallion-architecture", "What Is Medallion Architecture?"),
+      L(25, "what-is-medallion-architecture", "What Is Medallion Architecture?", {
+        contentDir: "ch03/25-what-is-medallion-architecture",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(26, "the-bronze-layer", "The Bronze Layer — Raw Ingestion"),
       L(27, "the-silver-layer", "The Silver Layer — Cleaned and Conformed Data"),
       L(28, "the-gold-layer", "The Gold Layer — Business-Level Aggregates"),
