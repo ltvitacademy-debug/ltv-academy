@@ -786,7 +786,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955424/ltv-t-sql/ch12-116-slowly-changing-dimensions.mp4",
         durationLabel: "1 min 54 s",
       }),
-      L(117, "surrogate-vs-natural-keys", "Surrogate Keys vs. Natural Keys"),
+      L(117, "surrogate-vs-natural-keys", "Surrogate Keys vs. Natural Keys", {
+        contentDir: "ch12/117-surrogate-vs-natural-keys",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955729/ltv-t-sql/ch12-117-surrogate-vs-natural-keys.mp4",
+        durationLabel: "1 min 54 s",
+      }),
       L(118, "t-sql-in-the-bi-pipeline", "Where T-SQL Fits in the BI/Warehousing Pipeline"),
     ],
   },
