@@ -200,7 +200,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/39-the-three-level-namespace",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(40, "creating-a-catalog-and-schema", "Creating a Catalog and Schema"),
+      L(40, "creating-a-catalog-and-schema", "Creating a Catalog and Schema", {
+        contentDir: "ch04/40-creating-a-catalog-and-schema",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(41, "managed-vs-external-tables", "Managed Tables vs. External Tables"),
       L(42, "access-control-grant-and-revoke", "Access Control — GRANT and REVOKE"),
       L(43, "row-and-column-level-security", "Row-Level and Column-Level Security"),
