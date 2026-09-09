@@ -228,7 +228,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 4,
     title: "Grouping and Aggregating",
     lessons: [
-      L(32, "count", "COUNT"),
+      L(32, "count", "COUNT", {
+        contentDir: "ch04/32-count",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788929356/ltv-t-sql/ch04-32-count.mp4",
+        durationLabel: "2 min 3 s",
+      }),
       L(33, "sum-avg", "SUM and AVG"),
       L(34, "min-max", "MIN and MAX"),
       L(35, "group-by-basics", "GROUP BY Basics"),
