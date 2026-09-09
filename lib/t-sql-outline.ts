@@ -276,7 +276,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788930378/ltv-t-sql/ch04-39-var-statistical-aggregates.mp4",
         durationLabel: "2 min 11 s",
       }),
-      L(40, "summary-reports", "Building Summary Reports"),
+      L(40, "summary-reports", "Building Summary Reports", {
+        contentDir: "ch04/40-summary-reports",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788930521/ltv-t-sql/ch04-40-summary-reports.mp4",
+        durationLabel: "2 min 7 s",
+      }),
     ],
   },
   {
