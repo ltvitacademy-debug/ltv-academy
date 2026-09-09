@@ -1,0 +1,36 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Azure Databricks & Delta Lake · Chapter Three",
+    "titlePlain": "The Gold ",
+    "titleEmphasis": "Layer",
+    "titleSuffix": "",
+    "subtitle": "Lesson 28 · Medallion Architecture"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Gold is aggregation, applied to clean data",
+    "code": "silver_trips = spark.table(\"silver.trips\")\n\ngold_daily_revenue = silver_trips.groupBy(\n  \"VendorID\", to_date(\"tpep_pickup_datetime\").alias(\"trip_date\")\n).agg(\n  count(\"*\").alias(\"trip_count\"),\n  sum(\"fare_amount\").alias(\"total_revenue\"),\n)\n\ngold_daily_revenue.write.format(\"delta\").mode(\"overwrite\").saveAsTable(\"gold.daily_revenue\")",
+    "caption": "Exactly Foundations Lessons 53-54's groupBy()/agg() -- aimed at silver instead of raw data."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Why gold tables are small — on purpose",
+    "code": "# Silver: millions of rows.\n# Gold: a few thousand -- one row per vendor per day.\n#\n# The aggregation already happened ONCE, when gold was\n# built. A dashboard query never recomputes it.",
+    "caption": "This size difference is the entire point of building gold at all."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Multiple gold tables, same silver source",
+    "code": "gold_zone_distance = silver_trips.join(\n  zones, silver_trips.PULocationID == zones.LocationID, \"left\"\n).groupBy(\"Zone\").agg(avg(\"trip_distance\").alias(\"avg_distance\"))\n\ngold_zone_distance.write.format(\"delta\").mode(\"overwrite\").saveAsTable(\"gold.zone_distance\")",
+    "caption": "Completely normal -- gold is however many tables the business actually needs."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 29",
+    "titlePlain": "Designing a Bronze-to-Silver ",
+    "titleEmphasis": "Pipeline",
+    "titleSuffix": "",
+    "subtitle": "Turning this into a real, repeatable process."
+  }
+]
