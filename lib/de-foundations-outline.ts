@@ -26,7 +26,12 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Azure Data Lake & Storage",
     lessons: [
-      L(1, "azure-storage-accounts", "Azure Storage Accounts"),
+      L(1, "azure-storage-accounts", "Azure Storage Accounts", {
+        contentDir: "ch01/01-azure-storage-accounts",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788957977/ltv-de-foundations/ch01-01-azure-storage-accounts.mp4",
+        durationLabel: "1 min 56 s",
+      }),
       L(2, "blob-vs-adls-gen2", "Blob Storage vs. ADLS Gen2"),
       L(3, "containers-and-directories", "Containers and Directories"),
       L(4, "hierarchical-namespace", "Hierarchical Namespace"),
