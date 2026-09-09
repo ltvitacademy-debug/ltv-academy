@@ -38,7 +38,12 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788958216/ltv-de-foundations/ch01-02-blob-vs-adls-gen2.mp4",
         durationLabel: "1 min 59 s",
       }),
-      L(3, "containers-and-directories", "Containers and Directories"),
+      L(3, "containers-and-directories", "Containers and Directories", {
+        contentDir: "ch01/03-containers-and-directories",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788958468/ltv-de-foundations/ch01-03-containers-and-directories.mp4",
+        durationLabel: "1 min 31 s",
+      }),
       L(4, "hierarchical-namespace", "Hierarchical Namespace"),
       L(5, "rbac-vs-acls", "RBAC vs. ACLs"),
       L(6, "managed-identities-for-storage", "Managed Identities for Storage"),
