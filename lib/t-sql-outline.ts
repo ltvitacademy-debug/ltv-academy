@@ -726,7 +726,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 12,
     title: "Data Warehouse Concepts",
     lessons: [
-      L(107, "oltp-vs-olap", "OLTP vs. OLAP: Two Different Worlds"),
+      L(107, "oltp-vs-olap", "OLTP vs. OLAP: Two Different Worlds", {
+        contentDir: "ch12/107-oltp-vs-olap",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788941929/ltv-t-sql/ch12-107-oltp-vs-olap.mp4",
+        durationLabel: "2 min 9 s",
+      }),
       L(108, "what-is-a-data-warehouse", "What Is a Data Warehouse?"),
       L(109, "what-is-a-data-mart", "What Is a Data Mart?"),
       L(110, "what-is-a-data-lake", "What Is a Data Lake?"),

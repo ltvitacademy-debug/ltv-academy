@@ -1,0 +1,43 @@
+# Lesson 107 — OLTP vs. OLAP: Two Different Worlds · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Welcome to the final chapter. Everything so far has been about ONE
+database doing ONE job well. Now we zoom out to two fundamentally
+different jobs a database can do: OLTP and OLAP.
+
+## S2 · STEPS CARD (two jobs)
+
+OLTP — online transaction processing — is the world you've lived in for
+eleven chapters. Fast, individual reads and writes: placing one order,
+updating one address. That's exactly why normalization mattered so much —
+it keeps constantly-changing data from drifting out of sync. OLAP —
+online analytical processing — has a completely different job: big,
+aggregate questions across millions of historical rows. Read-heavy,
+rarely updated, and usually denormalized ON PURPOSE, because fewer joins
+means faster aggregates over huge volumes.
+
+## S3 · CODE CARD (OLTP query)
+
+Here's the OLTP version of a question: total sales by year, computed live
+by joining two normalized order tables. It works — but every single time
+you ask it, SQL Server redoes that join across potentially millions of
+rows.
+
+## S4 · CODE CARD (OLAP query)
+
+Here's the exact same question, asked against AdventureWorks D-W twenty
+fourteen — the SAME company's data, restructured. Fewer joins, a table
+shaped specifically for this kind of question. Same answer, dramatically
+less work.
+
+## S5 · OUTRO CARD
+
+From here through the end of the course, every lab runs against this
+warehouse database instead — because we're studying how data gets
+reshaped for analysis, not how it gets recorded in the first place. Next
+lesson: what a data warehouse actually is. See you there.
