@@ -32,7 +32,12 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788957977/ltv-de-foundations/ch01-01-azure-storage-accounts.mp4",
         durationLabel: "1 min 56 s",
       }),
-      L(2, "blob-vs-adls-gen2", "Blob Storage vs. ADLS Gen2"),
+      L(2, "blob-vs-adls-gen2", "Blob Storage vs. ADLS Gen2", {
+        contentDir: "ch01/02-blob-vs-adls-gen2",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788958216/ltv-de-foundations/ch01-02-blob-vs-adls-gen2.mp4",
+        durationLabel: "1 min 59 s",
+      }),
       L(3, "containers-and-directories", "Containers and Directories"),
       L(4, "hierarchical-namespace", "Hierarchical Namespace"),
       L(5, "rbac-vs-acls", "RBAC vs. ACLs"),
