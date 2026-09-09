@@ -1,0 +1,44 @@
+# Lesson 69 — Stored Procedures: Parameters · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Last lesson's procedure always filtered on the exact same color,
+hard-coded. That's not very reusable. This lesson fixes that with
+parameters — values you pass in when you actually call the procedure.
+
+## S2 · CODE CARD (parameter example)
+
+A parameter gets declared right after the procedure name, before AS.
+At-sign Color, NVARCHAR 15. Look familiar? It should — this is
+functionally a variable, exactly like Lesson 62, just pre-populated from
+whatever the caller passes in. EXEC usp_GetProductsByColor, at-sign
+Color equals Red. Run it again with a different value, and the exact
+same saved logic runs against a completely different filter. That's the
+whole point of parameterizing instead of hard-coding.
+
+## S3 · CODE CARD (default value example)
+
+And a parameter can have a default value, which makes it optional. Set
+at-sign Color to Black right in the declaration, and calling the
+procedure with no arguments at all just uses Black automatically. Still
+want red instead? Override it explicitly, same as before.
+
+## S4 · CODE CARD (named notation)
+
+And when a procedure has more than one parameter, always name them at
+the call site — at-sign Color equals Red, at-sign MinPrice equals 500.
+That's called named notation, and this course uses it every time,
+because it's completely unambiguous and doesn't depend on getting the
+order right. Passing bare values positionally works too, technically, but
+it gets easy to mix up the moment a procedure has several parameters.
+
+## S5 · OUTRO CARD
+
+Parameters turn a fixed script into a genuinely reusable one, defaults
+make them optional, and named notation keeps every call unambiguous.
+Next lesson: dynamic SQL, building a query as text and running it on the
+fly. See you there.
