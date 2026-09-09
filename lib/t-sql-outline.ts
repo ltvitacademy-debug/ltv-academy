@@ -630,7 +630,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788939553/ltv-t-sql/ch10-92-set-statistics-profile-xml.mp4",
         durationLabel: "1 min 58 s",
       }),
-      L(93, "temp-tables-vs-variables-vs-ctes", "Temp Tables vs. Table Variables vs. CTEs: Performance Tradeoffs"),
+      L(93, "temp-tables-vs-variables-vs-ctes", "Temp Tables vs. Table Variables vs. CTEs: Performance Tradeoffs", {
+        contentDir: "ch10/93-temp-tables-vs-variables-vs-ctes",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788939737/ltv-t-sql/ch10-93-temp-tables-vs-variables-vs-ctes.mp4",
+        durationLabel: "2 min 25 s",
+      }),
       L(94, "performance-anti-patterns", "Common T-SQL Performance Anti-Patterns"),
     ],
   },
