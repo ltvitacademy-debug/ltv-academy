@@ -284,7 +284,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/54-aggregations",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(55, "pyspark-joins", "PySpark Joins"),
+      L(55, "pyspark-joins", "PySpark Joins", {
+        contentDir: "ch04/55-pyspark-joins",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(56, "union", "union()"),
       L(57, "window-functions", "Window Functions"),
       L(58, "temporary-views", "Temporary Views"),
