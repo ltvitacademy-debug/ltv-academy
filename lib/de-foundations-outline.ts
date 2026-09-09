@@ -244,7 +244,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/44-select",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(45, "filter-and-where", "filter() and where()"),
+      L(45, "filter-and-where", "filter() and where()", {
+        contentDir: "ch04/45-filter-and-where",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(46, "withcolumn", "withColumn()"),
       L(47, "when-and-conditional-logic", "when() and Conditional Logic"),
       L(48, "data-type-conversion", "Data Type Conversion"),
