@@ -1,13 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEmbedMode } from "@/components/useEmbedMode";
 
 export default function LearningCenterBar() {
-  const isEmbed = useEmbedMode();
-
-  if (isEmbed) return null;
-
+  // Always shown, even in embed mode (?embed=1) — this is the only way
+  // back to /app once a viewer is a few lessons deep inside the iframe.
   return (
     <div className="border-b border-ink/10 bg-parchment">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
