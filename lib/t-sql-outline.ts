@@ -372,7 +372,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788932495/ltv-t-sql/ch06-53-multi-value-subqueries.mp4",
         durationLabel: "2 min 32 s",
       }),
-      L(54, "correlated-subqueries", "Correlated Subqueries"),
+      L(54, "correlated-subqueries", "Correlated Subqueries", {
+        contentDir: "ch06/54-correlated-subqueries",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788932651/ltv-t-sql/ch06-54-correlated-subqueries.mp4",
+        durationLabel: "2 min 21 s",
+      }),
       L(55, "exists-not-exists", "EXISTS and NOT EXISTS"),
       L(56, "ctes", "Common Table Expressions (CTEs)"),
       L(57, "recursive-ctes", "Recursive CTEs"),

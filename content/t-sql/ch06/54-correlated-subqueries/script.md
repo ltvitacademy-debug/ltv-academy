@@ -1,0 +1,46 @@
+# Lesson 54 — Correlated Subqueries · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Every subquery you've written so far runs completely on its own — same
+result no matter what row the outer query happens to be on. This lesson
+introduces something different: a subquery that reaches OUT to the outer
+query's current row.
+
+## S2 · CODE CARD (correlated subquery example)
+
+Look closely at the inner query here: p1 dot ProductSubcategoryID shows
+up INSIDE it. That's the correlation. For every single row p1 in the
+outer query, the inner query recomputes the average price within THAT
+row's own subcategory, and compares against it. This finds products
+priced above average for their OWN category — not the overall average
+across every product, which is what the plain scalar subquery from
+Lesson 52 computed.
+
+## S3 · STEPS CARD (INDEPENDENT once / CORRELATED per row)
+
+Because that inner query genuinely depends on the outer row, it has to
+run all over again for every single row the outer query considers. An
+independent subquery runs once, period. A correlated one runs once per
+row — a real, meaningful difference.
+
+## S4 · CODE CARD (same table, two aliases)
+
+And notice both queries reference the exact same table, Production dot
+Product. That's exactly why the two aliases, p1 and p2, aren't optional
+here — without them, T-SQL has no way to tell "this row's subcategory"
+apart from "whatever subcategory is being scanned inside the subquery."
+Same idea as the self-join aliasing from Lesson 27, just applied to a
+subquery this time.
+
+## S5 · OUTRO CARD
+
+Correlated means it reaches into the outer row, and runs once per row
+because of it — which does carry a real performance cost on large tables,
+something we'll come back to properly in the Performance Tuning chapter.
+Next lesson: EXISTS and NOT EXISTS, for testing whether matching rows
+exist at all. See you there.
