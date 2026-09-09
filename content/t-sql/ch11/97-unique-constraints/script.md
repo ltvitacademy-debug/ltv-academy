@@ -1,0 +1,45 @@
+# Lesson 97 — UNIQUE Constraints · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+The primary key answers what row is this. But sometimes another column
+also needs to be one-of-a-kind, without becoming the table's identity.
+That's what a UNIQUE constraint is for.
+
+## S2 · CODE CARD (inline)
+
+A UNIQUE constraint guarantees every value in a column is distinct,
+exactly like a primary key — except a table can have many of them. Define
+one right inline when you create the table.
+
+## S3 · CODE CARD (AK_ convention)
+
+You can add one after the fact too, and AdventureWorks follows its own
+naming convention for this: A-K, for alternate key. The real Human
+Resources Employee table has A-K Employee National ID Number and A-K
+Employee Login ID — both unique, neither one the primary key.
+
+## S4 · CODE CARD (NULL exception)
+
+Here's the surprising exception. A primary key never allows NULL, ever. A
+UNIQUE constraint DOES allow NULL — but only ONE. That trips people up,
+because standard SQL theory says NULL is never equal to another NULL, so
+you'd expect unlimited NULLs to be fine. But SQL Server actually builds
+UNIQUE as a unique index, and that index treats a second NULL as a
+duplicate.
+
+## S5 · CODE CARD (comparison)
+
+So think of it this way. Primary key: what row is this. UNIQUE: what else
+about this row also has to be one-of-a-kind. Both enforced by the database
+itself, not by application code that might forget to check.
+
+## S6 · OUTRO CARD
+
+Next lesson: NOT NULL and CHECK constraints — guaranteeing more than just
+uniqueness, like requiring a value, or requiring it to fall within a valid
+range. See you there.
