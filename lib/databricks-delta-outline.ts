@@ -30,7 +30,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/01-what-is-azure-databricks",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(2, "creating-a-databricks-workspace", "Creating a Databricks Workspace"),
+      L(2, "creating-a-databricks-workspace", "Creating a Databricks Workspace", {
+        contentDir: "ch01/02-creating-a-databricks-workspace",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(3, "the-workspace-ui-tour", "The Workspace UI Tour"),
       L(4, "clusters-and-compute", "Clusters and Compute"),
       L(5, "all-purpose-vs-job-clusters", "All-Purpose vs. Job Clusters"),
