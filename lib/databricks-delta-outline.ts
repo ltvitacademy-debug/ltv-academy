@@ -228,7 +228,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/46-delta-sharing-basics",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(47, "unity-catalog-best-practices", "Unity Catalog Best Practices"),
+      L(47, "unity-catalog-best-practices", "Unity Catalog Best Practices", {
+        contentDir: "ch04/47-unity-catalog-best-practices",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
     ],
   },
   {
