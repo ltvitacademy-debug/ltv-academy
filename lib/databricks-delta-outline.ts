@@ -38,7 +38,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/03-the-workspace-ui-tour",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(4, "clusters-and-compute", "Clusters and Compute"),
+      L(4, "clusters-and-compute", "Clusters and Compute", {
+        contentDir: "ch01/04-clusters-and-compute",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(5, "all-purpose-vs-job-clusters", "All-Purpose vs. Job Clusters"),
       L(6, "notebooks-cells-and-languages", "Notebooks, Cells, and Languages"),
       L(7, "attaching-a-notebook-to-a-cluster", "Attaching a Notebook to a Cluster"),
