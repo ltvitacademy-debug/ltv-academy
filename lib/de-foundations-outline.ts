@@ -136,7 +136,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/20-working-with-files",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(21, "pandas-dataframes", "Pandas DataFrames"),
+      L(21, "pandas-dataframes", "Pandas DataFrames", {
+        contentDir: "ch02/21-pandas-dataframes",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(22, "reading-csv-and-json", "Reading CSV and JSON"),
       L(23, "rest-apis-with-python", "REST APIs with Python"),
       L(24, "processing-json", "Processing JSON"),
