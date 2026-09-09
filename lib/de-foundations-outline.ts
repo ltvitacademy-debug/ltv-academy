@@ -68,7 +68,12 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788959271/ltv-de-foundations/ch01-07-sas-tokens.mp4",
         durationLabel: "1 min 52 s",
       }),
-      L(8, "csv-vs-json-vs-parquet-vs-delta", "CSV vs. JSON vs. Parquet vs. Delta"),
+      L(8, "csv-vs-json-vs-parquet-vs-delta", "CSV vs. JSON vs. Parquet vs. Delta", {
+        contentDir: "ch01/08-csv-vs-json-vs-parquet-vs-delta",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788959447/ltv-de-foundations/ch01-08-csv-vs-json-vs-parquet-vs-delta.mp4",
+        durationLabel: "2 min 16 s",
+      }),
       L(9, "partitioning-data", "Partitioning Data"),
       L(10, "designing-a-data-lake", "Designing a Data Lake"),
       L(11, "raw-cleansed-curated-zones", "Raw, Cleansed, and Curated Zones"),
