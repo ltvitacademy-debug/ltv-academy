@@ -252,7 +252,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788929803/ltv-t-sql/ch04-35-group-by-basics.mp4",
         durationLabel: "2 min 13 s",
       }),
-      L(36, "group-by-multiple-columns", "GROUP BY Multiple Columns"),
+      L(36, "group-by-multiple-columns", "GROUP BY Multiple Columns", {
+        contentDir: "ch04/36-group-by-multiple-columns",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788929938/ltv-t-sql/ch04-36-group-by-multiple-columns.mp4",
+        durationLabel: "2 min 3 s",
+      }),
       L(37, "having-vs-where", "HAVING vs. WHERE"),
       L(38, "union-vs-union-all", "UNION vs. UNION ALL"),
       L(39, "var-statistical-aggregates", "VAR and Statistical Aggregates"),
