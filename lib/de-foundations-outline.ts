@@ -312,7 +312,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/61-partitioning-output",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(62, "spark-performance-fundamentals", "Spark Performance Fundamentals"),
+      L(62, "spark-performance-fundamentals", "Spark Performance Fundamentals", {
+        contentDir: "ch04/62-spark-performance-fundamentals",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
     ],
   },
 ];
