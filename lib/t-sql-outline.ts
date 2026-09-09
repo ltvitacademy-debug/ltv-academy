@@ -156,7 +156,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Joining Tables",
     lessons: [
-      L(21, "keys-review", "Table Relationships & Keys Review"),
+      L(21, "keys-review", "Table Relationships & Keys Review", {
+        contentDir: "ch03/21-keys-review",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788927778/ltv-t-sql/ch03-21-keys-review.mp4",
+        durationLabel: "2 min 3 s",
+      }),
       L(22, "inner-join", "INNER JOIN"),
       L(23, "left-join", "LEFT JOIN"),
       L(24, "right-join", "RIGHT JOIN"),
