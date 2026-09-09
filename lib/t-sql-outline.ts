@@ -48,7 +48,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788925181/ltv-t-sql/ch01-04-selecting-specific-columns.mp4",
         durationLabel: "2 min 20 s",
       }),
-      L(5, "column-aliases", "Column Aliases (AS)"),
+      L(5, "column-aliases", "Column Aliases (AS)", {
+        contentDir: "ch01/05-column-aliases",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788925323/ltv-t-sql/ch01-05-column-aliases.mp4",
+        durationLabel: "2 min 9 s",
+      }),
       L(6, "string-concatenation", "String Concatenation with +"),
       L(7, "case-simple", "CASE Expressions (Simple)"),
       L(8, "case-searched", "CASE Expressions (Searched)"),
