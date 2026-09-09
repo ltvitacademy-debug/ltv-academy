@@ -30,7 +30,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788923886/ltv-t-sql/ch01-01-what-is-t-sql.mp4",
         durationLabel: "3 min 54 s",
       }),
-      L(2, "connecting-and-use", "Connecting to a Database & the USE Statement"),
+      L(2, "connecting-and-use", "Connecting to a Database & the USE Statement", {
+        contentDir: "ch01/02-connecting-and-use",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788924817/ltv-t-sql/ch01-02-connecting-and-use.mp4",
+        durationLabel: "2 min 59 s",
+      }),
       L(3, "select-basics", "The SELECT Statement Basics"),
       L(4, "selecting-specific-columns", "Selecting Specific Columns"),
       L(5, "column-aliases", "Column Aliases (AS)"),
