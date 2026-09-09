@@ -62,7 +62,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/09-widgets-and-parameters",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(10, "databricks-runtime-and-versions", "Databricks Runtime and Versions"),
+      L(10, "databricks-runtime-and-versions", "Databricks Runtime and Versions", {
+        contentDir: "ch01/10-databricks-runtime-and-versions",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(11, "jobs-scheduling-notebook-runs", "Jobs — Scheduling Notebook Runs"),
       L(12, "databricks-cli-and-rest-api-basics", "Databricks CLI and REST API Basics"),
     ],
