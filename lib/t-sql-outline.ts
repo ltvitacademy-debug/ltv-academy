@@ -432,7 +432,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788933933/ltv-t-sql/ch07-62-variables-declare.mp4",
         durationLabel: "2 min 10 s",
       }),
-      L(63, "batches-go", "Batches and GO"),
+      L(63, "batches-go", "Batches and GO", {
+        contentDir: "ch07/63-batches-go",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788934080/ltv-t-sql/ch07-63-batches-go.mp4",
+        durationLabel: "2 min 6 s",
+      }),
       L(64, "if-else", "IF/ELSE"),
       L(65, "begin-end", "BEGIN/END Blocks"),
       L(66, "while-loops", "WHILE Loops"),
