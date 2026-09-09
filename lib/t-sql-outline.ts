@@ -270,7 +270,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788930229/ltv-t-sql/ch04-38-union-vs-union-all.mp4",
         durationLabel: "2 min 15 s",
       }),
-      L(39, "var-statistical-aggregates", "VAR and Statistical Aggregates"),
+      L(39, "var-statistical-aggregates", "VAR and Statistical Aggregates", {
+        contentDir: "ch04/39-var-statistical-aggregates",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788930378/ltv-t-sql/ch04-39-var-statistical-aggregates.mp4",
+        durationLabel: "2 min 11 s",
+      }),
       L(40, "summary-reports", "Building Summary Reports"),
     ],
   },
