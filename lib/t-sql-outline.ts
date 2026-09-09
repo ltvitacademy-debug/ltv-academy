@@ -570,7 +570,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 10,
     title: "Performance Tuning",
     lessons: [
-      L(83, "what-is-performance-tuning", "What Is Query Performance Tuning?"),
+      L(83, "what-is-performance-tuning", "What Is Query Performance Tuning?", {
+        contentDir: "ch10/83-what-is-performance-tuning",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788937580/ltv-t-sql/ch10-83-what-is-performance-tuning.mp4",
+        durationLabel: "2 min 18 s",
+      }),
       L(84, "cartesian-product", "The Cartesian Product: What Happens When Joins Go Wrong"),
       L(85, "joins-vs-subqueries", "Joins vs. Subqueries: Which Is Faster, and Why"),
       L(86, "exists-vs-in-vs-join", "EXISTS vs. IN vs. JOIN for Existence Checks"),
