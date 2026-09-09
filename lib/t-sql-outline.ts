@@ -306,7 +306,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788931001/ltv-t-sql/ch05-43-varchar-max.mp4",
         durationLabel: "2 min 23 s",
       }),
-      L(44, "len-upper-lower", "LEN, UPPER, LOWER"),
+      L(44, "len-upper-lower", "LEN, UPPER, LOWER", {
+        contentDir: "ch05/44-len-upper-lower",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788931139/ltv-t-sql/ch05-44-len-upper-lower.mp4",
+        durationLabel: "1 min 58 s",
+      }),
       L(45, "substring-charindex", "SUBSTRING and CHARINDEX"),
       L(46, "stuff-vs-replace", "STUFF vs. REPLACE"),
       L(47, "trim-ltrim-rtrim", "TRIM, LTRIM, RTRIM"),
