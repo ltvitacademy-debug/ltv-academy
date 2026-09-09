@@ -1,0 +1,37 @@
+# Lesson 34 — MIN and MAX · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Two more aggregate functions, and these two are about finding the
+extremes: MIN for the smallest value, MAX for the largest.
+
+## S2 · CODE CARD (MIN/MAX on numbers)
+
+MIN of list price, as cheapest price. MAX of list price, as most
+expensive price. Both in the same SELECT, no problem — you can mix as
+many aggregate functions together as a query needs.
+
+## S3 · CODE CARD (MIN/MAX on text)
+
+And MIN and MAX aren't limited to numbers. On a text column, they follow
+alphabetical order. MIN of last name gives you whichever last name sorts
+earliest in the alphabet. MAX gives you whichever sorts latest.
+
+## S4 · CODE CARD (MIN/MAX on dates)
+
+And on dates, they work exactly like the comparison operators from
+Lesson 12: earlier is smaller. MIN of order date gives you the earliest
+order ever placed; MAX gives you the most recent one.
+
+## S5 · OUTRO CARD
+
+And consistent with every aggregate function so far, NULL never wins as
+the minimum or the maximum — it's skipped entirely, because it isn't a
+comparable value at all. MIN and MAX find the extremes, on numbers, text,
+or dates, ignoring NULL along the way. Next lesson: GROUP BY, for
+aggregating within groups instead of across an entire table. See you
+there.

@@ -240,7 +240,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788929509/ltv-t-sql/ch04-33-sum-avg.mp4",
         durationLabel: "1 min 55 s",
       }),
-      L(34, "min-max", "MIN and MAX"),
+      L(34, "min-max", "MIN and MAX", {
+        contentDir: "ch04/34-min-max",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788929651/ltv-t-sql/ch04-34-min-max.mp4",
+        durationLabel: "1 min 43 s",
+      }),
       L(35, "group-by-basics", "GROUP BY Basics"),
       L(36, "group-by-multiple-columns", "GROUP BY Multiple Columns"),
       L(37, "having-vs-where", "HAVING vs. WHERE"),
