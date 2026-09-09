@@ -90,7 +90,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "Filtering and Sorting",
     lessons: [
-      L(11, "where-clause", "The WHERE Clause"),
+      L(11, "where-clause", "The WHERE Clause", {
+        contentDir: "ch02/11-where-clause",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926282/ltv-t-sql/ch02-11-where-clause.mp4",
+        durationLabel: "2 min 38 s",
+      }),
       L(12, "comparison-operators", "Relational/Comparison Operators"),
       L(13, "and-or-not", "AND, OR, NOT"),
       L(14, "like-wildcards", "LIKE and Wildcards"),
