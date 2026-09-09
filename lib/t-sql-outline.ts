@@ -378,7 +378,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788932651/ltv-t-sql/ch06-54-correlated-subqueries.mp4",
         durationLabel: "2 min 21 s",
       }),
-      L(55, "exists-not-exists", "EXISTS and NOT EXISTS"),
+      L(55, "exists-not-exists", "EXISTS and NOT EXISTS", {
+        contentDir: "ch06/55-exists-not-exists",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788932812/ltv-t-sql/ch06-55-exists-not-exists.mp4",
+        durationLabel: "2 min 17 s",
+      }),
       L(56, "ctes", "Common Table Expressions (CTEs)"),
       L(57, "recursive-ctes", "Recursive CTEs"),
       L(58, "views", "Views: Creating and Using"),
