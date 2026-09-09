@@ -762,7 +762,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788951572/ltv-t-sql/ch12-112-etl-vs-elt.mp4",
         durationLabel: "2 min 1 s",
       }),
-      L(113, "fact-dimension-tables", "Fact Tables and Dimension Tables"),
+      L(113, "fact-dimension-tables", "Fact Tables and Dimension Tables", {
+        contentDir: "ch12/113-fact-dimension-tables",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788951951/ltv-t-sql/ch12-113-fact-dimension-tables.mp4",
+        durationLabel: "1 min 48 s",
+      }),
       L(114, "star-schema", "Star Schema"),
       L(115, "snowflake-schema", "Snowflake Schema"),
       L(116, "slowly-changing-dimensions", "Slowly Changing Dimensions (SCD)"),
