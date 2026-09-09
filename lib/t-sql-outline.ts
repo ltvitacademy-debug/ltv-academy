@@ -132,7 +132,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788927191/ltv-t-sql/ch02-17-order-by.mp4",
         durationLabel: "2 min 0 s",
       }),
-      L(18, "top-top-percent", "TOP and TOP PERCENT"),
+      L(18, "top-top-percent", "TOP and TOP PERCENT", {
+        contentDir: "ch02/18-top-top-percent",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788927329/ltv-t-sql/ch02-18-top-top-percent.mp4",
+        durationLabel: "1 min 59 s",
+      }),
       L(19, "top-with-ties", "TOP WITH TIES"),
       L(20, "predicates", "Predicates: How SQL Server Filters Data"),
     ],
