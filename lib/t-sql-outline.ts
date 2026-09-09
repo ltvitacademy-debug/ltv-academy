@@ -540,7 +540,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 9,
     title: "Window and Ranking Functions",
     lessons: [
-      L(79, "over-partition-by", "OVER() and PARTITION BY"),
+      L(79, "over-partition-by", "OVER() and PARTITION BY", {
+        contentDir: "ch09/79-over-partition-by",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788936906/ltv-t-sql/ch09-79-over-partition-by.mp4",
+        durationLabel: "2 min 9 s",
+      }),
       L(80, "row-number", "ROW_NUMBER"),
       L(81, "rank-dense-rank", "RANK and DENSE_RANK"),
       L(82, "ntile", "NTILE"),
