@@ -228,7 +228,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/40-reading-csv",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(41, "reading-json", "Reading JSON"),
+      L(41, "reading-json", "Reading JSON", {
+        contentDir: "ch04/41-reading-json",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(42, "reading-parquet", "Reading Parquet"),
       L(43, "defining-schemas", "Defining Schemas"),
       L(44, "select", "select()"),
