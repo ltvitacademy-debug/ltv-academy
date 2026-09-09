@@ -510,7 +510,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788936071/ltv-t-sql/ch08-74-lock-types.mp4",
         durationLabel: "1 min 49 s",
       }),
-      L(75, "concurrency-blocking", "Concurrency and Blocking"),
+      L(75, "concurrency-blocking", "Concurrency and Blocking", {
+        contentDir: "ch08/75-concurrency-blocking",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788936227/ltv-t-sql/ch08-75-concurrency-blocking.mp4",
+        durationLabel: "2 min 6 s",
+      }),
       L(76, "try-catch", "TRY/CATCH Error Handling"),
       L(77, "raiserror-throw", "RAISERROR and THROW"),
       L(78, "auth-modes", "SQL Server Authentication Modes"),
