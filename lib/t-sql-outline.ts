@@ -702,7 +702,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788941284/ltv-t-sql/ch11-103-second-third-normal-form.mp4",
         durationLabel: "2 min 2 s",
       }),
-      L(104, "system-databases", "System Databases (master, msdb, tempdb, model)"),
+      L(104, "system-databases", "System Databases (master, msdb, tempdb, model)", {
+        contentDir: "ch11/104-system-databases",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788941451/ltv-t-sql/ch11-104-system-databases.mp4",
+        durationLabel: "1 min 58 s",
+      }),
       L(105, "local-vs-global-temp-tables", "Local vs. Global Temp Tables"),
       L(106, "sql-server-profiler", "SQL Server Profiler"),
     ],
