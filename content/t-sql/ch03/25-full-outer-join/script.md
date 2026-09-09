@@ -1,0 +1,43 @@
+# Lesson 25 — FULL OUTER JOIN · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+You've now seen INNER JOIN keep only matches, LEFT JOIN keep everything on
+the left, and RIGHT JOIN keep everything on the right. What if you want
+everything from BOTH sides at once? That's FULL OUTER JOIN.
+
+## S2 · CODE CARD (FULL OUTER JOIN example)
+
+Same shape of query, new keyword: FULL OUTER JOIN. This returns products
+that have sold, matched with their order details. Products that have
+never sold, with NULL filling every column from the order side. And in
+principle, order rows referencing a product that no longer exists, with
+NULL filling the product side — rare in a well-kept database, but
+structurally possible. Every row, from both tables, matched or not.
+
+## S3 · STEPS CARD (INNER / LEFT / RIGHT / FULL OUTER)
+
+Let's put all four join types in one place, because this is the moment
+they finally click as one connected idea. INNER keeps only what matches.
+LEFT keeps everything on the left. RIGHT keeps everything on the right.
+And FULL OUTER keeps everything, from both sides, all at once. Same
+underlying ON predicate every time — just different rules about what
+survives when there's no match.
+
+## S4 · CODE CARD (FULL OUTER JOIN + double IS NULL)
+
+And just like LEFT JOIN plus IS NULL found one-sided gaps back in Lesson
+23, FULL OUTER JOIN plus IS NULL on BOTH join columns catches gaps from
+either direction, in a single query. Product ID is null, OR sales order
+detail's product ID is null — either condition means something didn't
+match, from one side or the other.
+
+## S5 · OUTRO CARD
+
+Four join types, one shared mental model: match, then decide what happens
+to the leftovers. Next lesson: CROSS JOIN, the one join type that doesn't
+even have an ON clause. See you there.
