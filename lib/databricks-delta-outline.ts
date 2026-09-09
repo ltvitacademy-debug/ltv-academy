@@ -154,7 +154,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/29-designing-a-bronze-to-silver-pipeline",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(30, "designing-a-silver-to-gold-pipeline", "Designing a Silver-to-Gold Pipeline"),
+      L(30, "designing-a-silver-to-gold-pipeline", "Designing a Silver-to-Gold Pipeline", {
+        contentDir: "ch03/30-designing-a-silver-to-gold-pipeline",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(31, "incremental-processing-patterns", "Incremental Processing Patterns"),
       L(32, "autoloader", "Autoloader — Incremental File Ingestion"),
       L(33, "structured-streaming-basics", "Structured Streaming Basics"),
