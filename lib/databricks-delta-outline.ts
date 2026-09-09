@@ -262,7 +262,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch05/53-pipeline-modes-triggered-vs-continuous",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(54, "lakeflow-jobs-orchestration", "Lakeflow Jobs — Orchestration"),
+      L(54, "lakeflow-jobs-orchestration", "Lakeflow Jobs — Orchestration", {
+        contentDir: "ch05/54-lakeflow-jobs-orchestration",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(55, "monitoring-pipeline-runs", "Monitoring Pipeline Runs"),
       L(56, "lakeflow-vs-traditional-adf-pipelines", "Lakeflow vs. Traditional ADF Pipelines"),
       L(57, "course-recap", "Course Recap — From Storage to Orchestrated Pipelines"),
