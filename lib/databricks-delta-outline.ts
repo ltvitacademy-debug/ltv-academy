@@ -238,7 +238,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Lakeflow",
     lessons: [
-      L(48, "what-is-lakeflow", "What Is Lakeflow?"),
+      L(48, "what-is-lakeflow", "What Is Lakeflow?", {
+        contentDir: "ch05/48-what-is-lakeflow",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(49, "lakeflow-connect", "Lakeflow Connect — Ingestion Basics"),
       L(50, "lakeflow-declarative-pipelines", "Lakeflow Declarative Pipelines"),
       L(51, "defining-a-pipeline-with-dlt-table", "Defining a Pipeline With @dlt.table"),
