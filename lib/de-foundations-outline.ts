@@ -80,7 +80,12 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788959622/ltv-de-foundations/ch01-09-partitioning-data.mp4",
         durationLabel: "2 min 12 s",
       }),
-      L(10, "designing-a-data-lake", "Designing a Data Lake"),
+      L(10, "designing-a-data-lake", "Designing a Data Lake", {
+        contentDir: "ch01/10-designing-a-data-lake",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788959782/ltv-de-foundations/ch01-10-designing-a-data-lake.mp4",
+        durationLabel: "1 min 40 s",
+      }),
       L(11, "raw-cleansed-curated-zones", "Raw, Cleansed, and Curated Zones"),
       L(12, "bronze-silver-gold-architecture", "Bronze, Silver, Gold Architecture"),
     ],
