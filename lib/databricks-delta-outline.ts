@@ -246,7 +246,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch05/49-lakeflow-connect",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(50, "lakeflow-declarative-pipelines", "Lakeflow Declarative Pipelines"),
+      L(50, "lakeflow-declarative-pipelines", "Lakeflow Declarative Pipelines", {
+        contentDir: "ch05/50-lakeflow-declarative-pipelines",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(51, "defining-a-pipeline-with-dlt-table", "Defining a Pipeline With @dlt.table"),
       L(52, "expectations-declarative-data-quality", "Expectations — Declarative Data Quality"),
       L(53, "pipeline-modes-triggered-vs-continuous", "Pipeline Modes: Triggered vs. Continuous"),
