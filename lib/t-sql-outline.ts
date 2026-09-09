@@ -360,7 +360,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 6,
     title: "Subqueries, CTEs, and Views",
     lessons: [
-      L(52, "single-value-subqueries", "Single-Value Subqueries"),
+      L(52, "single-value-subqueries", "Single-Value Subqueries", {
+        contentDir: "ch06/52-single-value-subqueries",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788932333/ltv-t-sql/ch06-52-single-value-subqueries.mp4",
+        durationLabel: "2 min 5 s",
+      }),
       L(53, "multi-value-subqueries", "Multi-Value Subqueries"),
       L(54, "correlated-subqueries", "Correlated Subqueries"),
       L(55, "exists-not-exists", "EXISTS and NOT EXISTS"),

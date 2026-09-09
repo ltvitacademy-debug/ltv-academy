@@ -1,0 +1,43 @@
+# Lesson 52 — Single-Value Subqueries · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Welcome to Chapter 6. Everything so far has been one query at a time. Now
+we start writing queries inside other queries — subqueries. We'll begin
+with the simplest shape: one that returns exactly a single value.
+
+## S2 · CODE CARD (scalar subquery in WHERE)
+
+Name, list price, from Product, where list price is greater than — and
+here's the subquery — select average of list price, from Product. That
+inner query computes exactly one number: the average price across every
+product. The outer query then compares each individual product against
+that single number. Every product priced above average, without you ever
+hard-coding or separately calculating that average yourself.
+
+## S3 · CODE CARD (scalar subquery in SELECT)
+
+And a subquery that returns one value can go almost anywhere a single
+value is expected — not just in WHERE. Put it right in the SELECT list,
+and every row shows that same overall average sitting alongside its own
+price, ready for direct comparison in a report.
+
+## S4 · STEPS CARD (1 ROW works / 2+ ROWS errors)
+
+There's exactly one hard rule here: the subquery has to return one value,
+genuinely, or the whole thing fails. If it unexpectedly returns more than
+one row, SQL Server has no way to compare a single value against multiple
+results, and it throws a runtime error. That's exactly why scalar
+subqueries almost always wrap an aggregate function — average, count,
+max, min, sum — because aggregates are guaranteed to collapse down to one
+value, every time.
+
+## S5 · OUTRO CARD
+
+One query, nested inside another, standing in for a single value — that's
+the scalar subquery. Next lesson: what happens when the subquery returns
+more than one value instead. See you there.
