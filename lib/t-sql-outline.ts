@@ -108,7 +108,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926597/ltv-t-sql/ch02-13-and-or-not.mp4",
         durationLabel: "2 min 37 s",
       }),
-      L(14, "like-wildcards", "LIKE and Wildcards"),
+      L(14, "like-wildcards", "LIKE and Wildcards", {
+        contentDir: "ch02/14-like-wildcards",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926751/ltv-t-sql/ch02-14-like-wildcards.mp4",
+        durationLabel: "2 min 29 s",
+      }),
       L(15, "in-and-between", "IN and BETWEEN"),
       L(16, "null-handling", "Handling NULL (IS NULL / IS NOT NULL)"),
       L(17, "order-by", "ORDER BY: Ascending & Descending"),
