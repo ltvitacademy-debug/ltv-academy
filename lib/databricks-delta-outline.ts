@@ -192,7 +192,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
     n: 4,
     title: "Unity Catalog",
     lessons: [
-      L(38, "what-is-unity-catalog", "What Is Unity Catalog?"),
+      L(38, "what-is-unity-catalog", "What Is Unity Catalog?", {
+        contentDir: "ch04/38-what-is-unity-catalog",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(39, "the-three-level-namespace", "The Three-Level Namespace"),
       L(40, "creating-a-catalog-and-schema", "Creating a Catalog and Schema"),
       L(41, "managed-vs-external-tables", "Managed Tables vs. External Tables"),
