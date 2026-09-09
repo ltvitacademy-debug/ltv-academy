@@ -8,6 +8,7 @@ import { DATA_FACTORY_CHAPTERS } from "./data-factory-outline";
 import { BLOCKCHAIN_CHAPTERS } from "./blockchain-outline";
 import { TSQL_CHAPTERS } from "./t-sql-outline";
 import { DE_FOUNDATIONS_CHAPTERS } from "./de-foundations-outline";
+import { DATABRICKS_DELTA_CHAPTERS } from "./databricks-delta-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -95,6 +96,15 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: DE_FOUNDATIONS_CHAPTERS,
     contentBase: "de-foundations",
+  },
+  {
+    slug: "azure-databricks-and-delta-lake",
+    title: "Azure Databricks & Delta Lake",
+    tagline:
+      "Clusters, notebooks, Delta tables, medallion pipelines, Unity Catalog, and Lakeflow — 57 lessons continuing straight from Data Engineering Foundations.",
+    status: "available",
+    chapters: DATABRICKS_DELTA_CHAPTERS,
+    contentBase: "databricks-delta",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,
