@@ -102,7 +102,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926431/ltv-t-sql/ch02-12-comparison-operators.mp4",
         durationLabel: "2 min 17 s",
       }),
-      L(13, "and-or-not", "AND, OR, NOT"),
+      L(13, "and-or-not", "AND, OR, NOT", {
+        contentDir: "ch02/13-and-or-not",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926597/ltv-t-sql/ch02-13-and-or-not.mp4",
+        durationLabel: "2 min 37 s",
+      }),
       L(14, "like-wildcards", "LIKE and Wildcards"),
       L(15, "in-and-between", "IN and BETWEEN"),
       L(16, "null-handling", "Handling NULL (IS NULL / IS NOT NULL)"),
