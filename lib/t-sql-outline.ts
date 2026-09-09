@@ -384,7 +384,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788932812/ltv-t-sql/ch06-55-exists-not-exists.mp4",
         durationLabel: "2 min 17 s",
       }),
-      L(56, "ctes", "Common Table Expressions (CTEs)"),
+      L(56, "ctes", "Common Table Expressions (CTEs)", {
+        contentDir: "ch06/56-ctes",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788932975/ltv-t-sql/ch06-56-ctes.mp4",
+        durationLabel: "2 min 11 s",
+      }),
       L(57, "recursive-ctes", "Recursive CTEs"),
       L(58, "views", "Views: Creating and Using"),
       L(59, "indexed-views", "Indexed Views"),
