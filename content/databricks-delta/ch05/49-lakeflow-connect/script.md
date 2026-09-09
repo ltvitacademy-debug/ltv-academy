@@ -1,0 +1,37 @@
+# Lesson 49 — Lakeflow Connect — Ingestion Basics · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5-3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Ingestion isn't always files in a folder — Lakeflow Connect.
+
+## S2 · CODE CARD (beyond files)
+
+Autoloader solves one specific shape — files landing in a folder.
+Lakeflow Connect is the broader ingestion layer on top, with
+managed connectors for sources that were never a folder of files
+to begin with — a database, a SaaS application, a message queue.
+
+## S3 · CODE CARD (Autoloader's place)
+
+And Autoloader's own syntax doesn't change at all. It's still
+exactly Lesson 32's code — it's just now understood as one of
+Connect's ingestion types, specifically the file-based one.
+
+## S4 · CODE CARD (managed connectors)
+
+For a source like a SaaS CRM, a managed connector handles
+authentication, schema mapping, and incremental extraction on your
+behalf — the same managed idea Lesson 4 introduced for compute,
+and Lesson 41 introduced for tables, now applied to ingestion
+itself.
+
+## S5 · OUTRO CARD
+
+NYC Taxi data has always genuinely been files in a folder —
+Autoloader alone was always right for it. A real organization
+usually needs more. Next lesson: Lakeflow Declarative Pipelines, a
+more declarative way to build what Chapter 3 already built.
