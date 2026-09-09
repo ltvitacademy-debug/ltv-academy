@@ -174,7 +174,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788928080/ltv-t-sql/ch03-23-left-join.mp4",
         durationLabel: "2 min 0 s",
       }),
-      L(24, "right-join", "RIGHT JOIN"),
+      L(24, "right-join", "RIGHT JOIN", {
+        contentDir: "ch03/24-right-join",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788928219/ltv-t-sql/ch03-24-right-join.mp4",
+        durationLabel: "1 min 38 s",
+      }),
       L(25, "full-outer-join", "FULL OUTER JOIN"),
       L(26, "cross-join", "CROSS JOIN"),
       L(27, "self-join", "SELF JOIN"),
