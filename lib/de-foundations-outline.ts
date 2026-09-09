@@ -1,0 +1,111 @@
+// The full Data Engineering Foundations course outline. Only lessons with a
+// contentDir + videoUrl are playable; everything else renders as "in production".
+// First of a 4-course Data Engineering track: Foundations -> Azure Databricks &
+// Delta Lake -> Microsoft Fabric & Real-Time Analytics -> Career & Capstone.
+
+export type LessonMeta = {
+  n: number;
+  slug: string;
+  title: string;
+  contentDir?: string; // under content/de-foundations/
+  videoUrl?: string;
+  durationLabel?: string;
+};
+
+export type ChapterMeta = { n: number; title: string; lessons: LessonMeta[] };
+
+const L = (n: number, slug: string, title: string, extra?: Partial<LessonMeta>): LessonMeta => ({
+  n,
+  slug,
+  title,
+  ...extra,
+});
+
+export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
+  {
+    n: 1,
+    title: "Azure Data Lake & Storage",
+    lessons: [
+      L(1, "azure-storage-accounts", "Azure Storage Accounts"),
+      L(2, "blob-vs-adls-gen2", "Blob Storage vs. ADLS Gen2"),
+      L(3, "containers-and-directories", "Containers and Directories"),
+      L(4, "hierarchical-namespace", "Hierarchical Namespace"),
+      L(5, "rbac-vs-acls", "RBAC vs. ACLs"),
+      L(6, "managed-identities-for-storage", "Managed Identities for Storage"),
+      L(7, "sas-tokens", "SAS Tokens"),
+      L(8, "csv-vs-json-vs-parquet-vs-delta", "CSV vs. JSON vs. Parquet vs. Delta"),
+      L(9, "partitioning-data", "Partitioning Data"),
+      L(10, "designing-a-data-lake", "Designing a Data Lake"),
+      L(11, "raw-cleansed-curated-zones", "Raw, Cleansed, and Curated Zones"),
+      L(12, "bronze-silver-gold-architecture", "Bronze, Silver, Gold Architecture"),
+    ],
+  },
+  {
+    n: 2,
+    title: "Python for Data Engineers",
+    lessons: [
+      L(13, "python-for-data-engineering", "Python for Data Engineering"),
+      L(14, "variables-and-data-types", "Variables and Data Types"),
+      L(15, "lists-and-dictionaries", "Lists and Dictionaries"),
+      L(16, "conditions", "Conditions"),
+      L(17, "loops", "Loops"),
+      L(18, "functions", "Functions"),
+      L(19, "exception-handling", "Exception Handling"),
+      L(20, "working-with-files", "Working With Files"),
+      L(21, "pandas-dataframes", "Pandas DataFrames"),
+      L(22, "reading-csv-and-json", "Reading CSV and JSON"),
+      L(23, "rest-apis-with-python", "REST APIs with Python"),
+      L(24, "processing-json", "Processing JSON"),
+      L(25, "connecting-python-to-sql", "Connecting Python to SQL"),
+      L(26, "cleaning-data-with-python", "Cleaning Data With Python"),
+      L(27, "building-a-simple-python-etl-process", "Building a Simple Python ETL Process"),
+    ],
+  },
+  {
+    n: 3,
+    title: "Apache Spark Fundamentals",
+    lessons: [
+      L(28, "why-apache-spark", "Why Apache Spark?"),
+      L(29, "distributed-computing", "Distributed Computing"),
+      L(30, "spark-architecture", "Spark Architecture"),
+      L(31, "driver-and-executors", "Driver and Executors"),
+      L(32, "clusters-and-nodes", "Clusters and Nodes"),
+      L(33, "spark-partitions", "Spark Partitions"),
+      L(34, "lazy-evaluation", "Lazy Evaluation"),
+      L(35, "transformations-vs-actions", "Transformations vs. Actions"),
+      L(36, "sparksession", "SparkSession"),
+      L(37, "spark-dataframes", "Spark DataFrames"),
+      L(38, "spark-sql", "Spark SQL"),
+    ],
+  },
+  {
+    n: 4,
+    title: "PySpark",
+    lessons: [
+      L(39, "creating-dataframes", "Creating DataFrames"),
+      L(40, "reading-csv", "Reading CSV"),
+      L(41, "reading-json", "Reading JSON"),
+      L(42, "reading-parquet", "Reading Parquet"),
+      L(43, "defining-schemas", "Defining Schemas"),
+      L(44, "select", "select()"),
+      L(45, "filter-and-where", "filter() and where()"),
+      L(46, "withcolumn", "withColumn()"),
+      L(47, "when-and-conditional-logic", "when() and Conditional Logic"),
+      L(48, "data-type-conversion", "Data Type Conversion"),
+      L(49, "string-functions", "String Functions"),
+      L(50, "date-functions", "Date Functions"),
+      L(51, "null-handling", "Null Handling"),
+      L(52, "removing-duplicates", "Removing Duplicates"),
+      L(53, "groupby", "groupBy()"),
+      L(54, "aggregations", "Aggregations"),
+      L(55, "pyspark-joins", "PySpark Joins"),
+      L(56, "union", "union()"),
+      L(57, "window-functions", "Window Functions"),
+      L(58, "temporary-views", "Temporary Views"),
+      L(59, "spark-sql-with-dataframes", "Spark SQL With DataFrames"),
+      L(60, "writing-data", "Writing Data"),
+      L(61, "partitioning-output", "Partitioning Output"),
+      L(62, "spark-performance-fundamentals", "Spark Performance Fundamentals"),
+    ],
+  },
+];

@@ -7,6 +7,7 @@ import { PYTHON_CHAPTERS } from "./python-outline";
 import { DATA_FACTORY_CHAPTERS } from "./data-factory-outline";
 import { BLOCKCHAIN_CHAPTERS } from "./blockchain-outline";
 import { TSQL_CHAPTERS } from "./t-sql-outline";
+import { DE_FOUNDATIONS_CHAPTERS } from "./de-foundations-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -85,6 +86,15 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: TSQL_CHAPTERS,
     contentBase: "t-sql",
+  },
+  {
+    slug: "data-engineering-foundations",
+    title: "Data Engineering Foundations",
+    tagline:
+      "Storage, Python, and Spark — the 62-lesson foundation for Azure data engineering, working hands-on with real NYC Taxi trip data.",
+    status: "available",
+    chapters: DE_FOUNDATIONS_CHAPTERS,
+    contentBase: "de-foundations",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,
