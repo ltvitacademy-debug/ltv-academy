@@ -1,0 +1,36 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Azure Databricks & Delta Lake · Chapter Three",
+    "titlePlain": "Designing a Bronze-to-Silver ",
+    "titleEmphasis": "Pipeline",
+    "titleSuffix": "",
+    "subtitle": "Lesson 29 · Medallion Architecture"
+  },
+  {
+    "type": "code",
+    "eyebrow": "From a one-off script to a real pipeline",
+    "code": "dbutils.widgets.text(\"process_date\", \"2024-01-15\")\nprocess_date = dbutils.widgets.get(\"process_date\")\n\nnew_bronze_rows = spark.table(\"bronze.trips\").filter(\n  to_date(col(\"_ingested_at\")) == process_date\n)",
+    "caption": "Lesson 9's widgets + Lesson 11's jobs -- running repeatedly, safely."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Idempotency — the property that matters most",
+    "code": "# Idempotent: run twice on the same input,\n#              get the SAME result as running once.\n#\n# Real jobs get retried. A non-idempotent pipeline\n# silently corrupts data on the second run.",
+    "caption": "Easy to miss until it's already happened in production."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Why MERGE, not append, for silver",
+    "code": "silver_table = DeltaTable.forName(spark, \"silver.trips\")\nsilver_table.alias(\"target\").merge(\n  cleaned_new_rows.alias(\"source\"),\n  \"target.VendorID = source.VendorID AND target.tpep_pickup_datetime = source.tpep_pickup_datetime\",\n).whenMatchedUpdateAll().whenNotMatchedInsertAll().execute()",
+    "caption": "append would duplicate rows on a rerun. MERGE is the idempotency mechanism."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 30",
+    "titlePlain": "Designing a Silver-to-Gold ",
+    "titleEmphasis": "Pipeline",
+    "titleSuffix": "",
+    "subtitle": "The same pattern, one layer further."
+  }
+]
