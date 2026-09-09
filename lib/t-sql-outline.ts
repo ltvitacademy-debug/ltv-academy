@@ -714,7 +714,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788941592/ltv-t-sql/ch11-105-local-vs-global-temp-tables.mp4",
         durationLabel: "1 min 52 s",
       }),
-      L(106, "sql-server-profiler", "SQL Server Profiler"),
+      L(106, "sql-server-profiler", "SQL Server Profiler", {
+        contentDir: "ch11/106-sql-server-profiler",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788941755/ltv-t-sql/ch11-106-sql-server-profiler.mp4",
+        durationLabel: "1 min 46 s",
+      }),
     ],
   },
   {
