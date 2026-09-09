@@ -210,7 +210,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/37-spark-dataframes",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(38, "spark-sql", "Spark SQL"),
+      L(38, "spark-sql", "Spark SQL", {
+        contentDir: "ch03/38-spark-sql",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
     ],
   },
   {
