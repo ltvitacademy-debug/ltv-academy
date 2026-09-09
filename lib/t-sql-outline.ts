@@ -96,7 +96,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926282/ltv-t-sql/ch02-11-where-clause.mp4",
         durationLabel: "2 min 38 s",
       }),
-      L(12, "comparison-operators", "Relational/Comparison Operators"),
+      L(12, "comparison-operators", "Relational/Comparison Operators", {
+        contentDir: "ch02/12-comparison-operators",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926431/ltv-t-sql/ch02-12-comparison-operators.mp4",
+        durationLabel: "2 min 17 s",
+      }),
       L(13, "and-or-not", "AND, OR, NOT"),
       L(14, "like-wildcards", "LIKE and Wildcards"),
       L(15, "in-and-between", "IN and BETWEEN"),
