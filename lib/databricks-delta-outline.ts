@@ -258,7 +258,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch05/52-expectations-declarative-data-quality",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(53, "pipeline-modes-triggered-vs-continuous", "Pipeline Modes: Triggered vs. Continuous"),
+      L(53, "pipeline-modes-triggered-vs-continuous", "Pipeline Modes: Triggered vs. Continuous", {
+        contentDir: "ch05/53-pipeline-modes-triggered-vs-continuous",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(54, "lakeflow-jobs-orchestration", "Lakeflow Jobs — Orchestration"),
       L(55, "monitoring-pipeline-runs", "Monitoring Pipeline Runs"),
       L(56, "lakeflow-vs-traditional-adf-pipelines", "Lakeflow vs. Traditional ADF Pipelines"),
