@@ -594,7 +594,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788938145/ltv-t-sql/ch10-86-exists-vs-in-vs-join.mp4",
         durationLabel: "2 min 18 s",
       }),
-      L(87, "sargable-predicates", "SARGable vs. Non-SARGable WHERE Clauses"),
+      L(87, "sargable-predicates", "SARGable vs. Non-SARGable WHERE Clauses", {
+        contentDir: "ch10/87-sargable-predicates",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788938321/ltv-t-sql/ch10-87-sargable-predicates.mp4",
+        durationLabel: "2 min 20 s",
+      }),
       L(88, "clustered-vs-nonclustered", "Clustered vs. Nonclustered Indexes: Choosing Wisely"),
       L(89, "filtered-included-indexes", "Filtered Indexes and Included Columns"),
       L(90, "execution-plans", "Reading Execution Plans: Scans vs. Seeks"),
