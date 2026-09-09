@@ -435,7 +435,7 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
       L(62, "business-requirements", "Gathering Business Requirements", {
         contentDir: "ch08/62-business-requirements",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788828727/ltv-powerbi/ch08-62-business-requirements.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788952928/ltv-powerbi/ch08-62-business-requirements.mp4",
         durationLabel: "1 min 54 s",
       }),
       L(63, "choosing-kpis", "Choosing KPIs", {
@@ -597,7 +597,7 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
       L(85, "capstone-import", "Import the Raw Data", {
         contentDir: "ch12/85-capstone-import",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788831823/ltv-powerbi/ch12-85-capstone-import.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953039/ltv-powerbi/ch12-85-capstone-import.mp4",
         durationLabel: "2 min 6 s",
       }),
       L(86, "capstone-power-query", "Clean & Transform With Power Query", {
@@ -609,7 +609,7 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
       L(87, "capstone-star-schema", "Build the Star Schema", {
         contentDir: "ch12/87-capstone-star-schema",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788831828/ltv-powerbi/ch12-87-capstone-star-schema.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953139/ltv-powerbi/ch12-87-capstone-star-schema.mp4",
         durationLabel: "1 min 48 s",
       }),
       L(88, "capstone-dax", "Create DAX Measures", {
@@ -645,7 +645,7 @@ export const POWERBI_CHAPTERS: ChapterMeta[] = [
       L(93, "capstone-present", "Present the Final Dashboard", {
         contentDir: "ch12/93-capstone-present",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788831847/ltv-powerbi/ch12-93-capstone-present.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953223/ltv-powerbi/ch12-93-capstone-present.mp4",
         durationLabel: "1 min 49 s",
       }),
     ],
