@@ -1,0 +1,42 @@
+# Lesson 35 — GROUP BY Basics · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Every aggregate function so far has produced exactly one number for the
+entire table. But a much more common real question is one number PER
+GROUP — the average price per color, not one single average lumping
+everything together. That's what GROUP BY is for.
+
+## S2 · CODE CARD (GROUP BY Color)
+
+Color, average of list price, as average price, from Production dot
+Product, group by color. Run this, and instead of one overall average,
+you get one row per distinct color, each with its own average price.
+
+## S3 · STEPS CARD (SPLIT / AGGREGATE / COMBINE)
+
+Here's the mental model, in three steps. Split the table into groups, one
+group per distinct color. Aggregate separately within each group —
+average of list price runs once PER group, not once overall. And combine
+the results into one row per group. Split, aggregate, combine — that's
+GROUP BY, every time.
+
+## S4 · CODE CARD (the failing query)
+
+And here's the single most important rule, and the source of most
+beginner errors: every non-aggregated column in your SELECT list has to
+appear in GROUP BY too. Add Name here, and it fails — because multiple
+products, with different names, all share the same color group. There's
+no single, unambiguous name SQL Server could show for that group. Every
+SELECT column needs to be either wrapped in an aggregate function, or
+listed in GROUP BY itself.
+
+## S5 · OUTRO CARD
+
+Split, aggregate, combine — and every non-aggregated column has to be
+part of the grouping. Next lesson: grouping by more than one column at
+once. See you there.
