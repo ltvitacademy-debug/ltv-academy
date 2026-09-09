@@ -204,7 +204,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788928785/ltv-t-sql/ch03-28-joining-three-tables.mp4",
         durationLabel: "1 min 49 s",
       }),
-      L(29, "cross-apply", "CROSS APPLY"),
+      L(29, "cross-apply", "CROSS APPLY", {
+        contentDir: "ch03/29-cross-apply",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788928921/ltv-t-sql/ch03-29-cross-apply.mp4",
+        durationLabel: "1 min 54 s",
+      }),
       L(30, "outer-apply", "OUTER APPLY"),
       L(31, "choosing-the-right-join", "Choosing the Right Join"),
     ],
