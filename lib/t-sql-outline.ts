@@ -114,7 +114,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926751/ltv-t-sql/ch02-14-like-wildcards.mp4",
         durationLabel: "2 min 29 s",
       }),
-      L(15, "in-and-between", "IN and BETWEEN"),
+      L(15, "in-and-between", "IN and BETWEEN", {
+        contentDir: "ch02/15-in-and-between",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926892/ltv-t-sql/ch02-15-in-and-between.mp4",
+        durationLabel: "2 min 12 s",
+      }),
       L(16, "null-handling", "Handling NULL (IS NULL / IS NOT NULL)"),
       L(17, "order-by", "ORDER BY: Ascending & Descending"),
       L(18, "top-top-percent", "TOP and TOP PERCENT"),
