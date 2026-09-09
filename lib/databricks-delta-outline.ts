@@ -182,7 +182,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/36-data-quality-checks",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(37, "building-a-full-medallion-pipeline", "Building a Full Medallion Pipeline"),
+      L(37, "building-a-full-medallion-pipeline", "Building a Full Medallion Pipeline", {
+        contentDir: "ch03/37-building-a-full-medallion-pipeline",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
     ],
   },
   {
