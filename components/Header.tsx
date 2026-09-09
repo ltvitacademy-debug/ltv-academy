@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Seal from "./Seal";
+import { useEmbedMode } from "./useEmbedMode";
 
 const NAV = [
   { label: "Tracks", href: "/#tracks" },
@@ -14,6 +15,9 @@ const NAV = [
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const isEmbed = useEmbedMode();
+
+  if (isEmbed) return null;
 
   return (
     <header className="sticky top-0 z-50 bg-crimson-deep border-b border-gold">

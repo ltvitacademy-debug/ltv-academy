@@ -1,7 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { PHONE } from "@/lib/copy";
+import { useEmbedMode } from "./useEmbedMode";
 
 export default function Footer() {
+  const isEmbed = useEmbedMode();
+
+  if (isEmbed) return null;
+
   return (
     <footer className="bg-crimson-deep text-parchment">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-3">
