@@ -426,7 +426,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 7,
     title: "Programming with T-SQL",
     lessons: [
-      L(62, "variables-declare", "Variables and DECLARE"),
+      L(62, "variables-declare", "Variables and DECLARE", {
+        contentDir: "ch07/62-variables-declare",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788933933/ltv-t-sql/ch07-62-variables-declare.mp4",
+        durationLabel: "2 min 10 s",
+      }),
       L(63, "batches-go", "Batches and GO"),
       L(64, "if-else", "IF/ELSE"),
       L(65, "begin-end", "BEGIN/END Blocks"),
