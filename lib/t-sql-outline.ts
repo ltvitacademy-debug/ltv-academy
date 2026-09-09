@@ -582,7 +582,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788937762/ltv-t-sql/ch10-84-cartesian-product.mp4",
         durationLabel: "2 min 20 s",
       }),
-      L(85, "joins-vs-subqueries", "Joins vs. Subqueries: Which Is Faster, and Why"),
+      L(85, "joins-vs-subqueries", "Joins vs. Subqueries: Which Is Faster, and Why", {
+        contentDir: "ch10/85-joins-vs-subqueries",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788937954/ltv-t-sql/ch10-85-joins-vs-subqueries.mp4",
+        durationLabel: "2 min 21 s",
+      }),
       L(86, "exists-vs-in-vs-join", "EXISTS vs. IN vs. JOIN for Existence Checks"),
       L(87, "sargable-predicates", "SARGable vs. Non-SARGable WHERE Clauses"),
       L(88, "clustered-vs-nonclustered", "Clustered vs. Nonclustered Indexes: Choosing Wisely"),
