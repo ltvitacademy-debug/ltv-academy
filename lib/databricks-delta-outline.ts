@@ -112,7 +112,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/20-schema-evolution",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(21, "time-travel", "Time Travel — Querying Historical Versions"),
+      L(21, "time-travel", "Time Travel — Querying Historical Versions", {
+        contentDir: "ch02/21-time-travel",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(22, "update-delete-and-merge", "UPDATE, DELETE, and MERGE"),
       L(23, "optimize-and-file-compaction", "OPTIMIZE and File Compaction"),
       L(24, "vacuum-cleaning-up-old-files", "VACUUM — Cleaning Up Old Files"),
