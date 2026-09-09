@@ -390,7 +390,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788932975/ltv-t-sql/ch06-56-ctes.mp4",
         durationLabel: "2 min 11 s",
       }),
-      L(57, "recursive-ctes", "Recursive CTEs"),
+      L(57, "recursive-ctes", "Recursive CTEs", {
+        contentDir: "ch06/57-recursive-ctes",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788933144/ltv-t-sql/ch06-57-recursive-ctes.mp4",
+        durationLabel: "2 min 29 s",
+      }),
       L(58, "views", "Views: Creating and Using"),
       L(59, "indexed-views", "Indexed Views"),
       L(60, "pivot", "PIVOT"),
