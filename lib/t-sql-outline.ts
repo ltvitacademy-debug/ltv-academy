@@ -552,7 +552,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788937062/ltv-t-sql/ch09-80-row-number.mp4",
         durationLabel: "2 min 10 s",
       }),
-      L(81, "rank-dense-rank", "RANK and DENSE_RANK"),
+      L(81, "rank-dense-rank", "RANK and DENSE_RANK", {
+        contentDir: "ch09/81-rank-dense-rank",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788937231/ltv-t-sql/ch09-81-rank-dense-rank.mp4",
+        durationLabel: "2 min 27 s",
+      }),
       L(82, "ntile", "NTILE"),
     ],
   },
