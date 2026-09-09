@@ -170,7 +170,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/33-structured-streaming-basics",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(34, "streaming-from-bronze-to-silver", "Streaming from Bronze to Silver"),
+      L(34, "streaming-from-bronze-to-silver", "Streaming from Bronze to Silver", {
+        contentDir: "ch03/34-streaming-from-bronze-to-silver",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(35, "handling-late-arriving-data", "Handling Late-Arriving Data"),
       L(36, "data-quality-checks", "Data Quality Checks in the Medallion Flow"),
       L(37, "building-a-full-medallion-pipeline", "Building a Full Medallion Pipeline"),

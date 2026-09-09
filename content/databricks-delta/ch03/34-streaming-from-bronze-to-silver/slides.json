@@ -1,0 +1,36 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Azure Databricks & Delta Lake · Chapter Three",
+    "titlePlain": "Streaming from Bronze to ",
+    "titleEmphasis": "Silver",
+    "titleSuffix": "",
+    "subtitle": "Lesson 34 · Medallion Architecture"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The cleaning logic doesn't change",
+    "code": "def clean_batch(micro_batch_df, batch_id):\n  cleaned = micro_batch_df.withColumn(\n    \"fare_amount\", col(\"fare_amount\").cast(\"double\")\n  ).dropDuplicates([\"VendorID\", \"tpep_pickup_datetime\"]).na.drop(subset=[\"fare_amount\"])\n\n  silver_table = DeltaTable.forName(spark, \"silver.trips\")\n  silver_table.alias(\"target\").merge(cleaned.alias(\"source\"), \"...\") \\\n    .whenMatchedUpdateAll().whenNotMatchedInsertAll().execute()",
+    "caption": "Exactly Lesson 27's cleaning and Lesson 29's MERGE call. Nothing new here."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Why writeStream needs foreachBatch for MERGE",
+    "code": "bronze_stream = spark.readStream.format(\"delta\").table(\"bronze.trips\")\n\nbronze_stream.writeStream \\\n  .foreachBatch(clean_batch) \\\n  .option(\"checkpointLocation\", \"/checkpoints/silver_stream\") \\\n  .trigger(availableNow=True).start()",
+    "caption": "No .mergeStream() sink exists -- foreachBatch bridges back to ordinary batch operations."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The full pipeline, end to end",
+    "code": "bronze.trips (via Autoloader, Lesson 32)\n    -> readStream\n    -> foreachBatch(clean_batch)\n    -> silver.trips (updated continuously)",
+    "caption": "Every piece is something already covered -- combined."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 35",
+    "titlePlain": "Handling Late-Arriving ",
+    "titleEmphasis": "Data",
+    "titleSuffix": "",
+    "subtitle": "A real streaming complication."
+  }
+]
