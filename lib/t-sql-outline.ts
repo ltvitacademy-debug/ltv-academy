@@ -522,7 +522,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788936399/ltv-t-sql/ch08-76-try-catch.mp4",
         durationLabel: "2 min 1 s",
       }),
-      L(77, "raiserror-throw", "RAISERROR and THROW"),
+      L(77, "raiserror-throw", "RAISERROR and THROW", {
+        contentDir: "ch08/77-raiserror-throw",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788936563/ltv-t-sql/ch08-77-raiserror-throw.mp4",
+        durationLabel: "2 min 5 s",
+      }),
       L(78, "auth-modes", "SQL Server Authentication Modes"),
     ],
   },
