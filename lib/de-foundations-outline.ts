@@ -260,7 +260,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/48-data-type-conversion",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(49, "string-functions", "String Functions"),
+      L(49, "string-functions", "String Functions", {
+        contentDir: "ch04/49-string-functions",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(50, "date-functions", "Date Functions"),
       L(51, "null-handling", "Null Handling"),
       L(52, "removing-duplicates", "Removing Duplicates"),
