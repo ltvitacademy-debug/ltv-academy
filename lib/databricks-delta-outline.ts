@@ -166,7 +166,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/32-autoloader",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(33, "structured-streaming-basics", "Structured Streaming Basics"),
+      L(33, "structured-streaming-basics", "Structured Streaming Basics", {
+        contentDir: "ch03/33-structured-streaming-basics",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(34, "streaming-from-bronze-to-silver", "Streaming from Bronze to Silver"),
       L(35, "handling-late-arriving-data", "Handling Late-Arriving Data"),
       L(36, "data-quality-checks", "Data Quality Checks in the Medallion Flow"),
