@@ -792,7 +792,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955729/ltv-t-sql/ch12-117-surrogate-vs-natural-keys.mp4",
         durationLabel: "1 min 54 s",
       }),
-      L(118, "t-sql-in-the-bi-pipeline", "Where T-SQL Fits in the BI/Warehousing Pipeline"),
+      L(118, "t-sql-in-the-bi-pipeline", "Where T-SQL Fits in the BI/Warehousing Pipeline", {
+        contentDir: "ch12/118-t-sql-in-the-bi-pipeline",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955888/ltv-t-sql/ch12-118-t-sql-in-the-bi-pipeline.mp4",
+        durationLabel: "1 min 50 s",
+      }),
     ],
   },
 ];
