@@ -62,7 +62,12 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788959064/ltv-de-foundations/ch01-06-managed-identities-for-storage.mp4",
         durationLabel: "1 min 32 s",
       }),
-      L(7, "sas-tokens", "SAS Tokens"),
+      L(7, "sas-tokens", "SAS Tokens", {
+        contentDir: "ch01/07-sas-tokens",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788959271/ltv-de-foundations/ch01-07-sas-tokens.mp4",
+        durationLabel: "1 min 52 s",
+      }),
       L(8, "csv-vs-json-vs-parquet-vs-delta", "CSV vs. JSON vs. Parquet vs. Delta"),
       L(9, "partitioning-data", "Partitioning Data"),
       L(10, "designing-a-data-lake", "Designing a Data Lake"),
