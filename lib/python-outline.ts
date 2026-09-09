@@ -19,7 +19,7 @@ export const PYTHON_CHAPTERS: ChapterMeta[] = [
       L(1, "what-is-python", "What Is Python & Why Use It in Power BI?", {
         contentDir: "ch01/01-what-is-python",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788813628/ltv-python/ch01-01-what-is-python.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788952943/ltv-python/ch01-01-what-is-python.mp4",
         durationLabel: "2 min 10 s",
       }),
       L(2, "installing-python", "Installing Python for Power BI", {
@@ -61,7 +61,7 @@ export const PYTHON_CHAPTERS: ChapterMeta[] = [
       L(6, "intro-to-pandas", "Introduction to Pandas", {
         contentDir: "ch03/06-intro-to-pandas",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788815653/ltv-python/ch03-06-intro-to-pandas.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953060/ltv-python/ch03-06-intro-to-pandas.mp4",
         durationLabel: "2 min 10 s",
       }),
       L(7, "dataframes", "Understanding DataFrames", {
@@ -163,7 +163,7 @@ export const PYTHON_CHAPTERS: ChapterMeta[] = [
       L(20, "python-vs-power-query-vs-dax", "Python vs. Power Query vs. DAX", {
         contentDir: "ch06/20-python-vs-power-query-vs-dax",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788818560/ltv-python/ch06-20-python-vs-power-query-vs-dax.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953193/ltv-python/ch06-20-python-vs-power-query-vs-dax.mp4",
         durationLabel: "2 min 44 s",
       }),
     ],

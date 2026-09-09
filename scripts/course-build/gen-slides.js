@@ -92,6 +92,37 @@ function fitLabelSize(text, maxWidth, startSize, minSize) {
   return size;
 }
 
+// Break `text` into lines that each fit within maxWidth at the given
+// font size, shrinking the font (down to minSize) first if even a single
+// word can't fit — this is what stepsCard() uses for the "sub" line so a
+// long sub-label wraps inside its own box instead of overflowing into the
+// neighboring step's box (the original single-line, fixed-size render did
+// exactly that whenever a sub was longer than a couple of words).
+function wrapToFit(text, maxWidth, startSize, minSize, avgCharWidth = 0.55) {
+  const words = String(text || "").split(/\s+/).filter(Boolean);
+  if (words.length === 0) return { size: startSize, lines: [] };
+
+  let size = startSize;
+  const longest = Math.max(...words.map((w) => w.length));
+  while (size > minSize && longest * size * avgCharWidth > maxWidth) {
+    size -= 2;
+  }
+
+  const lines = [];
+  let cur = "";
+  for (const w of words) {
+    const trial = cur ? `${cur} ${w}` : w;
+    if (!cur || trial.length * size * avgCharWidth <= maxWidth) {
+      cur = trial;
+    } else {
+      lines.push(cur);
+      cur = w;
+    }
+  }
+  if (cur) lines.push(cur);
+  return { size, lines };
+}
+
 function stepsCard(spec) {
   const steps = spec.steps || [];
   const n = steps.length;
@@ -100,16 +131,28 @@ function stepsCard(spec) {
   if (bw * n + gap * (n - 1) > W - 160) {
     bw = Math.floor((W - 160 - gap * (n - 1)) / n);
   }
+
+  const subMaxWidth = bw - 32;
+  const wrapped = steps.map((s) => wrapToFit(s.sub, subMaxWidth, 22, 15));
+  const subLineH = 27;
+  const maxSubLines = Math.max(1, ...wrapped.map((w) => w.lines.length));
+  const boxH = Math.max(150, 92 + maxSubLines * subLineH);
+
   const x0 = (W - (bw * n + gap * (n - 1))) / 2, y0 = 470;
   let nodes = "";
   steps.forEach((s, i) => {
     const x = x0 + i * (bw + gap);
     const labelSize = fitLabelSize(String(s.label), bw - 32, 40, 18);
-    nodes += `<rect x="${x}" y="${y0}" width="${bw}" height="150" fill="none" stroke="${C.gold}" stroke-width="2"/>
+    const { size: subSize, lines: subLines } = wrapped[i];
+    const subStartY = y0 + 108;
+    const subTspans = subLines
+      .map((line, li) => `<tspan x="${x + bw / 2}" dy="${li === 0 ? 0 : subLineH}">${esc(line)}</tspan>`)
+      .join("");
+    nodes += `<rect x="${x}" y="${y0}" width="${bw}" height="${boxH}" fill="none" stroke="${C.gold}" stroke-width="2"/>
     <text x="${x + bw / 2}" y="${y0 + 62}" text-anchor="middle" font-family="${SERIF}" font-size="${labelSize}" fill="${C.parchment}">${esc(s.label)}</text>
-    <text x="${x + bw / 2}" y="${y0 + 108}" text-anchor="middle" font-family="${SANS}" font-size="22" fill="${C.goldPale}">${esc(s.sub || "")}</text>
+    <text x="${x + bw / 2}" y="${subStartY}" text-anchor="middle" font-family="${SANS}" font-size="${subSize}" fill="${C.goldPale}">${subTspans}</text>
     <text x="${x + bw / 2}" y="${y0 - 30}" text-anchor="middle" font-family="${SERIF}" font-size="34" fill="${C.gold}">0${i + 1}</text>`;
-    if (i < n - 1) nodes += `<text x="${x + bw + gap / 2}" y="${y0 + 88}" text-anchor="middle" font-family="${SANS}" font-size="40" fill="${C.gold}">→</text>`;
+    if (i < n - 1) nodes += `<text x="${x + bw + gap / 2}" y="${y0 + boxH / 2 + 14}" text-anchor="middle" font-family="${SANS}" font-size="40" fill="${C.gold}">→</text>`;
   });
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
   <rect width="${W}" height="${H}" fill="${C.deep}"/>
