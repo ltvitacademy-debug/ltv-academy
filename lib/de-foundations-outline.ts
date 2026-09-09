@@ -280,7 +280,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/53-groupby",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(54, "aggregations", "Aggregations"),
+      L(54, "aggregations", "Aggregations", {
+        contentDir: "ch04/54-aggregations",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(55, "pyspark-joins", "PySpark Joins"),
       L(56, "union", "union()"),
       L(57, "window-functions", "Window Functions"),
