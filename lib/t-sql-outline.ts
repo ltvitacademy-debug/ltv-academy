@@ -636,7 +636,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788939737/ltv-t-sql/ch10-93-temp-tables-vs-variables-vs-ctes.mp4",
         durationLabel: "2 min 25 s",
       }),
-      L(94, "performance-anti-patterns", "Common T-SQL Performance Anti-Patterns"),
+      L(94, "performance-anti-patterns", "Common T-SQL Performance Anti-Patterns", {
+        contentDir: "ch10/94-performance-anti-patterns",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788939933/ltv-t-sql/ch10-94-performance-anti-patterns.mp4",
+        durationLabel: "2 min 41 s",
+      }),
     ],
   },
   {

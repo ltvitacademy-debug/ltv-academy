@@ -1,0 +1,55 @@
+# Lesson 94 — Common T-SQL Performance Anti-Patterns · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+This chapter's finale: five habits that quietly wreck performance, each one
+tying back to a tool you now have — execution plans, STATISTICS IO and
+TIME, SARGability, and indexing.
+
+## S2 · CODE CARD (SELECT *)
+
+Anti-pattern one: SELECT star. It pulls every column, even ones you never
+use — and it can silently defeat a covering index. If the index only holds
+the columns you actually need, but you ask for all of them, SQL Server
+falls back to a lookup or a scan. Name your columns.
+
+## S3 · CODE CARD (non-SARGable / implicit conversion)
+
+Anti-pattern two: non-SARGable predicates and implicit conversions,
+straight from Lesson 87. Wrapping a column in a function, or comparing
+mismatched data types, blocks the index every single time. This is the
+single most common reason a query that should be fast is scanning the
+whole table instead.
+
+## S4 · CODE CARD (cursors)
+
+Anti-pattern three: cursors instead of set-based logic. SQL Server's engine
+is built to process sets of rows efficiently, not to loop one row at a
+time. A cursor asks it to abandon that strength. If you're reaching for
+FETCH NEXT, ask whether the same result fits in one UPDATE or INSERT
+statement instead.
+
+## S5 · CODE CARD (scalar UDF in WHERE)
+
+Anti-pattern four, and maybe the sneakiest: a scalar function called inside
+a WHERE clause. It gets invoked once for every single row — a hidden
+cursor — and it's also non-SARGable, so no index helps either. Rewriting
+it as a plain comparison, like a date range, fixes both problems at once.
+
+## S6 · STEPS CARD (checklist)
+
+So before you ship any query: are you selecting only what you need, is
+every predicate SARGable, could a loop be one set-based statement, and did
+you actually verify the plan and the logical reads rather than just
+assuming it's fine?
+
+## S7 · OUTRO CARD
+
+That closes out Performance Tuning. Twelve lessons, and now a real toolkit
+for finding and fixing slow T-SQL. Next up, Chapter 11: Database Design
+Fundamentals — keys, constraints, relationships, and normalization. See you
+there.
