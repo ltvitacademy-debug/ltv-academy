@@ -174,7 +174,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/28-why-apache-spark",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(29, "distributed-computing", "Distributed Computing"),
+      L(29, "distributed-computing", "Distributed Computing", {
+        contentDir: "ch03/29-distributed-computing",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(30, "spark-architecture", "Spark Architecture"),
       L(31, "driver-and-executors", "Driver and Executors"),
       L(32, "clusters-and-nodes", "Clusters and Nodes"),
