@@ -270,7 +270,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch05/55-monitoring-pipeline-runs",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(56, "lakeflow-vs-traditional-adf-pipelines", "Lakeflow vs. Traditional ADF Pipelines"),
+      L(56, "lakeflow-vs-traditional-adf-pipelines", "Lakeflow vs. Traditional ADF Pipelines", {
+        contentDir: "ch05/56-lakeflow-vs-traditional-adf-pipelines",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(57, "course-recap", "Course Recap — From Storage to Orchestrated Pipelines"),
     ],
   },
