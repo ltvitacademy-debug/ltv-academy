@@ -474,7 +474,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788934994/ltv-t-sql/ch07-69-stored-procedures-parameters.mp4",
         durationLabel: "2 min 14 s",
       }),
-      L(70, "dynamic-sql", "Dynamic SQL with sp_executesql"),
+      L(70, "dynamic-sql", "Dynamic SQL with sp_executesql", {
+        contentDir: "ch07/70-dynamic-sql",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788935166/ltv-t-sql/ch07-70-dynamic-sql.mp4",
+        durationLabel: "2 min 22 s",
+      }),
       L(71, "merge-statement", "The MERGE Statement"),
     ],
   },
