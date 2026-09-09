@@ -56,7 +56,12 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788958889/ltv-de-foundations/ch01-05-rbac-vs-acls.mp4",
         durationLabel: "1 min 44 s",
       }),
-      L(6, "managed-identities-for-storage", "Managed Identities for Storage"),
+      L(6, "managed-identities-for-storage", "Managed Identities for Storage", {
+        contentDir: "ch01/06-managed-identities-for-storage",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788959064/ltv-de-foundations/ch01-06-managed-identities-for-storage.mp4",
+        durationLabel: "1 min 32 s",
+      }),
       L(7, "sas-tokens", "SAS Tokens"),
       L(8, "csv-vs-json-vs-parquet-vs-delta", "CSV vs. JSON vs. Parquet vs. Delta"),
       L(9, "partitioning-data", "Partitioning Data"),
