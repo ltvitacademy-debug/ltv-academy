@@ -408,7 +408,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788933460/ltv-t-sql/ch06-59-indexed-views.mp4",
         durationLabel: "2 min 7 s",
       }),
-      L(60, "pivot", "PIVOT"),
+      L(60, "pivot", "PIVOT", {
+        contentDir: "ch06/60-pivot",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788933622/ltv-t-sql/ch06-60-pivot.mp4",
+        durationLabel: "2 min 13 s",
+      }),
       L(61, "unpivot", "UNPIVOT"),
     ],
   },
