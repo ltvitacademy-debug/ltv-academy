@@ -66,7 +66,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788925625/ltv-t-sql/ch01-07-case-simple.mp4",
         durationLabel: "1 min 58 s",
       }),
-      L(8, "case-searched", "CASE Expressions (Searched)"),
+      L(8, "case-searched", "CASE Expressions (Searched)", {
+        contentDir: "ch01/08-case-searched",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788925783/ltv-t-sql/ch01-08-case-searched.mp4",
+        durationLabel: "2 min 12 s",
+      }),
       L(9, "distinct", "DISTINCT"),
       L(10, "comments-formatting", "Comments & Query Formatting"),
     ],
