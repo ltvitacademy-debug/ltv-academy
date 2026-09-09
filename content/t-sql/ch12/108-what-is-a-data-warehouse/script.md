@@ -1,0 +1,40 @@
+# Lesson 108 — What Is a Data Warehouse? · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Last lesson drew the line between OLTP and OLAP. Now let's define the
+thing that actually lives on the OLAP side: the data warehouse itself.
+
+## S2 · STEPS CARD (four properties)
+
+The classic definition breaks it into four properties. Subject-oriented:
+organized around sales, customers, products — not whichever application
+happened to create the data. Integrated: consistent naming and formats
+across every source. Time-variant: it keeps HISTORY, not just the
+current state. And non-volatile: once loaded, data gets appended, never
+updated or deleted in place.
+
+## S3 · CODE CARD (time-variant)
+
+Here's time-variant, for real. Every row in Fact Internet Sales is
+anchored to a specific order date. Ask what two thousand eleven looked
+like, and you get a real, stable answer — nothing since then has quietly
+overwritten it, the way an order's status might just get updated in place
+over in the OLTP system.
+
+## S4 · CODE CARD (data origin)
+
+And here's the thing to remember: a warehouse doesn't originate data.
+It's FED — by one or more OLTP systems, through a periodic loading
+process. AdventureWorks D-W twenty fourteen is, conceptually, that same
+company's transactional history, reshaped specifically for analysis.
+
+## S5 · OUTRO CARD
+
+Subject-oriented, integrated, time-variant, non-volatile — four words, one
+very different kind of database. Next lesson: a smaller, more focused
+slice of the same idea — the data mart. See you there.

@@ -732,7 +732,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788941929/ltv-t-sql/ch12-107-oltp-vs-olap.mp4",
         durationLabel: "2 min 9 s",
       }),
-      L(108, "what-is-a-data-warehouse", "What Is a Data Warehouse?"),
+      L(108, "what-is-a-data-warehouse", "What Is a Data Warehouse?", {
+        contentDir: "ch12/108-what-is-a-data-warehouse",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788942079/ltv-t-sql/ch12-108-what-is-a-data-warehouse.mp4",
+        durationLabel: "1 min 48 s",
+      }),
       L(109, "what-is-a-data-mart", "What Is a Data Mart?"),
       L(110, "what-is-a-data-lake", "What Is a Data Lake?"),
       L(111, "warehouse-vs-lake-vs-mart", "Data Warehouse vs. Data Lake vs. Data Mart"),
