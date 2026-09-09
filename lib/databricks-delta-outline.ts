@@ -178,7 +178,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/35-handling-late-arriving-data",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(36, "data-quality-checks", "Data Quality Checks in the Medallion Flow"),
+      L(36, "data-quality-checks", "Data Quality Checks in the Medallion Flow", {
+        contentDir: "ch03/36-data-quality-checks",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(37, "building-a-full-medallion-pipeline", "Building a Full Medallion Pipeline"),
     ],
   },

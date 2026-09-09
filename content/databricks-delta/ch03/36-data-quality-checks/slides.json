@@ -1,0 +1,36 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Azure Databricks & Delta Lake · Chapter Three",
+    "titlePlain": "Data Quality Checks in the Medallion ",
+    "titleEmphasis": "Flow",
+    "titleSuffix": "",
+    "subtitle": "Lesson 36 · Medallion Architecture"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Quarantine — a third option beyond keep or drop",
+    "code": "valid_rows = cleaned.filter(\n  (col(\"fare_amount\") > 0) & (col(\"trip_distance\") > 0)\n)\nquarantined_rows = cleaned.filter(\n  (col(\"fare_amount\") <= 0) | (col(\"trip_distance\") <= 0)\n)\n\nvalid_rows.write.format(\"delta\").mode(\"append\").saveAsTable(\"silver.trips\")\nquarantined_rows.write.format(\"delta\").mode(\"append\").saveAsTable(\"silver.trips_quarantine\")",
+    "caption": "Not Lesson 51's drop-or-fill binary -- nothing silently discarded, nothing bad reaches gold."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Tracking quality over time",
+    "code": "quality_metrics = spark.sql(\"\"\"\n  SELECT current_date() AS check_date, COUNT(*) AS total_rows,\n         SUM(CASE WHEN fare_amount <= 0 THEN 1 ELSE 0 END) AS bad_fare_count\n  FROM bronze.trips WHERE _ingested_at >= current_date()\n\"\"\")\nquality_metrics.write.format(\"delta\").mode(\"append\").saveAsTable(\"gold.data_quality_metrics\")",
+    "caption": "A genuine small gold table -- a spike here is an early warning worth investigating."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Two different claims",
+    "code": "# Job Run History: \"Succeeded\"\n#   -> the CODE executed without an exception\n#\n# Quarantine counts + quality metrics\n#   -> whether the DATA was actually good\n#\n# Genuinely different questions.",
+    "caption": "A successful run doesn't guarantee the data processed was trustworthy."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 37",
+    "titlePlain": "Building a Full Medallion ",
+    "titleEmphasis": "Pipeline",
+    "titleSuffix": "",
+    "subtitle": "The chapter finale, all together."
+  }
+]
