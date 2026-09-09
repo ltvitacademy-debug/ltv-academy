@@ -600,7 +600,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788938321/ltv-t-sql/ch10-87-sargable-predicates.mp4",
         durationLabel: "2 min 20 s",
       }),
-      L(88, "clustered-vs-nonclustered", "Clustered vs. Nonclustered Indexes: Choosing Wisely"),
+      L(88, "clustered-vs-nonclustered", "Clustered vs. Nonclustered Indexes: Choosing Wisely", {
+        contentDir: "ch10/88-clustered-vs-nonclustered",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788938495/ltv-t-sql/ch10-88-clustered-vs-nonclustered.mp4",
+        durationLabel: "2 min 23 s",
+      }),
       L(89, "filtered-included-indexes", "Filtered Indexes and Included Columns"),
       L(90, "execution-plans", "Reading Execution Plans: Scans vs. Seeks"),
       L(91, "set-statistics-time-io", "SET STATISTICS TIME and IO in Practice"),
