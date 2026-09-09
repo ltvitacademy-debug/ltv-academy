@@ -42,7 +42,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/04-clusters-and-compute",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(5, "all-purpose-vs-job-clusters", "All-Purpose vs. Job Clusters"),
+      L(5, "all-purpose-vs-job-clusters", "All-Purpose vs. Job Clusters", {
+        contentDir: "ch01/05-all-purpose-vs-job-clusters",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(6, "notebooks-cells-and-languages", "Notebooks, Cells, and Languages"),
       L(7, "attaching-a-notebook-to-a-cluster", "Attaching a Notebook to a Cluster"),
       L(8, "dbfs-databricks-file-system", "DBFS — Databricks File System"),
