@@ -92,7 +92,12 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788959969/ltv-de-foundations/ch01-11-raw-cleansed-curated-zones.mp4",
         durationLabel: "1 min 47 s",
       }),
-      L(12, "bronze-silver-gold-architecture", "Bronze, Silver, Gold Architecture"),
+      L(12, "bronze-silver-gold-architecture", "Bronze, Silver, Gold Architecture", {
+        contentDir: "ch01/12-bronze-silver-gold-architecture",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788960148/ltv-de-foundations/ch01-12-bronze-silver-gold-architecture.mp4",
+        durationLabel: "1 min 53 s",
+      }),
     ],
   },
   {
