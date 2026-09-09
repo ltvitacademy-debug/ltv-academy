@@ -654,7 +654,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788940117/ltv-t-sql/ch11-95-primary-keys.mp4",
         durationLabel: "2 min 14 s",
       }),
-      L(96, "foreign-keys", "Foreign Keys"),
+      L(96, "foreign-keys", "Foreign Keys", {
+        contentDir: "ch11/96-foreign-keys",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788940277/ltv-t-sql/ch11-96-foreign-keys.mp4",
+        durationLabel: "2 min 11 s",
+      }),
       L(97, "unique-constraints", "UNIQUE Constraints"),
       L(98, "not-null-check", "NOT NULL and CHECK Constraints"),
       L(99, "one-to-one", "Table Relationships: One-to-One"),
