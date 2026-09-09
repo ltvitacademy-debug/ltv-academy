@@ -170,7 +170,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Apache Spark Fundamentals",
     lessons: [
-      L(28, "why-apache-spark", "Why Apache Spark?"),
+      L(28, "why-apache-spark", "Why Apache Spark?", {
+        contentDir: "ch03/28-why-apache-spark",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(29, "distributed-computing", "Distributed Computing"),
       L(30, "spark-architecture", "Spark Architecture"),
       L(31, "driver-and-executors", "Driver and Executors"),
