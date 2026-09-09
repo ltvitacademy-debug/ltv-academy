@@ -208,7 +208,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/41-managed-vs-external-tables",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(42, "access-control-grant-and-revoke", "Access Control — GRANT and REVOKE"),
+      L(42, "access-control-grant-and-revoke", "Access Control — GRANT and REVOKE", {
+        contentDir: "ch04/42-access-control-grant-and-revoke",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(43, "row-and-column-level-security", "Row-Level and Column-Level Security"),
       L(44, "data-lineage-in-unity-catalog", "Data Lineage in Unity Catalog"),
       L(45, "unity-catalog-volumes", "Unity Catalog Volumes"),
