@@ -576,7 +576,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788937580/ltv-t-sql/ch10-83-what-is-performance-tuning.mp4",
         durationLabel: "2 min 18 s",
       }),
-      L(84, "cartesian-product", "The Cartesian Product: What Happens When Joins Go Wrong"),
+      L(84, "cartesian-product", "The Cartesian Product: What Happens When Joins Go Wrong", {
+        contentDir: "ch10/84-cartesian-product",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788937762/ltv-t-sql/ch10-84-cartesian-product.mp4",
+        durationLabel: "2 min 20 s",
+      }),
       L(85, "joins-vs-subqueries", "Joins vs. Subqueries: Which Is Faster, and Why"),
       L(86, "exists-vs-in-vs-join", "EXISTS vs. IN vs. JOIN for Existence Checks"),
       L(87, "sargable-predicates", "SARGable vs. Non-SARGable WHERE Clauses"),
