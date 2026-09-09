@@ -276,7 +276,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/52-removing-duplicates",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(53, "groupby", "groupBy()"),
+      L(53, "groupby", "groupBy()", {
+        contentDir: "ch04/53-groupby",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(54, "aggregations", "Aggregations"),
       L(55, "pyspark-joins", "PySpark Joins"),
       L(56, "union", "union()"),
