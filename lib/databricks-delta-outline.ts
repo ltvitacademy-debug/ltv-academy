@@ -96,7 +96,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/16-reading-and-writing-delta-tables",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(17, "the-delta-transaction-log", "The Delta Transaction Log"),
+      L(17, "the-delta-transaction-log", "The Delta Transaction Log", {
+        contentDir: "ch02/17-the-delta-transaction-log",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(18, "acid-transactions-in-delta-lake", "ACID Transactions in Delta Lake"),
       L(19, "schema-enforcement", "Schema Enforcement"),
       L(20, "schema-evolution", "Schema Evolution"),
