@@ -256,7 +256,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch04/47-when-and-conditional-logic",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(48, "data-type-conversion", "Data Type Conversion"),
+      L(48, "data-type-conversion", "Data Type Conversion", {
+        contentDir: "ch04/48-data-type-conversion",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(49, "string-functions", "String Functions"),
       L(50, "date-functions", "Date Functions"),
       L(51, "null-handling", "Null Handling"),
