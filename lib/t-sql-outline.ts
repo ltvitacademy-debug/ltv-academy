@@ -120,7 +120,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926892/ltv-t-sql/ch02-15-in-and-between.mp4",
         durationLabel: "2 min 12 s",
       }),
-      L(16, "null-handling", "Handling NULL (IS NULL / IS NOT NULL)"),
+      L(16, "null-handling", "Handling NULL (IS NULL / IS NOT NULL)", {
+        contentDir: "ch02/16-null-handling",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788927055/ltv-t-sql/ch02-16-null-handling.mp4",
+        durationLabel: "2 min 45 s",
+      }),
       L(17, "order-by", "ORDER BY: Ascending & Descending"),
       L(18, "top-top-percent", "TOP and TOP PERCENT"),
       L(19, "top-with-ties", "TOP WITH TIES"),
