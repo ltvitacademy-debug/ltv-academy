@@ -84,7 +84,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/13-what-is-delta-lake",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(14, "delta-tables-vs-parquet-tables", "Delta Tables vs. Parquet Tables"),
+      L(14, "delta-tables-vs-parquet-tables", "Delta Tables vs. Parquet Tables", {
+        contentDir: "ch02/14-delta-tables-vs-parquet-tables",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(15, "creating-a-delta-table", "Creating a Delta Table"),
       L(16, "reading-and-writing-delta-tables", "Reading and Writing Delta Tables"),
       L(17, "the-delta-transaction-log", "The Delta Transaction Log"),
