@@ -162,7 +162,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/31-incremental-processing-patterns",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(32, "autoloader", "Autoloader — Incremental File Ingestion"),
+      L(32, "autoloader", "Autoloader — Incremental File Ingestion", {
+        contentDir: "ch03/32-autoloader",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(33, "structured-streaming-basics", "Structured Streaming Basics"),
       L(34, "streaming-from-bronze-to-silver", "Streaming from Bronze to Silver"),
       L(35, "handling-late-arriving-data", "Handling Late-Arriving Data"),
