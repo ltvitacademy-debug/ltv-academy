@@ -606,7 +606,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788938495/ltv-t-sql/ch10-88-clustered-vs-nonclustered.mp4",
         durationLabel: "2 min 23 s",
       }),
-      L(89, "filtered-included-indexes", "Filtered Indexes and Included Columns"),
+      L(89, "filtered-included-indexes", "Filtered Indexes and Included Columns", {
+        contentDir: "ch10/89-filtered-included-indexes",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788938659/ltv-t-sql/ch10-89-filtered-included-indexes.mp4",
+        durationLabel: "2 min 8 s",
+      }),
       L(90, "execution-plans", "Reading Execution Plans: Scans vs. Seeks"),
       L(91, "set-statistics-time-io", "SET STATISTICS TIME and IO in Practice"),
       L(92, "set-statistics-profile-xml", "SET STATISTICS PROFILE and XML"),
