@@ -274,7 +274,10 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch05/56-lakeflow-vs-traditional-adf-pipelines",
         // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
       }),
-      L(57, "course-recap", "Course Recap — From Storage to Orchestrated Pipelines"),
+      L(57, "course-recap", "Course Recap — From Storage to Orchestrated Pipelines", {
+        contentDir: "ch05/57-course-recap",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
     ],
   },
 ];
