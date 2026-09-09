@@ -1,0 +1,42 @@
+# Lesson 112 — ETL vs. ELT · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Getting data from a source system into a warehouse always involves the
+same three steps. The question is: in what order, and where does the
+middle one actually happen?
+
+## S2 · STEPS CARD (ETL vs ELT)
+
+E-T-L transforms the data in a separate staging area or engine FIRST,
+then loads the already-clean result. E-L-T loads the raw data into the
+target system FIRST, and transforms it there, using the target's own
+processing power.
+
+## S3 · CODE CARD (the transform)
+
+Here's what that transform actually looks like in T-SQL. Getting a row
+from Adventure Works's order details into the warehouse's fact table
+isn't a simple copy — it needs real work: looking up the right date key,
+the right product key, computing sales amount from price and discount.
+This single INSERT SELECT statement, joining staged data against the
+warehouse's own dimension tables, IS the transform step.
+
+## S4 · CODE CARD (why ELT leans on T-SQL)
+
+And that's exactly why T-SQL itself can BE the transformation engine in
+an ELT pipeline. Because the transform happens inside the destination
+database, an ordinary SELECT with joins does the whole job. Modern cloud
+warehouses lean toward ELT for exactly this reason — destination compute
+is cheap, so why maintain a whole separate transformation tool?
+
+## S5 · OUTRO CARD
+
+Same three letters, different order, and a real difference in where the
+work happens. Next lesson: fact tables and dimension tables — the two
+table types every warehouse, including this one, is actually built from.
+See you there.
