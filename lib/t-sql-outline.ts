@@ -588,7 +588,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788937954/ltv-t-sql/ch10-85-joins-vs-subqueries.mp4",
         durationLabel: "2 min 21 s",
       }),
-      L(86, "exists-vs-in-vs-join", "EXISTS vs. IN vs. JOIN for Existence Checks"),
+      L(86, "exists-vs-in-vs-join", "EXISTS vs. IN vs. JOIN for Existence Checks", {
+        contentDir: "ch10/86-exists-vs-in-vs-join",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788938145/ltv-t-sql/ch10-86-exists-vs-in-vs-join.mp4",
+        durationLabel: "2 min 18 s",
+      }),
       L(87, "sargable-predicates", "SARGable vs. Non-SARGable WHERE Clauses"),
       L(88, "clustered-vs-nonclustered", "Clustered vs. Nonclustered Indexes: Choosing Wisely"),
       L(89, "filtered-included-indexes", "Filtered Indexes and Included Columns"),
