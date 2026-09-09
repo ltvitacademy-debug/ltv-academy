@@ -444,7 +444,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788934244/ltv-t-sql/ch07-64-if-else.mp4",
         durationLabel: "2 min 7 s",
       }),
-      L(65, "begin-end", "BEGIN/END Blocks"),
+      L(65, "begin-end", "BEGIN/END Blocks", {
+        contentDir: "ch07/65-begin-end",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788934389/ltv-t-sql/ch07-65-begin-end.mp4",
+        durationLabel: "2 min 0 s",
+      }),
       L(66, "while-loops", "WHILE Loops"),
       L(67, "cursors", "Cursors: Declaring and Fetching"),
       L(68, "stored-procedures-creating", "Stored Procedures: Creating"),
