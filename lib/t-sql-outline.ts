@@ -744,7 +744,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788942219/ltv-t-sql/ch12-109-what-is-a-data-mart.mp4",
         durationLabel: "1 min 37 s",
       }),
-      L(110, "what-is-a-data-lake", "What Is a Data Lake?"),
+      L(110, "what-is-a-data-lake", "What Is a Data Lake?", {
+        contentDir: "ch12/110-what-is-a-data-lake",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788942370/ltv-t-sql/ch12-110-what-is-a-data-lake.mp4",
+        durationLabel: "1 min 33 s",
+      }),
       L(111, "warehouse-vs-lake-vs-mart", "Data Warehouse vs. Data Lake vs. Data Mart"),
       L(112, "etl-vs-elt", "ETL vs. ELT"),
       L(113, "fact-dimension-tables", "Fact Tables and Dimension Tables"),

@@ -1,0 +1,38 @@
+# Lesson 110 — What Is a Data Lake? · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Every table you've built in this course demands structure before a
+single row goes in. A data lake flips that completely — raw data, any
+format, no structure required at write time at all.
+
+## S2 · CODE CARD (schema-on-write)
+
+This is schema-on-write: define the structure first, THEN load data that
+has to conform to it. Fast to query later, but you pay the structuring
+cost up front, every time.
+
+## S3 · CODE CARD (schema-on-read)
+
+A data lake does schema-on-read instead: dump raw CSV, JSON, even
+unstructured files in as-is, and only decide how to interpret them once
+someone actually queries them. Flexible and cheap to ingest — but every
+query has to do some of that structuring work itself.
+
+## S4 · CODE CARD (OPENROWSET)
+
+T-SQL actually reaches into this world directly. OPEN ROW SET lets you
+query a raw file sitting in a lake straight from T-SQL — no table, no
+load step, structure applied only at the moment you query it. This is
+exactly the idea behind Synapse's serverless SQL pools.
+
+## S5 · OUTRO CARD
+
+A warehouse holds data someone deliberately decided was worth
+structuring. A lake holds everything, cheap enough that figuring out
+what's valuable later beats trying to predict it up front. Next lesson:
+putting warehouse, lake, and mart side by side. See you there.
