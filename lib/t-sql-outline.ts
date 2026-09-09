@@ -618,7 +618,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788939159/ltv-t-sql/ch10-90-execution-plans.mp4",
         durationLabel: "2 min 15 s",
       }),
-      L(91, "set-statistics-time-io", "SET STATISTICS TIME and IO in Practice"),
+      L(91, "set-statistics-time-io", "SET STATISTICS TIME and IO in Practice", {
+        contentDir: "ch10/91-set-statistics-time-io",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788939349/ltv-t-sql/ch10-91-statistics-time-io.mp4",
+        durationLabel: "2 min 10 s",
+      }),
       L(92, "set-statistics-profile-xml", "SET STATISTICS PROFILE and XML"),
       L(93, "temp-tables-vs-variables-vs-ctes", "Temp Tables vs. Table Variables vs. CTEs: Performance Tradeoffs"),
       L(94, "performance-anti-patterns", "Common T-SQL Performance Anti-Patterns"),
