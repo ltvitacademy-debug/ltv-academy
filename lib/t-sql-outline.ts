@@ -294,7 +294,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788930682/ltv-t-sql/ch05-41-char-vs-varchar.mp4",
         durationLabel: "2 min 9 s",
       }),
-      L(42, "nvarchar-unicode", "NVARCHAR and Unicode"),
+      L(42, "nvarchar-unicode", "NVARCHAR and Unicode", {
+        contentDir: "ch05/42-nvarchar-unicode",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788930839/ltv-t-sql/ch05-42-nvarchar-unicode.mp4",
+        durationLabel: "2 min 17 s",
+      }),
       L(43, "varchar-max", "VARCHAR(MAX)"),
       L(44, "len-upper-lower", "LEN, UPPER, LOWER"),
       L(45, "substring-charindex", "SUBSTRING and CHARINDEX"),

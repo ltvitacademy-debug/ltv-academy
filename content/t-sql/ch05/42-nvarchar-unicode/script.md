@@ -1,0 +1,45 @@
+# Lesson 42 — NVARCHAR and Unicode · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Plain VARCHAR works great for English text. But the moment you need to
+store a name like José, or María, or a name written in Chinese or
+Japanese characters, VARCHAR can genuinely fail you.
+
+## S2 · CODE CARD (the problem)
+
+VARCHAR uses roughly one byte per character — plenty for English letters
+and basic punctuation, but not enough to reliably represent accented
+letters, Cyrillic, Chinese, Japanese, Arabic, or emoji. That's exactly the
+gap Unicode fills — a standard built to represent virtually every
+character in every written language.
+
+## S3 · CODE CARD (NVARCHAR fix)
+
+NVARCHAR is the fix. It behaves exactly like VARCHAR — variable length,
+up to whatever maximum you declare — but stores those characters using
+Unicode. Names like José, María, or characters written in Japanese store
+correctly and reliably, no matter what regional settings the server
+happens to have. The tradeoff: Unicode storage generally costs about
+twice the space per character. Real overhead, but for anything that might
+hold international names or user-generated content — which is most real
+applications — it's worth paying.
+
+## S4 · CODE CARD (N prefix)
+
+One more piece: when you write a Unicode literal directly in your T-SQL,
+prefix it with the letter N. Where first name equals N-quote-José-quote.
+Without that N, SQL Server may interpret the literal through its default
+non-Unicode code page, which can silently mangle characters outside basic
+English — even when you're querying a perfectly ordinary column.
+
+## S5 · OUTRO CARD
+
+VARCHAR for plain English text, NVARCHAR when international characters
+are even remotely possible, and the N prefix on any Unicode literal you
+type yourself. Next lesson: VARCHAR of MAX, for text that could genuinely
+be huge. See you there.
