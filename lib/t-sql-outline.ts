@@ -324,7 +324,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788931426/ltv-t-sql/ch05-46-stuff-vs-replace.mp4",
         durationLabel: "1 min 59 s",
       }),
-      L(47, "trim-ltrim-rtrim", "TRIM, LTRIM, RTRIM"),
+      L(47, "trim-ltrim-rtrim", "TRIM, LTRIM, RTRIM", {
+        contentDir: "ch05/47-trim-ltrim-rtrim",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788931575/ltv-t-sql/ch05-47-trim-ltrim-rtrim.mp4",
+        durationLabel: "2 min 5 s",
+      }),
       L(48, "date-time-data-types", "Date and Time Data Types"),
       L(49, "date-functions", "Date Functions: GETDATE, DATEADD, DATEDIFF"),
       L(50, "cast-convert", "Converting and Formatting Data (CAST/CONVERT)"),
