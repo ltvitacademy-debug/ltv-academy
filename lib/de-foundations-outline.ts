@@ -220,7 +220,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
     n: 4,
     title: "PySpark",
     lessons: [
-      L(39, "creating-dataframes", "Creating DataFrames"),
+      L(39, "creating-dataframes", "Creating DataFrames", {
+        contentDir: "ch04/39-creating-dataframes",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(40, "reading-csv", "Reading CSV"),
       L(41, "reading-json", "Reading JSON"),
       L(42, "reading-parquet", "Reading Parquet"),
