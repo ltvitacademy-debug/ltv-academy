@@ -104,7 +104,10 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "Python for Data Engineers",
     lessons: [
-      L(13, "python-for-data-engineering", "Python for Data Engineering"),
+      L(13, "python-for-data-engineering", "Python for Data Engineering", {
+        contentDir: "ch02/13-python-for-data-engineering",
+        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+      }),
       L(14, "variables-and-data-types", "Variables and Data Types"),
       L(15, "lists-and-dictionaries", "Lists and Dictionaries"),
       L(16, "conditions", "Conditions"),
