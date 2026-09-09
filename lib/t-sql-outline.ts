@@ -516,7 +516,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788936227/ltv-t-sql/ch08-75-concurrency-blocking.mp4",
         durationLabel: "2 min 6 s",
       }),
-      L(76, "try-catch", "TRY/CATCH Error Handling"),
+      L(76, "try-catch", "TRY/CATCH Error Handling", {
+        contentDir: "ch08/76-try-catch",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788936399/ltv-t-sql/ch08-76-try-catch.mp4",
+        durationLabel: "2 min 1 s",
+      }),
       L(77, "raiserror-throw", "RAISERROR and THROW"),
       L(78, "auth-modes", "SQL Server Authentication Modes"),
     ],

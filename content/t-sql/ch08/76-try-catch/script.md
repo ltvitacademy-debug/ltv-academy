@@ -1,0 +1,43 @@
+# Lesson 76 — TRY/CATCH Error Handling · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Without any error handling, a runtime error — a bad conversion, a
+constraint violation, a deadlock from last lesson — just stops the
+batch cold, right where it happened. TRY and CATCH let you actually
+intercept that error and decide what happens next.
+
+## S2 · CODE CARD (basic TRY/CATCH)
+
+Begin try, select 1 divided by 0 — a deliberate error. End try. Begin
+catch, print an error occurred, plus error message. End catch. Code
+inside TRY runs completely normally, right up until the instant a
+runtime error happens. Then execution jumps immediately to CATCH,
+skipping whatever was left in TRY. And if nothing ever goes wrong, CATCH
+doesn't run at all.
+
+## S3 · CODE CARD (error functions)
+
+Inside that CATCH block, a handful of functions describe exactly what
+happened. Error number, error message, error line — all three only mean
+anything inside a CATCH block. Call them anywhere else, and they just
+come back NULL.
+
+## S4 · CODE CARD (TRY/CATCH + transaction)
+
+And here's the pattern that ties everything from this chapter together.
+Begin try, begin transaction, run both updates, commit. End try. Begin
+catch — roll back the transaction, then print what went wrong. If
+anything at all fails inside that transaction, CATCH explicitly rolls it
+back, guaranteeing atomicity even when something genuinely unexpected
+happens, instead of leaving a half-finished change sitting there.
+
+## S5 · OUTRO CARD
+
+TRY runs your code; CATCH takes over the instant something breaks. Next
+lesson: RAISERROR and THROW, for raising your own errors deliberately,
+on purpose. See you there.
