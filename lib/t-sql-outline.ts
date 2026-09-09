@@ -300,7 +300,12 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788930839/ltv-t-sql/ch05-42-nvarchar-unicode.mp4",
         durationLabel: "2 min 17 s",
       }),
-      L(43, "varchar-max", "VARCHAR(MAX)"),
+      L(43, "varchar-max", "VARCHAR(MAX)", {
+        contentDir: "ch05/43-varchar-max",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788931001/ltv-t-sql/ch05-43-varchar-max.mp4",
+        durationLabel: "2 min 23 s",
+      }),
       L(44, "len-upper-lower", "LEN, UPPER, LOWER"),
       L(45, "substring-charindex", "SUBSTRING and CHARINDEX"),
       L(46, "stuff-vs-replace", "STUFF vs. REPLACE"),
