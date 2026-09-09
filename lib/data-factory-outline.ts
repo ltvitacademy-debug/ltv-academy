@@ -25,13 +25,13 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
       L(2, "etl-vs-elt", "ETL vs. ELT", {
         contentDir: "ch01/02-etl-vs-elt",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788836007/ltv-data-factory/ch01-02-etl-vs-elt.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788952929/ltv-data-factory/ch01-02-etl-vs-elt.mp4",
         durationLabel: "2 min 18 s",
       }),
       L(3, "adf-vs-ssis-vs-fabric", "Data Factory vs. SSIS vs. Fabric Data Factory", {
         contentDir: "ch01/03-adf-vs-ssis-vs-fabric",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788836425/ltv-data-factory/ch01-03-adf-vs-ssis-vs-fabric.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953055/ltv-data-factory/ch01-03-adf-vs-ssis-vs-fabric.mp4",
         durationLabel: "2 min 29 s",
       }),
       L(4, "creating-a-data-factory", "Creating a Data Factory Instance", {
@@ -115,7 +115,7 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
       L(15, "web-wait-fail-set-variable", "Web, Wait, Fail & Set Variable Activities", {
         contentDir: "ch03/15-web-wait-fail-set-variable",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788860791/ltv-data-factory/ch03-15-web-wait-fail-set-variable.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953166/ltv-data-factory/ch03-15-web-wait-fail-set-variable.mp4",
         durationLabel: "2 min 7 s",
       }),
       L(16, "first-end-to-end-pipeline", "Building Your First End-to-End Pipeline", {
@@ -157,7 +157,7 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
       L(21, "execute-pipeline-activity", "Execute Pipeline Activity", {
         contentDir: "ch04/21-execute-pipeline-activity",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788861818/ltv-data-factory/ch04-21-execute-pipeline-activity.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953241/ltv-data-factory/ch04-21-execute-pipeline-activity.mp4",
         durationLabel: "2 min 2 s",
       }),
       L(22, "expression-language-system-variables", "Expression Language & System Variables", {
@@ -187,7 +187,7 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
       L(25, "source-sink-transformations", "Source & Sink Transformations", {
         contentDir: "ch05/25-source-sink-transformations",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788862974/ltv-data-factory/ch05-25-source-sink-transformations.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953312/ltv-data-factory/ch05-25-source-sink-transformations.mp4",
         durationLabel: "2 min 43 s",
       }),
       L(26, "filter-select-derived-column", "Filter, Select & Derived Column", {
@@ -199,7 +199,7 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
       L(27, "join-aggregate-transformations", "Join & Aggregate Transformations", {
         contentDir: "ch05/27-join-aggregate-transformations",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788862986/ltv-data-factory/ch05-27-join-aggregate-transformations.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953373/ltv-data-factory/ch05-27-join-aggregate-transformations.mp4",
         durationLabel: "2 min 27 s",
       }),
       L(28, "conditional-split-pivot-unpivot", "Conditional Split, Pivot & Unpivot", {
@@ -265,7 +265,7 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
       L(36, "self-hosted-integration-runtime", "Self-Hosted Integration Runtime", {
         contentDir: "ch07/36-self-hosted-integration-runtime",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788864569/ltv-data-factory/ch07-36-self-hosted-integration-runtime.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953433/ltv-data-factory/ch07-36-self-hosted-integration-runtime.mp4",
         durationLabel: "2 min 22 s",
       }),
       L(37, "connecting-on-premises-securely", "Connecting to On-Premises Data Securely", {
@@ -283,7 +283,7 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
       L(38, "the-monitor-hub", "The Monitor Hub", {
         contentDir: "ch08/38-the-monitor-hub",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788865359/ltv-data-factory/ch08-38-the-monitor-hub.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953512/ltv-data-factory/ch08-38-the-monitor-hub.mp4",
         durationLabel: "3 min 5 s",
       }),
       L(39, "alerts-metrics-retry-policies", "Alerts, Metrics & Retry Policies", {
@@ -295,13 +295,13 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
       L(40, "error-handling-patterns", "Error Handling Patterns", {
         contentDir: "ch08/40-error-handling-patterns",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788865368/ltv-data-factory/ch08-40-error-handling-patterns.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953582/ltv-data-factory/ch08-40-error-handling-patterns.mp4",
         durationLabel: "2 min 51 s",
       }),
       L(41, "logging-to-log-analytics", "Logging to Log Analytics", {
         contentDir: "ch08/41-logging-to-log-analytics",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788865370/ltv-data-factory/ch08-41-logging-to-log-analytics.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953645/ltv-data-factory/ch08-41-logging-to-log-analytics.mp4",
         durationLabel: "2 min 32 s",
       }),
     ],
@@ -313,19 +313,19 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
       L(42, "fabric-data-factory-overview", "Fabric Data Factory Overview", {
         contentDir: "ch09/42-fabric-data-factory-overview",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788866458/ltv-data-factory/ch09-42-fabric-data-factory-overview.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953713/ltv-data-factory/ch09-42-fabric-data-factory-overview.mp4",
         durationLabel: "2 min 35 s",
       }),
       L(43, "dataflow-gen2-vs-mapping-data-flows", "Dataflow Gen2 vs. Mapping Data Flows", {
         contentDir: "ch09/43-dataflow-gen2-vs-mapping-data-flows",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788866460/ltv-data-factory/ch09-43-dataflow-gen2-vs-mapping-data-flows.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953778/ltv-data-factory/ch09-43-dataflow-gen2-vs-mapping-data-flows.mp4",
         durationLabel: "2 min 32 s",
       }),
       L(44, "pipelines-in-fabric", "Pipelines in Fabric", {
         contentDir: "ch09/44-pipelines-in-fabric",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788866463/ltv-data-factory/ch09-44-pipelines-in-fabric.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953832/ltv-data-factory/ch09-44-pipelines-in-fabric.mp4",
         durationLabel: "2 min 1 s",
       }),
       L(45, "onelake-as-a-destination", "OneLake as a Destination", {
@@ -337,13 +337,13 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
       L(46, "migrating-adf-to-fabric", "Migrating ADF Pipelines to Fabric", {
         contentDir: "ch09/46-migrating-adf-pipelines-to-fabric",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788866473/ltv-data-factory/ch09-46-migrating-adf-pipelines-to-fabric.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953900/ltv-data-factory/ch09-46-migrating-adf-pipelines-to-fabric.mp4",
         durationLabel: "2 min 35 s",
       }),
       L(47, "adf-vs-fabric-when-to-choose", "When to Choose ADF vs. Fabric", {
         contentDir: "ch09/47-when-to-choose-adf-vs-fabric",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788866475/ltv-data-factory/ch09-47-when-to-choose-adf-vs-fabric.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953965/ltv-data-factory/ch09-47-when-to-choose-adf-vs-fabric.mp4",
         durationLabel: "2 min 33 s",
       }),
     ],
@@ -361,25 +361,25 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
       L(49, "role-based-access-control", "Role-Based Access Control (RBAC)", {
         contentDir: "ch10/49-rbac",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788867469/ltv-data-factory/ch10-49-rbac.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954021/ltv-data-factory/ch10-49-rbac.mp4",
         durationLabel: "2 min 13 s",
       }),
       L(50, "git-integration-source-control", "Git Integration & Source Control", {
         contentDir: "ch10/50-git-integration-source-control",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788867471/ltv-data-factory/ch10-50-git-integration-source-control.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954084/ltv-data-factory/ch10-50-git-integration-source-control.mp4",
         durationLabel: "2 min 27 s",
       }),
       L(51, "publishing-and-environments", "Publishing & Environments (Dev/Test/Prod)", {
         contentDir: "ch10/51-publishing-environments",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788867478/ltv-data-factory/ch10-51-publishing-environments.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954154/ltv-data-factory/ch10-51-publishing-environments.mp4",
         durationLabel: "2 min 47 s",
       }),
       L(52, "arm-templates-devops-pipelines", "ARM Templates & Azure DevOps Pipelines", {
         contentDir: "ch10/52-arm-templates-devops-pipelines",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788867480/ltv-data-factory/ch10-52-arm-templates-devops-pipelines.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954224/ltv-data-factory/ch10-52-arm-templates-devops-pipelines.mp4",
         durationLabel: "2 min 48 s",
       }),
     ],
@@ -391,37 +391,37 @@ export const DATA_FACTORY_CHAPTERS: ChapterMeta[] = [
       L(53, "capstone-requirements", "Capstone: Business Requirements", {
         contentDir: "ch11/53-business-requirements",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788868556/ltv-data-factory/ch11-53-business-requirements.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954285/ltv-data-factory/ch11-53-business-requirements.mp4",
         durationLabel: "2 min 33 s",
       }),
       L(54, "capstone-connect-copy-pipeline", "Capstone: Connect & Build the Copy Pipeline", {
         contentDir: "ch11/54-connect-build-copy-pipeline",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788868559/ltv-data-factory/ch11-54-connect-build-copy-pipeline.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954348/ltv-data-factory/ch11-54-connect-build-copy-pipeline.mp4",
         durationLabel: "2 min 20 s",
       }),
       L(55, "capstone-control-flow-error-handling", "Capstone: Add Control Flow & Error Handling", {
         contentDir: "ch11/55-control-flow-error-handling",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788868562/ltv-data-factory/ch11-55-control-flow-error-handling.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954419/ltv-data-factory/ch11-55-control-flow-error-handling.mp4",
         durationLabel: "2 min 49 s",
       }),
       L(56, "capstone-mapping-data-flow", "Capstone: Build the Mapping Data Flow", {
         contentDir: "ch11/56-build-mapping-data-flow",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788868569/ltv-data-factory/ch11-56-build-mapping-data-flow.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954490/ltv-data-factory/ch11-56-build-mapping-data-flow.mp4",
         durationLabel: "2 min 57 s",
       }),
       L(57, "capstone-schedule-secure-monitor", "Capstone: Schedule, Secure & Monitor", {
         contentDir: "ch11/57-schedule-secure-monitor",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788868572/ltv-data-factory/ch11-57-schedule-secure-monitor.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954553/ltv-data-factory/ch11-57-schedule-secure-monitor.mp4",
         durationLabel: "2 min 29 s",
       }),
       L(58, "capstone-present", "Capstone: Present the Finished Pipeline", {
         contentDir: "ch11/58-present-finished-pipeline",
         videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788868574/ltv-data-factory/ch11-58-present-finished-pipeline.mp4",
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954619/ltv-data-factory/ch11-58-present-finished-pipeline.mp4",
         durationLabel: "2 min 38 s",
       }),
     ],
