@@ -105,7 +105,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/18-what-is-real-time-intelligence",
         // videoUrl/durationLabel pending
       }),
-      L(19, "eventstreams", "Eventstreams — Ingesting Streaming Data"),
+      L(19, "eventstreams", "Eventstreams — Ingesting Streaming Data", {
+        contentDir: "ch02/19-eventstreams",
+        // videoUrl/durationLabel pending
+      }),
       L(20, "event-sources", "Event Sources: Azure Event Hubs and IoT Hub"),
       L(21, "eventhouse-and-kql-database", "Eventhouse and KQL Database"),
       L(22, "what-is-kql", "What Is KQL?"),
