@@ -52,6 +52,11 @@ import { AZURE_AI_CLOUD_CHAPTERS } from "./azure-ai-cloud-outline";
 import { DOCKER_AI_DEPLOYMENT_CHAPTERS } from "./docker-ai-deployment-outline";
 import { AI_SECURITY_EVAL_MONITORING_CHAPTERS } from "./ai-security-eval-monitoring-outline";
 import { AI_ENGINEERING_CAPSTONES_CHAPTERS } from "./ai-engineering-capstones-outline";
+import { JS_TS_BLOCKCHAIN_CHAPTERS } from "./js-ts-blockchain-outline";
+import { BLOCKCHAIN_APIS_BACKEND_CHAPTERS } from "./blockchain-apis-backend-outline";
+import { DEFI_TOKEN_ENGINEERING_CHAPTERS } from "./defi-token-engineering-outline";
+import { BLOCKCHAIN_TESTING_DEVOPS_CHAPTERS } from "./blockchain-testing-devops-outline";
+import { BLOCKCHAIN_ENGINEERING_CAPSTONES_CHAPTERS } from "./blockchain-engineering-capstones-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -535,6 +540,51 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: AI_ENGINEERING_CAPSTONES_CHAPTERS,
     contentBase: "ai-engineering-capstones",
+  },
+  {
+    slug: "js-ts-blockchain",
+    title: "JavaScript & TypeScript for Blockchain Developers",
+    tagline:
+      "Programming fundamentals through JavaScript, then TypeScript and Node.js — no prior course assumed, built for the code every dApp runs on.",
+    status: "available",
+    chapters: JS_TS_BLOCKCHAIN_CHAPTERS,
+    contentBase: "js-ts-blockchain",
+  },
+  {
+    slug: "blockchain-apis-backend",
+    title: "Blockchain APIs & Backend Development",
+    tagline:
+      "The off-chain half of a dApp — RPC providers, event listening, subgraphs, oracles, and wallet/session integration on the server side.",
+    status: "available",
+    chapters: BLOCKCHAIN_APIS_BACKEND_CHAPTERS,
+    contentBase: "blockchain-apis-backend",
+  },
+  {
+    slug: "defi-token-engineering",
+    title: "DeFi & Token Engineering",
+    tagline:
+      "The mechanics behind real protocols — AMMs, lending and liquidations, staking and yield, tokenomics design, and DAO governance.",
+    status: "available",
+    chapters: DEFI_TOKEN_ENGINEERING_CHAPTERS,
+    contentBase: "defi-token-engineering",
+  },
+  {
+    slug: "blockchain-testing-devops",
+    title: "Blockchain Testing, DevOps & Deployment",
+    tagline:
+      "Fuzz and invariant testing, CI/CD for smart contracts, multisig-controlled multi-chain deployments, monitoring, and a real mainnet-launch runbook.",
+    status: "available",
+    chapters: BLOCKCHAIN_TESTING_DEVOPS_CHAPTERS,
+    contentBase: "blockchain-testing-devops",
+  },
+  {
+    slug: "blockchain-engineering-capstones",
+    title: "Blockchain Engineering Capstones",
+    tagline:
+      "Three flagship portfolio projects — a full DeFi protocol, an NFT marketplace, and a DAO governance system — plus job preparation.",
+    status: "available",
+    chapters: BLOCKCHAIN_ENGINEERING_CAPSTONES_CHAPTERS,
+    contentBase: "blockchain-engineering-capstones",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,

@@ -81,6 +81,31 @@ export const CAREER_PATHS: CareerPath[] = [
       "AI Application Developer → AI Engineer → Senior AI Engineer → Staff/Lead AI Engineer → Principal AI Engineer → AI Architect → $200K+ potential — real compensation at the top of that ladder, but it typically requires years of production experience, not a promise on graduation.",
   },
   {
+    slug: "blockchain-engineer",
+    title: "Blockchain Engineer",
+    targetJobs: ["Junior Blockchain Developer", "Web3 Developer", "Solidity Developer", "Smart Contract Developer", "Blockchain Engineer"],
+    description:
+      "This is its own door into LTV, not an add-on to an existing program — no prior course assumed. You'll start from real programming fundamentals in JavaScript and TypeScript, then move through blockchain foundations, cryptography, Bitcoin, Ethereum and smart contracts, Solidity, token standards, testing and tooling, and full-stack DApp development, plus a dedicated security auditing course. From there it goes further than most bootcamps: the off-chain backend work every dApp actually needs, deeper DeFi and token-engineering mechanics, and the testing, DevOps, and deployment skills that take a contract from a testnet demo to a real mainnet launch. It closes with three flagship portfolio projects: a full DeFi protocol, an NFT marketplace, and a DAO governance system.",
+    salaryRange: "$70K–$100K as a Junior Blockchain Developer / Web3 Developer · $120K–$160K+ at Senior/Staff Blockchain Engineer · $200K+ potential at Principal Blockchain Engineer / Blockchain Architect",
+    certification: "No single industry-standard certification — a working GitHub portfolio of audited, deployed contracts carries far more weight in blockchain hiring than any exam",
+    stages: [
+      {
+        label: "Job Ready",
+        note: "The whole program — no prior course assumed",
+        courseSlugs: [
+          "js-ts-blockchain",
+          "blockchain",
+          "blockchain-apis-backend",
+          "defi-token-engineering",
+          "blockchain-testing-devops",
+          "blockchain-engineering-capstones",
+        ],
+      },
+    ],
+    destinationNote:
+      "Blockchain Developer → Smart Contract Developer → Blockchain Engineer → Senior Blockchain Engineer → Staff/Lead Blockchain Engineer → Protocol Engineer → Blockchain Architect → $200K+ potential — real compensation at the top of that ladder, but it typically requires years of production experience, not a promise on graduation.",
+  },
+  {
     slug: "data-analyst-bi-engineer",
     title: "Data Analyst → BI Engineer",
     targetJobs: ["Data Analyst", "BI Analyst", "Senior BI Analyst", "BI Developer", "BI Engineer"],
