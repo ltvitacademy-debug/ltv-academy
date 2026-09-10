@@ -27,7 +27,10 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "System Design for Data Engineers",
     lessons: [
-      L(1, "what-is-system-design", "What Is System Design, for Data Engineers?"),
+      L(1, "what-is-system-design", "What Is System Design, for Data Engineers?", {
+        contentDir: "ch01/01-what-is-system-design",
+        // videoUrl/durationLabel pending
+      }),
       L(2, "requirements-gathering", "Requirements Gathering — Functional vs. Non-Functional"),
       L(3, "back-of-the-envelope-estimation", "Back-of-the-Envelope Estimation"),
       L(4, "choosing-storage", "Choosing Storage — OLTP vs. OLAP vs. Object Storage"),
