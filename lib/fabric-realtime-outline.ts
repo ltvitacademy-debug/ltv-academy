@@ -63,7 +63,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/09-dataflows-gen2",
         // videoUrl/durationLabel pending
       }),
-      L(10, "fabric-warehouse", "Fabric Warehouse"),
+      L(10, "fabric-warehouse", "Fabric Warehouse", {
+        contentDir: "ch01/10-fabric-warehouse",
+        // videoUrl/durationLabel pending
+      }),
       L(11, "lakehouse-vs-warehouse", "Lakehouse vs. Warehouse — Choosing the Right Engine"),
       L(12, "direct-lake-mode", "Direct Lake Mode"),
       L(13, "semantic-models-in-fabric", "Semantic Models in Fabric"),
