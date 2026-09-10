@@ -11,6 +11,7 @@ import { DE_FOUNDATIONS_CHAPTERS } from "./de-foundations-outline";
 import { DATABRICKS_DELTA_CHAPTERS } from "./databricks-delta-outline";
 import { FABRIC_REALTIME_CHAPTERS } from "./fabric-realtime-outline";
 import { CAREER_CAPSTONE_CHAPTERS } from "./career-capstone-outline";
+import { TABLEAU_CHAPTERS } from "./tableau-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -125,6 +126,15 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: CAREER_CAPSTONE_CHAPTERS,
     contentBase: "career-capstone",
+  },
+  {
+    slug: "tableau",
+    title: "Tableau",
+    tagline:
+      "Beginner to advanced in 95 hands-on videos — connecting, modeling, calculating, and dashboarding, assuming the SQL you already know from T-SQL Development.",
+    status: "available",
+    chapters: TABLEAU_CHAPTERS,
+    contentBase: "tableau",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,
