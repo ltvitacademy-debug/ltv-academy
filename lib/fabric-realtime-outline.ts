@@ -35,7 +35,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/02-fabric-workspaces",
         // videoUrl/durationLabel pending
       }),
-      L(3, "onelake", "OneLake — One Lake for the Whole Organization"),
+      L(3, "onelake", "OneLake — One Lake for the Whole Organization", {
+        contentDir: "ch01/03-onelake",
+        // videoUrl/durationLabel pending
+      }),
       L(4, "creating-a-lakehouse", "Creating a Lakehouse"),
       L(5, "fabric-lakehouse-vs-databricks-lakehouse", "Fabric Lakehouse vs. Databricks Lakehouse"),
       L(6, "fabric-notebooks", "Fabric Notebooks"),
