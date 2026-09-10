@@ -189,7 +189,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/39-real-time-data-quality",
         // videoUrl/durationLabel pending
       }),
-      L(40, "fabric-realtime-vs-databricks-streaming", "Comparing Fabric Real-Time to Databricks Structured Streaming"),
+      L(40, "fabric-realtime-vs-databricks-streaming", "Comparing Fabric Real-Time to Databricks Structured Streaming", {
+        contentDir: "ch02/40-fabric-realtime-vs-databricks-streaming",
+        // videoUrl/durationLabel pending
+      }),
       L(41, "a-real-time-nyc-taxi-dashboard", "A Real-Time NYC Taxi Dashboard, Start to Finish"),
       L(42, "real-time-chapter-recap", "Real-Time Chapter Recap"),
     ],
