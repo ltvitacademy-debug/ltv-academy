@@ -50,6 +50,37 @@ export const CAREER_PATHS: CareerPath[] = [
       "This program doesn't lead to a single destination — it leads to a first job. Once you're working, the rest of this catalog becomes optional next steps, not required ones: Analytics Engineer, Azure/Fabric Data Engineer, Snowflake Data Engineer, Azure Database Engineer, and Salesforce Data Analyst all build on exactly what you just learned here. Get job-ready first. Then decide how far you want to go.",
   },
   {
+    slug: "ai-engineer",
+    title: "AI Engineer",
+    targetJobs: ["Junior AI Engineer", "AI Application Developer", "Generative AI Developer", "AI Solutions Developer", "AI Engineer"],
+    description:
+      "This is its own door into LTV, not an add-on to an existing program — no prior course assumed. You'll start from real Python fundamentals and build straight through APIs, classic AI/ML foundations, generative AI and LLMs, prompt and context engineering, retrieval-augmented generation, and AI agents, then round it out with the cloud, deployment, security, and monitoring skills that separate a demo from something running in production. It closes with three flagship portfolio projects: a production RAG knowledge assistant, an AI data analyst that works with SQL and APIs, and a tool-using AI agent with human approval, security, and logging.",
+    salaryRange: "$75K–$110K as a Junior AI Engineer / AI Application Developer · $130K–$180K+ at Senior/Staff AI Engineer · $200K+ potential at Principal AI Engineer / AI Architect",
+    certification: "No single industry-standard certification yet — portfolio and production experience carry more weight in AI hiring than any one exam",
+    stages: [
+      {
+        label: "Job Ready",
+        note: "The whole program — no prior course assumed",
+        courseSlugs: [
+          "python-for-ai-engineering",
+          "git-github-for-software-engineers",
+          "apis-json-for-ai-applications",
+          "ai-ml-foundations",
+          "generative-ai-and-llms",
+          "prompt-and-context-engineering",
+          "rag-and-vector-databases",
+          "ai-agents",
+          "azure-ai-and-cloud-for-ai-engineers",
+          "docker-and-deployment-for-ai-applications",
+          "ai-security-evaluation-and-monitoring",
+          "ai-engineering-capstones",
+        ],
+      },
+    ],
+    destinationNote:
+      "AI Application Developer → AI Engineer → Senior AI Engineer → Staff/Lead AI Engineer → Principal AI Engineer → AI Architect → $200K+ potential — real compensation at the top of that ladder, but it typically requires years of production experience, not a promise on graduation.",
+  },
+  {
     slug: "data-analyst-bi-engineer",
     title: "Data Analyst → BI Engineer",
     targetJobs: ["Data Analyst", "BI Analyst", "Senior BI Analyst", "BI Developer", "BI Engineer"],

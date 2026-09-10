@@ -40,6 +40,18 @@ import { SSIS_CHAPTERS } from "./ssis-outline";
 import { SSRS_CHAPTERS } from "./ssrs-outline";
 import { DATA_WAREHOUSING_CHAPTERS } from "./data-warehousing-outline";
 import { MICROSOFT_BI_CAPSTONE_CHAPTERS } from "./microsoft-bi-capstone-outline";
+import { PYTHON_FOR_AI_CHAPTERS } from "./python-for-ai-outline";
+import { GIT_GITHUB_SWE_CHAPTERS } from "./git-github-swe-outline";
+import { APIS_JSON_AI_CHAPTERS } from "./apis-json-ai-outline";
+import { AI_ML_FOUNDATIONS_CHAPTERS } from "./ai-ml-foundations-outline";
+import { GENERATIVE_AI_LLMS_CHAPTERS } from "./generative-ai-llms-outline";
+import { PROMPT_CONTEXT_ENGINEERING_CHAPTERS } from "./prompt-context-engineering-outline";
+import { RAG_VECTOR_DATABASES_CHAPTERS } from "./rag-vector-databases-outline";
+import { AI_AGENTS_CHAPTERS } from "./ai-agents-outline";
+import { AZURE_AI_CLOUD_CHAPTERS } from "./azure-ai-cloud-outline";
+import { DOCKER_AI_DEPLOYMENT_CHAPTERS } from "./docker-ai-deployment-outline";
+import { AI_SECURITY_EVAL_MONITORING_CHAPTERS } from "./ai-security-eval-monitoring-outline";
+import { AI_ENGINEERING_CAPSTONES_CHAPTERS } from "./ai-engineering-capstones-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -415,6 +427,114 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: MICROSOFT_BI_CAPSTONE_CHAPTERS,
     contentBase: "microsoft-bi-capstone",
+  },
+  {
+    slug: "python-for-ai-engineering",
+    title: "Python for AI Engineering",
+    tagline:
+      "No prior programming assumed — Python fundamentals, data structures, OOP, environments, and API/async basics, aimed squarely at building AI applications.",
+    status: "available",
+    chapters: PYTHON_FOR_AI_CHAPTERS,
+    contentBase: "python-for-ai",
+  },
+  {
+    slug: "git-github-for-software-engineers",
+    title: "Git & GitHub for Software Engineers",
+    tagline:
+      "Version control, collaborative workflows, and CI/CD basics for anyone building real software — the general-engineering counterpart to this catalog's data-flavored Git course.",
+    status: "available",
+    chapters: GIT_GITHUB_SWE_CHAPTERS,
+    contentBase: "git-github-swe",
+  },
+  {
+    slug: "apis-json-for-ai-applications",
+    title: "APIs & JSON for AI Applications",
+    tagline:
+      "REST fundamentals, JSON deep dive, and the specific shapes AI provider APIs use — streaming, function calling, structured output — plus building a reusable client wrapper.",
+    status: "available",
+    chapters: APIS_JSON_AI_CHAPTERS,
+    contentBase: "apis-json-ai",
+  },
+  {
+    slug: "ai-ml-foundations",
+    title: "AI/ML Foundations",
+    tagline:
+      "Genuine ML literacy, not math-heavy theory — what's actually happening under an LLM API call, before the rest of the AI Engineer path builds on top of it.",
+    status: "available",
+    chapters: AI_ML_FOUNDATIONS_CHAPTERS,
+    contentBase: "ai-ml-foundations",
+  },
+  {
+    slug: "generative-ai-and-llms",
+    title: "Generative AI & LLMs",
+    tagline:
+      "How large language models actually work, the current model landscape, and working with LLM APIs directly — chat completions, streaming, tool calling, fine-tuning, and multimodal models.",
+    status: "available",
+    chapters: GENERATIVE_AI_LLMS_CHAPTERS,
+    contentBase: "generative-ai-llms",
+  },
+  {
+    slug: "prompt-and-context-engineering",
+    title: "Prompt & Context Engineering",
+    tagline:
+      "Prompt design and context management as an engineering discipline with its own testing and evaluation practice, not guesswork.",
+    status: "available",
+    chapters: PROMPT_CONTEXT_ENGINEERING_CHAPTERS,
+    contentBase: "prompt-context-engineering",
+  },
+  {
+    slug: "rag-and-vector-databases",
+    title: "RAG & Vector Databases",
+    tagline:
+      "Embeddings, vector databases, chunking, retrieval, re-ranking, and evaluation — the real retrieval-augmented generation pipeline, ending in a production RAG knowledge assistant.",
+    status: "available",
+    chapters: RAG_VECTOR_DATABASES_CHAPTERS,
+    contentBase: "rag-vector-databases",
+  },
+  {
+    slug: "ai-agents",
+    title: "AI Agents",
+    tagline:
+      "Tool calling, agent architectures, human-in-the-loop approval, and safety guardrails — moving from a system that answers questions to one that takes actions, safely.",
+    status: "available",
+    chapters: AI_AGENTS_CHAPTERS,
+    contentBase: "ai-agents",
+  },
+  {
+    slug: "azure-ai-and-cloud-for-ai-engineers",
+    title: "Azure AI & Cloud for AI Engineers",
+    tagline:
+      "Deploying, securing, and monitoring AI services in Azure — Azure AI Foundry, Azure OpenAI, Azure AI Search — with a deliberate glance at AWS Bedrock and Vertex AI.",
+    status: "available",
+    chapters: AZURE_AI_CLOUD_CHAPTERS,
+    contentBase: "azure-ai-cloud",
+  },
+  {
+    slug: "docker-and-deployment-for-ai-applications",
+    title: "Docker & Deployment for AI Applications",
+    tagline:
+      "Packaging and shipping an AI application like a real production system — containers, deployment patterns, autoscaling, and reliability.",
+    status: "available",
+    chapters: DOCKER_AI_DEPLOYMENT_CHAPTERS,
+    contentBase: "docker-ai-deployment",
+  },
+  {
+    slug: "ai-security-evaluation-and-monitoring",
+    title: "AI Security, Evaluation & Monitoring",
+    tagline:
+      "The production-readiness layer for AI specifically — prompt injection, eval datasets, drift detection, hallucination monitoring, and responsible AI governance.",
+    status: "available",
+    chapters: AI_SECURITY_EVAL_MONITORING_CHAPTERS,
+    contentBase: "ai-security-eval-monitoring",
+  },
+  {
+    slug: "ai-engineering-capstones",
+    title: "AI Engineering Capstones",
+    tagline:
+      "Three flagship portfolio projects — a production RAG knowledge assistant, an AI data analyst working with SQL and APIs, and a tool-using agent with human approval — plus job preparation.",
+    status: "available",
+    chapters: AI_ENGINEERING_CAPSTONES_CHAPTERS,
+    contentBase: "ai-engineering-capstones",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,

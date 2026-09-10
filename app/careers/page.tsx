@@ -2,10 +2,12 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { CAREER_PATHS } from "@/lib/career-paths";
 
+const FIRST_CHOICE_COUNT = CAREER_PATHS.filter((p) => !p.isDestination).length;
+const DESTINATION_COUNT = CAREER_PATHS.filter((p) => p.isDestination).length;
+
 export const metadata: Metadata = {
   title: "Career Paths",
-  description:
-    "Eight career paths through the LTV Academy catalog — from your first data job to a $200K+ technical destination. Pick a path, see the exact courses.",
+  description: `${FIRST_CHOICE_COUNT} career paths through the LTV Academy catalog — from your first job to a $200K+ technical destination. Pick a path, see the exact courses.`,
 };
 
 export default function CareerPathsPage() {
@@ -16,15 +18,16 @@ export default function CareerPathsPage() {
     <main className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
       <p className="eyebrow mb-4">Choose your path</p>
       <h1 className="display max-w-3xl text-4xl sm:text-5xl">
-        Every path starts at <em className="text-crimson">T-SQL</em>. From
-        there, it's a decision.
+        Most paths start at <em className="text-crimson">T-SQL</em>. A couple
+        have their own door in.
       </h1>
       <p className="mt-5 max-w-2xl text-stone">
-        The catalog isn't dozens of unrelated courses — it's one foundation
-        branching into {firstChoicePaths.length} career paths, plus{" "}
-        {destinationPaths.length} longer destinations that show where the
-        road eventually leads. Pick where you want to end up, and the exact
-        course sequence is right there.
+        The catalog isn't dozens of unrelated courses — most of it branches
+        from one shared SQL foundation into {firstChoicePaths.length} career
+        paths, plus {destinationPaths.length} longer destinations that show
+        where the road eventually leads. A couple of paths, like AI Engineer,
+        skip that foundation entirely and start on their own. Pick where you
+        want to end up, and the exact course sequence is right there.
       </p>
 
       <ol className="mt-16 divide-y divide-ink/10 border-y border-ink/10">
@@ -59,11 +62,11 @@ export default function CareerPathsPage() {
       <div className="mt-20">
         <p className="eyebrow mb-4">The long road</p>
         <h2 className="display max-w-2xl text-3xl sm:text-4xl">
-          Two <em className="text-crimson">destinations</em>, not first choices.
+          {destinationPaths.length} <em className="text-crimson">destinations</em>, not first choices.
         </h2>
         <p className="mt-4 max-w-2xl text-stone">
           These aren't where a beginner enrolls — they're shown so students
-          can see where the six paths above eventually converge.
+          can see where the {firstChoicePaths.length} paths above eventually converge.
         </p>
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2">
