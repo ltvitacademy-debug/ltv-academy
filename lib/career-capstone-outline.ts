@@ -43,7 +43,10 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/04-choosing-storage",
         // videoUrl/durationLabel pending
       }),
-      L(5, "choosing-a-processing-model", "Choosing a Processing Model — Batch, Streaming, or Hybrid"),
+      L(5, "choosing-a-processing-model", "Choosing a Processing Model — Batch, Streaming, or Hybrid", {
+        contentDir: "ch01/05-choosing-a-processing-model",
+        // videoUrl/durationLabel pending
+      }),
       L(6, "the-lambda-architecture", "The Lambda Architecture"),
       L(7, "the-kappa-architecture", "The Kappa Architecture"),
       L(8, "data-modeling-at-scale", "Data Modeling at Scale — Star Schema Revisited"),
