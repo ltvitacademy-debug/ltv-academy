@@ -165,7 +165,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/33-watermarks-in-real-streaming-systems",
         // videoUrl/durationLabel pending
       }),
-      L(34, "handling-out-of-order-events", "Handling Out-of-Order Events"),
+      L(34, "handling-out-of-order-events", "Handling Out-of-Order Events", {
+        contentDir: "ch02/34-handling-out-of-order-events",
+        // videoUrl/durationLabel pending
+      }),
       L(35, "eventstream-transformations", "Eventstream Transformations"),
       L(36, "routing-events-to-multiple-destinations", "Routing Events to Multiple Destinations"),
       L(37, "activator-real-time-alerting", "Activator — Real-Time Alerting"),
