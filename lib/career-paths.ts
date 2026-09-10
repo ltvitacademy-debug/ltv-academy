@@ -25,6 +25,31 @@ export type CareerPath = {
 
 export const CAREER_PATHS: CareerPath[] = [
   {
+    slug: "microsoft-data-bi-developer",
+    title: "Microsoft Data & BI Developer",
+    targetJobs: ["Junior BI Developer", "SQL/BI Developer", "Report Developer", "Power BI Developer", "Data & BI Developer"],
+    description:
+      "This is the actual foundation program — SQL Server, SSIS, SSRS, Power BI, and data warehousing, taught together as one complete stack, no Python or Tableau required. Those are skills to add later, once you're already employable. You'll move from raw data through SQL Server and SSIS-driven ETL into a proper star-schema warehouse, then serve it two ways — SSRS for paginated reporting, Power BI for analytics — and finish with a capstone that ties the entire stack together plus real resume, portfolio, and interview preparation. Every other path in this catalog is something you add after this one, not instead of it.",
+    salaryRange: "$55K–$85K as an entry-level Microsoft BI/SQL Developer · $75K–$110K+ within 1–3 years, before choosing an advanced specialization",
+    certification: "PL-300 is a natural add-on once Power BI Development is complete, though this program isn't built around a single exam",
+    stages: [
+      {
+        label: "Job Ready",
+        note: "The whole program — this is the complete foundation, not step one of something bigger",
+        courseSlugs: [
+          "t-sql-development",
+          "ssis-development",
+          "ssrs-development",
+          "power-bi",
+          "data-modeling-and-data-warehousing",
+          "microsoft-bi-capstone",
+        ],
+      },
+    ],
+    destinationNote:
+      "This program doesn't lead to a single destination — it leads to a first job. Once you're working, the rest of this catalog becomes optional next steps, not required ones: Analytics Engineer, Azure/Fabric Data Engineer, Snowflake Data Engineer, Azure Database Engineer, and Salesforce Data Analyst all build on exactly what you just learned here. Get job-ready first. Then decide how far you want to go.",
+  },
+  {
     slug: "data-analyst-bi-engineer",
     title: "Data Analyst → BI Engineer",
     targetJobs: ["Data Analyst", "BI Analyst", "Senior BI Analyst", "BI Developer", "BI Engineer"],

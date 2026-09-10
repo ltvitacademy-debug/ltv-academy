@@ -36,6 +36,10 @@ import { SALESFORCE_ANALYTICS_CAPSTONE_CHAPTERS } from "./salesforce-analytics-c
 import { AWS_FUNDAMENTALS_CHAPTERS } from "./aws-fundamentals-outline";
 import { AWS_DATA_ENGINEERING_CHAPTERS } from "./aws-data-engineering-outline";
 import { AWS_CAPSTONE_CHAPTERS } from "./aws-capstone-outline";
+import { SSIS_CHAPTERS } from "./ssis-outline";
+import { SSRS_CHAPTERS } from "./ssrs-outline";
+import { DATA_WAREHOUSING_CHAPTERS } from "./data-warehousing-outline";
+import { MICROSOFT_BI_CAPSTONE_CHAPTERS } from "./microsoft-bi-capstone-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -375,6 +379,42 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: AWS_CAPSTONE_CHAPTERS,
     contentBase: "aws-capstone",
+  },
+  {
+    slug: "ssis-development",
+    title: "SSIS Development",
+    tagline:
+      "Control flow, data flow, transformations, error handling, and deployment — the ETL platform behind the Microsoft Data & BI Developer program.",
+    status: "available",
+    chapters: SSIS_CHAPTERS,
+    contentBase: "ssis",
+  },
+  {
+    slug: "ssrs-development",
+    title: "SSRS Development",
+    tagline:
+      "Paginated reporting, parameters, expressions, drilldowns, and subscriptions — real report design and delivery, not just Power BI.",
+    status: "available",
+    chapters: SSRS_CHAPTERS,
+    contentBase: "ssrs",
+  },
+  {
+    slug: "data-modeling-and-data-warehousing",
+    title: "Data Modeling & Data Warehousing",
+    tagline:
+      "Star schemas, facts, dimensions, grain, surrogate keys, and slowly changing dimensions — dimensional modeling as its own discipline, not a side note in a SQL course.",
+    status: "available",
+    chapters: DATA_WAREHOUSING_CHAPTERS,
+    contentBase: "data-warehousing",
+  },
+  {
+    slug: "microsoft-bi-capstone",
+    title: "Microsoft Data & BI Capstone + Job Preparation",
+    tagline:
+      "SQL Server, SSIS, SSRS, Power BI, and data warehousing, tied into one real stack — then resume, portfolio, and interview preparation for your first Microsoft BI Developer role.",
+    status: "available",
+    chapters: MICROSOFT_BI_CAPSTONE_CHAPTERS,
+    contentBase: "microsoft-bi-capstone",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,
