@@ -13,6 +13,7 @@ import { FABRIC_REALTIME_CHAPTERS } from "./fabric-realtime-outline";
 import { CAREER_CAPSTONE_CHAPTERS } from "./career-capstone-outline";
 import { TABLEAU_CHAPTERS } from "./tableau-outline";
 import { AZURE_DBA_CHAPTERS } from "./azure-dba-outline";
+import { SNOWFLAKE_CHAPTERS } from "./snowflake-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -145,6 +146,15 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: AZURE_DBA_CHAPTERS,
     contentBase: "azure-dba",
+  },
+  {
+    slug: "snowflake",
+    title: "Snowflake",
+    tagline:
+      "A focused specialization, not a mega-course — loading, transforming, modeling, securing, tuning, and connecting Snowflake to Power BI, built on the SQL you already know.",
+    status: "available",
+    chapters: SNOWFLAKE_CHAPTERS,
+    contentBase: "snowflake",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,
