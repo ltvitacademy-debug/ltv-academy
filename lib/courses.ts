@@ -12,6 +12,7 @@ import { DATABRICKS_DELTA_CHAPTERS } from "./databricks-delta-outline";
 import { FABRIC_REALTIME_CHAPTERS } from "./fabric-realtime-outline";
 import { CAREER_CAPSTONE_CHAPTERS } from "./career-capstone-outline";
 import { TABLEAU_CHAPTERS } from "./tableau-outline";
+import { AZURE_DBA_CHAPTERS } from "./azure-dba-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -135,6 +136,15 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: TABLEAU_CHAPTERS,
     contentBase: "tableau",
+  },
+  {
+    slug: "azure-database-administrator",
+    title: "Azure Database Administrator",
+    tagline:
+      "DP-300 + real-world Azure SQL administration — security, performance tuning, automation, and HA/DR, in 95 videos built on the T-SQL you already know.",
+    status: "available",
+    chapters: AZURE_DBA_CHAPTERS,
+    contentBase: "azure-dba",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,
