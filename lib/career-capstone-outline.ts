@@ -39,7 +39,10 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/03-back-of-the-envelope-estimation",
         // videoUrl/durationLabel pending
       }),
-      L(4, "choosing-storage", "Choosing Storage — OLTP vs. OLAP vs. Object Storage"),
+      L(4, "choosing-storage", "Choosing Storage — OLTP vs. OLAP vs. Object Storage", {
+        contentDir: "ch01/04-choosing-storage",
+        // videoUrl/durationLabel pending
+      }),
       L(5, "choosing-a-processing-model", "Choosing a Processing Model — Batch, Streaming, or Hybrid"),
       L(6, "the-lambda-architecture", "The Lambda Architecture"),
       L(7, "the-kappa-architecture", "The Kappa Architecture"),
