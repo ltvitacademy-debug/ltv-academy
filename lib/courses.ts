@@ -10,6 +10,7 @@ import { TSQL_CHAPTERS } from "./t-sql-outline";
 import { DE_FOUNDATIONS_CHAPTERS } from "./de-foundations-outline";
 import { DATABRICKS_DELTA_CHAPTERS } from "./databricks-delta-outline";
 import { FABRIC_REALTIME_CHAPTERS } from "./fabric-realtime-outline";
+import { CAREER_CAPSTONE_CHAPTERS } from "./career-capstone-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -115,6 +116,15 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: FABRIC_REALTIME_CHAPTERS,
     contentBase: "fabric-realtime",
+  },
+  {
+    slug: "data-engineering-career-and-capstone",
+    title: "Data Engineering Career & Capstone",
+    tagline:
+      "System design, DP-700 certification prep, AI for data engineers, and three full capstone projects — 81 lessons closing out the Data Engineering track.",
+    status: "available",
+    chapters: CAREER_CAPSTONE_CHAPTERS,
+    contentBase: "career-capstone",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,
