@@ -23,6 +23,16 @@ import { EXCEL_CHAPTERS } from "./excel-outline";
 import { POWERSHELL_CHAPTERS } from "./powershell-outline";
 import { AZURE_FUNDAMENTALS_CHAPTERS } from "./azure-fundamentals-outline";
 import { ADVANCED_DATABRICKS_CHAPTERS } from "./advanced-databricks-outline";
+import { TSQL_FOR_DBAS_CHAPTERS } from "./t-sql-for-dbas-outline";
+import { SQL_SERVER_DBA_CHAPTERS } from "./sql-server-dba-outline";
+import { SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS } from "./sql-server-performance-tuning-outline";
+import { SQL_SERVER_HA_DR_CHAPTERS } from "./sql-server-ha-dr-outline";
+import { POWERSHELL_AUTOMATION_DEVOPS_DBAS_CHAPTERS } from "./powershell-automation-devops-dbas-outline";
+import { SALESFORCE_FUNDAMENTALS_CHAPTERS } from "./salesforce-fundamentals-outline";
+import { SOQL_DATA_MANAGEMENT_CHAPTERS } from "./soql-data-management-outline";
+import { SALESFORCE_REPORTS_DASHBOARDS_CHAPTERS } from "./salesforce-reports-dashboards-outline";
+import { CRM_ANALYTICS_TABLEAU_NEXT_CHAPTERS } from "./crm-analytics-tableau-next-outline";
+import { SALESFORCE_ANALYTICS_CAPSTONE_CHAPTERS } from "./salesforce-analytics-capstone-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -245,6 +255,96 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: ADVANCED_DATABRICKS_CHAPTERS,
     contentBase: "advanced-databricks",
+  },
+  {
+    slug: "t-sql-for-database-administrators",
+    title: "T-SQL for Database Administrators",
+    tagline:
+      "Not \"how do I write SQL to work with data\" — \"how do I use T-SQL to figure out what's wrong with SQL Server and fix it.\" DMVs, blocking, backups, security, and a real DBA diagnostic toolkit.",
+    status: "available",
+    chapters: TSQL_FOR_DBAS_CHAPTERS,
+    contentBase: "t-sql-for-dbas",
+  },
+  {
+    slug: "sql-server-database-administration",
+    title: "SQL Server Database Administration",
+    tagline:
+      "General, on-prem-flavored SQL Server administration — installation, configuration, architecture, security, maintenance, Agent, and production support — before Azure enters the picture at all.",
+    status: "available",
+    chapters: SQL_SERVER_DBA_CHAPTERS,
+    contentBase: "sql-server-dba",
+  },
+  {
+    slug: "sql-server-performance-tuning",
+    title: "SQL Server Performance Tuning",
+    tagline:
+      "Performance tuning as its own discipline — execution plans, index tuning, wait-based methodology, Query Store, and configuration tuning, well beyond a single troubleshooting chapter.",
+    status: "available",
+    chapters: SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS,
+    contentBase: "sql-server-performance-tuning",
+  },
+  {
+    slug: "sql-server-ha-backup-and-disaster-recovery",
+    title: "SQL Server HA, Backup & Disaster Recovery",
+    tagline:
+      "Always On Availability Groups, failover clustering, log shipping, replication, and real disaster recovery planning — the on-prem HA/DR depth a cloud-only course only touches at a high level.",
+    status: "available",
+    chapters: SQL_SERVER_HA_DR_CHAPTERS,
+    contentBase: "sql-server-ha-dr",
+  },
+  {
+    slug: "powershell-automation-and-devops-for-dbas",
+    title: "PowerShell, Automation & DevOps for DBAs",
+    tagline:
+      "dbatools, CI/CD for databases, infrastructure as code, and DevOps culture — for DBAs who already know basic PowerShell and are ready to automate the whole job.",
+    status: "available",
+    chapters: POWERSHELL_AUTOMATION_DEVOPS_DBAS_CHAPTERS,
+    contentBase: "powershell-automation-devops-dbas",
+  },
+  {
+    slug: "salesforce-fundamentals-for-data-analysts",
+    title: "Salesforce Fundamentals for Data Analysts",
+    tagline:
+      "Not a Salesforce Administrator mega-course — exactly what a data analyst needs to understand what Salesforce data means before analyzing it.",
+    status: "available",
+    chapters: SALESFORCE_FUNDAMENTALS_CHAPTERS,
+    contentBase: "salesforce-fundamentals",
+  },
+  {
+    slug: "soql-and-salesforce-data-management",
+    title: "SOQL & Salesforce Data Management",
+    tagline:
+      "The T-SQL-to-Salesforce bridge: SOQL, SOSL, Data Loader, Workbench, data quality, and data migration — assuming the SQL you already know.",
+    status: "available",
+    chapters: SOQL_DATA_MANAGEMENT_CHAPTERS,
+    contentBase: "soql-data-management",
+  },
+  {
+    slug: "salesforce-reports-and-dashboards",
+    title: "Salesforce Reports & Dashboards",
+    tagline:
+      "Native Salesforce analytics first — reports, formulas, dashboards, and sales/service analytics — so you know when Salesforce's own reporting is enough, and when it isn't.",
+    status: "available",
+    chapters: SALESFORCE_REPORTS_DASHBOARDS_CHAPTERS,
+    contentBase: "salesforce-reports-dashboards",
+  },
+  {
+    slug: "salesforce-crm-analytics-and-tableau-next",
+    title: "Salesforce CRM Analytics & Tableau Next",
+    tagline:
+      "Beyond basic Salesforce reporting: CRM Analytics, Salesforce Data Cloud, Tableau Next, semantic modeling, and enterprise governance — the ecosystem current Senior Data Analyst postings ask for.",
+    status: "available",
+    chapters: CRM_ANALYTICS_TABLEAU_NEXT_CHAPTERS,
+    contentBase: "crm-analytics-tableau-next",
+  },
+  {
+    slug: "salesforce-analytics-career-and-capstone",
+    title: "Salesforce Analytics Career & Capstone",
+    tagline:
+      "Three portfolio projects of increasing independence — Sales Pipeline, Customer Service, Executive CRM Analytics — plus interview preparation.",
+    status: "available",
+    chapters: SALESFORCE_ANALYTICS_CAPSTONE_CHAPTERS,
+    contentBase: "salesforce-analytics-capstone",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,
