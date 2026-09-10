@@ -141,7 +141,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/27-ingesting-data-into-kql",
         // videoUrl/durationLabel pending
       }),
-      L(28, "real-time-dashboards", "Real-Time Dashboards"),
+      L(28, "real-time-dashboards", "Real-Time Dashboards", {
+        contentDir: "ch02/28-real-time-dashboards",
+        // videoUrl/durationLabel pending
+      }),
       L(29, "windowing-in-streaming-data", "Windowing in Streaming Data"),
       L(30, "tumbling-windows", "Tumbling Windows"),
       L(31, "hopping-and-sliding-windows", "Hopping and Sliding Windows"),
