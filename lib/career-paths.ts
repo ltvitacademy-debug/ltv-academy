@@ -30,7 +30,7 @@ export const CAREER_PATHS: CareerPath[] = [
     targetJobs: ["Junior BI Developer", "SQL/BI Developer", "Report Developer", "Power BI Developer", "Data & BI Developer"],
     description:
       "This is the actual foundation program — SQL Server, SSIS, SSRS, Power BI, and data warehousing, taught together as one complete stack, no Python or Tableau required. Those are skills to add later, once you're already employable. You'll move from raw data through SQL Server and SSIS-driven ETL into a proper star-schema warehouse, then serve it two ways — SSRS for paginated reporting, Power BI for analytics — and finish with a capstone that ties the entire stack together plus real resume, portfolio, and interview preparation. Every other path in this catalog is something you add after this one, not instead of it.",
-    salaryRange: "$55K–$85K as an entry-level Microsoft BI/SQL Developer · $75K–$110K+ within 1–3 years, before choosing an advanced specialization",
+    salaryRange: "$75K to start as a Microsoft BI/SQL Developer · $125K+ within 5 years, before choosing an advanced specialization",
     certification: "PL-300 is a natural add-on once Power BI Development is complete, though this program isn't built around a single exam",
     stages: [
       {
