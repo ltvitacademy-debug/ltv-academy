@@ -247,7 +247,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/52-observability-logs-metrics-traces",
         // videoUrl/durationLabel pending
       }),
-      L(53, "alerts-for-pipeline-failures", "Setting Up Alerts for Pipeline Failures"),
+      L(53, "alerts-for-pipeline-failures", "Setting Up Alerts for Pipeline Failures", {
+        contentDir: "ch03/53-alerts-for-pipeline-failures",
+        // videoUrl/durationLabel pending
+      }),
       L(54, "cost-management-and-optimization", "Cost Management and Optimization"),
       L(55, "right-sizing-compute", "Right-Sizing Compute"),
       L(56, "slas-and-slos", "SLAs and SLOs for Data Pipelines"),
