@@ -177,7 +177,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/36-routing-events-to-multiple-destinations",
         // videoUrl/durationLabel pending
       }),
-      L(37, "activator-real-time-alerting", "Activator — Real-Time Alerting"),
+      L(37, "activator-real-time-alerting", "Activator — Real-Time Alerting", {
+        contentDir: "ch02/37-activator-real-time-alerting",
+        // videoUrl/durationLabel pending
+      }),
       L(38, "change-data-capture-streamed", "Change Data Capture, Streamed"),
       L(39, "real-time-data-quality", "Real-Time Data Quality"),
       L(40, "fabric-realtime-vs-databricks-streaming", "Comparing Fabric Real-Time to Databricks Structured Streaming"),
