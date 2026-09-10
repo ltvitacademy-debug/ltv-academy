@@ -295,7 +295,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/64-capacity-planning",
         // videoUrl/durationLabel pending
       }),
-      L(65, "blue-green-and-canary-deployments", "Blue-Green and Canary Deployments for Pipelines"),
+      L(65, "blue-green-and-canary-deployments", "Blue-Green and Canary Deployments for Pipelines", {
+        contentDir: "ch03/65-blue-green-and-canary-deployments",
+        // videoUrl/durationLabel pending
+      }),
       L(66, "rollback-strategies", "Rollback Strategies"),
       L(67, "documentation-that-gets-used", "Documentation That Actually Gets Used"),
       L(68, "on-call-for-data-engineers", "On-Call for Data Engineers"),
