@@ -151,6 +151,70 @@ export const CAREER_PATHS: CareerPath[] = [
       "SQL Developer/DBA → Azure DBA → Senior DBA → Database Engineer → Senior Database Engineer → Principal Database Engineer → Database Architect. Even this path needs some cloud and scripting skill to reach the highest levels.",
   },
   {
+    slug: "sql-server-database-administrator",
+    title: "SQL Server Database Administrator",
+    targetJobs: ["SQL Developer", "Junior DBA", "Database Administrator", "Senior DBA", "Database Engineer", "Principal Database Engineer"],
+    description:
+      "A deeper, SQL-Server-first alternative to the Azure Database Engineer path, for someone who wants to go all the way into database administration as its own discipline. It deliberately doesn't repeat T-SQL Development's SQL language foundation — instead it moves straight from writing SQL to using T-SQL like a DBA: diagnosing, monitoring, and fixing SQL Server. From there you build real on-prem administration, deep performance tuning, and high-availability skills before moving into Azure and the DP-300 certification, closing with the automation and DevOps practices senior DBAs are expected to know.",
+    salaryRange: "$80K–$130K as a DBA · $130K–$180K+ at Senior DBA / Database Engineer · Principal Database Engineer roles currently post above $200K",
+    certification: "DP-300 — a checkpoint partway through this path, not the end of it",
+    stages: [
+      {
+        label: "Job Ready",
+        note: "T-SQL, used like a DBA, then real on-prem administration",
+        courseSlugs: ["t-sql-development", "t-sql-for-database-administrators", "sql-server-database-administration"],
+      },
+      {
+        label: "Advanced",
+        note: "Tune it, keep it alive, move to the cloud, automate everything",
+        courseSlugs: [
+          "sql-server-performance-tuning",
+          "sql-server-ha-backup-and-disaster-recovery",
+          "azure-database-administrator",
+          "powershell-automation-and-devops-for-dbas",
+        ],
+      },
+    ],
+    destinationNote:
+      "SQL Developer/DBA → Senior DBA → Database Engineer → Senior Database Engineer → Principal Database Engineer → Database Architect. Learn SQL → use SQL like a DBA → administer SQL Server → tune performance → keep databases alive → move to Azure → automate everything — a much stronger progression than SQL, more SQL, even more SQL.",
+  },
+  {
+    slug: "salesforce-data-analyst",
+    title: "Salesforce Data Analyst / CRM Analytics",
+    targetJobs: [
+      "Salesforce Data Analyst",
+      "CRM Data Analyst",
+      "Sales/Revenue Operations Analyst",
+      "Senior Salesforce Data Analyst",
+      "Salesforce Analytics Engineer",
+    ],
+    description:
+      "Salesforce reporting shows up in a huge share of analyst job postings, and this path builds it as a real specialization rather than \"take Tableau and learn Salesforce on your own.\" You'll learn what Salesforce data actually means, bridge the SQL you already know into SOQL and Salesforce's own data tools, build native Salesforce reports and dashboards before ever reaching for an external BI tool, then bring in Tableau and finish with three portfolio projects — a sales pipeline, a customer service analysis, and a full executive CRM dashboard presented as though the instructor were the VP of Sales.",
+    salaryRange: "$65K–$95K as a Salesforce/CRM Data Analyst · $150K–$200K+ once combined with CRM Analytics, Data Cloud & Tableau Next at Senior/Analytics Engineer level",
+    certification: "Salesforce Certified Tableau Data Analyst",
+    stages: [
+      {
+        label: "Job Ready",
+        courseSlugs: [
+          "t-sql-development",
+          "salesforce-fundamentals-for-data-analysts",
+          "soql-and-salesforce-data-management",
+          "salesforce-reports-and-dashboards",
+          "tableau",
+          "advanced-excel-for-data-analysts",
+          "salesforce-analytics-career-and-capstone",
+        ],
+      },
+      {
+        label: "Advanced",
+        note: "Beyond CRM reporting into enterprise analytics",
+        courseSlugs: ["salesforce-crm-analytics-and-tableau-next", "snowflake", "dbt-analytics-engineering"],
+      },
+    ],
+    destinationNote:
+      "General Salesforce Data Analyst pay is modest on its own — the real ceiling comes from moving beyond CRM reporting into CRM Analytics, Data Cloud, and Tableau Next. A current Salesforce Senior Data Analyst posting combining exactly that stack (plus Snowflake and dbt) reaches $202,600 base in select markets. Salesforce Data Analyst → Senior Salesforce Analyst → CRM Analytics Developer → Salesforce Analytics Engineer → Senior Analytics Engineer, converging into the same Analytics Engineer ceiling as the Analytics Engineer path.",
+  },
+  {
     slug: "bi-to-data-architect",
     title: "BI → Data Architect",
     targetJobs: ["Data Analyst", "BI Developer", "BI Engineer", "Analytics Engineer", "Senior Analytics Engineer", "Data Architect"],

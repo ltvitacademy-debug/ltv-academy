@@ -20,10 +20,11 @@ export default function CareerPathsPage() {
         there, it's a decision.
       </h1>
       <p className="mt-5 max-w-2xl text-stone">
-        The catalog isn't nine or twelve unrelated courses — it's one
-        foundation branching into six career paths, plus two longer
-        destinations that show where the road eventually leads. Pick where
-        you want to end up, and the exact course sequence is right there.
+        The catalog isn't dozens of unrelated courses — it's one foundation
+        branching into {firstChoicePaths.length} career paths, plus{" "}
+        {destinationPaths.length} longer destinations that show where the
+        road eventually leads. Pick where you want to end up, and the exact
+        course sequence is right there.
       </p>
 
       <ol className="mt-16 divide-y divide-ink/10 border-y border-ink/10">
