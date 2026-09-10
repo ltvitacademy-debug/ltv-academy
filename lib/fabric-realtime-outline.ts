@@ -59,7 +59,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/08-fabric-data-factory-pipelines",
         // videoUrl/durationLabel pending
       }),
-      L(9, "dataflows-gen2", "Dataflows Gen2"),
+      L(9, "dataflows-gen2", "Dataflows Gen2", {
+        contentDir: "ch01/09-dataflows-gen2",
+        // videoUrl/durationLabel pending
+      }),
       L(10, "fabric-warehouse", "Fabric Warehouse"),
       L(11, "lakehouse-vs-warehouse", "Lakehouse vs. Warehouse — Choosing the Right Engine"),
       L(12, "direct-lake-mode", "Direct Lake Mode"),
