@@ -219,7 +219,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/45-ci-cd-for-data-pipelines",
         // videoUrl/durationLabel pending
       }),
-      L(46, "version-control-for-notebooks-and-pipelines", "Version Control for Notebooks and Pipelines"),
+      L(46, "version-control-for-notebooks-and-pipelines", "Version Control for Notebooks and Pipelines", {
+        contentDir: "ch03/46-version-control-for-notebooks-and-pipelines",
+        // videoUrl/durationLabel pending
+      }),
       L(47, "infrastructure-as-code", "Infrastructure as Code — ARM/Bicep and Terraform Basics"),
       L(48, "testing-data-pipelines", "Testing Data Pipelines"),
       L(49, "unit-testing-pyspark-transformations", "Unit Testing PySpark Transformations"),
