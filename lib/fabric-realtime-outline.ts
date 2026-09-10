@@ -181,7 +181,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/37-activator-real-time-alerting",
         // videoUrl/durationLabel pending
       }),
-      L(38, "change-data-capture-streamed", "Change Data Capture, Streamed"),
+      L(38, "change-data-capture-streamed", "Change Data Capture, Streamed", {
+        contentDir: "ch02/38-change-data-capture-streamed",
+        // videoUrl/durationLabel pending
+      }),
       L(39, "real-time-data-quality", "Real-Time Data Quality"),
       L(40, "fabric-realtime-vs-databricks-streaming", "Comparing Fabric Real-Time to Databricks Structured Streaming"),
       L(41, "a-real-time-nyc-taxi-dashboard", "A Real-Time NYC Taxi Dashboard, Start to Finish"),
