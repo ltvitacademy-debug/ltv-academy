@@ -335,7 +335,7 @@ export const COURSES: CourseMeta[] = [
     slug: "salesforce-crm-analytics-and-tableau-next",
     title: "Salesforce CRM Analytics & Tableau Next",
     tagline:
-      "Beyond basic Salesforce reporting: CRM Analytics, Salesforce Data Cloud, Tableau Next, semantic modeling, and enterprise governance — the ecosystem current Senior Data Analyst postings ask for.",
+      "SAQL, bindings, dashboard interactions, and deployment — the real technical jump from analyzing Salesforce data to building the analytics system 500 people rely on, plus Data Cloud, Tableau Next, semantic modeling, and governance.",
     status: "available",
     chapters: CRM_ANALYTICS_TABLEAU_NEXT_CHAPTERS,
     contentBase: "crm-analytics-tableau-next",

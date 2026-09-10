@@ -205,10 +205,10 @@ export const CAREER_PATHS: CareerPath[] = [
     title: "Salesforce Data Analyst / CRM Analytics",
     targetJobs: [
       "Salesforce Data Analyst",
-      "CRM Data Analyst",
-      "Sales/Revenue Operations Analyst",
       "Senior Salesforce Data Analyst",
+      "CRM Analytics Developer",
       "Salesforce Analytics Engineer",
+      "Senior Salesforce Analytics Engineer",
     ],
     description:
       "Salesforce reporting shows up in a huge share of analyst job postings, and this path builds it as a real specialization rather than \"take Tableau and learn Salesforce on your own.\" You'll learn what Salesforce data actually means, bridge the SQL you already know into SOQL and Salesforce's own data tools, build native Salesforce reports and dashboards before ever reaching for an external BI tool, then bring in Tableau and finish with three portfolio projects — a sales pipeline, a customer service analysis, and a full executive CRM dashboard presented as though the instructor were the VP of Sales.",
@@ -234,7 +234,7 @@ export const CAREER_PATHS: CareerPath[] = [
       },
     ],
     destinationNote:
-      "General Salesforce Data Analyst pay is modest on its own — the real ceiling comes from moving beyond CRM reporting into CRM Analytics, Data Cloud, and Tableau Next. A current Salesforce Senior Data Analyst posting combining exactly that stack (plus Snowflake and dbt) reaches $202,600 base in select markets. Salesforce Data Analyst → Senior Salesforce Analyst → CRM Analytics Developer → Salesforce Analytics Engineer → Senior Analytics Engineer, converging into the same Analytics Engineer ceiling as the Analytics Engineer path.",
+      "General Salesforce Data Analyst pay is modest on its own — the real ceiling comes from moving beyond CRM reporting into CRM Analytics, Data Cloud, and Tableau Next. A current Salesforce Senior Data Analyst posting combining exactly that stack (plus Snowflake and dbt) reaches $202,600 base in select markets. Salesforce Data Analyst → Senior Salesforce Data Analyst → CRM Analytics Developer → Salesforce Analytics Engineer → Senior Salesforce Analytics Engineer — see the Salesforce Data Architect destination for where that ladder ultimately leads.",
   },
   {
     slug: "bi-to-data-architect",
@@ -279,6 +279,46 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "Already further along than it looks: Career & Capstone's System Design chapter (requirements, estimation, architecture trade-offs, case studies) already covers a real slice of the technical-leadership layer these postings ask for.",
+  },
+  {
+    slug: "salesforce-data-architect",
+    title: "Salesforce Data Architect",
+    targetJobs: [
+      "Salesforce Data Analyst",
+      "Senior Salesforce Data Analyst",
+      "CRM Analytics Developer",
+      "Salesforce Analytics Engineer",
+      "Senior Salesforce Analytics Engineer",
+      "Salesforce Data / Analytics Architect",
+    ],
+    description:
+      "This isn't a starting point — it's shown to students as where the Salesforce Data Analyst path can eventually lead. The road runs through two real technical steps most students never hear named: CRM Analytics Developer (building the analytics system 500 salespeople and executives rely on, not just answering one question yourself) and Salesforce Analytics Engineer (engineering the data platform behind Salesforce analytics — Data Cloud, Snowflake, dbt, and CI/CD). From there, enterprise architecture, governance, and integration leadership are what separate a Senior Analytics Engineer from an Architect.",
+    salaryRange: "$65K–$95K at entry · $110K–$160K+ as a CRM Analytics Developer · $130K–$200K+ as a Salesforce Analytics Engineer · $200K+ potential at Architect — rough market targets, not guarantees",
+    isDestination: true,
+    stages: [
+      {
+        label: "Foundation",
+        note: "The Salesforce Data Analyst path, start to finish",
+        pathChoiceSlugs: ["salesforce-data-analyst"],
+      },
+      {
+        label: "CRM Analytics Developer",
+        note: "SAQL, bindings, dashboard interactions, performance, deployment",
+        courseSlugs: ["salesforce-crm-analytics-and-tableau-next"],
+      },
+      {
+        label: "Salesforce Analytics Engineer",
+        note: "Engineering the platform behind the analytics, not just analyzing it",
+        courseSlugs: ["snowflake", "dbt-analytics-engineering", "git-github-cicd-for-data"],
+      },
+      {
+        label: "Architecture",
+        note: "Already built — not a gap",
+        courseSlugs: ["data-engineering-career-and-capstone"],
+      },
+    ],
+    destinationNote:
+      "Salesforce Data Analyst → Senior Salesforce Data Analyst → CRM Analytics Developer → Salesforce Analytics Engineer → Senior Salesforce Analytics Engineer → Salesforce Data/Analytics Architect → Enterprise/Solution Architect. Notice how little new curriculum this actually needs — Snowflake, SQL, Tableau, and dbt already exist or are planned elsewhere in the catalog; this ladder mostly just reuses them in sequence.",
   },
 ];
 
