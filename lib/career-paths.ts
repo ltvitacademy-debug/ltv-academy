@@ -33,8 +33,10 @@ export const CAREER_PATHS: CareerPath[] = [
     salaryRange: "$60K–$100K to start · $100K–$160K+ at Senior BI Analyst / BI Engineer",
     certification: "PL-300",
     stages: [
-      { label: "Beginner", courseSlugs: ["t-sql-development", "power-bi", "python-for-power-bi"] },
-      { label: "Job-Ready", courseSlugs: ["tableau", "advanced-excel-for-data-analysts"] },
+      {
+        label: "Job Ready",
+        courseSlugs: ["t-sql-development", "power-bi", "python-for-power-bi", "tableau", "advanced-excel-for-data-analysts"],
+      },
       { label: "Advanced", note: "Data Factory, selected sections", courseSlugs: ["data-factory", "git-github-cicd-for-data"] },
     ],
     destinationNote:
@@ -48,8 +50,10 @@ export const CAREER_PATHS: CareerPath[] = [
       "Analytics Engineering sits between Data Analyst and Data Engineer, and it's one of the fastest-growing, best-paid corners of the field — most students never hear about it. You'll take the SQL and cloud-warehouse fundamentals from T-SQL and Snowflake and add the piece that actually defines the role: dbt. Version-controlled, tested, documented data models are what separate an Analytics Engineer from someone who just writes ad-hoc SQL.",
     salaryRange: "$80K–$140K as an Analytics Engineer · $140K–$200K+ at Senior, with Staff/Principal regularly clearing $200K",
     stages: [
-      { label: "Beginner", courseSlugs: ["t-sql-development", "power-bi", "snowflake"] },
-      { label: "Job-Ready", courseSlugs: ["dbt-analytics-engineering", "git-github-cicd-for-data"] },
+      {
+        label: "Job Ready",
+        courseSlugs: ["t-sql-development", "power-bi", "snowflake", "dbt-analytics-engineering", "git-github-cicd-for-data"],
+      },
       { label: "Advanced", courseSlugs: ["data-factory", "airflow"] },
     ],
     destinationNote:
@@ -64,10 +68,11 @@ export const CAREER_PATHS: CareerPath[] = [
     salaryRange: "$80K–$140K as a Data Engineer · $140K–$190K+ at Senior · Lead/Staff/Principal roles regularly post at $200K–$280K+",
     certification: "DP-700 — already built into Data Engineering Career & Capstone's Chapter 2",
     stages: [
-      { label: "Beginner", courseSlugs: ["t-sql-development", "data-engineering-foundations"] },
       {
-        label: "Job-Ready",
+        label: "Job Ready",
         courseSlugs: [
+          "t-sql-development",
+          "data-engineering-foundations",
           "data-factory",
           "azure-databricks-and-delta-lake",
           "microsoft-fabric-and-real-time-analytics",
@@ -91,8 +96,10 @@ export const CAREER_PATHS: CareerPath[] = [
     salaryRange: "$90K–$150K as a Databricks Data Engineer · $150K–$190K+ at Senior · Principal Databricks Architect roles currently post $190K–$200K+",
     certification: "DP-750",
     stages: [
-      { label: "Beginner", courseSlugs: ["t-sql-development", "data-engineering-foundations"] },
-      { label: "Job-Ready", courseSlugs: ["data-factory", "azure-databricks-and-delta-lake"] },
+      {
+        label: "Job Ready",
+        courseSlugs: ["t-sql-development", "data-engineering-foundations", "data-factory", "azure-databricks-and-delta-lake"],
+      },
       {
         label: "Advanced",
         courseSlugs: [
@@ -116,8 +123,10 @@ export const CAREER_PATHS: CareerPath[] = [
     salaryRange: "$90K–$150K as a Snowflake Developer / Cloud Data Engineer · $150K–$200K+ at Senior",
     certification: "SnowPro Core",
     stages: [
-      { label: "Beginner", courseSlugs: ["t-sql-development", "snowflake"] },
-      { label: "Job-Ready", courseSlugs: ["dbt-analytics-engineering", "data-factory", "power-bi"] },
+      {
+        label: "Job Ready",
+        courseSlugs: ["t-sql-development", "snowflake", "dbt-analytics-engineering", "data-factory", "power-bi"],
+      },
       { label: "Advanced", courseSlugs: ["airflow", "git-github-cicd-for-data", "terraform-bicep-for-data-engineers"] },
     ],
     destinationNote:
@@ -132,8 +141,10 @@ export const CAREER_PATHS: CareerPath[] = [
     salaryRange: "$80K–$130K as an Azure Database Administrator · $130K–$180K+ at Senior DBA / Database Engineer",
     certification: "DP-300 — already the spine of Azure Database Administrator",
     stages: [
-      { label: "Beginner", courseSlugs: ["t-sql-development", "azure-fundamentals"] },
-      { label: "Job-Ready", courseSlugs: ["azure-database-administrator", "data-factory"] },
+      {
+        label: "Job Ready",
+        courseSlugs: ["t-sql-development", "azure-fundamentals", "azure-database-administrator", "data-factory"],
+      },
       { label: "Advanced", courseSlugs: ["powershell-fundamentals", "terraform-bicep-for-data-engineers", "git-github-cicd-for-data"] },
     ],
     destinationNote:
