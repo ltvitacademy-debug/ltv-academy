@@ -121,7 +121,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/22-what-is-kql",
         // videoUrl/durationLabel pending
       }),
-      L(23, "kql-where-and-project", "KQL: Basic Queries With where and project"),
+      L(23, "kql-where-and-project", "KQL: Basic Queries With where and project", {
+        contentDir: "ch02/23-kql-where-and-project",
+        // videoUrl/durationLabel pending
+      }),
       L(24, "kql-summarize", "KQL: summarize and Aggregations"),
       L(25, "kql-joins", "KQL: Joins"),
       L(26, "kql-time-series-functions", "KQL: Time Series Functions"),
