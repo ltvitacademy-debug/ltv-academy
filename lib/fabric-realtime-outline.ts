@@ -231,7 +231,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/48-testing-data-pipelines",
         // videoUrl/durationLabel pending
       }),
-      L(49, "unit-testing-pyspark-transformations", "Unit Testing PySpark Transformations"),
+      L(49, "unit-testing-pyspark-transformations", "Unit Testing PySpark Transformations", {
+        contentDir: "ch03/49-unit-testing-pyspark-transformations",
+        // videoUrl/durationLabel pending
+      }),
       L(50, "data-contracts", "Data Contracts"),
       L(51, "schema-drift-and-breaking-changes", "Schema Drift and Breaking Changes"),
       L(52, "observability-logs-metrics-traces", "Observability: Logs, Metrics, and Traces"),
