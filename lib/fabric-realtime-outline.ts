@@ -161,7 +161,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/32-session-windows",
         // videoUrl/durationLabel pending
       }),
-      L(33, "watermarks-in-real-streaming-systems", "Watermarks in Real Streaming Systems"),
+      L(33, "watermarks-in-real-streaming-systems", "Watermarks in Real Streaming Systems", {
+        contentDir: "ch02/33-watermarks-in-real-streaming-systems",
+        // videoUrl/durationLabel pending
+      }),
       L(34, "handling-out-of-order-events", "Handling Out-of-Order Events"),
       L(35, "eventstream-transformations", "Eventstream Transformations"),
       L(36, "routing-events-to-multiple-destinations", "Routing Events to Multiple Destinations"),
