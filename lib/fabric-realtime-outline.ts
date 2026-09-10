@@ -211,7 +211,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/43-what-makes-a-pipeline-production-ready",
         // videoUrl/durationLabel pending
       }),
-      L(44, "environments-dev-test-prod", "Environments: Dev, Test, and Prod"),
+      L(44, "environments-dev-test-prod", "Environments: Dev, Test, and Prod", {
+        contentDir: "ch03/44-environments-dev-test-prod",
+        // videoUrl/durationLabel pending
+      }),
       L(45, "ci-cd-for-data-pipelines", "CI/CD for Data Pipelines"),
       L(46, "version-control-for-notebooks-and-pipelines", "Version Control for Notebooks and Pipelines"),
       L(47, "infrastructure-as-code", "Infrastructure as Code — ARM/Bicep and Terraform Basics"),
