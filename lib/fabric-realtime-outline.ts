@@ -71,7 +71,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/11-lakehouse-vs-warehouse",
         // videoUrl/durationLabel pending
       }),
-      L(12, "direct-lake-mode", "Direct Lake Mode"),
+      L(12, "direct-lake-mode", "Direct Lake Mode", {
+        contentDir: "ch01/12-direct-lake-mode",
+        // videoUrl/durationLabel pending
+      }),
       L(13, "semantic-models-in-fabric", "Semantic Models in Fabric"),
       L(14, "fabric-capacities-and-skus", "Fabric Capacities and SKUs"),
       L(15, "git-integration-and-deployment-pipelines", "Git Integration and Deployment Pipelines"),
