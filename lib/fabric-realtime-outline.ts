@@ -87,7 +87,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/15-git-integration-and-deployment-pipelines",
         // videoUrl/durationLabel pending
       }),
-      L(16, "the-monitoring-hub", "The Monitoring Hub"),
+      L(16, "the-monitoring-hub", "The Monitoring Hub", {
+        contentDir: "ch01/16-the-monitoring-hub",
+        // videoUrl/durationLabel pending
+      }),
       L(17, "fabric-chapter-recap", "Fabric Chapter Recap — Where This Fits With Databricks"),
     ],
   },
