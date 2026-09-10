@@ -255,7 +255,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/54-cost-management-and-optimization",
         // videoUrl/durationLabel pending
       }),
-      L(55, "right-sizing-compute", "Right-Sizing Compute"),
+      L(55, "right-sizing-compute", "Right-Sizing Compute", {
+        contentDir: "ch03/55-right-sizing-compute",
+        // videoUrl/durationLabel pending
+      }),
       L(56, "slas-and-slos", "SLAs and SLOs for Data Pipelines"),
       L(57, "incident-response", "Incident Response for Data Pipelines"),
       L(58, "root-cause-analysis", "Root Cause Analysis, Step by Step"),
