@@ -31,7 +31,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/01-what-is-microsoft-fabric",
         // videoUrl/durationLabel pending
       }),
-      L(2, "fabric-workspaces", "Fabric Workspaces"),
+      L(2, "fabric-workspaces", "Fabric Workspaces", {
+        contentDir: "ch01/02-fabric-workspaces",
+        // videoUrl/durationLabel pending
+      }),
       L(3, "onelake", "OneLake — One Lake for the Whole Organization"),
       L(4, "creating-a-lakehouse", "Creating a Lakehouse"),
       L(5, "fabric-lakehouse-vs-databricks-lakehouse", "Fabric Lakehouse vs. Databricks Lakehouse"),
