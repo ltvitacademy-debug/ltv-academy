@@ -193,7 +193,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/40-fabric-realtime-vs-databricks-streaming",
         // videoUrl/durationLabel pending
       }),
-      L(41, "a-real-time-nyc-taxi-dashboard", "A Real-Time NYC Taxi Dashboard, Start to Finish"),
+      L(41, "a-real-time-nyc-taxi-dashboard", "A Real-Time NYC Taxi Dashboard, Start to Finish", {
+        contentDir: "ch02/41-a-real-time-nyc-taxi-dashboard",
+        // videoUrl/durationLabel pending
+      }),
       L(42, "real-time-chapter-recap", "Real-Time Chapter Recap"),
     ],
   },
