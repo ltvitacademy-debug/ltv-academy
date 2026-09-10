@@ -263,7 +263,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/56-slas-and-slos",
         // videoUrl/durationLabel pending
       }),
-      L(57, "incident-response", "Incident Response for Data Pipelines"),
+      L(57, "incident-response", "Incident Response for Data Pipelines", {
+        contentDir: "ch03/57-incident-response",
+        // videoUrl/durationLabel pending
+      }),
       L(58, "root-cause-analysis", "Root Cause Analysis, Step by Step"),
       L(59, "disaster-recovery-and-backup", "Disaster Recovery and Backup Strategies"),
       L(60, "data-governance-in-production", "Data Governance in Production"),
