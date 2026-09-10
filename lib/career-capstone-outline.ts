@@ -31,7 +31,10 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/01-what-is-system-design",
         // videoUrl/durationLabel pending
       }),
-      L(2, "requirements-gathering", "Requirements Gathering — Functional vs. Non-Functional"),
+      L(2, "requirements-gathering", "Requirements Gathering — Functional vs. Non-Functional", {
+        contentDir: "ch01/02-requirements-gathering",
+        // videoUrl/durationLabel pending
+      }),
       L(3, "back-of-the-envelope-estimation", "Back-of-the-Envelope Estimation"),
       L(4, "choosing-storage", "Choosing Storage — OLTP vs. OLAP vs. Object Storage"),
       L(5, "choosing-a-processing-model", "Choosing a Processing Model — Batch, Streaming, or Hybrid"),
