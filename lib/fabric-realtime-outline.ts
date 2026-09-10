@@ -145,7 +145,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/28-real-time-dashboards",
         // videoUrl/durationLabel pending
       }),
-      L(29, "windowing-in-streaming-data", "Windowing in Streaming Data"),
+      L(29, "windowing-in-streaming-data", "Windowing in Streaming Data", {
+        contentDir: "ch02/29-windowing-in-streaming-data",
+        // videoUrl/durationLabel pending
+      }),
       L(30, "tumbling-windows", "Tumbling Windows"),
       L(31, "hopping-and-sliding-windows", "Hopping and Sliding Windows"),
       L(32, "session-windows", "Session Windows"),
