@@ -91,7 +91,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/16-the-monitoring-hub",
         // videoUrl/durationLabel pending
       }),
-      L(17, "fabric-chapter-recap", "Fabric Chapter Recap — Where This Fits With Databricks"),
+      L(17, "fabric-chapter-recap", "Fabric Chapter Recap — Where This Fits With Databricks", {
+        contentDir: "ch01/17-fabric-chapter-recap",
+        // videoUrl/durationLabel pending
+      }),
     ],
   },
   {
