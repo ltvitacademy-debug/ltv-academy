@@ -315,7 +315,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/69-a-production-incident-start-to-finish",
         // videoUrl/durationLabel pending
       }),
-      L(70, "course-recap", "Production Data Engineering Recap — and This Course's Finale"),
+      L(70, "course-recap", "Production Data Engineering Recap — and This Course's Finale", {
+        contentDir: "ch03/70-course-recap",
+        // videoUrl/durationLabel pending
+      }),
     ],
   },
 ];
