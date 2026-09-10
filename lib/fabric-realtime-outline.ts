@@ -169,7 +169,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/34-handling-out-of-order-events",
         // videoUrl/durationLabel pending
       }),
-      L(35, "eventstream-transformations", "Eventstream Transformations"),
+      L(35, "eventstream-transformations", "Eventstream Transformations", {
+        contentDir: "ch02/35-eventstream-transformations",
+        // videoUrl/durationLabel pending
+      }),
       L(36, "routing-events-to-multiple-destinations", "Routing Events to Multiple Destinations"),
       L(37, "activator-real-time-alerting", "Activator — Real-Time Alerting"),
       L(38, "change-data-capture-streamed", "Change Data Capture, Streamed"),
