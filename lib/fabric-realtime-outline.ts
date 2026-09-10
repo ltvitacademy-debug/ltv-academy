@@ -101,7 +101,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "Real-Time Data Engineering",
     lessons: [
-      L(18, "what-is-real-time-intelligence", "What Is Real-Time Intelligence?"),
+      L(18, "what-is-real-time-intelligence", "What Is Real-Time Intelligence?", {
+        contentDir: "ch02/18-what-is-real-time-intelligence",
+        // videoUrl/durationLabel pending
+      }),
       L(19, "eventstreams", "Eventstreams — Ingesting Streaming Data"),
       L(20, "event-sources", "Event Sources: Azure Event Hubs and IoT Hub"),
       L(21, "eventhouse-and-kql-database", "Eventhouse and KQL Database"),
