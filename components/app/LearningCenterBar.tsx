@@ -9,12 +9,20 @@ export default function LearningCenterBar() {
     <div className="border-b border-ink/10 bg-parchment">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
         <p className="eyebrow">Student Learning Center</p>
-        <Link
-          href="/app"
-          className="text-sm text-stone underline underline-offset-4 hover:text-crimson"
-        >
-          My dashboard
-        </Link>
+        <div className="flex items-center gap-5">
+          <Link
+            href="/careers"
+            className="text-sm text-stone underline underline-offset-4 hover:text-crimson"
+          >
+            Career paths
+          </Link>
+          <Link
+            href="/app"
+            className="text-sm text-stone underline underline-offset-4 hover:text-crimson"
+          >
+            My dashboard
+          </Link>
+        </div>
       </div>
     </div>
   );
