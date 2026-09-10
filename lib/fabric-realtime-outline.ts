@@ -311,7 +311,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/68-on-call-for-data-engineers",
         // videoUrl/durationLabel pending
       }),
-      L(69, "a-production-incident-start-to-finish", "A Production Incident, Start to Finish"),
+      L(69, "a-production-incident-start-to-finish", "A Production Incident, Start to Finish", {
+        contentDir: "ch03/69-a-production-incident-start-to-finish",
+        // videoUrl/durationLabel pending
+      }),
       L(70, "course-recap", "Production Data Engineering Recap — and This Course's Finale"),
     ],
   },

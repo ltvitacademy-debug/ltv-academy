@@ -1,0 +1,38 @@
+# Lesson 69 — A Production Incident, Start to Finish · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5-3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+A production incident, start to finish — every piece of this
+chapter, chained together in one realistic scenario.
+
+## S2 · STEPS CARD (detect, triage, mitigate)
+
+An activator alert fires, sev one, paging on-call. Triage confirms
+it's real. Mitigation is a canary rollback of the change that
+caused it. And someone's already communicating what's happening —
+nothing here had to be invented mid-incident.
+
+## S3 · STEPS CARD (root cause, resolution, review)
+
+Observability shows exactly which deploy caused it. The five whys
+traces it to a missing CI check. The real resolution — fixing that
+CI check — ships carefully through normal CI/CD, not under
+pressure. Then a blameless write-up, and the runbook gets updated
+for next time.
+
+## S4 · CODE CARD (checking what this wasn't)
+
+Just as important — recognizing what this wasn't. Not a disaster,
+since the system was never down. Not a PII exposure, since fare
+amount isn't sensitive. Just twelve minutes debited from the
+month's error budget.
+
+## S5 · OUTRO CARD
+
+Take away any one piece — severity tiers, the runbook, CI/CD — and
+the whole response breaks down somewhere. Next up: this course's
+finale, bringing all three chapters together.
