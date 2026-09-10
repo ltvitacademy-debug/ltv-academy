@@ -43,7 +43,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/04-creating-a-lakehouse",
         // videoUrl/durationLabel pending
       }),
-      L(5, "fabric-lakehouse-vs-databricks-lakehouse", "Fabric Lakehouse vs. Databricks Lakehouse"),
+      L(5, "fabric-lakehouse-vs-databricks-lakehouse", "Fabric Lakehouse vs. Databricks Lakehouse", {
+        contentDir: "ch01/05-fabric-lakehouse-vs-databricks-lakehouse",
+        // videoUrl/durationLabel pending
+      }),
       L(6, "fabric-notebooks", "Fabric Notebooks"),
       L(7, "shortcuts", "Shortcuts — Referencing Data Without Copying It"),
       L(8, "fabric-data-factory-pipelines", "Fabric Data Factory — Pipelines"),
