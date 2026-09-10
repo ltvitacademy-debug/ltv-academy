@@ -115,6 +115,28 @@ export const CAREER_PATHS: CareerPath[] = [
       "Databricks Data Engineer → Senior → Lead Data Engineer → Principal Databricks Engineer → Databricks/Lakehouse Architect.",
   },
   {
+    slug: "aws-data-engineer",
+    title: "AWS Data Engineer",
+    targetJobs: ["Junior Data Engineer", "AWS Data Engineer", "Senior Data Engineer", "Lead / Staff Engineer", "Principal Data Engineer", "AWS Data Architect"],
+    description:
+      "The flagship engineering path in this catalog is heavily Microsoft-flavored — this path reuses the same SQL and Spark foundation but points it at AWS instead: S3, Glue, Redshift, Athena, EMR, Lambda, Kinesis, and Step Functions, the exact combination current AWS data engineering postings ask for.",
+    salaryRange: "$80K–$140K as an AWS Data Engineer · $140K–$190K+ at Senior · Lead/Staff/Principal roles regularly post at $200K–$280K+",
+    certification: "AWS Certified Data Engineer – Associate",
+    stages: [
+      {
+        label: "Job Ready",
+        courseSlugs: ["t-sql-development", "data-engineering-foundations", "aws-fundamentals-for-data-engineers", "aws-data-engineering"],
+      },
+      {
+        label: "Advanced",
+        note: "Databricks/Spark, selected content",
+        courseSlugs: ["azure-databricks-and-delta-lake", "git-github-cicd-for-data", "terraform-bicep-for-data-engineers", "aws-capstone"],
+      },
+    ],
+    destinationNote:
+      "Junior Data Engineer → AWS Data Engineer → Senior Data Engineer → Lead/Staff Engineer → Principal Data Engineer → AWS Data Architect — the same $200K+ ceiling as the Azure/Fabric path, reached through AWS's own tools instead.",
+  },
+  {
     slug: "snowflake-data-engineer",
     title: "Snowflake Data / Analytics Engineer",
     targetJobs: ["Snowflake Developer", "Analytics Engineer", "Cloud Data Engineer", "Senior Snowflake Engineer", "Principal Data Engineer"],

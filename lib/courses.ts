@@ -33,6 +33,9 @@ import { SOQL_DATA_MANAGEMENT_CHAPTERS } from "./soql-data-management-outline";
 import { SALESFORCE_REPORTS_DASHBOARDS_CHAPTERS } from "./salesforce-reports-dashboards-outline";
 import { CRM_ANALYTICS_TABLEAU_NEXT_CHAPTERS } from "./crm-analytics-tableau-next-outline";
 import { SALESFORCE_ANALYTICS_CAPSTONE_CHAPTERS } from "./salesforce-analytics-capstone-outline";
+import { AWS_FUNDAMENTALS_CHAPTERS } from "./aws-fundamentals-outline";
+import { AWS_DATA_ENGINEERING_CHAPTERS } from "./aws-data-engineering-outline";
+import { AWS_CAPSTONE_CHAPTERS } from "./aws-capstone-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -345,6 +348,33 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: SALESFORCE_ANALYTICS_CAPSTONE_CHAPTERS,
     contentBase: "salesforce-analytics-capstone",
+  },
+  {
+    slug: "aws-fundamentals-for-data-engineers",
+    title: "AWS Fundamentals for Data Engineers",
+    tagline:
+      "A short primer on cloud and AWS concepts — regions, IAM, core services, and the shared responsibility model — for anyone starting an AWS-flavored path from zero.",
+    status: "available",
+    chapters: AWS_FUNDAMENTALS_CHAPTERS,
+    contentBase: "aws-fundamentals",
+  },
+  {
+    slug: "aws-data-engineering",
+    title: "AWS Data Engineering",
+    tagline:
+      "S3, Glue, Athena, Redshift, Lambda, Step Functions, DMS, EMR, Kinesis, and CloudWatch — the exact combination current AWS data engineering postings ask for.",
+    status: "available",
+    chapters: AWS_DATA_ENGINEERING_CHAPTERS,
+    contentBase: "aws-data-engineering",
+  },
+  {
+    slug: "aws-capstone",
+    title: "AWS Capstone",
+    tagline:
+      "Every AWS service from AWS Data Engineering, tied into one working platform, with the monitoring, security, CI/CD, and cost practices that make it job-ready.",
+    status: "available",
+    chapters: AWS_CAPSTONE_CHAPTERS,
+    contentBase: "aws-capstone",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,
