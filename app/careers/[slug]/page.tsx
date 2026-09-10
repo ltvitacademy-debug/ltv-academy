@@ -83,7 +83,7 @@ export default async function CareerPathPage({
                   return (
                     <li key={courseSlug}>
                       <Link
-                        href={`/app/courses/${courseSlug}`}
+                        href={`/app/courses/${courseSlug}?path=${path.slug}`}
                         className="group flex items-center justify-between gap-4 py-5"
                       >
                         <div>

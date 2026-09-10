@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { COURSES, getCourse, lessonCount } from "@/lib/courses";
 import LessonRow from "@/components/app/LessonRow";
+import CoursePathBreadcrumb from "@/components/app/CoursePathBreadcrumb";
 
 export function generateStaticParams() {
   return COURSES.map((c) => ({ slug: c.slug }));
@@ -37,6 +39,9 @@ export default async function CoursePage({
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
+      <Suspense fallback={<div className="mb-6 h-5" />}>
+        <CoursePathBreadcrumb />
+      </Suspense>
       <p className="eyebrow mb-4">The {course.chapters?.length}-chapter course</p>
       <h1 className="display text-4xl sm:text-5xl">
         {course.title}
