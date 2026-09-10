@@ -243,7 +243,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/51-schema-drift-and-breaking-changes",
         // videoUrl/durationLabel pending
       }),
-      L(52, "observability-logs-metrics-traces", "Observability: Logs, Metrics, and Traces"),
+      L(52, "observability-logs-metrics-traces", "Observability: Logs, Metrics, and Traces", {
+        contentDir: "ch03/52-observability-logs-metrics-traces",
+        // videoUrl/durationLabel pending
+      }),
       L(53, "alerts-for-pipeline-failures", "Setting Up Alerts for Pipeline Failures"),
       L(54, "cost-management-and-optimization", "Cost Management and Optimization"),
       L(55, "right-sizing-compute", "Right-Sizing Compute"),
