@@ -109,7 +109,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/19-eventstreams",
         // videoUrl/durationLabel pending
       }),
-      L(20, "event-sources", "Event Sources: Azure Event Hubs and IoT Hub"),
+      L(20, "event-sources", "Event Sources: Azure Event Hubs and IoT Hub", {
+        contentDir: "ch02/20-event-sources",
+        // videoUrl/durationLabel pending
+      }),
       L(21, "eventhouse-and-kql-database", "Eventhouse and KQL Database"),
       L(22, "what-is-kql", "What Is KQL?"),
       L(23, "kql-where-and-project", "KQL: Basic Queries With where and project"),
