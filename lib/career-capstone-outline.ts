@@ -51,7 +51,10 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/06-the-lambda-architecture",
         // videoUrl/durationLabel pending
       }),
-      L(7, "the-kappa-architecture", "The Kappa Architecture"),
+      L(7, "the-kappa-architecture", "The Kappa Architecture", {
+        contentDir: "ch01/07-the-kappa-architecture",
+        // videoUrl/durationLabel pending
+      }),
       L(8, "data-modeling-at-scale", "Data Modeling at Scale — Star Schema Revisited"),
       L(9, "partitioning-strategies", "Partitioning Strategies"),
       L(10, "sharding-a-data-store", "Sharding a Data Store"),
