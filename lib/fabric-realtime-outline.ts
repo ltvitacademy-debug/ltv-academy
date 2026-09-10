@@ -283,7 +283,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch03/61-handling-pii-and-sensitive-data",
         // videoUrl/durationLabel pending
       }),
-      L(62, "secrets-management", "Secrets Management"),
+      L(62, "secrets-management", "Secrets Management", {
+        contentDir: "ch03/62-secrets-management",
+        // videoUrl/durationLabel pending
+      }),
       L(63, "access-reviews-and-least-privilege", "Access Reviews and Least Privilege"),
       L(64, "capacity-planning", "Capacity Planning"),
       L(65, "blue-green-and-canary-deployments", "Blue-Green and Canary Deployments for Pipelines"),
