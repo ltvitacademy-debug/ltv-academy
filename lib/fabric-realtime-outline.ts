@@ -197,7 +197,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch02/41-a-real-time-nyc-taxi-dashboard",
         // videoUrl/durationLabel pending
       }),
-      L(42, "real-time-chapter-recap", "Real-Time Chapter Recap"),
+      L(42, "real-time-chapter-recap", "Real-Time Chapter Recap", {
+        contentDir: "ch02/42-real-time-chapter-recap",
+        // videoUrl/durationLabel pending
+      }),
     ],
   },
   {
