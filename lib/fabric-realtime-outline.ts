@@ -51,7 +51,10 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch01/06-fabric-notebooks",
         // videoUrl/durationLabel pending
       }),
-      L(7, "shortcuts", "Shortcuts — Referencing Data Without Copying It"),
+      L(7, "shortcuts", "Shortcuts — Referencing Data Without Copying It", {
+        contentDir: "ch01/07-shortcuts",
+        // videoUrl/durationLabel pending
+      }),
       L(8, "fabric-data-factory-pipelines", "Fabric Data Factory — Pipelines"),
       L(9, "dataflows-gen2", "Dataflows Gen2"),
       L(10, "fabric-warehouse", "Fabric Warehouse"),
