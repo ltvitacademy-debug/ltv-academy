@@ -14,6 +14,15 @@ import { CAREER_CAPSTONE_CHAPTERS } from "./career-capstone-outline";
 import { TABLEAU_CHAPTERS } from "./tableau-outline";
 import { AZURE_DBA_CHAPTERS } from "./azure-dba-outline";
 import { SNOWFLAKE_CHAPTERS } from "./snowflake-outline";
+import { DBT_CHAPTERS } from "./dbt-outline";
+import { GIT_CICD_CHAPTERS } from "./git-cicd-outline";
+import { AIRFLOW_CHAPTERS } from "./airflow-outline";
+import { TERRAFORM_BICEP_CHAPTERS } from "./terraform-bicep-outline";
+import { KAFKA_CHAPTERS } from "./kafka-outline";
+import { EXCEL_CHAPTERS } from "./excel-outline";
+import { POWERSHELL_CHAPTERS } from "./powershell-outline";
+import { AZURE_FUNDAMENTALS_CHAPTERS } from "./azure-fundamentals-outline";
+import { ADVANCED_DATABRICKS_CHAPTERS } from "./advanced-databricks-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -155,6 +164,87 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: SNOWFLAKE_CHAPTERS,
     contentBase: "snowflake",
+  },
+  {
+    slug: "dbt-analytics-engineering",
+    title: "dbt / Analytics Engineering",
+    tagline:
+      "Sources, staging, marts, tests, snapshots, and CI/CD — the modeling layer that turns a warehouse into a governed, documented, testable analytics product.",
+    status: "available",
+    chapters: DBT_CHAPTERS,
+    contentBase: "dbt",
+  },
+  {
+    slug: "git-github-cicd-for-data",
+    title: "Git, GitHub & CI/CD for Data",
+    tagline:
+      "Version control and automated pipelines for people whose daily work is SQL, dbt, and notebooks — not a generic software-engineering course.",
+    status: "available",
+    chapters: GIT_CICD_CHAPTERS,
+    contentBase: "git-cicd",
+  },
+  {
+    slug: "airflow",
+    title: "Airflow",
+    tagline:
+      "DAGs, operators, sensors, and real ELT pipelines — the orchestration tool that shows up constantly outside Microsoft-only shops.",
+    status: "available",
+    chapters: AIRFLOW_CHAPTERS,
+    contentBase: "airflow",
+  },
+  {
+    slug: "terraform-bicep-for-data-engineers",
+    title: "Terraform & Bicep for Data Engineers",
+    tagline:
+      "Provisioning the Azure resources behind a data platform as code, instead of clicking through the portal every time.",
+    status: "available",
+    chapters: TERRAFORM_BICEP_CHAPTERS,
+    contentBase: "terraform-bicep",
+  },
+  {
+    slug: "kafka-event-streaming",
+    title: "Kafka & Event Streaming",
+    tagline:
+      "Topics, partitions, producers, consumers, and Kafka Connect — the real-time platform skill senior data engineering roles ask for beside Fabric and Databricks streaming.",
+    status: "available",
+    chapters: KAFKA_CHAPTERS,
+    contentBase: "kafka",
+  },
+  {
+    slug: "advanced-excel-for-data-analysts",
+    title: "Advanced Excel for Data Analysts",
+    tagline:
+      "PivotTables, XLOOKUP, dynamic arrays, and Power Query — a focused module, not a 100-video Excel course, aimed squarely at analyst work.",
+    status: "available",
+    chapters: EXCEL_CHAPTERS,
+    contentBase: "excel",
+  },
+  {
+    slug: "powershell-fundamentals",
+    title: "PowerShell Fundamentals",
+    tagline:
+      "Enough PowerShell to read, modify, and run the automation scripts a DBA or data engineer actually encounters on the job.",
+    status: "available",
+    chapters: POWERSHELL_CHAPTERS,
+    contentBase: "powershell",
+  },
+  {
+    slug: "azure-fundamentals",
+    title: "Azure Fundamentals",
+    tagline:
+      "A short, AZ-900-aligned primer on cloud and Azure concepts for anyone starting an Azure-flavored path from zero.",
+    status: "available",
+    chapters: AZURE_FUNDAMENTALS_CHAPTERS,
+    contentBase: "azure-fundamentals",
+  },
+  {
+    slug: "advanced-databricks-specialization",
+    title: "Advanced Databricks Specialization",
+    tagline:
+      "Unity Catalog depth, Auto Loader, Lakeflow, Workflows, and DP-750 prep — continuing straight from Azure Databricks & Delta Lake.",
+    status: "available",
+    chapters: ADVANCED_DATABRICKS_CHAPTERS,
+    contentBase: "advanced-databricks",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,
