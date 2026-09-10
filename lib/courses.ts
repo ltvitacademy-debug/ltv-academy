@@ -9,6 +9,7 @@ import { BLOCKCHAIN_CHAPTERS } from "./blockchain-outline";
 import { TSQL_CHAPTERS } from "./t-sql-outline";
 import { DE_FOUNDATIONS_CHAPTERS } from "./de-foundations-outline";
 import { DATABRICKS_DELTA_CHAPTERS } from "./databricks-delta-outline";
+import { FABRIC_REALTIME_CHAPTERS } from "./fabric-realtime-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -105,6 +106,15 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: DATABRICKS_DELTA_CHAPTERS,
     contentBase: "databricks-delta",
+  },
+  {
+    slug: "microsoft-fabric-and-real-time-analytics",
+    title: "Microsoft Fabric & Real-Time Analytics",
+    tagline:
+      "OneLake, lakehouses and warehouses, real-time Eventstreams and KQL, and the production practices that keep a data platform running — 70 lessons continuing straight from Azure Databricks & Delta Lake.",
+    status: "available",
+    chapters: FABRIC_REALTIME_CHAPTERS,
+    contentBase: "fabric-realtime",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,
