@@ -27,7 +27,7 @@ export const SSIS_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "SSIS Fundamentals",
     lessons: [
-      L(1, "what-is-ssis", "What Is SSIS?"),
+      L(1, "what-is-ssis", "What Is SSIS?", { contentDir: "ch01/01-what-is-ssis" }),
       L(2, "ssdt-and-project-setup", "SSDT & Project Setup"),
       L(3, "the-ssis-architecture", "The SSIS Architecture"),
       L(4, "packages-projects-and-solutions", "Packages, Projects & Solutions"),
