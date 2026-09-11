@@ -1,0 +1,17 @@
+# Script — Welcome! What Is Tableau & Course Overview
+
+## Segment 1 (title)
+
+Welcome to Tableau. Tableau is a data visualization and business intelligence platform — you connect it to data, and it turns that data into interactive charts, dashboards, and stories, without writing code for the visualization layer itself.
+
+## Segment 2 (screenshot: the real workspace)
+
+This is the real Tableau Desktop workspace, straight from Tableau's own documentation. The Data pane on the left holds every field from your connected data source, split into Dimensions and Measures. The Columns and Rows shelves determine the chart's basic shape. The Marks card controls color, size, and detail. You'll be looking at this exact layout for the rest of the course — this particular example uses the Sample Superstore dataset, which you'll download yourself in Lesson 3.
+
+## Segment 3 (steps: course structure)
+
+This course runs 95 lessons across 18 chapters: getting started and connecting to data, visualization fundamentals and formatting, filters and calculated fields, data modeling and maps, parameters and Level of Detail expressions, dashboards, and finally three portfolio projects plus interview preparation. It assumes you already know SQL from T-SQL Development — every Tableau-specific skill is taught from zero.
+
+## Segment 4 (outro)
+
+Next lesson, you'll install Tableau Desktop and Tableau Public and get both running on your own machine.

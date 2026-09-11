@@ -27,7 +27,7 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Getting Started",
     lessons: [
-      L(1, "welcome-what-is-tableau", "Welcome! What Is Tableau & Course Overview"),
+      L(1, "welcome-what-is-tableau", "Welcome! What Is Tableau & Course Overview", { contentDir: "ch01/01-welcome-what-is-tableau" }),
       L(2, "installing-tableau-desktop-and-public", "Installing Tableau Desktop & Tableau Public"),
       L(3, "course-datasets", "Downloading and Understanding the Course Datasets"),
       L(4, "navigating-tableau-desktop", "Navigating Tableau Desktop"),
