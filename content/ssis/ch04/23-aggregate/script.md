@@ -1,0 +1,38 @@
+# Script — Aggregate
+
+## Segment 1 (title)
+
+The Aggregate transformation brings GROUP BY-style logic straight into
+your data flow — no database round trip required. Let's break down what
+it can actually do.
+
+## Segment 2 (steps: the operations)
+
+Seven operations, all working off one input. Group By divides your
+rows into groups by whatever column value you choose — any data type
+works. Sum and Average both need numeric columns, and give you a total
+or an average per group. Count tells you how many items landed in a
+group, while Count Distinct tells you how many unique, non-null values
+showed up. And Minimum and Maximum are restricted to numeric, date, or
+time columns — you can apply more than one of these operations to the
+very same input column if you need to, say, both the sum and the
+average of the same Sales figure.
+
+## Segment 3 (code: SQL comparison)
+
+If you've ever written this exact query — group by CountryRegion, sum
+the Population — you already understand the Aggregate transformation.
+It does the same job, but entirely inside the pipeline, on rows that
+are already streaming through your package. One detail worth knowing:
+the Aggregate transformation only outputs the columns actually involved
+in grouping or aggregating. Any other column on the input — say, a City
+column that nothing referenced — just disappears from the output. And
+because it can't finalize a group's total until it's seen every row in
+that group, it has to consume the entire rowset before it publishes
+anything at all — that's what makes it an asynchronous transformation.
+
+## Segment 4 (outro)
+
+Aggregate collapses rows into summaries. Next lesson, we cover Sort —
+the transformation that puts rows in order, and the one both Merge and
+Merge Join absolutely require before they'll run.

@@ -1,0 +1,38 @@
+# Script — Sort
+
+## Segment 1 (title)
+
+The Sort transformation looks simple — order some rows — but it sets up
+two of the most important transformations still to come. Let's see
+exactly how it works.
+
+## Segment 2 (code: numbered sort keys)
+
+Here's how a multi-column sort actually gets configured. Every column
+you want sorted gets a number — the column numbered 1 sorts first, the
+column numbered 2 breaks ties within that first sort, and so on. The
+sign tells the transformation the direction: positive means ascending,
+negative means descending. So CountryRegion at sort order 1 ascending,
+then City at sort order 2 ascending, gives you exactly what you'd get
+from ORDER BY CountryRegion, City in T-SQL. Any column left at sort
+order 0 — like Revenue here — isn't part of the sort at all, but it
+still rides along in the output.
+
+## Segment 3 (steps: what sort does)
+
+Three things worth remembering about this transformation. First, it
+handles a full multi-column sort using those numbered keys. Second, it
+can remove duplicate rows in the very same pass — a simple checkbox, no
+extra transformation needed — collapsing any rows whose sort key values
+match into a single row. And third, and this is the important one for
+where we're headed next: both the Merge transformation and the Merge
+Join transformation absolutely require their inputs to already be
+sorted on the columns they're combining. This transformation is how you
+guarantee that before the data ever reaches them.
+
+## Segment 4 (outro)
+
+Sort gets your data flow into the exact order two upcoming
+transformations depend on. Next lesson: Merge and Merge Join — two
+different ways to combine sorted datasets, and when to reach for each
+one.

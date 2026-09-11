@@ -1,0 +1,43 @@
+# Script — Common Failure Patterns
+
+## Segment 1 (title)
+
+We've spent this whole chapter building tools for when things go wrong —
+event handlers, error outputs, logging, checkpoints. This lesson ties them
+together: the failure categories you'll actually run into, and which tool
+from this chapter you reach for first in each one.
+
+## Segment 2 (steps: four failure categories)
+
+Four categories cover almost everything you'll see. Connection failures —
+a server that's down, a share that's unreachable — surface fast, right at
+the start of a task, naming the connection manager itself; look there
+first, and lean on an OnError handler plus checkpoints if it's task four
+of ten. Data type mismatches show up mid-data-flow, a conversion or
+truncation naming a specific column; this is exactly what error outputs
+from Lesson 32 are built for — redirect the bad rows instead of failing
+the whole load. Permission issues are the ones that work fine in SSDT and
+then fail in production, because the account that actually runs the
+package in production isn't the one you tested with; logging with
+Operator and SourceName turned on is what tells you which account and
+which step actually failed.
+
+## Segment 3 (steps: dependency failures and the real pattern)
+
+The fourth category is downstream and dependency failures — the package
+itself is fine, but something it depends on changed or isn't ready: an
+upstream schema change, a file that hasn't landed yet. The fix there is
+often an OnError handler that checks preconditions before letting the rest
+of the package run at all. And here's the pattern behind all four: none of
+them get fixed by just rerunning the package. Rerun without changing
+anything, and you reproduce the same connection failure, the same
+mismatch, the same permission problem, the same missing dependency — every
+time, unless the failure was genuinely transient.
+
+## Segment 4 (outro)
+
+Sorting a failure into one of these four categories in the first few
+seconds — before you even fully read the error message — is what separates
+someone flailing at a red X from someone actually diagnosing it. Chapter 7
+picks up from here with advanced SSIS patterns: incremental loads, the
+Slowly Changing Dimension transformation, and script components.

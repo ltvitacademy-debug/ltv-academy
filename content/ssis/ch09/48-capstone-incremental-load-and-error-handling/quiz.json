@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-incremental-load-and-error-handling",
+  "questions": [
+    {
+      "q": "Why does Lesson 47's truncate-and-reload approach not scale?",
+      "options": [
+        "Every run re-extracts the entire source table, even orders loaded in previous runs, getting slower as the source grows",
+        "SSIS packages can only run a fixed number of times before failing",
+        "AdventureWorks2012 deletes old orders automatically",
+        "Truncate statements are not supported by SQL Server"
+      ],
+      "answer": 0,
+      "explain": "A full reload re-does the same work on every run regardless of what actually changed, which is fine on a small lab table but becomes a real problem as the source table grows."
+    },
+    {
+      "q": "What does the watermark (CapstoneLoadControl.LastLoadDate) get used for?",
+      "options": [
+        "Filtering the source query to only rows modified after the last successful run",
+        "Storing the package's password",
+        "Counting how many times the package has ever been deployed",
+        "Replacing the need for a Data Flow Task entirely"
+      ],
+      "answer": 0,
+      "explain": "The source query's WHERE clause filters on ModifiedDate > the stored watermark, so each run only extracts what's new or changed since the last successful load."
+    },
+    {
+      "q": "What does changing the Lookup transformation's error output to Redirect Row accomplish?",
+      "options": [
+        "Rows that don't match CapstoneDimProduct get routed to a separate output (here, a flat file) instead of being silently dropped",
+        "It makes the Lookup match every row automatically, regardless of ProductID",
+        "It disables the Lookup transformation entirely",
+        "It causes the whole package to fail immediately on any unmatched row"
+      ],
+      "answer": 0,
+      "explain": "Redirect Row sends failing rows down a separate error path — here, into capstone_lookup_errors.csv — so unmatched rows are captured and visible instead of vanishing."
+    },
+    {
+      "q": "What does the OnError event handler on the Data Flow Task do?",
+      "options": [
+        "Inserts a row into a custom log table recording the failure, even if no one is watching the package run",
+        "Automatically fixes whatever error occurred",
+        "Prevents the Data Flow Task from ever failing again",
+        "Emails the package's source code to the administrator"
+      ],
+      "answer": 0,
+      "explain": "An OnError event handler runs package logic in response to a failure — here, writing a record to dbo.CapstoneRunLog so the failure leaves a trace."
+    },
+    {
+      "q": "After adding the watermark, what should happen if you run the package twice in a row with no new orders added in between?",
+      "options": [
+        "The second run loads zero rows, since nothing has changed since the first run's watermark",
+        "The second run reloads every row again, exactly like the first run",
+        "The second run deletes everything the first run loaded",
+        "The package refuses to run a second time at all"
+      ],
+      "answer": 0,
+      "explain": "With the source query filtering on ModifiedDate > the stored watermark and no new or changed orders in between, the second run correctly finds nothing new to extract."
+    }
+  ]
+}

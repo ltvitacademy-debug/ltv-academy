@@ -1,0 +1,38 @@
+# Script — Environments & Environment Variables
+
+## Segment 1 (title)
+
+A project deployed to SSISDB is one fixed thing — but you almost never
+want it to run identically everywhere. This lesson is about
+environments: how one deployed project runs with different values in
+dev, test, and production, without maintaining three separate copies
+of it.
+
+## Segment 2 (steps: build the environment)
+
+An environment is just a named container of variables — Dev, Test,
+Production, whatever names make sense for you. You create one by
+right-clicking the Environments folder under your folder in SSISDB and
+selecting Create Environment. Then open its properties and add
+variables on the Variables page — pick a type, enter a value, and check
+Sensitive if it's something like a password, which gets encrypted the
+same way sensitive parameters are. The variable's name doesn't have to
+match anything yet — that connection happens in the next step.
+
+## Segment 3 (steps: map it to a project)
+
+To actually use an environment, a project needs a reference to it —
+right-click the project, select Configure, go to the References page,
+and add the environment. Then, back in Configure, on the Parameters
+page, you map an individual parameter or connection manager property:
+browse its Value field, select Use environment variable, and pick which
+variable feeds it. And here's the one rule that matters: even if a
+project references multiple environments, a single execution can only
+pull from one of them. There's no such thing as accidentally mixing a
+dev variable and a production variable in the same run.
+
+## Segment 4 (outro)
+
+Once a package can be pointed at the right environment, the last piece
+is getting it to run without you clicking anything — that's SQL Server
+Agent, and that's next lesson.

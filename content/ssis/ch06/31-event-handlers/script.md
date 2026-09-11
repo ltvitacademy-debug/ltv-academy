@@ -1,0 +1,42 @@
+# Script — Event Handlers
+
+## Segment 1 (title)
+
+Every package you've built so far runs quietly in the happy path — until
+something breaks. This lesson is about what SSIS does the moment something
+breaks: event handlers, the mechanism behind almost every real-world
+failure notification you'll ever build.
+
+## Segment 2 (screenshot: event-handlers-tab)
+
+Every executable in SSIS — the package itself, a container, a task — raises
+events as it runs. OnPreExecute right before it starts, OnPostExecute right
+after, OnError the moment something goes wrong. Most of the time nothing's
+listening. An event handler is how you tell SSIS: when this event happens on
+this executable, run this workflow.
+
+This is the Event Handlers tab, and here's the part that surprises people —
+it isn't a special dialog, it's a full second design surface. Same Toolbox,
+same tasks, same Connection Managers area as Control Flow. Two dropdowns
+scope it: Executable picks which package, container, or task the handler
+belongs to, and Event handler picks which event — OnError, OnWarning, and
+so on. Pick OnError on the package, and you get a blank canvas to build a
+response on — send an e-mail, log something custom, refresh a lookup table.
+
+## Segment 3 (steps: event bubbling)
+
+Here's the piece that makes one handler go a long way. If a task raises
+OnError and that task has no handler of its own, the event doesn't vanish —
+it bubbles up to the next container in the hierarchy. Task to Sequence
+container to package. If the package has an OnError handler, that's where
+it finally runs. That's exactly why one package-level OnError handler is
+often enough to catch a failure anywhere in the package, without wiring an
+individual handler onto every single task.
+
+## Segment 4 (outro)
+
+You won't build handlers for most of the available events day to day — but
+OnError, wired to something like a Send Mail Task, shows up in nearly every
+production package you'll ship. Next lesson, we go one level deeper into
+error handling: configuring error outputs directly on data flow components,
+so a single bad row doesn't take down the whole data flow.

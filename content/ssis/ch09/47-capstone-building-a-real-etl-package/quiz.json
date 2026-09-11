@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-building-a-real-etl-package",
+  "questions": [
+    {
+      "q": "What does the Execute SQL Task at the start of the control flow do?",
+      "options": [
+        "Truncates dbo.CapstoneFactOrderSales in AdventureWorksDW2014 before the load runs",
+        "Creates the AdventureWorks2012 database from scratch",
+        "Runs the entire data flow itself, without a separate Data Flow Task",
+        "Deletes the CapstoneDimProduct table permanently"
+      ],
+      "answer": 0,
+      "explain": "This lesson's package does a full reload, so it truncates the fact table first, guarded by a success precedence constraint so the data flow never runs against a failed truncate."
+    },
+    {
+      "q": "Why does the Lookup transformation have to run before the OLE DB Destination?",
+      "options": [
+        "Because CapstoneFactOrderSales stores ProductKey, a surrogate key that only the Lookup can resolve from ProductID",
+        "Because SSIS requires every data flow to contain a Lookup transformation",
+        "Because the OLE DB Destination can't accept more than three columns without a Lookup first",
+        "It doesn't matter — the Lookup could just as easily run after the destination"
+      ],
+      "answer": 0,
+      "explain": "There's no ProductKey to write until the Lookup matches the source's ProductID against CapstoneDimProduct and adds it to the pipeline."
+    },
+    {
+      "q": "What does the Derived Column transformation compute in this package?",
+      "options": [
+        "DateKey (in yyyymmdd integer format) and ExtendedAmount (OrderQty times UnitPrice)",
+        "The SalesOrderID and ProductID columns",
+        "A brand-new connection manager",
+        "The precedence constraint between the two control flow tasks"
+      ],
+      "answer": 0,
+      "explain": "DateKey has to match DimDate's yyyymmdd integer format exactly to join correctly, and ExtendedAmount is a simple computed value the source query doesn't already provide in that shape."
+    },
+    {
+      "q": "What query does the OLE DB Source run, and against which connection manager?",
+      "options": [
+        "A join of Sales.SalesOrderHeader and Sales.SalesOrderDetail, against the AdventureWorks2012 connection manager",
+        "A SELECT against CapstoneFactOrderSales, against the AdventureWorksDW2014 connection manager",
+        "A stored procedure call with no parameters, against a flat file connection manager",
+        "It doesn't run a query — it reads directly from Production.Product only"
+      ],
+      "answer": 0,
+      "explain": "The source pulls order header and order detail rows from AdventureWorks2012, joined on SalesOrderID, which is exactly the raw shape the rest of the data flow reshapes."
+    },
+    {
+      "q": "After running the package twice in a row, what should the row count in dbo.CapstoneFactOrderSales look like?",
+      "options": [
+        "The same both times — the truncate step means every run is a full reload, not an accumulation",
+        "Exactly double the first run's count",
+        "Zero, because truncate deletes the table structure itself",
+        "It's unpredictable and depends on network latency"
+      ],
+      "answer": 0,
+      "explain": "Because the Execute SQL Task truncates the fact table before every load, re-running the package reloads the same data rather than duplicating it — that's the whole point of a full-load pattern."
+    }
+  ]
+}

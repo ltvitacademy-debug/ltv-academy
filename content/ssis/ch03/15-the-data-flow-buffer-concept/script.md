@@ -1,0 +1,39 @@
+# Script — The Data Flow Buffer Concept
+
+## Segment 1 (title)
+
+Time to go one level deeper than "rows move from source to
+destination." How do they actually move? The answer is the buffer, and
+it's one of the most important performance concepts in this entire
+course.
+
+## Segment 2 (steps: allocate, fill, pass downstream)
+
+Moving a million rows one at a time would be painfully slow, so the
+data flow engine doesn't do that. Instead it allocates a block of
+memory — a buffer — fills it with as many rows as will fit, and passes
+that entire buffer down the chain to the next component. Every
+transformation and destination in your data flow processes a buffer at
+a time, not a row at a time. This is exactly what you're watching when
+the Data Viewer, which we'll cover in Lesson 18, pauses "buffer by
+buffer" while you step through it.
+
+## Segment 3 (steps: the two tuning knobs)
+
+Two properties decide how big those buffers actually are.
+DefaultBufferSize defaults to ten megabytes — 10,485,760 bytes exactly.
+DefaultMaxBufferRows caps it at ten thousand rows by default. But
+here's the part that matters for real packages: a buffer's capacity is
+bytes, not rows. So a narrower row — fewer columns, smaller data types
+— lets more rows fit in that same ten megabytes. That's the actual
+reason experienced SSIS developers are strict about dropping columns a
+data flow doesn't need as early as possible. And if the machine
+genuinely doesn't have enough memory for the buffers a package needs,
+SSIS spools them to disk instead — watch the "Buffers spooled"
+counter, because a rising number there is a real performance problem.
+
+## Segment 4 (outro)
+
+Now that you understand how rows physically move, let's configure the
+component you'll build into almost every package you write: the OLE DB
+source and destination.

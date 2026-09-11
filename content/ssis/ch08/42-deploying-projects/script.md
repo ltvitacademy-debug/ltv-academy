@@ -1,0 +1,39 @@
+# Script — Deploying Projects
+
+## Segment 1 (title)
+
+Now that SSISDB exists, let's actually put something in it. This
+lesson is about deploying a project — the process that takes everything
+you built in SSDT and moves it into the catalog, where it can be
+scheduled, parameterized, and monitored.
+
+## Segment 2 (screenshot: deploy-project-menu)
+
+Every project you've built since Lesson 4 uses the project deployment
+model — the whole project, every package and parameter inside it,
+builds into one file, a dot-I-S-P-A-C file, and that file deploys as a
+single unit. You don't deploy packages one at a time; you deploy the
+project they live in. You can kick off deployment three ways — from
+SSDT's Project menu, from the command line, or, like you see here,
+right from SSMS: expand SSISDB, find your Projects folder, right-click,
+and select Deploy Project. No need to even have the project open in
+Visual Studio.
+
+## Segment 3 (screenshot: deployment-wizard)
+
+However you launch it, you land on the same wizard. The Introduction
+page spells out the five steps ahead: pick the deployment model, select
+the project or packages, select the destination, review your
+selections, and deploy. Select Source is where you point at your ispac
+file, or at a project already sitting somewhere in the catalog. Select
+Destination is where you type the target server and browse to the
+folder inside SSISDB. Review shows you everything you picked, with a
+Deploy button. And Results shows success or failure for every single
+action — click Failed on any row for the exact error, and you can save
+the whole report as XML.
+
+## Segment 4 (outro)
+
+Once a project's deployed, it's ready to run with different settings
+depending on where it's running — dev, test, or production. That's
+exactly what environments solve, and that's next lesson.

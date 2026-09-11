@@ -1,0 +1,38 @@
+# Script — Incremental Loads With SSIS
+
+## Segment 1 (title)
+
+Welcome to Chapter 7, Advanced SSIS Patterns. We're starting with a
+problem every real-world package eventually runs into: what happens when
+your source table gets too big to reload from scratch every single run?
+
+## Segment 2 (steps: incremental load pattern)
+
+Every package you've built so far in this course does a full load —
+truncate the destination, pull the entire source, load it back. That's
+fine for a small lookup table, but it falls apart once a source table
+has fifty million rows and only a dozen of them actually changed since
+last night. An incremental load, also called a delta load, fixes that by
+loading only what's new or changed.
+
+The standard way to know what's changed is a watermark — a saved value,
+usually the maximum modified date your package processed last run. Here's
+the pattern: first, an Execute SQL Task reads that saved watermark into a
+variable. Second, your OLE DB Source uses a parameterized query to pull
+only rows newer than it — that's the actual delta extract. Third, a
+Lookup transformation checks each of those rows against the destination's
+business key, and a Conditional Split routes brand-new rows to an insert
+and already-existing-but-changed rows to an update. And finally, another
+Execute SQL Task saves the new maximum value as next run's watermark.
+
+Notice there's no single "Incremental Load Task" in the Toolbox — every
+piece of this pattern is something you already built in Chapters 2 and 4.
+
+## Segment 3 (outro)
+
+This pattern and next lesson's Slowly Changing Dimension Transformation
+solve overlapping problems, but at different scopes — this one is a
+general incremental extract strategy for any table, while the SCD
+Transformation is purpose-built for dimension tables in a star schema.
+Next lesson, we open that wizard and see exactly how it handles Type 1
+and Type 2 changes for you.
