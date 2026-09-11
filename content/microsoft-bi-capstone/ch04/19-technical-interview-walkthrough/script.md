@@ -1,0 +1,21 @@
+# Script — Technical Interview Walkthrough
+
+## Segment 1 (title)
+
+Knowing the material isn't usually where candidates lose points — answering it as a disorganized stream of facts is. This lesson walks through one technical question end to end, using this capstone as the answer.
+
+## Segment 2 (steps: the four-part structure)
+
+A strong answer follows four steps: clarify scope, so you're answering the actual question. State the design decision, plainly, before justifying it. Justify it, tying the choice to the real problem. And name a tradeoff, showing you understand what you gave up, not just what you gained.
+
+## Segment 3 (code: the worked example)
+
+Take "walk me through the ETL pipeline you built." After clarifying scope, the decision is stated plainly: work order data loaded into staging, then transformed and loaded into a warehouse by an SSIS package. Short, concrete, no justification yet — just the shape of the answer.
+
+## Segment 4 (steps: adapting the skeleton)
+
+The justification comes next — SSIS chosen for scheduling and a repeatable, production-style pipeline — and then the tradeoff: heavier to set up than Power Query, worth it because this needed to be a standalone, schedulable job. The same four steps work on almost any design question you get asked, including designing the dimensional model itself.
+
+## Segment 5 (outro)
+
+Next lesson moves past the technical questions entirely, into the behavioral interview — the questions that aren't about the tools at all.

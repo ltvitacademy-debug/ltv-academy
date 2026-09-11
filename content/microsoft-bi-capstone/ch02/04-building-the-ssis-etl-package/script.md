@@ -1,0 +1,21 @@
+# Script — Building the SSIS ETL Package
+
+## Segment 1 (title)
+
+This lesson builds WorkOrderETL.dtsx — the one SSIS package this capstone's entire pipeline runs on, and it does two genuinely different jobs.
+
+## Segment 2 (screenshot: anatomy of a data flow)
+
+Every data flow, no matter which task it lives in, is built from the same three kinds of components: sources, transformations, and destinations, connected by paths. Both of this package's Data Flow Tasks follow this exact shape.
+
+## Segment 3 (steps: Data Flow Task 1)
+
+The first Data Flow Task does exactly one job: get Production.WorkOrder into the staging table you created last lesson, unchanged. An OLE DB Source reads the real AdventureWorks2012 table, and an OLE DB Destination writes straight into stg.WorkOrder using fast load. No transformation in between — that's deliberate.
+
+## Segment 4 (steps: Data Flow Task 2)
+
+The second Data Flow Task reads from staging instead, and this is where the real work happens: a Lookup transformation resolves each staged ProductID against DimProduct to get a ProductKey, a second Lookup resolves ScrapReasonID against DimScrapReason — redirecting unmatched rows instead of failing, since most work orders scrap nothing — and the resolved keys land in dw.FactWorkOrder. Same Lookup pattern SSIS Development already taught, just pointed at a new business process.
+
+## Segment 5 (outro)
+
+Next lesson builds the actual staging and warehouse tables these two Data Flow Tasks depend on — without them, Data Flow Task 2 has nothing to resolve keys against.

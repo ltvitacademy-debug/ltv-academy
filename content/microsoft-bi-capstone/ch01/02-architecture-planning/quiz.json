@@ -1,0 +1,60 @@
+{
+  "lesson": "architecture-planning",
+  "questions": [
+    {
+      "q": "What is the actual name of this capstone's fact table, and what is its grain?",
+      "options": [
+        "dw.FactWorkOrder, with one row per work order",
+        "dw.FactSales, with one row per sales order line",
+        "stg.WorkOrder, with one row per production operation",
+        "dw.FactProduct, with one row per product"
+      ],
+      "answer": 0,
+      "explain": "dw.FactWorkOrder is the fact table this architecture builds, and its grain is one row per work order — every column added to it has to be true at that grain."
+    },
+    {
+      "q": "Why is dw.FactWorkOrder classified as an accumulating snapshot fact rather than a transaction fact?",
+      "options": [
+        "Because StockedQty and ScrappedQty update on the same row as production progresses, instead of a new row being inserted at each step",
+        "Because it only ever holds one row total",
+        "Because it has no measures at all",
+        "Because it is refreshed only once a year"
+      ],
+      "answer": 0,
+      "explain": "A transaction fact captures an event once and never changes. This fact's measures get revisited and updated as the work order moves through its lifecycle, which is the defining trait of an accumulating snapshot."
+    },
+    {
+      "q": "Why does dw.FactWorkOrder have three foreign keys — StartDateKey, EndDateKey, and DueDateKey — all pointing at the same dw.DimDate table?",
+      "options": [
+        "DimDate is a role-playing dimension here: one physical table referenced multiple times, each key representing a different role, instead of building three separate date dimensions",
+        "Because SQL Server requires at least three foreign keys per fact table",
+        "Because each date actually comes from a different, unrelated date dimension",
+        "It's a mistake in the design that should be fixed by removing two of the keys"
+      ],
+      "answer": 0,
+      "explain": "Building three separate date dimensions would triple the maintenance cost of a table that never changes shape. A role-playing dimension lets one DimDate table serve all three roles."
+    },
+    {
+      "q": "Why is Production.Location explicitly left out of this capstone's dimensional model?",
+      "options": [
+        "It lives at the WorkOrderRouting (operation) grain, one level finer than the work-order grain this capstone chose, so modeling it would fan the fact table out past its intended grain",
+        "Because AdventureWorks2012 doesn't actually contain a Production.Location table",
+        "Because location data is never useful in a manufacturing model",
+        "Because it was already used by Data Modeling & Data Warehousing's capstone"
+      ],
+      "answer": 0,
+      "explain": "A single work order can pass through several locations during production. Including it would either break the chosen grain or force an arbitrary rule — so this architecture scopes it out deliberately."
+    },
+    {
+      "q": "How do the SSRS report and the Power BI dashboard in this architecture relate to each other?",
+      "options": [
+        "They connect independently to the same dw.FactWorkOrder and dimension tables — neither tool feeds the other",
+        "Power BI reads its data from the SSRS report's output",
+        "SSRS reads its data from a Power BI dataset",
+        "They both read directly from Production.WorkOrder, bypassing the warehouse entirely"
+      ],
+      "answer": 0,
+      "explain": "Both WorkOrderProductionSummary.rdl and the Power BI report are independent consumers of the same shared warehouse tables — that's the whole point of building a shared warehouse instead of two separate pipelines."
+    }
+  ]
+}

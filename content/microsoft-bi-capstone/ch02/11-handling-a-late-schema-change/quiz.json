@@ -1,0 +1,60 @@
+{
+  "lesson": "handling-a-late-schema-change",
+  "questions": [
+    {
+      "q": "Why does ShiftCode belong on a new dw.DimShift dimension rather than as a raw column added directly to dw.FactWorkOrder?",
+      "options": [
+        "It's a low-cardinality descriptive attribute, the same shape as ScrapReason — modeling it as a dimension avoids duplicating descriptive text and lets a later rename (e.g. \"Day\" to \"First Shift\") update one dimension row instead of every historical fact row",
+        "SQL Server does not allow adding new columns to an existing fact table",
+        "SSIS cannot map a new source column into an existing staging table",
+        "Fact tables are only allowed to contain foreign keys, never any other column type"
+      ],
+      "answer": 0,
+      "explain": "ShiftCode is a small set of fixed, descriptive values describing a characteristic of the work order — exactly the shape ScrapReason already took as dw.DimScrapReason, so it gets modeled the same way."
+    },
+    {
+      "q": "Put the five-stop ripple in the order this lesson describes it: staging, SSIS mapping, warehouse, SSRS, Power BI. Why does this order matter?",
+      "options": [
+        "Each stop only works because the one before it already landed — an SSIS mapping added before the staging column exists fails, and a report parameter added before the warehouse column exists just produces blanks",
+        "The order doesn't matter; all five can be changed in any sequence with identical results",
+        "SSRS and Power BI must be updated before the warehouse, since they are the tools business users actually see",
+        "The staging table is optional and can be skipped entirely for an additive change"
+      ],
+      "answer": 0,
+      "explain": "Each stage depends on the previous one already existing — you can't map a column that isn't in staging yet, and a report can't show a warehouse column that doesn't exist yet."
+    },
+    {
+      "q": "Why does this lesson describe the staging and warehouse changes as \"additive,\" and why does that matter?",
+      "options": [
+        "They add new nullable columns and a new dimension without altering any existing column's type or meaning, so every report and dashboard already in production keeps working unmodified",
+        "Additive means the change can only ever add rows, never columns",
+        "Additive changes always require every consuming report to be rebuilt from scratch immediately",
+        "Additive changes are only possible in Power BI, never in SQL Server or SSRS"
+      ],
+      "answer": 0,
+      "explain": "Because nothing that already existed changed shape or meaning, WorkOrderProductionSummary.rdl and the Power BI dashboard keep working exactly as they did before, with no forced same-day update."
+    },
+    {
+      "q": "What should ShiftKey be, on dw.FactWorkOrder rows loaded before the ShiftCode change was made?",
+      "options": [
+        "NULL (or a resolved \"Unknown Shift\" member) — a normal, expected state for a Type 0 dimension backfilled after the fact",
+        "An error value that must be manually corrected before any report can run",
+        "Automatically set to the most common shift code across all historical rows",
+        "Impossible — historical rows must be deleted and reloaded before this change can be made at all"
+      ],
+      "answer": 0,
+      "explain": "Pre-change historical rows legitimately have no shift recorded; NULL (or an Unknown Shift member) is the expected, correct state, not a data quality failure."
+    },
+    {
+      "q": "After making this schema change, what does this lesson say to do with Lesson 10's validation checklist?",
+      "options": [
+        "Re-run all four checks exactly as written, plus one addition: confirm ShiftKey resolves to a real DimShift row or is legitimately NULL for pre-change rows",
+        "Discard it entirely and design a completely new set of checks specific to shifts",
+        "Skip validation this time, since the change is additive and therefore assumed safe",
+        "Only re-run the checks against the Power BI dashboard, since SSRS wasn't changed in this scenario"
+      ],
+      "answer": 0,
+      "explain": "The same row-count, orphaned-key, and cross-tool checks still apply after any change — this one just adds a ShiftKey orphan check on top of them."
+    }
+  ]
+}

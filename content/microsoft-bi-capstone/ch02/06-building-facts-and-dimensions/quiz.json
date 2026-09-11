@@ -1,0 +1,60 @@
+{
+  "lesson": "building-facts-and-dimensions",
+  "questions": [
+    {
+      "q": "Why is dw.FactWorkOrder classified as an accumulating snapshot fact table rather than a plain transaction fact?",
+      "options": [
+        "A work order has a defined lifecycle — started, due, and eventually ended — so the fact row is inserted at the start and updated as StockedQty/ScrappedQty change and EndDateKey is filled in, rather than inserted once and left alone",
+        "It's classified this way purely because it has more than three columns",
+        "Because it never gets updated after the initial insert",
+        "Because it aggregates data on a fixed schedule, like once per day"
+      ],
+      "answer": 0,
+      "explain": "The insert-then-update-until-complete lifecycle is exactly what distinguishes an accumulating snapshot from a transaction fact (insert-only) or a periodic snapshot (scheduled batch inserts)."
+    },
+    {
+      "q": "Why do StartDateKey, EndDateKey, and DueDateKey all reference the same physical dw.DimDate table instead of three separate date dimensions?",
+      "options": [
+        "This is a role-playing dimension — one physical table serving three distinct business roles avoids three separate ETL loads and the risk of the same calendar date looking different across duplicated copies",
+        "SQL Server does not allow more than one date dimension per database",
+        "The three dates are always identical, so only one lookup is needed",
+        "It's a performance optimization with no relationship to dimensional modeling concepts"
+      ],
+      "answer": 0,
+      "explain": "Same mechanism as Data Modeling & Data Warehousing's Lesson 27 — one physical dimension, multiple foreign keys, each a distinct role."
+    },
+    {
+      "q": "Why is EndDateKey nullable on dw.FactWorkOrder while StartDateKey and DueDateKey are not?",
+      "options": [
+        "A work order that hasn't finished yet has no end date — the row is inserted when the work order starts, before it has ended, and EndDateKey gets filled in once it completes",
+        "EndDateKey is nullable because it's never actually used",
+        "StartDateKey and DueDateKey are always the same value, so only one needs to be required",
+        "SQL Server requires the last column in a CREATE TABLE statement to be nullable"
+      ],
+      "answer": 0,
+      "explain": "This nullability is a direct consequence of the accumulating snapshot load pattern — the row exists before the work order is done."
+    },
+    {
+      "q": "Why isn't Production.Location modeled as a dimension on dw.FactWorkOrder, even though it's a real, related AdventureWorks2012 table?",
+      "options": [
+        "Location is tracked at the WorkOrderRouting (operation) grain, one level finer than the WorkOrder grain this fact table chose — attaching one LocationKey per work order would silently pick just one location for a work order that may have touched several",
+        "Production.Location doesn't actually exist in AdventureWorks2012",
+        "Location data is already fully captured by DimProduct",
+        "Adding a fourth dimension would exceed SQL Server's column limit"
+      ],
+      "answer": 0,
+      "explain": "This is a genuine grain mismatch, not a simplification — modeling it correctly would require a separate fact table at the routing grain or a many-to-many bridge, both out of scope for this capstone."
+    },
+    {
+      "q": "Which group does WorkOrderID belong to on dw.FactWorkOrder, and why?",
+      "options": [
+        "A degenerate dimension — it identifies the work order itself and isn't worth a separate one-column dimension table",
+        "A measure — it gets summed in reports",
+        "A role-playing foreign key to DimDate",
+        "A surrogate key resolved by a Lookup transformation"
+      ],
+      "answer": 0,
+      "explain": "WorkOrderID rides directly on the fact row as a degenerate dimension, the same pattern Data Modeling & Data Warehousing's capstone used for PurchaseOrderID."
+    }
+  ]
+}

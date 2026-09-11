@@ -1,0 +1,60 @@
+{
+  "lesson": "staging-and-warehouse-tables",
+  "questions": [
+    {
+      "q": "Why is ScrapReasonID left nullable all the way from stg.WorkOrder through to dw.FactWorkOrder.ScrapReasonKey?",
+      "options": [
+        "Most work orders scrap nothing at all, so a valid row can legitimately arrive with no scrap reason",
+        "Production.WorkOrder never actually populates this column",
+        "SQL Server requires every foreign key column to be nullable",
+        "It's a data entry mistake that should be fixed in staging"
+      ],
+      "answer": 0,
+      "explain": "A work order that produced its full quantity with zero scrap has no scrap reason to record — that's a normal, valid case, not missing data to clean up."
+    },
+    {
+      "q": "Why is dw.DimScrapReason built as an SCD Type 0 dimension instead of Type 1 or Type 2?",
+      "options": [
+        "It's a small, essentially static reference table — Production.ScrapReason rarely changes, so there's no history worth tracking and no meaningful 'overwrite' scenario to handle",
+        "Type 0 dimensions are required for every dimension smaller than 100 rows",
+        "SQL Server doesn't support IDENTITY columns on Type 1 dimensions",
+        "DimScrapReason needs to track full historical change, which only Type 0 supports"
+      ],
+      "answer": 0,
+      "explain": "Type 0 is the honest choice for a small, essentially static reference table — pretending it needs Type 2 history tracking would be over-engineering it."
+    },
+    {
+      "q": "Why does this capstone reference an existing dw.DimDate table instead of building a new one?",
+      "options": [
+        "DimDate is a conformed dimension — building it once and reusing it (including three times on one fact table) avoids duplicating a calendar table that should always agree with itself",
+        "SQL Server only allows one date dimension per database",
+        "AdventureWorks2012 has no date data to build a dimension from",
+        "dw.DimDate must be rebuilt from scratch for every new fact table"
+      ],
+      "answer": 0,
+      "explain": "A conformed DimDate, built once, is exactly what lets Lesson 6 reference it three separate times as three different roles without three separate ETL loads to keep in sync."
+    },
+    {
+      "q": "What is the key structural difference between the stg schema and the dw schema, even though both live on the same SQL Server instance?",
+      "options": [
+        "stg uses wide, forgiving types with no constraints and is disposable; dw uses strict types, surrogate keys, and primary/foreign key constraints, and is the durable version other tools read from",
+        "stg and dw are functionally identical and exist only for naming preference",
+        "dw tables are always temporary and get dropped after each load",
+        "stg tables use foreign keys to enforce data quality; dw tables never do"
+      ],
+      "answer": 0,
+      "explain": "The schema separation makes the distinction between disposable scratch space and the durable, report-facing warehouse visible in every object name."
+    },
+    {
+      "q": "What key type does dw.DimProduct's ProductAlternateKey column represent?",
+      "options": [
+        "The original OLTP natural key (Production.Product.ProductID), kept so ETL can look up the dimension row during a load",
+        "A brand-new surrogate key generated only for reporting",
+        "A foreign key to dw.FactWorkOrder",
+        "A randomly generated GUID unrelated to any source system"
+      ],
+      "answer": 0,
+      "explain": "ProductAlternateKey preserves the real source ProductID so the SSIS Lookup transformation in Lesson 4 has something concrete to match against."
+    }
+  ]
+}

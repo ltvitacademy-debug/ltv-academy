@@ -1,0 +1,17 @@
+# Script — Common Microsoft BI Developer Interview Questions
+
+## Segment 1 (title)
+
+A Microsoft-stack BI developer interview almost never stays in one lane. This lesson previews the two kinds of questions you'll actually get asked, so you know what to prepare for before you're in the room.
+
+## Segment 2 (steps: conceptual vs. tool-specific)
+
+Conceptual questions test whether you understand why a design choice gets made — star schema versus snowflake, SCD types, SSIS versus Power Query. Tool-specific questions test whether you've actually operated the tool — an SSIS Lookup transformation, an SSRS parameter, a DAX measure. Prepare for them differently: reason conceptual answers out loud, and point to real work you built for the tool-specific ones.
+
+## Segment 3 (steps: a realistic sample)
+
+Expect questions like: what's the difference between a Type 1 and Type 2 slowly changing dimension, how does a Lookup transformation handle a row with no match, and what does CALCULATE actually do in DAX. Every one of these has a direct answer sitting in your own capstone project.
+
+## Segment 4 (outro)
+
+Next lesson, you'll answer one of these questions end to end, out loud, using this exact capstone as the worked example — modeling what a strong technical interview answer actually sounds like.
