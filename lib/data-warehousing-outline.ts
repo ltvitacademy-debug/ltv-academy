@@ -27,7 +27,7 @@ export const DATA_WAREHOUSING_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Dimensional Modeling Fundamentals",
     lessons: [
-      L(1, "oltp-vs-olap-revisited", "OLTP vs. OLAP, Revisited"),
+      L(1, "oltp-vs-olap-revisited", "OLTP vs. OLAP, Revisited", { contentDir: "ch01/01-oltp-vs-olap-revisited" }),
       L(2, "what-is-dimensional-modeling", "What Is Dimensional Modeling?"),
       L(3, "star-schema-vs-snowflake-schema", "Star Schema vs. Snowflake Schema"),
       L(4, "choosing-the-grain", "Choosing the Grain"),
