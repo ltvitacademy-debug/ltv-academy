@@ -1,0 +1,125 @@
+{
+  "course": "aws-capstone",
+  "questions": [
+    {
+      "q": "When planning the architecture for a new AWS data platform, why is it important to start with the business scenario (data sources, freshness requirements, consumers) before choosing services?",
+      "options": ["The right services depend on requirements like data volume, latency needs, and who consumes the output — choosing services first risks over- or under-engineering the solution", "AWS requires a signed business plan before provisioning any resources", "Every AWS data platform must use the exact same set of services regardless of requirements", "Business requirements are only relevant for billing purposes, not architecture"],
+      "answer": 0,
+      "explain": "Service choice should follow requirements, not the other way around — a batch-only reporting need calls for a very different design than a low-latency streaming need, and starting from the business scenario keeps the architecture right-sized."
+    },
+    {
+      "q": "In capstone architecture planning, why might a team choose Glue over EMR for ETL when the workload is moderate and doesn't require deep cluster tuning?",
+      "options": ["Glue is always faster than EMR at every workload size, regardless of tuning", "EMR cannot run Spark jobs; only Glue can", "Glue is serverless, so there's no cluster to provision, patch, or scale manually, which reduces operational overhead for workloads that don't need deep tuning", "Glue is the only AWS service capable of reading from S3"],
+      "answer": 2,
+      "explain": "Glue removes cluster management entirely, which is a real win in operational overhead for workloads that don't need EMR's fine-grained control over instance types, custom software, or cluster tuning."
+    },
+    {
+      "q": "A capstone architecture calls for ingesting data into S3, cataloging and transforming it with Glue, loading curated results into Redshift, and letting analysts query via Athena. Why might Athena still be used even though Redshift is available?",
+      "options": ["Athena is required before any data can be loaded into Redshift", "Athena can query the raw or intermediate data still sitting in S3 without needing it loaded into Redshift first, which is useful for ad hoc or infrequent queries", "Athena and Redshift cannot coexist in the same AWS account", "Redshift can't be queried with SQL; only Athena can"],
+      "answer": 1,
+      "explain": "Athena lets analysts query data directly in S3 on demand, which is well suited to ad hoc or infrequent access, while Redshift is better suited to the curated, frequently queried datasets worth the cost of loading."
+    },
+    {
+      "q": "When ingesting data from an external source into S3 as the landing zone for a pipeline, what's a common best practice?",
+      "options": ["Always delete the raw source files immediately after they land in S3", "Transform the data completely before it's allowed to touch S3 at all", "Store raw and curated data under the exact same S3 key with no separation", "Land the raw data unchanged in a 'raw' zone/prefix first, then transform it into curated zones downstream, rather than transforming during ingestion"],
+      "answer": 3,
+      "explain": "Keeping an unmodified raw copy lets you reprocess or debug from the original source if a downstream transformation has a bug, and separating raw/curated zones keeps the pipeline's stages clean and independently reprocessable."
+    },
+    {
+      "q": "Once a Glue crawler populates the Glue Data Catalog with a table's schema, what can then use that catalog entry?",
+      "options": ["Both Athena and Redshift Spectrum, as well as Glue ETL jobs themselves, can reference the same catalog table to query or process the underlying S3 data", "Only Glue ETL jobs can ever use catalog entries; Athena can't reference them", "The catalog entry is only used to generate a PDF report", "Catalog entries automatically load into Redshift as physical tables"],
+      "answer": 0,
+      "explain": "The Glue Data Catalog is a shared metadata store — once a table is registered there, Athena, Redshift Spectrum, and Glue ETL jobs can all reference it as a common schema for the same underlying S3 data."
+    },
+    {
+      "q": "In a Glue ETL job that joins two datasets and writes curated output back to S3, why is Parquet often preferred over CSV for that output?",
+      "options": ["Parquet is a row-based format with performance identical to CSV", "CSV files can't be stored in S3 at all", "Parquet is a columnar, compressed format that lets downstream query engines like Athena read only the needed columns, cutting both storage cost and query time", "Parquet requires abandoning SQL entirely and querying only with Python"],
+      "answer": 2,
+      "explain": "Because Parquet stores data column-by-column and compresses it, a query that only needs a few columns can skip reading the rest, which reduces both the bytes scanned (and therefore Athena cost) and query latency."
+    },
+    {
+      "q": "What happens to a Glue ETL job's progress if Job Bookmarks are disabled and the job is rerun on the same source data?",
+      "options": ["The job automatically skips all previously seen records regardless of the bookmark setting", "The job reprocesses all the source data again from scratch, including records it already processed before", "The job fails immediately, since bookmarks are required for the job to run at all", "The job only processes records added in exactly the last 24 hours"],
+      "answer": 1,
+      "explain": "Bookmarks are what let a job remember which data it already handled; without them enabled, a rerun has no memory of prior progress and reprocesses the entire source dataset from the beginning."
+    },
+    {
+      "q": "After loading curated data into Redshift with COPY, why would you choose a distribution style and sort key rather than leaving the defaults?",
+      "options": ["Distribution and sort keys are purely cosmetic and have no effect on performance", "They only matter for tables with fewer than 100 rows", "Setting them prevents the table from ever being queried again", "A well-chosen distribution key reduces data movement between nodes during joins, and a sort key lets Redshift skip irrelevant blocks, both improving query performance"],
+      "answer": 3,
+      "explain": "Distribution keys control which node a row lives on, minimizing cross-node shuffling during joins on that key, while sort keys let Redshift use zone maps to skip blocks that can't match a query's filter — both directly speed up queries."
+    },
+    {
+      "q": "What's an appropriate use case for choosing Redshift Serverless instead of a provisioned Redshift cluster in this capstone pipeline?",
+      "options": ["Variable or unpredictable query workloads, where you don't want to size and pay for a fixed cluster around the clock", "Workloads that require manually managing node counts at all times", "Serverless is required before Redshift Spectrum can function", "Serverless removes the ability to use SQL against the warehouse"],
+      "answer": 0,
+      "explain": "Redshift Serverless automatically scales compute to match the workload and bills based on usage, which fits spiky or unpredictable query patterns better than paying for a fixed-size provisioned cluster around the clock."
+    },
+    {
+      "q": "When analysts run ad hoc queries against curated S3 data via Athena as part of this pipeline, what most directly affects the cost of each query?",
+      "options": ["The number of analysts who have IAM access to Athena", "The time of day the query happens to run", "The amount of data scanned by the query, which is why partitioning and columnar formats like Parquet help control cost", "The AWS Region where the analyst's laptop is physically located"],
+      "answer": 2,
+      "explain": "Athena bills per query based on bytes scanned, so techniques that reduce scanned data — partition pruning and columnar formats like Parquet — translate directly into lower per-query cost."
+    },
+    {
+      "q": "In this capstone's pipeline, why orchestrate the Glue crawler, Glue ETL job, and Redshift load with Step Functions rather than running each manually?",
+      "options": ["Step Functions is required before Glue jobs are allowed to run at all", "Step Functions can sequence the steps, wait for each to complete, retry on failure, and handle errors, turning a manual process into a reliable automated workflow", "Manually running each step by hand guarantees better reliability than orchestration", "Step Functions replaces the need for IAM roles between the orchestrated services"],
+      "answer": 1,
+      "explain": "Step Functions models the pipeline as a state machine that waits for each step's completion, can retry transient failures, and can branch on errors — replacing fragile manual sequencing with a defined, observable workflow."
+    },
+    {
+      "q": "To catch a failed Glue job in this pipeline before an analyst notices stale data, what's an effective use of CloudWatch?",
+      "options": ["Wait for analysts to notice and report the problem manually", "CloudWatch can only monitor EC2 instances, not services like Glue", "Disable monitoring in production to reduce alert noise", "Set a CloudWatch Alarm on a Glue job-failure metric that triggers an SNS notification to the data team"],
+      "answer": 3,
+      "explain": "Glue publishes job-level metrics to CloudWatch, and an alarm on a failure metric can automatically notify the responsible team via SNS the moment a job fails, rather than relying on someone noticing stale data downstream."
+    },
+    {
+      "q": "When securing the capstone pipeline's roles, why give the Glue ETL job's IAM role read/write access to only the specific S3 prefixes it needs, rather than the whole bucket?",
+      "options": ["It limits the blast radius if that role's credentials are ever misused or the job has a bug, since it can't touch data outside its scope", "Scoped permissions make the Glue job execute faster", "IAM policies can only be written at the whole-bucket level, never per-prefix", "Broader permissions are always required for Glue crawlers to function at all"],
+      "answer": 0,
+      "explain": "This is least privilege in practice: if the role is scoped to only the prefixes it legitimately needs, a bug in the job or a leaked credential can't be used to read or overwrite unrelated data elsewhere in the bucket."
+    },
+    {
+      "q": "What does adding CI/CD to this pipeline typically automate?",
+      "options": ["It automatically writes the ETL business logic for you", "It replaces the need for IAM roles anywhere in the pipeline", "Testing and deploying changes to infrastructure and job code, like Glue scripts or Step Functions definitions, automatically when changes are pushed, instead of manual console edits", "It only applies to front-end web applications, never data pipelines"],
+      "answer": 2,
+      "explain": "CI/CD for a data pipeline runs automated tests and deploys updated Glue scripts, Step Functions definitions, or infrastructure templates whenever changes are committed, replacing risky, untracked manual edits in the console."
+    },
+    {
+      "q": "Why is defining infrastructure as code, for example with CloudFormation or Terraform, valuable for a capstone project like this rather than clicking through the console?",
+      "options": ["Infrastructure as code can only define EC2 resources, not Glue or Redshift", "It makes the environment reproducible and version-controlled, so the same pipeline can be recreated or reviewed consistently", "It removes the need for any IAM permissions in the deployed resources", "Console-based changes are always safer than code-based ones for a team"],
+      "answer": 1,
+      "explain": "Infrastructure as code captures the exact configuration of every resource in version control, so the environment can be recreated consistently, reviewed like any other code change, and rolled back if something goes wrong."
+    },
+    {
+      "q": "In a cost optimization pass over this pipeline, which change would most directly reduce Redshift costs during periods of low query activity?",
+      "options": ["Adding more distribution keys to every table", "Increasing the number of Glue DPUs used by the ETL job", "Storing more raw data permanently inside the cluster instead of S3", "Switching to Redshift Serverless, or pausing/resizing a provisioned cluster during idle periods"],
+      "answer": 3,
+      "explain": "Redshift compute is one of the largest ongoing costs in a pipeline like this; matching capacity to actual demand — via Serverless or pausing/resizing an idle provisioned cluster — avoids paying for compute that isn't being used."
+    },
+    {
+      "q": "What's a core disaster recovery consideration for the Redshift and S3 components of this pipeline?",
+      "options": ["Disaster recovery is unnecessary since AWS guarantees 100% uptime for every service", "Only EC2 instances need disaster recovery planning, not managed services like Redshift", "Deleting old snapshots regularly is the main disaster recovery best practice", "Ensuring automated snapshots/backups exist and are tested for restore, and that S3 data is protected with versioning or cross-region replication as needed"],
+      "answer": 3,
+      "explain": "Even managed services need a recovery plan: Redshift snapshots must exist and actually be restorable, and S3 data worth protecting from accidental deletion or a regional issue should use versioning or cross-region replication."
+    },
+    {
+      "q": "When presenting this capstone's architecture to a technical audience, such as in an interview, what's most valuable to explain about the design?",
+      "options": ["Only the total dollar cost of the AWS bill, with no mention of design decisions", "A recitation of every AWS service that exists, whether it was used or not", "The trade-offs behind key decisions, such as why Glue was chosen over EMR, or why both Redshift and Athena were used, not just a list of services", "The exact IAM policy JSON with no explanation of what it accomplishes"],
+      "answer": 2,
+      "explain": "A list of services used says little about your understanding; explaining the reasoning behind each choice — the trade-offs considered and why one option fit the requirements better than another — is what demonstrates real architectural judgment."
+    },
+    {
+      "q": "The AWS Certified Data Engineer – Associate exam covers domains including data ingestion/transformation, orchestration, storage, and monitoring/security. Which of this capstone's components maps most directly to the orchestration domain?",
+      "options": ["The S3 bucket used as the raw landing zone", "Step Functions coordinating the Glue crawler, ETL job, and Redshift load in sequence", "The Redshift distribution key configuration", "The CloudWatch dashboard alone, with no other services involved"],
+      "answer": 1,
+      "explain": "Orchestration is specifically about sequencing and managing dependent steps of a pipeline, which is exactly what Step Functions does here by coordinating the crawler, ETL job, and warehouse load as one managed workflow."
+    },
+    {
+      "q": "In technical interview prep after building this capstone, which is the stronger way to answer a question like \"why did you choose Athena instead of loading everything into Redshift?\"",
+      "options": ["Say Athena was chosen because it was the only service mentioned in the course", "Say Redshift doesn't support SQL, so there was no other option", "Avoid the question since AWS services are interchangeable anyway", "Explain the actual trade-off you evaluated, such as query frequency and the cost/complexity of maintaining a warehouse load versus querying S3 directly"],
+      "answer": 3,
+      "explain": "Interviewers are testing judgment, not memorized facts — walking through the real trade-off (how often the data is queried, and whether the cost of loading and maintaining it in a warehouse is worth it) shows you understand the decision, not just the outcome."
+    }
+  ]
+}

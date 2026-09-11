@@ -1,0 +1,125 @@
+{
+  "course": "aws-data-engineering",
+  "questions": [
+    {
+      "q": "You upload an object to S3 using a key that already exists in the bucket, and S3 Versioning is not enabled. What happens to the previous object?",
+      "options": ["S3 automatically keeps every previous version forever even without enabling Versioning", "It's overwritten and the previous version is gone unless S3 Versioning was enabled", "S3 rejects the second upload with a duplicate-key error", "The object is automatically renamed to avoid a naming conflict"],
+      "answer": 1,
+      "explain": "Without Versioning turned on, a PUT to an existing key simply replaces the object — the prior content is gone. Versioning must be explicitly enabled to preserve prior copies under the same key."
+    },
+    {
+      "q": "What's the benefit of partitioning S3 data lake objects using keys such as year=2024/month=01/day=15/?",
+      "options": ["It's required or the upload to S3 will fail", "It automatically compresses the data to save on storage cost", "It encrypts each partition with a different KMS key", "Query engines like Athena can skip scanning partitions that don't match a query's filter, reducing data scanned and cost"],
+      "answer": 3,
+      "explain": "Partition-style prefixes let query engines use partition pruning: when a query filters on year/month/day, the engine only reads matching prefixes instead of scanning the whole dataset, cutting cost and query time."
+    },
+    {
+      "q": "A Glue job needs to read from an S3 bucket that lives in a different AWS account. What's the standard way to grant that access?",
+      "options": ["Add a bucket policy on the source bucket granting the other account's IAM role access, combined with a matching IAM policy on that role", "Make the S3 bucket fully public so any AWS account can read it", "Copy the source account's root user credentials into the Glue job", "Cross-account access to S3 isn't possible in AWS"],
+      "answer": 0,
+      "explain": "Cross-account S3 access is granted through a resource-based bucket policy on the source bucket naming the other account's principal, paired with an identity-based policy on that principal allowing the same action — both sides must agree."
+    },
+    {
+      "q": "What does a Glue crawler do?",
+      "options": ["Runs the actual ETL transformation code against your data", "Deletes stale tables from the Glue Data Catalog on a schedule", "Scans data in a source like S3, infers its schema, and populates tables in the Glue Data Catalog", "Can only crawl Amazon RDS databases, never S3"],
+      "answer": 2,
+      "explain": "A Glue crawler connects to a data source, samples the data to infer schema and format, and creates or updates the corresponding table definition in the Glue Data Catalog so other services can query it."
+    },
+    {
+      "q": "What is the purpose of Glue Job Bookmarks?",
+      "options": ["They save a visual snapshot of the Glue Studio canvas for later editing", "They track which data has already been processed so rerunning the job only processes new or changed data", "They bookmark favorite jobs in the AWS console for quick access", "They store a backup of a job's Python script in S3"],
+      "answer": 1,
+      "explain": "Job bookmarks persist state about which files or records a job has already handled, so a subsequent run of the same job processes only newly arrived or changed data instead of reprocessing everything."
+    },
+    {
+      "q": "In AWS Glue, ETL jobs can be authored in which languages?",
+      "options": ["Only a proprietary Glue-specific scripting language, not Python or Scala", "Only Java, since Glue runs exclusively on the JVM", "Only SQL, since Glue jobs can't run custom code", "Python (PySpark) or Scala, both running on Apache Spark under the hood"],
+      "answer": 3,
+      "explain": "Glue ETL jobs are built on Apache Spark and can be written as PySpark scripts or Scala, giving you the full Spark programming model for transformations rather than a restrictive proprietary language."
+    },
+    {
+      "q": "What underlying query engine does Amazon Athena use?",
+      "options": ["Presto (Trino), a distributed SQL query engine", "MySQL's InnoDB storage engine", "A proprietary AWS-only engine unrelated to any open-source project", "The same engine that powers Amazon RDS for PostgreSQL"],
+      "answer": 0,
+      "explain": "Athena is built on Presto (now largely developed as the Trino project), an open-source distributed SQL engine designed to query large datasets in place, such as files sitting in S3."
+    },
+    {
+      "q": "How does Athena's pricing model work?",
+      "options": ["You pay a fixed monthly fee no matter how much you query", "You pay only for storage, and every query is free", "You're charged per query based on the amount of data scanned, with no cluster to provision or pay for", "You must provision and pay for a dedicated cluster before running any query, similar to Redshift"],
+      "answer": 2,
+      "explain": "Athena is serverless: there's no cluster to size or manage, and you're billed per query based on the amount of data the query scans, which is why partitioning and columnar formats reduce cost."
+    },
+    {
+      "q": "What is the role of the COPY command in Redshift?",
+      "options": ["It duplicates an entire existing Redshift cluster into a new one", "It's the recommended way to bulk-load data into Redshift tables, typically pulling directly from S3 in parallel", "It copies a table's schema without copying any of its data", "It's used only for exporting data out of Redshift into S3"],
+      "answer": 1,
+      "explain": "COPY is Redshift's high-throughput bulk-loading command; it reads data in parallel from a source like S3 and distributes the load across the cluster's compute nodes, which is far faster than row-by-row INSERTs."
+    },
+    {
+      "q": "What do distribution keys control in Redshift?",
+      "options": ["Which IAM users are allowed to query the table", "How rows of a table are distributed across the cluster's compute nodes, which affects join and query performance", "How often automated snapshots of the cluster are taken", "Which AWS Region the cluster's data is replicated to"],
+      "answer": 1,
+      "explain": "A distribution key determines which compute node each row is stored on; choosing it well co-locates related rows from joined tables on the same node, avoiding expensive data shuffling during queries."
+    },
+    {
+      "q": "What does Redshift Spectrum let you do?",
+      "options": ["Query data sitting directly in S3 using Redshift SQL, without first loading it into the cluster", "Automatically resize the cluster's compute nodes on a fixed schedule", "Encrypt data at rest using a customer-managed KMS key", "Migrate an on-premises database into Redshift"],
+      "answer": 0,
+      "explain": "Redshift Spectrum extends Redshift's SQL query engine to data files stored in S3, letting you join warehouse tables with S3 data without first loading the S3 data into the cluster."
+    },
+    {
+      "q": "What's a key limitation of AWS Lambda that makes it unsuitable for long-running big-data transformations?",
+      "options": ["Lambda functions can only be triggered manually, never by events", "Lambda cannot be written in Python, only in Java", "A single invocation has a maximum execution timeout (15 minutes), which is too short for large-scale batch processing", "Lambda charges a flat monthly fee no matter how much it's used"],
+      "answer": 2,
+      "explain": "Every Lambda invocation is capped at a 15-minute execution limit, so workloads that need longer processing time, like large Spark-style batch jobs, need a service such as Glue or EMR instead."
+    },
+    {
+      "q": "In an S3-triggered Lambda pattern, what typically initiates the function's execution?",
+      "options": ["A human must manually click 'Run' in the Lambda console every time", "An S3 event notification, such as a new object being created, invokes the Lambda function automatically", "The Lambda function polls S3 in a tight loop every millisecond", "S3 emails the bucket owner, who then runs the function by hand"],
+      "answer": 1,
+      "explain": "S3 can publish event notifications for actions like object creation, and those events can directly invoke a subscribed Lambda function, giving you event-driven processing without any polling or manual steps."
+    },
+    {
+      "q": "What is the main purpose of AWS Step Functions in a data pipeline?",
+      "options": ["Storing the raw data that flows through the pipeline", "Replacing the need for IAM roles between the services it orchestrates", "Running Spark jobs directly instead of EMR or Glue", "Orchestrating multiple steps, like Glue jobs and Lambda functions, as a visual state machine, including retries and error handling"],
+      "answer": 3,
+      "explain": "Step Functions coordinates a sequence of tasks across services as a state machine, tracking execution state and providing built-in retry and error-handling logic so failures at any step can be handled explicitly."
+    },
+    {
+      "q": "What does AWS Database Migration Service's Change Data Capture (CDC) feature do?",
+      "options": ["It continuously replicates ongoing changes from the source database to the target after the initial full load, keeping them in sync", "It takes a single one-time snapshot of the source database and nothing more", "It converts the source database's schema from one engine to another", "It only works for migrating from Redshift into S3"],
+      "answer": 0,
+      "explain": "CDC in DMS captures inserts, updates, and deletes happening on the source after the initial full load completes, and streams them to the target so the target stays in near-real-time sync with the source."
+    },
+    {
+      "q": "How does EMR differ from Glue for running Spark jobs?",
+      "options": ["EMR and Glue are simply two names for the exact same underlying service", "Glue requires you to manually patch every cluster node, unlike EMR", "EMR gives you a managed Hadoop/Spark cluster you configure and control directly, while Glue is a fully serverless Spark environment you don't manage", "EMR can't run Apache Spark, only Hadoop MapReduce"],
+      "answer": 2,
+      "explain": "EMR provisions an actual cluster whose instance types, scaling, and configuration you control, while Glue abstracts the cluster away entirely and runs your Spark code as a fully serverless job."
+    },
+    {
+      "q": "Which of these is a common way to reduce EMR cluster costs?",
+      "options": ["Always run the cluster continuously 24/7 no matter the workload", "Use Spot Instances for task nodes and terminate the cluster, or enable auto-scaling, when it isn't actively processing", "Avoid Spot Instances entirely since EMR doesn't support them", "Always use the largest instance type available for every node"],
+      "answer": 1,
+      "explain": "EMR supports Spot Instances for lower-cost, interruptible capacity on task nodes, and clusters that are transient (spun up for a job and torn down afterward) or auto-scaled avoid paying for idle capacity."
+    },
+    {
+      "q": "What's the difference between Kinesis Data Streams and Kinesis Data Firehose?",
+      "options": ["They're the exact same service marketed under two different names", "Firehose requires you to write custom consumer applications, while Data Streams does not", "Data Streams can only be used with on-premises data centers, never AWS services", "Data Streams gives you low-latency custom stream processing with consumers you write, while Firehose is fully managed and automatically delivers streaming data to destinations like S3 or Redshift"],
+      "answer": 3,
+      "explain": "Data Streams is the building block for custom real-time consumers you write yourself, while Firehose is a fully managed delivery service that buffers and loads streaming data into destinations like S3, Redshift, or OpenSearch with no consumer code required."
+    },
+    {
+      "q": "What is Kinesis Data Analytics typically used for?",
+      "options": ["Running real-time SQL or Apache Flink applications directly against streaming data to analyze or transform it on the fly", "Permanently archiving streaming data for years at low cost", "Replacing the need for a Kinesis Data Stream or Firehose delivery stream", "Only visualizing data after it has already landed in Redshift"],
+      "answer": 0,
+      "explain": "Kinesis Data Analytics lets you run continuous SQL queries or Apache Flink applications directly against a live stream, enabling real-time aggregation, filtering, or transformation before the data reaches its destination."
+    },
+    {
+      "q": "What can a CloudWatch Alarm do when a monitored metric, such as Glue job errors, breaches a threshold?",
+      "options": ["Only display a red icon in the console with no way to notify anyone", "Automatically rewrite the failing job's code to fix the error", "Automatically trigger an action, such as sending an SNS notification or invoking a Lambda function", "Permanently disable the AWS service being monitored"],
+      "answer": 2,
+      "explain": "A CloudWatch Alarm watches a metric against a threshold and, when breached, can change state and trigger configured actions like publishing to an SNS topic or invoking a Lambda function, enabling automated alerting or remediation."
+    }
+  ]
+}
