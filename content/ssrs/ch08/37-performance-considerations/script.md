@@ -1,0 +1,17 @@
+# Script — Performance Considerations
+
+## Segment 1 (title)
+
+We're closing out the deployment and administration chapter by pulling everything together — dataset design, caching, expressions — into one coherent way to think about report performance. And it starts with a single diagnostic question.
+
+## Segment 2 (steps: diagnostic question)
+
+Is every report slow, or just one? If it's every report, that's almost never about any single report's design — it's infrastructure. Report processing is memory-intensive, hosting the report server and its database on separate machines tends to help, and if the whole server's straining, that's the scale-out deployment from earlier in this chapter, spreading load across multiple instances. But if it's just one report, the fix lives inside that report — and dataset query efficiency is where you look first, before touching caching at all.
+
+## Segment 3 (steps: the fix order)
+
+Filter and sort and aggregate at the data source, not inside the report — every unnecessary row is cost you're paying twice. Tie report parameters to query parameters so you're retrieving less in the first place. Only once the query itself is efficient does caching become a real multiplier — a snapshot in particular, since caching still makes the very first requester pay the full cost, while a snapshot runs on its own schedule and never makes a live user wait. And watch expression complexity — a heavy expression repeated across a table's rows adds up fast; that's often better as a calculated field, computed once instead of re-evaluated per row.
+
+## Segment 4 (outro)
+
+That's Chapter 8. Next up: the capstone — building a real paginated report suite that pulls together everything from datasets through deployment.

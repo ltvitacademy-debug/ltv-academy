@@ -1,0 +1,21 @@
+# Script — Drilldown Reports
+
+## Segment 1 (title)
+
+Welcome back to SSRS Development. This lesson is drilldown reports — the plus and minus toggle that lets a user expand or collapse part of a report without ever leaving it. That's genuinely different from a drillthrough, which we'll get to next lesson.
+
+## Segment 2 (screenshot: expand-collapse-report-table)
+
+A drilldown comes down to two properties on the item you want to hide. Hidden controls whether it shows when the report first runs — Show, Hide, or an expression evaluated at run time. ToggleItem names a text box elsewhere in the report that the user clicks to flip that Hidden state.
+
+This is the Visibility tab of a Tablix Properties dialog — Hide is selected, and "Display can be toggled by this report item" is checked, with a text box picked from the list. You set these two properties either on a whole report item like this, right from its Properties dialog, or on a specific group or row inside a table or matrix, using the Grouping pane's Advanced mode to select the group and set the same two properties on its Tablix Member properties.
+
+One rule to remember: the toggle text box can't be the group you're hiding. It has to live in the same group as the hidden item, or in a parent group above it — never inside the thing it's controlling.
+
+## Segment 3 (steps: rendering support)
+
+And here's a gotcha worth knowing before you ship a drilldown report: that toggle only works in rendering extensions built for interactivity. In HTML — the viewer used in Report Builder's preview and the web portal — hidden items are genuinely absent until toggled. Excel takes a completely different approach: it expands and shows every row and column, ignoring Hidden entirely. And XML renders every item regardless, hidden or not. If your users are exporting to Excel, don't be surprised when everything shows up expanded.
+
+## Segment 4 (outro)
+
+Next lesson: drillthrough reports — where clicking a value doesn't expand anything in place, it opens a completely separate report, with a parameter carrying the value along.

@@ -1,0 +1,17 @@
+# Script — Security & Role Assignments
+
+## Segment 1 (title)
+
+Last lesson we saw the two admin surfaces. Now let's go deeper on the one that trips people up the most: security. A role assignment sounds simple, but it's got three moving parts, and there's a distinction — item-level versus system-level — that's easy to get backwards.
+
+## Segment 2 (steps: role assignment parts)
+
+A role assignment maps a user or group account to a role definition — a named bundle of permitted tasks — for a specific securable item, like a folder or a report. In practice you'll live in three predefined roles: Browser, for most users, who just view and run reports; Publisher, a smaller group who add reports and create folders; and Content Manager, full control including security itself, reserved for only a few people.
+
+## Segment 3 (screenshot: report-add-group-user)
+
+Here's the part people get backwards: item-level and system-level role assignments are mutually exclusive. Item-level controls access to things in the folder hierarchy — reports, folders, shared data sources — inherited down from Home unless you override it. System-level authorizes operations scoped to the server as a whole, like using Report Builder or shared schedules, and it doesn't touch the folder hierarchy at all. That's why granting a new user access is genuinely a two-part job. This is that override in action — a report's Security page, with Add group or user highlighted. Once you customize security here, this role assignment applies to this one report alone, no longer inherited from its parent folder.
+
+## Segment 4 (outro)
+
+Next lesson: report caching and snapshots — how to keep a report from re-querying the data source on every single request.

@@ -1,0 +1,21 @@
+# Script — Sparklines
+
+## Segment 1 (title)
+
+We've covered charts that plot whole series, gauges that show one dial value, and indicators that boil that value down to an icon. Sparklines sit in an interesting spot between all three — a real chart, showing real trend data, deliberately shrunk down to fit inside a single table cell.
+
+## Segment 2 (screenshot: sparkline-example)
+
+A sparkline is a small, simple chart — no legend, no axis lines, no tick marks, no labels — designed to convey a lot of information in very little space. Here's a real table: six sales reps, each row showing a name, a number, and a small wavy line tracking their trend right next to it. On its own, one of these lines wouldn't tell you much. But line up six of them, one per row, and you can compare trends at a glance — Blythe and Tsoflias are climbing, Valdez has a dip in the middle — without a single axis label getting in the way. That's the entire point of a sparkline: it's built to be read as a set, not one at a time.
+
+## Segment 3 (screenshot: data-bars-example)
+
+A close cousin is the data bar, which nests the same way but renders as a bar instead of a line — think of it as a single-cell bar chart rather than a trend line. Data bars usually represent one data point per row, but as this stacked example shows, one bar can still illustrate more than one value — three priority levels of task count, say, stacked into a single colored bar. Both sparklines and data bars are technically chart variants with the supporting elements removed, and both come with the same restriction: you can't add either one to a table's detail row, because they display aggregated data — they need a group total cell to live in, not a raw per-record row. And if several sparklines sit in the same column, they only mean something if they're aligned — same time period lining up horizontally, same value reaching the same height vertically — otherwise a row with small values would stretch to fill the cell and look falsely dramatic.
+
+## Segment 4 (steps: convert to full chart)
+
+Here's the part that ties this whole chapter together: a sparkline isn't a separate feature from a full chart — it's the exact same chart with elements hidden. Right-click one and choose Convert to Full Chart, and the axis lines, labels, tick marks, and legend all come back instantly. There's no equivalent one-click path in the other direction — shrinking a full chart back down to a sparkline means deleting those elements yourself.
+
+## Segment 5 (outro)
+
+That closes out Chapter 5 on charts and visual elements. Next, Chapter 6 turns to drilldowns and navigation — starting with drilldown reports.

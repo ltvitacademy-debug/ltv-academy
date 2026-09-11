@@ -1,0 +1,21 @@
+# Script — Tables & Lists
+
+## Segment 1 (title)
+
+Time to put something on the design surface. Table and List are both data regions — items bound to a dataset that repeat their layout across your data — and they're the two simplest ones to start with.
+
+## Segment 2 (screenshot: ssrs-tutorial-arrange-fields)
+
+The fastest way to a first table is the Table or Matrix Wizard. Once you're connected to a dataset, the Arrange fields page is where the real decisions happen. Drag fields into Row groups to create a new grouping level every time that value changes — here it's SalesDate, then Subcategory nested under it. Drag fields into Values, and Report Builder aggregates them automatically — Sum for numeric fields by default.
+
+## Segment 3 (screenshot: ssrs-tutorial-design-surface-new-table)
+
+Finish the wizard, and this is what lands on the design surface — a fully wired table. Header row, a detail row full of bracketed placeholders like SalesDate and Sum of Sales, a subtotal row per subcategory, and a grand total at the bottom. Down in the Row Groups pane, you can see the exact same three groups you dragged in the wizard — SalesDate, Subcategory, and Details. Those placeholders only turn into real numbers once you hit Run.
+
+## Segment 4 (steps: table-vs-list)
+
+So when do you reach for a List instead of a Table? A Table is a fixed grid — rows and columns, spreadsheet-style. A List repeats an entire freeform block per record instead — think a directory of employee cards, not a spreadsheet. If what you're picturing looks like rows and columns, use Table. If it looks like a repeated card or form, use List.
+
+## Segment 5 (outro)
+
+Next lesson, we add a second dimension — literally — with the Matrix data region.

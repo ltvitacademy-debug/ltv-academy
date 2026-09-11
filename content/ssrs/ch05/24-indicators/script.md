@@ -1,0 +1,17 @@
+# Script — Indicators
+
+## Segment 1 (title)
+
+We just spent a whole lesson on gauges — frames, scales, pointers, ranges. Now let's strip nearly all of that away. An indicator displays the same single data value a gauge does, but represented by nothing more than a small icon.
+
+## Segment 2 (screenshot: indicator-traffic-light)
+
+This is exactly why indicators exist: legibility at a size a full gauge could never survive. Here's a real table of sales by territory and sales person, with an Indicator column running down the right side — green, yellow, or red circles, one per detail row and one per territory subtotal. Look at what's actually happening: Pamela Ansam-Wolfe's zero dollars in sales reads red; David Campbell's three-and-a-half million reads green — same column, same icon set, evaluated completely independently row by row, and you read the whole table's health without parsing a single number.
+
+## Segment 3 (steps: four indicator sets)
+
+Report Builder ships four built-in indicator sets, and picking the right one is really about matching the message to the icon. Directional — up, down, flat arrows — communicates a trend: is this climbing or falling. Symbols — checkmarks, exclamation marks — communicates a state: did this pass, does this need attention. Shape — traffic lights, diamonds — communicates a condition: on track, at risk, blocked. And Ratings — filled squares, stars — communicates a degree of progress or completion. Every icon in a set owns a percentage range of your data by default — a five-icon set gets five twenty-percent bands — and every one of those ranges is fully editable.
+
+## Segment 4 (outro)
+
+One more limitation worth remembering: an indicator only ever shows one current value. If you need to show a trend — multiple points over time, not just where things stand right now — that's a job for a sparkline, and that's exactly where we're headed next.
