@@ -47,6 +47,10 @@ Never both. A table that mixes descriptive attributes and
 transactional measures together is a design smell this course will
 teach you to spot and fix.
 
+![Star schema diagram showing a central SALES fact table (Product ID, Order ID, Customer ID, Employer ID, Total, Quantity, Discount) surrounded by four dimension tables — Time, Product, Customer, and Employee — each holding descriptive attributes and its own key.](/courses/data-warehousing/ch01/02-what-is-dimensional-modeling/star-schema.webp)
+*One fact table, holding keys and measures, surrounded by the dimension tables that describe those keys — the shape this classification produces.*
+Source: [GeeksforGeeks — Star Schema in Data Warehouse Modeling](https://www.geeksforgeeks.org/dbms/star-schema-in-data-warehouse-modeling/)
+
 ## Why model this way at all
 
 Lesson 1 established the *problem*: normalized OLTP schemas are slow

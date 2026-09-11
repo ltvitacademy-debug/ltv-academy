@@ -41,6 +41,10 @@ category, for the last three years" is an OLAP question. A normalized
 OLTP schema answers that question by joining a dozen tables; a
 dimensional model answers it by joining a handful.
 
+![Diagram showing OLTP Operations feeding Business Processes via business strategy and master data/transactions, and OLAP Information consuming the Business Data Warehouse via analytics.](/courses/data-warehousing/ch01/01-oltp-vs-olap-revisited/oltp-vs-olap.png)
+*OLTP runs the business day to day; OLAP is built on top of it to make sense of what already happened.*
+Source: [Guru99 — OLTP vs OLAP](https://www.guru99.com/oltp-vs-olap.html)
+
 ## Why not just report off the OLTP database directly?
 
 It's tempting, and it works for a while, until it doesn't:
