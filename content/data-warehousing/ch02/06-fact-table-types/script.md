@@ -1,0 +1,17 @@
+# Script — Fact Table Types
+
+## Segment 1 (title)
+
+Every fact table measures a business process, but not every fact table behaves the same way over time. This lesson covers the three fact table types that classification is actually built on.
+
+## Segment 2 (steps: three fact table types)
+
+A transaction fact table stores one row per business event — a sales order line, a call, a click — written once and left alone except to fix an error. A periodic snapshot fact table stores one row per entity per fixed time interval, like an end-of-day inventory balance, loaded on a schedule whether or not anything happened. An accumulating snapshot fact table stores one row per instance of a multi-step process, and that row gets updated, not re-inserted, every time the process reaches its next milestone.
+
+## Segment 3 (steps: why the type matters)
+
+This isn't just naming — it changes real design decisions. Transaction tables can grow into the billions of rows; snapshot tables are bounded by how many entities and time periods you have. Transaction measures are usually fully additive, but a periodic snapshot measure like inventory is often semi-additive — you can sum it across products, but summing it across days double-counts stock that never moved. And the ETL pattern itself differs: transaction tables are insert-only, while an accumulating snapshot table needs an update that finds the existing row and advances it.
+
+## Segment 4 (outro)
+
+The next three lessons take each type in turn, starting with the one you'll build most often: the transaction fact table.

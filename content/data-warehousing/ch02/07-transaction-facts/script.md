@@ -1,0 +1,17 @@
+# Script — Transaction Facts
+
+## Segment 1 (title)
+
+If you only remember one fact table type, make it this one. A transaction fact table stores one row per business event, and it's the type you'll design most often.
+
+## Segment 2 (code: f_SalesOrderLine)
+
+Here's Microsoft's own reference fact table shape, adapted to a sales-order-line grain. Dimension keys for order date, product, and customer. Attributes — the order number and line number — that set the grain without joining to a dimension. And measures: quantity and line revenue. Notice there's no primary key — the dimension keys and attributes already identify the row well enough, and a formal key would just cost storage at billions of rows.
+
+## Segment 3 (steps: immutable, additive)
+
+Three things define a transaction fact table. It's insert-once: written the moment the event happens, then left alone except to fix a genuine error. Its attributes set the grain without being dimension keys — that order number is what makes this "one row per line," not "one row per order." And because every row is a genuinely independent event, its measures are fully additive — you can sum line revenue across products, customers, or dates and get a meaningful number every time.
+
+## Segment 4 (outro)
+
+That full additivity is a luxury. The next lesson covers a fact table type where it quietly disappears: the periodic snapshot.

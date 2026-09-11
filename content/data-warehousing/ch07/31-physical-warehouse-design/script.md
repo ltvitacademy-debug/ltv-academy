@@ -1,0 +1,17 @@
+# Script — Physical Warehouse Design
+
+## Segment 1 (title)
+
+Welcome to Chapter 7, Building the Warehouse. Everything so far has been design on a whiteboard — grain, fact types, dimensions. This lesson is where that design becomes real SQL Server tables.
+
+## Segment 2 (code: dimension table)
+
+Dimension tables are built for read speed and readability. The surrogate key comes first, as an identity column. The source system's natural key sticks around too, as an ordinary column — not for joins, but so your ETL load can look up the right surrogate key later. And attributes stay flat and denormalized, like category and subcategory living right on the product dimension instead of being split into their own tables.
+
+## Segment 3 (code: fact table)
+
+A fact table is built for the opposite problem: millions of narrow rows getting aggregated, not looked up one at a time. Foreign keys point to every dimension at your chosen grain, using surrogate keys — never natural keys. Measures are narrow numeric types, decimal or money, never text. And the one place this genuinely departs from OLTP habit: the date key is a plain integer in YYYYMMDD format, not a datetime column, because it's smaller and faster to join.
+
+## Segment 4 (outro)
+
+Notice the fact table has no clustered index yet — that decision is big enough to earn its own lesson. Next up: indexing a warehouse.

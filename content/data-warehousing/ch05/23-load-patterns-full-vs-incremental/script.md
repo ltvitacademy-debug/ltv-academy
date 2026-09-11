@@ -1,0 +1,17 @@
+# Script — Load Patterns: Full vs. Incremental
+
+## Segment 1 (title)
+
+Every load has to answer a basic question: how much of the source table do you actually pull, every run? There are two fundamental answers, and this lesson is about both of them.
+
+## Segment 2 (steps: full vs. incremental)
+
+A full load extracts the entire source table, every single run — simple to reason about, but wasteful once a table gets large, since you're reprocessing millions of unchanged rows every time. An incremental, or delta, load extracts only what's new or changed since the last successful run — far cheaper at scale, but it needs a reliable way to know what actually changed.
+
+## Segment 3 (screenshot: the watermark workflow)
+
+The most common way to know what changed is a watermark — a column, usually a timestamp or an increasing key, that only ever goes up. Every run repeats the same four steps: read the old watermark from last time, read the current maximum value in the source, load only the rows between those two values, and then — only after that load actually succeeds — update the stored watermark so next run picks up exactly where this one left off. Update the watermark too early, and a failed load can silently lose rows forever.
+
+## Segment 4 (outro)
+
+One thing a watermark can never catch: a row that gets physically deleted from the source just disappears, no trace. Data that clears staging still isn't guaranteed clean, though — next lesson covers the checks that catch that before it reaches the warehouse.

@@ -1,0 +1,17 @@
+# Script — Documenting the Model
+
+## Segment 1 (title)
+
+You've built the physical warehouse, indexed it, partitioned it, and named everything consistently. This lesson is the last piece: leaving it legible to the people who come after you.
+
+## Segment 2 (screenshot: SSMS Database Diagram)
+
+A naming convention tells you a column's role, not its meaning. Start with the structure. SQL Server Management Studio has a built-in visual designer that draws a real entity-relationship diagram straight from your live schema — tables, primary keys, and relationship lines, laid out automatically. For a star schema, that's exactly the picture you'd expect: one fact table in the middle, dimensions radiating out around it.
+
+## Segment 3 (code: extended properties)
+
+A diagram shows structure, not meaning. For that, SQL Server lets you attach extended properties — real metadata pinned directly to a table or column with sp_addextendedproperty. Document the table's grain, document a column's actual business meaning, and that metadata lives inside the database itself. It survives a restore, and it's queryable — unlike a description sitting in a wiki page that nobody keeps updated.
+
+## Segment 4 (outro)
+
+That's the physical warehouse, fully built and documented. Next up: the capstone, where you take everything from this course and build a complete warehouse for a real business process, start to finish.

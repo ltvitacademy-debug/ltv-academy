@@ -1,0 +1,21 @@
+# Script — Aggregate Tables
+
+## Segment 1 (title)
+
+We close chapter six with a pattern that's pure performance, not correctness. Every fact table you've built stores data at its lowest useful grain, which is correct — but correct and fast aren't the same thing.
+
+## Segment 2 (steps: correct but slow)
+
+A detailed fact table with hundreds of millions of rows still has to scan and sum across all of them every time someone asks for something as ordinary as total revenue by month by region, even though the real answer is a small, predictable summary. That's the problem an aggregate fact table solves.
+
+## Segment 3 (code: building the rollup)
+
+An aggregate fact table is a rollup of the base fact table to a lower dimensionality or higher granularity, built specifically to accelerate the queries people actually run. In Fabric Warehouse the mechanics are plain T-SQL: CREATE TABLE AS SELECT, grouping the detailed fact by whatever dimension keys the aggregate needs to keep, summing the measures. Instead of recomputing that summary every time, you compute it once and query the small table instead.
+
+## Segment 4 (steps: the real trade-off)
+
+That speed isn't free. An aggregate table is duplicated data, and duplication has a maintenance cost — every time the detailed fact table gets new rows, which for most fact tables is constantly, the aggregate has to be refreshed on a schedule as part of your ETL orchestration, or it goes stale and starts disagreeing with the detail.
+
+## Segment 5 (outro)
+
+That's every pattern in chapter six: junk dimensions, role-playing dimensions, bridge tables, late-arriving dimensions, and now aggregate tables. Chapter seven turns to actually building the physical warehouse these patterns live in.

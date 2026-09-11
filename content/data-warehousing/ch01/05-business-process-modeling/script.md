@@ -1,0 +1,17 @@
+# Script — Business Process Modeling
+
+## Segment 1 (title)
+
+You've got grain down. Now let's zoom out to the full method it belongs to: Kimball's four-step process for designing any dimensional model, in order, from scratch.
+
+## Segment 2 (steps: the four-step process)
+
+Four questions, asked in this order, every single time. First, choose the business process — the activity you're actually measuring. Second, declare the grain — what one fact row means. Third, identify the dimensions — what describes each row, now that the grain is fixed. Fourth, identify the facts — what numbers belong on each row. Each step depends completely on the one before it, which is why the order isn't a suggestion.
+
+## Segment 3 (steps: sales is two processes)
+
+Step one trips people up more than any other, because "business process" is easy to state too loosely. "Sales" sounds like one thing, but order processing — what happens the moment an order is placed — and shipping — the separate event when it actually ships — are two different business processes, each with its own grain, its own dimensions, and its own fact table. Model them as one and no amount of clever column design in the later steps fixes it. You'd be rebuilding from scratch.
+
+## Segment 4 (outro)
+
+Business process, then grain, then dimensions, then facts — that sequence is the backbone of everything left in this course. Chapter 2 picks it up from here, starting with how fact tables are classified by type.

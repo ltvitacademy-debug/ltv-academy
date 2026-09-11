@@ -1,0 +1,17 @@
+# Script — Staging Table Design
+
+## Segment 1 (title)
+
+Now that you know why a staging layer exists, let's design one. What does a staging table actually look like, column by column?
+
+## Segment 2 (steps: design principles)
+
+Three principles drive staging table design. Columns are loosely typed — usually wide strings, even when the final warehouse column will be an integer or a date — so a messy source value never fails the load itself. Column names closely mirror the source system, so it's obvious where every value came from. And almost nothing is constrained: no primary keys, no foreign keys, no NOT NULL — validation happens downstream, not during the load.
+
+## Segment 3 (code: a worked staging table)
+
+Here's a staging table for SalesOrderDetail. Every business column is a nullable, forgiving type, and there's no primary key or foreign key in sight — compare that to the strict, constrained table this data will eventually land in. The three extra columns at the bottom, LoadDate, SourceSystem, and BatchID, are audit columns; Lesson 25 covers exactly why they matter. The standard load pattern here is truncate-and-reload: empty the table, then bulk-insert this run's rows — fast, and it guarantees you never mix rows from two different loads.
+
+## Segment 4 (outro)
+
+One design decision left in this table: how do you actually get new or changed rows into it — all of them, every time, or just the ones that changed? That's next lesson.

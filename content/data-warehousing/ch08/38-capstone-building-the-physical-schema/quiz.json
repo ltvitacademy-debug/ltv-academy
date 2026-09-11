@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-building-the-physical-schema",
+  "questions": [
+    {
+      "q": "Why does DimVendor's CREATE TABLE statement include EffectiveDate, ExpirationDate, and IsCurrent columns, while DimProduct's doesn't?",
+      "options": [
+        "DimVendor was designed as SCD Type 2 in Lesson 37, and those three columns are exactly the tracking columns a Type 2 dimension needs; DimProduct is Type 1 and simply overwrites",
+        "Those columns are required on every dimension table in SQL Server",
+        "DimProduct has no dates associated with it at all",
+        "It's an arbitrary stylistic choice with no connection to the earlier design decision"
+      ],
+      "answer": 0,
+      "explain": "The physical schema in this lesson is a direct translation of Lesson 37's SCD type decisions — Type 2 dimensions get EffectiveDate/ExpirationDate/IsCurrent, Type 1 dimensions don't."
+    },
+    {
+      "q": "In FactPurchaseOrderLine, why are VendorKey, ProductKey, EmployeeKey, and ShipMethodKey defined as foreign keys to surrogate keys rather than to the OLTP natural keys?",
+      "options": [
+        "The fact table should reference the warehouse-generated surrogate keys, keeping the star schema independent of the OLTP source's own key values",
+        "SQL Server does not allow foreign keys to natural keys",
+        "Surrogate keys are always character strings, so they join faster",
+        "Natural keys don't exist in AdventureWorks2012"
+      ],
+      "answer": 0,
+      "explain": "Chapter 3 covers exactly this: a fact table's foreign keys point at each dimension's surrogate key, not the OLTP source system's natural key, which keeps the warehouse decoupled from the source."
+    },
+    {
+      "q": "Why are PurchaseOrderID, PurchaseOrderDetailID, RevisionNumber, and Status stored as plain columns on the fact table instead of foreign keys to a dimension table?",
+      "options": [
+        "They're degenerate dimensions — identifying attributes of the order itself that don't warrant their own dimension table",
+        "Because SQL Server doesn't support foreign keys on INT columns",
+        "Because they are measures, not identifying attributes",
+        "Because the fact table already has too many foreign keys"
+      ],
+      "answer": 0,
+      "explain": "This is Lesson 14's degenerate dimension pattern, applied for real — the order's own identifying values stay directly on the fact row."
+    },
+    {
+      "q": "What is the purpose of adding a clustered columnstore index to FactPurchaseOrderLine, in addition to a nonclustered rowstore index?",
+      "options": [
+        "The columnstore index is built for broad analytical aggregation scans across the whole fact table, while the nonclustered index still helps queries that filter tightly by vendor and date",
+        "Columnstore indexes replace the need for a primary key",
+        "Columnstore indexes are required before a table can hold any data",
+        "Nonclustered indexes cannot exist on fact tables"
+      ],
+      "answer": 0,
+      "explain": "Lesson 32's indexing guidance for fact tables: a clustered columnstore index handles wide aggregate scans efficiently, while a targeted nonclustered index still supports narrower, filtered lookups."
+    },
+    {
+      "q": "Why is OrderDateKey chosen as the partitioning column for FactPurchaseOrderLine?",
+      "options": [
+        "It's the column most \"by year\" or \"by quarter\" queries filter on, and it's the column that grows every time a new batch of purchase orders is loaded",
+        "It's the only column in the table that allows NULL values",
+        "Partitioning must always be done on a table's primary key",
+        "OrderDateKey has the fewest distinct values of any column"
+      ],
+      "answer": 0,
+      "explain": "Lesson 33's partitioning guidance: partition on the column that both matches how the table is queried (by date range) and how it grows (new date ranges added over time), enabling partition elimination and easier loads."
+    }
+  ]
+}

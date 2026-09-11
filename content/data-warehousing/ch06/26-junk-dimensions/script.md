@@ -1,0 +1,21 @@
+# Script — Junk Dimensions
+
+## Segment 1 (title)
+
+Chapter six starts a run of advanced warehouse patterns you'll hit in almost every real project. First up: junk dimensions, for when your model accumulates a pile of tiny, low-cardinality flags that each seem to want their own dimension table.
+
+## Segment 2 (steps: too many tiny dimensions)
+
+The problem shows up gradually. Order status gets its own dimension. Payment method gets its own dimension. A gift-wrap flag gets its own dimension. Each one is two or three rows, but by the time you've got six or eight of these, your fact table is dragging six or eight extra foreign keys, and your field list is cluttered with tables nobody thinks of as real dimensions.
+
+## Segment 3 (real Microsoft Fabric diagram)
+
+Microsoft's own dimensional modeling guidance shows the fix directly. Take order status and delivery status — two small, independent attributes — and build one consolidated dimension as their Cartesian product: every combination of the two gets one row, with its own surrogate key. Three order statuses times three delivery statuses gives you nine rows in one Sales Status dimension, replacing two separate tables and two separate foreign keys with one of each.
+
+## Segment 4 (steps: good candidates only)
+
+Not everything belongs in a junk dimension. The right candidates share three traits: there are many of them, each has few attributes — often just one column — and each has low cardinality, meaning only a handful of distinct values. Flags, indicators, order status, basic demographic states. Push it too far — five attributes with ten values each — and the Cartesian product produces a hundred thousand rows, which is worse than what you started with.
+
+## Segment 5 (outro)
+
+Junk dimensions solve too many small dimensions. Next lesson tackles the opposite kind of repetition: one real dimension, like Date, that needs to show up more than once on the same fact table.

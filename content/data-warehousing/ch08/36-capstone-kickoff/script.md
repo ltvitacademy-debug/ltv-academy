@@ -1,0 +1,17 @@
+# Script — Capstone Kickoff
+
+## Segment 1 (title)
+
+Welcome to the capstone. Over these four lessons you're going to design and build one real, coherent dimensional model, start to finish — not four disconnected topics, one project. This lesson scopes it.
+
+## Segment 2 (steps: the four-step process, for real)
+
+Lesson 5 gave you Kimball's four-step business process modeling sequence: choose the business process, declare the grain, identify the dimensions, identify the facts. Up to now you've walked through that sequence in the abstract. Starting here, you run it for real. This lesson handles step one. Lesson 37 handles the other three — declaring the grain precisely, then working out the dimension list and the fact table.
+
+## Segment 3 (steps: why procurement, not sales again)
+
+Here's the business process this capstone picks: procurement — ordering products from vendors and receiving them into inventory. And here's why it's not Sales again. SSIS Development's capstone already built an incremental ETL package against sales orders. SSRS Development's capstone already built a two-report drillthrough suite against AdventureWorksDW2014's real internet sales fact table. And AdventureWorksDW2014 itself ships no purchasing fact table at all — only sales, finance, and a couple of others. The AdventureWorks2012 Purchasing schema is real, it's populated with purchase orders, vendors, and receiving data, and nobody in this catalog has dimensionally modeled it yet. That's exactly the kind of genuinely new design problem a capstone should hand you, instead of a schema you could just copy.
+
+## Segment 4 (outro)
+
+One detail to sit with before next lesson: a purchase order line doesn't just get placed and sit still. It gets partially received, sometimes rejected, over time. Keep that in mind — it's going to matter a lot when Lesson 37 has to pick the right fact table type.

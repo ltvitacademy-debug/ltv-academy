@@ -1,0 +1,17 @@
+# Script — Choosing the Grain
+
+## Segment 1 (title)
+
+You know star and snowflake now. Before you can design either one for real, there's a decision that has to come first, and it's the single most important one in fact table design: the grain.
+
+## Segment 2 (code: two grain statements)
+
+Grain is a one-sentence statement of what a single fact table row represents. Not the columns, not the data types — just what one row means. "One row per order" and "one row per order line" look similar, but they're two entirely different tables. The order-level table can tell you how many orders you took in March. It cannot tell you which products were on them, because product doesn't exist at that grain. Every dimension key and every measure a fact table can hold is determined by its grain, which is exactly why grain gets declared before you choose a single dimension or fact.
+
+## Segment 3 (steps: atomic vs. summarized)
+
+Grain comes in two flavors. Atomic grain stores data at the lowest level of detail the source system captures — one row per order line. Summarized grain pre-rolls that detail up to something coarser — one row per product per day. Kimball's advice is almost always to go atomic first: atomic data can answer questions you haven't thought to ask yet, while summarized data is locked to the level it was rolled up to. Aggregate tables absolutely have a place, but as an addition on top of atomic data, never as a replacement for it. And watch for the most common mistake — a table that mixes two grains, distinguished only by which columns happen to be filled in. That breaks every sum you run against it.
+
+## Segment 4 (outro)
+
+Grain is locked in first, always. Next lesson zooms out to the full picture — Kimball's four-step process for modeling a business process from scratch, with grain as step two of four.

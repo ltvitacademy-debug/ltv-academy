@@ -1,0 +1,17 @@
+# Script — Partitioning Large Fact Tables
+
+## Segment 1 (title)
+
+A columnstore index makes querying a large fact table fast, but it doesn't solve everything. This lesson is about the operational problem that's left: loading new data in and purging old data out.
+
+## Segment 2 (code: partition function and scheme)
+
+Partitioning splits a table into physical chunks based on one column's values, while it still looks like a single table to every query. It's two pieces. A partition function maps column values to partition numbers using boundary values. A partition scheme then maps those partition numbers to actual filegroups. Four boundary values here create five partitions — everything before 2022, one partition per year, then everything from 2025 on.
+
+## Segment 3 (code: switch partition)
+
+The fact table then gets created ON that scheme, keyed by the same column — almost always the date key, because date is the natural boundary for both loading and purging. And here's why it actually matters: ALTER TABLE SWITCH PARTITION moves a whole partition in or out of the table as a near-instant metadata operation, no matter how many rows it holds. A nightly load builds a partition and switches it in; a retention job switches the oldest one out and drops it.
+
+## Segment 4 (outro)
+
+Next lesson steps back from T-SQL syntax to something just as real: the naming conventions that keep a warehouse this size readable — Fact_ and Dim_ prefixes and consistent columns.
