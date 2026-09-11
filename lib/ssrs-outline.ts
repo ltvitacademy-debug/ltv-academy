@@ -27,7 +27,7 @@ export const SSRS_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "SSRS Fundamentals",
     lessons: [
-      L(1, "what-is-ssrs-and-paginated-reporting", "What Is SSRS & Paginated Reporting?"),
+      L(1, "what-is-ssrs-and-paginated-reporting", "What Is SSRS & Paginated Reporting?", { contentDir: "ch01/01-what-is-ssrs-and-paginated-reporting" }),
       L(2, "report-server-architecture", "Report Server Architecture"),
       L(3, "report-builder-vs-ssdt", "Report Builder vs. SSDT/Visual Studio"),
       L(4, "setting-up-a-report-project", "Setting Up a Report Project"),
