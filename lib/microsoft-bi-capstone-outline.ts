@@ -29,7 +29,7 @@ export const MICROSOFT_BI_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Capstone Overview",
     lessons: [
-      L(1, "capstone-kickoff-and-business-scenario", "Capstone Kickoff & Business Scenario"),
+      L(1, "capstone-kickoff-and-business-scenario", "Capstone Kickoff & Business Scenario", { contentDir: "ch01/01-capstone-kickoff-and-business-scenario" }),
       L(2, "architecture-planning", "Architecture Planning: Raw Data to Reporting"),
     ],
   },
