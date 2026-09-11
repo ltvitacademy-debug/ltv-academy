@@ -1,0 +1,125 @@
+{
+  "course": "power-bi",
+  "questions": [
+    {
+      "q": "What's the core difference between Power BI Desktop and the Power BI Service?",
+      "options": ["Desktop is the authoring tool for building reports/models; the Service is the cloud platform for publishing, sharing, and scheduling refresh", "They're the exact same product under two names", "The Service is only for viewing, never publishing", "Desktop can only connect to Excel files"],
+      "answer": 0,
+      "explain": "Power BI Desktop is where you build the data model and report visuals; once published, the Power BI Service hosts it online for sharing, scheduled refresh, dashboards, and row-level security enforcement."
+    },
+    {
+      "q": "What's the practical difference between Import mode and DirectQuery when connecting to a data source?",
+      "options": ["Import loads a copy of the data into Power BI's in-memory model for fast performance; DirectQuery leaves data in the source and queries it live on every interaction", "DirectQuery is always faster than Import", "Import mode can't use DAX measures", "DirectQuery doesn't support scheduled refresh because there's nothing to refresh"],
+      "answer": 0,
+      "explain": "Import compresses and loads a snapshot of the data into Power BI's VertiPaq engine, fast but needs a refresh to stay current; DirectQuery sends a live query to the source on every click, which is always current but limited by the source's own query performance."
+    },
+    {
+      "q": "What does the Power Query Editor's \"Applied Steps\" pane actually represent?",
+      "options": ["A recorded, ordered, replayable sequence of transformation steps applied to get from raw source data to the final shape", "A version history of the whole Power BI file", "A list of every DAX measure", "A log of who edited the query and when"],
+      "answer": 0,
+      "explain": "Every click in Power Query — removing a column, filtering rows, splitting a column — gets recorded as a step in that ordered list, which is really a human-readable view of the underlying M script; re-running the query replays every step in order."
+    },
+    {
+      "q": "Why might \"Unpivot Columns\" be a necessary step before loading a wide, cross-tab-shaped source, such as one column per month?",
+      "options": ["Power BI's model works best with long/narrow tables, one row per fact, so a wide table needs unpivoting into a Month column and a Value column before it can be modeled and visualized properly", "Unpivoting is required by Power BI's file size limit", "Power BI can't read wide tables at all", "Unpivoting removes duplicate rows"],
+      "answer": 0,
+      "explain": "A cross-tab layout with a column per month isn't usable for slicing/aggregating in a report — unpivoting turns those month columns into rows, an attribute column plus a value column, which is the shape Power BI's model and visuals actually need."
+    },
+    {
+      "q": "What's the risk of loading a query step that references \"today's date\" as a hardcoded filter, versus a dynamic Power Query parameter?",
+      "options": ["A hardcoded date won't update on future refreshes, silently filtering to a date that's now wrong", "Power Query doesn't allow parameters at all", "Hardcoded filters run faster in every case", "It has no practical difference"],
+      "answer": 0,
+      "explain": "A literal date baked into a query step stays frozen forever — every future scheduled refresh keeps filtering to that same stale date. A parameter, or DateTime.LocalNow(), recalculates at each refresh instead."
+    },
+    {
+      "q": "In a star-schema-style Power BI model, which direction should the relationship's filter typically flow between a Date dimension and a Sales fact table?",
+      "options": ["Single direction, from Date filtering Sales", "Bidirectional, always", "Only from Sales toward Date", "No filtering — dimensions and facts should be unrelated"],
+      "answer": 0,
+      "explain": "The standard, recommended pattern is single-direction filtering from the one-side dimension to the many-side fact — bidirectional relationships are powerful but can introduce ambiguity and performance issues, and are reserved for cases that specifically need them."
+    },
+    {
+      "q": "Why does Power BI's model prefer a star schema, fact plus dimensions, over one large flat denormalized table?",
+      "options": ["Smaller, well-related tables compress better and let DAX aggregate correctly across multiple dimensions without duplicated/miscounted values", "A flat table is always technically impossible to load", "Star schemas are only a visual preference with no performance impact", "Power BI requires at least 3 tables to render any visual"],
+      "answer": 0,
+      "explain": "A single flat table often duplicates dimension attributes across every fact row and can make certain aggregations ambiguous or wrong; a proper star schema keeps facts and descriptive attributes cleanly separated so DAX aggregates correctly and the model compresses far better."
+    },
+    {
+      "q": "What's the fundamental difference between a DAX calculated column and a DAX measure?",
+      "options": ["A calculated column is computed once per row and stored in the model; a measure is computed dynamically at query time based on the current filter context", "They always return the same result in every context", "Measures take up storage space; calculated columns don't", "Calculated columns can use CALCULATE; measures cannot"],
+      "answer": 0,
+      "explain": "A calculated column evaluates row-by-row at refresh time and its result is materialized and stored; a measure has no stored value at all — it's recalculated on the fly, aggregating over whatever rows the current filters/slicers leave in context."
+    },
+    {
+      "q": "What does CALCULATE(SUM(Sales[Amount]), Sales[Region] = \"West\") actually do?",
+      "options": ["Sums Amount, but overrides/adds a filter so only West rows are included in that sum, regardless of any Region slicer already on the report", "Sums Amount for every region and then multiplies by a West-only ratio", "Deletes every non-West row from the table permanently", "Only works inside calculated columns, not measures"],
+      "answer": 0,
+      "explain": "CALCULATE is DAX's filter-context modifier — its first argument is the expression to evaluate, and every argument after that adds or overrides filters for that evaluation, so this always sums Amount for West regardless of whatever region a report-level slicer might already be filtering to."
+    },
+    {
+      "q": "Why does SUMX(Sales, Sales[Quantity] * Sales[UnitPrice]) behave differently from SUM(Sales[Quantity]) * SUM(Sales[UnitPrice])?",
+      "options": ["SUMX multiplies quantity by price on each row first, then sums the results; the other expression sums each column independently first, producing a mathematically different, usually wrong, total", "They always return the same number", "SUMX only works on the Date table", "SUM times SUM is the pattern Microsoft recommends instead"],
+      "answer": 0,
+      "explain": "This is one of the most common DAX mistakes — SUMX is an iterator that computes quantity times price row by row before summing, which is correct; multiplying two independent SUM()s together sums each column first and then multiplies the totals, giving a meaningless number unless every row happens to share the same price."
+    },
+    {
+      "q": "Why does a proper Date dimension table, marked as a Date table in Power BI, matter for time intelligence functions like SAMEPERIODLASTYEAR?",
+      "options": ["Time intelligence functions rely on a continuous, complete calendar table with no gaps to correctly walk backward/forward across periods", "Time intelligence functions work identically with or without a dedicated Date table", "A Date table is only cosmetic and affects nothing functionally", "SAMEPERIODLASTYEAR only works on text-formatted dates"],
+      "answer": 0,
+      "explain": "DAX time-intelligence functions assume they can walk a contiguous, gap-free calendar to find \"the same day/period, one year back\" — a table missing dates breaks that assumption and produces wrong or missing results."
+    },
+    {
+      "q": "What's the difference between a report-level filter and a visual-level filter in Power BI?",
+      "options": ["A report-level filter applies to every page/visual in the report; a visual-level filter only affects the one visual it's attached to", "They behave identically", "Report-level filters can't use measures", "Visual-level filters are permanent and can't be removed"],
+      "answer": 0,
+      "explain": "Power BI's filter hierarchy runs from broadest to narrowest — report-level filters constrain everything in the report, page-level filters constrain just that page, and visual-level filters constrain only the single visual they're set on."
+    },
+    {
+      "q": "Why might a line chart with too many category values on the X-axis become misleading or unreadable?",
+      "options": ["Too many points crowd the axis labels and can obscure the real trend, so aggregating to a coarser grain is often better", "Power BI automatically limits every chart to 10 points", "Line charts can't display more than one series regardless of category count", "It's never a problem — more detail is always better"],
+      "answer": 0,
+      "explain": "Visualization design isn't just putting all the data on the chart — dense, cluttered axes actively work against the point of a chart, so choosing an appropriate aggregation grain is part of building a report that actually communicates."
+    },
+    {
+      "q": "What's the difference between a Power BI report and a Power BI dashboard?",
+      "options": ["A report is a multi-page, interactive analytical canvas built from one dataset; a dashboard is a single-page collection of pinned tiles, which can come from multiple reports/datasets", "They're interchangeable terms", "Dashboards support drill-through and reports don't", "Reports can only be viewed in the Service, never in Desktop"],
+      "answer": 0,
+      "explain": "Reports are authored against one dataset and can have many interactive pages; a dashboard is a Service-only, single-page pinboard of tiles that can be pinned from several different reports, even different datasets, into one at-a-glance view."
+    },
+    {
+      "q": "What does \"Publish to Power BI Service\" actually upload?",
+      "options": ["The report and the underlying semantic model — the data, relationships, and measures — it's built on", "Only a static image of the current report state", "Only the .pbix file's connection strings", "Nothing — Publish just creates a shareable link with no data"],
+      "answer": 0,
+      "explain": "Publishing sends both halves of the .pbix up to the Service: the semantic model, the compressed data, relationships, and DAX measures, and the report layer built on top of it, which is what lets the Service run scheduled refreshes and serve the report online."
+    },
+    {
+      "q": "What's a Power BI workspace, and why does it matter for collaboration?",
+      "options": ["A container that groups related reports/datasets/dashboards and controls who can view or edit them", "A single user's personal desktop folder", "A backup location for .pbix files", "A feature only available in Power BI Report Server"],
+      "answer": 0,
+      "explain": "Workspaces are the Service's organizational and permissions boundary — content lives inside a workspace, and workspace roles control who can see or change what's inside it, which is the foundation of team collaboration in the Service."
+    },
+    {
+      "q": "Why does a report connected to an on-premises SQL Server database need a Gateway configured before scheduled refresh will work?",
+      "options": ["The Power BI Service runs in the cloud with no direct network path to an on-prem database — the gateway acts as a secure bridge that relays the refresh query", "Gateways are only needed for DirectQuery, never Import", "Scheduled refresh works automatically for any data source with no configuration", "Gateways are required only for row-level security"],
+      "answer": 0,
+      "explain": "The cloud-hosted Power BI Service can't reach into a private on-prem network on its own — an on-premises data gateway, installed inside that network, is what lets the Service securely relay refresh requests to sources it otherwise couldn't reach at all."
+    },
+    {
+      "q": "What does Row-Level Security, RLS, in Power BI actually restrict?",
+      "options": ["Which rows of data a given user sees within the same report, based on a DAX filter tied to their identity/role", "Which visuals a user is allowed to view", "Whether a user can export a report to PDF", "Whether a user can edit the report's DAX measures"],
+      "answer": 0,
+      "explain": "RLS applies a DAX filter expression per role, tied to the viewing user's identity, so two people opening the exact same report see the exact same visuals but only the rows their role permits — it's data-level, not feature-level, security."
+    },
+    {
+      "q": "When presenting a capstone Power BI dashboard, why does the order you build the model, then the visuals, then the story matter?",
+      "options": ["A correct, well-related data model is what makes every downstream visual and DAX measure trustworthy — building visuals on a shaky model just produces confidently wrong numbers", "Visual design should always come before any data modeling", "DAX measures should be written before the tables are even loaded", "Order doesn't matter as long as the final dashboard looks polished"],
+      "answer": 0,
+      "explain": "Power BI's layered architecture means everything downstream depends on what's upstream — a mis-modeled relationship or a broken measure produces numbers that look fine on a chart but are simply wrong, which is why the model has to be solid before the visuals are trusted."
+    },
+    {
+      "q": "In a capstone project, why is documenting your DAX measures considered part of the deliverable, not an afterthought?",
+      "options": ["A model with undocumented, opaque measures is hard for anyone else, or future you, to trust, maintain, or extend", "Power BI requires documentation to publish a report", "Documentation replaces the need for testing measures", "DAX measures document themselves automatically"],
+      "answer": 0,
+      "explain": "In a real job, a dashboard's numbers get questioned and the model gets handed off — a measure with no explanation of what it means or why it's calculated that way is a liability; clear documentation is what turns a working model into a maintainable one."
+    }
+  ]
+}

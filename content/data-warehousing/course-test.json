@@ -1,0 +1,125 @@
+{
+  "course": "data-modeling-and-data-warehousing",
+  "questions": [
+    {
+      "q": "What's the primary goal of dimensional modeling, as distinct from normalized (3NF) transactional modeling?",
+      "options": ["Optimize for fast, simple, understandable analytical queries rather than for eliminating write-time data redundancy", "Eliminate all data redundancy in every table", "Support high-volume transactional writes", "Store data in the smallest possible file size regardless of query performance"],
+      "answer": 0,
+      "explain": "OLTP/3NF modeling optimizes for consistent, non-redundant writes; dimensional modeling deliberately denormalizes and organizes data around how people actually ask business questions, trading some redundancy for much simpler, faster analytical queries."
+    },
+    {
+      "q": "What does \"grain\" mean in the context of a fact table?",
+      "options": ["The precise level of detail one row represents — e.g. one row per order line, not per order or per customer", "The physical file format the table is stored in", "The number of columns in the table", "How often the table is refreshed"],
+      "answer": 0,
+      "explain": "Grain is the single most important design decision for a fact table — it defines exactly what one row means, and every measure and relationship in the model has to respect that same level of detail."
+    },
+    {
+      "q": "Why is declaring the grain explicitly, before building any fact table, considered a critical first step?",
+      "options": ["Mixing grains in one fact table, some rows per transaction and some pre-aggregated, makes totals silently wrong when summed together", "Grain only matters for the Date dimension", "Declaring grain is a formality with no real effect on correctness", "Grain determines the table's column names only"],
+      "answer": 0,
+      "explain": "If some rows in a fact table represent individual transactions and others represent daily totals, a simple SUM() double-counts or under-counts depending on which rows a query happens to touch — an explicit, single grain avoids that entirely."
+    },
+    {
+      "q": "What's the difference between an additive and a semi-additive fact/measure?",
+      "options": ["An additive measure, like sales amount, can be correctly summed across every dimension; a semi-additive measure, like account balance, can be summed across some dimensions but not across time", "All measures in a fact table are always additive", "Semi-additive measures can never be aggregated at all", "Additive measures only apply to the Date dimension"],
+      "answer": 0,
+      "explain": "Sales amount sums correctly across customers, products, and time — it's fully additive. An account balance summed across time produces a meaningless number — it's semi-additive, correctly summable across some dimensions but not time, where you instead want the latest or average value."
+    },
+    {
+      "q": "What's a \"factless fact table\" used for?",
+      "options": ["Recording that an event occurred, such as a student attending class, with no numeric measure, just the event and its dimension keys", "A fact table that has been deleted", "A dimension table mistakenly named as a fact table", "A fact table with only NULL values"],
+      "answer": 0,
+      "explain": "Some business events are worth tracking purely for their occurrence and the dimensions involved — no dollar amount or quantity needed — a factless fact table captures exactly that, and gets counted rather than summed."
+    },
+    {
+      "q": "What is a degenerate dimension?",
+      "options": ["An attribute like an order number or invoice number that's stored directly in the fact table rather than in its own dimension table, since it has no other descriptive attributes worth modeling", "A dimension table with zero rows", "A dimension that changes very frequently", "A dimension used only for security filtering"],
+      "answer": 0,
+      "explain": "A degenerate dimension is a dimension-like identifier kept right on the fact row instead of being broken out into its own table, since it carries no further descriptive attributes that would justify a separate dimension."
+    },
+    {
+      "q": "Why does a Date dimension typically get its own table rather than storing a date directly as a fact table attribute?",
+      "options": ["It lets you attach rich descriptive attributes, like fiscal quarter or a holiday flag, that a raw date column can't carry on its own, and reuse them across every fact table", "Dates can't be stored as columns in a fact table", "A Date dimension is purely optional and adds no value", "Every fact table must have exactly one dimension"],
+      "answer": 0,
+      "explain": "A raw date value alone can't answer \"which fiscal quarter\" or \"was this a holiday\" — a dedicated Date dimension pre-computes and stores every descriptive attribute you'd want to slice by, shared consistently across every fact table that joins to it."
+    },
+    {
+      "q": "What's a conformed dimension, and why does it matter across multiple fact tables?",
+      "options": ["A dimension defined once and reused identically across multiple fact tables, so the same Product or Customer means exactly the same thing everywhere it's joined", "A dimension that's been normalized into 3NF", "A dimension with only one column", "A temporary dimension used only during ETL"],
+      "answer": 0,
+      "explain": "When two fact tables both join to the same, single Customer dimension rather than two slightly different copies, analysts can compare and combine numbers across subject areas with confidence — that shared, single definition is what \"conformed\" means."
+    },
+    {
+      "q": "What's a \"snowflaked\" dimension?",
+      "options": ["A dimension table that's been normalized into multiple related tables instead of one flat denormalized table", "A dimension with data quality issues", "A dimension that only contains numeric data", "A fact table disguised as a dimension"],
+      "answer": 0,
+      "explain": "Snowflaking breaks a flat dimension into normalized sub-tables — it trades the simplicity of a pure star schema for some storage savings and normalization, at the cost of extra joins."
+    },
+    {
+      "q": "What's the key difference between a Type 1 and a Type 2 Slowly Changing Dimension?",
+      "options": ["Type 1 overwrites the old attribute value with no history kept; Type 2 adds a new row preserving the old version, so history is retained", "Type 1 keeps full history; Type 2 overwrites", "Both types keep identical history", "Type 2 only applies to the Date dimension"],
+      "answer": 0,
+      "explain": "Type 1 is a simple overwrite, useful when you don't care about the old value. Type 2 is the \"track history\" pattern — it inserts a brand-new row with a new surrogate key and effective dates whenever the tracked attribute changes, so old fact rows still correctly point at the version that was true then."
+    },
+    {
+      "q": "In a Type 2 SCD, what are effective/expiration dates, or a current-row flag, used for?",
+      "options": ["Identifying which version of a dimension row was \"current\" at any given point in time, so historical facts join to the version that was true then", "Deleting old rows automatically", "Encrypting historical data", "Preventing new rows from being inserted"],
+      "answer": 0,
+      "explain": "Type 2 SCDs keep multiple rows per business entity over time — effective/expiration date columns, or an IsCurrent flag, are what let a query correctly determine which specific version was in effect on any historical date."
+    },
+    {
+      "q": "Why do Type 2 SCDs use a surrogate key rather than the source system's natural/business key as the dimension's primary key?",
+      "options": ["A single business entity needs multiple distinct dimension rows over time, and a surrogate key lets each version have its own unique identity that fact rows can point to", "Business keys are always too long to index", "Surrogate keys are required for Type 1 SCDs specifically", "Natural keys can't be used in any dimension table"],
+      "answer": 0,
+      "explain": "If the business key stayed the primary key, you couldn't have two rows for the same entity representing two points in time — a separate surrogate key gives every historical version its own unique row identity that fact tables can correctly reference."
+    },
+    {
+      "q": "What's the purpose of a staging area/staging tables in an ETL/warehouse architecture?",
+      "options": ["A landing zone that holds raw, mostly-unmodified source data temporarily, isolating transformation logic from the live source systems and the final warehouse tables", "A permanent archive of every historical row ever loaded", "The same thing as the data warehouse itself", "A reporting layer for end users"],
+      "answer": 0,
+      "explain": "Staging tables exist so extraction and transformation don't have to happen directly against fragile production source systems or the final warehouse tables at the same time — raw data lands there first and gets validated/cleaned before moving into the warehouse."
+    },
+    {
+      "q": "Why is truncate-and-reload a reasonable staging pattern, even though it seems wasteful compared to only loading new/changed rows?",
+      "options": ["For staging, simplicity and guaranteed correctness on every run often outweigh the performance cost, especially for smaller source tables", "It's never a reasonable pattern under any circumstance", "It's required by SQL Server for all ETL", "Truncate-and-reload is only valid for dimension tables, never staging"],
+      "answer": 0,
+      "explain": "Staging tables are disposable, intermediate landing zones — for many source tables, wiping and reloading the whole thing every run is simpler and safer than building and maintaining true incremental-extract logic, especially when the source volume is manageable."
+    },
+    {
+      "q": "What does an ETL design's \"upsert\" (MERGE) step typically do when loading a dimension table?",
+      "options": ["Insert new dimension rows and update matching existing rows in one operation, based on a business key match", "Only ever insert new rows, never update", "Delete every row and reload from scratch every time", "Only works for fact tables, never dimensions"],
+      "answer": 0,
+      "explain": "MERGE compares incoming rows against the target by a business key — if a match exists it updates or triggers a new versioned row, and if no match exists it inserts a brand-new dimension row, all in a single statement."
+    },
+    {
+      "q": "What's a bridge table used for when modeling a many-to-many relationship between a fact and a dimension?",
+      "options": ["It resolves the many-to-many relationship, such as one sale having multiple salespeople, by sitting between the fact and dimension, avoiding fan-out/double-counting", "It's a temporary table used only during ETL", "It's another name for a fact table", "It only applies to the Date dimension"],
+      "answer": 0,
+      "explain": "Star schemas assume one-to-many relationships between dimensions and facts — when a real relationship is actually many-to-many, a bridge table models that association correctly instead of forcing an incorrect one-to-many join that would double-count the fact."
+    },
+    {
+      "q": "What's the difference between a role-playing dimension and having separate physical dimension tables?",
+      "options": ["A role-playing dimension is the same physical Date table used multiple times in one fact table, such as OrderDate and ShipDate, via multiple relationships or views, rather than duplicating the table itself", "Role-playing dimensions are always duplicated physically, one per role", "Role-playing only applies to Product dimensions", "It requires a separate ETL process per role"],
+      "answer": 0,
+      "explain": "Rather than building separate OrderDate and ShipDate dimension tables that duplicate every attribute, a role-playing dimension reuses one physical Date table in multiple relationships or aliased views — the same table playing different roles in the model."
+    },
+    {
+      "q": "When physically building a warehouse's fact and dimension tables, why does load order matter, dimensions before facts?",
+      "options": ["Fact rows need to reference dimension surrogate keys that must already exist, so dimensions have to be loaded, or at least have an \"unknown member\" row, before facts that reference them", "Load order has no real effect as long as both finish eventually", "SQL Server enforces alphabetical load order automatically", "Facts must always load before dimensions"],
+      "answer": 0,
+      "explain": "A fact row's foreign keys point at dimension surrogate keys — if a dimension row doesn't exist yet when a fact tries to reference it, that fact row either fails to load correctly or has to fall back to an \"unknown member\" placeholder, so dimensions are conventionally loaded first."
+    },
+    {
+      "q": "What's the purpose of an \"Unknown\" or \"N/A\" member row in a dimension table?",
+      "options": ["It gives fact rows with missing or not-yet-resolved dimension data a valid, non-null foreign key to point to, so the fact table's referential integrity stays intact", "It represents corrupted data that should be deleted", "It's only used in the Date dimension", "It replaces the need for a surrogate key"],
+      "answer": 0,
+      "explain": "Rather than allowing a NULL foreign key, which breaks joins, or dropping the fact row, warehouse design conventionally adds one deliberate \"Unknown\" row to each dimension, so a fact whose real dimension value is missing still has something valid to reference."
+    },
+    {
+      "q": "In a capstone warehouse build, why is validating row counts and spot-checking totals against the source system considered part of \"finishing,\" not optional QA?",
+      "options": ["A warehouse that loads without errors can still silently produce wrong numbers — validation is what actually confirms the numbers are trustworthy", "SQL Server automatically guarantees correct totals on every load", "Row-count validation is only necessary for staging tables", "Spot-checking totals is redundant once ETL logging is in place"],
+      "answer": 0,
+      "explain": "An ETL job finishing \"successfully\" says nothing about whether the resulting numbers are actually correct — a subtle join fan-out or wrong grain assumption can silently inflate or deflate totals without ever raising an error, which is exactly why comparing warehouse totals back against the source is a real, required verification step."
+    }
+  ]
+}

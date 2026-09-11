@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { COURSES, getCourse, lessonCount } from "@/lib/courses";
+import { COURSES, getCourse, lessonCount, loadCourseTest } from "@/lib/courses";
 import LessonRow from "@/components/app/LessonRow";
 import CoursePathBreadcrumb from "@/components/app/CoursePathBreadcrumb";
 
@@ -17,6 +17,7 @@ export default async function CoursePage({
   const { slug } = await params;
   const course = getCourse(slug);
   if (!course) notFound();
+  const test = loadCourseTest(course);
 
   if (course.status === "coming-soon") {
     return (
@@ -79,6 +80,22 @@ export default async function CoursePage({
           </section>
         ))}
       </div>
+
+      {test && (
+        <div className="mt-14 border-2 border-gold bg-gold/10 p-7">
+          <p className="eyebrow mb-2">Final test</p>
+          <h2 className="display text-2xl">Ready to test what you&apos;ve learned?</h2>
+          <p className="mt-2 max-w-2xl text-stone">
+            {test.questions.length} questions covering the whole course — 90% to pass.
+          </p>
+          <Link
+            href={`/app/courses/${course.slug}/test`}
+            className="mt-4 inline-block rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep"
+          >
+            Take the final test →
+          </Link>
+        </div>
+      )}
     </main>
   );
 }

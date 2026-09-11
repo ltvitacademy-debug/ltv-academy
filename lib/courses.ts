@@ -627,3 +627,17 @@ export function loadLessonContent(lesson: LessonMeta, contentBase: string) {
     : null;
   return { guideHtml, quiz };
 }
+
+// A course's final test — 20 questions covering the whole course, 90% (18/20)
+// required to pass. Lives at content/<contentBase>/course-test.json, a sibling
+// of the per-lesson content folders. Reuses the Quiz shape; only lessons get
+// contentDir-scoped folders, a course test sits at the course's content root.
+export function loadCourseTest(course: CourseMeta): Quiz | null {
+  const testPath = path.join(
+    process.cwd(),
+    "content",
+    course.contentBase ?? course.slug,
+    "course-test.json"
+  );
+  return fs.existsSync(testPath) ? JSON.parse(fs.readFileSync(testPath, "utf8")) : null;
+}
