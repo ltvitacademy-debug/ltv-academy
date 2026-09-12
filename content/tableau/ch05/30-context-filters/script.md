@@ -1,0 +1,21 @@
+# Script — Context Filters
+
+## Segment 1 (title)
+
+Context filters make one filter run before all the others — and the reason that matters is correctness, not just speed.
+
+## Segment 2 (screenshot: baseline)
+
+Here's Sub-Category by Sales, unfiltered — all ten sub-categories, ranked by total sales.
+
+## Segment 3 (screenshot: context filter applied)
+
+Right-click a filter pill and choose Add to Context, and it moves to the top of the Filters shelf and turns grey — the visual signal it's now computed first. Here, Category: Furniture is in context, and a Sub-Category filter beneath it now only sees Furniture's four sub-categories.
+
+## Segment 4 (steps: why it matters)
+
+Without context, a Top N filter is computed against the entire dataset first — you'd get whichever overall top sub-categories happen to be Furniture, purely by coincidence. With Category: Furniture in context, Top N is correctly computed only among Furniture's own sub-categories. That's a different answer, not just a faster one.
+
+## Segment 5 (outro)
+
+Next lesson lays out Tableau's entire filter order of operations — where context filters actually sit in the sequence.

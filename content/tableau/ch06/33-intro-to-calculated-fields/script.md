@@ -1,0 +1,21 @@
+# Script — Introduction to Calculated Fields
+
+## Segment 1 (title)
+
+Welcome to Calculated Fields. A calculated field is a new field you define yourself, using a formula written in Tableau's own calculation language — built from the fields already in your data source, without touching the underlying data or writing SQL.
+
+## Segment 2 (screenshot: the Calculation Editor)
+
+Every calculated field starts here: Analysis, then Create Calculated Field. That opens the Calculation Editor — a name field at the top, a formula box beneath it, and a function search panel on the right that gives you syntax, a description, and an example for every available function. Tableau checks your syntax as you type, and won't let you save a broken formula.
+
+## Segment 3 (code: your first calculated field)
+
+Here's a real example straight from Tableau's own documentation. Discount Ratio equals IIF, Sales not equal to zero, comma, Discount divided by Sales, comma, zero. That formula checks whether Sales is non-zero, and if so divides Discount by Sales — otherwise it returns zero, avoiding a divide-by-zero error. Click OK, and it appears in the Data pane immediately, marked with an equals sign to show it's calculated.
+
+## Segment 4 (steps: three kinds of calculations)
+
+This chapter covers three broad categories, in this order. First, arithmetic and KPI calculations — the ratios and margins built from plus, minus, multiply, and divide. Second, type-specific functions — string functions like LEFT and CONTAINS, date functions like DATEDIFF and DATEADD. Third, logic — IF/THEN/ELSE and CASE, for formulas that return different results depending on a condition. After that, we'll cover the two things that trip up almost every new Tableau author: NULLs and data types, and the aggregate-versus-non-aggregate rule.
+
+## Segment 5 (outro)
+
+Next lesson, you'll build real arithmetic and KPI calculations — profit, profit ratio, and the kind of index formulas that show up in almost every Tableau dashboard.

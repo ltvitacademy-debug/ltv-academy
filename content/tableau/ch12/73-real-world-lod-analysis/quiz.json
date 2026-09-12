@@ -1,0 +1,60 @@
+{
+  "lesson": "real-world-lod-analysis",
+  "questions": [
+    {
+      "q": "What does { FIXED [Customer Name] : MIN([Order Date]) } compute?",
+      "options": [
+        "Each customer's earliest order date, stable regardless of the current view",
+        "The most recent order date across all customers",
+        "The average number of days between a customer's orders",
+        "The date the workbook was last refreshed"
+      ],
+      "answer": 0,
+      "explain": "FIXED locks MIN([Order Date]) to the Customer Name grain, giving each customer's first purchase date independent of whatever's on the view — the foundation for both the new-vs-returning flag and the cohort grouping in this lesson."
+    },
+    {
+      "q": "Why does the New vs. Returning flag (IF [Order Date] = [Customer First Order Date] THEN \"New\" ELSE \"Returning\" END) require a FIXED LOD expression rather than a plain date comparison?",
+      "options": [
+        "Because Customer First Order Date must stay the customer's absolute earliest date regardless of the view, which only a FIXED expression can guarantee",
+        "Because Tableau requires all IF statements to reference an LOD expression",
+        "It doesn't actually require FIXED — any calculation would work identically",
+        "Because dates cannot be compared directly in Tableau without an LOD expression"
+      ],
+      "answer": 0,
+      "explain": "Without FIXED, a reference to 'first order date' would only reflect whatever's visible in the current view, not the customer's true full-history first order — which defeats the purpose of a new-vs-returning flag."
+    },
+    {
+      "q": "What does DATETRUNC('month', [Customer First Order Date]) produce, and why is it useful here?",
+      "options": [
+        "A 'Cohort Month' field that rounds each customer's first purchase date down to the start of its month, grouping customers by acquisition period",
+        "The exact day of the customer's first order, unchanged",
+        "A count of how many months the customer has been active",
+        "The current month, regardless of the customer's actual first order date"
+      ],
+      "answer": 0,
+      "explain": "DATETRUNC rounds a date down to the start of the specified period. Applied to the FIXED first-order date, it groups every customer whose first purchase fell in the same month into one cohort."
+    },
+    {
+      "q": "In the suggested lab view (Cohort Month on Rows, AVG(Customer Lifetime Sales) on Columns, New vs. Returning filtered to 'New' only), why filter to 'New' only?",
+      "options": [
+        "So each customer is counted exactly once, at their first order, rather than once per order they've ever placed",
+        "Because 'Returning' customers have no lifetime sales value",
+        "Filtering to 'New' has no effect on the result — it's purely cosmetic",
+        "Because Cohort Month only exists for new customers"
+      ],
+      "answer": 0,
+      "explain": "Without that filter, a customer's row would appear once per order, and averaging Customer Lifetime Sales across those repeated rows would overweight customers with more orders. Filtering to New keeps one row per customer."
+    },
+    {
+      "q": "What are the two FIXED LOD expressions this lesson builds the entire analysis on top of?",
+      "options": [
+        "{ FIXED [Customer Name] : SUM([Sales]) } and { FIXED [Customer Name] : MIN([Order Date]) }",
+        "{ INCLUDE [Order ID] : COUNTD([Product Name]) } and { EXCLUDE [Sub-Category] : SUM([Sales]) }",
+        "RUNNING_SUM(SUM([Sales])) and RANK(SUM([Sales]))",
+        "{ FIXED : AVG([Sales]) } and { FIXED [Region] : SUM([Sales]) }"
+      ],
+      "answer": 0,
+      "explain": "Customer Lifetime Sales and Customer First Order Date — both FIXED to Customer Name — are the two building blocks every other field in this lesson (New vs. Returning, Cohort Month) derives from."
+    }
+  ]
+}

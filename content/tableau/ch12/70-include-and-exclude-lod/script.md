@@ -1,0 +1,21 @@
+# Script — INCLUDE & EXCLUDE LOD
+
+## Segment 1 (title)
+
+FIXED ignores the view completely. INCLUDE and EXCLUDE don't — they compute relative to whatever's currently on the view, adding or removing specific dimensions from it. Edit the view, and their results can change too. That's expected, not a bug.
+
+## Segment 2 (code: INCLUDE)
+
+INCLUDE adds finer detail than the view has. This computes distinct products per order — finer than a view grained by Region alone. Wrap it in AVG at the view level and you get average products per order, by region — something a plain COUNTD can't give you.
+
+## Segment 3 (code: EXCLUDE)
+
+EXCLUDE does the opposite — it removes detail the view already has. On a view grained by Category and Sub-Category, excluding Sub-Category gives you each row's parent Category total instead. Divide the row's own sales by that, and you've got a percent-of-parent ratio with no second query.
+
+## Segment 4 (steps: side by side)
+
+Three keywords, three relationships to the view: FIXED is independent, INCLUDE adds detail, EXCLUDE removes it. Same curly-brace syntax throughout — only the keyword and what it's paired with changes the behavior.
+
+## Segment 5 (outro)
+
+Next lesson looks at how all three of these interact with filters — context filters, dimension filters, and the exact order Tableau applies them in.

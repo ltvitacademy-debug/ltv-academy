@@ -1,0 +1,17 @@
+# Script — Box-and-Whisker Plots
+
+## Segment 1 (title)
+
+A box-and-whisker plot summarizes a distribution using five numbers at once: the minimum, the first quartile, the median, the third quartile, and the maximum. The box spans the middle 50 percent of the data; the whiskers extend out toward the extremes.
+
+## Segment 2 (screenshot: box plot by segment)
+
+Here's a finished box plot — Average Discount by Segment, built with Show Me. Three segments could share nearly identical average discounts while having very different spreads — one clustered tight around its median, another swinging wide. A bar chart of averages would hide that completely. A box plot puts it front and center.
+
+## Segment 3 (steps: whisker configuration)
+
+Tableau gives you two ways to draw the whiskers. The first extends only to points within one and a half times the interquartile range, flagging anything beyond as a separate outlier dot — the standard statistical convention. The second stretches all the way to the true minimum and maximum, with no outliers called out.
+
+## Segment 4 (outro)
+
+Next lesson wraps up this chapter: choosing the right visualization for the question you're actually asking, across every chart type you've built so far.

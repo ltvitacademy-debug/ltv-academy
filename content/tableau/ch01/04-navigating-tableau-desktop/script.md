@@ -1,0 +1,21 @@
+# Script — Navigating Tableau Desktop
+
+## Segment 1 (title)
+
+This lesson is a proper tour of the Tableau Desktop workspace — every area you'll be moving between for the rest of this course.
+
+## Segment 2 (screenshot: workspace overview)
+
+Here's the full workspace, labeled A through I. The menu bar and toolbar sit on top. The Data pane on the left lists every field. The Columns and Rows shelves set up the view's basic structure. The Marks card controls color, size, and detail. And the worksheet canvas is where the actual chart renders.
+
+## Segment 3 (screenshot: parts of the view)
+
+Zoom into the chart itself, and it has its own named parts: row and column headers, created by discrete fields; axes, created by continuous fields; a legend, showing what color or size encodes; and a caption, a short description of what the view shows. These exact terms come back in nearly every future lesson.
+
+## Segment 4 (steps: the vocabulary that matters)
+
+Three things to remember: shelves like Columns and Rows hold fields and set the view's shape; the Marks card controls how marks look; and headers versus axes is really just discrete versus continuous, which is exactly what Lesson 5 covers next.
+
+## Segment 5 (outro)
+
+Next lesson dives into that discrete-versus-continuous distinction directly — Dimensions, Measures, and what "blue" and "green" actually mean in Tableau.

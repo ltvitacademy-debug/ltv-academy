@@ -1,0 +1,17 @@
+# Script — Highlight Tables & Heat Maps
+
+## Segment 1 (title)
+
+A highlight table starts as a plain nested text table — dimensions on Columns and Rows — then a measure gets dragged onto Color. Tableau recolors every cell from most negative to most positive, and suddenly the pattern is visible without scanning a single number.
+
+## Segment 2 (screenshot: highlight table)
+
+Here's a finished highlight table — Profit across Segment, Region, and Sub-Category. The grid is still exactly as readable as a spreadsheet, but color now does the work your eye would otherwise have to do, hunting row by row for the extremes.
+
+## Segment 3 (screenshot: heat map)
+
+Add a second measure to Size, and the same table becomes a heat map — cells now vary in both color and size, encoding two measures in one grid at once. Here Sales drives size and Profit drives color, using a Red-Black Diverging palette so the biggest, most prominent squares are also the highest earners.
+
+## Segment 4 (outro)
+
+Next lesson, you'll build scatter plots — the chart for showing the relationship between two measures directly.
