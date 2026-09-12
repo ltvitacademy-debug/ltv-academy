@@ -1,0 +1,17 @@
+# Script — Data Types & Formatting
+
+## Segment 1 (title)
+
+Excel guesses the data type of everything you type in, and most of the time that guess is invisible. The times it's wrong are the problem — a number secretly stored as text quietly breaks sums and lookups without ever throwing an error.
+
+## Segment 2 (screenshot: green triangle)
+
+Here's the tell: a green triangle in the corner of the cell, and left-alignment instead of the normal right-alignment for numbers. Both mean Excel thinks that "number" is actually text — and a text `1024` will not match a numeric `1024` in a lookup, even though they look identical.
+
+## Segment 3 (code: VALUE, DATEVALUE, TEXT)
+
+Three functions fix this. VALUE converts a numeric-looking text string into a real number. DATEVALUE does the same for dates. TEXT goes the other way on purpose, turning a real number into a formatted label. VALUE and DATEVALUE both fail loudly with an error if the text isn't really a number or date — that's a feature, not a bug.
+
+## Segment 4 (outro)
+
+Next lesson: Excel Tables — turning a range into a real Table so your formulas and formatting expand automatically as rows get added.

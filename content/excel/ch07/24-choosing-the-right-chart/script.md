@@ -1,0 +1,25 @@
+# Script — Choosing the Right Chart
+
+## Segment 1 (title)
+
+The most common charting mistake isn't an ugly chart — it's a chart type that can't answer the real question behind it. Name the question first; the chart type follows from that.
+
+## Segment 2 (screenshot: insert ribbon)
+
+Excel has a shortcut for exactly this problem. Select your data, then Insert, Recommended Charts, in the Charts group.
+
+## Segment 3 (screenshot: recommended charts dialog)
+
+Excel scans your data's shape and proposes chart types, even explaining its reasoning — here, a stacked column chart for comparing parts of a whole. Treat this as a well-informed guess, not a verdict, since it knows your data's shape, not your actual business question.
+
+## Segment 4 (steps: comparison, trend, composition)
+
+Three of the five questions a chart answers: Comparison, how do categories stack up right now — bar or column chart. Trend over time — a line chart, never a pie, since pie charts have no sense of time at all. Composition of a whole — stacked bar or column.
+
+## Segment 5 (steps: relationship, distribution)
+
+The other two: Relationship between two variables — a scatter chart, the one job bar and line charts can't do. And distribution — how values spread across a range — a histogram, for spotting outliers and skew an average would hide.
+
+## Segment 6 (outro)
+
+Next lesson: What-If Analysis and Goal Seek — working backward from a target result to find the input that gets you there.
