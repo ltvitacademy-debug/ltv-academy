@@ -258,17 +258,17 @@ export const CAREER_PATHS: CareerPath[] = [
     title: "SQL Server Database Administrator",
     targetJobs: ["SQL Developer", "Junior DBA", "Database Administrator", "Senior DBA", "Database Engineer", "Principal Database Engineer"],
     description:
-      "A deeper, SQL-Server-first alternative to the Azure Database Engineer path, for someone who wants to go all the way into database administration as its own discipline. It deliberately doesn't repeat T-SQL Development's SQL language foundation — instead it moves straight from writing SQL to using T-SQL like a DBA: diagnosing, monitoring, and fixing SQL Server. From there you build real on-prem administration, deep performance tuning, and high-availability skills before moving into Azure and the DP-300 certification, closing with the automation and DevOps practices senior DBAs are expected to know.",
+      "A deeper, SQL-Server-first alternative to the Azure Database Engineer path, for someone who wants to go all the way into database administration as its own discipline. It deliberately doesn't repeat T-SQL Development's SQL language foundation — instead it moves straight from writing SQL to using T-SQL like a DBA: diagnosing, monitoring, and fixing SQL Server. From there you build real on-prem administration, deep performance tuning, and high-availability skills before moving into Azure and the DP-300 certification, closing with the automation and DevOps practices senior DBAs are expected to know — then rounds out with real, hands-on exposure to the other database platforms every senior DBA eventually runs into: Oracle, MySQL, and PostgreSQL on the relational side, and MongoDB, Cosmos DB, and Neo4j on the NoSQL side.",
     salaryRange: "$80K–$130K as a DBA · $130K–$180K+ at Senior DBA / Database Engineer · Principal Database Engineer roles currently post above $200K",
     certification: "DP-300 — a checkpoint partway through this path, not the end of it",
     stages: [
       {
-        label: "Job Ready",
+        label: "01 — Job Ready",
         note: "T-SQL, used like a DBA, then real on-prem administration",
         courseSlugs: ["t-sql-development", "t-sql-for-database-administrators", "sql-server-database-administration"],
       },
       {
-        label: "Advanced",
+        label: "02 — Advanced SQL Server",
         note: "Tune it, keep it alive, move to the cloud, automate everything",
         courseSlugs: [
           "sql-server-performance-tuning",
@@ -277,9 +277,14 @@ export const CAREER_PATHS: CareerPath[] = [
           "powershell-automation-and-devops-for-dbas",
         ],
       },
+      {
+        label: "03 — Multi-Platform Databases",
+        note: "Apply everything above to the platforms every senior DBA eventually meets",
+        courseSlugs: ["cross-platform-relational-database-administration", "nosql-document-and-graph-databases"],
+      },
     ],
     destinationNote:
-      "SQL Developer/DBA → Senior DBA → Database Engineer → Senior Database Engineer → Principal Database Engineer → Database Architect. Learn SQL → use SQL like a DBA → administer SQL Server → tune performance → keep databases alive → move to Azure → automate everything — a much stronger progression than SQL, more SQL, even more SQL.",
+      "SQL Developer/DBA → Senior DBA → Database Engineer → Senior Database Engineer → Principal Database Engineer → Database Architect. Learn SQL → use SQL like a DBA → administer SQL Server → tune performance → keep databases alive → move to Azure → automate everything → apply it all to Oracle, MySQL, PostgreSQL, MongoDB, Cosmos DB, and Neo4j. Two additional multi-platform courses are enough to give a SQL Server DBA meaningful, credible exposure elsewhere without turning this into a database-of-the-week mega-program — if demand later justifies deeper Oracle, MongoDB, or Cosmos DB training, that becomes its own advanced specialization rather than a redesign of this path.",
   },
   {
     slug: "salesforce-data-analyst",

@@ -28,6 +28,8 @@ import { SQL_SERVER_DBA_CHAPTERS } from "./sql-server-dba-outline";
 import { SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS } from "./sql-server-performance-tuning-outline";
 import { SQL_SERVER_HA_DR_CHAPTERS } from "./sql-server-ha-dr-outline";
 import { POWERSHELL_AUTOMATION_DEVOPS_DBAS_CHAPTERS } from "./powershell-automation-devops-dbas-outline";
+import { CROSS_PLATFORM_DBA_CHAPTERS } from "./cross-platform-dba-outline";
+import { NOSQL_DOCUMENT_GRAPH_CHAPTERS } from "./nosql-document-graph-outline";
 import { SALESFORCE_FUNDAMENTALS_CHAPTERS } from "./salesforce-fundamentals-outline";
 import { SOQL_DATA_MANAGEMENT_CHAPTERS } from "./soql-data-management-outline";
 import { SALESFORCE_REPORTS_DASHBOARDS_CHAPTERS } from "./salesforce-reports-dashboards-outline";
@@ -324,6 +326,24 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: POWERSHELL_AUTOMATION_DEVOPS_DBAS_CHAPTERS,
     contentBase: "powershell-automation-devops-dbas",
+  },
+  {
+    slug: "cross-platform-relational-database-administration",
+    title: "Cross-Platform Relational Database Administration",
+    tagline:
+      "Apply your SQL Server DBA knowledge to Oracle, MySQL, and PostgreSQL — architecture, security, backup, recovery, performance, replication, and migration, in 96 videos.",
+    status: "available",
+    chapters: CROSS_PLATFORM_DBA_CHAPTERS,
+    contentBase: "cross-platform-dba",
+  },
+  {
+    slug: "nosql-document-and-graph-databases",
+    title: "NoSQL, Document & Graph Databases",
+    tagline:
+      "How MongoDB, Azure Cosmos DB, and Neo4j store, distribute, secure, and query data when traditional relational modeling isn't the best fit — 80 videos.",
+    status: "available",
+    chapters: NOSQL_DOCUMENT_GRAPH_CHAPTERS,
+    contentBase: "nosql-document-graph",
   },
   {
     slug: "salesforce-fundamentals-for-data-analysts",
