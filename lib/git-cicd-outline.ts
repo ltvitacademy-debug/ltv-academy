@@ -27,7 +27,7 @@ export const GIT_CICD_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Git Fundamentals for Data People",
     lessons: [
-      L(1, "why-git-for-data-work", "Why Git Matters for Data Work"),
+      L(1, "why-git-for-data-work", "Why Git Matters for Data Work", { contentDir: "ch01/01-why-git-for-data-work" }),
       L(2, "installing-git", "Installing Git & Your First Repository"),
       L(3, "init-add-commit", "init, add & commit"),
       L(4, "branches", "Branches: Working Without Breaking Things"),
