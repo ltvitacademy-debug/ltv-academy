@@ -1,0 +1,21 @@
+# Script — Environment Variables & Secrets in CI/CD
+
+## Segment 1 (title)
+
+Every secrets reference in retail-orders-analytics' workflow file points to a value configured on GitHub itself — never written in the repository, never visible in a diff. To get there, open the repository's Settings.
+
+## Segment 2 (screenshot: repo settings tab)
+
+From Settings, Secrets and variables then Actions is where secrets actually get created. They're encrypted — GitHub itself can't show you a saved secret's value again, only let you overwrite it.
+
+## Segment 3 (screenshot: actions secrets page)
+
+GitHub does three things with a secret automatically: encrypts it at rest, masks it as asterisks if a workflow step accidentally prints it, and withholds it entirely from pull requests opened from a fork.
+
+## Segment 4 (steps: separate CI and prod secrets)
+
+Lesson 22's deploy job used deliberately different secret names from the CI job — PROD_DB_HOST versus DB_HOST. A CI credential should only reach a disposable schema; a production credential should only be usable from the deploy job. One shared credential everywhere means a bug in a PR's CI run could reach production data — two separate ones means it can't.
+
+## Segment 5 (outro)
+
+Next lesson: the capstone — putting this entire chapter together into one real dbt project with a working CI/CD pipeline, start to finish.

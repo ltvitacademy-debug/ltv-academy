@@ -1,0 +1,25 @@
+# Script — Code Review Basics
+
+## Segment 1 (title)
+
+A pull request's diff isn't just something to skim. Hovering any changed line reveals a small icon for leaving a comment attached to exactly that line — for a SQL query, the difference between a vague comment and one attached to the exact join in question.
+
+## Segment 2 (screenshot: hover comment icon)
+
+That icon shows up on hover over any line in the diff — click it to open a comment box scoped to that exact line, not the pull request as a whole.
+
+## Segment 3 (screenshot: suggestion block)
+
+Comments describe a problem. Suggestions propose the fix directly, as an editable code block the author can accept with one click. Instead of describing a naming convention violation, a suggestion hands over the exact corrected line.
+
+## Segment 4 (screenshot: review changes button)
+
+Individual line comments don't do anything until you submit a review, which starts from the Review changes button on the Files changed tab. Every comment you've left gets bundled into whichever verdict you submit there.
+
+## Segment 5 (steps: three verdicts)
+
+Three verdicts: Comment is feedback with no verdict attached and doesn't block anything. Approve unblocks a merge on a repo that requires review. Request changes blocks the merge button until it's resolved or dismissed.
+
+## Segment 6 (outro)
+
+Next lesson: GitHub Issues and project boards — tracking work that isn't a code change yet.
