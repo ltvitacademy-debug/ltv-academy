@@ -27,7 +27,7 @@ export const EXCEL_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Excel Fundamentals Refresher",
     lessons: [
-      L(1, "interface-and-shortcuts-for-speed", "Interface & Shortcuts for Speed"),
+      L(1, "interface-and-shortcuts-for-speed", "Interface & Shortcuts for Speed", { contentDir: "ch01/01-interface-and-shortcuts-for-speed" }),
       L(2, "data-types-and-formatting", "Data Types & Formatting"),
       L(3, "excel-tables", "Excel Tables"),
       L(4, "named-ranges", "Named Ranges"),
