@@ -1,0 +1,60 @@
+{
+  "lesson": "pipeline-troubleshooting-end-to-end",
+  "questions": [
+    {
+      "q": "What is the recommended order for diagnosing \"the daily load didn't run\" in a Snowpipe -> Stream -> Task pipeline?",
+      "options": [
+        "Pipe (did the file load), then Stream (did it capture a change), then Task (did it run/succeed), then Table (did the result land)",
+        "Jump straight to assuming the Task is broken and rewrite it",
+        "Check the downstream table first and ignore everything upstream",
+        "There is no useful order — check everything simultaneously at random"
+      ],
+      "answer": 0,
+      "explain": "Walking the chain from the beginning (pipe) to the end (table), in order, finds the actual break faster than guessing which link failed."
+    },
+    {
+      "q": "What does SYSTEM$STREAM_HAS_DATA returning FALSE mean, when Step 1 confirms rows clearly loaded?",
+      "options": [
+        "The stream itself is the likely problem — often already consumed by an earlier run, or recreated and lost its offset",
+        "The warehouse is out of credits",
+        "The file format was misconfigured",
+        "The task definitely has a syntax error"
+      ],
+      "answer": 0,
+      "explain": "If rows loaded but the stream shows no data, the stream itself — not the file load — is the point to investigate."
+    },
+    {
+      "q": "In TASK_HISTORY, what does a state of SKIPPED mean, as opposed to FAILED?",
+      "options": [
+        "The task's WHEN condition (often tied to SYSTEM$STREAM_HAS_DATA) evaluated false, so the task didn't run at all — it isn't a broken task",
+        "SKIPPED and FAILED mean exactly the same thing",
+        "The task ran twice by mistake",
+        "The warehouse was deleted"
+      ],
+      "answer": 0,
+      "explain": "SKIPPED indicates the task's WHEN condition was false, which is a normal, working outcome one link back (often an empty stream) — not the same as a real failure."
+    },
+    {
+      "q": "Which Snowflake functions/table functions does this lesson chain together to diagnose the pipeline end to end?",
+      "options": [
+        "SYSTEM$PIPE_STATUS / COPY_HISTORY, SYSTEM$STREAM_HAS_DATA, and TASK_HISTORY",
+        "Only SHOW WAREHOUSES",
+        "Only SCD Type 2 merge logic",
+        "Only Power BI's refresh history"
+      ],
+      "answer": 0,
+      "explain": "The chain uses pipe status/copy history for the load step, stream-has-data for the change-capture step, and task history for the scheduled-processing step."
+    },
+    {
+      "q": "Why does the lesson emphasize checking the chain in order rather than jumping to conclusions?",
+      "options": [
+        "Because a string of SKIPPED task runs, for example, is fully explained by an earlier stalled link (an empty stream), not a broken task — checking in order avoids fixing the wrong thing",
+        "Because Snowflake requires queries to run in a specific numbered sequence",
+        "Because SQL syntax requires it",
+        "Because it reduces warehouse credit costs"
+      ],
+      "answer": 0,
+      "explain": "Symptoms downstream (like SKIPPED tasks) are often consistent with, and explained by, a problem one or more links earlier — order-checking turns a vague symptom into a specific root cause."
+    }
+  ]
+}

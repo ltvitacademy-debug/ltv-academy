@@ -1,0 +1,21 @@
+# Script — Streams: Change Tracking in Snowflake
+
+## Segment 1 (title)
+
+Incremental loading with a homemade watermark column works, but you own the bookkeeping — and it breaks the moment a row updates without touching that column, or gets deleted entirely. Snowflake's native answer is a Stream.
+
+## Segment 2 (code: creating and querying a stream)
+
+One statement — CREATE STREAM on table orders — creates an object that tracks every insert, update, and delete against that table from this point forward. Query it like a table, and you get back only the rows that changed since the stream was last consumed.
+
+## Segment 3 (steps: the metadata columns)
+
+Every stream adds three columns. METADATA dollar ACTION — insert or delete. METADATA dollar ISUPDATE — true when a delete-plus-insert pair actually represents an update, since Snowflake has no separate update action. METADATA dollar ROW ID — tracks row version history internally.
+
+## Segment 4 (steps: consumed, not just read)
+
+This is the part that trips people up: a plain SELECT to peek doesn't consume the stream. Only a DML statement that reads from the stream and commits — an INSERT or MERGE — advances it. That's exactly what a pipeline wants: process the changes once, and the stream stops returning what you've already handled.
+
+## Segment 5 (outro)
+
+Next lesson: Tasks — Snowflake's native scheduler, for running the work that consumes a stream automatically instead of by hand.

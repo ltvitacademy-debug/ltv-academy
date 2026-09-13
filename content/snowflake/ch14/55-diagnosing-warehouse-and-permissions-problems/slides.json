@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Snowflake · Chapter 14, Lesson 55",
+    "titlePlain": "Diagnosing Warehouse & ",
+    "titleEmphasis": "Permissions",
+    "titleSuffix": " Problems",
+    "subtitle": "Three failure modes, diagnosable with SQL in under a minute"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three real failure modes",
+    "titlePlain": "It's almost always ",
+    "titleEmphasis": "one",
+    "titleSuffix": " of these",
+    "steps": [
+      { "label": "Suspended / queued warehouse", "sub": "Waiting on compute, not broken" },
+      { "label": "Missing privilege", "sub": "Or the wrong current role" },
+      { "label": "Resource monitor shutdown", "sub": "It hit its credit quota" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Is it a warehouse problem?",
+    "code": "SHOW WAREHOUSES LIKE 'ANALYTICS_WH';\n\nSELECT start_time, avg_running, avg_queued_load\nFROM TABLE(INFORMATION_SCHEMA.WAREHOUSE_LOAD_HISTORY(\n  warehouse_name => 'ANALYTICS_WH',\n  date_range_start => DATEADD(hours, -6, CURRENT_TIMESTAMP())\n));",
+    "caption": "Nonzero avg_queued_load means it was waiting on compute, not failing."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Is it a privileges problem?",
+    "code": "SELECT CURRENT_ROLE();\n\nSHOW GRANTS TO ROLE analyst_role;\n\nSHOW GRANTS ON TABLE reporting.orders;",
+    "caption": "Check the current role first — that's the most common real cause."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Did a resource monitor fire?",
+    "code": "SHOW RESOURCE MONITORS;\n-- credit_quota vs. used_credits, suspend actions\n\nSHOW WAREHOUSES LIKE 'LOAD_WH';\n-- state = SUSPENDED means a monitor's threshold fired",
+    "caption": "It did its job — raise the quota, wait for reset, or split the workload."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Pipeline Troubleshooting, ",
+    "titleEmphasis": "End to End",
+    "titleSuffix": "",
+    "subtitle": "The daily load didn't run — how you'd actually find out why"
+  }
+]

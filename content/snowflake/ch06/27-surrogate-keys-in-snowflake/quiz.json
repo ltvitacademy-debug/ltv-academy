@@ -1,0 +1,60 @@
+{
+  "lesson": "surrogate-keys-in-snowflake",
+  "questions": [
+    {
+      "q": "What are the two interchangeable Snowflake syntaxes for an auto-generated sequential key column?",
+      "options": [
+        "AUTOINCREMENT and IDENTITY",
+        "SEQUENCE and SERIAL",
+        "HASH and MD5",
+        "PRIMARY and UNIQUE"
+      ],
+      "answer": 0,
+      "explain": "Snowflake supports both AUTOINCREMENT and IDENTITY(1,1)-style syntax, with the same underlying behavior — mirroring T-SQL's IDENTITY concept."
+    },
+    {
+      "q": "Why aren't Snowflake AUTOINCREMENT values guaranteed to be gap-free or in strict insertion order?",
+      "options": [
+        "Snowflake loads data in parallel across many micro-partitions, so concurrent inserts don't guarantee sequential, gap-free assignment",
+        "AUTOINCREMENT is not actually supported in Snowflake",
+        "Snowflake resets the counter to zero after every query",
+        "Only VARCHAR columns can use AUTOINCREMENT"
+      ],
+      "answer": 0,
+      "explain": "Because loading happens in parallel across micro-partitions, values assigned by concurrent inserts can have gaps or arrive out of insertion order, more pronounced than T-SQL's IDENTITY."
+    },
+    {
+      "q": "What does a HASH()-based surrogate key pattern compute the key from?",
+      "options": [
+        "The natural/business key, deterministically, right inside the transformation that builds the dimension",
+        "A random number generated fresh on every insert",
+        "The current system timestamp only",
+        "The row's physical storage location in the micro-partition"
+      ],
+      "answer": 0,
+      "explain": "HASH(customer_id) (or similar) derives the surrogate key deterministically from the natural key, so the same input always produces the same key."
+    },
+    {
+      "q": "Why does a HASH()-based key avoid needing a 'round trip' that AUTOINCREMENT requires?",
+      "options": [
+        "It can be computed independently by any transformation that knows the natural key, without first inserting into the dimension and reading back the assigned value",
+        "HASH() values are always smaller than AUTOINCREMENT values",
+        "AUTOINCREMENT cannot be used in any SELECT statement",
+        "HASH() keys are only used for VARCHAR columns"
+      ],
+      "answer": 0,
+      "explain": "A fact table transformation can compute HASH(customer_id) itself to match a dimension's key without waiting on an INSERT-and-read-back cycle against the dimension table."
+    },
+    {
+      "q": "Why does a HASH()-based key survive a CREATE OR REPLACE TABLE AS SELECT rebuild more cleanly than AUTOINCREMENT state?",
+      "options": [
+        "It's recomputed identically every time from the same natural key, whereas AUTOINCREMENT state isn't preserved automatically across a full table rebuild",
+        "CREATE OR REPLACE TABLE AS SELECT is incompatible with AUTOINCREMENT columns and will always error",
+        "HASH() keys are stored outside the table so rebuilding never affects them",
+        "AUTOINCREMENT columns are deleted whenever a table is replaced"
+      ],
+      "answer": 0,
+      "explain": "Because a HASH()-based key is deterministic and recomputed from source data every run, it naturally matches across rebuilds, while AUTOINCREMENT's internal counter state isn't guaranteed to line up the same way after a full CREATE OR REPLACE rebuild."
+    }
+  ]
+}

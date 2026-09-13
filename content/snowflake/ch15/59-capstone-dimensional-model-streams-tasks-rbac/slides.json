@@ -1,0 +1,47 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Snowflake · Chapter 15, Lesson 59",
+    "titlePlain": "Capstone: Dimensional Model, ",
+    "titleEmphasis": "Streams/Tasks",
+    "titleSuffix": " & RBAC",
+    "subtitle": "Milestone 2 — a star schema that stays current, and is actually secured"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The star schema: surrogate keys",
+    "code": "CREATE OR REPLACE TABLE warehouse.dim_customer (\n  customer_key NUMBER AUTOINCREMENT PRIMARY KEY,\n  customer_id STRING, segment STRING,\n  effective_date DATE, end_date DATE, is_current BOOLEAN\n);\n\nCREATE OR REPLACE TABLE warehouse.fact_orders (\n  order_id STRING, customer_key NUMBER, order_date DATE,\n  quantity NUMBER, extended_amt NUMBER(12,2)\n);",
+    "caption": "The fact table joins on customer_key, never the natural customer_id."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Streams + Tasks: incremental refresh",
+    "code": "CREATE OR REPLACE STREAM staging.orders_stream ON TABLE staging.orders;\n\nCREATE OR REPLACE TASK refresh_fact_orders\n  WAREHOUSE = load_wh\n  SCHEDULE = '60 MINUTE'\n  WHEN SYSTEM$STREAM_HAS_DATA('staging.orders_stream')\nAS\nMERGE INTO warehouse.fact_orders f\nUSING staging.orders_stream s ON f.order_id = s.order_id\nWHEN MATCHED THEN UPDATE SET f.quantity = s.quantity\nWHEN NOT MATCHED THEN INSERT (order_id, quantity) VALUES (s.order_id, s.quantity);",
+    "caption": "Skips the merge entirely when the stream is empty — cheap by design."
+  },
+  {
+    "type": "code",
+    "eyebrow": "RBAC: two roles, real boundaries",
+    "code": "CREATE ROLE capstone_loader_role;\nGRANT INSERT, SELECT ON ALL TABLES IN SCHEMA capstone_db.raw\n  TO ROLE capstone_loader_role;\n\nCREATE ROLE capstone_analyst_role;\nGRANT SELECT ON ALL TABLES IN SCHEMA capstone_db.warehouse\n  TO ROLE capstone_analyst_role;\n-- no grant on raw or staging at all",
+    "caption": "The analyst role's missing grant on raw is the point, not an oversight."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Verify, don't assume",
+    "titlePlain": "Prove ",
+    "titleEmphasis": "it",
+    "titleSuffix": ", don't guess",
+    "steps": [
+      { "label": "TASK_HISTORY", "sub": "A real incremental run happened" },
+      { "label": "SHOW GRANTS TO ROLE", "sub": "The analyst boundary is real" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Capstone: Performance, Monitoring & ",
+    "titleEmphasis": "Presenting",
+    "titleSuffix": " Your Project",
+    "subtitle": "The final milestone — and the last lesson of the course"
+  }
+]

@@ -1,0 +1,21 @@
+# Script — FLATTEN: Converting Semi-Structured Data to Relational
+
+## Segment 1 (title)
+
+Colon notation is great for a JSON field that holds one value. But what about a field that holds an array — a list of line items on an order, a list of tags on a record? Colon notation gets you the whole array back as one value, not one row per item. That's what FLATTEN is for.
+
+## Segment 2 (code: the array problem)
+
+Picture an order with a line_items array holding two items. v colon line_items returns that entire array as a single VARIANT value — still not the one-row-per-item shape a reporting table needs. Something has to pull the array apart.
+
+## Segment 3 (steps: LATERAL FLATTEN pattern)
+
+FLATTEN is a table function — it takes a VARIANT array and returns one row per element. LATERAL lets it reference the other columns on the row it's flattening, so each resulting row carries the parent record's fields — order id, customer — alongside that one item's own sku, quantity, and price.
+
+## Segment 4 (steps: when to use it)
+
+Use item.value for the flattened element itself, item.index for its array position. And only reach for FLATTEN when a field is actually an array needing one row per element — if every field is a single value, colon and dot notation from last lesson is simpler and enough.
+
+## Segment 5 (outro)
+
+Next lesson: the hands-on lab — taking a raw JSON feed all the way through loading, querying, and flattening into real reporting tables.

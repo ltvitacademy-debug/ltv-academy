@@ -1,0 +1,36 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Snowflake · Chapter 5, Lesson 22",
+    "titlePlain": "CTAS & SQL-Based ",
+    "titleEmphasis": "Transformations",
+    "titleSuffix": "",
+    "subtitle": "One statement, from raw query to finished table"
+  },
+  {
+    "type": "code",
+    "eyebrow": "CREATE TABLE AS SELECT",
+    "code": "CREATE OR REPLACE TABLE staging.orders_cleaned AS\nSELECT\n    order_id,\n    customer_id,\n    TRY_CAST(order_total AS NUMBER(12,2)) AS order_total,\n    TO_TIMESTAMP_NTZ(order_ts) AS order_ts\nFROM raw.orders\nWHERE order_id IS NOT NULL;",
+    "caption": "CREATE OR REPLACE swaps the table atomically — safe to rerun on every pipeline run."
+  },
+  {
+    "type": "code",
+    "eyebrow": "vs. T-SQL's SELECT INTO",
+    "code": "-- T-SQL: errors if the table exists\nSELECT * INTO dbo.OrdersClean FROM dbo.Orders;\n\n-- Snowflake: rebuild is the idiom, not a workaround\nCREATE OR REPLACE TABLE staging.orders_cleaned AS\nSELECT * FROM raw.orders;",
+    "caption": "Same idea as SELECT INTO — but drop-and-rebuild is the default pattern here, not a bolted-on fix."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Business logic lives in the SELECT",
+    "code": "CREATE OR REPLACE TABLE analytics.orders_flagged AS\nSELECT\n    order_id,\n    customer_id,\n    order_total,\n    CASE WHEN order_total >= 1000\n         THEN TRUE ELSE FALSE END AS is_high_value\nFROM staging.orders_cleaned;",
+    "caption": "Casts, CASE logic, and filters — no separate transformation layer to configure."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Incremental ",
+    "titleEmphasis": "Loading",
+    "titleSuffix": " Patterns",
+    "subtitle": "Processing only what's new, instead of rebuilding everything"
+  }
+]

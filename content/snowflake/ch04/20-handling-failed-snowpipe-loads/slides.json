@@ -1,0 +1,49 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Snowflake · Chapter 4, Lesson 20",
+    "titlePlain": "Handling Failed Snowpipe ",
+    "titleEmphasis": "Loads",
+    "titleSuffix": "",
+    "subtitle": "Two questions, two different places to look"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Did the file load cleanly?",
+    "code": "SELECT file_name, status, error_count, first_error_message\nFROM TABLE(INFORMATION_SCHEMA.COPY_HISTORY(\n  TABLE_NAME => 'my_table',\n  START_TIME => DATEADD(hours, -24, CURRENT_TIMESTAMP())\n))\nWHERE status != 'LOADED';",
+    "caption": "Snowpipe loads go through the same load path — same function reports them."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Did the pipe even see the file?",
+    "code": "SELECT *\nFROM TABLE(INFORMATION_SCHEMA.PIPE_USAGE_HISTORY(\n  DATE_RANGE_START => DATEADD(hours, -24, CURRENT_TIMESTAMP()),\n  PIPE_NAME => 'my_db.public.my_pipe'\n));",
+    "caption": "A load that never started leaves nothing for COPY_HISTORY to report."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Most likely causes, in order",
+    "titlePlain": "Where a pipe actually ",
+    "titleEmphasis": "breaks",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "ARN mismatch", "sub": "Event notification points at the wrong queue" },
+      { "label": "Permission gaps", "sub": "Insert or stage usage revoked" },
+      { "label": "Format drift", "sub": "Source file shape quietly changed" },
+      { "label": "Paused pipe", "sub": "Nobody resumed it after maintenance" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Resuming safely",
+    "code": "ALTER PIPE my_db.public.my_pipe SET PIPE_EXECUTION_PAUSED = FALSE;\n\n-- Pick up anything missed while paused:\nALTER PIPE my_db.public.my_pipe REFRESH;",
+    "caption": "Unpausing alone doesn't retroactively pick up missed files."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next chapter",
+    "titlePlain": "The ELT Pattern in ",
+    "titleEmphasis": "Snowflake",
+    "titleSuffix": "",
+    "subtitle": "From getting data in to shaping it once it's there"
+  }
+]

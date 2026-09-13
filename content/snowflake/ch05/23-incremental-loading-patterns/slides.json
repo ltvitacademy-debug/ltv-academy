@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Snowflake · Chapter 5, Lesson 23",
+    "titlePlain": "Incremental Loading ",
+    "titleEmphasis": "Patterns",
+    "titleSuffix": "",
+    "subtitle": "Processing only what's new, not the whole table every run"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Track a watermark",
+    "code": "CREATE TABLE IF NOT EXISTS staging.load_watermarks (\n    source_table   VARCHAR,\n    last_loaded_ts TIMESTAMP_NTZ\n);\n\nSELECT last_loaded_ts FROM staging.load_watermarks\nWHERE source_table = 'orders';",
+    "caption": "The highest already-processed value of an ever-increasing column — read it before pulling new rows."
+  },
+  {
+    "type": "code",
+    "eyebrow": "MERGE the new batch in",
+    "code": "MERGE INTO staging.orders_cleaned AS tgt\nUSING (SELECT * FROM raw.orders\n       WHERE loaded_at > :last_loaded_ts) AS src\nON tgt.order_id = src.order_id\nWHEN MATCHED THEN UPDATE SET tgt.order_total = src.order_total\nWHEN NOT MATCHED THEN INSERT (order_id, order_total)\n    VALUES (src.order_id, src.order_total);",
+    "caption": "Same MERGE syntax you already know from T-SQL — updates changed rows, inserts new ones."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The incremental cycle",
+    "titlePlain": "Read, merge, ",
+    "titleEmphasis": "advance",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Read watermark", "sub": "What's already processed" },
+      { "label": "MERGE new rows", "sub": "Only rows past the watermark" },
+      { "label": "Advance watermark", "sub": "Or the next run reprocesses everything" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Deduplication ",
+    "titleEmphasis": "Strategies",
+    "titleSuffix": "",
+    "subtitle": "QUALIFY — a pattern that doesn't exist in T-SQL"
+  }
+]

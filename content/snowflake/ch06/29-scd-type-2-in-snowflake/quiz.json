@@ -1,0 +1,60 @@
+{
+  "lesson": "scd-type-2-in-snowflake",
+  "questions": [
+    {
+      "q": "What does SCD Type 2 do that distinguishes it from SCD Type 1?",
+      "options": [
+        "It preserves history by closing out the old row and inserting a new version, instead of overwriting the value in place",
+        "It deletes old rows entirely once an attribute changes",
+        "It stores only the current version, identical to SCD1",
+        "It requires no surrogate key at all"
+      ],
+      "answer": 0,
+      "explain": "SCD2's defining behavior is keeping every historical version by expiring the old row and inserting a new one, rather than overwriting in place like SCD1."
+    },
+    {
+      "q": "In the SCD2 table shape, why can the natural key (customer_id) appear in multiple rows while the surrogate key does not repeat?",
+      "options": [
+        "Each row represents one historical version of the customer, so the surrogate key identifies a version, while the natural key identifies the customer across all versions",
+        "The natural key is randomly duplicated by Snowflake for performance reasons",
+        "Surrogate keys are not allowed to be unique in Snowflake",
+        "This only happens due to a data quality bug and should never occur"
+      ],
+      "answer": 0,
+      "explain": "SCD2 stores one row per version of a customer, so the natural key legitimately repeats across versions while the surrogate key must be unique per version."
+    },
+    {
+      "q": "Why can't a single MERGE statement fully implement SCD Type 2?",
+      "options": [
+        "SCD2 needs to close out an old row while also inserting a new one for the same source row — a third behavior MERGE's WHEN MATCHED / WHEN NOT MATCHED clauses don't provide",
+        "MERGE cannot update any column in Snowflake",
+        "MERGE cannot reference a staging table as its source",
+        "Snowflake does not support the MERGE statement at all"
+      ],
+      "answer": 0,
+      "explain": "MERGE's two clauses (update matched, insert unmatched) cover SCD1's needs but not SCD2's requirement to both expire an old row and insert a new one for the same changed record, which is why real code splits this into two statements."
+    },
+    {
+      "q": "What does step 1 of the two-step SCD2 pattern do?",
+      "options": [
+        "An UPDATE that sets the expiry_date and flips is_current to FALSE for rows whose tracked attributes changed",
+        "An INSERT that adds brand-new customer rows only",
+        "A DELETE that removes all historical rows permanently",
+        "A CREATE OR REPLACE TABLE that rebuilds the entire dimension from scratch"
+      ],
+      "answer": 0,
+      "explain": "Step 1 closes out changed rows by setting their expiry_date and marking is_current FALSE, which must happen before step 2 inserts the new versions."
+    },
+    {
+      "q": "Why must step 1 (closing out changed rows) run before step 2 (inserting new versions)?",
+      "options": [
+        "Step 2's anti-join looks for a current row that no longer matches the source, which depends on is_current already being updated by step 1",
+        "Snowflake enforces statement ordering automatically and will error if reversed",
+        "Step 2 physically cannot run unless step 1's table lock is released",
+        "There is no dependency between the two steps; the order doesn't matter"
+      ],
+      "answer": 0,
+      "explain": "Step 2 identifies rows needing a new version partly by checking for a current row that has stopped matching the source — a check that only works correctly after step 1 has already flipped is_current for changed rows."
+    }
+  ]
+}

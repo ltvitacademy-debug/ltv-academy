@@ -1,0 +1,21 @@
+# Script — Internal vs. External Stages
+
+## Segment 1 (title)
+
+Every load into Snowflake goes through a stage first — a named reference to a file location, not a copy of your data. Before we touch COPY INTO, we need to know the two kinds of stage and when to use each.
+
+## Segment 2 (screenshot: Create Stage dialog)
+
+Snowsight's Create Stage wizard — under Databases, Create, Stage, Amazon S3 — writes the same CREATE STAGE statement you could type by hand: a name, a URL pointing at the bucket, and credentials. The UI is a shortcut, not a different mechanism.
+
+## Segment 3 (steps: internal vs external)
+
+Internal stages live inside storage Snowflake already manages for you — a user stage, a table stage, or a named internal stage — zero cloud setup required. External stages point at a bucket you already own in S3, Azure Blob, or GCS, without copying the files in first.
+
+## Segment 4 (code: CREATE STAGE syntax)
+
+A named internal stage needs nothing but a name and a file format. A named external stage adds a URL and credentials — production pipelines typically swap hardcoded keys for a storage integration instead, which Chapter 4 covers.
+
+## Segment 5 (outro)
+
+Next lesson: file formats. Before COPY INTO can read a file correctly, Snowflake needs to know whether it's looking at CSV, JSON, or Parquet — and exactly how that file is shaped.

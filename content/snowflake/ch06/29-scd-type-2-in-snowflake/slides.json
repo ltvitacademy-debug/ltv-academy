@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Snowflake · Chapter 6, Lesson 29",
+    "titlePlain": "SCD Type 2 in ",
+    "titleEmphasis": "Snowflake",
+    "titleSuffix": "",
+    "subtitle": "Preserving history with effective and expiry dating"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The SCD2 table shape",
+    "code": "CREATE TABLE analytics.dim_customer (\n    customer_key   NUMBER,   -- unique per VERSION\n    customer_id    VARCHAR,  -- repeats across versions\n    region         VARCHAR,\n    effective_date DATE,\n    expiry_date    DATE,\n    is_current     BOOLEAN\n);",
+    "caption": "The natural key can repeat; the surrogate key identifies one version, not one customer."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why one MERGE isn't enough",
+    "titlePlain": "A third ",
+    "titleEmphasis": "behavior",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Update in place", "sub": "What SCD1's MERGE does" },
+      { "label": "Insert if new", "sub": "Also what MERGE does" },
+      { "label": "Close old + insert new", "sub": "MERGE has no clause for this" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1 — close out changed rows",
+    "code": "UPDATE analytics.dim_customer AS tgt\nSET expiry_date = CURRENT_DATE(), is_current = FALSE\nFROM staging.customers_cleaned AS src\nWHERE tgt.customer_id = src.customer_id\n  AND tgt.is_current = TRUE\n  AND tgt.region <> src.region;",
+    "caption": "Must run first — step 2's anti-join depends on is_current already being updated."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 — insert new versions",
+    "code": "INSERT INTO analytics.dim_customer (customer_key, customer_id,\n    region, effective_date, expiry_date, is_current)\nSELECT HASH(src.customer_id, CURRENT_DATE()), src.customer_id,\n    src.region, CURRENT_DATE(), NULL, TRUE\nFROM staging.customers_cleaned AS src\nLEFT JOIN analytics.dim_customer AS tgt\n    ON tgt.customer_id = src.customer_id AND tgt.is_current = TRUE\nWHERE tgt.customer_id IS NULL OR tgt.region <> src.region;",
+    "caption": "One new current row per brand-new or just-closed-out customer."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Staging → Warehouse → ",
+    "titleEmphasis": "Reporting",
+    "titleSuffix": " Layers",
+    "subtitle": "Tying Chapters 5 and 6 together"
+  }
+]

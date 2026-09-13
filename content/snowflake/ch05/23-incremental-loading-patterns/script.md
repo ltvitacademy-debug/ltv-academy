@@ -1,0 +1,21 @@
+# Script — Incremental Loading Patterns
+
+## Segment 1 (title)
+
+Rebuilding an entire table on every run is fine at small volume. Once the source has years of history and only a few thousand rows changed since yesterday, re-scanning everything every run wastes compute for no benefit. Incremental loading processes only what's new or changed.
+
+## Segment 2 (code: watermark table + read)
+
+A watermark is the highest value of some ever-increasing column, usually a timestamp, that's already been processed. Track it in a small table, read it at the start of each run, and pull only rows newer than it.
+
+## Segment 3 (code: MERGE incremental upsert)
+
+MERGE, which you already know from T-SQL, is what actually applies an incremental batch — updating rows that changed and inserting rows that are brand new, all in one statement, matched against the watermark-filtered source.
+
+## Segment 4 (steps: the incremental cycle)
+
+After the merge, advance the watermark to the new maximum so the next run doesn't reprocess the same rows. Forgetting that step is a real bug — it silently reprocesses everything, every time.
+
+## Segment 5 (outro)
+
+Next lesson: deduplication strategies — including QUALIFY, a Snowflake pattern that doesn't exist in T-SQL.

@@ -1,0 +1,21 @@
+# Script — File Formats: CSV, JSON & Parquet
+
+## Segment 1 (title)
+
+Before COPY INTO can read a file, Snowflake needs to know exactly how it's shaped. That's what a file format object is for — defined once, reused on every load.
+
+## Segment 2 (screenshot: CREATE FILE FORMAT worksheet)
+
+Here's a real CREATE FILE FORMAT statement running in a worksheet — delimiter, header-skip, quoting, and null-handling all defined together. Every COPY INTO that references this object inherits the same parsing rules, so you're not reconfiguring it on every load.
+
+## Segment 3 (code: CSV options)
+
+The options that matter most in practice: FIELD_DELIMITER for what separates columns, SKIP_HEADER for header rows, FIELD_OPTIONALLY_ENCLOSED_BY so a comma inside a quoted field doesn't split into an extra column, and NULL_IF for which strings become NULL.
+
+## Segment 4 (code: JSON and Parquet)
+
+JSON loads each document as one VARIANT value per row — STRIP_OUTER_ARRAY is the setting to remember, since without it a top-level array loads as a single row instead of many. Parquet already carries its own schema, so its file format definition is often just TYPE equals PARQUET, nothing else.
+
+## Segment 5 (outro)
+
+Next lesson: COPY INTO itself — the command that actually moves rows from a staged file, through a file format, into a table.
