@@ -27,7 +27,7 @@ export const DBT_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Analytics Engineering & dbt Fundamentals",
     lessons: [
-      L(1, "what-is-analytics-engineering", "What Is Analytics Engineering?"),
+      L(1, "what-is-analytics-engineering", "What Is Analytics Engineering?", { contentDir: "ch01/01-what-is-analytics-engineering" }),
       L(2, "dbt-fundamentals", "dbt Fundamentals: What Problem Does It Solve?"),
       L(3, "dbt-cloud-vs-dbt-core", "dbt Cloud vs. dbt Core"),
       L(4, "dbt-project-structure", "dbt Project Structure"),
