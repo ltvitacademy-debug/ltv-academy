@@ -29,7 +29,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Snowflake Architecture & Getting Started",
     lessons: [
-      L(1, "welcome-to-snowflake-course-overview", "Welcome to Snowflake: Course Overview & What You'll Build"),
+      L(1, "welcome-to-snowflake-course-overview", "Welcome to Snowflake: Course Overview & What You'll Build", { contentDir: "ch01/01-welcome-to-snowflake-course-overview" }),
       L(2, "snowflake-architecture-storage-compute-cloud-services", "Snowflake Architecture: Storage, Compute & Cloud Services"),
       L(3, "databases-schemas-and-tables", "Databases, Schemas & Tables in Snowflake"),
       L(4, "virtual-warehouses-scaling-auto-suspend-resume", "Virtual Warehouses, Scaling & Auto-Suspend/Auto-Resume"),
