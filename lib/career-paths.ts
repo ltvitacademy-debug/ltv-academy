@@ -263,12 +263,12 @@ export const CAREER_PATHS: CareerPath[] = [
     certification: "DP-300 — a checkpoint partway through this path, not the end of it",
     stages: [
       {
-        label: "01 — Job Ready",
+        label: "Job Ready",
         note: "T-SQL, used like a DBA, then real on-prem administration",
         courseSlugs: ["t-sql-development", "t-sql-for-database-administrators", "sql-server-database-administration"],
       },
       {
-        label: "02 — Advanced SQL Server",
+        label: "Advanced SQL Server",
         note: "Tune it, keep it alive, move to the cloud, automate everything",
         courseSlugs: [
           "sql-server-performance-tuning",
@@ -278,7 +278,7 @@ export const CAREER_PATHS: CareerPath[] = [
         ],
       },
       {
-        label: "03 — Multi-Platform Databases",
+        label: "Multi-Platform Databases",
         note: "Apply everything above to the platforms every senior DBA eventually meets",
         courseSlugs: ["cross-platform-relational-database-administration", "nosql-document-and-graph-databases"],
       },
