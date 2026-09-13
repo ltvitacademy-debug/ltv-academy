@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "dbt / Analytics Engineering · Chapter 5, Lesson 26",
+    "titlePlain": "Incremental Strategies: merge, delete+insert, ",
+    "titleEmphasis": "append",
+    "titleSuffix": "",
+    "subtitle": "What dbt does with the rows is_incremental() finds"
+  },
+  {
+    "type": "code",
+    "eyebrow": "merge — the default",
+    "code": "{{ config(\n    materialized='incremental',\n    unique_key='order_id',\n    incremental_strategy='merge',\n) }}\n\nselect order_id, customer_id, order_status, order_ts\nfrom {{ source('shop', 'orders') }}\n{% if is_incremental() %}\n    where order_ts > (select max(order_ts) from {{ this }})\n{% endif %}",
+    "caption": "Same MERGE shape you already know from T-SQL and Snowflake."
+  },
+  {
+    "type": "code",
+    "eyebrow": "delete+insert — replace whole batches",
+    "code": "{{ config(\n    materialized='incremental',\n    unique_key='order_id',\n    incremental_strategy='delete+insert',\n) }}\n\n-- deletes rows matching the new batch's keys,\n-- then inserts the new batch wholesale",
+    "caption": "Better when a batch replaces a whole prior batch, or MERGE isn't supported."
+  },
+  {
+    "type": "code",
+    "eyebrow": "append — cheapest, but your problem",
+    "code": "{{ config(\n    materialized='incremental',\n    incremental_strategy='append',\n) }}\n\nselect event_id, event_type, occurred_at\nfrom {{ source('app', 'events') }}\n{% if is_incremental() %}\n    where occurred_at > (select max(occurred_at) from {{ this }})\n{% endif %}",
+    "caption": "No unique_key, no matching — correct only for truly immutable event data."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Choosing between them",
+    "titlePlain": "Three situations, three ",
+    "titleEmphasis": "strategies",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "merge", "sub": "Rows updated after arrival" },
+      { "label": "delete+insert", "sub": "A batch replaces a whole prior batch" },
+      { "label": "append", "sub": "Truly immutable event data" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Incremental Model Gotchas & ",
+    "titleEmphasis": "Full Refreshes",
+    "titleSuffix": "",
+    "subtitle": "Real failure modes, and the fix"
+  }
+]

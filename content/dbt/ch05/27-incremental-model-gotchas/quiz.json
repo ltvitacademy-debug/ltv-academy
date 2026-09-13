@@ -1,0 +1,60 @@
+{
+  "lesson": "incremental-model-gotchas",
+  "questions": [
+    {
+      "q": "Why is a schema change on a source table dangerous for an incremental model specifically?",
+      "options": [
+        "Rows built before the change never re-run against the new column, so it's null for old rows and populated only going forward — invisible until someone notices",
+        "It causes the entire dbt project to fail to compile immediately",
+        "It has no effect at all on incremental models",
+        "It only affects seeds, never models"
+      ],
+      "answer": 0,
+      "explain": "Because an incremental model never reprocesses old rows, a new or changed source column is silently missing from historical rows, which looks like a data quality bug rather than a schema issue."
+    },
+    {
+      "q": "How can late-arriving data get permanently missed by an incremental model?",
+      "options": [
+        "If a row arrives after the watermark has already advanced past its timestamp, the is_incremental() filter excludes it and it's never picked up again",
+        "Late-arriving data is always automatically included by dbt regardless of timestamp",
+        "It causes the model to throw a compile error",
+        "dbt automatically detects and re-includes late rows without any config"
+      ],
+      "answer": 0,
+      "explain": "The filter trusts the timestamp reflects arrival time; a row that arrives late with an old timestamp falls behind an already-advanced watermark and gets silently skipped."
+    },
+    {
+      "q": "What does `dbt run --full-refresh` actually do?",
+      "options": [
+        "Drops the model's target table and rebuilds it from scratch, ignoring is_incremental() filtering entirely",
+        "Only refreshes the dbt docs site, not any data",
+        "Deletes the model definition from the project",
+        "Re-runs only the single most recent row"
+      ],
+      "answer": 0,
+      "explain": "--full-refresh rebuilds the table from the same SELECT that runs on a brand-new model's first build, so nothing gets filtered out — fixing both schema drift and missed late arrivals."
+    },
+    {
+      "q": "What is a 'lookback window,' and what does it trade off?",
+      "options": [
+        "Re-checking a few recent periods every run to catch late arrivals, at the cost of some redundant reprocessing",
+        "A dbt Cloud feature for viewing historical job logs",
+        "A setting that disables incremental models entirely",
+        "A type of snapshot strategy"
+      ],
+      "answer": 0,
+      "explain": "A lookback window widens the incremental filter to re-check a few recent days, trading a little redundant work for catching rows that arrived late."
+    },
+    {
+      "q": "Why shouldn't `--full-refresh` be run casually on every deploy?",
+      "options": [
+        "It costs exactly what the incremental model was built to avoid — a full reprocessing of the entire history",
+        "It is not a real dbt command and doesn't exist",
+        "It permanently deletes the model's source data",
+        "It has zero cost, so there's no reason not to — the lesson just avoids recommending it"
+      ],
+      "answer": 0,
+      "explain": "A full refresh reprocesses everything, which is the exact cost incremental models exist to avoid — the healthy pattern is scheduling it periodically, not running it on every deploy."
+    }
+  ]
+}

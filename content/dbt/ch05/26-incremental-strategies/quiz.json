@@ -1,0 +1,60 @@
+{
+  "lesson": "incremental-strategies",
+  "questions": [
+    {
+      "q": "What does `incremental_strategy` control, as distinct from `is_incremental()`?",
+      "options": [
+        "What dbt does with the selected rows once found (merge, delete+insert, append), while is_incremental() decides which rows get selected",
+        "Whether the model is materialized as a view or a table",
+        "The warehouse the model connects to",
+        "Whether tests run before or after the model builds"
+      ],
+      "answer": 0,
+      "explain": "is_incremental() gates which rows the SELECT returns on a repeat run; incremental_strategy controls how those rows get applied to the target table."
+    },
+    {
+      "q": "Which strategy compiles to a real MERGE statement, matching on unique_key?",
+      "options": [
+        "merge",
+        "append",
+        "delete+insert",
+        "None of them use MERGE"
+      ],
+      "answer": 0,
+      "explain": "merge is the default strategy and compiles to a MERGE statement — the same shape already familiar from T-SQL and Snowflake."
+    },
+    {
+      "q": "When is `delete+insert` the better choice over `merge`?",
+      "options": [
+        "When a whole batch naturally replaces a whole prior batch, or on a warehouse where MERGE is unsupported or slow",
+        "Only when the model has zero rows",
+        "Never — merge is always strictly better in every case",
+        "Only for seeds, never for models"
+      ],
+      "answer": 0,
+      "explain": "delete+insert deletes rows matching the new batch's keys and inserts the batch wholesale — a better fit when replacing whole batches, or where MERGE isn't well supported."
+    },
+    {
+      "q": "Why does `append` not require a `unique_key`?",
+      "options": [
+        "Because it does no matching at all — it just inserts the new rows, which is only safe for truly immutable, append-only data",
+        "Because append automatically deduplicates rows for you",
+        "Because unique_key is required for every strategy except append, by design flaw",
+        "Because append only works on seeds"
+      ],
+      "answer": 0,
+      "explain": "append is the cheapest strategy because it skips matching entirely — that's exactly why it's unsafe for data that can be updated after it first arrives."
+    },
+    {
+      "q": "What happens if you use `append` on data that can be updated after arrival?",
+      "options": [
+        "You get duplicate rows the moment a changed row looks like a 'new' row to the filter",
+        "dbt automatically falls back to merge behavior",
+        "The model fails to compile",
+        "Nothing — append behaves identically to merge in every case"
+      ],
+      "answer": 0,
+      "explain": "Without matching, append can't tell a changed row from a brand-new one — if the filter picks it up again, it gets inserted a second time as a duplicate."
+    }
+  ]
+}

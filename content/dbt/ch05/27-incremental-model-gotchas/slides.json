@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "dbt / Analytics Engineering · Chapter 5, Lesson 27",
+    "titlePlain": "Incremental Model Gotchas & ",
+    "titleEmphasis": "Full Refreshes",
+    "titleSuffix": "",
+    "subtitle": "A bad incremental run doesn't fix itself"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Gotcha 1 — schema drift",
+    "code": "-- fragile: a new source column shows up in new rows,\n-- but never appears in rows already built\nselect * from {{ source('shop', 'orders') }}\n{% if is_incremental() %}\n    where order_ts > (select max(order_ts) from {{ this }})\n{% endif %}",
+    "caption": "Old rows never re-run — the new column is null there, populated only going forward."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Gotcha 2 — late-arriving data",
+    "code": "-- a lookback window re-checks a few recent days,\n-- trading redundant work for catching late arrivals\n{% if is_incremental() %}\n    where order_ts > (\n        select dateadd(day, -3, max(order_ts)) from {{ this }}\n    )\n{% endif %}",
+    "caption": "Without it, a late-arriving row with an old timestamp is skipped forever."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The fix",
+    "code": "dbt run --full-refresh --select stg_orders",
+    "caption": "Drops and rebuilds from scratch, ignoring is_incremental() entirely — fixes both gotchas."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The habit that prevents this",
+    "titlePlain": "Not a ",
+    "titleEmphasis": "free",
+    "titleSuffix": " action",
+    "steps": [
+      { "label": "Day to day", "sub": "Run incrementally" },
+      { "label": "On a schedule", "sub": "Periodic full refresh, known cadence" },
+      { "label": "After a known schema change", "sub": "Full refresh immediately" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Jinja Basics Inside ",
+    "titleEmphasis": "dbt",
+    "titleSuffix": "",
+    "subtitle": "The templating syntax under everything you've used so far"
+  }
+]

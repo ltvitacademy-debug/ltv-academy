@@ -1,0 +1,25 @@
+# Script — Snapshots for Slowly Changing Dimensions
+
+## Segment 1 (title)
+
+You already know SCD Type 2 from Snowflake: close out the old row, insert a new one, instead of overwriting. A dbt snapshot is the same idea, but dbt generates and runs that update-then-insert logic for you from one config, instead of you writing it by hand.
+
+## Segment 2 (code: defining a snapshot)
+
+Snapshots live in the snapshots folder as SQL files with a snapshot block and a config — target schema, unique key, and a strategy. Run it with dbt snapshot, and every run dbt compares current source rows against what it already captured, closing out changed rows and inserting new versions automatically.
+
+## Segment 3 (steps: two strategies)
+
+Two strategies decide how a snapshot detects change. Timestamp strategy trusts a reliable updated_at column on the source. Check strategy compares the actual values of the columns you list, for sources with no trustworthy updated_at.
+
+## Segment 4 (code: check_cols)
+
+Check_cols: all compares every column, but that's expensive and trips on irrelevant columns changing — listing only the columns that actually matter is almost always the better call.
+
+## Segment 5 (code: what a snapshot adds)
+
+Unlike the hand-rolled Snowflake version, dbt manages the effective-dating columns for you: dbt_valid_from, dbt_valid_to, and dbt_scd_id. A null dbt_valid_to marks the current version — querying history is just a where clause against these two columns.
+
+## Segment 6 (outro)
+
+Next lesson: Incremental Models Fundamentals — why processing only new or changed rows matters at scale, the same idea as the incremental loading pattern from Snowflake, now inside a dbt model itself.
