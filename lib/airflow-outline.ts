@@ -26,7 +26,7 @@ export const AIRFLOW_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Airflow Fundamentals",
     lessons: [
-      L(1, "why-orchestration", "What Is Airflow & Why Orchestration?"),
+      L(1, "why-orchestration", "What Is Airflow & Why Orchestration?", { contentDir: "ch01/01-why-orchestration" }),
       L(2, "the-dag-concept", "The DAG Concept"),
       L(3, "installing-and-running-airflow", "Installing & Running Airflow"),
       L(4, "the-airflow-ui", "The Airflow UI, Tour"),
