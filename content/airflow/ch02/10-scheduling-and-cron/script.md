@@ -1,0 +1,21 @@
+# Script — Scheduling & Cron Expressions
+
+## Segment 1 (title)
+
+Every DAG's schedule parameter controls when it runs, and accepts real cron syntax — the same crontab syntax used on Unix, not an Airflow-specific dialect. Minute, hour, day-of-month, month, day-of-week, left to right.
+
+## Segment 2 (code: logical date vs. actual run time)
+
+The single most common source of scheduling confusion: a DAG run's logical date is the start of the period it covers, not the moment it actually executes. A run with logical date the 15th might actually run after midnight on the 16th, once the 15th has fully completed.
+
+## Segment 3 (code: presets vs. real cron strings)
+
+Airflow ships readable presets like @daily and @hourly for common cases. Reach for a real cron string the moment you need something a preset doesn't cover — 6 AM on weekdays only has no preset equivalent, and that specificity matters constantly in real pipelines.
+
+## Segment 4 (code: catchup)
+
+When a new DAG is deployed with a start_date in the past, catchup equals True, the default, schedules every missed run since then, not just going forward. For a pipeline meant to only process the latest data, catchup equals False is almost always the right choice.
+
+## Segment 5 (outro)
+
+Next lesson: task instances and DAG runs — the exact vocabulary for what actually happened, and when.

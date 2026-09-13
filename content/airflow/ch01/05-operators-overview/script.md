@@ -1,0 +1,21 @@
+# Script — Operators Overview
+
+## Segment 1 (title)
+
+An Operator is a Python class that knows how to do exactly one kind of work — run a Python function, run a shell command, run a SQL query. You don't write the "how" every time, you just instantiate it with the specific details.
+
+## Segment 2 (code: BashOperator example)
+
+Here's BashOperator. It already knows how to run a shell command, capture its output, and report success or failure back to Airflow. You supply the one thing it needs — which command to run — and give it a task_id.
+
+## Segment 3 (steps: Operator vs Task)
+
+This distinction matters. The Operator is the class — BashOperator, PythonOperator. A Task is what you get once you instantiate that class inside a DAG, with a task_id. The same Operator class gets instantiated many times across many DAGs — every instantiation is its own separate task, with its own logs and history.
+
+## Segment 4 (steps: the ecosystem)
+
+Two operators cover most of what you'll need, and each gets its own full lesson next chapter — PythonOperator for any Python callable, BashOperator for shell commands. Beyond those, there's a whole catalog of provider operators purpose-built for specific systems — Snowflake, dbt, S3 — that already know how to authenticate and talk to that system correctly.
+
+## Segment 5 (outro)
+
+Next lesson: your first real DAG — writing the actual file, start to finish.

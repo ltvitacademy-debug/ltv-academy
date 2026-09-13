@@ -1,0 +1,21 @@
+# Script — Building an ELT DAG
+
+## Segment 1 (title)
+
+Every real Airflow pipeline in a warehouse-based business collapses into the same three-step shape: extract or check for new data, load it into the warehouse, then trigger the transform. This lesson builds that shape as one real DAG.
+
+## Segment 2 (steps: the shape)
+
+Three steps, one dependency chain. Check for new data — is there anything new since the last run? Load — land the raw data in Snowflake. Transform — trigger the dbt build. That's it; everything else is detail on top of this shape.
+
+## Segment 3 (screenshot: Graph view)
+
+Here's what that dependency chain actually renders as once Airflow runs it. Every box is one task, and the lines are the exact order your code declared — this DAG has dozens of tasks, but it's built from the same three-step shape, just wider.
+
+## Segment 4 (code: the DAG)
+
+check_for_new_data, then load_to_snowflake using SQLExecuteQueryOperator with a Snowflake connection, then trigger_dbt_build using BashOperator to run dbt build — one dependency line, check_for_new_data followed by load_to_snowflake followed by trigger_dbt_build, encodes the whole order. Nothing here is a new mechanism — it's Chapters 1 through 4, combined.
+
+## Segment 5 (outro)
+
+Next lesson: Airflow plus dbt — what that trigger_dbt_build step is actually doing, and the two real ways to run it.

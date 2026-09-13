@@ -1,0 +1,21 @@
+# Script — Sensors
+
+## Segment 1 (title)
+
+Every Operator you've seen so far runs once and finishes. A Sensor is a special kind of task that instead waits — it checks a condition repeatedly, on an interval, and only succeeds once that condition becomes true, or fails once a timeout is hit.
+
+## Segment 2 (code: poke_interval, timeout, mode)
+
+Every Sensor shares the same base parameters: poke_interval, how often to check. timeout, how long before giving up. And mode — poke holds a worker slot the entire time, fine for short waits. reschedule frees the slot between checks, much better for long waits.
+
+## Segment 3 (code: ExternalTaskSensor)
+
+ExternalTaskSensor waits for a specific task, or an entire DAG, in a different DAG to reach a given state — the standard way to chain two independently-scheduled DAGs without merging them into one, so a downstream DAG never runs against half-refreshed data.
+
+## Segment 4 (steps: sensors vs. regular tasks)
+
+A Sensor is still just a task — it shows up in the Grid and Graph views like any other, participates in dependencies, retries, and trigger rules exactly the same way. The only real difference is its execute method loops and checks instead of doing the work directly.
+
+## Segment 5 (outro)
+
+Next lesson: branching — sending a DAG down one of several possible paths based on a condition.

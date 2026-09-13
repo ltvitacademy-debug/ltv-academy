@@ -1,0 +1,21 @@
+# Script — PythonOperator
+
+## Segment 1 (title)
+
+You already know how to write a Python function. PythonOperator's whole job is turning one into a task — you point it at the function with python_callable, and nothing about the function itself needs to change.
+
+## Segment 2 (code: op_kwargs)
+
+Most real functions need inputs. op_kwargs passes keyword arguments into your callable exactly like calling it directly would — table_name, batch_size, whatever your function actually needs. op_args does the same thing positionally, as a list, if you prefer that style.
+
+## Segment 3 (code: the @task decorator)
+
+You saw @task briefly in Lesson 6 — it's the TaskFlow API, and it does exactly the same job with less setup. No task_id to type, no python_callable to wire up — you call the decorated function like a normal function, with normal arguments, and Airflow turns that call into a task automatically.
+
+## Segment 4 (steps: when you'd still use classic PythonOperator)
+
+For a new DAG, @task is usually the more ergonomic choice. But you'll still run into classic PythonOperator constantly — in existing DAGs written before TaskFlow existed, in DAGs needing dynamic behavior TaskFlow doesn't cover as cleanly, and in most documentation more than a few years old. Recognizing both matters more than picking a side.
+
+## Segment 5 (outro)
+
+Next lesson: BashOperator — running a shell command as a task.

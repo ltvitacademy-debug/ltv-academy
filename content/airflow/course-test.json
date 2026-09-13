@@ -1,0 +1,131 @@
+{
+  "course": "airflow",
+  "questions": [
+    {
+      "q": "What is a DAG in Apache Airflow, fundamentally?",
+      "options": ["A single Python script that runs top to bottom sequentially", "A collection of tasks with explicit dependencies and no cycles, defining execution order", "A database table used to store task logs", "A built-in Airflow operator type"],
+      "answer": 1,
+      "explain": "\"DAG\" stands for Directed Acyclic Graph. Airflow uses it to represent tasks and the dependencies between them, with no circular references allowed, and that graph structure is what determines execution order."
+    },
+    {
+      "q": "What is the role of the Scheduler in Airflow's architecture?",
+      "options": ["It executes task code directly inside the webserver process", "It renders the graphical Airflow UI", "It parses DAG files and determines which task instances are ready to run based on dependencies and schedule, handing them to the executor", "It permanently stores DAG run history with no expiration"],
+      "answer": 2,
+      "explain": "The Scheduler continuously parses DAG definitions, evaluates dependencies and schedules, and queues up task instances that are ready to run — it doesn't run the task code itself."
+    },
+    {
+      "q": "Which Airflow component actually determines how and where a task instance runs (e.g. locally, via Celery workers, or on Kubernetes)?",
+      "options": ["The Executor", "The Webserver", "The Metadata Database", "The DAG file itself"],
+      "answer": 0,
+      "explain": "The Executor is the layer that decides how task instances are physically run. Swapping executors (LocalExecutor, CeleryExecutor, KubernetesExecutor) changes where the work happens without changing the DAG code."
+    },
+    {
+      "q": "What's the main advantage of Airflow's operator abstraction?",
+      "options": ["It eliminates the need to declare task dependencies", "It stores credentials in plaintext for convenience", "It automatically parallelizes every task regardless of dependencies", "It encapsulates a single unit of work (run Python, run Bash, call an API, etc.) so DAG authors avoid boilerplate for common integration patterns"],
+      "answer": 3,
+      "explain": "Operators are templates for a single task type. Using PythonOperator, BashOperator, or a provider's operator means you don't re-implement connection and execution logic for every DAG that needs the same kind of work."
+    },
+    {
+      "q": "In an Airflow DAG file, what actually determines whether Task B runs after Task A?",
+      "options": ["An explicit dependency set with an operator like task_a >> task_b, not just the order tasks are written in the file", "The order tasks appear in the Python file, top to bottom", "Alphabetical order of the tasks' task_ids", "Whichever task was most recently edited runs first"],
+      "answer": 0,
+      "explain": "Airflow parses the whole file to build the dependency graph. Writing task_b's code after task_a's in the file has no bearing on execution order — only explicit dependency operators like >>, <<, or set_downstream() do."
+    },
+    {
+      "q": "What's a key difference between PythonOperator and BashOperator?",
+      "options": ["BashOperator can only run on Windows machines", "PythonOperator calls a Python callable directly in the worker's process; BashOperator spawns a subprocess to run a shell command", "PythonOperator is deprecated and BashOperator replaced it entirely", "PythonOperator requires a completely separate Airflow installation"],
+      "answer": 1,
+      "explain": "PythonOperator executes a Python function in-process, giving direct access to Python objects and XComs, while BashOperator launches a new shell subprocess to run a command line, which is better for wrapping existing CLI tools."
+    },
+    {
+      "q": "A DAG is defined with schedule_interval=\"0 6 * * *\". When does it run?",
+      "options": ["Daily at 6:00 AM", "Once at minute 6 of every hour", "Every 6 hours, starting at midnight", "Every Monday at 6:00 AM"],
+      "answer": 0,
+      "explain": "Standard cron format is minute hour day month day-of-week. \"0 6 * * *\" fixes minute to 0 and hour to 6 while leaving day, month, and day-of-week unrestricted, which means every day at 6:00 AM."
+    },
+    {
+      "q": "What are XComs used for in Airflow?",
+      "options": ["Storing large Parquet or CSV datasets between tasks", "Passing small pieces of data between tasks in a DAG, stored in and retrieved from the metadata database", "Encrypting the passwords stored in Connections", "Triggering an external DAG from a webhook"],
+      "answer": 1,
+      "explain": "XCom (\"cross-communication\") lets one task push a small value that a downstream task pulls with xcom_pull. Because it's backed by the metadata database, it's meant for small values like IDs or file paths, not bulk data."
+    },
+    {
+      "q": "What is a Task Instance in Airflow?",
+      "options": ["A specific run of a task for a particular DAG run, identified by the task plus its execution/logical date", "A permanent, unchanging definition of a task", "A synonym for the DAG itself", "A type of sensor"],
+      "answer": 0,
+      "explain": "A task is the definition; a task instance is one concrete execution of that task for a given DAG run, and it's the task instance that carries a state like running, success, or failed."
+    },
+    {
+      "q": "What does an Airflow Connection primarily store?",
+      "options": ["The dependency graph between two tasks", "The DAG's schedule_interval", "The credentials and connection details (host, login, password, extra config) for an external system, referenced by a connection ID", "Task retry counts"],
+      "answer": 2,
+      "explain": "A Connection bundles everything needed to reach an external system — host, port, login, password, and arbitrary extra JSON — under one connection ID, so DAG code references the ID instead of hardcoding secrets."
+    },
+    {
+      "q": "What's the relationship between a Hook and a provider package in Airflow?",
+      "options": ["A provider package is a single Hook with no operators", "Hooks are deprecated in favor of provider packages and no longer used", "Hooks only work with Airflow core and never with installed providers", "A Hook is the interface Airflow code uses to talk to an external system (e.g. SnowflakeHook); provider packages bundle the hooks, operators, and sensors for a given system outside of Airflow core"],
+      "answer": 3,
+      "explain": "Since Airflow 2.0, integrations for specific systems (Snowflake, AWS, Postgres, etc.) ship as separate provider packages, each containing the hooks, operators, and sensors needed to talk to that system."
+    },
+    {
+      "q": "Why would a DAG use SnowflakeHook rather than opening a raw database connection with a generic driver?",
+      "options": ["It wraps connection retrieval via the Connection ID and provides a ready-made interface for running queries, avoiding hardcoded credentials and repeated boilerplate", "It bypasses the need for any credentials whatsoever", "It only functions when paired with BashOperator", "It requires rewriting the DAG entirely in SQL instead of Python"],
+      "answer": 0,
+      "explain": "Hooks centralize the connection logic: they look up the stored Connection by ID and expose convenience methods, so task code stays focused on the query rather than re-implementing authentication."
+    },
+    {
+      "q": "How does a Sensor differ from a regular operator?",
+      "options": ["It always runs before the Scheduler starts", "It cannot be used with task dependencies", "It executes strictly faster than a comparable operator", "It waits and repeatedly checks (\"pokes\" or reschedules) for a condition to become true, such as a file landing or a partition appearing, before letting downstream tasks proceed"],
+      "answer": 3,
+      "explain": "Sensors are a special operator subclass built to poll for a condition on an interval (or defer, in deferrable mode) rather than doing the work itself, which is why long-running sensors can tie up worker slots if not configured carefully."
+    },
+    {
+      "q": "When BranchPythonOperator picks one downstream path in a DAG, what happens to the tasks on the path NOT chosen?",
+      "options": ["They run in parallel with the chosen path regardless", "They raise an error that fails the whole DAG", "They still run, but their output is ignored", "They are marked skipped, since the branching operator returns only the task_id(s) that should proceed"],
+      "answer": 3,
+      "explain": "BranchPythonOperator returns the id(s) of the task(s) that should run next; every other immediate downstream task gets a \"skipped\" state, and that skip can propagate further downstream depending on trigger rules."
+    },
+    {
+      "q": "What does the default trigger rule \"all_success\" require before a task is allowed to run?",
+      "options": ["At least one upstream task must have succeeded", "All of that task's directly upstream tasks must have succeeded", "All upstream tasks must have completed, regardless of outcome", "No upstream tasks are allowed to exist"],
+      "answer": 1,
+      "explain": "\"all_success\" is the default trigger rule: a task only fires once every one of its direct parent task instances succeeded. Rules like \"one_success\" or \"all_done\" relax that requirement for branching and cleanup patterns."
+    },
+    {
+      "q": "In a typical Airflow-orchestrated ELT pattern, why does the transformation step usually run after loading rather than inside Airflow itself?",
+      "options": ["Airflow performs all row-level transformation itself and never delegates to the warehouse", "Transformation must always run before the load step in Airflow-orchestrated pipelines", "Raw data is loaded into the warehouse first, then a tool like dbt runs the transformation using the warehouse's own compute, with Airflow just triggering that step rather than performing it", "Airflow requires all transformations to be written as Python UDFs"],
+      "answer": 2,
+      "explain": "ELT pushes transformation work into the destination warehouse's compute engine (via SQL models, often through dbt), and Airflow's job is orchestration — deciding when to kick that step off and what depends on it, not doing the heavy computation itself."
+    },
+    {
+      "q": "When an Airflow DAG orchestrates dbt, what does the task typically do?",
+      "options": ["It triggers a dbt command (such as dbt run or dbt build), letting dbt compile and execute its own SQL models against the warehouse", "It rewrites dbt's compiled SQL models before running them", "It stores dbt's compiled SQL permanently inside an XCom for reuse", "It replaces dbt's Jinja templating with Airflow's own templating engine"],
+      "answer": 0,
+      "explain": "Airflow typically wraps a dbt CLI invocation (directly or via a provider operator) as a task; dbt itself still owns compiling Jinja-templated SQL into executable statements and running them against the warehouse."
+    },
+    {
+      "q": "What's the purpose of setting retries and retry_delay on an Airflow task?",
+      "options": ["To automatically re-attempt a failed task a set number of times after waiting a delay, handling transient failures without manual intervention", "To make the task run multiple times in parallel for speed", "To permanently disable the task after its first failure", "To change how often the DAG itself is scheduled to run"],
+      "answer": 0,
+      "explain": "retries and retry_delay tell Airflow to treat a failure as potentially transient (a flaky API call, a brief network blip) and automatically try the same task instance again after waiting, instead of immediately marking the DAG run as failed."
+    },
+    {
+      "q": "How does Airflow typically notify a team when a task fails?",
+      "options": ["Airflow cannot alert on task failures under any configuration", "Only by someone manually refreshing the Airflow UI to check status", "By automatically restarting the entire Airflow installation on any failure", "Via callback functions such as on_failure_callback, or built-in email/Slack notification integrations configured on the task or DAG"],
+      "answer": 3,
+      "explain": "Airflow exposes lifecycle callbacks (on_failure_callback, on_success_callback, etc.) and several provider-supplied notifiers, letting teams wire failures to email, Slack, PagerDuty, or any custom function."
+    },
+    {
+      "q": "What's a key tradeoff between a managed Airflow service (e.g. Amazon MWAA, Google Cloud Composer, Astronomer) and self-hosting?",
+      "options": ["Managed services always cost less than self-hosting in every case", "Managed Airflow handles infrastructure, upgrades, and scaling for you at a cost premium, while self-hosting gives full control but requires managing the scheduler, database, and workers yourself", "Self-hosted Airflow cannot run the same DAG code as a managed service", "Managed Airflow does not support custom provider packages"],
+      "answer": 1,
+      "explain": "Managed offerings trade money and some flexibility for reduced operational burden — someone else patches, scales, and keeps the scheduler and metadata database healthy. Self-hosting gives more control over versions and infrastructure but puts that maintenance on your team."
+    },
+    {
+      "q": "When troubleshooting why a specific task instance failed, where should you look first?",
+      "options": ["The DAG file's Python docstring", "The scheduler's heartbeat interval setting", "The Airflow installation's license file", "The task instance's log in the Airflow UI, which captures the stdout/stderr and stack trace from that specific run"],
+      "answer": 3,
+      "explain": "Every task instance has its own log stream captured by Airflow, viewable in the UI's Grid or Graph view. That log contains the actual exception or error output from the run, which is almost always the fastest path to a root cause."
+    }
+  ]
+}

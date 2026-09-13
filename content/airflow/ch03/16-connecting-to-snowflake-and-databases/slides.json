@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Airflow · Chapter 3, Lesson 16",
+    "titlePlain": "Connecting to ",
+    "titleEmphasis": "Snowflake",
+    "titleSuffix": " & Other Databases",
+    "subtitle": "Connections, Hooks, and provider packages, used together"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What goes in a Snowflake Connection",
+    "titlePlain": "The vocabulary you ",
+    "titleEmphasis": "already know",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Login / Password", "sub": "Standard fields" },
+      { "label": "account, warehouse", "sub": "In the Extra JSON field" },
+      { "label": "database, role", "sub": "Also in Extra" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "A real SnowflakeOperator DAG",
+    "code": "refresh_orders_summary = SnowflakeOperator(\n    task_id=\"refresh_orders_summary\",\n    snowflake_conn_id=\"snowflake_default\",\n    sql=\"\"\"\n        CREATE OR REPLACE TABLE analytics.orders_summary AS\n        SELECT order_date, COUNT(*) AS order_count,\n               SUM(order_total) AS revenue\n        FROM raw.orders GROUP BY order_date;\n    \"\"\",\n)",
+    "caption": "Scheduled daily at 6 AM — the same SQL you'd run by hand."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Dropping down to SnowflakeHook",
+    "code": "def check_orders_landed(**context):\n    hook = SnowflakeHook(snowflake_conn_id=\"snowflake_default\")\n    count = hook.get_first(\n        \"SELECT COUNT(*) FROM raw.orders WHERE order_date = CURRENT_DATE;\"\n    )[0]\n    if count == 0:\n        raise ValueError(\"No orders landed today.\")",
+    "caption": "Same Connection, more control over what happens with the result."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What's the same, what's new",
+    "titlePlain": "Same SQL, ",
+    "titleEmphasis": "new",
+    "titleSuffix": " scheduling layer",
+    "steps": [
+      { "label": "SQL unchanged", "sub": "Same account/warehouse/role model" },
+      { "label": "conn_id, not hardcoded", "sub": "One place to rotate credentials" },
+      { "label": "Scheduled + retried", "sub": "Not a manual worksheet run" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "",
+    "titleEmphasis": "Sensors",
+    "titleSuffix": "",
+    "subtitle": "A task that waits for a condition before continuing"
+  }
+]
