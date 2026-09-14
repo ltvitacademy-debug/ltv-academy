@@ -1,0 +1,60 @@
+{
+  "lesson": "designing-for-idempotency",
+  "questions": [
+    {
+      "q": "Why is idempotency mandatory, rather than a nice-to-have, in a real system design?",
+      "options": [
+        "Because retries after a lost confirmation are unavoidable at scale, and a non-idempotent write silently corrupts data on a second run",
+        "Idempotency is only needed for streaming systems, never batch ones",
+        "Retries never actually happen in well-designed systems",
+        "Idempotency only matters for dimension tables, not fact tables"
+      ],
+      "answer": 0,
+      "explain": "Databricks Lesson 29 named this directly: a non-idempotent pipeline silently corrupts data on a second run — retries make that scenario inevitable."
+    },
+    {
+      "q": "What does an idempotency key actually do?",
+      "options": [
+        "Lets the receiving system recognize a retry as the same logical operation, returning the original result instead of creating a duplicate",
+        "Encrypts the request so it can't be intercepted",
+        "Automatically retries a failed request a fixed number of times",
+        "Replaces the need for a primary key on the destination table"
+      ],
+      "answer": 0,
+      "explain": "The caller generates it once per logical operation; a retry carrying the same key gets the original result back."
+    },
+    {
+      "q": "Why is MERGE INTO the real mechanism behind idempotency, rather than just a definition?",
+      "options": [
+        "Matching on a stable key, a reprocessed batch updates existing rows instead of inserting duplicates — plain append has no such protection",
+        "MERGE INTO is only available in streaming pipelines, not batch ones",
+        "MERGE INTO always deletes the entire table before rewriting it",
+        "MERGE INTO cannot be used with fact tables"
+      ],
+      "answer": 0,
+      "explain": "Databricks Lesson 22 introduced MERGE INTO's syntax, and Lesson 29 showed why matching on a stable key is what actually prevents duplicate rows on a rerun."
+    },
+    {
+      "q": "Why must a MERGE statement's ON clause match on a natural key rather than a surrogate key, for idempotency?",
+      "options": [
+        "A surrogate key generated fresh on each load isn't stable across retries, so it can't reliably identify 'the same row' a second time",
+        "Natural keys are always integers, which MERGE requires",
+        "Surrogate keys cannot be used in SQL at all",
+        "There is no real difference between natural and surrogate keys for this purpose"
+      ],
+      "answer": 0,
+      "explain": "The natural key (like the source's own order_id) exists before the row reaches you and stays stable across every retry; a surrogate key does not."
+    },
+    {
+      "q": "How do dimension tables typically use surrogate keys, compared to how fact table dedup logic must work?",
+      "options": [
+        "Dimensions commonly use surrogate keys for join performance, but merge/dedup logic must key off the natural identifier the source system provides",
+        "Dimensions and fact tables both require surrogate keys for dedup",
+        "Surrogate keys are never used anywhere in a star schema",
+        "Natural keys are only used in OLTP systems, never in dimensional models"
+      ],
+      "answer": 0,
+      "explain": "Star schema dimensions (Lesson 8) use surrogate keys internally for join performance — a separate concern from keeping a fact table's MERGE idempotent."
+    }
+  ]
+}

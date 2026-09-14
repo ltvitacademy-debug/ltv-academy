@@ -1,0 +1,25 @@
+# Script — Exactly-Once vs. At-Least-Once Delivery · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5-3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+At-most-once and at-least-once are both achievable. True exactly-once delivery, at the network layer, genuinely isn't — a sender can never be fully certain whether a message or just its acknowledgment was lost.
+
+## S2 · CODE CARD (effectively exactly-once)
+
+Real systems resolve this by accepting at-least-once delivery, then making the processing idempotent — Lesson 11's MERGE on a natural key. Duplicates may arrive, but they never change the outcome.
+
+## S3 · CODE CARD (Databricks Autoloader)
+
+Databricks Lesson 32's Autoloader checkpoint already shows this: delivery isn't guaranteed exactly-once, but reprocessing an already-seen file becomes a no-op — the result is exactly-once even though the delivery underneath isn't.
+
+## S4 · CODE CARD (Fabric Eventstream)
+
+Fabric's Eventstream works the same way — sources may redeliver an event rather than risk losing it, and a destination keyed on a stable event ID absorbs that redelivery without a duplicate row.
+
+## S5 · OUTRO CARD
+
+The guarantee shifts from "never sent twice" to "sending it twice never matters." Next up: designing an ingestion layer, where this exact pattern gets built in from the start.

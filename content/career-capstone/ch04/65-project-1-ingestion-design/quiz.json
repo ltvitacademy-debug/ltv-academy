@@ -1,0 +1,60 @@
+{
+  "lesson": "project-1-ingestion-design",
+  "questions": [
+    {
+      "q": "Why does the online-order path use a Fabric Eventstream instead of a nightly batch job?",
+      "options": [
+        "Online orders arrive continuously all day, and an Eventstream is built to receive and route continuous event traffic in near real time",
+        "Eventstreams are required for all data ingestion regardless of source",
+        "Batch jobs cannot technically read JSON payloads",
+        "The nightly POS export path also uses an Eventstream"
+      ],
+      "answer": 0,
+      "explain": "Fabric & Real-Time Analytics Lesson 19's Eventstream is designed for continuous event ingestion, matching how online orders actually arrive."
+    },
+    {
+      "q": "What is bronze's job in this design, per Databricks & Delta Lake Lesson 26?",
+      "options": [
+        "Preserve the raw event faithfully, untransformed, so a downstream bug can always be replayed from an unmodified source",
+        "Apply business logic and produce the final aggregated tables",
+        "Store only online order data, never POS exports",
+        "Deduplicate and clean all data before it lands"
+      ],
+      "answer": 0,
+      "explain": "Bronze lands data as-is; cleaning and business logic happen in later layers, not at ingestion."
+    },
+    {
+      "q": "Why does this design target at-least-once delivery with idempotent landing, rather than building exactly-once delivery end to end?",
+      "options": [
+        "Exactly-once end-to-end is expensive and usually unnecessary; keying landed rows on the source event ID lets a redelivered event overwrite instead of duplicate",
+        "At-least-once delivery is impossible to make idempotent",
+        "Exactly-once delivery is the only guarantee Fabric Eventstreams support",
+        "Delivery guarantees don't matter for this project since data loss is acceptable"
+      ],
+      "answer": 0,
+      "explain": "Lesson 12 frames exactly-once vs. at-least-once as a trade-off; idempotent landing (via MERGE on event_id) makes at-least-once safe without the cost of true exactly-once."
+    },
+    {
+      "q": "What tool handles the nightly POS export path, and why?",
+      "options": [
+        "Databricks Autoloader, because it picks up only new files incrementally rather than re-scanning the whole export folder each run",
+        "A Fabric Eventstream, the same tool used for online orders",
+        "A manual script run once at the end of each quarter",
+        "Autoloader is not used anywhere in this design"
+      ],
+      "answer": 0,
+      "explain": "Autoloader (Databricks & Delta Lake Lesson 32) is built for incremental file ingestion, matching the nightly-export pattern."
+    },
+    {
+      "q": "What concrete freshness SLA does this lesson land on, replacing the vague \"same-day\" requirement?",
+      "options": [
+        "Online sales visible within minutes of the Eventstream receiving them; in-store sales visible by the next morning after the nightly export",
+        "All data, online and in-store, must be visible within one second",
+        "No freshness number is defined — \"same-day\" remains the working requirement",
+        "In-store sales are visible instantly; online sales are delayed by a week"
+      ],
+      "answer": 0,
+      "explain": "The hybrid ingestion design makes the real freshness numbers concrete: near-real-time for streaming online orders, next-morning for the nightly batch."
+    }
+  ]
+}

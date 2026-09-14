@@ -1,0 +1,60 @@
+{
+  "lesson": "project-1-transformation-and-modeling",
+  "questions": [
+    {
+      "q": "Why does merging in-store and online sales data happen in silver rather than at gold or at dashboard query time?",
+      "options": [
+        "Doing the reconciliation once in silver avoids pushing that same work into every query that touches sales — transform once, query many times",
+        "Gold-layer tables cannot contain data from more than one source",
+        "Merging at query time is actually the preferred approach and silver only stores POS data",
+        "Silver and gold are the same layer in this project's design"
+      ],
+      "answer": 0,
+      "explain": "This mirrors Lesson 14's transformation-layer design reasoning: reconcile once upstream, not repeatedly at read time."
+    },
+    {
+      "q": "What is the grain of gold.FactSales, and where was it originally fixed?",
+      "options": [
+        "One row per line item per sale, any channel — fixed during the Project 1 kickoff (Lesson 64), following Lesson 8's grain-first principle",
+        "One row per store per day, fixed in this lesson for the first time",
+        "One row per customer, fixed in the serving layer lesson",
+        "The grain is left undefined until the dashboard is built"
+      ],
+      "answer": 0,
+      "explain": "Lesson 64 fixed the grain during scoping; this lesson enforces it during the bronze-to-silver conform step and carries it into FactSales."
+    },
+    {
+      "q": "Why does DimStore need SCD Type 2 treatment in this project?",
+      "options": [
+        "Stores change over time (region, category mix), and a dashboard query needs the store attributes as they were at the time of each historical sale, not retroactively overwritten",
+        "SCD Type 2 is required for every dimension table regardless of whether it changes",
+        "DimStore is a fact table, not a dimension, so it needs history",
+        "SCD Type 2 replaces the need for a star schema entirely"
+      ],
+      "answer": 0,
+      "explain": "This is the same SCD Type 2 pattern Lesson 8 described, applied to a real changing dimension and implemented as a Databricks Lesson 22 MERGE."
+    },
+    {
+      "q": "How is the SCD Type 2 update to DimStore actually implemented?",
+      "options": [
+        "As a targeted MERGE that closes out the old row (setting end_date and is_current = false) and inserts a new current row",
+        "By deleting the entire DimStore table and reloading it from scratch on every update",
+        "By adding a new column to FactSales for every store attribute change",
+        "SCD Type 2 is described conceptually but not actually implemented in code here"
+      ],
+      "answer": 0,
+      "explain": "The MERGE keys on store_id and is_current = 1, updating the old row's end_date and inserting the new current version — not a full table rewrite."
+    },
+    {
+      "q": "What does Databricks & Delta Lake Lesson 27 say silver's role is, and how does this project apply it?",
+      "options": [
+        "Silver holds cleaned, conformed data — here, that means reshaping two differently-structured sources (POS lines and online JSON events) into one unified sales_events table",
+        "Silver holds only aggregated, business-ready summary numbers",
+        "Silver is optional and this project skips it, going straight from bronze to gold",
+        "Silver's role is identical to bronze's — no cleaning happens there"
+      ],
+      "answer": 0,
+      "explain": "Silver's cleaned-and-conformed definition is exactly what unifies pos_sales and online_orders into one grain before gold ever sees them."
+    }
+  ]
+}
