@@ -1,0 +1,60 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Kafka & Event Streaming · Chapter Seven",
+    "titlePlain": "Capstone: A Real-Time Event Pipeline on ",
+    "titleEmphasis": "Kafka",
+    "titleSuffix": "",
+    "subtitle": "Lesson 29 · Capstone"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The whole chapter, built together",
+    "titlePlain": "One pipeline, ",
+    "titleEmphasis": "one",
+    "titleSuffix": " throughline",
+    "steps": [
+      { "label": "Producer", "sub": "real click events, acks=all, idempotent" },
+      { "label": "Topic", "sub": "partitions sized for the group, retention sized for replay" },
+      { "label": "Consumer group + DLQ", "sub": "manual commit, poison pills routed aside" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The topics",
+    "code": "kafka-topics.sh --create \\\n  --topic clickstream \\\n  --partitions 8 \\\n  --replication-factor 3 \\\n  --config retention.ms=259200000\n\nkafka-topics.sh --create --topic clickstream-dlq \\\n  --partitions 1 --replication-factor 3",
+    "caption": "8 partitions for clickstream's real throughput; a single-partition DLQ, since failures there are rare and order doesn't matter."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The producer",
+    "code": "producer = Producer({\n    \"bootstrap.servers\": BOOTSTRAP,\n    \"acks\": \"all\",\n    \"enable.idempotence\": True,\n})\nproducer.produce(\"clickstream\", key=str(session_id),\n                  value=event_json, callback=on_delivery)",
+    "caption": "Same idempotent-producer choice as Lesson 25 — no lost events, no duplicate writes on a retry."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The consumer, with a dead-letter path",
+    "code": "consumer.subscribe([\"clickstream\"])\nmsg = consumer.poll(1.0)\ntry:\n    process_event(msg.value())\nexcept Exception:\n    producer.produce(\"clickstream-dlq\", value=msg.value())\nfinally:\n    consumer.commit(msg)",
+    "caption": "A malformed event goes to clickstream-dlq; the partition never stalls behind it."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What this pipeline is actually for",
+    "titlePlain": "The same shape as a ",
+    "titleEmphasis": "real",
+    "titleSuffix": " system",
+    "steps": [
+      { "label": "This pipeline", "sub": "producer, sized topic, consumer group, dead-letter topic" },
+      { "label": "Career & Capstone's fraud detector", "sub": "Project 3 (Lessons 75-78) — same shape, scoring instead of storing" },
+      { "label": "Case Study (Lesson 21)", "sub": "Career & Capstone's real-time fraud detection system, for context" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 30",
+    "titlePlain": "Capstone: Wrap-Up & Portfolio ",
+    "titleEmphasis": "Presentation",
+    "titleSuffix": "",
+    "subtitle": "The last lesson in this course."
+  }
+]

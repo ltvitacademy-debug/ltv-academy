@@ -1,0 +1,21 @@
+# Script — Kafka + Snowflake & Databricks
+
+## Segment 1 (title)
+
+The same orders topic from Lesson 25 doesn't just sit in Kafka — it lands somewhere. This lesson covers the two real integration patterns this course's earlier platforms actually use: Snowflake's Kafka connector, and Databricks Structured Streaming.
+
+## Segment 2 (code: landing in Snowflake)
+
+The Snowflake Sink Connector is config, not code. Point it at a topic and a database and schema, and Snowpipe Streaming underneath buffers and lands each batch as rows, on a schedule you control.
+
+## Segment 3 (code: reading it in Databricks)
+
+Databricks reads the same kind of topic with spark.readStream.format(kafka) — Structured Streaming Basics, Azure Databricks & Delta Lake Lesson 33, pointed at a live Kafka topic instead of a file source.
+
+## Segment 4 (steps: same topic, two landings)
+
+Two very different landings from one topic. Snowflake's connector is config-driven, with no transform logic in the middle. Databricks' readStream is code-driven, with the full power of Spark before anything lands as Delta.
+
+## Segment 5 (outro)
+
+Neither replaces the other — a team might run both off the same topic, for different reasons. Next up: what happens when one of these landings actually fails.

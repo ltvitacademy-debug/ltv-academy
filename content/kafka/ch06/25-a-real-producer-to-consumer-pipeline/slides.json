@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Kafka & Event Streaming · Chapter Six",
+    "titlePlain": "A Real Producer-to-Kafka-to-",
+    "titleEmphasis": "Consumer",
+    "titleSuffix": " Pipeline",
+    "subtitle": "Lesson 25 · Practical Patterns"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The producer, for real",
+    "code": "producer = Producer({\n    \"bootstrap.servers\": \"b1:9092,b2:9092,b3:9092\",\n    \"acks\": \"all\",\n    \"enable.idempotence\": True,\n})\nproducer.produce(\"orders\", key=str(cust_id),\n                  value=order_json, callback=on_delivery)\nproducer.flush()",
+    "caption": "acks=all + enable.idempotence: no order event is lost, and a retry never duplicates it on the broker."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The topic, sized on purpose",
+    "code": "kafka-topics.sh --create \\\n  --topic orders \\\n  --partitions 6 \\\n  --replication-factor 3 \\\n  --config retention.ms=604800000",
+    "caption": "6 partitions: room for a 6-member consumer group. 7-day retention: room to replay if a downstream job needs to reprocess."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The consumer group, for real",
+    "code": "consumer = Consumer({\n    \"bootstrap.servers\": \"b1:9092,b2:9092,b3:9092\",\n    \"group.id\": \"orders-processor\",\n    \"enable.auto.commit\": False,\n})\nconsumer.subscribe([\"orders\"])\nmsg = consumer.poll(1.0)\nprocess_order(msg.value())\nconsumer.commit(msg)",
+    "caption": "Manual commit, after processing — an offset only advances once the event has actually been handled."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What Lessons 6-9 actually built",
+    "titlePlain": "One pipeline, ",
+    "titleEmphasis": "four",
+    "titleSuffix": " earlier lessons",
+    "steps": [
+      { "label": "L6-7 Producer & Consumer", "sub": "the basic API this pipeline is written against" },
+      { "label": "L8 Consumer Group", "sub": "orders-processor scales to as many members as there are partitions" },
+      { "label": "L9 Delivery Semantics", "sub": "acks=all + manual commit lands on effectively at-least-once" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 26",
+    "titlePlain": "Kafka + Snowflake & ",
+    "titleEmphasis": "Databricks",
+    "titleSuffix": "",
+    "subtitle": "Where this same topic actually lands."
+  }
+]

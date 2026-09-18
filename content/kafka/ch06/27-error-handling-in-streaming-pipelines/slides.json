@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Kafka & Event Streaming · Chapter Six",
+    "titlePlain": "Error Handling in Streaming ",
+    "titleEmphasis": "Pipelines",
+    "titleSuffix": "",
+    "subtitle": "Lesson 27 · Practical Patterns"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The dead-letter topic",
+    "code": "try:\n    process_order(msg.value())\n    consumer.commit(msg)\nexcept Exception as e:\n    producer.produce(\"orders-dlq\", key=msg.key(),\n                      value=msg.value(), headers={\"error\": str(e)})\n    producer.flush()\n    consumer.commit(msg)",
+    "caption": "A poison-pill message goes to orders-dlq instead of blocking every event behind it on this partition."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Retry before giving up",
+    "code": "for attempt in range(3):\n    try:\n        process_order(msg.value())\n        break\n    except TransientError:\n        time.sleep(2 ** attempt)\nelse:\n    send_to_dlq(msg)\nconsumer.commit(msg)",
+    "caption": "Bounded retries with backoff for a transient failure — a network blip isn't a poison pill."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three failure modes, three answers",
+    "titlePlain": "Not every failure gets the ",
+    "titleEmphasis": "same",
+    "titleSuffix": " answer",
+    "steps": [
+      { "label": "Transient failure", "sub": "same message, bounded retry with backoff, then keep going" },
+      { "label": "Poison pill", "sub": "move it to a dead-letter topic, keep the partition moving" },
+      { "label": "Idempotent processing", "sub": "Career & Capstone Lesson 11 — safe even if a retry reprocesses it" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 28",
+    "titlePlain": "Kafka Security ",
+    "titleEmphasis": "Basics",
+    "titleSuffix": "",
+    "subtitle": "Who's even allowed to produce or consume any of this."
+  }
+]

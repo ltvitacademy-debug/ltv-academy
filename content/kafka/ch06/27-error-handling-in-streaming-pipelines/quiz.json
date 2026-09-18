@@ -1,0 +1,60 @@
+{
+  "lesson": "error-handling-in-streaming-pipelines",
+  "questions": [
+    {
+      "q": "What is a poison-pill message, according to this lesson?",
+      "options": [
+        "A message that fails processing no matter how many times it's retried",
+        "Any message that arrives out of order",
+        "A message with a valid schema that always processes successfully",
+        "A message produced with acks=all"
+      ],
+      "answer": 0,
+      "explain": "Unlike a transient failure, a poison pill fails no matter how many retries it gets — the message itself is the problem."
+    },
+    {
+      "q": "Why does retrying a poison-pill message forever actually make things worse on a Kafka partition?",
+      "options": [
+        "Kafka guarantees order within a partition and won't skip ahead, so the retry blocks every event behind that message on the same partition",
+        "It causes the broker to delete the entire topic",
+        "It has no negative effect at all, since Kafka processes partitions in parallel automatically",
+        "It converts the message into a valid one after enough retries"
+      ],
+      "answer": 0,
+      "explain": "Because order within a partition is guaranteed, a consumer stuck retrying one message can't move on to the next one — everything behind it on that partition waits."
+    },
+    {
+      "q": "Why does this lesson recommend a bounded retry with backoff for a transient failure, instead of immediately sending it to a dead-letter topic?",
+      "options": [
+        "A transient failure, like a downstream timeout, usually succeeds if the same message is simply retried a moment later — sending it straight to a DLQ would throw away a perfectly good message",
+        "Retries are never useful in a streaming pipeline",
+        "Backoff removes the need for a dead-letter topic entirely",
+        "A transient failure is exactly the same thing as a poison pill"
+      ],
+      "answer": 0,
+      "explain": "Treating every failure like a poison pill wastes messages that would have succeeded on a simple retry — bounded retries with backoff catch that case first."
+    },
+    {
+      "q": "Why does idempotent processing (Career & Capstone Lesson 11) matter for both retries and dead-letter handling, per this lesson?",
+      "options": [
+        "A message can end up processed more than once in both patterns, so processing has to produce the same result whether it happens once or twice",
+        "Idempotency is only relevant to producers, never to consumers",
+        "Retries and dead-letter handling make idempotency completely unnecessary",
+        "Idempotent processing means a message is never processed more than once, so this concern is irrelevant"
+      ],
+      "answer": 0,
+      "explain": "A crash between processing and committing, or a retry whose confirmation was lost, can both cause reprocessing — idempotent logic (like an UPSERT instead of a blind INSERT) is what keeps that safe."
+    },
+    {
+      "q": "In this lesson's dead-letter code, why does the consumer still call consumer.commit(msg) after routing a failed message to orders-dlq?",
+      "options": [
+        "So the consumer group's offset advances past the poison-pill message, letting the partition keep moving instead of getting stuck reprocessing it forever",
+        "Committing after a failure is a mistake and should never be done",
+        "It has no effect — commit only matters on a successful process_order() call",
+        "It deletes the message from the dead-letter topic"
+      ],
+      "answer": 0,
+      "explain": "Once the message is safely routed to the DLQ, committing its offset lets the consumer move past it instead of retrying the same poison pill indefinitely."
+    }
+  ]
+}
