@@ -1,0 +1,62 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced Databricks Specialization · Chapter Seven",
+    "titlePlain": "Capstone: An Advanced Lakehouse ",
+    "titleEmphasis": "Pipeline",
+    "titleSuffix": "",
+    "subtitle": "Lesson 33 · DP-750 Prep & Capstone"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The build order",
+    "titlePlain": "Five steps, ",
+    "titleEmphasis": "one",
+    "titleSuffix": " governed pipeline",
+    "steps": [
+      { "label": "01 Unity Catalog", "sub": "Catalog, bronze/silver/gold schemas, a volume" },
+      { "label": "02 Auto Loader", "sub": "Stream + daily batch ingestion" },
+      { "label": "03 Lakeflow", "sub": "Declarative transform with inline data quality" },
+      { "label": "04 Jobs", "sub": "Multi-task orchestration" },
+      { "label": "05 Perf & Security", "sub": "Applied throughout, not bolted on" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1 · Unity Catalog structure",
+    "code": "Catalog: retail_prod\n├── Schema: bronze   (raw landed data)\n├── Schema: silver    (cleaned, deduplicated)\n├── Schema: gold      (business-ready, joined)\n└── Volume: raw_landing  (daily catalog export lands here)",
+    "caption": "Managed tables throughout — nothing here needs external tables."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 · Auto Loader ingestion",
+    "code": "Order events (streaming): Auto Loader + Structured Streaming,\n                          directory listing -- volume doesn't\n                          yet justify file notification mode\n\nProduct catalog (daily): Auto Loader trigger-once batch mode,\n                          schema evolution allows new columns",
+    "caption": "Two ingestion problems, two configurations."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 3 · The Lakeflow pipeline",
+    "code": "@dlt.table(name=\"orders_silver\")\n@dlt.expect_or_drop(\"valid_total\", \"order_total > 0\")\n@dlt.expect(\"has_customer\", \"customer_id IS NOT NULL\")\ndef orders_silver():\n    return dlt.read_stream(\"orders_bronze\").select(...)",
+    "caption": "A bad total gets dropped; a missing customer ID gets tracked, not dropped."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 4 · Orchestration",
+    "code": "Task 1: ingest_catalog_batch   (Auto Loader, daily trigger)\nTask 2: run_lakeflow_pipeline  (depends on Task 1)\nTask 3: refresh_gold_metrics   (depends on Task 2)\nTask 4: notify_on_failure      (runs only on failure)",
+    "caption": "Streaming order ingestion runs as its own separate job."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 5 · Performance & security",
+    "code": "Performance: broadcast join candidate + liquid clustering\n             on order_date for fast time-range queries\n\nSecurity:    column mask on customer_email, managed identity\n             auth, audit logging enabled on the catalog",
+    "caption": "Provably secure enough for an auditor to sign off on."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 34",
+    "titlePlain": "Capstone: Wrap-Up & Portfolio ",
+    "titleEmphasis": "Presentation",
+    "titleSuffix": "",
+    "subtitle": "The final lesson of this course."
+  }
+]

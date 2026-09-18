@@ -1,0 +1,21 @@
+# Script — Catalogs, Schemas & External Locations
+
+## Segment 1 (title)
+
+Databricks & Delta Lake Lessons 39 and 40 already covered catalogs, schemas, and managed location in full. This lesson covers the one governed object that lesson never touched — external locations.
+
+## Segment 2 (code: recap)
+
+Catalog.schema.table is the real three-part name of every object, and CREATE CATALOG with a MANAGED LOCATION tells Unity Catalog where its own managed tables should live. That's the whole picture Lesson 40 needed — this lesson is about data that doesn't live under a managed location at all.
+
+## Segment 3 (screenshot: external locations overview)
+
+An external location binds a specific cloud path to a specific storage credential, and is itself a securable object — you grant and revoke on it exactly like a table. External tables and external volumes both have to point at a path that already has an external location registered over it.
+
+## Segment 4 (code: storage credential)
+
+A storage credential wraps a real cloud identity — a managed identity, a service principal — so Unity Catalog can authenticate to storage without any user ever seeing an access key. Users get grants on the external location, never the credential directly.
+
+## Segment 5 (outro)
+
+Credential, then external location, then external table or volume — the chain Lesson 40's managed location never needed. Next up: managed versus external tables, the real decision this time, not just the definition.

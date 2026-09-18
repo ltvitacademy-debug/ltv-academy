@@ -1,0 +1,21 @@
+# Script — Managed vs. External Tables
+
+## Segment 1 (title)
+
+Databricks & Delta Lake Lesson 41 already covered the definition of managed versus external tables in full, including what DROP TABLE does to each. This lesson is the decision those definitions leave open.
+
+## Segment 2 (steps: when to choose which)
+
+Choose external when another team or tool genuinely needs to read the same files directly, or a data-residency requirement pins files to a fixed container. Choose managed when Databricks is the only real owner of that table's lifecycle — which is still the right call for this course's own bronze, silver, and gold tables.
+
+## Segment 3 (code: the decision isn't a fallback)
+
+External isn't a fallback for forgetting to specify a location — it's the deliberate choice when something real outside Databricks needs direct file access, while managed gets automatic vacuum, optimize, and predictive optimization for free.
+
+## Segment 4 (code: the real migration cost)
+
+There is no ALTER TABLE SET MANAGED. Converting external to managed means a real DEEP CLONE that copies every file into the catalog's managed location, then repointing readers and cleaning up the old registration separately — never a same-transaction, zero-cost flip.
+
+## Segment 5 (outro)
+
+The decision and its real cost, not just the definition. Next up: Unity Catalog volumes — past what a volume is, into the file-access patterns a single example never covered.

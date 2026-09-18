@@ -1,0 +1,25 @@
+# Script — Auto Loader + Structured Streaming
+
+## Segment 1 (title)
+
+Lesson 32 already wired cloudFiles into a writeStream once, running until caught up then stopping. This lesson is what changes when the pipeline needs to run continuously, or do more than one thing per batch.
+
+## Segment 2 (code: running continuously)
+
+Swapping trigger available now for trigger processing time thirty seconds is the real difference between a scheduled catch-up job and an always-on pipeline — the stream never stops, checking for new files on a fixed interval indefinitely.
+
+## Segment 3 (code: foreachBatch)
+
+Neither Lesson 32 nor Lesson 33 needed more than one sink. ForeachBatch hands each micro-batch to ordinary batch DataFrame code — anything Spark can express, including writing to more than one table from a single Auto Loader stream.
+
+## Segment 4 (code: watching a running stream)
+
+An available-now job finishes and you check the table. A continuous stream doesn't finish — query status and query last progress are the real way to confirm it's healthy and keeping up, without stopping it to look.
+
+## Segment 5 (code: same API, different source)
+
+The Kafka course's Lesson 26 uses this exact readStream and writeStream combination against a Kafka topic instead of cloudFiles — same triggers, same foreachBatch, same monitoring. Auto Loader and Kafka are both just sources plugged into the same Structured Streaming engine.
+
+## Segment 6 (outro)
+
+Continuous triggers, multi-sink batches, live monitoring, and the same engine underneath Kafka too. Next up: ingestion patterns at scale — many streams, real checkpoint management.
