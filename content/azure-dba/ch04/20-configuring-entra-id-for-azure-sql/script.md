@@ -1,0 +1,21 @@
+# Script — Configuring Microsoft Entra ID for Azure SQL
+
+## Segment 1 (title)
+
+Before any database can have Entra-authenticated users, the logical server needs a Microsoft Entra admin assigned first -- a server-level setting, done once, ideally to a group rather than a named person.
+
+## Segment 2 (code: setting the admin)
+
+Set it through the portal's Entra ID blade, or with Set-AzSqlServerActiveDirectoryAdministrator in PowerShell. Point it at a group, and admin membership changes in Entra ID without ever touching SQL Server configuration.
+
+## Segment 3 (code: creating Entra users)
+
+Connect as that Entra admin, then CREATE USER FROM EXTERNAL PROVIDER inside the database -- for a user, a group, or even a managed identity. Notice there's no separate CREATE LOGIN step the way SQL authentication needed.
+
+## Segment 4 (steps: prefer groups)
+
+Grant permissions to an Entra group once, and every future hire who joins that group inherits the same access automatically -- no repeated CREATE USER and GRANT pairs, and no permission drift between team members.
+
+## Segment 5 (outro)
+
+Server-level admin first, then CREATE USER inside the database, then roles and grants. Next up: the real hierarchy behind all of this -- logins, users, roles, and security principals.

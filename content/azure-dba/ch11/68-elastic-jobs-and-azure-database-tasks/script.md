@@ -1,0 +1,17 @@
+# Script — Elastic Jobs & Azure Database Tasks
+
+## Segment 1 (title)
+
+Lesson 59 already established the real limit: SQL Server Agent doesn't run as a full scheduler inside Azure SQL Database itself. That leaves a gap — how do you run the same maintenance script across forty databases in a pool, on a schedule, without babysitting forty connections by hand? Elastic Jobs is the purpose-built answer.
+
+## Segment 2 (steps: the three pieces)
+
+Three pieces make up an elastic job: the job agent database, a small dedicated database storing job definitions and history; the target group, the list of databases or pools a job runs against; and the job itself, one T-SQL script plus a schedule, potentially reaching dozens of databases at once.
+
+## Segment 3 (code: target group and job)
+
+Add a target group, add a member database to it, then create a weekly job whose one step points at that target group and runs a stored procedure call. Every one of these procedures lives in the jobs schema, in the job agent database — not inside the database being maintained.
+
+## Segment 4 (outro)
+
+Elastic Jobs doesn't ask you to learn new scripting — it asks you to already have working T-SQL and hands you a scheduler that runs it everywhere it needs to run, the same idea as Agent jobs from Lesson 60, aimed at Azure SQL Database's real architecture. Next up: tying automation into a deployment pipeline, with real alerting.

@@ -1,0 +1,21 @@
+# Script — SQL Authentication vs. Microsoft Entra Authentication
+
+## Segment 1 (title)
+
+If you took Azure Fundamentals, you already know what Entra ID is and what identity and access management means generally. This lesson applies that specifically to how a SQL connection proves who it is.
+
+## Segment 2 (code: SQL authentication)
+
+A SQL login's username and password hash live inside the database engine itself. That means the password has to be managed and rotated somewhere, there's no built-in MFA, and every system with its own logins is its own separate identity silo.
+
+## Segment 3 (code: Entra authentication)
+
+FROM EXTERNAL PROVIDER means the identity isn't stored in SQL Server at all -- it's a reference to Entra ID. Authentication happens against Entra, which means MFA, centralized management, and support for managed identities with no credential at all.
+
+## Segment 4 (steps: why Entra is the recommended direction)
+
+Password sprawl, no MFA, decentralized access -- Entra authentication removes every one of those problems by design. Microsoft's guidance across Azure SQL, Managed Instance, and even Arc-enabled SQL Server all point the same direction.
+
+## Segment 5 (outro)
+
+Authentication proves who's connecting -- it says nothing about what they're allowed to do once they're in. Next up: actually configuring Microsoft Entra ID for Azure SQL.

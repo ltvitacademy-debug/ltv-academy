@@ -1,0 +1,60 @@
+{
+  "lesson": "index-seeks-scans-lookups-plan-operators",
+  "questions": [
+    {
+      "q": "What is the key difference between an Index Seek and an Index Scan?",
+      "options": [
+        "A Seek navigates directly to matching rows via the index's B-tree; a Scan reads the entire index top to bottom checking every row",
+        "They are two names for exactly the same operation",
+        "A Seek only works on clustered indexes, a Scan only on nonclustered",
+        "A Scan is always faster than a Seek"
+      ],
+      "answer": 0,
+      "explain": "An unexpected scan on a large table for a selective query is a strong signal the right index doesn't exist or isn't being used."
+    },
+    {
+      "q": "What is a Key Lookup (or RID Lookup)?",
+      "options": [
+        "A second trip back to the clustered index (or heap) to fetch columns that the nonclustered index used for the seek doesn't cover",
+        "An error that means the query failed",
+        "A type of index that replaces the need for a clustered index",
+        "The first step the optimizer always performs, before any seek or scan"
+      ],
+      "answer": 0,
+      "explain": "At scale, thousands of Key Lookups mean thousands of extra random-I/O trips -- often fixed with an included column turning the index into a covering index."
+    },
+    {
+      "q": "Why does WHERE YEAR(OrderDate) = 2013 often force a scan even if an index on OrderDate exists?",
+      "options": [
+        "Wrapping the column in a function makes the predicate non-SARGable -- the optimizer would have to evaluate the function for every row before it could match, so it can't use a seek",
+        "YEAR() is not a valid T-SQL function",
+        "Indexes on date columns are never usable in WHERE clauses",
+        "This always produces a syntax error"
+      ],
+      "answer": 0,
+      "explain": "Rewriting as a direct range comparison on OrderDate (not wrapped in a function) restores SARGability and the possibility of a seek."
+    },
+    {
+      "q": "What does the Hash Match operator do, and what's a risk it carries?",
+      "options": [
+        "It builds an in-memory hash table from one input and probes it with the other -- it can spill to tempdb if the hash table doesn't fit in memory",
+        "It always sorts both inputs first, guaranteeing no memory use",
+        "It is only used for INSERT statements",
+        "It never appears in join queries"
+      ],
+      "answer": 0,
+      "explain": "Hash Match is common for joins on large, unsorted inputs without a useful index."
+    },
+    {
+      "q": "Which combination of operators is described as the single most common 'add this index' fix in real DBA work?",
+      "options": [
+        "An Index Seek immediately followed by a Key Lookup on a query returning thousands of rows",
+        "A Sort followed by a Compute Scalar",
+        "Two consecutive Index Scans on the same table",
+        "A Nested Loops join with no other operators"
+      ],
+      "answer": 0,
+      "explain": "The seek itself is fine; the index just doesn't cover enough columns to avoid the second trip -- adding an included column usually fixes it."
+    }
+  ]
+}

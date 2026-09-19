@@ -1,0 +1,36 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Azure Database Administrator · Chapter Eight",
+    "titlePlain": "Finding Missing, Duplicate & ",
+    "titleEmphasis": "Unused Indexes",
+    "titleSuffix": "",
+    "subtitle": "Lesson 47 · Query Performance Tuning"
+  },
+  {
+    "type": "code",
+    "eyebrow": "What's missing",
+    "code": "SELECT d.equality_columns, d.included_columns,\n       s.avg_user_impact, s.user_seeks + s.user_scans AS times_helpful\nFROM sys.dm_db_missing_index_details d\nJOIN sys.dm_db_missing_index_groups g ON d.index_handle = g.index_handle\nJOIN sys.dm_db_missing_index_group_stats s ON g.index_group_handle = s.group_handle\nORDER BY s.avg_user_impact DESC;",
+    "caption": "The optimizer's own wish list -- treat avg_user_impact as a hint, then verify."
+  },
+  {
+    "type": "code",
+    "eyebrow": "What's duplicated",
+    "code": "SELECT t.name, i.name, c.name AS leading_column\nFROM sys.indexes i\nJOIN sys.index_columns ic ON ic.object_id = i.object_id\n  AND ic.index_id = i.index_id AND ic.key_ordinal = 1\nJOIN sys.columns c ON c.object_id = ic.object_id AND c.column_id = ic.column_id\nJOIN sys.tables t ON t.object_id = i.object_id\nORDER BY t.name, c.name;",
+    "caption": "Same table + leading column appearing twice? Duplicate candidate."
+  },
+  {
+    "type": "code",
+    "eyebrow": "What's unused",
+    "code": "SELECT t.name, i.name, s.user_seeks, s.user_scans,\n       s.user_lookups, s.user_updates\nFROM sys.indexes i\nJOIN sys.tables t ON t.object_id = i.object_id\nLEFT JOIN sys.dm_db_index_usage_stats s\n  ON s.object_id = i.object_id AND s.index_id = i.index_id\nWHERE ISNULL(s.user_seeks,0)=0 AND ISNULL(s.user_scans,0)=0\n  AND ISNULL(s.user_lookups,0)=0;",
+    "caption": "Zero seeks/scans/lookups but real writes -- pure overhead, zero benefit."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 48",
+    "titlePlain": "Query Store ",
+    "titleEmphasis": "Fundamentals",
+    "titleSuffix": "",
+    "subtitle": "SQL Server's own flight data recorder for query plans."
+  }
+]
