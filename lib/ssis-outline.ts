@@ -27,12 +27,37 @@ export const SSIS_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "SSIS Fundamentals",
     lessons: [
-      L(1, "what-is-ssis", "What Is SSIS?", { contentDir: "ch01/01-what-is-ssis" }),
-      L(2, "ssdt-and-project-setup", "SSDT & Project Setup", { contentDir: "ch01/02-ssdt-and-project-setup" }),
-      L(3, "the-ssis-architecture", "The SSIS Architecture", { contentDir: "ch01/03-the-ssis-architecture" }),
-      L(4, "packages-projects-and-solutions", "Packages, Projects & Solutions", { contentDir: "ch01/04-packages-projects-and-solutions" }),
-      L(5, "connection-managers", "Connection Managers", { contentDir: "ch01/05-connection-managers" }),
-      L(6, "your-first-package", "Your First Package", { contentDir: "ch01/06-your-first-package" }),
+      L(1, "what-is-ssis", "What Is SSIS?", {
+        contentDir: "ch01/01-what-is-ssis",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1789828705/ltv-ssis/ch01-01-what-is-ssis.mp4",
+        durationLabel: "2 min 55 s",
+      }),
+      L(2, "ssdt-and-project-setup", "SSDT & Project Setup", { contentDir: "ch01/02-ssdt-and-project-setup",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1789828990/ltv-ssis/ch01-02-ssdt-and-project-setup.mp4",
+        durationLabel: "2 min 4 s",
+      }),
+      L(3, "the-ssis-architecture", "The SSIS Architecture", { contentDir: "ch01/03-the-ssis-architecture",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1789829107/ltv-ssis/ch01-03-the-ssis-architecture.mp4",
+        durationLabel: "2 min 14 s",
+      }),
+      L(4, "packages-projects-and-solutions", "Packages, Projects & Solutions", { contentDir: "ch01/04-packages-projects-and-solutions",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1789829216/ltv-ssis/ch01-04-packages-projects-and-solutions.mp4",
+        durationLabel: "2 min 24 s",
+      }),
+      L(5, "connection-managers", "Connection Managers", { contentDir: "ch01/05-connection-managers",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1789829345/ltv-ssis/ch01-05-connection-managers.mp4",
+        durationLabel: "2 min 3 s",
+      }),
+      L(6, "your-first-package", "Your First Package", { contentDir: "ch01/06-your-first-package",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1789829473/ltv-ssis/ch01-06-your-first-package.mp4",
+        durationLabel: "2 min 3 s",
+      }),
     ],
   },
   {
