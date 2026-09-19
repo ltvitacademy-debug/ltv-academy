@@ -1,0 +1,17 @@
+# Script — Where-Object, Select-Object & ForEach-Object
+
+## Segment 1 (title)
+
+Three cmdlets that show up in almost every real pipeline, all using $_, and commonly confused — but each does a genuinely different job.
+
+## Segment 2 (steps: three different jobs)
+
+Where-Object filters which objects continue, a yes or no per object, unchanged either way. Select-Object chooses which properties survive, or limits how many rows, without asking whether an object qualifies. ForEach-Object runs an action against every object that arrives, often for a side effect rather than to reshape the pipeline.
+
+## Segment 3 (code: all three together)
+
+Get-Process, filtered to CPU greater than 100, then Select-Object down to Name and CPU, then ForEach-Object writes a line for each one. Filter first, then shape, then act — read left to right and each stage's job is unambiguous.
+
+## Segment 4 (outro)
+
+The one question that tells them apart: am I deciding who survives, what they look like, or doing something to each one? Next up: sorting and filtering — the last lesson of this chapter.

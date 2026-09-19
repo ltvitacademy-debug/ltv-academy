@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "PowerShell Fundamentals · Chapter Four",
+    "titlePlain": "Automating a Routine Admin ",
+    "titleEmphasis": "Task",
+    "titleSuffix": "",
+    "subtitle": "Lesson 17 · PowerShell for Azure & SQL"
+  },
+  {
+    "type": "code",
+    "eyebrow": "A real, complete script",
+    "code": "function Test-BackupAge {\n    param(\n        [string]$SqlInstance,\n        [int]$MaxHoursOld = 24\n    )\n    $query = \"SELECT d.name AS DatabaseName,\n        MAX(b.backup_finish_date) AS LastBackup\n        FROM sys.databases d\n        LEFT JOIN msdb.dbo.backupset b\n               ON d.name = b.database_name\n        WHERE d.database_id > 4 GROUP BY d.name\"\n    $results = Invoke-DbaQuery -SqlInstance $SqlInstance -Query $query\n    foreach ($row in $results) {\n        if ($null -eq $row.LastBackup) {\n            Write-Host \"$SqlInstance / $($row.DatabaseName): NEVER BACKED UP\"\n            continue\n        }\n        $hoursOld = ((Get-Date) - $row.LastBackup).TotalHours\n        if ($hoursOld -gt $MaxHoursOld) {\n            Write-Host \"$SqlInstance / $($row.DatabaseName): OVERDUE\"\n        } else {\n            Write-Host \"$SqlInstance / $($row.DatabaseName): OK\"\n        }\n    }\n}",
+    "caption": "A Verb-Noun function, dbatools, a loop, and branching — everything from this chapter, combined."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Across a whole fleet",
+    "code": "$servers = \"SQL-PROD-01\", \"SQL-PROD-02\", \"SQL-PROD-03\"\n\nforeach ($server in $servers) {\n    Test-BackupAge -SqlInstance $server -MaxHoursOld 24\n}\n\n# SQL-PROD-01 / SalesDB: OK (6.2h old)\n# SQL-PROD-01 / InventoryDB: OVERDUE (31.4h old)\n# SQL-PROD-02 / OrdersDB: OK (2.1h old)\n# SQL-PROD-03 / ArchiveDB: NEVER BACKED UP",
+    "caption": "An outer foreach calls the function once per server — the inner foreach handles each database."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Nothing new, just combined",
+    "titlePlain": "Recognizing the ",
+    "titleEmphasis": "pieces",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Function (L13)", "sub": "Verb-Noun, typed params, a sensible default" },
+      { "label": "dbatools (L16)", "sub": "Invoke-DbaQuery reads real backup history" },
+      { "label": "Loops + branching (L11-12)", "sub": "two foreach loops, if/elseif-shaped logic" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 18",
+    "titlePlain": "Reading & Modifying an Existing ",
+    "titleEmphasis": "Script",
+    "titleSuffix": "",
+    "subtitle": "This course's final lesson."
+  }
+]
