@@ -1,0 +1,17 @@
+# Script — Lambda Fundamentals
+
+## Segment 1 (title)
+
+Lambda is a step further than everything else in this course — you write a function, AWS runs it in response to something happening, and it disappears again the moment it's done. No server, no cluster.
+
+## Segment 2 (code: no server, no idling)
+
+A Lambda function is a handler AWS invokes in response to a trigger — an API call, a file landing in S3, a scheduled time. Between invocations, nothing is running and nothing is billed. And every function has a hard ceiling of fifteen minutes of execution time.
+
+## Segment 3 (steps: memory, CPU, and the cold start)
+
+You configure one number, memory, from 128 megabytes up to about ten gigabytes — and CPU scales proportionally with it, so memory tuning is really a performance lever, not just a cost setting. The first invocation after idle time pays a cold start, where AWS initializes a fresh execution environment before your code even runs. A warm invocation, reusing an existing environment, skips that cost entirely.
+
+## Segment 4 (outro)
+
+Lambda fundamentals down. Next up: event-driven data processing — reacting to events instead of polling for them.

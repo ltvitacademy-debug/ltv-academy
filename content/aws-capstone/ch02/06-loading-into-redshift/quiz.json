@@ -1,0 +1,60 @@
+{
+  "lesson": "loading-into-redshift",
+  "questions": [
+    {
+      "q": "Why does this capstone use Redshift Serverless instead of a provisioned Redshift cluster?",
+      "options": [
+        "Northfield's query pattern is bursty (heavy at month-end, quiet otherwise), and Serverless bills per RPU-second with auto-pause instead of billing hourly regardless of use",
+        "Provisioned clusters cannot run SQL COPY commands",
+        "Redshift Serverless is required for any table using a DISTKEY",
+        "Serverless is simply newer, with no cost-related reason"
+      ],
+      "answer": 0,
+      "explain": "Lesson 1 established Northfield's bursty query pattern; Serverless's per-RPU-second billing and auto-pause map directly onto that usage shape."
+    },
+    {
+      "q": "What is the fastest way to bulk-load curated S3 data into analytics.fact_orders, per this lesson?",
+      "options": [
+        "The COPY command, which loads in parallel across Redshift's compute nodes",
+        "Individual INSERT statements for each row",
+        "Manually uploading a CSV through the Redshift console",
+        "A Lambda function that writes one row at a time"
+      ],
+      "answer": 0,
+      "explain": "COPY loads directly from S3 in parallel across compute nodes, far faster than row-by-row INSERTs."
+    },
+    {
+      "q": "What DISTKEY and SORTKEY does analytics.fact_orders use, and why?",
+      "options": [
+        "DISTKEY customer_id (colocates rows for customer joins) and SORTKEY dt (matches date-range query patterns)",
+        "DISTKEY order_id and SORTKEY product_sku, chosen at random",
+        "No DISTKEY or SORTKEY are used on this table",
+        "DISTKEY region and SORTKEY customer_id"
+      ],
+      "answer": 0,
+      "explain": "DISTKEY(customer_id) colocates a customer's rows for fast dim_customer joins; SORTKEY(dt) lets Redshift skip blocks of unrelated dates for 'last month' style queries."
+    },
+    {
+      "q": "What IAM role authorizes the COPY command to read from northfield-curated-zone?",
+      "options": [
+        "northfield-redshift-copy-role",
+        "northfield-glue-role",
+        "northfield-stepfunctions-role",
+        "No IAM role is needed for COPY"
+      ],
+      "answer": 0,
+      "explain": "The COPY command's IAM_ROLE parameter references northfield-redshift-copy-role, scoped in Lesson 10 to only the curated zone bucket."
+    },
+    {
+      "q": "What tables make up northfielddw's star schema in the analytics schema?",
+      "options": [
+        "analytics.fact_orders plus dim_product, dim_customer, and dim_date",
+        "A single denormalized orders table with no dimensions",
+        "analytics.northfield_orders_raw and northfield_inventory_raw",
+        "fact_orders only, with dimensions stored in DynamoDB"
+      ],
+      "answer": 0,
+      "explain": "The schema is a small star: fact_orders joined against dim_product, dim_customer, and dim_date."
+    }
+  ]
+}

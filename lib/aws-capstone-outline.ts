@@ -27,39 +27,70 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Capstone Overview",
     lessons: [
-      L(1, "capstone-kickoff-and-business-scenario", "Capstone Kickoff & Business Scenario"),
-      L(2, "architecture-planning", "Architecture Planning"),
+      L(1, "capstone-kickoff-and-business-scenario", "Capstone Kickoff & Business Scenario", {
+        contentDir: "ch01/01-capstone-kickoff-and-business-scenario",
+        // videoUrl/durationLabel pending
+      }),
+      L(2, "architecture-planning", "Architecture Planning", {
+        contentDir: "ch01/02-architecture-planning",
+      }),
     ],
   },
   {
     n: 2,
     title: "Building the Pipeline",
     lessons: [
-      L(3, "ingesting-data-into-s3", "Ingesting Data Into S3"),
-      L(4, "cataloging-with-glue", "Cataloging With Glue"),
-      L(5, "transforming-with-glue-etl", "Transforming With Glue ETL"),
-      L(6, "loading-into-redshift", "Loading Into Redshift"),
-      L(7, "querying-with-athena", "Querying With Athena"),
-      L(8, "orchestrating-with-step-functions", "Orchestrating With Step Functions"),
+      L(3, "ingesting-data-into-s3", "Ingesting Data Into S3", {
+        contentDir: "ch02/03-ingesting-data-into-s3",
+      }),
+      L(4, "cataloging-with-glue", "Cataloging With Glue", {
+        contentDir: "ch02/04-cataloging-with-glue",
+      }),
+      L(5, "transforming-with-glue-etl", "Transforming With Glue ETL", {
+        contentDir: "ch02/05-transforming-with-glue-etl",
+      }),
+      L(6, "loading-into-redshift", "Loading Into Redshift", {
+        contentDir: "ch02/06-loading-into-redshift",
+      }),
+      L(7, "querying-with-athena", "Querying With Athena", {
+        contentDir: "ch02/07-querying-with-athena",
+      }),
+      L(8, "orchestrating-with-step-functions", "Orchestrating With Step Functions", {
+        contentDir: "ch02/08-orchestrating-with-step-functions",
+      }),
     ],
   },
   {
     n: 3,
     title: "Adding Production Practices",
     lessons: [
-      L(9, "monitoring-with-cloudwatch", "Monitoring With CloudWatch"),
-      L(10, "securing-with-iam-least-privilege", "Securing With IAM Least Privilege"),
-      L(11, "ci-cd-for-the-pipeline", "CI/CD for the Pipeline"),
-      L(12, "a-cost-optimization-pass", "A Cost Optimization Pass"),
-      L(13, "disaster-recovery-considerations", "Disaster Recovery Considerations"),
+      L(9, "monitoring-with-cloudwatch", "Monitoring With CloudWatch", {
+        contentDir: "ch03/09-monitoring-with-cloudwatch",
+      }),
+      L(10, "securing-with-iam-least-privilege", "Securing With IAM Least Privilege", {
+        contentDir: "ch03/10-securing-with-iam-least-privilege",
+      }),
+      L(11, "ci-cd-for-the-pipeline", "CI/CD for the Pipeline", {
+        contentDir: "ch03/11-ci-cd-for-the-pipeline",
+      }),
+      L(12, "a-cost-optimization-pass", "A Cost Optimization Pass", {
+        contentDir: "ch03/12-a-cost-optimization-pass",
+      }),
+      L(13, "disaster-recovery-considerations", "Disaster Recovery Considerations", {
+        contentDir: "ch03/13-disaster-recovery-considerations",
+      }),
     ],
   },
   {
     n: 4,
     title: "Wrap-Up",
     lessons: [
-      L(14, "presenting-your-aws-data-platform", "Presenting Your AWS Data Platform"),
-      L(15, "portfolio-and-interview-prep", "Portfolio & Interview Prep"),
+      L(14, "presenting-your-aws-data-platform", "Presenting Your AWS Data Platform", {
+        contentDir: "ch04/14-presenting-your-aws-data-platform",
+      }),
+      L(15, "portfolio-and-interview-prep", "Portfolio & Interview Prep", {
+        contentDir: "ch04/15-portfolio-and-interview-prep",
+      }),
     ],
   },
 ];

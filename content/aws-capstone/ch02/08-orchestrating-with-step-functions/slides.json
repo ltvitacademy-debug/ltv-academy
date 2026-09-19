@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AWS Capstone · Chapter Two",
+    "titlePlain": "Orchestrating ",
+    "titleEmphasis": "With Step Functions",
+    "titleSuffix": "",
+    "subtitle": "Lesson 8 · Building the Pipeline"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The state machine (ASL)",
+    "code": "StartAt: CrawlRawZone\nCrawlRawZone  -> glue:startCrawler        -> WaitForCrawler\nWaitForCrawler -> Wait 60s                -> RunETLJob\nRunETLJob     -> glue:startJobRun.sync    -> LoadRedshift\nLoadRedshift  -> redshiftdata:executeStatement -> NotifySuccess\n\nAny state's error -> Catch -> NotifyFailure",
+    "caption": "northfield-pipeline-orchestrator, four real states plus error handling."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The nightly trigger",
+    "code": "EventBridge rule: northfield-nightly-trigger\nSchedule:          cron(0 6 * * ? *)\nTarget:            northfield-pipeline-orchestrator\n\n# 6 AM UTC — gives the overnight SQL Server\n# export time to land its _SUCCESS marker.",
+    "caption": "A late or missing export just produces an uneventful run."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why .sync matters",
+    "titlePlain": "Wait, don't ",
+    "titleEmphasis": "fire-and-forget",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "startJobRun.sync", "sub": "Step Functions waits for the Glue job to finish" },
+      { "label": "Catch on every task", "sub": "any failure routes to NotifyFailure" },
+      { "label": "SNS on both outcomes", "sub": "success and failure both notify" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 9",
+    "titlePlain": "Monitoring ",
+    "titleEmphasis": "With CloudWatch",
+    "titleSuffix": "",
+    "subtitle": "Chapter Three — making this pipeline production-grade."
+  }
+]

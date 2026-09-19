@@ -1,0 +1,60 @@
+{
+  "lesson": "securing-with-iam-least-privilege",
+  "questions": [
+    {
+      "q": "What buckets does northfield-glue-role have access to?",
+      "options": [
+        "Only northfield-raw-zone, northfield-curated-zone, and northfield-glue-scripts",
+        "Every bucket in the AWS account",
+        "Only northfield-curated-zone, read-only",
+        "No S3 access — it only needs Glue Catalog permissions"
+      ],
+      "answer": 0,
+      "explain": "The role used by the crawler and ETL job is scoped to exactly the three buckets the pipeline actually touches, nothing account-wide."
+    },
+    {
+      "q": "Why does northfield-stepfunctions-role name the exact ARN of northfield-orders-etl instead of granting glue:StartJobRun on Resource: '*'?",
+      "options": [
+        "So the role can only ever start this one specific Glue job, even if the account later gains other Glue jobs it shouldn't touch",
+        "Because Resource: '*' is technically invalid JSON in IAM policies",
+        "Exact ARNs make the policy load faster",
+        "There is no difference in effect between the two approaches"
+      ],
+      "answer": 0,
+      "explain": "Resource-level scoping to a specific ARN prevents the role from silently gaining power over future, unrelated resources in the account."
+    },
+    {
+      "q": "What access does northfield-redshift-copy-role have?",
+      "options": [
+        "Read-only access (s3:GetObject, s3:ListBucket) to northfield-curated-zone only",
+        "Full read/write access to both the raw and curated zones",
+        "Write access to northfield-raw-zone for staging COPY input",
+        "Administrator access to the whole Redshift Serverless workgroup"
+      ],
+      "answer": 0,
+      "explain": "It's the narrowest role in the pipeline — read-only, and scoped only to the curated zone bucket the COPY command reads from."
+    },
+    {
+      "q": "What is the practical benefit of least-privilege IAM roles if one role's credentials are ever compromised?",
+      "options": [
+        "The blast radius stays limited to whatever that one narrow role can do, not the whole account",
+        "Compromised credentials become impossible to use at all",
+        "AWS automatically revokes compromised credentials within seconds",
+        "It has no practical security benefit, only compliance value"
+      ],
+      "answer": 0,
+      "explain": "Least privilege limits blast radius — a compromised northfield-redshift-copy-role, for example, can only read one bucket, not touch the whole pipeline."
+    },
+    {
+      "q": "What is the common shortcut this lesson explicitly warns against?",
+      "options": [
+        "Granting 'Resource': '*' for an action instead of naming the specific resource ARNs a role actually needs",
+        "Using IAM roles at all instead of hardcoded access keys",
+        "Creating more than three IAM roles for one pipeline",
+        "Using JSON instead of YAML for policy documents"
+      ],
+      "answer": 0,
+      "explain": "The guide calls out 'Resource: *' as a shortcut that silently widens a role's power as the account grows, versus scoping to exact ARNs."
+    }
+  ]
+}

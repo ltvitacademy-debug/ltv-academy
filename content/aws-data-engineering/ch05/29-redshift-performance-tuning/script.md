@@ -1,0 +1,17 @@
+# Script — Redshift Performance Tuning
+
+## Segment 1 (title)
+
+This lesson is about diagnosing a slow Redshift query and knowing which lever to pull — turning "Redshift is slow" into a specific, fixable cause.
+
+## Segment 2 (code: routine maintenance, not one-time setup)
+
+VACUUM reclaims space from deleted or updated rows and re-sorts data back into SORTKEY order, since new writes land at the end of a table rather than in sorted position. ANALYZE refreshes the table statistics the query planner relies on to pick join algorithms and scan order. Both matter most after heavy write activity or a large COPY.
+
+## Segment 3 (steps: EXPLAIN, turning slow into a cause)
+
+EXPLAIN shows you the actual plan a query will run without executing it. Watch for a sequential scan over a large table, which usually means your SORTKEY or filter aren't lining up. Watch for a shuffle of data between nodes, which usually means your DISTKEY doesn't match the join column. And watch for a nested loop over a huge row count — that's almost always an accidental cross join.
+
+## Segment 4 (outro)
+
+Redshift performance tuning down — that closes out the Redshift chapter. Next up, Chapter Six: Lambda fundamentals, serverless compute for event-driven data work.

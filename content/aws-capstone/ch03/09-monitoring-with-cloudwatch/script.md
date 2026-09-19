@@ -1,0 +1,21 @@
+# Script — Monitoring With CloudWatch
+
+## Segment 1 (title)
+
+The pipeline notifies on success or failure, but only if the state machine gets far enough to reach a notify state. CloudWatch alarms watch the pipeline from the outside, independent of whether it can notify about itself.
+
+## Segment 2 (code: Glue job failure alarm)
+
+northfield-glue-etl-failure watches the Glue job's own failed-tasks metric directly. Even if the state machine got stuck before reaching its own catch logic, this alarm still fires because it reads Glue's metrics independently.
+
+## Segment 3 (code: Step Functions failure alarm)
+
+northfield-stepfunctions-failure-alarm watches the ExecutionsFailed metric on the state machine itself, catching infrastructure-level failures — like an IAM permission error — that might happen before any internal catch logic runs.
+
+## Segment 4 (steps: the dashboard)
+
+northfield-pipeline-dashboard puts Glue duration and failure counts, Step Functions execution status, and Redshift and Athena usage on one screen — the same screen worth having open during an interview demo.
+
+## Segment 5 (outro)
+
+Next up: securing with IAM least privilege, where we scope every role in this pipeline down to exactly what it needs and nothing more.

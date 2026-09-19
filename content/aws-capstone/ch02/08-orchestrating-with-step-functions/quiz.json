@@ -1,0 +1,60 @@
+{
+  "lesson": "orchestrating-with-step-functions",
+  "questions": [
+    {
+      "q": "What four real states carry northfield-pipeline-orchestrator's main path?",
+      "options": [
+        "CrawlRawZone, RunETLJob, LoadRedshift, and NotifySuccess (with a NotifyFailure catch path)",
+        "Only a single Lambda function that does everything",
+        "CrawlRawZone, LoadRedshift, RunETLJob, NotifyFailure, in that order",
+        "IngestS3, CrawlRawZone, RunETLJob, LoadRedshift, QueryAthena"
+      ],
+      "answer": 0,
+      "explain": "The chain is crawl the raw zone, run the ETL job, load Redshift, then notify success — with any failure caught and routed to NotifyFailure."
+    },
+    {
+      "q": "Why does RunETLJob use glue:startJobRun.sync instead of the plain glue:startJobRun action?",
+      "options": [
+        "The .sync integration makes Step Functions wait for the Glue job to actually finish before moving to the next state",
+        "It's required syntax with no functional difference",
+        "It runs the job twice for redundancy",
+        ".sync makes the job run faster"
+      ],
+      "answer": 0,
+      "explain": "The .sync suffix is a synchronous service integration — Step Functions waits for completion instead of firing and moving on immediately."
+    },
+    {
+      "q": "What does every task state's Catch clause do?",
+      "options": [
+        "Routes any error in that state straight to the NotifyFailure state, ensuring a human is told when something breaks",
+        "Automatically retries the failed state up to 100 times",
+        "Silently ignores the error and continues to the next state",
+        "Deletes the partial output from that state"
+      ],
+      "answer": 0,
+      "explain": "Every task state's Catch routes States.ALL errors to NotifyFailure, which publishes to SNS so failures are surfaced, not swallowed."
+    },
+    {
+      "q": "What triggers northfield-pipeline-orchestrator to run each night, and when?",
+      "options": [
+        "An EventBridge rule (northfield-nightly-trigger) on a cron schedule at 6:00 AM UTC",
+        "A human manually starting it from the console every morning",
+        "S3 event notifications the moment any file is uploaded",
+        "It runs continuously with no schedule"
+      ],
+      "answer": 0,
+      "explain": "northfield-nightly-trigger uses cron(0 6 * * ? *) to fire the state machine at 6 AM UTC, after the overnight SQL Server export finishes."
+    },
+    {
+      "q": "What happens if the SQL Server export is running late and hasn't finished when the 6 AM trigger fires?",
+      "options": [
+        "The crawler still runs but finds no new partition, and the ETL job's bookmark means nothing new gets reprocessed — an uneventful run, not a broken one",
+        "The entire state machine immediately fails and pages an on-call engineer",
+        "Step Functions deletes the previous night's data to avoid conflicts",
+        "The pipeline silently loads stale data into Redshift without any indication"
+      ],
+      "answer": 0,
+      "explain": "A late export just means no new partition is found; the crawler and bookmarked ETL job handle that gracefully rather than erroring or loading stale/incomplete data."
+    }
+  ]
+}

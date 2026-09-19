@@ -1,0 +1,60 @@
+{
+  "lesson": "querying-with-athena",
+  "questions": [
+    {
+      "q": "What kind of workload does Athena serve in this capstone, versus Redshift?",
+      "options": [
+        "Ad hoc, one-off questions that don't justify a scheduled load, queried directly against the Glue Catalog",
+        "The exact same scheduled dashboard queries as Redshift, duplicated for redundancy",
+        "Only queries against Redshift tables, never S3 directly",
+        "Writing new data into the curated zone"
+      ],
+      "answer": 0,
+      "explain": "Athena is used for ad hoc analyst questions that don't deserve a permanent table or scheduled load; Redshift serves the repeated dashboard workload."
+    },
+    {
+      "q": "What does Athena bill for, and how does the northfield-analysts workgroup guard against runaway cost?",
+      "options": [
+        "It bills per byte scanned, and the workgroup sets a 5 GB per-query scan limit",
+        "It bills a flat monthly fee regardless of usage",
+        "It bills per query regardless of size, with no guardrails possible",
+        "It bills per row returned, capped at 1,000 rows per query"
+      ],
+      "answer": 0,
+      "explain": "Athena's billing unit is bytes scanned; northfield-analysts sets a 5 GB per-query scan limit as a cost guardrail."
+    },
+    {
+      "q": "In the top-products-by-region query, why does filtering WHERE dt BETWEEN ... reduce cost?",
+      "options": [
+        "It prunes partitions, so Athena skips scanning any dt partition outside the requested range entirely",
+        "It has no effect on cost, only on result ordering",
+        "It forces Athena to use Redshift instead of scanning S3",
+        "It only affects which columns are returned, not bytes scanned"
+      ],
+      "answer": 0,
+      "explain": "Because the table is partitioned by dt, a WHERE dt filter lets Athena prune partitions outside the range, scanning far fewer bytes."
+    },
+    {
+      "q": "Why does querying northfield_orders_curated (Parquet) typically cost less than querying the equivalent raw CSV?",
+      "options": [
+        "Parquet is columnar, so a query needing only a few columns reads just those column chunks instead of every column of every row",
+        "Parquet files are always smaller in total file count",
+        "CSV cannot be queried by Athena at all",
+        "Curated data has fewer rows than raw data"
+      ],
+      "answer": 0,
+      "explain": "Column pruning is only possible with a columnar format like Parquet; CSV has no column-level structure to skip, so every column of every row gets scanned."
+    },
+    {
+      "q": "How does northfield_orders_curated get registered in the Glue Data Catalog, given there's no crawler for the curated zone?",
+      "options": [
+        "The Glue ETL job's sink sets enableUpdateCatalog=True, so writing the Parquet output also registers/updates the catalog table",
+        "It must be created manually in the Athena console before every query",
+        "Athena creates it automatically the first time it's queried",
+        "It is copied over from northfield_orders_raw with no changes"
+      ],
+      "answer": 0,
+      "explain": "Lesson 5's ETL job uses enableUpdateCatalog=True on its Glue sink, so the same write both produces the Parquet files and updates the Catalog table."
+    }
+  ]
+}

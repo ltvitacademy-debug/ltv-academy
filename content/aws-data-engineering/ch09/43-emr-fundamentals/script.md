@@ -1,0 +1,21 @@
+# Script — EMR Fundamentals
+
+## Segment 1 (title)
+
+Glue and Redshift abstract the cluster away from you. Amazon EMR is the opposite — a managed Hadoop and Spark cluster service where you provision and control the actual compute.
+
+## Segment 2 (steps: master, core, and task)
+
+Every EMR cluster has three node roles. The master node manages the cluster and runs YARN's ResourceManager — there's exactly one. Core nodes run tasks and store data via HDFS. Task nodes run tasks only, with no HDFS storage, which means they can be added and removed freely to scale compute without any data-loss risk.
+
+## Segment 3 (code: launching a cluster)
+
+One create-cluster call provisions a correctly-configured cluster — you specify the release label, which applications to install like Spark, the instance type, and how many instances.
+
+## Segment 4 (steps: what EMR handles for you)
+
+EMR gives you everything around the open-source tools themselves: EMRFS lets Spark and Hadoop jobs read and write S3 directly instead of only HDFS, and IAM integration plus auto-termination on idle come built in — none of which raw EC2 gives you for free.
+
+## Segment 5 (outro)
+
+EMR fundamentals down. Next up: an honest comparison — EMR versus Glue versus Databricks, and when each one actually fits.

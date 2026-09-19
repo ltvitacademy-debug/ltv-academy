@@ -1,0 +1,60 @@
+{
+  "lesson": "cataloging-with-glue",
+  "questions": [
+    {
+      "q": "What does the northfield-raw-crawler actually do to the CSV files in northfield-raw-zone?",
+      "options": [
+        "It scans them and registers table schemas/partitions in the Glue Data Catalog, without moving or copying the underlying data",
+        "It copies every file into a new S3 bucket in a cleaned format",
+        "It deletes the raw files once cataloged",
+        "It loads the data directly into Redshift"
+      ],
+      "answer": 0,
+      "explain": "A Glue crawler catalogs data in place — it registers schema and partition metadata, it never moves or transforms the source files."
+    },
+    {
+      "q": "What two tables does northfield-raw-crawler create in northfield_catalog?",
+      "options": [
+        "northfield_orders_raw and northfield_inventory_raw",
+        "fact_orders and dim_product",
+        "northfield_orders_curated and northfield_inventory_curated",
+        "orders_2026_09_19 and inventory_2026_09_19"
+      ],
+      "answer": 0,
+      "explain": "One table per raw prefix: northfield_orders_raw from orders/, and northfield_inventory_raw from inventory/."
+    },
+    {
+      "q": "Why is northfield-raw-crawler configured to run on demand rather than on its own cron schedule?",
+      "options": [
+        "Step Functions already knows when the night's upload finished (via the _SUCCESS marker) and triggers the crawler at the right time",
+        "Glue crawlers cannot be scheduled at all",
+        "On-demand crawlers are cheaper regardless of orchestration",
+        "AWS requires all crawlers in a Data Catalog to run on demand"
+      ],
+      "answer": 0,
+      "explain": "A crawler on its own schedule risks running before or redundant with the actual upload; Step Functions is the single place that decides when the chain runs."
+    },
+    {
+      "q": "Does the Glue crawler clean or correct data types and values (e.g. fixing order_date or inconsistent region values)?",
+      "options": [
+        "No — it only infers types from the CSV headers; cleaning and correction happen in the Glue ETL job",
+        "Yes, the crawler fully cleans and validates every column",
+        "Yes, but only for numeric columns",
+        "The crawler deletes any row with inconsistent data"
+      ],
+      "answer": 0,
+      "explain": "The crawler's job is to make raw data visible via inferred schema, not to correct it — that's explicitly the ETL job's responsibility in Lesson 5."
+    },
+    {
+      "q": "What keeps repeated crawls fast as northfield-raw-zone accumulates many daily dt= partitions over time?",
+      "options": [
+        "Partition indexing",
+        "Deleting old partitions automatically",
+        "Switching the crawler to run continuously",
+        "Reducing the number of raw files per day"
+      ],
+      "answer": 0,
+      "explain": "Glue's partition indexing keeps re-crawls efficient even as a table accumulates a year or more of daily dt= partitions."
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AWS Capstone · Chapter Two",
+    "titlePlain": "Transforming ",
+    "titleEmphasis": "With Glue ETL",
+    "titleSuffix": "",
+    "subtitle": "Lesson 5 · Building the Pipeline"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The job",
+    "code": "Job name:    northfield-orders-etl\nType:        Spark (Glue 4.0)\nWorkers:     G.1X x 5\nScript:      s3://northfield-glue-scripts/\n             jobs/northfield-orders-etl.py\nSource:      northfield_catalog.northfield_orders_raw\nTarget:      s3://northfield-curated-zone/orders/\nBookmark:    enabled",
+    "caption": "One Spark job, one raw table in, one curated Parquet output."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The transform (PySpark)",
+    "code": "curated = (raw\n  .withColumn(\"order_date\", to_date(col(\"order_date\")))\n  .withColumn(\"region\", upper(trim(col(\"region\"))))\n  .withColumn(\"order_total\", col(\"quantity\") * col(\"unit_price\"))\n  .dropDuplicates([\"order_id\"])\n)\n\ncurated.write.mode(\"append\") \\\n  .partitionBy(\"dt\").parquet(\"s3://northfield-curated-zone/orders/\")",
+    "caption": "Typed dates, normalized region, a computed total, deduped."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why it's built this way",
+    "titlePlain": "Incremental, ",
+    "titleEmphasis": "columnar",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Job bookmarks", "sub": "only the new dt= partition reprocesses" },
+      { "label": "Parquet + Snappy", "sub": "columnar, compressed, cheaper to query" },
+      { "label": "Partitioned by dt", "sub": "curated side prunes partitions too" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 6",
+    "titlePlain": "Loading ",
+    "titleEmphasis": "Into Redshift",
+    "titleSuffix": "",
+    "subtitle": "COPY-ing curated Parquet into a real fact table."
+  }
+]
