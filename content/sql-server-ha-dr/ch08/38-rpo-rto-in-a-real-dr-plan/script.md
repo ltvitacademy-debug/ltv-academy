@@ -1,0 +1,17 @@
+# Script — RPO/RTO in a Real DR Plan
+
+## Segment 1 (title)
+
+The previous lesson listed RPO and RTO as one component of a DR plan. This lesson goes deeper, because these two numbers actually drive technology decisions — get them wrong or leave them vague, and everything built on top is arguably wrong too.
+
+## Segment 2 (code: two different questions)
+
+RPO is Recovery Point Objective — how much data loss is acceptable, the gap between protection points. RTO is Recovery Time Objective — how much downtime is acceptable, the speed of the recovery process itself. They're independent numbers.
+
+## Segment 3 (steps: what each one forces)
+
+A tight RPO forces synchronous replication or frequent log backups. A tight RTO forces automatic failover, like an AG listener or an FCI. If both are tight, that's a synchronous AG or FCI, accepting the performance cost that comes with it.
+
+## Segment 4 (outro)
+
+The real failure isn't the business rejecting a proposed target — it's never being asked, so IT guesses or defaults to whatever's already in place. Next up: why an untested DR plan isn't a real plan, and what a good runbook actually contains.

@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-simulate-a-failover",
+  "questions": [
+    {
+      "q": "Why does Bellhaven run a planned failover test instead of just trusting the AG's configuration?",
+      "options": [
+        "A DBA who has never watched a failover actually happen only knows it was configured to work, not that it does — an untested plan is still theoretical",
+        "SQL Server requires a manual test before automatic failover can ever be enabled",
+        "Planned failovers are required monthly by Microsoft licensing",
+        "There's no real reason — it's just a best practice with no concrete justification"
+      ],
+      "answer": 0,
+      "explain": "The lesson draws the same conclusion Chapter 8 makes about DR runbooks: an HA/DR plan that has never actually been executed hasn't been proven."
+    },
+    {
+      "q": "Why is ALTER AVAILABILITY GROUP AG_Bellhaven FAILOVER (without FORCE) the correct command for this test?",
+      "options": [
+        "SQLPRD01 and SQLPRD02 are both synchronous and currently healthy/synchronized, so this is a planned failover with no data loss",
+        "The FORCE clause is required for every failover, planned or not",
+        "FAILOVER without FORCE only works on asynchronous replicas",
+        "There is no difference between FAILOVER and FORCE_FAILOVER_ALLOW_DATA_LOSS"
+      ],
+      "answer": 0,
+      "explain": "Between healthy synchronous replicas, a plain FAILOVER is a safe, no-data-loss operation — forcing it would be reserved for a genuinely different, degraded scenario."
+    },
+    {
+      "q": "What does sys.dm_hadr_availability_replica_states let the team confirm after the failover?",
+      "options": [
+        "Each replica's current role (primary/secondary) and health, confirming SQLPRD02 actually became primary",
+        "The exact RPO in minutes for the last transaction",
+        "Which backup job ran most recently",
+        "The physical location of each replica's server"
+      ],
+      "answer": 0,
+      "explain": "This DMV reports role and synchronization health per replica — the first thing to check after a failover."
+    },
+    {
+      "q": "Why does the test also check that BHFS-AGL (the listener) is reachable, rather than just checking the database's role?",
+      "options": [
+        "The listener is what applications actually connect through — confirming it routes to the new primary proves the failover is transparent to real client connections",
+        "The listener has no functional purpose and is only checked for documentation",
+        "The listener must be manually recreated after every failover",
+        "Applications always connect directly to SQLPRD01 regardless of the listener"
+      ],
+      "answer": 0,
+      "explain": "The listener is the actual mechanism that makes failover invisible to applications — verifying it confirms the whole chain, not just the database engine's internal state."
+    },
+    {
+      "q": "What does 'failing back' to SQLPRD01 involve, once the test is verified?",
+      "options": [
+        "Running the identical FAILOVER command in the opposite direction, on SQLPRD01 — a routine operation between healthy synchronous partners",
+        "Rebuilding AG_Bellhaven completely from scratch",
+        "Restoring the full backup from Lesson 43 onto SQLPRD01",
+        "Failback is not possible once a failover has occurred"
+      ],
+      "answer": 0,
+      "explain": "Because the pair is synchronous and symmetric, failing back is just running FAILOVER again, targeting SQLPRD01 — not a special or risky operation."
+    }
+  ]
+}

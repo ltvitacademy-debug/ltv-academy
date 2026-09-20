@@ -1,0 +1,225 @@
+{
+  "course": "sql-server-ha-backup-and-disaster-recovery",
+  "questions": [
+    {
+      "q": "In FULL recovery model, what actually reclaims transaction log space so the log doesn't keep growing?",
+      "options": [
+        "Running a transaction log backup — a checkpoint alone does not truncate the log under FULL recovery",
+        "Reaching a checkpoint alone is enough to truncate the log",
+        "The log physically cannot grow at all while in FULL recovery",
+        "SQL Server automatically caps log growth at 10% of the database's size"
+      ],
+      "answer": 0,
+      "explain": "Under FULL (and BULK_LOGGED) recovery, the log is only truncated (its space made reusable) after a log backup runs and captures those records; a checkpoint alone hardens data pages but does not free log space, which is exactly why log backups are mandatory in this model."
+    },
+    {
+      "q": "What's a real trade-off of enabling backup compression on SQL Server?",
+      "options": [
+        "It always makes backups slower with no upside",
+        "Smaller backup files and less disk I/O, at the cost of higher CPU usage while the backup runs",
+        "It prevents the backup from also being encrypted",
+        "It removes the need to ever verify the backup"
+      ],
+      "answer": 1,
+      "explain": "Compression trades CPU cycles (used to compress the data as it's written) for a smaller file and reduced I/O — usually a good trade on I/O-bound systems with CPU headroom, but a real cost to weigh on CPU-constrained servers."
+    },
+    {
+      "q": "A DBA restores a full backup WITH RECOVERY, then realizes a differential backup also needed to be applied. What must happen now?",
+      "options": [
+        "The differential can still be applied normally on top",
+        "SQL Server automatically reopens the restore sequence",
+        "The restore sequence must start over from the full backup (or an earlier valid point), since RECOVERY already closed it out",
+        "Only the transaction log is affected, so nothing else needs to change"
+      ],
+      "answer": 2,
+      "explain": "WITH RECOVERY brings the database fully online and ends the restore sequence — after that point, no further differential or log backups can be layered on. If more restores were actually needed, the DBA has to restart the sequence from the full backup using WITH NORECOVERY throughout."
+    },
+    {
+      "q": "A DBA needs to restore a database to the moment right before an accidental DELETE ran at 3:47pm. What must exist for a point-in-time restore to that moment to be possible?",
+      "options": [
+        "Only a full backup taken earlier that same day",
+        "A differential backup alone, with no log backups required",
+        "Point-in-time restore never actually requires transaction log backups",
+        "An unbroken chain of transaction log backups covering that window, on top of the preceding full/differential backup"
+      ],
+      "answer": 3,
+      "explain": "Point-in-time restore replays log records up to a specified moment using RESTORE LOG ... WITH STOPAT; that's only possible if log backups exist covering the target time as part of an unbroken chain since the last full or differential backup."
+    },
+    {
+      "q": "Before restoring a still-accessible but damaged database, why should a DBA take a tail-log backup first?",
+      "options": [
+        "It captures any transactions that occurred since the last log backup, preventing that data from being lost during the restore",
+        "Tail-log backups are only relevant under SIMPLE recovery model",
+        "A tail-log backup eliminates the need to have a prior full backup at all",
+        "Taking a tail-log backup automatically repairs any corruption present"
+      ],
+      "answer": 0,
+      "explain": "As long as the log is still accessible, a tail-log backup captures the most recent transactions that haven't been backed up yet, preserving them so a subsequent point-in-time restore can bring the database back with minimal or no data loss."
+    },
+    {
+      "q": "What's the fundamental difference between a High Availability (HA) solution and a Disaster Recovery (DR) solution?",
+      "options": [
+        "HA and DR are interchangeable terms for the same thing",
+        "DR always guarantees zero data loss while HA never does",
+        "HA only exists in Azure, and DR only applies on-premises",
+        "HA minimizes downtime from component-level failures, typically with fast, often automatic failover within the same site; DR addresses recovering from a larger-scale event, usually at a different location, with some acceptable downtime or data loss"
+      ],
+      "answer": 3,
+      "explain": "HA technologies like Availability Groups or FCI target quick recovery from a single component (node, disk, service) failing within the same data center; DR plans account for losing an entire site and typically involve a geographically separate location, with RPO/RTO defining the acceptable data loss and downtime."
+    },
+    {
+      "q": "A system guarantees 99.9% (\"three nines\") availability over a year. Roughly how much downtime does that allow?",
+      "options": [
+        "About 5 minutes per year",
+        "About 8.76 hours per year",
+        "About 36.5 days per year",
+        "About 1 hour per year"
+      ],
+      "answer": 1,
+      "explain": "99.9% availability over 8,760 hours in a year permits about 0.1% downtime, which works out to roughly 8.76 hours — a common SLA tier, well below \"five nines\" (about 5 minutes/year) but far more forgiving than 99% (about 3.65 days/year)."
+    },
+    {
+      "q": "In an Always On Availability Group, what defines the \"primary replica\"?",
+      "options": [
+        "Any replica can accept writes simultaneously",
+        "The replica dedicated exclusively to hosting tempdb",
+        "A replica that only performs backup operations",
+        "The replica that currently owns the databases in read-write mode and streams transaction log records out to the secondary replicas"
+      ],
+      "answer": 3,
+      "explain": "Only one replica in an AG is the primary at a time — it's the sole read-write copy, and every change is captured in its transaction log and sent to secondaries, which apply (\"redo\") those log records to stay in sync."
+    },
+    {
+      "q": "What's the trade-off of using a synchronous-commit replica in an Availability Group compared to an asynchronous-commit replica?",
+      "options": [
+        "A synchronous replica guarantees zero data loss on failover to it, but adds commit latency on the primary since it waits for the secondary to confirm the log record is hardened",
+        "Synchronous commit has no performance cost whatsoever",
+        "Asynchronous commit is the one that guarantees zero data loss",
+        "Synchronous replicas can never participate in automatic failover"
+      ],
+      "answer": 0,
+      "explain": "Synchronous commit requires the primary to wait for the secondary's acknowledgment that a transaction's log record has been hardened before committing, which protects against data loss but adds latency; asynchronous commit removes that wait, trading some potential data loss for lower latency."
+    },
+    {
+      "q": "What does an Availability Group listener actually provide?",
+      "options": [
+        "A monitoring dashboard for cluster health",
+        "A virtual network name and IP that client applications connect to, which automatically routes to whichever replica currently holds the primary role",
+        "A required substitute for the underlying Windows Server Failover Cluster",
+        "A mechanism used exclusively for read-only routing, never for write connections"
+      ],
+      "answer": 1,
+      "explain": "The listener gives applications one stable name/IP to connect to regardless of which node is currently primary; after a failover, the listener redirects new connections to the new primary automatically, so client connection strings don't need to change."
+    },
+    {
+      "q": "What's the core mechanism that lets a Failover Cluster Instance (FCI) provide instance-level HA?",
+      "options": [
+        "Each node keeps its own independent copy of the data that must be manually synchronized",
+        "An Availability Group must already be running underneath the FCI",
+        "FCI eliminates the need to take any database backups",
+        "A shared storage layer that any cluster node can access, with only one node actively running the SQL Server instance at a time — failover simply moves ownership of that shared storage and the instance to another node"
+      ],
+      "answer": 3,
+      "explain": "An FCI relies on shared storage (traditional SAN, or a shared-nothing equivalent like Storage Spaces Direct) that all cluster nodes can see; only the active node has the instance's resources online, and failover means another node takes ownership of the storage and starts the SQL Server service."
+    },
+    {
+      "q": "Why does a Windows Server Failover Cluster require a quorum mechanism?",
+      "options": [
+        "Quorum is used purely for load-balancing client connections",
+        "Quorum determines when backup jobs are scheduled to run",
+        "Quorum has no real effect on failover behavior",
+        "To prevent a split-brain scenario where more than one subset of nodes believes it should be the one running cluster resources, by requiring a majority (or witness-assisted majority) vote"
+      ],
+      "answer": 3,
+      "explain": "If a network partition split the cluster into two groups of nodes that could each independently decide to bring resources online, you'd get data corruption from two \"active\" instances; quorum forces only the side with a majority vote (using votes and, if needed, a witness) to remain active."
+    },
+    {
+      "q": "What underlying mechanism does log shipping use to move changes from the primary server to the secondary?",
+      "options": [
+        "Regularly backing up the transaction log on the primary, copying those backup files to the secondary, and restoring them there on a schedule",
+        "Continuous synchronous replication of data pages between servers",
+        "A storage volume physically shared between both servers",
+        "Real-time streaming of transactions with no backup files involved at all"
+      ],
+      "answer": 0,
+      "explain": "Log shipping is built entirely on the standard backup/copy/restore cycle: a scheduled job backs up the transaction log on the primary, another job copies the backup file to the secondary, and a third restores it there — introducing latency equal to however often that cycle runs."
+    },
+    {
+      "q": "In what scenario might log shipping still be a reasonable choice today over an Always On Availability Group?",
+      "options": [
+        "Whenever automatic failover with zero data loss is an absolute requirement",
+        "A low-cost, simple standby solution is acceptable, some data-loss/latency is tolerable, and Enterprise-only AG features or licensing aren't available or needed",
+        "Only when using Azure SQL Database, which doesn't support log shipping-style scenarios",
+        "Only in environments with no secondary server available at all"
+      ],
+      "answer": 1,
+      "explain": "Log shipping is simple, works on lower editions, and requires far less infrastructure than an AG, making it a reasonable fit when the business can tolerate the inherent delay between log backup cycles and doesn't need automatic failover or read-scale secondaries."
+    },
+    {
+      "q": "In transactional replication, what is the role of the Log Reader Agent?",
+      "options": [
+        "It applies replicated changes at the subscriber database",
+        "It compresses full and log backups on the publisher",
+        "It manages automatic failover for Always On Availability Groups",
+        "It reads the transaction log of the published database and moves marked transactions into the distribution database"
+      ],
+      "answer": 3,
+      "explain": "The Log Reader Agent monitors the publisher's transaction log for transactions marked for replication and copies them into the distribution database, from which the Distribution Agent then delivers them to subscribers."
+    },
+    {
+      "q": "A business requirement states \"we can tolerate losing at most 15 minutes of data.\" What term describes this, and what does it drive technically?",
+      "options": [
+        "Recovery Time Objective — it governs how long the outage itself can last, not data loss",
+        "A Service Level Agreement — a contractual document, not a specific data-loss metric",
+        "Mean Time Between Failures — a reliability metric, not a data-loss tolerance",
+        "Recovery Point Objective (RPO) — it drives how frequently backups, log shipments, or replication must occur so no more than 15 minutes of transactions could ever be lost"
+      ],
+      "answer": 3,
+      "explain": "RPO defines the maximum acceptable amount of data loss, measured in time; a 15-minute RPO means log backups (or another replication mechanism) must run at least that often, since anything less frequent would risk losing more than the tolerated window."
+    },
+    {
+      "q": "Why is it essential to regularly test a disaster recovery plan, rather than just writing and maintaining the runbook?",
+      "options": [
+        "Untested procedures frequently fail in practice due to missing steps, stale credentials, or environment drift, and testing is the only real way to confirm the actual recovery time matches the RTO",
+        "Once documented, a DR plan never needs to be tested again",
+        "Testing DR plans is only done to satisfy regulators, with no other real benefit",
+        "A DR runbook is self-validating the moment it's written"
+      ],
+      "answer": 0,
+      "explain": "Environments drift — credentials expire, server names change, steps that worked a year ago may no longer apply. Only an actual test (tabletop or live) reveals whether the plan still works and whether recovery genuinely happens within the promised RTO."
+    },
+    {
+      "q": "When designing a backup strategy to meet a strict RPO, what typically drives how often transaction log backups need to run?",
+      "options": [
+        "The RPO itself: log backups must run frequently enough that the maximum acceptable data-loss window is never exceeded",
+        "Log backup frequency is fixed by SQL Server and cannot be adjusted",
+        "Log backups should always run exactly once per day, regardless of RPO",
+        "RPO only applies to full backups, never to log backups"
+      ],
+      "answer": 0,
+      "explain": "If the business can tolerate at most, say, 15 minutes of data loss, log backups need to run at least every 15 minutes; the RPO is the requirement that log backup frequency is designed to satisfy, not an arbitrary schedule choice."
+    },
+    {
+      "q": "During a planned, manual failover test of an Availability Group, why actually perform it during a maintenance window rather than only reviewing the documented procedure?",
+      "options": [
+        "Failover tests carry zero risk, so scheduling doesn't matter",
+        "Availability Group failovers can only be tested inside Azure",
+        "Failover testing becomes unnecessary the moment the AG is created",
+        "A real failover exercises the actual mechanics — listener redirection, application reconnect behavior, and replica synchronization state — that a written procedure alone can't verify"
+      ],
+      "answer": 3,
+      "explain": "Reading a runbook confirms the steps are documented; actually performing the failover proves those steps work in practice and reveals real issues — like an application that doesn't reconnect cleanly, or a replica that isn't as synchronized as assumed — that reading alone would never surface."
+    },
+    {
+      "q": "Beyond the technical restore commands, what should a well-written DR runbook also include?",
+      "options": [
+        "Only the exact RESTORE DATABASE syntax needed",
+        "Nothing more than a list of server names",
+        "Only a high-level summary intended for executives",
+        "Clear roles and responsibilities, communication steps, criteria for formally declaring a disaster, and validation steps to confirm the recovered system is actually usable"
+      ],
+      "answer": 3,
+      "explain": "A DR event is as much a coordination problem as a technical one — a runbook that only lists commands leaves out who decides to invoke DR, who communicates status to stakeholders, and how the team confirms the recovered environment is genuinely functional before declaring the incident over."
+    }
+  ]
+}

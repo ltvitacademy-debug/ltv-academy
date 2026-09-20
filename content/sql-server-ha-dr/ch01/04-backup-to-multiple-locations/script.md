@@ -1,0 +1,21 @@
+# Script — Backup to Multiple Locations
+
+## Segment 1 (title)
+
+A perfectly designed backup strategy can still fail at the one moment it matters, if every copy lives on the same disk as the database it's protecting. This lesson covers where backups physically land, and the real syntax for writing to more than one place.
+
+## Segment 2 (code: striping)
+
+Listing more than one DISK target in a single BACKUP statement doesn't create two independent copies — it stripes the backup, splitting it across all the listed files. That's useful for spreading I/O across drives to speed things up, but it's not redundancy. Losing any one file makes the whole set unusable.
+
+## Segment 3 (code: mirroring)
+
+Real redundancy uses the MIRROR TO clause, an Enterprise Edition feature that creates a complete, independent copy of the backup. Each mirror set needs the same number of devices as the primary set. Unlike striping, losing one copy still leaves a full, restorable backup in the other location.
+
+## Segment 4 (steps: local disk vs. network share vs. same disk)
+
+Local disk is fast and simple but shares every failure mode of the server it's on. A network share survives losing the database server itself, at the cost of network latency and a dependency on that share's own availability. A backup on the same disk as the database protects against logical mistakes, but zero physical disk failures.
+
+## Segment 5 (outro)
+
+A real strategy always gets at least one copy off the disk holding the live database — ideally off the server entirely. Next up: verifying that these backups are actually good.

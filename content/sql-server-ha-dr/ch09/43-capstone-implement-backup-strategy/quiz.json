@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-implement-backup-strategy",
+  "questions": [
+    {
+      "q": "Why does Bellhaven still need a real backup strategy once AG_Bellhaven exists?",
+      "options": [
+        "An AG protects against server and site loss, but replicates corruption or bad deletes just as fast as good data — it isn't a substitute for backups",
+        "Availability Groups don't work unless a separate backup job runs first",
+        "Backups are only needed to initially create the Availability Group",
+        "They don't — an AG makes traditional backups unnecessary"
+      ],
+      "answer": 0,
+      "explain": "An AG replicates whatever happens to the data, good or bad. Only real, restorable backups protect against logical damage like a bad delete."
+    },
+    {
+      "q": "How often does BellhavenOLTP's log backup run, and why that specific interval?",
+      "options": [
+        "Every 5 minutes, to match the business's stated 5-minute RPO directly",
+        "Every 24 hours, matching the full backup schedule",
+        "Once per week, since log backups are only for archival",
+        "There is no log backup schedule — only full and differential"
+      ],
+      "answer": 0,
+      "explain": "A log backup bounds data loss directly, so the 5-minute interval was chosen to match the stated RPO exactly."
+    },
+    {
+      "q": "Why is BellhavenOLTP's full backup marked WITH COPY_ONLY?",
+      "options": [
+        "Because only COPY_ONLY full backups (along with log backups) are supported when the backup runs on a secondary replica in an Availability Group",
+        "COPY_ONLY is required for every full backup regardless of AG membership",
+        "COPY_ONLY backups run faster than normal full backups",
+        "COPY_ONLY disables compression"
+      ],
+      "answer": 0,
+      "explain": "Secondary replicas in an AG only support COPY_ONLY full backups and log backups — a normal full backup that resets the differential base isn't supported there."
+    },
+    {
+      "q": "Why must BellhavenOLTP's differential backup run on SQLPRD01 (the primary), not a secondary?",
+      "options": [
+        "Differential backups aren't supported on secondary replicas at all — there's no way for a secondary to track the differential bitmap independently",
+        "Differential backups are always slower on a secondary",
+        "SQLPRD01 has faster disks than the other replicas",
+        "Secondary replicas cannot run any kind of backup"
+      ],
+      "answer": 0,
+      "explain": "Differential backups require tracking changes since the last full, which only the primary can do — this is a real, deliberate AG limitation, not a performance choice."
+    },
+    {
+      "q": "What does sys.fn_hadr_backup_is_preferred_replica do in the log backup job?",
+      "options": [
+        "It lets the job check whether the local replica is the one the AG's backup preference designates, so only that replica actually performs the scheduled backup",
+        "It forces a failover if a backup fails",
+        "It automatically restores a log backup on another replica",
+        "It reports the current RPO in minutes"
+      ],
+      "answer": 0,
+      "explain": "The function checks the local replica against AUTOMATED_BACKUP_PREFERENCE, letting the same job be deployed to every replica while only the correct one executes it."
+    }
+  ]
+}

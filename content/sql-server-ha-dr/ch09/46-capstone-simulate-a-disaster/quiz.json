@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-simulate-a-disaster",
+  "questions": [
+    {
+      "q": "What does this lesson's simulated disaster involve, specifically?",
+      "options": [
+        "Total loss of the Columbus site — both SQLPRD01 and SQLPRD02 unreachable at once, leaving only the asynchronous SQLDR01 replica",
+        "A single disk failure on SQLPRD01 only",
+        "A planned, routine failover between SQLPRD01 and SQLPRD02",
+        "Loss of the backup files from Lesson 43, with all servers still running"
+      ],
+      "answer": 0,
+      "explain": "This lesson tests the DR leg specifically — the scenario where the entire Columbus site, both local replicas, is gone at once."
+    },
+    {
+      "q": "Why does SQL Server refuse a plain FAILOVER command in this scenario?",
+      "options": [
+        "SQLDR01 is asynchronous and can't be confirmed as fully caught up once the other replicas that could confirm it are unreachable",
+        "FAILOVER only ever works when run from the primary replica",
+        "SQLDR01 has no failover capability at all",
+        "A plain FAILOVER would work fine and is what should be used here"
+      ],
+      "answer": 0,
+      "explain": "Because asynchronous commit doesn't guarantee the secondary is caught up, and the replicas that could confirm it are gone, SQL Server requires the explicit FORCE_FAILOVER_ALLOW_DATA_LOSS acknowledgment instead."
+    },
+    {
+      "q": "What is FORCE_FAILOVER_ALLOW_DATA_LOSS actually for?",
+      "options": [
+        "It explicitly promotes an asynchronous replica to primary while acknowledging that some committed data may not have made it there",
+        "It forces a backup to run immediately before any failover",
+        "It permanently disables the failed replicas from ever rejoining",
+        "It is used for routine, planned failovers between synchronous replicas"
+      ],
+      "answer": 0,
+      "explain": "This command is reserved specifically for promoting a replica when data loss can't be ruled out — exactly the case with an unreachable primary and an async secondary."
+    },
+    {
+      "q": "Why does Bellhaven's runbook call for measuring the actual data-loss window instead of assuming it matched the 5-minute RPO?",
+      "options": [
+        "The real gap depends on what was actually in flight when the site went down, and it must be verified, not assumed, before declaring the test successful",
+        "The RPO number is only a marketing figure with no operational meaning",
+        "SQL Server automatically reports the exact RPO after every forced failover",
+        "Measuring the gap is unnecessary once FORCE_FAILOVER_ALLOW_DATA_LOSS succeeds"
+      ],
+      "answer": 0,
+      "explain": "A forced failover's actual data loss depends on real conditions at the time — it must be measured against timestamps, not assumed to equal the target RPO."
+    },
+    {
+      "q": "What has to happen to SQLPRD01 and SQLPRD02 once the Columbus site is restored after this kind of disaster?",
+      "options": [
+        "They rejoin AG_Bellhaven as new secondaries from scratch — the forced failover broke the original quorum relationship, so they don't automatically resume their old roles",
+        "They automatically resume as primary and synchronous secondary the moment power is restored",
+        "They can never rejoin the same Availability Group again",
+        "Nothing — the AG configuration is unaffected by a forced failover"
+      ],
+      "answer": 0,
+      "explain": "A forced failover breaks the original relationship; recovering replicas have to rejoin and reseed as new secondaries under the promoted primary, SQLDR01."
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+# Script — FCI Setup, Overview
+
+## Segment 1 (title)
+
+You know the pieces now — active node, shared storage, quorum. This lesson connects them into the actual order of operations an administrator follows to stand up a real Failover Cluster Instance.
+
+## Segment 2 (steps: the real order of operations)
+
+First, the Windows Server Failover Cluster gets built — nodes joined to the domain, the Failover Clustering feature enabled, quorum established. Then shared storage is configured and added as cluster shared storage, visible to every node but mountable by one at a time. Only then does SQL Server Setup come in, choosing New SQL Server Failover Cluster Installation.
+
+## Segment 3 (code: adding more nodes later)
+
+That first setup run creates the FCI itself — instance name, virtual network name, data and log paths pointed at the shared storage. Every additional node gets added afterward by running setup again and choosing Add node to a SQL Server failover cluster, which is what actually makes that node able to host the instance during a later failover.
+
+## Segment 4 (outro)
+
+Each step depends on the one before it — setup won't even offer the failover cluster installation path until a validated WSFC cluster already exists. Next up: an honest comparison of FCI against Availability Groups, not a sales pitch for either.

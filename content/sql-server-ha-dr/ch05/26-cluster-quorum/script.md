@@ -1,0 +1,17 @@
+# Script — Cluster Quorum
+
+## Segment 1 (title)
+
+Something has to guarantee only one node is ever allowed to claim shared storage, even when the network gets messy. That's quorum — a core Windows Server Failover Clustering concept underneath every FCI and every Availability Group.
+
+## Segment 2 (code: the real quorum models)
+
+Node majority gives each node one vote and requires more than half online — clean with an odd number of nodes. Node and disk majority adds a shared witness disk as a tie-breaker for even node counts. Cloud witness replaces that disk with an Azure Storage account, useful for clusters spread across sites.
+
+## Segment 3 (steps: what happens during a network partition)
+
+If the cluster splits into groups that can't see each other, quorum runs a check: which group holds a majority of the votes? Only that group keeps running cluster resources. Every other group stops — even if those nodes are perfectly healthy — because they can't prove they aren't the isolated minority.
+
+## Segment 4 (outro)
+
+This is what makes split-brain structurally impossible, not just unlikely: at most one side of any partition can ever hold a majority. Next up: how an FCI actually gets set up, from WSFC through a running instance.

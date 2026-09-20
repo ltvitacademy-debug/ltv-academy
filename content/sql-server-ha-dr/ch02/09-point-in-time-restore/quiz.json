@@ -1,0 +1,60 @@
+{
+  "lesson": "point-in-time-restore",
+  "questions": [
+    {
+      "q": "What does the `WITH STOPAT` clause do in a log restore?",
+      "options": [
+        "Replays the transaction log only up to the specified date and time, discarding any transactions committed after that moment",
+        "Stops the entire restore chain and rolls it back completely",
+        "Pauses the restore until manually resumed",
+        "Restores only the most recent log backup, ignoring earlier ones"
+      ],
+      "answer": 0,
+      "explain": "STOPAT lets SQL Server roll the log forward to an exact moment and stop there, as if later transactions never happened."
+    },
+    {
+      "q": "In a full + differential + log restore chain, what is the correct order and RECOVERY pattern?",
+      "options": [
+        "Full, then differential, then log backups in sequence — every step but the last uses NORECOVERY",
+        "Log backups first, then differential, then full — RECOVERY on every step",
+        "Any order is fine as long as WITH RECOVERY is used on the full backup",
+        "Differential first, then full, then logs, with NORECOVERY only on the full"
+      ],
+      "answer": 0,
+      "explain": "The chain must be applied in the order the backups were taken, and only the final statement in the chain uses WITH RECOVERY."
+    },
+    {
+      "q": "Why does point-in-time restore require FULL (or BULK_LOGGED) recovery rather than SIMPLE?",
+      "options": [
+        "SIMPLE recovery truncates the log automatically, so there's no unbroken log backup chain to roll forward through",
+        "SIMPLE recovery doesn't support full backups",
+        "Point-in-time restore is a licensing feature unrelated to recovery model",
+        "FULL recovery is required by SQL Server for any restore of any kind"
+      ],
+      "answer": 0,
+      "explain": "An unbroken log chain is required to roll forward to an arbitrary point, and SIMPLE recovery's automatic truncation prevents that chain from existing."
+    },
+    {
+      "q": "What limitation does BULK_LOGGED recovery introduce for point-in-time restore, per this lesson?",
+      "options": [
+        "If the target moment falls inside a minimally-logged bulk operation, SQL Server can't stop at an arbitrary point inside it",
+        "BULK_LOGGED prevents point-in-time restore entirely",
+        "BULK_LOGGED requires a differential backup before every log restore",
+        "BULK_LOGGED restores are always slower than FULL recovery restores"
+      ],
+      "answer": 0,
+      "explain": "This is the same tradeoff introduced in Lesson 1 — BULK_LOGGED sacrifices precise point-in-time recovery through minimally-logged bulk operations."
+    },
+    {
+      "q": "A restore chain has the full backup, the differential, and log backups 1 and 3 — but log backup 2 is missing. What happens if you try to STOPAT a time covered by log backup 3?",
+      "options": [
+        "The restore fails — the chain is broken because log backup 3's LSN range can't connect to log backup 1 without log backup 2",
+        "SQL Server skips the missing log backup automatically and restores anyway",
+        "The restore succeeds because STOPAT only checks the final log backup, not the whole chain",
+        "The restore succeeds but silently loses only the transactions from the missing backup"
+      ],
+      "answer": 0,
+      "explain": "Log backups must connect via unbroken LSN ranges. A gap anywhere in the sequence breaks the entire chain, regardless of which backup you're ultimately trying to restore to."
+    }
+  ]
+}

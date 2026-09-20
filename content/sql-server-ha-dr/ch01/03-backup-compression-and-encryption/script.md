@@ -1,0 +1,21 @@
+# Script — Backup Compression & Encryption
+
+## Segment 1 (title)
+
+Lesson 2 designed when full, differential, and log backups run. This lesson covers what happens to the bytes they produce — compressing them so they're cheaper to store and move, and encrypting them so they're safe wherever they end up.
+
+## Segment 2 (code: compression syntax and tradeoff)
+
+Adding COMPRESSION to a backup statement typically shrinks the file 50 to 70 percent, because SQL Server compresses the data as it writes it. That's not free — compression is CPU-bound work happening on the same server running production queries, so the right call depends on whether disk and network I/O or CPU is the scarcer resource.
+
+## Segment 3 (code: certificate then encryption)
+
+Encryption isn't a flag you just add. SQL Server requires a certificate to already exist before a backup can reference it — create the certificate first, then the backup statement points at it directly with ENCRYPTION and ALGORITHM equals AES_256, the recommended choice.
+
+## Segment 4 (code: backing up the certificate)
+
+The certificate used to encrypt a backup is the only thing that can decrypt it later. If that certificate is lost — server rebuilt, never backed up — every encrypted backup it protected becomes permanently unrestorable, even though the file itself is perfectly intact. Back up the certificate, separately from the backups it protects.
+
+## Segment 5 (outro)
+
+Compression earns its cost on network-bound destinations or tight disk budgets. Encryption earns its cost under compliance requirements or when backups leave a controlled environment. Neither is needed everywhere. Next up: backing up to more than one location at once.

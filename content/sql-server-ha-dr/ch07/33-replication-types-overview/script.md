@@ -1,0 +1,17 @@
+# Script — Replication Types, Overview
+
+## Segment 1 (title)
+
+This chapter moves to a different technology family. Availability Groups, FCI, log shipping, and mirroring exist to keep a database available after a failure. Replication is not primarily an HA/DR mechanism — it exists to distribute data for other reasons, and mixing that up is a common, expensive mistake.
+
+## Segment 2 (code: three real types)
+
+Transactional replication captures changes from the log and sends them near-real-time, one direction — the workhorse type. Merge replication allows changes on both sides with conflict resolution, but it's largely legacy today. Snapshot replication takes a full periodic copy with no incremental tracking, and it's also the required first step before the other two types can start.
+
+## Segment 3 (steps: not an HA/DR mechanism)
+
+An Availability Group or FCI protects the whole database with automatic or near-automatic failover. Replication only moves a defined set of objects to independent subscriber databases — if the publisher goes down, subscribers just stop receiving updates, they don't take over its workload.
+
+## Segment 4 (outro)
+
+Choosing the right type starts with asking why data needs to move, not how fast. Next up: transactional replication's real publisher, distributor, and subscriber architecture.

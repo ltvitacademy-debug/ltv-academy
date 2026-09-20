@@ -1,0 +1,21 @@
+# Script — Point-in-Time Restore
+
+## Segment 1 (title)
+
+Lessons seven and eight built restore chains that land you exactly on a backup's own timestamp. Point-in-time restore is the payoff chapter one promised for running FULL recovery — restoring to any specific moment between backups, using the transaction log to roll forward and stop wherever you choose.
+
+## Segment 2 (code: the full chain, in order)
+
+The chain extends the same pattern one link further: full, then differential, then log backups in the exact order they were taken. Every statement but the last uses NORECOVERY — the same rule from the last two lessons, just applied across a longer chain.
+
+## Segment 3 (steps: why STOPAT matters)
+
+STOPAT tells SQL Server to replay the log only up to a specific date and time, then stop and recover — anything committed after that moment is discarded, as if it never happened. That's what lets you restore to right before a bad delete, not just to the last backup's timestamp.
+
+## Segment 4 (code: the requirement this was built on)
+
+None of this works without an unbroken log chain, and SIMPLE recovery prevents that by truncating the log automatically. BULK_LOGGED mostly works too, except inside a minimally-logged bulk operation, where STOPAT can't land on an arbitrary point.
+
+## Segment 5 (outro)
+
+This is exactly why chapter one treated FULL recovery as the real default. Next up: restoring a backup to a completely different server, using the MOVE clause and dealing with orphaned users.
