@@ -1,0 +1,21 @@
+# Script — Sales Cloud vs. Service Cloud
+
+## Segment 1 (title)
+
+Salesforce isn't one monolithic product. It's a shared platform with different "Clouds" built on top for different jobs — and the two you'll run into constantly are Sales Cloud and Service Cloud.
+
+## Segment 2 (code: Sales Cloud pipeline)
+
+Sales Cloud manages the sales process. A Lead comes in, gets qualified, and converts into an Opportunity, which reps push through stages until it's won or lost. A Sales Cloud report is almost always asking a pipeline question.
+
+## Segment 3 (code: Service Cloud support)
+
+Service Cloud manages customer support after the sale closes. Its center of gravity is the Case — a customer's question or issue, tracked from open to resolved. Mixing up a Service Cloud report for a Sales Cloud one is a fast way to hand someone the wrong number.
+
+## Segment 4 (steps: shared platform)
+
+Here's what matters most: Sales Cloud and Service Cloud aren't separate databases. They share foundational objects — Account and Contact — so a single company can have Opportunities and Cases at the same time, joinable on the same shared model.
+
+## Segment 5 (outro)
+
+That shared model is exactly why cross-Cloud questions are answerable at all. Next up: Editions and the AppExchange.

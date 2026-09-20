@@ -1,0 +1,21 @@
+# Script — Salesforce Terminology for Analysts
+
+## Segment 1 (title)
+
+Every Salesforce conversation assumes you know a small set of core vocabulary. None of it is complicated, but getting it precise now means nothing later trips over a word that means something more specific than it sounds like.
+
+## Segment 2 (code: org, object, record)
+
+An org is one company's whole self-contained Salesforce instance. An object is a table-like structure for a type of thing — Account, Contact, Opportunity. A record is one specific instance of that object, like one particular company's Account. Object is the table, record is the row.
+
+## Segment 3 (code: field, tab, app)
+
+A field is one piece of data on an object — Amount and Close Date on Opportunity. A tab is the clickable element that opens a list view for an object. And an app is a bundle of tabs for one job — the Sales app bundles what a rep needs, the Service app bundles what a support agent needs.
+
+## Segment 4 (steps: maps to a query)
+
+Here's why precision matters: when you eventually write a query selecting Amount from Opportunity where the stage is Closed Won, you're querying an object, for specific fields, across every matching record in the org. Every word in that query maps straight back to this lesson.
+
+## Segment 5 (outro)
+
+Get this vocabulary solid now and the rest of this course will click faster. Next up: why analysts need to understand the data model, not just query it.

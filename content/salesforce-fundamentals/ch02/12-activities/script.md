@@ -1,0 +1,21 @@
+# Script — Activities
+
+## Segment 1 (title)
+
+Chapter Two closes with an object type that's easy to overlook but shows up in almost every real analysis: Activities. Every call logged, every meeting scheduled, runs through this.
+
+## Segment 2 (code: not one object)
+
+In casual conversation, people say "log an Activity" as if it were one object. It isn't. Activities is really an umbrella term covering two separate standard objects: Task and Event, grouped together in one shared related list in the UI.
+
+## Segment 3 (steps: Task vs Event)
+
+A Task is an action item with no fixed calendar time — call this Lead back, send the proposal. An Event is scheduled at a specific time — a meeting, a call with a defined start and end. Both can relate to a Lead, Contact, Opportunity, or Case.
+
+## Segment 4 (code: why it matters)
+
+Two Opportunities with the identical Amount and Stage can have wildly different Activity histories — one with a dozen logged calls, another with almost none. That difference is often what actually predicts whether a deal closes.
+
+## Segment 5 (outro)
+
+Analyzing rep activity or deals at risk means querying Task and Event directly, not just Opportunity. Next up, Chapter Three begins with the first core Service Cloud object: Cases.
