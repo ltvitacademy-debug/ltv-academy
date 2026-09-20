@@ -1,0 +1,17 @@
+# Script — Configuring a Sharded Cluster
+
+## Segment 1 (title)
+
+Lesson 25 laid out the pieces: config servers, shards, mongos. This lesson walks the real sequence for standing a sharded cluster up, in a deliberate order — the routing and metadata layers exist before any data gets distributed.
+
+## Segment 2 (steps: deployment order)
+
+Config servers come up first, as their own replica set, each mongod started with --configsvr. Then each shard is deployed as its own replica set, using --shardsvr. Then mongos is started, pointed at the config server replica set, and each shard is registered with sh.addShard().
+
+## Segment 3 (code: enable sharding)
+
+Sharding is enabled per database with sh.enableSharding(), then a specific collection is sharded with the chosen shard key using sh.shardCollection() — here, a hashed customerId. From there, mongos and the config servers split and migrate chunks automatically as data grows.
+
+## Segment 4 (outro)
+
+A DBA's job becomes monitoring balance and chunk migration health, not manually moving data. Next up: MongoDB Atlas, the managed cloud service that runs all of this for you.

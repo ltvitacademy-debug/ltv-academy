@@ -1,0 +1,21 @@
+# Script — The MongoDB Query Language: Filters & Projections
+
+## Segment 1 (title)
+
+You already know how to filter rows in T-SQL with a WHERE clause. MongoDB's find() does the same job with a JSON-like query document instead. Once you see the pattern, it's mostly a change of syntax, not a change of thinking.
+
+## Segment 2 (code: comparison operators)
+
+A find() call takes a filter document — a key for each field, and either a literal for equality or an operator for something more specific. $gt, $gte, $lt, $lte, and $ne map directly to the comparison operators you already use in SQL. $in matches against a list, exactly like SQL's IN.
+
+## Segment 3 (code: combining conditions)
+
+List more than one field in a filter document and MongoDB ANDs them together implicitly, no operator required — just like comma-separated conditions in a WHERE clause. $or takes an array of condition documents and matches if any of them are true, the same logic as SQL's OR.
+
+## Segment 4 (code: projections)
+
+The second argument to find() is the projection, MongoDB's equivalent of a SELECT column list. List fields with a 1 to include them, or a 0 to exclude them — but not both at once outside of _id, which returns by default unless you exclude it explicitly.
+
+## Segment 5 (outro)
+
+find() answers "which documents match?" The aggregation pipeline answers a bigger question: how should the matching data be transformed, grouped, and reshaped on its way back to you. That's next.

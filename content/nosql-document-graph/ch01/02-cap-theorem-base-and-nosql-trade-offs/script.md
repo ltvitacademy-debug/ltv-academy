@@ -1,0 +1,21 @@
+# Script — CAP Theorem, BASE & NoSQL Trade-offs
+
+## Segment 1 (title)
+
+Every NoSQL platform in this course makes deliberate tradeoffs under the hood, and the CAP theorem is the reason those tradeoffs exist. This lesson covers CAP and the BASE model — not academic trivia, but the real constraints behind every distributed database decision ahead.
+
+## Segment 2 (code: the CAP theorem)
+
+CAP stands for Consistency, Availability, and Partition tolerance. A distributed system can only guarantee two of these three at the same time. But network partitions aren't optional in a distributed system — they will happen. So the real forced choice is what happens during a partition: sacrifice consistency, or sacrifice availability.
+
+## Segment 3 (code: BASE)
+
+Relational databases target ACID. Many NoSQL systems instead target BASE — Basically Available, Soft state, Eventual consistency. It's not ACID done sloppily. It's a deliberate choice for workloads where a slightly stale read beats a failed request — a product page, a social feed, a cart.
+
+## Segment 4 (steps: where real platforms land)
+
+No production system is purely CP or purely AP. MongoDB leans consistent by default with tunable read and write concerns. Cassandra leans available, with per-query tunable consistency levels. Azure Cosmos DB makes the tradeoff explicit with five named consistency levels you choose directly.
+
+## Segment 5 (outro)
+
+CAP and BASE aren't a verdict that NoSQL is less correct — they describe tradeoffs every distributed system faces. Next up: comparing the four major NoSQL data model families and what each is actually good at.

@@ -1,0 +1,17 @@
+# Script — Private Endpoints & Firewall Rules for Cosmos DB
+
+## Segment 1 (title)
+
+The previous lesson introduced network isolation as one layer of Cosmos DB security. This lesson goes deeper into the two mechanisms you actually configure: IP firewall rules, and Private Endpoints — a materially stronger option.
+
+## Segment 2 (code: two very different postures)
+
+An IP firewall rule is an allow-list on top of a public endpoint that still exists — it filters who can reach it. A Private Endpoint gives Cosmos DB a private IP inside your own VNet, using Azure Private Link, and lets you disable public network access entirely. One filters a public surface; the other removes it.
+
+## Segment 3 (steps: how each is configured)
+
+A firewall rule is a list of specific public IPs or CIDR ranges. A Private Endpoint is a private network interface provisioned inside your VNet, mapped to your Cosmos DB account. And a private DNS zone redirects the account's normal hostname to that private IP, so application connection strings don't have to change.
+
+## Segment 4 (outro)
+
+Firewall rules are quick and reasonable for a small number of known IPs; Private Endpoints are the recommended posture for production. Next up: monitoring Cosmos DB with Azure Monitor — RU consumption, diagnostic logs, and real metrics.
