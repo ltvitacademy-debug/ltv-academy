@@ -1,0 +1,21 @@
+# Script — Oracle Authentication & User Accounts
+
+## Segment 1 (title)
+
+SQL Server gives you Windows or SQL Server Authentication. Oracle's story is more layered — password authentication, OS authentication, and password-file authentication for remote administrative connections all solve different problems, and knowing which one is doing the work matters.
+
+## Segment 2 (steps: three ways Oracle authenticates)
+
+Password authentication is the default — the database checks a stored hash per user, just like SQL Server Authentication. OS authentication trusts the operating system: anyone in the local dba OS group can connect with sqlplus slash as sysdba, no password asked. Password-file authentication, built with orapwd, is what makes SYSDBA or SYSOPER work over a remote connection, even before the database is mounted.
+
+## Segment 3 (code: CREATE USER syntax)
+
+A single CREATE USER statement creates both identity and database presence — there's no separate login-versus-user split like in SQL Server. An account created IDENTIFIED EXTERNALLY has no database password at all; it relies entirely on OS trust.
+
+## Segment 4 (code: SYS vs. SYSTEM)
+
+SYS owns the data dictionary itself and should only ever connect AS SYSDBA — never for routine work. SYSTEM is a default account with the DBA role granted, useful for administration, but it is not the dictionary owner. Real practice is named, individual DBA accounts so actions are attributable to a person.
+
+## Segment 5 (outro)
+
+Next up: roles, privileges, and grants in Oracle — the real GRANT and REVOKE syntax, system versus object privileges, and predefined roles like CONNECT, RESOURCE, and DBA.

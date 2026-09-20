@@ -30,10 +30,13 @@ export const CROSS_PLATFORM_DBA_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Foundations: Thinking Cross-Platform",
     lessons: [
-      L(1, "course-introduction-from-sql-server-dba-to-cross-platform-dba", "Course Introduction: From SQL Server DBA to Cross-Platform DBA"),
-      L(2, "why-organizations-run-multiple-database-platforms", "Why Organizations Run Multiple Database Platforms"),
-      L(3, "relational-concepts-that-transfer-vs-what-doesnt", "Relational Concepts That Transfer vs. What Doesn't"),
-      L(4, "comparing-sql-server-oracle-mysql-postgresql", "Comparing SQL Server, Oracle, MySQL & PostgreSQL at a Glance"),
+      L(1, "course-introduction-from-sql-server-dba-to-cross-platform-dba", "Course Introduction: From SQL Server DBA to Cross-Platform DBA", {
+        contentDir: "ch01/01-course-introduction-from-sql-server-dba-to-cross-platform-dba",
+        // videoUrl/durationLabel pending
+      }),
+      L(2, "why-organizations-run-multiple-database-platforms", "Why Organizations Run Multiple Database Platforms", { contentDir: "ch01/02-why-organizations-run-multiple-database-platforms" }),
+      L(3, "relational-concepts-that-transfer-vs-what-doesnt", "Relational Concepts That Transfer vs. What Doesn't", { contentDir: "ch01/03-relational-concepts-that-transfer-vs-what-doesnt" }),
+      L(4, "comparing-sql-server-oracle-mysql-postgresql", "Comparing SQL Server, Oracle, MySQL & PostgreSQL at a Glance", { contentDir: "ch01/04-comparing-sql-server-oracle-mysql-postgresql" }),
       L(5, "setting-up-your-cross-platform-lab-environment", "Setting Up Your Cross-Platform Lab Environment"),
     ],
   },
@@ -53,8 +56,8 @@ export const CROSS_PLATFORM_DBA_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Oracle Security & User Management",
     lessons: [
-      L(12, "oracle-authentication-and-user-accounts", "Oracle Authentication & User Accounts"),
-      L(13, "roles-privileges-and-grants-in-oracle", "Roles, Privileges & Grants in Oracle"),
+      L(12, "oracle-authentication-and-user-accounts", "Oracle Authentication & User Accounts", { contentDir: "ch03/12-oracle-authentication-and-user-accounts" }),
+      L(13, "roles-privileges-and-grants-in-oracle", "Roles, Privileges & Grants in Oracle", { contentDir: "ch03/13-roles-privileges-and-grants-in-oracle" }),
       L(14, "profiles-password-policies-resource-limits", "Profiles, Password Policies & Resource Limits"),
       L(15, "oracle-auditing-and-fine-grained-access-control", "Oracle Auditing & Fine-Grained Access Control"),
       L(16, "transparent-data-encryption-in-oracle", "Transparent Data Encryption in Oracle"),
@@ -76,7 +79,7 @@ export const CROSS_PLATFORM_DBA_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Oracle Performance Tuning",
     lessons: [
-      L(23, "oracle-performance-tuning-methodology", "Oracle Performance Tuning Methodology"),
+      L(23, "oracle-performance-tuning-methodology", "Oracle Performance Tuning Methodology", { contentDir: "ch05/23-oracle-performance-tuning-methodology" }),
       L(24, "reading-oracle-execution-plans", "Reading Oracle Execution Plans"),
       L(25, "oracle-optimizer-statistics-cost-based-optimizer", "Oracle Optimizer Statistics & the Cost-Based Optimizer"),
       L(26, "awr-ash-oracle-diagnostic-tools", "AWR, ASH & Oracle Diagnostic Tools"),
@@ -98,7 +101,7 @@ export const CROSS_PLATFORM_DBA_CHAPTERS: ChapterMeta[] = [
     n: 7,
     title: "MySQL Architecture & Installation",
     lessons: [
-      L(33, "mysql-architecture-server-layer-vs-storage-engine-layer", "MySQL Architecture: Server Layer vs. Storage Engine Layer"),
+      L(33, "mysql-architecture-server-layer-vs-storage-engine-layer", "MySQL Architecture: Server Layer vs. Storage Engine Layer", { contentDir: "ch07/33-mysql-architecture-server-layer-vs-storage-engine-layer" }),
       L(34, "innodb-vs-myisam-choosing-a-storage-engine", "InnoDB vs. MyISAM & Choosing a Storage Engine"),
       L(35, "installing-mysql-and-initial-configuration", "Installing MySQL & Initial Configuration"),
       L(36, "mysql-configuration-files-and-system-variables", "MySQL Configuration Files & System Variables"),
@@ -142,7 +145,7 @@ export const CROSS_PLATFORM_DBA_CHAPTERS: ChapterMeta[] = [
     n: 11,
     title: "MySQL Replication & High Availability",
     lessons: [
-      L(53, "mysql-replication-fundamentals", "MySQL Replication Fundamentals"),
+      L(53, "mysql-replication-fundamentals", "MySQL Replication Fundamentals", { contentDir: "ch11/53-mysql-replication-fundamentals" }),
       L(54, "configuring-source-replica-replication", "Configuring Source-Replica Replication"),
       L(55, "group-replication-and-mysql-innodb-cluster", "Group Replication & MySQL InnoDB Cluster"),
       L(56, "mysql-router-and-read-write-splitting", "MySQL Router & Read/Write Splitting"),
