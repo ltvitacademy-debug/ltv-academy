@@ -1,0 +1,21 @@
+# Script — MySQL Migration & Upgrade Strategies
+
+## Segment 1 (title)
+
+Every platform eventually needs a version upgrade, and every platform has its own rules about how far you can jump and what happens to the data. This lesson closes out the MySQL section with the two real upgrade paths a MySQL DBA chooses between.
+
+## Segment 2 (code: in-place upgrade)
+
+An in-place upgrade swaps the server binaries while keeping the same data directory. In current MySQL 8.0 and later, the server upgrades its own data dictionary automatically on startup. Before running one, MySQL Shell's checkForServerUpgrade reports deprecated features and incompatibilities. The real limit is that it only supports one GA series at a time.
+
+## Segment 3 (code: logical dump and reload)
+
+A logical dump and reload exports data and schema and reloads it into a freshly installed target version. It's required for bigger version jumps or a move to a different deployment entirely. MySQL Shell's dumpInstance and loadDump utilities dump and load in parallel and are the current recommended tool for a migration of any real size.
+
+## Segment 4 (steps: choosing a path)
+
+In-place is fast but limited to one GA series per step. Dump and reload handles bigger jumps at the cost of time. And since MySQL 8.4, Oracle runs two release tracks — fast-moving Innovation releases and stable Long Term Support releases — with production systems generally favoring LTS.
+
+## Segment 5 (outro)
+
+That closes out the MySQL section of this course. Every lesson from here forward moves to PostgreSQL, starting with the same architecture question that opens every new platform: what does the server actually look like once it's running, in processes and memory.

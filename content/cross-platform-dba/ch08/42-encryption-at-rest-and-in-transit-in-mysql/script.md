@@ -1,0 +1,21 @@
+# Script — Encryption at Rest and in Transit in MySQL
+
+## Segment 1 (title)
+
+This closes out MySQL's security chapter with two distinct encryption questions: is the data unreadable if someone steals the physical disk or a backup file, and is it unreadable if someone intercepts it on the network. MySQL answers both, configured separately.
+
+## Segment 2 (code: InnoDB tablespace encryption)
+
+InnoDB tablespace encryption uses a two-tier key architecture to AES-encrypt table data files on disk. It protects a stolen disk, snapshot, or backup file, but not a legitimate authenticated connection — MySQL decrypts transparently for any query that has the privilege to read the table.
+
+## Segment 3 (code: TLS/SSL configuration)
+
+Encryption in transit is configured with certificates referenced in my.cnf. require_secure_transport, set to ON, forces every connection to the server to use TLS, rejecting any attempt to connect in plaintext.
+
+## Segment 4 (code: per-account TLS)
+
+Beyond a server-wide requirement, individual accounts can be required to use TLS specifically. REQUIRE SSL mandates an encrypted connection; REQUIRE X509 goes further, requiring the client to present a valid certificate — genuine mutual authentication.
+
+## Segment 5 (outro)
+
+At-rest and in-transit encryption solve different problems and neither substitutes for the other. Next up: Chapter 9 begins with MySQL backup strategies — logical versus physical backups.

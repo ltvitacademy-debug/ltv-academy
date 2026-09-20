@@ -1,0 +1,21 @@
+# Script — Reading Oracle Execution Plans
+
+## Segment 1 (title)
+
+Oracle Performance Tuning Methodology gave you the loop: measure, identify, change, verify. Reading an execution plan is how you do the identify step for one slow statement, using Oracle's own tools and operators.
+
+## Segment 2 (code: EXPLAIN PLAN vs DISPLAY_CURSOR)
+
+EXPLAIN PLAN followed by DBMS_XPLAN.DISPLAY shows what the optimizer predicts it will do, without actually running the statement. More trustworthy is DBMS_XPLAN.DISPLAY_CURSOR, which shows the plan Oracle actually used, and with gather_plan_statistics enabled it adds actual rows next to the optimizer's estimate.
+
+## Segment 3 (steps: three operators)
+
+Most plans lean on a handful of operators. TABLE ACCESS FULL reads every block — not automatically bad, just worth questioning against a large table. INDEX RANGE SCAN reads a contiguous slice of an index. NESTED LOOPS probes the inner input once for every row from the outer input.
+
+## Segment 4 (code: reading the tree)
+
+The reading rule is the opposite of top-to-bottom: the most-indented line inside a group generally executes first. The Id column traces parent and child steps, and the Predicate Information section below the plan shows exactly which predicate drove access versus which one just filtered rows after they were read.
+
+## Segment 5 (outro)
+
+Those cost and row estimates you just read don't come from nowhere — they come from statistics the optimizer gathered about your data. Next up: Oracle's optimizer statistics and the cost-based optimizer.

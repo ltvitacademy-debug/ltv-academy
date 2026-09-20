@@ -1,0 +1,21 @@
+# Script — Indexing Strategies in MySQL
+
+## Segment 1 (title)
+
+Indexing trades write cost for read speed — that principle doesn't change on MySQL. What genuinely changes is that InnoDB organizes every table's actual data storage around its primary key, which shapes how you think about primary keys and composite indexes here specifically.
+
+## Segment 2 (code: InnoDB's clustered primary key)
+
+In InnoDB, a table's data rows are physically stored in primary key order inside the primary key's own B-tree — that's what clustered means. Every secondary index stores the primary key value alongside its own columns, so a secondary index lookup requires an extra step back into the clustered index.
+
+## Segment 3 (code: why key choice matters)
+
+A sequentially increasing primary key lets new rows append to the end of the B-tree efficiently. A randomly-ordered primary key like a UUID forces inserts into the middle of the structure repeatedly, causing page splits and fragmentation that a sequential key avoids.
+
+## Segment 4 (code: composite index order)
+
+A composite index is only useful for conditions matching its columns as a left-to-right prefix. An index on last_name, first_name serves queries filtering on last_name alone or both columns together, but not a query filtering on first_name alone.
+
+## Segment 5 (outro)
+
+Getting composite index column order wrong is one of the most common real causes of an unexpected key: NULL in EXPLAIN output. Next up: MySQL's Performance Schema and sys schema, the deeper instrumentation layer behind these tuning decisions.

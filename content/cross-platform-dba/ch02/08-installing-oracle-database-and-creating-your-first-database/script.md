@@ -1,0 +1,17 @@
+# Script — Installing Oracle Database & Creating Your First Database
+
+## Segment 1 (title)
+
+There's a distinction buried in this lesson's title that matters: installing Oracle Database software and creating a database are two separate steps, done with two separate tools — not one combined setup wizard.
+
+## Segment 2 (code: OUI vs DBCA)
+
+The Oracle Universal Installer, OUI, installs the software into a directory structure called an Oracle Home — at that point no database exists yet. The Database Configuration Assistant, DBCA, is the separate tool that actually creates a database, typically a container database with one or more pluggable databases inside it.
+
+## Segment 3 (steps: the ordered flow)
+
+The full ordered flow is: meet the prerequisites, run OUI to install the software, run DBCA to create the database, and then verify by connecting with SQL*Plus. This course's lab container already has this flow baked into its image, but a real DBA job will eventually put you in front of a bare server where you run these steps yourself.
+
+## Segment 4 (outro)
+
+Next up: Oracle Net Services and listener configuration — how a client actually finds and connects to a database once it exists, which works nothing like SQL Server's connection model.

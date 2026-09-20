@@ -1,0 +1,21 @@
+# Script — RMAN Architecture & Configuration
+
+## Segment 1 (title)
+
+RMAN isn't a single command — it's a client that connects to the target database, uses channels to actually read and write backup pieces, and records what it did somewhere durable. Where that metadata lives is a real architecture decision.
+
+## Segment 2 (code: target, channels, catalog)
+
+By default, RMAN's metadata lives in the target database's own control file, bounded by CONTROL_FILE_RECORD_KEEP_TIME. A recovery catalog is a separate, optional schema that survives control file loss and can track many databases centrally.
+
+## Segment 3 (code: CONFIGURE defaults)
+
+CONFIGURE commands set persistent defaults RMAN applies to every future session. Retention policy decides which backups are obsolete, backup optimization skips unchanged files, and controlfile autobackup protects against losing the control file entirely.
+
+## Segment 4 (steps: control file or catalog)
+
+It comes down to two choices for where metadata lives: the control file, which is the simple default, or a recovery catalog, which is recommended once you're managing more than a small, single-database shop.
+
+## Segment 5 (outro)
+
+Next up: full and incremental backups with RMAN — level 0, level 1, cumulative versus differential, and how block change tracking speeds it all up.

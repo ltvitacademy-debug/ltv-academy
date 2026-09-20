@@ -1,0 +1,21 @@
+# Script — AWR, ASH & Oracle Diagnostic Tools
+
+## Segment 1 (title)
+
+Oracle Performance Tuning Methodology already mentioned AWR and ADDM in passing. This lesson goes deeper on the two repositories that make Oracle's whole DB-Time methodology work: AWR for history, and ASH for a near-real-time view.
+
+## Segment 2 (code: AWR)
+
+AWR automatically snapshots instance-wide performance data — wait events, SQL stats, the time model — on a schedule, by default every sixty minutes, stored in SYSAUX with an 8-day default retention. You can generate a readable report comparing two snapshots, or query the DBA_HIST views directly for scripted analysis.
+
+## Segment 3 (steps: AWR vs ASH vs licensing)
+
+AWR gives you hourly, instance-wide history. ASH samples every active session every single second. And both of them sit behind the Diagnostics Pack — a licensed Oracle Enterprise Edition option, not something that's just automatically available the way SQL Server's Query Store is.
+
+## Segment 4 (code: ASH)
+
+ASH lives first in a circular buffer in the SGA, queryable live through V$ACTIVE_SESSION_HISTORY, with a subset persisted into AWR as DBA_HIST_ACTIVE_SESS_HISTORY for longer retention. Because it samples every second instead of aggregating, ASH catches a short-lived spike that an hourly AWR summary would smooth right over.
+
+## Segment 5 (outro)
+
+Everything so far in this chapter has been about diagnosing a problem. Next up: preventing one — Oracle's indexing strategies, including a type SQL Server doesn't have.

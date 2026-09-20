@@ -1,0 +1,60 @@
+{
+  "lesson": "vacuum-autovacuum-and-table-bloat",
+  "questions": [
+    {
+      "q": "Under PostgreSQL's MVCC model, what actually happens when a row is UPDATEd?",
+      "options": [
+        "A new row version is written and the old version is marked no-longer-current, rather than overwriting the row in place",
+        "The row is immediately overwritten in place with no history kept",
+        "The row is deleted and re-inserted with a new primary key",
+        "The change is written only to the WAL and never to the table"
+      ],
+      "answer": 0,
+      "explain": "MVCC keeps the old version around (as a dead tuple once no transaction needs it) so concurrent readers can still see a consistent snapshot."
+    },
+    {
+      "q": "What is a 'dead tuple'?",
+      "options": [
+        "A row version no active transaction can see anymore, but which still physically occupies space",
+        "A row that has been permanently deleted from disk",
+        "A corrupted row that failed a checksum",
+        "A row waiting to be indexed"
+      ],
+      "answer": 0,
+      "explain": "Dead tuples are the leftover old row versions from UPDATEs and DELETEs under MVCC — no longer visible, but not yet reclaimed."
+    },
+    {
+      "q": "What is the key difference between VACUUM and VACUUM FULL?",
+      "options": [
+        "VACUUM marks dead tuple space reusable without shrinking the file; VACUUM FULL rewrites the table and returns space to the OS but requires an exclusive lock",
+        "VACUUM and VACUUM FULL do exactly the same thing",
+        "VACUUM FULL runs automatically every night while VACUUM must be run manually",
+        "VACUUM only works on indexes, VACUUM FULL only works on tables"
+      ],
+      "answer": 0,
+      "explain": "Plain VACUUM reclaims space for reuse within the existing file; VACUUM FULL is a heavier, lock-exclusive rewrite that actually shrinks the file on disk."
+    },
+    {
+      "q": "What is table bloat, per this lesson?",
+      "options": [
+        "Dead tuples accumulating faster than vacuuming reclaims them, growing the table beyond what live data needs",
+        "A table that has too many indexes",
+        "A table that exceeds PostgreSQL's maximum row limit",
+        "A normal, harmless side effect of running ANALYZE"
+      ],
+      "answer": 0,
+      "explain": "When vacuuming — manual or auto — falls behind the rate of dead tuple creation, the table and its indexes grow larger than the live data requires."
+    },
+    {
+      "q": "What can cause autovacuum to fall behind on a table, per this lesson?",
+      "options": [
+        "A long-running transaction holding back what VACUUM can consider dead, or autovacuum settings too conservative for the table's write volume",
+        "Running too many SELECT queries against the table",
+        "Having too few columns in the table",
+        "Using a B-tree index instead of a GIN index"
+      ],
+      "answer": 0,
+      "explain": "MVCC must preserve row versions a still-running transaction might need to see, and conservative autovacuum thresholds can let dead tuples pile up on high-write tables."
+    }
+  ]
+}

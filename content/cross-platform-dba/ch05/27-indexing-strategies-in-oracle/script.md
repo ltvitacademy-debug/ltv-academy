@@ -1,0 +1,21 @@
+# Script — Indexing Strategies in Oracle
+
+## Segment 1 (title)
+
+Reading Oracle Execution Plans showed index range scans and unique scans as operators the optimizer reaches for. This lesson is about giving it good options to reach for — including a category of index SQL Server doesn't really have.
+
+## Segment 2 (code: B-tree)
+
+Oracle's default is the B-tree index, and it behaves like the nonclustered index you already know — a balanced tree suited to high-cardinality columns and equality or range predicates. The real difference: Oracle has no clustered index by default, a plain table is a heap, and an index-organized table is a distinct, deliberately chosen analog, not the default.
+
+## Segment 3 (steps: bitmap indexes)
+
+Bitmap indexes are a genuinely different structure — one bitmap per distinct value. They're built for low-cardinality columns, and bitwise AND and OR across bitmaps are cheap, exactly what an analytical query needs. But they're a bad fit for OLTP: updating one row can lock an entire bitmap segment covering many rows.
+
+## Segment 4 (code: function-based indexes)
+
+A function-based index indexes the result of an expression instead of the raw column, solving the classic problem where wrapping a column in a function, like UPPER, defeats a plain B-tree index entirely.
+
+## Segment 5 (outro)
+
+Everything through this chapter has been about tuning a single instance. Next up: Oracle Data Guard, Oracle's own high-availability and disaster-recovery story, starting Chapter Six.

@@ -1,0 +1,21 @@
+# Script — Oracle GoldenGate for Replication
+
+## Segment 1 (title)
+
+Data Guard and RAC both stay inside one world: Oracle talking to Oracle. Oracle GoldenGate is a separate product for a different job — real-time, log-based replication that can move specific data and cross platform boundaries entirely.
+
+## Segment 2 (steps: three replication modes)
+
+GoldenGate can replicate Oracle to Oracle selectively, table by table, not necessarily the whole database. It can replicate heterogeneously — Oracle to SQL Server, MySQL to Oracle, or into Kafka or a cloud warehouse — something Data Guard simply cannot do. And it can replicate bidirectionally, active-active, with conflict detection and resolution rules.
+
+## Segment 3 (code: core components)
+
+GoldenGate reads the source database's own transaction logs directly through its Extract process, writing captured changes into its own platform-neutral trail files. A Data Pump process can ship those trail files across the network — a name it happens to share with Oracle's export and import utility, but nothing else. Replicat applies the changes on the target, and can transform the data along the way.
+
+## Segment 4 (code: real use cases)
+
+GoldenGate shows up in zero-downtime migrations, replicating ongoing changes from an old platform to a new one while a cutover is prepared. It shows up in real-time integration, continuously feeding a data warehouse without a batch ETL window. And it shows up in active-active, multi-region deployments where more than one location accepts writes.
+
+## Segment 5 (outro)
+
+That's the last of Oracle's replication and HA tooling in this course. Next up: how you actually move an Oracle database forward across major versions — migration and upgrade strategies, and the finale of the Oracle section.

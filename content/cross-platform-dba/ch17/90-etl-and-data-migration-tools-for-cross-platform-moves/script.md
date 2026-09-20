@@ -1,0 +1,21 @@
+# Script — ETL & Data Migration Tools for Cross-Platform Moves
+
+## Segment 1 (title)
+
+This lesson closes out Chapter 17. The last five lessons covered how to assess a migration project and the schema- and syntax-level differences between SQL Server and each target. This lesson covers the last practical piece: the real tools used to actually move the data.
+
+## Segment 2 (steps: native tools)
+
+Every platform-specific chapter already covered each platform's own export and import tooling, and those tools remain central to a real migration. SQL Server has bcp, the Import and Export Wizard, and SSIS. Oracle has Data Pump. MySQL has mysqldump and mysqlpump. PostgreSQL has pg_dump, pg_restore, and COPY. None of them natively convert schema from one platform to another, though.
+
+## Segment 3 (steps: dedicated migration tools)
+
+That's the gap dedicated cross-platform migration tools fill. AWS Database Migration Service handles both a one-time full load and ongoing change data capture, commonly paired with the AWS Schema Conversion Tool. Azure has its own Database Migration Service. And purpose-built converters exist for specific pairs, like Ora2Pg for Oracle to PostgreSQL.
+
+## Segment 4 (code: why CDC changes cutover)
+
+A one-time full load works for a small database with a maintenance window, but a large, active production database usually can't tolerate that downtime. Change data capture lets the source keep running while changes replicate continuously, so cutover becomes a short final step — pause, drain, switch — measured in minutes instead of hours or days.
+
+## Segment 5 (outro)
+
+That closes Chapter 17 — assessment, platform-by-platform differences, a data-type reference, and the tools that move the data. Next up: Chapter 18, the course's capstone, starting with Lesson 91, Project Introduction — You're the Cross-Platform DBA.

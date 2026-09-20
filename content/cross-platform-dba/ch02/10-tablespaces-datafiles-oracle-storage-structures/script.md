@@ -1,0 +1,21 @@
+# Script — Tablespaces, Datafiles & Oracle Storage Structures
+
+## Segment 1 (title)
+
+Lesson 6 established that the database means physical files on disk. This lesson goes one layer deeper — how Oracle organizes those files, from logical storage down to the smallest unit of I/O.
+
+## Segment 2 (steps: storage hierarchy)
+
+Oracle's storage hierarchy has four layers: a tablespace is the logical unit everything gets assigned to, a datafile is the physical file on disk backing it, an extent is a contiguous group of blocks allocated as a segment grows, and a block — typically 8KB — is the smallest unit Oracle actually reads or writes.
+
+## Segment 3 (steps: mandatory tablespaces)
+
+A fresh Oracle database always comes with mandatory tablespaces before you create anything of your own. SYSTEM holds the core data dictionary, SYSAUX holds data for tools like AWR, UNDO holds the before-versions of changing rows for read consistency and rollback, and TEMP handles sorts and hash joins that spill to disk.
+
+## Segment 4 (code: comparison to filegroups)
+
+A tablespace is a reasonable starting comparison to a SQL Server filegroup — both group physical files that objects get assigned to. But don't lean on it too hard: SQL Server has no direct parallel to Oracle's UNDO tablespace, since it handles rollback and read consistency through the transaction log and tempdb's version store instead.
+
+## Segment 5 (outro)
+
+Next up: the tools you'll actually use to work with everything covered so far — SQL*Plus, SQL Developer, and Oracle Enterprise Manager.

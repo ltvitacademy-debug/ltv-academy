@@ -1,0 +1,17 @@
+# Script — PostgreSQL Streaming Replication Fundamentals
+
+## Segment 1 (title)
+
+Chapter fifteen tuned a single PostgreSQL instance. Chapter sixteen asks how you keep a second copy up to date in near-real-time. The answer since PostgreSQL 9.0 is streaming replication, and it starts with the same WAL you already used for point-in-time recovery.
+
+## Segment 2 (code: what gets streamed)
+
+A WAL sender process on the primary streams WAL records to a WAL receiver on the standby as they're generated, instead of waiting for them to be archived to a file. The standby writes and replays them continuously, so a healthy standby typically lags the primary by well under a second. That lag isn't zero, and it's worth monitoring, not assuming away.
+
+## Segment 3 (steps: physical vs logical)
+
+This is physical replication — WAL-based, producing a byte-for-byte copy of the entire primary cluster, nothing selective about it. Logical replication, coming in Lesson 82, replicates at the row and table level instead. The server generating WAL is the primary; a server replaying it is a standby, and it can later be promoted if the primary fails.
+
+## Segment 4 (outro)
+
+Streaming replication keeps a current copy of the data ready, but it doesn't automate failover by itself. Next up: configuring physical streaming replication with primary_conninfo, replication slots, and hot standby.

@@ -1,0 +1,17 @@
+# Script — Connection Pooling with PgBouncer
+
+## Segment 1 (title)
+
+Chapter twelve established that PostgreSQL forks a dedicated process for every client connection, unlike SQL Server's thread-based model. This lesson picks that back up: process-per-connection is exactly why connection pooling matters so much more operationally in PostgreSQL, and PgBouncer is the tool the ecosystem standardized on.
+
+## Segment 2 (code: why it matters)
+
+Every PostgreSQL connection is a full OS process with real memory and CPU overhead, so PostgreSQL's practical ceiling on concurrent connections is far lower than a thread-based engine can sustain. PgBouncer sits between client applications and PostgreSQL, maintaining a much smaller pool of real backend connections and handing them out as needed instead of opening a new process per client.
+
+## Segment 3 (steps: three pooling modes)
+
+Session pooling holds a connection for a client's entire session — safest, but least reuse. Transaction pooling, the mode most deployments actually run, holds a connection only for one transaction, giving much better reuse but meaning session state can't reliably survive between transactions. Statement pooling releases the connection after every statement, maximizing reuse but breaking multi-statement transactions.
+
+## Segment 4 (outro)
+
+Transaction pooling is what most teams reach for once they understand that session-state tradeoff. Next up: PostgreSQL migration and upgrade strategies, closing out the PostgreSQL section of this course.
