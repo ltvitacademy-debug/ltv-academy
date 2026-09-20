@@ -1,0 +1,36 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "PowerShell, Automation & DevOps for DBAs · Chapter Eight",
+    "titlePlain": "Capstone: Build the ",
+    "titleEmphasis": "Automation Suite",
+    "titleSuffix": "",
+    "subtitle": "Lesson 38 · Capstone"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Replacing the nightly SSMS click-through",
+    "code": "function Invoke-MeridianBackups {\n  param([string]$SqlInstance = \"MERSQLPRD01\")\n  try {\n    Backup-DbaDatabase -SqlInstance $SqlInstance `\n      -Database MeridianCommerce -Type Full `\n      -Path \\\\MERBACKUP01\\SQLBackups\\MeridianCommerce\n    Test-DbaLastBackup -SqlInstance $SqlInstance `\n      -Database MeridianCommerce\n  }\n  catch { Send-MeridianAlert -Severity Critical -Message $_ }\n}",
+    "caption": "Full + log backup, then proof the backup actually restores."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Replacing the 40-minute morning routine",
+    "code": "function Invoke-MeridianHealthCheck {\n  param([string]$SqlInstance = \"MERSQLPRD01\")\n  $disk   = Get-DbaDiskSpace -ComputerName $SqlInstance |\n              Where-Object Free -lt 50\n  $backup = Test-DbaLastBackup -SqlInstance $SqlInstance `\n              -Database MeridianCommerce\n  $jobs   = Get-DbaAgentJobHistory -SqlInstance $SqlInstance `\n              -StartDate (Get-Date).AddDays(-1) |\n              Where-Object Status -eq 'Failed'\n  [PSCustomObject]@{ LowDiskVolumes=$disk.Count } |\n    Send-MeridianAlert -Severity Info\n}",
+    "caption": "One 7:05 AM message instead of 40 minutes clicking through SSMS."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Index & statistics maintenance, weekly",
+    "code": "function Invoke-MeridianIndexMaintenance {\n  param([string]$SqlInstance = \"MERSQLPRD01\")\n  try {\n    Invoke-DbaDbIndexOptimize -SqlInstance $SqlInstance `\n      -Database MeridianCommerce\n  }\n  catch {\n    Send-MeridianAlert -Severity Warning -Message $_\n  }\n}",
+    "caption": "Reorganize, rebuild, or update statistics — decided per index, off-hours."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 39",
+    "titlePlain": "Capstone: Add ",
+    "titleEmphasis": "CI/CD",
+    "titleSuffix": " for a Database Change",
+    "subtitle": "Chapters 3-4's source control patterns, applied to a real schema change."
+  }
+]

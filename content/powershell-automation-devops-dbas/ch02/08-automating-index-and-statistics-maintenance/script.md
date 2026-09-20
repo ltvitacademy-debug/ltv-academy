@@ -1,0 +1,21 @@
+# Script — Automating Index & Statistics Maintenance
+
+## Segment 1 (title)
+
+The SQL Server DBA course covered index and statistics maintenance manually — checking fragmentation, deciding rebuild versus reorganize, updating statistics. This lesson automates that same decision-making with dbatools' own native cmdlet.
+
+## Segment 2 (code: Invoke-DbaDbOptimize)
+
+Invoke-DbaDbOptimize makes exactly the rebuild-versus-reorganize decision you already know: low fragmentation, skip; medium, reorganize; high, rebuild. UpdateStatistics folds statistics maintenance into the same pass instead of a separate step.
+
+## Segment 3 (code: or wrap Ola Hallengren's IndexOptimize)
+
+Many shops already standardized on Ola Hallengren's IndexOptimize procedure. Rather than replace it, Invoke-DbaQuery lets you call the existing, trusted T-SQL logic while PowerShell handles the scheduling and orchestration around it.
+
+## Segment 4 (code: safety patterns from Lessons 4 and 5)
+
+Index maintenance is exactly the kind of destructive-adjacent operation -WhatIf and error handling exist for. Wrapping the call in ShouldProcess and try/catch turns a command that does maintenance into a script that's actually safe to schedule and walk away from.
+
+## Segment 5 (outro)
+
+Whether you use dbatools' native optimizer or wrap Hallengren's procedure, the safety patterns from earlier lessons still apply. Next up: automating security audits with real dbatools cmdlets for logins and permissions.

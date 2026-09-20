@@ -1,0 +1,21 @@
+# Script — Database Migrations as Code
+
+## Segment 1 (title)
+
+Lesson 18 introduced the migration-runner category as an alternative to DACPAC deployment. This lesson covers exactly how that pattern works — the mechanism nearly every real migration tool implements.
+
+## Segment 2 (code: numbered, sequential scripts)
+
+Every schema change is its own small script, numbered in the order it needs to run. Each file is self-contained and does one thing, and the numbering guarantees every environment applies changes in the exact same order, regardless of which branch each one came from.
+
+## Segment 3 (code: the tracking table)
+
+A migrations-tracking table in the target database records which migration numbers have already run there. Every time the runner executes, it checks that table and applies, in order, only the migrations that aren't recorded yet.
+
+## Segment 4 (steps: migrations are additive)
+
+That's what makes the same pipeline step safe against a database that's already up to date, and safe against a brand-new empty database — nothing happens in the first case, everything runs in order in the second.
+
+## Segment 5 (outro)
+
+Because a migration becomes a fact once it's run anywhere, you never edit an already-applied migration — you write a new one to fix the problem going forward. Next up: testing database changes in a pipeline, with a real throwaway test database.

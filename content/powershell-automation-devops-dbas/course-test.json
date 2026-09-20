@@ -1,0 +1,225 @@
+{
+  "course": "powershell-automation-and-devops-for-dbas",
+  "questions": [
+    {
+      "q": "What is dbatools, in the context of SQL Server DBA automation?",
+      "options": [
+        "An open-source PowerShell module with hundreds of commands purpose-built for SQL Server administration tasks like backups, migrations, and health checks",
+        "A closed-source, Microsoft-only GUI application",
+        "A T-SQL-only feature with no PowerShell component",
+        "A tool limited exclusively to Azure SQL Database"
+      ],
+      "answer": 0,
+      "explain": "dbatools is a free, community-driven PowerShell module with several hundred commands (Backup-DbaDatabase, Test-DbaLastBackup, Copy-DbaDatabase, and many more) that wrap common DBA workflows into reusable, scriptable cmdlets far beyond what the generic SqlServer module provides."
+    },
+    {
+      "q": "What does PowerShell Remoting (WinRM-based) let a DBA do that running scripts locally on each server one at a time cannot?",
+      "options": [
+        "It's required before any T-SQL query can be executed",
+        "Execute commands against many remote servers from a single central script or session, without manually logging into each one",
+        "It fully replaces the need for SQL Server authentication",
+        "It only functions against Linux-based SQL Server instances"
+      ],
+      "answer": 1,
+      "explain": "Remoting establishes a PowerShell session on a remote machine so a script can run commands there as if local, which is what makes it practical to manage dozens or hundreds of SQL Server instances from one script instead of connecting to each one by hand."
+    },
+    {
+      "q": "What is SQL Server Management Objects (SMO)?",
+      "options": [
+        "A GUI-only feature built into SQL Server Management Studio",
+        "A direct replacement for SQL Server Agent",
+        "A .NET object library that lets scripts programmatically manage SQL Server objects — databases, logins, jobs, and more — instead of only issuing raw T-SQL strings",
+        "A feature available only against Azure SQL Database"
+      ],
+      "answer": 2,
+      "explain": "SMO exposes SQL Server's administrative surface as .NET objects and collections (a Server object with a Databases collection, each Database with a Tables collection, and so on), which PowerShell and dbatools build on top of to manipulate SQL Server programmatically rather than string-building T-SQL."
+    },
+    {
+      "q": "Why script backups with dbatools/PowerShell instead of relying solely on the built-in Maintenance Plan wizard?",
+      "options": [
+        "PowerShell backups run physically faster at the storage layer than a T-SQL BACKUP DATABASE statement",
+        "Maintenance Plans are structurally incapable of taking transaction log backups",
+        "PowerShell backup scripts bypass the need for a recovery model altogether",
+        "Scripted backups can be version-controlled, parameterized for different environments, and consistently deployed across many servers as part of broader automation"
+      ],
+      "answer": 3,
+      "explain": "A PowerShell backup script is just text — it can live in source control, take parameters for server name or retention, and be rolled out identically to dozens of servers, which the click-through Maintenance Plan wizard doesn't support in the same repeatable, auditable way."
+    },
+    {
+      "q": "What's the benefit of using a command like Test-DbaLastBackup as part of an automated health check, compared to just confirming a backup file exists?",
+      "options": [
+        "It actually restores a copy of a recent backup to verify the backup is genuinely usable, not just present on disk",
+        "It only checks the backup file's size on disk",
+        "It automatically repairs any backup file found to be corrupted",
+        "It makes running DBCC CHECKDB unnecessary going forward"
+      ],
+      "answer": 0,
+      "explain": "A backup file existing on disk doesn't prove it's restorable — Test-DbaLastBackup performs a real restore (often to a scratch instance) to confirm the backup actually works, which is the only way to be sure a backup would save you in a real recovery."
+    },
+    {
+      "q": "Why automate index and statistics maintenance with a scheduled script rather than running it manually every so often?",
+      "options": [
+        "Index maintenance only meaningfully matters once per year",
+        "Fragmentation and stale statistics accumulate continuously as data changes, so consistent scheduled maintenance prevents performance degradation from silently building up",
+        "Statistics never actually go stale on their own",
+        "Manual maintenance is always faster to run than an automated job"
+      ],
+      "answer": 1,
+      "explain": "Every insert, update, and delete gradually fragments indexes and shifts data distribution away from what statistics describe; without a consistent schedule, that drift accumulates unnoticed until query performance visibly degrades, which is exactly what automated, recurring maintenance prevents."
+    },
+    {
+      "q": "What's the core reason to put database schema objects — stored procedures, views, functions — under source control?",
+      "options": [
+        "Source control only provides value for compiled application binaries",
+        "Databases can't be represented as text, so version control doesn't really apply to them",
+        "Source control removes the need to ever take backups",
+        "It gives a complete history of every change, who made it and why, and enables reliable comparison and rollback — the same benefits application code already gets"
+      ],
+      "answer": 3,
+      "explain": "Stored procedures, views, and functions are just text (T-SQL) and can be treated exactly like application source code: tracked in Git, diffed between versions, reviewed via pull request, and rolled back to a known-good state when something goes wrong."
+    },
+    {
+      "q": "What does a schema comparison tool, such as SSDT's Schema Compare, let a DBA do?",
+      "options": [
+        "Compare row-level data between two tables, never schema",
+        "Compare only backup files against each other, byte for byte",
+        "Function exclusively against Azure SQL Database",
+        "Compare a database's actual schema against a source — another database or a database project — and generate a script containing just the differences"
+      ],
+      "answer": 3,
+      "explain": "Schema comparison tools diff structural definitions (tables, columns, indexes, procedures) between a target and a source, then produce a targeted synchronization script, which is far safer and more precise than manually tracking every schema difference by hand."
+    },
+    {
+      "q": "What's the main challenge that makes CI/CD for databases harder than CI/CD for stateless application code?",
+      "options": [
+        "Databases carry state — a deployment can't simply be swapped in and out like a stateless app, because a schema change affects existing data that has to be migrated safely",
+        "Databases fundamentally cannot be automated in any way",
+        "T-SQL cannot be scripted, so CI/CD is technically impossible for it",
+        "CI/CD for databases requires absolutely no testing of any kind"
+      ],
+      "answer": 0,
+      "explain": "A stateless application deployment can be blue-green swapped with essentially no consequence to data; a database deployment has to carry existing rows forward correctly through every schema change, which is what makes database CI/CD fundamentally harder than application CI/CD."
+    },
+    {
+      "q": "Why should schema changes in an automated deployment pipeline be applied as idempotent, incremental migration scripts rather than by overwriting the whole schema each run?",
+      "options": [
+        "Incremental migrations can be applied safely on top of the database's current state without destroying existing data, and each step is repeatable and auditable",
+        "Overwriting the entire schema every time is always the safer, preferred approach",
+        "Idempotency means the script has literally no effect no matter how many times it runs",
+        "Migration scripts are only relevant for databases that are strictly read-only"
+      ],
+      "answer": 0,
+      "explain": "Incremental migrations describe exactly what changed (add this column, alter this constraint) and can be run against a database at any prior version without wiping out existing data, unlike a full schema overwrite which risks destroying data that lives outside the definition being applied."
+    },
+    {
+      "q": "Why include automated tests (for example, with tSQLt) for database changes as part of a CI/CD pipeline?",
+      "options": [
+        "T-SQL logic fundamentally cannot be unit tested by any tooling",
+        "Database testing is only ever possible manually",
+        "Automated tests fully replace the need for a staging environment",
+        "They catch logic errors and regressions in stored procedures and functions before they reach production, the same way unit tests catch bugs in application code"
+      ],
+      "answer": 3,
+      "explain": "Frameworks like tSQLt let you write real unit tests against T-SQL objects — asserting a stored procedure's behavior, mocking tables, checking edge cases — so a bad change to business logic gets caught in the pipeline instead of being discovered by an end user in production."
+    },
+    {
+      "q": "What does Infrastructure as Code (IaC) mean when provisioning a new SQL Server environment?",
+      "options": [
+        "Writing every piece of application logic as a stored procedure",
+        "A concept that applies only to physical, on-premises hardware",
+        "Something that removes any need to test a deployment before it goes live",
+        "Defining the environment's configuration — VM size, SQL Server settings, network rules — in declarative code/templates that can be version-controlled and applied repeatably instead of manual setup"
+      ],
+      "answer": 3,
+      "explain": "IaC treats infrastructure configuration the same way application code is treated: as text in source control that's applied through an automated process, which produces the same environment every time instead of relying on someone remembering every checkbox from a manual setup."
+    },
+    {
+      "q": "What's a key benefit of provisioning SQL Server environments with tools like ARM templates, Bicep, or Terraform instead of manual setup?",
+      "options": [
+        "Dev, test, and production environments can be reliably reproduced with consistent configuration, reducing drift between them",
+        "These tools automatically generate your database's T-SQL schema for you",
+        "They remove the need for any monitoring once the environment is deployed",
+        "They only work against Azure SQL Database, never against SQL Server on a VM"
+      ],
+      "answer": 0,
+      "explain": "When environment setup lives in a template rather than a person's memory of manual steps, every environment built from that template ends up configured identically, eliminating the subtle configuration drift that causes \"works in dev, breaks in prod\" problems."
+    },
+    {
+      "q": "Why is alerting based on a trend or threshold sustained over time generally better than alerting the moment any single data point crosses a limit?",
+      "options": [
+        "It reduces false positives from brief, harmless spikes while still catching genuinely sustained problems worth escalating to a human",
+        "Single-point alerting is always the more accurate approach",
+        "Trend-based alerting cannot realistically be implemented in PowerShell",
+        "Thresholds of any kind should never be used in monitoring"
+      ],
+      "answer": 0,
+      "explain": "A momentary CPU spike or a single slow query is often harmless noise; requiring a condition to persist across several samples (or exceed a threshold consistently) filters out that noise so alerts fire for problems that actually matter, reducing needless pages."
+    },
+    {
+      "q": "What's a common cause of alert fatigue on a DBA team, and how can automation help address it?",
+      "options": [
+        "Alert fatigue is actually caused by having too few alerts configured",
+        "Automation inevitably makes alert fatigue worse, never better",
+        "Too many low-value or duplicate alerts firing, which automation can help fix by consolidating, deduplicating, and tuning thresholds so only actionable alerts reach a person",
+        "Alert fatigue has no real relationship to alert volume or relevance"
+      ],
+      "answer": 2,
+      "explain": "When a team gets paged constantly for non-actionable noise, they start ignoring alerts altogether — including the important ones. Automation that groups related alerts, suppresses duplicates, and tunes thresholds based on real data restores signal-to-noise so people actually respond."
+    },
+    {
+      "q": "How does adopting DevOps practices typically change a DBA's role compared to a traditional, gatekeeper-style DBA function?",
+      "options": [
+        "DevOps eliminates the need for a dedicated DBA role entirely",
+        "DevOps means developers get unrestricted production access with no review process",
+        "DevOps only ever applies to application code, never to databases",
+        "The DBA shifts toward enabling frequent, automated, self-service database changes with guardrails like automated testing and review, rather than being the sole manual approver of every change"
+      ],
+      "answer": 3,
+      "explain": "Instead of every database change routing through a single person as a manual gate, a DevOps-minded DBA builds the pipelines, tests, and review processes that let changes move quickly and safely without sacrificing control — shifting from gatekeeper to enabler."
+    },
+    {
+      "q": "What's the purpose of a blameless postmortem after a database incident?",
+      "options": [
+        "To focus on understanding the systemic and process causes behind the incident so they can be fixed, rather than assigning blame to an individual — which encourages honest reporting and helps prevent recurrence",
+        "To formally identify and discipline the person responsible",
+        "Postmortems are optional paperwork with no real operational value",
+        "Postmortems are only warranted after an outage lasting more than 24 hours"
+      ],
+      "answer": 0,
+      "explain": "When people fear blame, they hide details or avoid reporting near-misses; a blameless postmortem culture gets the full, honest picture of what happened and why, which is what actually lets a team fix the underlying process or system issue instead of just punishing whoever was on call."
+    },
+    {
+      "q": "When building an automation suite that touches production servers, why should scripts default to a \"dry run\" or -WhatIf mode before actually making changes?",
+      "options": [
+        "-WhatIf is purely a testing-only feature with no place in production tooling",
+        "It lets you review exactly what a script would do before it executes destructive or wide-reaching actions, reducing the risk of the automation itself causing an outage",
+        "A dry run always executes the change regardless of the flag",
+        "PowerShell has no concept of a dry-run or preview mode"
+      ],
+      "answer": 1,
+      "explain": "PowerShell's built-in SupportsShouldProcess/-WhatIf pattern lets a script report what it would change without actually changing anything, giving an operator a chance to review a wide-reaching or destructive action before it's committed — a critical safety net for automation running against production."
+    },
+    {
+      "q": "Why add monitoring and alerting around your own automation scripts, not just around SQL Server itself?",
+      "options": [
+        "Automation scripts never fail once they've been tested a single time",
+        "SQL Server automatically monitors the health of any PowerShell scripts running against it",
+        "If an automation script silently fails or stops running, a critical process — like nightly backups — could quietly stop happening without anyone noticing until it's too late",
+        "Monitoring automation adds no additional value beyond monitoring the server alone"
+      ],
+      "answer": 2,
+      "explain": "SQL Server has no awareness of whether an external PowerShell job succeeded, was skipped, or crashed; without monitoring the automation layer itself, a broken backup script could fail silently for weeks, and the first sign of trouble would be an unusable backup during an actual emergency."
+    },
+    {
+      "q": "When presenting a DevOps toolkit for DBA work to stakeholders, why demonstrate the CI/CD pipeline against a real database change end-to-end rather than just describing it?",
+      "options": [
+        "Presentations should avoid live demonstrations entirely",
+        "Describing a pipeline verbally is always more convincing than actually showing it",
+        "An end-to-end demonstration is unnecessary once the underlying code has been written",
+        "A live demonstration proves the pipeline actually works as claimed and builds concrete confidence, rather than asking stakeholders to trust an untested description"
+      ],
+      "answer": 3,
+      "explain": "Anyone can describe a pipeline that sounds good on paper; actually running a real change through it — commit, automated test, deployment, verification — is what proves it genuinely functions and gives stakeholders tangible evidence instead of a promise."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+# Script — Code Review for Database Changes
+
+## Segment 1 (title)
+
+A pull request against a stored procedure gets reviewed differently than one against application code. The syntax review is the easy, shared part. What actually matters most for database changes is specific to databases, and app-code reviewers often miss every bit of it.
+
+## Segment 2 (code: locking duration)
+
+Certain schema changes can lock a table for the entire duration of the operation. On a small table that's invisible. On a large, busy production table, a ninety-second migration can mean ninety seconds of blocked writes, cascading into timeouts. A reviewer has to ask how long this will realistically lock the table for.
+
+## Segment 3 (steps: three database-specific questions)
+
+A reviewer should also ask whether there's a rollback script — catching a migration that's genuinely hard to reverse before it merges, not after it's already run in production. And for an index change, whether it affects the query plans of other queries that touch the same table, not just the one it was written for.
+
+## Segment 4 (steps: additive, not a replacement)
+
+None of this replaces normal code review — readability, conventions, testing are all still required. It's additive: a database change needs everything an app-code change needs, plus locking, rollback, and downstream query impact.
+
+## Segment 5 (outro)
+
+Next up: Chapter Four begins with CI/CD concepts for databases — what continuous integration and continuous deployment actually mean applied specifically to schema changes.

@@ -1,0 +1,17 @@
+# Script — Integrating With Teams, Slack & Email
+
+## Segment 1 (title)
+
+A threshold check that never notifies anyone isn't alerting, it's just logging. This lesson covers actually getting the message to a human, through the channels most teams already use.
+
+## Segment 2 (code: the webhook pattern)
+
+Teams and Slack both support incoming webhooks — a unique URL that posts a message into a channel when you POST a JSON payload to it. Invoke-RestMethod is the same standard cmdlet you'd use to call any REST API — a chat webhook is just a REST API with one endpoint.
+
+## Segment 3 (code: Send-MailMessage is genuinely obsolete)
+
+Microsoft has marked Send-MailMessage as obsolete because it doesn't support current secure authentication methods most mail providers now require. The realistic modern replacements are calling a transactional email API directly, or using a dedicated library like MailKit for full SMTP control.
+
+## Segment 4 (outro)
+
+Next up: custom monitoring dashboards from scripts — exporting the metrics these health checks already gather so a real dashboard tool can read them.

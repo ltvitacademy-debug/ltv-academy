@@ -1,0 +1,17 @@
+# Script — Environment Consistency
+
+## Segment 1 (title)
+
+"It works in dev, it fails in prod" is almost never a mystery once you actually compare the two servers — they were built by hand, months apart, and quietly drifted. This lesson covers the real value IaC has here: consistency, not just provisioning.
+
+## Segment 2 (steps: where drift actually hides)
+
+Drift is small and boring — an older cumulative update on dev, a memory setting bumped on prod during an incident and never mirrored, a collation difference because someone accepted an installer default. None of it shows up in a code review; it only shows up when a query behaves differently and the investigation eats a day.
+
+## Segment 3 (code: one template, different parameters)
+
+The fix is removing the manual step that lets drift happen. One parameterized template provisions dev, test, and prod — capacity differs by SKU, but everything else about how the database is defined comes from the exact same source file, with no separate setup document that can go stale.
+
+## Segment 4 (outro)
+
+Next up: IaC and PowerShell together — where infrastructure as code hands off to a dbatools script for the SQL-Server-specific configuration IaC tools don't model well.

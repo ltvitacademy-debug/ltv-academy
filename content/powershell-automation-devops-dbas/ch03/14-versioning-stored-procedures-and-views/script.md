@@ -1,0 +1,21 @@
+# Script — Versioning Stored Procedures & Views
+
+## Segment 1 (title)
+
+Once database objects belong in Git, the next question is structural: one giant file with the whole schema, or one file per object? The real answer, and what database projects are built around, is one file per object — almost entirely because of what a Git diff looks like.
+
+## Segment 2 (code: one file, one object)
+
+Each stored procedure, view, function, or table gets its own SQL file with the full CREATE script for that single object. When a procedure changes, that file, and only that file, changes.
+
+## Segment 3 (steps: the alternative fails)
+
+A single giant schema-dump file seems simpler but destroys Git's value. A one-line change buried three thousand lines in feels like a needle in a haystack, and two people changing unrelated objects on the same day frequently collide in a merge conflict anyway.
+
+## Segment 4 (code: a real diff)
+
+With one file per object, a change produces a diff showing exactly what changed in that procedure and nothing else. A reviewer sees precisely one object changed, and precisely what changed inside it — which is the entire point of code review working at all.
+
+## Segment 5 (outro)
+
+Two developers changing different procedures on the same day never conflict, because they're editing entirely different files. Next up: branching strategies for database code — trunk-based versus feature branches, applied honestly to schemas.

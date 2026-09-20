@@ -1,0 +1,36 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "PowerShell, Automation & DevOps for DBAs · Chapter Two",
+    "titlePlain": "Automating ",
+    "titleEmphasis": "Health Checks",
+    "titleSuffix": "",
+    "subtitle": "Lesson 7 · Automating Routine DBA Tasks"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The individual checks already exist",
+    "code": "Test-DbaDiskSpace -SqlInstance SQLPRD01\nGet-DbaLastGoodCheckDb -SqlInstance SQLPRD01\nGet-DbaLastBackup -SqlInstance SQLPRD01\n\nGet-DbaAgentJobHistory -SqlInstance SQLPRD01 -StartDate (Get-Date).AddDays(-1) |\n    Where-Object Status -eq 'Failed'",
+    "caption": "The same commands a DBA would run interactively — chained, not reinvented."
+  },
+  {
+    "type": "code",
+    "eyebrow": "One report, four checks",
+    "code": "$report = [PSCustomObject]@{\n    Instance      = $instance\n    LowDiskDrives = (Test-DbaDiskSpace -SqlInstance $instance |\n                      Where-Object PercentFree -lt 15).Name\n    StaleBackups  = (Get-DbaLastBackup -SqlInstance $instance |\n                      Where-Object { $_.LastBackup -lt (Get-Date).AddHours(-24) }).Database\n}",
+    "caption": "One structured record per server, ready to email, export, or dashboard."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Flag problems, don't just log data",
+    "code": "$problems = $report.LowDiskDrives + $report.StaleBackups + $report.FailedJobsToday\n\nif ($problems) {\n    Send-MailMessage -To dba-team@company.com `\n        -Subject \"Health check flagged issues on $instance\" `\n        -Body ($report | ConvertTo-Html | Out-String) -SmtpServer smtp.company.com\n}",
+    "caption": "A report nobody reads unless something's wrong stays sustainable."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 8",
+    "titlePlain": "Automating Index & Statistics ",
+    "titleEmphasis": "Maintenance",
+    "titleSuffix": "",
+    "subtitle": "Turning manual T-SQL maintenance into one scheduled script."
+  }
+]

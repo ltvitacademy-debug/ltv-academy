@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "PowerShell, Automation & DevOps for DBAs · Chapter Eight",
+    "titlePlain": "Capstone: Add Monitoring ",
+    "titleEmphasis": "& Alerting",
+    "titleSuffix": "",
+    "subtitle": "Lesson 40 · Capstone"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Detecting the real condition",
+    "code": "function Test-MeridianLogSpace {\n  param([string]$SqlInstance = \"MERSQLPRD01\")\n  $logSpace = Invoke-DbaQuery -SqlInstance $SqlInstance `\n    -Query \"DBCC SQLPERF(LOGSPACE)\" |\n    Where-Object DatabaseName -eq 'MeridianCommerce'\n  $pct = $logSpace.'Log Space In Use (%)'\n  if ($pct -ge 90) {\n    Send-MeridianAlert -Severity Critical -Channel Phone -Message $pct\n  } elseif ($pct -ge 70) {\n    Send-MeridianAlert -Severity Warning -Channel Teams -Message $pct\n  }\n}",
+    "caption": "DBCC SQLPERF(LOGSPACE) via Invoke-DbaQuery — the real command, not a guess."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Send-MeridianAlert, routed by severity",
+    "code": "function Send-MeridianAlert {\n  param(\n    [ValidateSet('Info','Warning','Critical')]$Severity,\n    [ValidateSet('Teams','Phone')]$Channel = 'Teams',\n    $Message\n  )\n  if ($Channel -eq 'Teams') {\n    Invoke-RestMethod -Uri $env:MERIDIAN_TEAMS_WEBHOOK -Method Post `\n      -Body (@{text=\"[$Severity] $Message\"} | ConvertTo-Json)\n  } else {\n    Invoke-RestMethod -Uri $env:MERIDIAN_PAGER_WEBHOOK -Method Post `\n      -Body (@{message=$Message} | ConvertTo-Json)\n  }\n}",
+    "caption": "Info & Warning land in Teams; only Critical rings Priya's phone."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why the 2 AM pages stopped",
+    "titlePlain": "Tuning it to stop paging ",
+    "titleEmphasis": "for nothing",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Sustained, not instant", "sub": "Requires several consecutive checks above threshold, not one spike" },
+      { "label": "Severity-based routing", "sub": "Warning → Teams for the morning; Critical → phone, rarely" },
+      { "label": "The result", "sub": "Nightly false pages → roughly one real page every couple weeks" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 41",
+    "titlePlain": "Capstone: Present the ",
+    "titleEmphasis": "DevOps Toolkit",
+    "titleSuffix": "",
+    "subtitle": "Turning this whole build into a story worth telling in an interview."
+  }
+]

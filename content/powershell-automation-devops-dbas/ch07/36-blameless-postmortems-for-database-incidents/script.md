@@ -1,0 +1,21 @@
+# Script — Blameless Postmortems for Database Incidents
+
+## Segment 1 (title)
+
+The SQL Server DBA course covers incident documentation as a skill on its own. This lesson looks at why blamelessness is a DevOps culture practice specifically, not just a documentation habit, and what breaks when a team gets it wrong.
+
+## Segment 2 (steps: why blame backfires)
+
+When a postmortem names a person as the cause, it feels like accountability, but it teaches the opposite lesson. The next person who makes a similar mistake now has a strong incentive to under-report it or hide a detail that makes them look bad. Blame doesn't make people more careful — it makes people better at hiding evidence.
+
+## Segment 3 (steps: anatomy of a postmortem)
+
+A blameless postmortem has three parts. A timeline of timestamped facts, pulled from logs and alerts, not memory. Contributing factors — everything that made the incident worse or let it go undetected longer, not just one root cause. And action items that are specific and owned, not "be more careful."
+
+## Segment 4 (code: rewriting the language)
+
+The discipline mostly comes down to how a sentence is written. "The on-call DBA failed to notice the alert" ends the investigation at a person's failure to act. "The alert had no escalation path" points at a fixable gap instead — same fact, completely different value as a finding.
+
+## Segment 5 (outro)
+
+Blamelessness isn't a soft value bolted onto DevOps — it's what keeps people reporting problems fast and honestly, which is exactly what DevOps needs to work. That closes this chapter. Next up: Lesson 37, Capstone Kickoff, where you bring automation, CI/CD, IaC, monitoring, and this culture work together into one real project.
