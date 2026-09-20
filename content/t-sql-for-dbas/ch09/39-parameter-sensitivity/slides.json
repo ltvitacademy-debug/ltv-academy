@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "T-SQL for Database Administrators · Chapter Nine",
+    "titlePlain": "Parameter ",
+    "titleEmphasis": "Sensitivity",
+    "titleSuffix": "",
+    "subtitle": "Lesson 39 · Performance Troubleshooting with T-SQL"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "One plan, built for one value",
+    "titlePlain": "What ",
+    "titleEmphasis": "sniffing",
+    "titleSuffix": " actually is",
+    "steps": [
+      { "label": "First run", "sub": "SQL Server sniffs that call's parameter value" },
+      { "label": "Skewed column", "sub": "2% Cancelled vs. 90% Shipped, wildly different plans" },
+      { "label": "Reused", "sub": "the wrong-shaped plan is cached for everyone" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The tell-tale symptom",
+    "code": "SELECT qs.min_elapsed_time, qs.max_elapsed_time,\n    qs.execution_count, st.text\nFROM sys.dm_exec_query_stats AS qs\nCROSS APPLY sys.dm_exec_sql_text(qs.sql_handle) AS st\nORDER BY (qs.max_elapsed_time - qs.min_elapsed_time) DESC;",
+    "caption": "Same cached plan, huge gap between min and max elapsed time."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Two real fixes",
+    "code": "-- Fix 1: force a fresh, freshly-sniffed plan every time\nSELECT OrderID, OrderDate, TotalDue\nFROM Sales.SalesOrderHeader\nWHERE Status = @Status\nOPTION (RECOMPILE);\n\n-- Fix 2: Parameter Sensitive Plan optimization (SQL 2022+)\n-- caches multiple plans, picks by parameter value automatically",
+    "caption": "PSP is on by default for eligible queries at 2022+ compat level."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 40",
+    "titlePlain": "Recompilation & Performance ",
+    "titleEmphasis": "Baselines",
+    "titleSuffix": "",
+    "subtitle": "Proving something actually got slower."
+  }
+]

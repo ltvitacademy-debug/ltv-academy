@@ -1,0 +1,60 @@
+{
+  "lesson": "backup-status-and-failed-jobs-scripts",
+  "questions": [
+    {
+      "q": "In msdb.dbo.backupset, what does a type value of 'D' represent?",
+      "options": [
+        "A full database backup",
+        "A differential backup",
+        "A transaction log backup",
+        "A failed backup attempt"
+      ],
+      "answer": 0,
+      "explain": "backupset.type uses 'D' for a full database backup, 'I' for differential, and 'L' for a transaction log backup."
+    },
+    {
+      "q": "Why does the backup status section use a LEFT JOIN from sys.databases to msdb.dbo.backupset instead of an inner join?",
+      "options": [
+        "So a database that has never been backed up still appears in the results, flagged as NEVER BACKED UP, instead of being silently dropped",
+        "LEFT JOIN runs faster than INNER JOIN in every case",
+        "backupset requires a LEFT JOIN by SQL Server syntax rules",
+        "It has no effect on the results either way"
+      ],
+      "answer": 0,
+      "explain": "An inner join would omit any database with zero matching backupset rows. A LEFT JOIN keeps it in the result set with NULL backup dates, which the CASE expression turns into a NEVER BACKED UP flag."
+    },
+    {
+      "q": "Why is the failed-jobs section in this lesson bounded by @JobLookbackHours, unlike Lesson 29's original query?",
+      "options": [
+        "So the morning check only surfaces recent failures instead of every failure in sysjobhistory's entire retention window",
+        "Because sysjobhistory only stores 24 hours of data by default",
+        "Because msdb.dbo.agent_datetime requires a bounded range to run at all",
+        "It has no practical effect on the query's output"
+      ],
+      "answer": 0,
+      "explain": "A morning check should focus on last night's failures, not the entire history retained in sysjobhistory. The lookback window keeps the output relevant to what needs a response today."
+    },
+    {
+      "q": "What does the full_backup_status column's OVERDUE value indicate?",
+      "options": [
+        "The most recent full backup's finish date is further in the past than @FullBackupThresholdHours allows",
+        "The backup job failed with an error",
+        "The database is in SIMPLE recovery model",
+        "The backup file could not be found on disk"
+      ],
+      "answer": 0,
+      "explain": "OVERDUE is computed purely from timing: DATEDIFF(HOUR, last full backup, GETDATE()) exceeding the threshold, regardless of whether any job reported an error."
+    },
+    {
+      "q": "Why does the failed-jobs query filter on h.step_id <> 0 in addition to h.run_status = 0?",
+      "options": [
+        "Because the step_id = 0 row is only a summary row, and the actual failing step with its error message lives in the step-level rows",
+        "Because step_id 0 always represents a successful run",
+        "Because sysjobhistory does not allow querying step_id 0 directly",
+        "It has no effect — step_id 0 rows never have run_status = 0"
+      ],
+      "answer": 0,
+      "explain": "step_id = 0 is a job-level summary row. Filtering it out and keeping step_id <> 0 surfaces the specific step that failed, along with its message."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "blocking-chains",
+  "questions": [
+    {
+      "q": "Which column on sys.dm_exec_requests directly exposes that a session is being blocked?",
+      "options": [
+        "blocking_session_id",
+        "wait_time_ms",
+        "cpu_time",
+        "logical_reads"
+      ],
+      "answer": 0,
+      "explain": "It's 0 when a request isn't waiting on another session, and the blocker's session ID when it is."
+    },
+    {
+      "q": "What does the wait_resource column tell you about a blocked request?",
+      "options": [
+        "The specific object, page, or key the request is waiting to acquire a lock on",
+        "The total CPU time consumed by the request so far",
+        "The name of the database the blocking session is connected to",
+        "The exact T-SQL statement causing the block"
+      ],
+      "answer": 0,
+      "explain": "wait_resource identifies precisely what's being contended for, which helps pinpoint the object involved."
+    },
+    {
+      "q": "Why is a recursive query useful for investigating blocking, rather than just looking at one row of sys.dm_exec_requests?",
+      "options": [
+        "Blocking chains can run several sessions deep, where a blocker is itself blocked by yet another session",
+        "sys.dm_exec_requests only returns one row per query execution",
+        "Recursive queries are required by SQL Server to read any DMV",
+        "blocking_session_id is only populated inside a recursive query"
+      ],
+      "answer": 0,
+      "explain": "Following blocking_session_id back link by link is how you reach the true root of a multi-session chain."
+    },
+    {
+      "q": "In a blocking chain, what characterizes the root session?",
+      "options": [
+        "It holds the lock everyone downstream is waiting on, and typically has blocking_session_id = 0 itself",
+        "It always has the highest cpu_time of any session on the instance",
+        "It is always the session with the lowest session_id",
+        "It is the session that most recently connected to the server"
+      ],
+      "answer": 0,
+      "explain": "The root isn't waiting on anyone else — it's simply running something (often a long open transaction) that holds locks others need."
+    },
+    {
+      "q": "In a three-session-deep blocking chain, why does killing the middle session usually fail to unblock the session at the front?",
+      "options": [
+        "The middle session's own blocker (the root) is still holding the lock and hasn't been addressed",
+        "Killing a session in SQL Server never actually releases its locks",
+        "The front session isn't actually related to the middle session at all",
+        "Blocking chains cannot be resolved by killing any session"
+      ],
+      "answer": 0,
+      "explain": "The middle session was itself waiting on the root — removing it doesn't free the lock still held upstream."
+    }
+  ]
+}

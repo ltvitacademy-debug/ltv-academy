@@ -1,0 +1,21 @@
+# Script — Proxies & Credentials
+
+## Segment 1 (title)
+
+By default, a CmdExec or non-T-SQL Agent step runs as the SQL Server Agent service account — almost always the wrong amount of privilege. A proxy paired with a credential solves that.
+
+## Segment 2 (code: the problem)
+
+Without a proxy, every CmdExec step inherits the Agent service account's Windows identity, which is often over-privileged and identical across every job on the instance. Sysadmin members are exempt from needing a proxy at all, which is itself a reason many shops mandate proxies even for administrators.
+
+## Segment 3 (code: CREATE CREDENTIAL + sp_add_proxy)
+
+CREATE CREDENTIAL stores a Windows account's authentication info, encrypted, inside SQL Server. sp_add_proxy wraps that credential, and sp_grant_proxy_to_subsystem authorizes it for a specific subsystem like CmdExec. For an Agent proxy, the credential's name must match the Windows account itself.
+
+## Segment 4 (steps: scoped identity, not ambient privilege)
+
+A job step that specifies that proxy name runs as the scoped domain account instead of the Agent service account — ideally an account with exactly the rights that step needs, and nothing more, limiting the blast radius if it's ever compromised.
+
+## Segment 5 (outro)
+
+Next up: agent troubleshooting — why a job can silently not run, and exactly where to look to find out.

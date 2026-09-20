@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "T-SQL for Database Administrators · Chapter Two",
+    "titlePlain": "Finding Blocking ",
+    "titleEmphasis": "Chains",
+    "titleSuffix": "",
+    "subtitle": "Lesson 9 · DBA Monitoring with T-SQL"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The one column that matters",
+    "code": "SELECT r.session_id AS blocked_session,\n       r.blocking_session_id,\n       r.wait_type, r.wait_time,\n       r.wait_resource\nFROM sys.dm_exec_requests AS r\nWHERE r.blocking_session_id <> 0;",
+    "caption": "blocking_session_id is 0 unless the request is stuck on another session."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Walk the chain to its root",
+    "code": ";WITH chain AS (\n  SELECT session_id, blocking_session_id, 0 AS depth\n  FROM sys.dm_exec_requests\n  WHERE blocking_session_id <> 0\n  UNION ALL\n  SELECT r.session_id, r.blocking_session_id, c.depth+1\n  FROM sys.dm_exec_requests r\n  JOIN chain c ON r.session_id = c.blocking_session_id\n)\nSELECT * FROM chain ORDER BY depth DESC;",
+    "caption": "Recursive CTE follows blocking_session_id back to the root holder."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Reading a chain",
+    "titlePlain": "Three sessions, one ",
+    "titleEmphasis": "root",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Session C", "sub": "waiting on session B" },
+      { "label": "Session B", "sub": "waiting on session A" },
+      { "label": "Session A", "sub": "root — holds the lock, blocked by no one" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 10",
+    "titlePlain": "TempDB Usage & ",
+    "titleEmphasis": "Database Space",
+    "titleSuffix": "",
+    "subtitle": "Chasing down the most common \"server is slow\" root cause."
+  }
+]

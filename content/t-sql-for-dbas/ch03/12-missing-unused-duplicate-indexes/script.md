@@ -1,0 +1,21 @@
+# Script — Missing, Unused & Duplicate Indexes
+
+## Segment 1 (title)
+
+Fragmentation is only worth fixing on an index that's earning its place. This lesson covers the other side of index health: missing indexes, unused indexes, and duplicate indexes.
+
+## Segment 2 (code: what the optimizer wishes existed)
+
+Every time the optimizer builds a plan and decides an index it doesn't have would have helped, it logs that fact. Sys.dm_db_missing_index_details, joined to the groups and group stats views, exposes it, ranked by the optimizer's estimated impact.
+
+## Segment 3 (steps: read with skepticism)
+
+But this DMV has real caveats. It only reflects queries that ran since the last restart, it never accounts for the write cost of maintaining a new index, and it never optimizes column order — treat it as a lead to investigate, not a script to run blind.
+
+## Segment 4 (code: indexes nobody reads)
+
+Sys.dm_db_index_usage_stats tracks the other half: seeks, scans, and lookups against updates, per index since the last restart. High updates with zero reads is pure overhead — every write pays to maintain an index nothing ever reads through.
+
+## Segment 5 (outro)
+
+Duplicate indexes — same key columns in a different order, or nearly the same included columns — are found by listing key columns per index and eyeballing the overlap. Next up: statistics, the optimizer's row-count estimates, and how they go stale.

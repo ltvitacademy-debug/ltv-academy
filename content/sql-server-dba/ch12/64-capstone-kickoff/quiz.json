@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-kickoff",
+  "questions": [
+    {
+      "q": "DispatchDB is in the FULL recovery model but has never had a transaction log backup. What is the concrete symptom of this on MERSQL01?",
+      "options": [
+        "The transaction log file has grown to 210 GB because nothing is ever clearing it, filling up the C: drive",
+        "The database silently switches itself to SIMPLE recovery",
+        "Full backups become impossible until a log backup runs",
+        "There is no symptom — FULL recovery with no log backups is a supported, low-risk configuration"
+      ],
+      "answer": 0,
+      "explain": "In FULL recovery, the log can't reuse space until a log backup (or equivalent) checkpoints it out. With no log backups ever taken, the log keeps growing indefinitely, which is exactly what happened to DispatchDB_log.ldf."
+    },
+    {
+      "q": "Why is DispatchTrack's app connecting to MERSQL01 as the sa login a serious security problem, beyond just the weak password?",
+      "options": [
+        "sa is a sysadmin-level account, so any compromise of the app's connection string grants full control of the entire instance, not just DispatchDB",
+        "sa cannot run T-SQL, so the app would only be able to use it for authentication",
+        "It isn't actually a problem as long as mixed mode authentication is enabled",
+        "sa only has read access by default, so the risk is limited"
+      ],
+      "answer": 0,
+      "explain": "sa is a member of the sysadmin fixed server role by default. An app connecting as sa means anyone who reads that connection string — or exploits an injection flaw in the app — gets full administrative control of MERSQL01, not just DispatchDB."
+    },
+    {
+      "q": "What does msdb.dbo.sysjobs having only one disabled row tell a new DBA doing discovery on MERSQL01?",
+      "options": [
+        "There is effectively no automated maintenance running — no backups, index maintenance, or integrity checks are scheduled",
+        "SQL Server Agent is not installed on this instance",
+        "The server has too many jobs and needs cleanup",
+        "msdb is corrupted and needs to be rebuilt"
+      ],
+      "answer": 0,
+      "explain": "sysjobs holds one row per Agent job. A single disabled leftover row means nothing meaningful is scheduled — no backup jobs, no index maintenance, no integrity checks — which matches the rest of the discovery findings."
+    },
+    {
+      "q": "Why does this capstone tackle the server in a specific order — architecture/storage first, then security, then maintenance automation, then incident and change management — rather than jumping straight to the sa login problem?",
+      "options": [
+        "Because a stable, correctly configured foundation (storage, tempdb, memory) has to be in place before security hardening and automated maintenance can be trusted to run reliably",
+        "Order doesn't matter; it's presented this way only for narrative convenience",
+        "Security must always be fixed before anything else, and this order violates that rule",
+        "Because SQL Server enforces this order technically and won't allow jobs to be created before sa is disabled"
+      ],
+      "answer": 0,
+      "explain": "The plan mirrors the course's own structure: you can't reliably automate maintenance or lock down access on storage/configuration that's still broken (log filling the disk, misconfigured tempdb), so stabilization comes first."
+    },
+    {
+      "q": "What is an RPO (Recovery Point Objective), and why is it effectively 'undefined' for DispatchDB as inherited?",
+      "options": [
+        "It's how much data loss is acceptable in time; with no log backups and full backups only every few weeks, there's no real bound on how much data could be lost",
+        "It's the maximum allowed downtime during a restore, which is unrelated to backups",
+        "It's a SQL Server configuration setting found in sys.databases",
+        "It's the amount of disk space reserved for backup files"
+      ],
+      "answer": 0,
+      "explain": "RPO measures acceptable data loss, not downtime (that's RTO). With log backups never running and full backups only sporadic and manual, MERSQL01 could lose weeks of data in a failure — an undefined, unacceptable RPO."
+    }
+  ]
+}

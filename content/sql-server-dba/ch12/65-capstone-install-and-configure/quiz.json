@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-install-and-configure",
+  "questions": [
+    {
+      "q": "Why does the plan for MERSQL01 separate data files, log files, tempdb, and backups onto four different volumes?",
+      "options": [
+        "So a problem on one volume (a runaway log, a tempdb spill, a full backup drive) can't take down the others, and I/O for each doesn't compete with the others",
+        "SQL Server requires each file type to be on a separate physical drive or it will refuse to start",
+        "It has no performance or reliability benefit — it's done purely for organizational tidiness",
+        "So that backups can be taken without ever needing a full backup again"
+      ],
+      "answer": 0,
+      "explain": "Separating file types isolates failure and contention: a filled log-file drive doesn't take out data files, and backups aren't sitting on the same disk as the database they protect."
+    },
+    {
+      "q": "Before moving DispatchDB's files to new drives, the plan takes a full backup and a log backup first. Why is the log backup specifically necessary right before the move?",
+      "options": [
+        "It captures the most recent transactions and truncates the log, so the restore chain stays valid and minimal data would be lost if something went wrong during the move",
+        "Log backups are unrelated to file moves and are only included out of habit",
+        "It disables the FULL recovery model temporarily so the file move can complete",
+        "It replaces the need for taking DispatchDB offline during the move"
+      ],
+      "answer": 0,
+      "explain": "Backing up the log right before a risky operation minimizes potential data loss and keeps the backup chain intact for FULL recovery — consistent with everything Chapters 3 and 6 covered about recovery models and backups."
+    },
+    {
+      "q": "MERSQL01 has 4 logical CPUs. Per Chapter 4's tempdb guidance applied here, how many tempdb data files does the capstone configure, and why?",
+      "options": [
+        "Four — generally one data file per logical CPU up to about eight, to reduce allocation-page contention",
+        "One large file, because multiple tempdb files are only useful on servers with more than 16 cores",
+        "Eight, regardless of core count, because that is always the recommended maximum",
+        "As many as fit on the T: drive, with no relationship to CPU count"
+      ],
+      "answer": 0,
+      "explain": "The standard guidance is roughly one tempdb data file per logical CPU up to about eight, all equally sized, to reduce contention on tempdb's allocation structures. MERSQL01's 4 CPUs get 4 files."
+    },
+    {
+      "q": "The tempdb data files are configured with FILEGROWTH in a fixed MB amount instead of a percentage. Why does that matter?",
+      "options": [
+        "Percentage-based growth produces increasingly large, unpredictable growth events as a file gets bigger, causing longer autogrowth pauses; a fixed MB amount grows predictably",
+        "Percentage-based growth is not a supported option for tempdb files",
+        "It has no practical effect — MB and percentage growth behave identically",
+        "Fixed MB growth means the file will never need to grow again"
+      ],
+      "answer": 0,
+      "explain": "Percentage growth compounds: a 10% growth on a 100GB file is 10GB, causing a large, slow autogrowth event. Fixed MB growth keeps each growth event small and predictable."
+    },
+    {
+      "q": "max server memory was left at its default (effectively unlimited) on MERSQL01. What problem does that cause, and how is it fixed?",
+      "options": [
+        "The Database Engine can claim nearly all available RAM, starving the OS and other services; it's fixed by setting max server memory to leave headroom, e.g. 26624 MB out of 32GB",
+        "It causes SQL Server to refuse new connections once RAM is full",
+        "It has no real effect since Windows always reserves memory for itself regardless of SQL Server's setting",
+        "It only matters for Enterprise Edition, not Standard Edition like MERSQL01 runs"
+      ],
+      "answer": 0,
+      "explain": "Without a cap, the buffer pool can grow until the OS itself is starved of memory, causing broader system instability. Setting max server memory (MB) explicitly reserves RAM for the OS and other services."
+    }
+  ]
+}

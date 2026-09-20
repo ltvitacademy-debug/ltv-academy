@@ -1,0 +1,21 @@
+# Script — Statistics: Inspecting & Maintaining
+
+## Segment 1 (title)
+
+Every execution plan the optimizer builds depends on a row-count estimate, and that estimate comes from statistics, not from the index itself. This lesson covers inspecting, and maintaining, those statistics.
+
+## Segment 2 (code: staleness, not guesswork)
+
+Sys.stats lists every statistics object on a table. Cross apply it with sys.dm_db_stats_properties to see when each one was last updated and its modification counter — the number of row changes since, which is exactly what SQL Server's own auto-update logic watches.
+
+## Segment 3 (code: the actual histogram)
+
+DBCC SHOW_STATISTICS with the HISTOGRAM option returns what the optimizer actually reads: up to 200 steps describing the data's distribution, with range boundaries and row counts per step. When an estimate looks wrong, this is how you confirm why.
+
+## Segment 4 (code: updating by hand)
+
+Update statistics without options samples a subset of rows — fast, but on a large or skewed table it can miss the true distribution. With FULLSCAN reads every row for the most accurate histogram possible, at the cost of a full table scan.
+
+## Segment 5 (outro)
+
+SQL Server auto-updates statistics on its own once enough rows change, using a threshold that scales with table size on modern compatibility levels. Next up: when not to rebuild an index — because rebuilding is not always the right call.

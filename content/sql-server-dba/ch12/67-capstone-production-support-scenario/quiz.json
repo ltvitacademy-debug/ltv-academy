@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-production-support-scenario",
+  "questions": [
+    {
+      "q": "DispatchTrack's health check page still loads fine while dispatchers can't save updates. Per the triage methodology, what does that combination of symptoms suggest?",
+      "options": [
+        "Blocking, not a crash — the Database Engine is up and answering simple requests, but something is holding locks that specific updates need",
+        "The Database Engine service has stopped and needs to be restarted",
+        "The disk holding the data files has failed",
+        "DispatchDB has been corrupted and needs DBCC CHECKDB immediately"
+      ],
+      "answer": 0,
+      "explain": "A responsive health check rules out the engine being down entirely. Specific operations hanging while the server otherwise responds is the classic signature of a blocking chain, which is exactly what triage should suspect first."
+    },
+    {
+      "q": "What made session 82 a 'head blocker' rather than just another blocked session?",
+      "options": [
+        "It held row locks from an open transaction while every other session waiting on those same rows was blocked behind it, directly or indirectly",
+        "It had the highest CPU usage of any session on the server",
+        "It was the session that had been connected the longest",
+        "It belonged to the sysadmin role"
+      ],
+      "answer": 0,
+      "explain": "A head blocker is the session at the root of a blocking chain — the one holding the lock(s) everyone else is queued up behind, even if it isn't itself blocked by anything."
+    },
+    {
+      "q": "sys.dm_exec_sessions showed session 82 had open_transaction_count = 1 and a last request that finished 11 minutes earlier. What does that combination indicate?",
+      "options": [
+        "An open, idle transaction — the session's last statement finished executing but no COMMIT or ROLLBACK was ever issued, so its locks are still held",
+        "The session is actively running a very long query right now",
+        "The session has disconnected but SQL Server hasn't noticed yet",
+        "open_transaction_count is unrelated to whether locks are held"
+      ],
+      "answer": 0,
+      "explain": "open_transaction_count > 0 with no currently executing request means the transaction was left open after its last statement completed — exactly the 'forgot to commit' scenario that explains why locks were still held 11 minutes later."
+    },
+    {
+      "q": "Why did the plan try to reach Priya directly before running KILL 82?",
+      "options": [
+        "Letting her commit or roll back cleanly is preferable to a forced KILL when there's time to do so; KILL was used only once contact failed and impact was growing",
+        "KILL cannot be used on a session that has an open transaction",
+        "Reaching out first is required by SQL Server before KILL will execute",
+        "There was no urgency, since the app wasn't actually affected yet"
+      ],
+      "answer": 0,
+      "explain": "A graceful resolution (the user committing or rolling back themselves) is preferable when time allows. KILL is the fallback once contact fails and the business impact (40 terminals blocked) outweighs waiting further."
+    },
+    {
+      "q": "Besides resolving the immediate blocking, what two follow-up actions does the lesson flag to reduce the chance of a recurrence?",
+      "options": [
+        "Setting a LOCK_TIMEOUT for ad hoc reporting connections, and evaluating Read Committed Snapshot Isolation (RCSI) for DispatchDB",
+        "Dropping the priya_analyst login permanently and disabling ad hoc query access entirely",
+        "Switching DispatchDB to the SIMPLE recovery model",
+        "Increasing max server memory further"
+      ],
+      "answer": 0,
+      "explain": "The lesson flags a LOCK_TIMEOUT for reporting connections and RCSI as a candidate to reduce reader/writer blocking generally — both handled as proper evaluated changes, not quick fixes."
+    }
+  ]
+}

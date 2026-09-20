@@ -1,0 +1,21 @@
+# Script — Installing SQL Server
+
+## Segment 1 (title)
+
+setup.exe walks through a fixed sequence of screens. None are hard to click through — the risk is clicking Next on a default that doesn't match the plan from the previous lesson.
+
+## Segment 2 (steps: setup.exe, screens 1-3)
+
+Feature Selection lets you install only the components you need. Instance Configuration chooses a default instance, or a named instance if several will coexist on the same machine. Server Configuration is where the planned service accounts actually get entered.
+
+## Segment 3 (steps: setup.exe, screens 4-6)
+
+Authentication mode is Windows-only, or Mixed Mode which also requires setting an sa password right there in the wizard. Data directories set the paths for data, log, and tempdb files. Collation gets confirmed here — the last convenient point before it becomes expensive to change.
+
+## Segment 4 (code: Setup finishes ≠ production-ready)
+
+The wizard sets features, accounts, authentication mode, file paths, and collation — but it never asks about max server memory, MAXDOP, tempdb file count, or backup compression defaults. Setup finishing successfully doesn't mean the instance is production-ready.
+
+## Segment 5 (outro)
+
+Next up: post-install configuration — the checklist every production instance still needs after the wizard exits.

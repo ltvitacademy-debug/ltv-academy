@@ -1,0 +1,17 @@
+# Script — File Growth Strategy
+
+## Segment 1 (title)
+
+FILEGROWTH looks like a small setting, but the difference between a good and a bad choice compounds over the life of a database. There's one real anti-pattern here, and one feature that makes growth fast when configured correctly.
+
+## Segment 2 (code: fixed vs percentage)
+
+Fixed growth is predictable — 512 megabytes is 512 megabytes regardless of file size. Percentage growth compounds: 10 percent of a 500 gigabyte file is a 50 gigabyte growth event, all at once. Size files deliberately and use autogrowth as a safety net, not a primary strategy.
+
+## Segment 3 (steps: IFI applies to data files only)
+
+Instant File Initialization skips zero-writing new space on data file growth, requiring the Perform Volume Maintenance Tasks privilege. It never applies to the log file — the log must always be zero-initialized so crash recovery can trust its content, which is exactly why an oversized log growth event is worse than the equivalent on a data file.
+
+## Segment 4 (outro)
+
+Size deliberately, grow in fixed, sensible increments, and let IFI do its job on the data side. Next up: storage best practices — separating disks and choosing RAID.

@@ -1,0 +1,60 @@
+{
+  "lesson": "tempdb-configuration",
+  "questions": [
+    {
+      "q": "Why does a single tempdb data file become a bottleneck under high concurrency?",
+      "options": [
+        "Many sessions creating and dropping temp objects contend for the same allocation pages within that one file, visible as PAGELATCH waits",
+        "tempdb has a hard row-count limit per file",
+        "A single file causes tempdb to switch to SIMPLE recovery automatically",
+        "tempdb cannot grow past a single file's maximum size"
+      ],
+      "answer": 0,
+      "explain": "tempdb's allocation pages track free space; under heavy concurrent temp-object creation, contention on those pages within one file shows up as PAGELATCH waits."
+    },
+    {
+      "q": "What is Microsoft's current recommendation for tempdb data files?",
+      "options": [
+        "Multiple data files, all the same initial size and growth setting, one per logical CPU up to a maximum of 8",
+        "Exactly one large data file regardless of CPU count",
+        "One file per user database on the instance",
+        "As many files as possible, sized differently to fill available disk space"
+      ],
+      "answer": 0,
+      "explain": "SQL Server Setup itself has configured multiple equally-sized tempdb files this way automatically since SQL Server 2016, one per logical core up to 8."
+    },
+    {
+      "q": "Why must tempdb's multiple data files be the same size and growth setting?",
+      "options": [
+        "SQL Server's proportional-fill algorithm allocates more to whichever file has proportionally more free space, so uneven files defeat the purpose of splitting",
+        "Unequal file sizes cause SQL Server to refuse to start",
+        "It's only a cosmetic recommendation with no functional effect",
+        "Equal sizing is required only for the log file, not tempdb data files"
+      ],
+      "answer": 0,
+      "explain": "Proportional fill directs more new allocations to files with more free space; if files are unequal, contention concentrates back onto fewer files, undoing the benefit of splitting."
+    },
+    {
+      "q": "Once an instance has more than 8 logical CPUs, what's the recommended approach to adding more tempdb files?",
+      "options": [
+        "Add more files in multiples of 4, but only after monitoring shows continued allocation-page contention",
+        "Automatically add one file per additional core with no monitoring",
+        "Never exceed 8 files under any circumstances",
+        "Switch to a single very large file instead"
+      ],
+      "answer": 0,
+      "explain": "Beyond 8 cores, Microsoft's guidance is to add tempdb files in increments of 4 only if monitoring still shows PAGELATCH contention, not to automatically scale with core count."
+    },
+    {
+      "q": "Why is Instant File Initialization especially valuable for tempdb?",
+      "options": [
+        "tempdb is recreated fresh on every SQL Server restart and is one of the most frequently-growing databases, so skipping zero-initialization saves real time",
+        "IFI is required for tempdb to support row versioning",
+        "IFI applies only to the tempdb log file",
+        "tempdb cannot grow at all without IFI enabled"
+      ],
+      "answer": 0,
+      "explain": "Because tempdb is rebuilt every restart and grows often on a busy instance, IFI's speedup on data file creation and growth events is especially valuable there — though it still doesn't apply to the log file."
+    }
+  ]
+}

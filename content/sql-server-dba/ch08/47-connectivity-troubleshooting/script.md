@@ -1,0 +1,21 @@
+# Script — Connectivity Troubleshooting
+
+## Segment 1 (title)
+
+I can't connect is one of the most common tickets a DBA receives, and it has a surprisingly short, orderable list of real causes. This lesson works through that list in the order a DBA should actually check it.
+
+## Segment 2 (code: below the database layer)
+
+Start below the database layer. Ping confirms basic network reachability, though it isn't conclusive alone. Telnet to port 1433 tests whether something is actually listening and accepting connections — a refused or timed-out attempt here points to a firewall, a stopped service, or the wrong port, not credentials.
+
+## Segment 3 (code: named instances need Browser)
+
+A named instance typically listens on a dynamic port instead of 1433. SQL Server Browser, on UDP 1434, resolves the instance name to that actual port — if Browser is stopped, named-instance connections can fail even though the instance itself is completely healthy.
+
+## Segment 4 (steps: the checklist, in order)
+
+Firewall rules need to allow both the Engine's TCP port and Browser's UDP 1434 for named instances — a blocked firewall produces the exact same symptom as a stopped service. If the network path is open but the connection still fails, the SQL Server error log is the next place to check for login failures or connection-refused entries.
+
+## Segment 5 (outro)
+
+Next up: network configuration — SQL Server Configuration Manager, the network protocols, and static versus dynamic ports.

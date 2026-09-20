@@ -1,0 +1,21 @@
+# Script — Parameter Sensitivity
+
+## Segment 1 (title)
+
+Last lesson found the worst queries by aggregate cost. Some of the worst offenders aren't badly written at all — they're victims of parameter sniffing, where the exact same cached plan is a great fit for one parameter value and a terrible fit for another.
+
+## Segment 2 (steps: what sniffing actually is)
+
+When a query first compiles, SQL Server sniffs the actual parameter value passed in and builds a plan optimized for it. That's usually right — until the same query's optimal plan is genuinely different for a different value, most often on a skewed column like an order status where 2 percent is Cancelled and 90 percent is Shipped.
+
+## Segment 3 (code: the tell-tale symptom)
+
+The tell-tale symptom: the exact same stored procedure runs fast for days, then suddenly runs slow with no code or data change. Sys.dm_exec_query_stats shows a huge gap between min and max elapsed time for that same cached plan — it's the cached plan that's wrong for that value, not the query itself.
+
+## Segment 4 (code: two real fixes)
+
+Option recompile forces a fresh, freshly-sniffed plan on every execution — the right trade for a procedure with wildly varying parameter distributions. Parameter Sensitive Plan optimization, new in SQL Server 2022, caches multiple plans per query and picks between them by parameter value automatically.
+
+## Segment 5 (outro)
+
+PSP is on by default for eligible queries once a database is at the 2022-plus compatibility level. Next up: recompilation and performance baselines — how to actually prove something got slower instead of just assuming it.

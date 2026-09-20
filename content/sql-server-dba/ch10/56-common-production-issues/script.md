@@ -1,0 +1,17 @@
+# Script — Common Production Issues
+
+## Segment 1 (title)
+
+Triage methodology is the framework. This lesson covers the specific, recurring incidents that framework actually gets applied to — the handful of problems behind most DBA pages.
+
+## Segment 2 (code: CPU, tempdb, and the log)
+
+A runaway query pins one session near 100% CPU — find it in sys.dm_exec_requests and kill it if it's genuinely runaway. Tempdb filling up can break the whole instance, since it's shared. An unbounded log is a symptom of either missing log backups or a forgotten open transaction — log_reuse_wait_desc tells you which.
+
+## Segment 3 (steps: Disk and blocking)
+
+Disk space exhaustion stops writes entirely when a drive fills — often fixed fast, but better caught with alerting before it happens. Blocking chains form when sessions queue up behind one blocker — stabilizing means addressing the head of the chain, not the sessions it's blocking.
+
+## Segment 4 (outro)
+
+Knowing what's wrong is only half the job — knowing who else needs to know is the other half. Next up: escalation and communication.

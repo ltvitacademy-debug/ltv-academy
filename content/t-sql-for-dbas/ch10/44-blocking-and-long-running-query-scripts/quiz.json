@@ -1,0 +1,60 @@
+{
+  "lesson": "blocking-and-long-running-query-scripts",
+  "questions": [
+    {
+      "q": "What does a blocking_session_id value of 0 mean for a row in sys.dm_exec_requests?",
+      "options": [
+        "That request is not currently blocked",
+        "The session has been killed",
+        "The request is the head of a blocking chain",
+        "The request is running with sysadmin permissions"
+      ],
+      "answer": 0,
+      "explain": "blocking_session_id is 0 when a request isn't waiting on any other session, and non-zero when it is — set to the blocking session's ID."
+    },
+    {
+      "q": "How does Section 2's query identify the head of a blocking chain?",
+      "options": [
+        "It finds a blocking_session_id value that never itself appears as a session_id with blocking_session_id <> 0 — meaning it blocks others without being blocked",
+        "It finds the session with the highest cpu_time",
+        "It finds the session that has been connected the longest",
+        "It finds the session with the lowest session_id number"
+      ],
+      "answer": 0,
+      "explain": "The head of the chain blocks other sessions but is not itself waiting on anyone — found by excluding any blocking_session_id that also shows up as a blocked session_id."
+    },
+    {
+      "q": "Why does killing the session at the end of a five-session blocking chain typically fail to resolve the incident?",
+      "options": [
+        "Because every session in the chain is ultimately waiting on the head of the chain, not on each other directly",
+        "Because KILL only works on the session with the lowest session_id",
+        "Because ending a session at the end of a chain always causes a deadlock",
+        "It actually does resolve the incident every time"
+      ],
+      "answer": 0,
+      "explain": "Each blocked session in the chain is waiting on the head, whether directly or transitively. Removing a session at the end leaves the head still holding its lock, so everyone else remains blocked."
+    },
+    {
+      "q": "In Section 3's expensive-query ranking, what does a row with a non-zero blocking_session_id combined with high cpu_time usually indicate?",
+      "options": [
+        "A query that is both resource-expensive and currently blocked — often the single most important row in the output",
+        "A query that has already finished executing",
+        "A query running under the sa login",
+        "A query that cannot be a valid result, since blocked queries never consume CPU"
+      ],
+      "answer": 0,
+      "explain": "blocking_session_id is carried into the expensive-query section too, so a row that's both expensive and blocked stands out as needing attention on two fronts at once."
+    },
+    {
+      "q": "Why do the blocking-chain queries and the expensive-query ranking belong in the same incident-response script rather than two separate ones?",
+      "options": [
+        "Because 'the database is slow' can mean either something is blocked or something is simply expensive, and a DBA needs both answers in the same incident",
+        "Because sys.dm_exec_requests cannot be queried more than once per session",
+        "Because SQL Server requires blocking and CPU checks to run in the same batch",
+        "There's no real benefit — they could just as easily be separate scripts"
+      ],
+      "answer": 0,
+      "explain": "Blocking and raw resource cost are two distinct, common causes of a database feeling slow. Combining both checks into one script means a single run covers both possibilities instead of guessing which one applies first."
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "T-SQL for Database Administrators · Chapter Ten",
+    "titlePlain": "Backup Status & ",
+    "titleEmphasis": "Failed Jobs",
+    "titleSuffix": " Scripts",
+    "subtitle": "Lesson 43 · Build Your DBA Toolkit"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Section 1 — backup status per database",
+    "code": "DECLARE @FullBackupThresholdHours int = 24;\nDECLARE @DatabaseName sysname = NULL;\n\nSELECT\n    d.name AS database_name,\n    MAX(CASE WHEN b.type='D' THEN b.backup_finish_date END)\n        AS last_full_backup,\n    CASE\n        WHEN MAX(CASE WHEN b.type='D' THEN b.backup_finish_date END)\n             IS NULL THEN 'NEVER BACKED UP'\n        WHEN DATEDIFF(HOUR, MAX(CASE WHEN b.type='D'\n             THEN b.backup_finish_date END), GETDATE())\n             > @FullBackupThresholdHours THEN 'OVERDUE'\n        ELSE 'OK'\n    END AS full_backup_status\nFROM sys.databases AS d\nLEFT JOIN msdb.dbo.backupset AS b ON b.database_name = d.name\nWHERE d.name NOT IN ('tempdb')\nGROUP BY d.name;",
+    "caption": "LEFT JOIN so a database with zero backups still shows up — flagged."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Section 2 — failed jobs, bounded to a window",
+    "code": "DECLARE @JobLookbackHours int = 24;\n\nSELECT\n    j.name AS job_name, h.step_id, h.step_name,\n    msdb.dbo.agent_datetime(h.run_date, h.run_time)\n        AS run_datetime,\n    h.message\nFROM msdb.dbo.sysjobs AS j\nJOIN msdb.dbo.sysjobhistory AS h ON j.job_id = h.job_id\nWHERE h.run_status = 0\n  AND h.step_id <> 0\n  AND msdb.dbo.agent_datetime(h.run_date, h.run_time)\n      >= DATEADD(HOUR, -@JobLookbackHours, GETDATE())\nORDER BY run_datetime DESC;",
+    "caption": "Bounded to the lookback window — last night, not all of history."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Reading the morning check",
+    "titlePlain": "Two questions, ",
+    "titleEmphasis": "one script",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Backups", "sub": "OK, OVERDUE, or NEVER BACKED UP — per database" },
+      { "label": "Failed jobs", "sub": "every failing step in the lookback window" },
+      { "label": "Correlate", "sub": "an overdue backup next to a failed backup job isn't a coincidence" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 44",
+    "titlePlain": "Blocking & Long-Running ",
+    "titleEmphasis": "Query",
+    "titleSuffix": " Scripts",
+    "subtitle": "The incident-response script."
+  }
+]

@@ -1,0 +1,17 @@
+# Script — Rolling Back a Bad Deployment
+
+## Segment 1 (title)
+
+Every practice in this chapter aims at making deployments safe, but safe isn't the same as never failing. What you do in the next ten minutes after a bad deployment matters just as much.
+
+## Segment 2 (code: The wrong first instinct)
+
+Restoring from last night's backup rolls back everything, including every legitimate transaction since then. If a deployment breaks something at 2:15 but the database has taken real orders since 9am, that restore throws away hours of real data to fix a fifteen-minute-old problem.
+
+## Segment 3 (steps: The right approach)
+
+A tested rollback script, written and tested alongside the deployment script itself, is the right first move — it reverses exactly the change that broke things. Point-in-time restore is still the right tool, but only once you've confirmed data was actually corrupted or lost, not as the reflexive first response.
+
+## Segment 4 (outro)
+
+That closes out change management. Next up: Chapter Ten, production support fundamentals, starting with triage methodology.

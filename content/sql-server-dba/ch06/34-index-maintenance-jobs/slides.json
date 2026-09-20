@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "SQL Server Database Administration · Chapter Six",
+    "titlePlain": "Index Maintenance ",
+    "titleEmphasis": "Jobs",
+    "titleSuffix": "",
+    "subtitle": "Lesson 34 · Maintenance Plans & Routine Administration"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Measure before you touch anything",
+    "code": "SELECT OBJECT_NAME(ips.object_id) AS table_name,\n       i.name AS index_name,\n       ips.avg_fragmentation_in_percent,\n       ips.page_count\nFROM sys.dm_db_index_physical_stats\n     (DB_ID(), NULL, NULL, NULL, 'LIMITED') ips\nJOIN sys.indexes i\n     ON ips.object_id = i.object_id\n    AND ips.index_id = i.index_id\nWHERE ips.page_count > 1000\nORDER BY ips.avg_fragmentation_in_percent DESC;",
+    "caption": "sys.dm_db_index_physical_stats — the real fragmentation number."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Microsoft's standard thresholds",
+    "titlePlain": "Under 5, 5 to 30, over ",
+    "titleEmphasis": "30",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Under 5% fragmentation", "sub": "do nothing — not worth the I/O" },
+      { "label": "5%–30% fragmentation", "sub": "REORGANIZE — lighter, always online" },
+      { "label": "Above 30% fragmentation", "sub": "REBUILD — heavier, refreshes statistics" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The real syntax",
+    "code": "-- 5%–30%: lighter, always online\nALTER INDEX IX_Orders_CustomerID\n    ON dbo.Orders REORGANIZE;\n\n-- above 30%: heavier, refreshes statistics\nALTER INDEX IX_Orders_CustomerID ON dbo.Orders\n    REBUILD WITH (ONLINE = ON, SORT_IN_TEMPDB = ON);\n\nALTER INDEX ALL ON dbo.Orders REBUILD;",
+    "caption": "REBUILD does a full-scan statistics refresh as a side effect."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 35",
+    "titlePlain": "Statistics ",
+    "titleEmphasis": "Jobs",
+    "titleSuffix": "",
+    "subtitle": "UPDATE STATISTICS scheduling and real cadence considerations."
+  }
+]
