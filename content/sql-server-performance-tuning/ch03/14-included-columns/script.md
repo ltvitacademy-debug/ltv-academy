@@ -1,0 +1,21 @@
+# Script — Included Columns
+
+## Segment 1 (title)
+
+Last lesson glossed over how you actually widen an index to make it covering. There are two ways — key columns and included columns — and they behave very differently. Let's look at the real syntax and when to use each.
+
+## Segment 2 (code: two different lists)
+
+CustomerId and OrderDate here are key columns — they determine sort order and can be seeked, following the leftmost-prefix rule. TotalDue and ShipCity are included columns — stored at the leaf level for fast retrieval, but they play no role in sorting and can't be seeked on their own.
+
+## Segment 3 (code: why INCLUDE is cheaper)
+
+Key columns are stored at every level of the index's B-tree, because the tree structure depends on sorting by them. Included columns are stored only at the leaf level — the bottom layer where lookups actually happen. That means a narrower tree above and even lets you include data types, like nvarchar max, that aren't allowed as key columns at all.
+
+## Segment 4 (steps: the rule)
+
+The rule is simple: does a query need to seek, range-scan, or sort using this column? If yes, it has to be a key column in the right position. If it just needs to be read back once a row is found, put it in INCLUDE. Adding it to the key when it doesn't need to be there just widens every level of the tree for nothing.
+
+## Segment 5 (outro)
+
+Included columns widen an index cheaply. Next up: filtered indexes — indexing only the rows that actually matter.

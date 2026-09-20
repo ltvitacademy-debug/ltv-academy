@@ -1,0 +1,60 @@
+{
+  "lesson": "rewriting-queries-for-performance",
+  "questions": [
+    {
+      "q": "What does 'sargable' mean?",
+      "options": [
+        "A predicate shaped so the optimizer can use an index seek directly, without evaluating a function per row",
+        "A query that always returns fewer than 100 rows",
+        "A synonym for a covering index",
+        "A predicate that always uses a table hint"
+      ],
+      "answer": 0,
+      "explain": "Sargable (Search ARGument ABLE) describes a predicate the optimizer can satisfy via an index seek rather than a full scan."
+    },
+    {
+      "q": "Why does `WHERE YEAR(OrderDate) = 2026` typically prevent an index seek on OrderDate?",
+      "options": [
+        "Wrapping the column in a function means SQL Server must compute that function for every row before it can filter, forcing a scan instead of a seek",
+        "YEAR() is not a valid T-SQL function",
+        "It actually does seek the index just as efficiently as a range predicate",
+        "OrderDate columns can never be indexed"
+      ],
+      "answer": 0,
+      "explain": "Wrapping an indexed column in a function makes the predicate non-sargable — the optimizer can't determine which index entries match without evaluating the function per row."
+    },
+    {
+      "q": "What is the sargable rewrite of `WHERE YEAR(OrderDate) = 2026` shown in this lesson?",
+      "options": [
+        "WHERE OrderDate >= '2026-01-01' AND OrderDate < '2027-01-01'",
+        "WHERE OrderDate = 2026",
+        "WHERE CONVERT(int, OrderDate) = 2026",
+        "WHERE OrderDate LIKE '2026%'"
+      ],
+      "answer": 0,
+      "explain": "A plain range predicate directly on the raw OrderDate column lets the optimizer seek the index, returning the same result set as the function-wrapped version."
+    },
+    {
+      "q": "How can an implicit conversion silently turn a seek into a scan, per this lesson?",
+      "options": [
+        "Comparing a column to a literal of a different data type can force SQL Server to convert the column's value on every row, depending on data type precedence rules, with no function visibly wrapping the column",
+        "Implicit conversions are resolved entirely at compile time and never affect execution",
+        "Implicit conversions only occur when using CAST or CONVERT explicitly",
+        "They only affect columnstore indexes, never rowstore indexes"
+      ],
+      "answer": 0,
+      "explain": "Comparing an nvarchar column to an int literal, for example, can force a per-row conversion on the column side, silently defeating a seek without any visible function call."
+    },
+    {
+      "q": "Beyond readability, what real performance cost can SELECT * introduce?",
+      "options": [
+        "It can defeat a covering index built for the query's actual needed columns, forcing a Key Lookup or wider scan, and increases data transferred over the network",
+        "It always causes a syntax error in SQL Server",
+        "It forces the query to run under READ UNCOMMITTED isolation",
+        "It has no measurable performance impact in any scenario"
+      ],
+      "answer": 0,
+      "explain": "Selecting every column defeats a narrowly built covering index and moves more data than necessary across the network on each execution."
+    }
+  ]
+}

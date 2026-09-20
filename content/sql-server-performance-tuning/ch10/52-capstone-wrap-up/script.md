@@ -1,0 +1,21 @@
+# Script — Capstone: Wrap-Up & Portfolio Presentation
+
+## Segment 1 (title)
+
+The Meridian Outfitters capstone is done: a real symptom, a measured baseline, a specific diagnosis, a targeted fix, a verified result, and a write-up someone else could act on. That's this entire course's arc, run once, start to finish.
+
+## Segment 2 (steps: mapping the arc back to the course)
+
+Chapter 1's loop structured all six lessons. Chapter 2's plan-reading found the Key Lookup. Chapter 3's covering indexes designed the fix. Chapter 5's wait-stat analysis confirmed it. And the tools from Chapters 4, 6, 7, and 8 didn't apply here — knowing that a query rewrite or a MAXDOP change wouldn't have helped is itself part of the methodology.
+
+## Segment 3 (code: the portfolio answer)
+
+An interviewer asking about a performance problem you solved wants exactly this shape: symptom, root cause, change, verified result. A non-covering index causing Key Lookups at scale, confirmed by plan and wait stats, fixed with a specific CREATE INDEX, verified with a three-hundred-x drop in duration and logical reads. That's stronger than "I added an index and it got faster" — it shows how you knew which one, and how you knew it worked.
+
+## Segment 4 (steps: where this fits in your path)
+
+SQL Server Performance Tuning is one of four Advanced-stage courses in the SQL Server Database Administrator path, alongside High Availability, Backup & Disaster Recovery, Azure Database Administrator, and PowerShell Automation & DevOps for DBAs. No required order — each covers a different advanced responsibility.
+
+## Segment 5 (outro)
+
+Whichever Advanced-stage course you pick up next, you're carrying the same discipline forward: measure before you guess, name the bottleneck precisely, change one thing deliberately, and verify it actually worked.

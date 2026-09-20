@@ -1,0 +1,60 @@
+{
+  "lesson": "parameter-sniffing",
+  "questions": [
+    {
+      "q": "What is the actual mechanism behind parameter sniffing?",
+      "options": [
+        "SQL Server compiles a plan optimized for the first parameter value it sees, caches that plan, and reuses it for subsequent calls even when a very different value is supplied",
+        "SQL Server recompiles a fresh plan for every single execution automatically",
+        "It only happens when statistics have never been updated",
+        "It is caused exclusively by using table variables instead of temp tables"
+      ],
+      "answer": 0,
+      "explain": "The plan is built and cached around whichever value triggered the first compile; a skewed data distribution then makes that cached plan a poor fit for other values."
+    },
+    {
+      "q": "Per this lesson, what is the decisive test to confirm parameter sniffing rather than stale statistics?",
+      "options": [
+        "Run the query with OPTION (RECOMPILE) to force a fresh compile using the current call's actual value; if it's dramatically better with statistics already confirmed current, it's sniffing",
+        "Restart the SQL Server service and see if performance changes",
+        "Check whether the query uses a JOIN or a subquery",
+        "Rebuild every index on the database and measure again"
+      ],
+      "answer": 0,
+      "explain": "OPTION (RECOMPILE) bypasses the cached plan and compiles fresh for that specific value; a dramatic improvement with current stats isolates the cause to the cached plan itself, not the statistics."
+    },
+    {
+      "q": "What does OPTION (OPTIMIZE FOR (@CustomerID = 11000)) do?",
+      "options": [
+        "Forces the optimizer to always compile as if that specific value were supplied, regardless of the actual parameter value passed at runtime",
+        "Deletes the cached plan permanently from the plan cache",
+        "Updates statistics only for rows matching that value",
+        "Forces a table scan instead of an index seek for that value"
+      ],
+      "answer": 0,
+      "explain": "OPTIMIZE FOR pins compilation to a chosen representative value (or UNKNOWN for average density), stabilizing the plan regardless of what value is actually passed."
+    },
+    {
+      "q": "What does Parameter Sensitive Plan (PSP) optimization, introduced in SQL Server 2022, do differently?",
+      "options": [
+        "It allows the optimizer to automatically cache multiple plan variants for the same query based on parameter value ranges, instead of forcing one plan to serve every case",
+        "It disables parameter sniffing entirely across all SQL Server versions back to 2008",
+        "It removes the need for indexes on parameterized queries",
+        "It only works for queries that use OPTION (RECOMPILE) explicitly"
+      ],
+      "answer": 0,
+      "explain": "PSP directly targets the classic skewed-distribution sniffing problem by letting SQL Server keep several plan shapes cached, chosen based on the incoming parameter value's range."
+    },
+    {
+      "q": "What is the tradeoff of using OPTION (RECOMPILE) as a fix for parameter sniffing?",
+      "options": [
+        "It guarantees the best plan for every call, but pays compilation overhead on every single execution, making it best for infrequently run queries",
+        "It permanently disables statistics updates for that table",
+        "It can only be applied at the database level, never per query",
+        "It has no downside and should always be the first fix attempted for every query"
+      ],
+      "answer": 0,
+      "explain": "Recompiling on every call avoids a mismatched cached plan entirely, but the constant compilation cost makes it best suited to queries where that overhead is trivial compared to execution cost."
+    }
+  ]
+}

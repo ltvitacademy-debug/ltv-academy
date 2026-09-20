@@ -1,0 +1,21 @@
+# Script — Capstone: Diagnose
+
+## Segment 1 (title)
+
+Time to run the loop for real. Baseline first, then the actual execution plan, then wait statistics — in that order — until the bottleneck is a specific, named thing, not a feeling.
+
+## Segment 2 (code: the baseline)
+
+Query Store already has weeks of history. For a typical consumer account, usp_CustomerOrderHistory averages fifteen milliseconds and six hundred forty logical reads. For a wholesale account like TrailWorks Co-op, it's twenty-eight seconds and about a hundred eighteen thousand logical reads — a hundred ninety times more expensive, for the exact same procedure.
+
+## Segment 3 (code: reading the actual plan)
+
+The actual execution plan shows an Index Seek on IX_Orders_CustomerID feeding a Key Lookup against the clustered index — fetching the columns that narrow index doesn't carry. For TrailWorks Co-op, that Key Lookup runs eighteen thousand four hundred times, over ninety percent of the plan's cost. Forty Key Lookups are invisible. Eighteen thousand four hundred is exactly what turns a millisecond query into a twenty-eight second one.
+
+## Segment 4 (steps: confirming with wait stats)
+
+Chapter 5 says don't stop at the plan — confirm it. Wait stats during the ten AM to two PM window show PAGEIOLATCH_SH dominating: waits for data pages being read from disk. That matches thousands of scattered Key Lookups per execution, multiplied across several reps pulling wholesale histories at once — exactly the load-correlated symptom from lesson one of this chapter.
+
+## Segment 5 (outro)
+
+The bottleneck now has a name: IX_Orders_CustomerID is a non-covering index, and the cost scales with a customer's order count. Next up: applying the fix.

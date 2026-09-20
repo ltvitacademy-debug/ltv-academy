@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "SQL Server Performance Tuning · Chapter Four",
+    "titlePlain": "Batch Processing ",
+    "titleEmphasis": "Techniques",
+    "titleSuffix": "",
+    "subtitle": "Lesson 23 · Query Tuning Techniques"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The problem: one giant transaction",
+    "code": "DELETE FROM dbo.AuditLog\nWHERE LogDate < '2020-01-01';\n\nMillions of rows, ONE transaction:\n  - log holds every row for the duration\n  - locks held for the entire operation\n  - killed job = the whole thing rolls back",
+    "caption": "Looks simple. On a large table, this is a production incident waiting to happen."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The fix: a TOP (n) loop",
+    "code": "DECLARE @RowsAffected INT = 1;\nWHILE @RowsAffected > 0\nBEGIN\n    DELETE TOP (5000)\n    FROM dbo.AuditLog\n    WHERE LogDate < '2020-01-01';\n\n    SET @RowsAffected = @@ROWCOUNT;\nEND;",
+    "caption": "Each iteration is its own short transaction -- locks held briefly, not for the whole job."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Sizing the batch",
+    "titlePlain": "Measure, don't ",
+    "titleEmphasis": "guess",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Pick a size", "sub": "a starting batch size, e.g. 5,000 rows" },
+      { "label": "Measure impact", "sub": "blocking, log growth, time per batch" },
+      { "label": "Adjust & verify", "sub": "Lesson 1's loop -- confirm it actually helped" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 24",
+    "titlePlain": "Wait Stats ",
+    "titleEmphasis": "Methodology",
+    "titleSuffix": "",
+    "subtitle": "Chapter Five: Wait Statistics & Bottleneck Analysis."
+  }
+]

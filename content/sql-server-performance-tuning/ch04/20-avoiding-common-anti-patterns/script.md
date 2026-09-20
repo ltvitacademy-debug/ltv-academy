@@ -1,0 +1,21 @@
+# Script — Avoiding Common Anti-Patterns
+
+## Segment 1 (title)
+
+Lessons 18 and 19 each fixed one specific problem shape. This lesson catalogs three more recurring anti-patterns from real production T-SQL: implicit conversions, NOLOCK misuse, and scalar UDFs in a WHERE clause.
+
+## Segment 2 (code: implicit conversions)
+
+When two operands have different data types, SQL Server converts one to match the other using type precedence rules — and that conversion sometimes has to happen per row on the indexed column itself, defeating a seek with no function visibly wrapping anything. The fix is always the same: make literals and parameters match the column's real type.
+
+## Segment 3 (code: NOLOCK)
+
+NOLOCK skips honoring locks on read, which avoids blocking — but it can return uncommitted data that later rolls back, duplicate rows, or skip rows entirely. It's not a general speed switch; it's a specific correctness tradeoff that's occasionally acceptable and frequently misused as a reflexive fix.
+
+## Segment 4 (code: scalar UDFs)
+
+A scalar function returning one value, called from a WHERE clause, historically executes once per candidate row — the exact row-by-row overhead from last lesson, hidden inside what looks like an ordinary function call. Recognize that shape; Lesson 22 goes deep on the real fix.
+
+## Segment 5 (outro)
+
+Three anti-patterns, one theme: each quietly defeats the set-based, sargable behavior the earlier lessons built toward. Next up: temp tables versus table variables — statistics, tempdb, and when each actually fits.

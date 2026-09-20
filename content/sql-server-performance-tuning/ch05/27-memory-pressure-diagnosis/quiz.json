@@ -1,0 +1,60 @@
+{
+  "lesson": "memory-pressure-diagnosis",
+  "questions": [
+    {
+      "q": "What does Page Life Expectancy (PLE) measure?",
+      "options": [
+        "The average number of seconds a data page stays in the buffer pool before being evicted",
+        "The total number of currently connected sessions",
+        "The average time a query takes to compile",
+        "The number of transaction log backups taken per day"
+      ],
+      "answer": 0,
+      "explain": "PLE is a Buffer Manager performance counter reflecting how long pages typically survive in memory before eviction."
+    },
+    {
+      "q": "Where do you read Page Life Expectancy from?",
+      "options": [
+        "sys.dm_os_performance_counters, filtered to the Buffer Manager object and the 'Page life expectancy' counter",
+        "sys.dm_os_wait_stats, filtered to wait_type = 'PLE'",
+        "sys.dm_exec_query_stats, ordered by total_worker_time",
+        "sys.dm_io_virtual_file_stats, summed across all files"
+      ],
+      "answer": 0,
+      "explain": "Despite sounding wait-related, PLE is a performance counter, exposed through sys.dm_os_performance_counters under the Buffer Manager object."
+    },
+    {
+      "q": "Per this lesson, is the classic 'PLE below 300 seconds is bad' rule still reliable on modern servers?",
+      "options": [
+        "No — it dates from small-RAM-era servers; PLE should be judged against buffer pool size and its own trend on that specific server, not one universal number",
+        "Yes — 300 seconds is still the single correct threshold for every server",
+        "No — PLE is meaningless and should never be checked",
+        "Yes — but only for servers with less than 1 TB of RAM"
+      ],
+      "answer": 0,
+      "explain": "On a server with a large buffer pool, 300 seconds would mean the entire pool churns over every 5 minutes — far more severe than the old rule implied. A trend-based, size-relative read is more meaningful."
+    },
+    {
+      "q": "What does a nonzero and growing RESOURCE_SEMAPHORE wait indicate?",
+      "options": [
+        "Queries are queuing up waiting for a memory grant to become available, directly stalling their execution",
+        "The transaction log is being backed up",
+        "A network packet was dropped between client and server",
+        "The buffer pool has more memory than it needs"
+      ],
+      "answer": 0,
+      "explain": "RESOURCE_SEMAPHORE accumulates when queries requesting memory grants (for sorts, hash joins, etc.) must queue because the memory-grant pool is contended."
+    },
+    {
+      "q": "A server's PLE has been stable at 4,000 seconds for weeks, then drops to 800 seconds right after a new nightly reporting job is added, and stays there. What's the more useful interpretation per this lesson?",
+      "options": [
+        "The sudden drop from a stable baseline is the meaningful signal worth investigating, regardless of whether 800 seconds alone would fail an old fixed threshold",
+        "800 seconds is comfortably above the old 300-second rule, so this can be ignored entirely",
+        "PLE readings are unreliable and should never be trusted after any workload change",
+        "This proves the buffer pool must be increased to exactly 5x its current size"
+      ],
+      "answer": 0,
+      "explain": "The lesson stresses that a sudden drop from a stable baseline matters more than the absolute value — this pattern points at the new job changing the working set, worth investigating on its own terms."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "tempdb-contention",
+  "questions": [
+    {
+      "q": "What do PAGELATCH_UP and PAGELATCH_EX waits on tempdb specifically indicate?",
+      "options": [
+        "Contention among sessions trying to access an allocation page already resident in memory, not a physical disk read",
+        "A physical read of a data page from disk into the buffer pool",
+        "A row-level lock held by another transaction",
+        "A slow client failing to consume returned rows"
+      ],
+      "answer": 0,
+      "explain": "PAGELATCH waits are latches on in-memory pages — contention to access a page already in the buffer pool, distinct from PAGEIOLATCH's physical disk read wait."
+    },
+    {
+      "q": "What do GAM and SGAM pages track in TempDB?",
+      "options": [
+        "Which extents are allocated at all (GAM) and which mixed extents have at least one free page (SGAM)",
+        "The current query plan cache contents",
+        "The list of currently blocked sessions",
+        "The transaction log's virtual log file boundaries"
+      ],
+      "answer": 0,
+      "explain": "GAM tracks overall extent allocation; SGAM tracks mixed extents with free space — both are bookkeeping pages every temp-object creation/drop must touch."
+    },
+    {
+      "q": "What is the standard, well-established fix for PAGELATCH contention on TempDB allocation pages?",
+      "options": [
+        "Add multiple TempDB data files, spreading allocation activity across separate files and their own allocation pages",
+        "Shrink the TempDB data file as small as possible",
+        "Move TempDB onto a single, larger data file",
+        "Disable autogrowth on all user databases"
+      ],
+      "answer": 0,
+      "explain": "Multiple data files distribute the GAM/SGAM/PFS allocation load across separate page sets, directly reducing contention on any single page."
+    },
+    {
+      "q": "Why must all TempDB data files be the same SIZE and FILEGROWTH?",
+      "options": [
+        "SQL Server's proportional-fill algorithm allocates new extents in proportion to each file's free space, so unequal sizes concentrate allocation activity back onto whichever file has more room",
+        "SQL Server refuses to start if TempDB files are unequal sizes",
+        "Equal sizing is only a cosmetic preference with no functional effect",
+        "Unequal file sizes cause TempDB to run out of disk space immediately"
+      ],
+      "answer": 0,
+      "explain": "Proportional fill favors files with more free space; unequal sizing undoes the benefit of adding multiple files by re-concentrating allocations."
+    },
+    {
+      "q": "A DBA adds four new TempDB files but sizes each at 1 GB while the original 20 GB file keeps autogrowth on. Contention barely improves. What's the most likely reason?",
+      "options": [
+        "The files are unequally sized, so proportional fill keeps favoring the original larger file, defeating the point of spreading allocation load",
+        "TempDB simply cannot support more than one data file",
+        "PAGELATCH waits are unrelated to file count in any scenario",
+        "The fix failed because autogrowth was left enabled on any file at all"
+      ],
+      "answer": 0,
+      "explain": "With mismatched sizes, proportional fill continues to route most new allocations to the file with more free space, so the contention-reducing effect of adding files doesn't materialize."
+    }
+  ]
+}

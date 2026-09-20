@@ -1,0 +1,21 @@
+# Script — Capstone: Tune
+
+## Segment 1 (title)
+
+Lesson 48 named the bottleneck precisely: a non-covering index causing Key Lookups at scale. Chapter 3 covered exactly this class of fix. This lesson applies it — one deliberate, targeted change.
+
+## Segment 2 (code: the covering index)
+
+The procedure filters on CustomerID, orders by OrderDate descending, and selects OrderStatus, OrderTotal, and ShipDate. So the new index keys on CustomerID and OrderDate descending, and includes the rest. CustomerID still seeks. OrderDate descending in the key means no separate Sort operator. Everything the SELECT needs is right there at the leaf level — no more Key Lookup.
+
+## Segment 3 (code: retiring the old index)
+
+Chapter 3's workflow was explicit: don't just add the new index and walk away. The old CustomerID-only index is now redundant — the new one seeks on everything it could, and covers the query outright. Dropping it matters because every insert into a fourteen-million-row table maintains every nonclustered index on it. A superseded index is a permanent tax for zero benefit.
+
+## Segment 4 (steps: why this is one deliberate change)
+
+This lesson doesn't touch MAXDOP, doesn't rebuild unrelated indexes, doesn't add a NOLOCK hint to mask the symptom. Lesson 48 measured a specific operator at a specific scale. This is the one change that diagnosis calls for — which is exactly what makes it possible to verify cleanly next.
+
+## Segment 5 (outro)
+
+Next up: proving it actually worked — comparing before and after metrics for real.

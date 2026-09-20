@@ -1,0 +1,21 @@
+# Script — Forcing Plans
+
+## Segment 1 (title)
+
+Lesson 33 gave you the architecture — plans and their runtime stats, retained in Query Store. Now you'll use that history to pin a specific, known-good plan in place, so SQL Server stops re-deciding how to run a query every time it recompiles.
+
+## Segment 2 (code: forcing a plan)
+
+Once Query Store's runtime stats show one plan_id consistently outperforms the others for a query, you force it with sp_query_store_force_plan. From then on, SQL Server checks for a forced plan and uses it instead of normal cost-based selection — and is_forced_plan plus the failure-reason column let you confirm it's actually applying.
+
+## Segment 3 (code: releasing it)
+
+Releasing a forced plan is just as direct — sp_query_store_unforce_plan by query_id and plan_id. Forcing is meant to be a monitored, revisitable decision, not something you set once and walk away from.
+
+## Segment 4 (steps: three mechanisms)
+
+SQL Server actually has three overlapping ways to influence plan choice. Query Store forcing reuses a plan it already captured — simplest to audit. Plan guides attach hints to a query pattern without touching application code. Query hints are the most direct but require editing the query text itself.
+
+## Segment 5 (outro)
+
+Forcing is the right call when you have clear evidence one plan wins — and a band-aid when it's covering for a real cardinality-estimation problem. Next up: SQL Server's own automatic version of this, Automatic Plan Correction.

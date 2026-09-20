@@ -1,0 +1,21 @@
+# Script — Temp Tables vs. Table Variables
+
+## Segment 1 (title)
+
+Staging intermediate results usually means choosing between a hash-sign temp table and an at-sign table variable. They look nearly interchangeable, but they behave very differently in exactly the way that matters: how the optimizer estimates row counts against them.
+
+## Segment 2 (code: similar syntax)
+
+Both are physically backed by tempdb — memory versus disk is a common myth, not the real distinction. The syntax looks almost identical too. The real difference that matters for performance is statistics.
+
+## Segment 3 (code: the optimizer's blind spot)
+
+SQL Server maintains real column statistics for temp tables, just like permanent tables. For table variables, in most versions, the optimizer has no statistics at all and falls back to a fixed, low-row-count estimate no matter how many rows the variable actually holds — which can produce a plan built for a handful of rows against a table variable holding a hundred thousand.
+
+## Segment 4 (steps: the practical rule)
+
+Pick by row count, not habit. Small, short-lived, low-row-count data inside one batch is fine as a table variable. Larger row counts, or anything an inaccurate estimate could hurt, belongs in a temp table so the optimizer has real statistics — and if you need an index beyond a primary key, a temp table lets you add one after the fact.
+
+## Segment 5 (outro)
+
+Statistics, not storage, decide which one to reach for. Next up: function performance pitfalls — scalar UDFs, and the real fix for the row-by-row problem they cause.

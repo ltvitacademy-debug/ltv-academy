@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "SQL Server Performance Tuning · Chapter Six",
+    "titlePlain": "Resource Governor for ",
+    "titleEmphasis": "Performance",
+    "titleSuffix": "",
+    "subtitle": "Lesson 32 · TempDB & Memory Tuning"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three pieces, one flow",
+    "titlePlain": "Every session gets ",
+    "titleEmphasis": "classified",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Classifier function", "sub": "a UDF run per session -- picks the workload group" },
+      { "label": "Workload group", "sub": "the bucket a session lands in; bound to one pool" },
+      { "label": "Resource pool", "sub": "the actual CPU/memory limits and floors enforced" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The classifier function",
+    "code": "CREATE FUNCTION dbo.RGClassifier()\nRETURNS SYSNAME WITH SCHEMABINDING\nAS BEGIN\n    IF APP_NAME() LIKE 'PowerBI%'\n        RETURN 'ReportingGroup';\n    RETURN 'OltpGroup';\nEND;\n\nALTER RESOURCE GOVERNOR\n  WITH (CLASSIFIER_FUNCTION = dbo.RGClassifier);\nALTER RESOURCE GOVERNOR RECONFIGURE;",
+    "caption": "Runs once per new session -- routes it into the right group."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Capping the reporting pool",
+    "code": "CREATE RESOURCE POOL ReportingPool\nWITH (MAX_CPU_PERCENT = 30,\n      MAX_MEMORY_PERCENT = 20);\n\nCREATE RESOURCE POOL OltpPool\nWITH (MIN_CPU_PERCENT = 50,\n      MAX_CPU_PERCENT = 100);\n\nALTER RESOURCE GOVERNOR RECONFIGURE;",
+    "caption": "A runaway report can only ever take its capped share -- OLTP keeps a floor."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 33",
+    "titlePlain": "Query Store, Deep ",
+    "titleEmphasis": "Dive",
+    "titleSuffix": "",
+    "subtitle": "Chapter Seven: Query Store & Automatic Tuning."
+  }
+]

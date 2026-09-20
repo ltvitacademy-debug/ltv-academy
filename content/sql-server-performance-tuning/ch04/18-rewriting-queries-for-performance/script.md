@@ -1,0 +1,21 @@
+# Script — Rewriting Queries for Performance
+
+## Segment 1 (title)
+
+Chapter 3 tuned the indexes underneath your queries. This chapter tunes the queries themselves, starting with the highest-payoff rewrite category: making a predicate sargable, so the optimizer can actually use the indexes you built.
+
+## Segment 2 (code: sargable vs. not)
+
+Sargable means the optimizer can use an index seek directly against a predicate. Wrap an indexed column in a function like YEAR, and SQL Server has to compute that function for every row before it can filter — forcing a scan. Rewrite it as a plain range predicate on the raw column, same result set, and the optimizer can seek straight into the index.
+
+## Segment 3 (code: implicit conversions)
+
+A closely related trap does the same damage with no function visible anywhere. Comparing a string column to a numeric literal can force SQL Server to convert the column's value on every row, depending on data type precedence — silently turning a seek into a scan. Match the literal's type to the column instead.
+
+## Segment 4 (code: SELECT *)
+
+SELECT star isn't just a style complaint. Pulling every column can defeat a covering index built for the query's real column list, forcing a Key Lookup or a wider scan, and it moves more data across the network on every execution than the query actually needs.
+
+## Segment 5 (outro)
+
+Sargability and SELECT star are the two most common self-inflicted query problems. Next up: set-based versus procedural thinking — why SQL Server almost always prefers a set-based approach.

@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "SQL Server Performance Tuning · Chapter Five",
+    "titlePlain": "I/O-Bound ",
+    "titleEmphasis": "Troubleshooting",
+    "titleSuffix": "",
+    "subtitle": "Lesson 26 · Wait Statistics & Bottleneck Analysis"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The three core I/O wait types",
+    "code": "PAGEIOLATCH_SH   page read for shared access\nPAGEIOLATCH_EX   page read for exclusive access\nWRITELOG         log write hardening to disk\nIO_COMPLETION    other non-buffer-pool I/O\n\nSELECT wait_type, wait_time_ms, signal_wait_time_ms\nFROM sys.dm_os_wait_stats\nWHERE wait_type IN\n  ('PAGEIOLATCH_SH','PAGEIOLATCH_EX',\n   'WRITELOG','IO_COMPLETION');",
+    "caption": "PAGEIOLATCH points at data files. WRITELOG points at the log."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Which physical file is actually stalling",
+    "code": "SELECT DB_NAME(vfs.database_id) AS db,\n    mf.physical_name,\n    vfs.io_stall_read_ms, vfs.io_stall_write_ms,\n    vfs.io_stall_read_ms /\n        NULLIF(vfs.num_of_reads, 0) AS avg_read_ms\nFROM sys.dm_io_virtual_file_stats(NULL, NULL) vfs\nJOIN sys.master_files mf\n    ON vfs.database_id = mf.database_id\n    AND vfs.file_id = mf.file_id\nORDER BY vfs.io_stall_read_ms\n       + vfs.io_stall_write_ms DESC;",
+    "caption": "Low single-digit ms average is healthy; tens of ms is worth escalating."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The log is a different fix",
+    "titlePlain": "High WRITELOG, ",
+    "titleEmphasis": "not",
+    "titleSuffix": " more data spindles",
+    "steps": [
+      { "label": "Fewer, larger commits", "sub": "reduce transaction frequency" },
+      { "label": "Faster log storage", "sub": "dedicated, low-latency volume" },
+      { "label": "Check autogrowth", "sub": "a growing log stalls every writer" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 27",
+    "titlePlain": "Memory Pressure ",
+    "titleEmphasis": "Diagnosis",
+    "titleSuffix": "",
+    "subtitle": "When the buffer pool can't hold the working set."
+  }
+]

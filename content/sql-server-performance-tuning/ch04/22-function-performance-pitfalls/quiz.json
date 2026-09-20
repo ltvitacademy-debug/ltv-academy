@@ -1,0 +1,60 @@
+{
+  "lesson": "function-performance-pitfalls",
+  "questions": [
+    {
+      "q": "Why does a scalar UDF called in a WHERE clause or SELECT list against many rows cause a performance problem, pre-SQL Server 2019?",
+      "options": [
+        "The optimizer treats it as an opaque black box and executes it once per row, effectively an uncosted, invisible per-row loop",
+        "Scalar UDFs are not valid T-SQL and will raise a syntax error",
+        "Scalar UDFs can only return integer values",
+        "Scalar UDFs always require an explicit cursor to be declared alongside them"
+      ],
+      "answer": 0,
+      "explain": "Because the optimizer can't see inside the function body to fold it into the query's plan, it falls back to calling it row-by-row, hidden from the visible plan operators."
+    },
+    {
+      "q": "What is an inline table-valued function (iTVF)?",
+      "options": [
+        "A function that returns a table via a single RETURN (SELECT ...) statement with no procedural body, letting the optimizer expand it into the calling query like a view",
+        "A scalar function that has been manually converted to run inside a WHILE loop",
+        "A function that can only be called from within a CURSOR declaration",
+        "A stored procedure that returns a scalar value"
+      ],
+      "answer": 0,
+      "explain": "Because an iTVF is defined by a single query expression rather than a procedural body, SQL Server can substitute its definition directly into the surrounding query."
+    },
+    {
+      "q": "What T-SQL operator is used to invoke a table-valued function per outer row within a set-based plan?",
+      "options": [
+        "CROSS APPLY (or OUTER APPLY)",
+        "INNER JOIN only, never APPLY",
+        "PIVOT",
+        "MERGE"
+      ],
+      "answer": 0,
+      "explain": "CROSS APPLY (or OUTER APPLY when the function may return no rows) invokes a table-valued function against each outer row as part of one set-based query."
+    },
+    {
+      "q": "What is the recommended rewrite for a scalar UDF that computes a per-row total and is called against every row of a large table?",
+      "options": [
+        "Convert its body into a single RETURN (SELECT ...) returning TABLE, and change call sites from a direct function call to CROSS APPLY",
+        "Wrap the existing scalar UDF call in a WHILE loop to make the row-by-row behavior explicit",
+        "Move the scalar UDF's logic into a trigger instead",
+        "There is no way to avoid the row-by-row cost; scalar UDFs must always be avoided entirely"
+      ],
+      "answer": 0,
+      "explain": "Rewriting the function as an inline table-valued function and invoking it with CROSS APPLY lets the optimizer fold it into a normal set-based plan."
+    },
+    {
+      "q": "Why does the lesson describe the scalar UDF performance problem as one the execution plan can hide?",
+      "options": [
+        "The plan can look deceptively simple (e.g., a single scan) while the actual per-row function calls don't appear as separate, visible operators",
+        "Execution plans cannot be generated at all for queries that call scalar UDFs",
+        "SQL Server encrypts scalar UDF logic so it never appears in any diagnostic tool",
+        "Scalar UDF calls always show up as a distinct 'Scalar UDF' operator with an accurate cost, making them easy to spot"
+      ],
+      "answer": 0,
+      "explain": "Because per-row scalar UDF calls aren't broken out as their own plan operators the way a join or lookup would be, the true per-row cost is easy to miss just from reading the plan."
+    }
+  ]
+}

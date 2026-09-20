@@ -1,0 +1,60 @@
+{
+  "lesson": "wait-stats-methodology",
+  "questions": [
+    {
+      "q": "What does sys.dm_os_wait_stats actually record?",
+      "options": [
+        "Aggregated time and count, per wait type, for every task that couldn't make progress, accumulated since the instance last restarted or the counters were last cleared",
+        "A row-by-row log of every individual query executed on the instance",
+        "The current CPU percentage used by each database",
+        "A list of currently held locks only"
+      ],
+      "answer": 0,
+      "explain": "It's a cumulative, per-wait-type aggregate — not a per-query or per-lock log — which is why clearing it before a measurement window matters."
+    },
+    {
+      "q": "What's the difference between resource wait time and signal wait time for a given wait type?",
+      "options": [
+        "Resource wait time is time genuinely spent waiting for the resource itself; signal wait time is time spent ready-to-run but queued for a free CPU scheduler",
+        "They are two names for the exact same measurement",
+        "Signal wait time only applies to network waits",
+        "Resource wait time is always larger than the total wait_time_ms"
+      ],
+      "answer": 0,
+      "explain": "wait_time_ms minus signal_wait_time_ms gives resource wait time; a high signal-wait share points at scheduler/CPU pressure rather than the resource itself."
+    },
+    {
+      "q": "Why must you clear wait stats with DBCC SQLPERF before a measurement window?",
+      "options": [
+        "Because sys.dm_os_wait_stats accumulates since the last restart, so raw totals can be dominated by old events unrelated to the current problem",
+        "Because the DMV only holds the last 60 seconds of data otherwise",
+        "Clearing is required by SQL Server licensing",
+        "Because wait stats are stored per query, not per instance"
+      ],
+      "answer": 0,
+      "explain": "Without clearing, a wait type's huge cumulative total might be almost entirely from a one-time event weeks ago, making it useless for diagnosing what's happening right now."
+    },
+    {
+      "q": "Why does the ranking query filter out wait types like SLEEP_TASK and LAZYWRITER_SLEEP?",
+      "options": [
+        "They're benign, always-present background waits that would crowd out the diagnostically meaningful signal if left in",
+        "Because those wait types don't actually exist in SQL Server",
+        "Because they always indicate a critical outage",
+        "Because DBCC SQLPERF automatically removes them already"
+      ],
+      "answer": 0,
+      "explain": "Every idle instance accumulates these background waits; excluding them keeps the top-of-list waits meaningful."
+    },
+    {
+      "q": "Two servers show PAGEIOLATCH_SH as their top wait by wait_time_ms. Server A has high signal wait time on that row; Server B has almost none. What does that difference suggest?",
+      "options": [
+        "Server A likely has CPU/scheduler pressure compounding the picture, while Server B's problem is more purely the I/O subsystem itself",
+        "Both servers have identical root causes with no meaningful difference",
+        "Server B's number is impossible and indicates DMV corruption",
+        "Signal wait time is irrelevant to PAGEIOLATCH_SH specifically"
+      ],
+      "answer": 0,
+      "explain": "Signal wait time reflects scheduler queuing regardless of wait type, so a high signal share alongside a resource wait points at added CPU pressure on top of the resource bottleneck."
+    }
+  ]
+}

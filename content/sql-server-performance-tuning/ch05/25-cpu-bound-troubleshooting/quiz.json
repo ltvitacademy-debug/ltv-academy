@@ -1,0 +1,60 @@
+{
+  "lesson": "cpu-bound-troubleshooting",
+  "questions": [
+    {
+      "q": "What does a high volume of SOS_SCHEDULER_YIELD indicate?",
+      "options": [
+        "Tasks are repeatedly yielding the CPU after their scheduler quantum because other runnable tasks are waiting for that scheduler — a strong signal of CPU pressure",
+        "The transaction log is full",
+        "A query is blocked waiting on a row lock",
+        "The buffer pool is undersized"
+      ],
+      "answer": 0,
+      "explain": "SOS_SCHEDULER_YIELD is recorded specifically when a task's time slice ends and other runnable tasks need that scheduler, directly reflecting CPU/scheduler contention."
+    },
+    {
+      "q": "Per this lesson, is a high total wait time on CXPACKET automatically a problem?",
+      "options": [
+        "No — it's a normal part of parallel thread synchronization; it's worth investigating mainly when paired with thread skew or unnecessary parallelism on small queries",
+        "Yes — any CXPACKET wait means parallelism must be disabled instance-wide",
+        "No — CXPACKET only ever appears due to a hardware failure",
+        "Yes — CXPACKET always means MAXDOP is set incorrectly"
+      ],
+      "answer": 0,
+      "explain": "High CXPACKET/CXCONSUMER time reflects that the instance runs a lot of parallel plans, which can be entirely appropriate; the actual concern is skew or inappropriate parallelism, not the wait type's presence alone."
+    },
+    {
+      "q": "Which DMV, and which column, identifies the queries actually consuming the most CPU time?",
+      "options": [
+        "sys.dm_exec_query_stats, ordered by total_worker_time",
+        "sys.dm_os_wait_stats, ordered by wait_time_ms",
+        "sys.dm_exec_requests, ordered by session_id",
+        "sys.dm_io_virtual_file_stats, ordered by num_of_reads"
+      ],
+      "answer": 0,
+      "explain": "total_worker_time in sys.dm_exec_query_stats is cumulative CPU time in microseconds since the plan entered cache — the direct measure of CPU consumption per query."
+    },
+    {
+      "q": "Why is sorting by total_worker_time better than sorting by total duration when hunting for CPU-heavy queries?",
+      "options": [
+        "Duration can be dominated by time spent waiting on something else, not actually working the CPU, so it can mislead you about what's truly CPU-expensive",
+        "Duration and total_worker_time are always numerically identical",
+        "total_worker_time is measured in a different, incompatible unit that can't be compared across queries",
+        "Sorting by duration is actually the better choice in every case"
+      ],
+      "answer": 0,
+      "explain": "A query can have a long duration mostly from waiting (I/O, locks) rather than CPU work; total_worker_time isolates the CPU-time component specifically."
+    },
+    {
+      "q": "sys.dm_os_wait_stats shows CXPACKET as a top wait type by total time, but every parallel query's actual execution plan shows evenly balanced row counts across threads. What should you conclude?",
+      "options": [
+        "This is likely normal parallel-execution overhead, not a problem worth chasing, since there's no thread skew present",
+        "This definitively proves a CPU bottleneck that must be fixed immediately",
+        "The wait stats DMV must be reporting corrupted data",
+        "Parallelism should be disabled instance-wide as a precaution"
+      ],
+      "answer": 0,
+      "explain": "Without skew or evidence of inappropriate parallelism on small queries, high CXPACKET time reflects expected synchronization overhead from legitimately parallel plans."
+    }
+  ]
+}

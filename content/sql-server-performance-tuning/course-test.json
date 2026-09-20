@@ -1,0 +1,225 @@
+{
+  "course": "sql-server-performance-tuning",
+  "questions": [
+    {
+      "q": "In a systematic performance-tuning methodology, what should happen before any tuning change is made?",
+      "options": [
+        "Establish a baseline of normal system behavior so any change's effect can actually be measured",
+        "Apply every known best practice immediately, in parallel",
+        "Rebuild every index in the database",
+        "Restart the SQL Server instance to clear all caches"
+      ],
+      "answer": 0,
+      "explain": "Without a baseline of what \"normal\" looks like, there's no way to know whether a change actually helped, made things worse, or had no effect at all — baselining comes first so improvement can be measured, not assumed."
+    },
+    {
+      "q": "Why is a captured performance baseline essential before tuning a system that users describe as \"slow\"?",
+      "options": [
+        "Baselines are only useful for long-term capacity planning",
+        "Without concrete baseline metrics, \"slow\" is purely subjective; the baseline gives real numbers to compare against once a change is made",
+        "Baselines remove the need for any further monitoring once captured",
+        "A baseline is only valid if captured exclusively during off-peak hours"
+      ],
+      "answer": 1,
+      "explain": "\"Slow\" means different things to different users; a baseline turns that vague complaint into measurable data — response times, wait stats, resource usage — that can be compared before and after a change to prove whether it actually fixed anything."
+    },
+    {
+      "q": "In an execution plan, a large gap between an operator's estimated and actual row counts most often points to what?",
+      "options": [
+        "A hardware failure on the storage subsystem",
+        "The query is currently blocked by another session",
+        "Stale or inaccurate statistics that misled the optimizer's cardinality estimate",
+        "Corruption in tempdb"
+      ],
+      "answer": 2,
+      "explain": "The optimizer chooses operators and join strategies based on estimated row counts derived from statistics; when those estimates diverge sharply from what actually happened at runtime, outdated or insufficient statistics are the most common culprit."
+    },
+    {
+      "q": "Which query hint forces SQL Server to compile a brand-new plan for a statement instead of reusing whatever plan is currently cached?",
+      "options": [
+        "OPTION (FAST 10)",
+        "OPTION (MAXDOP 1)",
+        "OPTION (KEEP PLAN)",
+        "OPTION (RECOMPILE)"
+      ],
+      "answer": 3,
+      "explain": "OPTION (RECOMPILE) discards any cached plan and forces a fresh compilation using the current parameter values, which is useful for diagnosing parameter-sensitivity issues, though it adds compilation overhead on every execution."
+    },
+    {
+      "q": "What makes a nonclustered index a \"covering index\" for a particular query?",
+      "options": [
+        "It contains, as key or included columns, every column the query references — so no lookup into the clustered index is needed",
+        "It covers only the columns referenced in the WHERE clause",
+        "It must include every column in the underlying table",
+        "It is built on the table's primary key"
+      ],
+      "answer": 0,
+      "explain": "A covering index satisfies the entire query — filtering, joining, and selecting — from the index itself, eliminating the extra Key Lookup into the clustered index that's needed when the index doesn't include every column the query touches."
+    },
+    {
+      "q": "When is a columnstore index typically the better choice over a traditional rowstore index?",
+      "options": [
+        "For OLTP point lookups by primary key",
+        "For large analytical or aggregation workloads that scan many rows across relatively few columns",
+        "For very small lookup tables",
+        "For tables that change on nearly every row, every second"
+      ],
+      "answer": 1,
+      "explain": "Columnstore's compression and column-oriented storage shine when queries aggregate or scan large volumes of data over a handful of columns — the classic data-warehouse pattern — rather than single-row OLTP lookups, where a traditional rowstore index is usually more efficient."
+    },
+    {
+      "q": "Why does a cursor-based, row-by-row update typically perform worse than an equivalent set-based UPDATE statement over the same rows?",
+      "options": [
+        "Cursors always use less memory than set-based operations",
+        "Cursors are required for correctness on large tables",
+        "T-SQL doesn't support set-based updates on large tables",
+        "The cursor iterates one row at a time, paying per-row overhead, instead of letting the engine optimize processing across the whole set at once"
+      ],
+      "answer": 3,
+      "explain": "A set-based UPDATE lets the query optimizer build one efficient plan for the entire operation; a cursor forces row-by-row processing with repeated context switches and per-row overhead, which is almost always slower at any meaningful scale."
+    },
+    {
+      "q": "For a large intermediate result set built inside a stored procedure, why might a temp table be preferable to a table variable?",
+      "options": [
+        "Table variables always outperform temp tables regardless of size",
+        "Temp tables can never have indexes created on them",
+        "Table variables persist data across separate user sessions",
+        "Temp tables can have statistics and nonclustered indexes created on them, letting the optimizer make better cardinality estimates for larger row counts"
+      ],
+      "answer": 3,
+      "explain": "Table variables historically lacked column-level statistics (this is only partially addressed by newer deferred-compilation improvements), which can lead the optimizer to badly underestimate row counts; a temp table behaves more like a regular table, with statistics and indexing, making it a safer choice as data volume grows."
+    },
+    {
+      "q": "After running DBCC SQLPERF('sys.dm_os_wait_stats', CLEAR), how should the wait-stats data collected afterward be interpreted?",
+      "options": [
+        "As wait accumulation over a specific, known time window — better for identifying which waits matter right now than a lifetime total since the last restart",
+        "As instantaneous, real-time waits only, with no accumulation",
+        "As historical data reaching back years before the clear",
+        "As a log of errors only, not wait time"
+      ],
+      "answer": 0,
+      "explain": "Clearing wait stats and then re-sampling after a defined interval isolates the waits that accumulated during that window, which is far more actionable for diagnosing a current issue than a cumulative total that may span weeks since the last restart and dilute recent problems."
+    },
+    {
+      "q": "A server shows sustained, high SOS_SCHEDULER_YIELD waits alongside low PAGEIOLATCH waits. What does this combination suggest?",
+      "options": [
+        "The disk subsystem is the bottleneck",
+        "CPU pressure — tasks are voluntarily yielding the scheduler after exhausting their quantum, not waiting on physical I/O",
+        "Network latency between application and database is the bottleneck",
+        "Memory is significantly over-provisioned"
+      ],
+      "answer": 1,
+      "explain": "SOS_SCHEDULER_YIELD occurs when a task voluntarily yields the CPU after using its full scheduling quantum, which climbs when the CPU itself is saturated; low PAGEIOLATCH waits rule out disk I/O as the current bottleneck, pointing instead toward CPU pressure."
+    },
+    {
+      "q": "Many sessions rapidly creating and dropping temp tables cause contention on which type of tempdb page?",
+      "options": [
+        "Data pages in user databases",
+        "The transaction log of user databases",
+        "Allocation pages such as PFS, GAM, and SGAM",
+        "Pages in the plan cache"
+      ],
+      "answer": 2,
+      "explain": "Every temp object creation and deallocation touches tempdb's allocation bitmap pages (PFS, GAM, SGAM); under heavy concurrent create/drop activity, many sessions contend for latches on those same pages — the classic reason for splitting tempdb into multiple data files."
+    },
+    {
+      "q": "A query requests a very large memory grant based on inflated cardinality estimates, and sessions start showing RESOURCE_SEMAPHORE waits. What's actually happening?",
+      "options": [
+        "The query is deadlocked with another session",
+        "The query is blocked by a row-level lock",
+        "The buffer pool is entirely full of dirty pages",
+        "The query is waiting for enough workspace (query execution) memory to become free, since its requested grant exceeds what's currently available"
+      ],
+      "answer": 3,
+      "explain": "RESOURCE_SEMAPHORE waits occur when a query's memory grant request can't be satisfied immediately from the memory grant pool; an inflated cardinality estimate (often from bad statistics or parameter sniffing) can cause SQL Server to request far more memory than the query actually needs, starving other queries."
+    },
+    {
+      "q": "Query Store captures runtime statistics at defined intervals (rather than just a single snapshot). Why does this matter for tuning?",
+      "options": [
+        "It only records a single snapshot taken at server startup",
+        "It only tracks whether a query errored, not how long it ran",
+        "It only applies to queries executed from within stored procedures",
+        "Interval-based capture lets a DBA see how a query's performance trends over time and spot when it regressed, rather than just its current state"
+      ],
+      "answer": 0,
+      "explain": "By aggregating runtime stats into configurable time intervals and persisting them to disk, Query Store lets a DBA look back and see exactly when a query's duration, CPU, or I/O pattern changed — the foundation for finding and explaining a performance regression."
+    },
+    {
+      "q": "What does forcing a plan in Query Store actually do?",
+      "options": [
+        "It tells SQL Server to reuse a specific, known-good execution plan for that query instead of letting the optimizer potentially pick a regressed one",
+        "It permanently prevents the query from being executed again",
+        "It disables statistics maintenance for every table the query touches",
+        "It automatically converts the ad hoc query into a stored procedure"
+      ],
+      "answer": 0,
+      "explain": "Plan forcing pins a particular plan_id as the one SQL Server must use for future executions of that query, which is a targeted way to stop a regression caused by the optimizer choosing a worse plan after a recompile, without changing the query text itself."
+    },
+    {
+      "q": "Lowering \"cost threshold for parallelism\" far below its default of 5 on a typical OLTP system tends to cause what?",
+      "options": [
+        "It prevents any query from ever using parallelism",
+        "Many more, smaller queries qualify for parallel execution unnecessarily, increasing CPU overhead and scheduling contention",
+        "It has no measurable effect on plan choice",
+        "It only changes how backup compression is applied"
+      ],
+      "answer": 1,
+      "explain": "Cost threshold for parallelism sets the estimated cost above which the optimizer will consider a parallel plan; setting it too low lets cheap, short-running queries go parallel, which adds thread coordination overhead that can hurt throughput on an OLTP workload dominated by short transactions."
+    },
+    {
+      "q": "Why should \"max server memory\" almost always be configured explicitly on a production SQL Server instance rather than left at its default?",
+      "options": [
+        "The default value is always set too low and hurts performance",
+        "It has no real impact on a server dedicated entirely to SQL Server",
+        "It only affects how tempdb is sized",
+        "The default effectively lets SQL Server consume nearly all available server memory, which can starve the OS and any other processes running on the box"
+      ],
+      "answer": 3,
+      "explain": "Left unconfigured, SQL Server's buffer pool will grow to use nearly all physical memory, which is fine on a truly dedicated box but can starve the OS, other SQL Server components (like SSAS or SSRS), or co-located applications if memory isn't explicitly capped."
+    },
+    {
+      "q": "Why is a single point-in-time performance snapshot generally insufficient for effective ongoing monitoring?",
+      "options": [
+        "Performance problems are often intermittent or time-dependent, so continuous baseline data over time is needed to recognize a deviation from normal",
+        "DMVs already retain unlimited history forever, so snapshots add nothing",
+        "A single snapshot is always sufficient for any troubleshooting need",
+        "Monitoring tools function correctly without any historical context"
+      ],
+      "answer": 0,
+      "explain": "Most DMVs reset on restart and reflect only cumulative totals since then; a one-off snapshot can't reveal whether current numbers are normal or abnormal for that server, which is why ongoing baseline collection over time is what actually enables spotting a real deviation."
+    },
+    {
+      "q": "After applying a fix, why validate its effect against the established baseline rather than declaring success because one query ran faster once?",
+      "options": [
+        "Baselines aren't needed anymore once a fix has been applied",
+        "A single faster run doesn't confirm the underlying issue is resolved under real production load — it could just reflect a warm cache; comparing metrics against baseline over time gives real confirmation",
+        "One successful test run always proves the issue is fully resolved",
+        "Validation against a baseline is only necessary for index changes, never for query rewrites"
+      ],
+      "answer": 1,
+      "explain": "A one-off fast run can be misleading — caches may be warm, or the workload at that moment may be unrepresentative. Comparing wait statistics, resource usage, and query duration against the original baseline over a realistic period of production activity is what actually proves a fix worked."
+    },
+    {
+      "q": "Why document performance-tuning findings even after the immediate issue has been resolved?",
+      "options": [
+        "Documentation is unnecessary once an issue is fixed",
+        "It's only required to satisfy a compliance audit, never useful internally",
+        "It creates a record that helps recognize recurrence, transfers knowledge to teammates, and justifies the change if it's questioned later",
+        "Documentation is only worth writing when a fix fails"
+      ],
+      "answer": 2,
+      "explain": "A documented record of what the symptom was, what diagnosis pointed to, and what change fixed it means the next person (or the same DBA, months later) doesn't have to re-derive the investigation from scratch if the same pattern reappears."
+    },
+    {
+      "q": "In a performance-tuning capstone presentation, why show wait-statistics data from before and after the fix rather than only the query's new execution time?",
+      "options": [
+        "Wait statistics are irrelevant to proving a fix worked",
+        "Execution time alone always tells the complete story of what changed",
+        "Wait statistics can't meaningfully be compared across two different time periods",
+        "Before-and-after wait stats demonstrate the actual mechanism behind the fix and show that the bottleneck class genuinely changed system-wide, not just for one lucky run"
+      ],
+      "answer": 3,
+      "explain": "A faster single query run could be a fluke or a warm-cache effect; showing that the dominant wait type shifted (for example, from PAGEIOLATCH-heavy to something far less significant) proves the underlying resource bottleneck was actually addressed, which is a much stronger form of evidence."
+    }
+  ]
+}

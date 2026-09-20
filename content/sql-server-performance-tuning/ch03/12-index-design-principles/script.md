@@ -1,0 +1,21 @@
+# Script — Index Design Principles
+
+## Segment 1 (title)
+
+Chapter 2 was about reading execution plans. This chapter is about designing the indexes those plans depend on. We start with the fundamentals: clustered versus nonclustered, key column order, and selectivity.
+
+## Segment 2 (code: clustered vs. nonclustered)
+
+A clustered index is the table — it determines physical row order, and there's only one per table. A nonclustered index is a separate, ordered structure of just its key columns plus a pointer back to the full row. If a query needs a column that isn't in that nonclustered index, SQL Server follows the pointer back to the clustered index — a Key Lookup, cheap for a few rows and ruinous for millions.
+
+## Segment 3 (code: leftmost-prefix rule)
+
+A composite index is sorted by its first key column, then by its second within each value of the first — like a phone book sorted by last name, then first name. SQL Server can seek on the leading column, or the leading columns together, but not on a trailing column alone. Column order isn't a suggestion; it decides which queries the index can actually help.
+
+## Segment 4 (steps: selectivity)
+
+Before indexing a column, judge its selectivity — how many distinct values it has relative to the table's size. High selectivity, like a customer ID, makes a great seek target. Low selectivity, like a status flag with three values, usually isn't worth the write overhead. Measure it, don't assume it.
+
+## Segment 5 (outro)
+
+Design principles set the foundation. Next up: covering indexes — designing an index that eliminates the Key Lookup entirely.

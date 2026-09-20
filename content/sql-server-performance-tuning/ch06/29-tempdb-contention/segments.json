@@ -1,0 +1,7 @@
+[
+  {"slide": "s1", "text": "TempDB is the one database every session on the instance shares — sort spills, hash join workspace, temp tables, version store rows. That shared nature makes it a uniquely common bottleneck, with a uniquely well-understood fix."},
+  {"slide": "s2", "text": "When many sessions create and drop temp objects at once, they all need to update TempDB's allocation bitmap pages. That shows up as PAGELATCH_UP and PAGELATCH_EX — latches on a page already in memory, contention to access it, distinct from PAGEIOLATCH waits for a page being read from disk."},
+  {"slide": "s3", "text": "GAM pages track which extents are allocated at all, SGAM tracks mixed extents with free space, and PFS tracks how full each page is. A single one of these pages covers a huge number of data pages, so high-concurrency workloads with lots of small temp objects converge on the same physical pages."},
+  {"slide": "s4", "text": "The standard fix is multiple TempDB data files instead of one, spreading allocation load across separate files — roughly one file per core up to about eight, then reassessing. But every file has to be the exact same size and growth setting, or SQL Server's proportional-fill algorithm favors whichever file has more free space, undoing the fix entirely."},
+  {"slide": "s5", "text": "Equally sized isn't a nice-to-have here — it's the whole mechanism the fix depends on. Next up: what happens when a query's memory grant itself becomes the bottleneck."}
+]

@@ -1,0 +1,60 @@
+{
+  "lesson": "memory-grants",
+  "questions": [
+    {
+      "q": "What is a memory grant?",
+      "options": [
+        "Workspace memory that SQL Server reserves for operators like sorts and hash joins before a query begins executing",
+        "The total physical RAM installed on the server",
+        "A permission granted to a login to read a specific table",
+        "The size of the transaction log file"
+      ],
+      "answer": 0,
+      "explain": "Certain plan operators need a memory workspace to do their job, and that workspace is reserved up front as a memory grant, sized by the optimizer's estimate."
+    },
+    {
+      "q": "What does sys.dm_exec_query_memory_grants expose about a query with a NULL grant_time but a populated request_time?",
+      "options": [
+        "The query is still waiting for its memory grant to be satisfied — the query-level view of a RESOURCE_SEMAPHORE wait",
+        "The query has already finished executing successfully",
+        "The query never requested a memory grant at all",
+        "The query's plan has been evicted from cache"
+      ],
+      "answer": 0,
+      "explain": "A request without a grant time means the grant hasn't been satisfied yet — the session is queued, which is exactly what RESOURCE_SEMAPHORE tracks at the wait-stats level."
+    },
+    {
+      "q": "Why can RESOURCE_SEMAPHORE waits occur even on a server with abundant physical RAM?",
+      "options": [
+        "The memory available for query grants is a bounded, shared pool (not all of physical RAM), and it can be exhausted by too many concurrent large grant requests",
+        "RESOURCE_SEMAPHORE is unrelated to memory and always indicates a CPU problem",
+        "SQL Server ignores physical RAM entirely when granting query memory",
+        "Abundant RAM guarantees RESOURCE_SEMAPHORE waits can never happen"
+      ],
+      "answer": 0,
+      "explain": "The grant pool is a bounded budget separate from total physical RAM; concurrent demand exceeding that budget causes queuing regardless of how much RAM the server has overall."
+    },
+    {
+      "q": "Per this lesson, what is the most common underlying root cause of an overestimated memory grant?",
+      "options": [
+        "A bad cardinality estimate from the optimizer, often due to stale statistics or parameter sniffing",
+        "The server having too much physical memory installed",
+        "TempDB having too many data files",
+        "The transaction log being too small"
+      ],
+      "answer": 0,
+      "explain": "Grant size is based on estimated row counts; when that estimate is wrong (stale stats, parameter sniffing, poorly handled correlations), the grant requested can be drastically oversized."
+    },
+    {
+      "q": "A query shows granted_memory_kb of 2,000,000 and max_used_memory_kb of only 15,000. Is 'increase max server memory' the right first fix, per this lesson?",
+      "options": [
+        "No — the large gap points at an overestimated grant from a bad cardinality estimate; the fix is addressing the estimate (statistics, parameter sniffing, or a rewrite), not adding server memory",
+        "Yes — this always means the server simply doesn't have enough RAM",
+        "Yes — increasing memory is the only way sys.dm_exec_query_memory_grants gaps can be resolved",
+        "No — this gap is normal and requires no investigation at all"
+      ],
+      "answer": 0,
+      "explain": "A grant far larger than what was actually used is the signature of an overestimated grant from a bad row-count estimate, which server memory alone doesn't fix."
+    }
+  ]
+}

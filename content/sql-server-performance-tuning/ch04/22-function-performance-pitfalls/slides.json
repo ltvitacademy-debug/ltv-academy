@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "SQL Server Performance Tuning · Chapter Four",
+    "titlePlain": "Function Performance ",
+    "titleEmphasis": "Pitfalls",
+    "titleSuffix": "",
+    "subtitle": "Lesson 22 · Query Tuning Techniques"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Scalar UDF: an opaque black box",
+    "code": "CREATE FUNCTION dbo.fn_OrderTotal(@OrderId INT)\nRETURNS MONEY AS BEGIN\n    RETURN (SELECT SUM(LineTotal)\n            FROM dbo.OrderLines\n            WHERE OrderId = @OrderId);\nEND;\n\nSELECT OrderId, dbo.fn_OrderTotal(OrderId)\nFROM dbo.Orders;\n-- called once per row -- invisible in the plan",
+    "caption": "Pre-2019: the optimizer can't see inside it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The fix: inline table-valued function",
+    "code": "CREATE FUNCTION dbo.fn_OrderTotal_iTVF(@OrderId INT)\nRETURNS TABLE AS RETURN (\n    SELECT SUM(LineTotal) AS OrderTotal\n    FROM dbo.OrderLines\n    WHERE OrderId = @OrderId\n);\n\nSELECT o.OrderId, t.OrderTotal\nFROM dbo.Orders AS o\nCROSS APPLY dbo.fn_OrderTotal_iTVF(o.OrderId) AS t;",
+    "caption": "A single RETURN (SELECT ...) — expandable like a view."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Recognize, then rewrite",
+    "titlePlain": "The same shape, ",
+    "titleEmphasis": "every time",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Spot it", "sub": "scalar RETURNS + BEGIN...END, called against many rows" },
+      { "label": "Convert it", "sub": "body becomes a single RETURN (SELECT ...) returning TABLE" },
+      { "label": "Rewire call sites", "sub": "direct call becomes CROSS APPLY / OUTER APPLY" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 23",
+    "titlePlain": "Batch Processing ",
+    "titleEmphasis": "Techniques",
+    "titleSuffix": "",
+    "subtitle": "Chunking large DELETE/UPDATE operations."
+  }
+]

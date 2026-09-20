@@ -1,0 +1,60 @@
+{
+  "lesson": "avoiding-common-anti-patterns",
+  "questions": [
+    {
+      "q": "Why can an implicit conversion silently defeat an index seek even with no function visibly wrapping the column?",
+      "options": [
+        "Comparing operands of different data types can force SQL Server to convert the indexed column's value per row, based on data type precedence rules",
+        "Implicit conversions only ever happen at the application layer, never inside SQL Server",
+        "SQL Server refuses to execute any query with mismatched data types",
+        "Implicit conversions always convert the literal, never the column"
+      ],
+      "answer": 0,
+      "explain": "Depending on precedence rules, the conversion can land on the column side, forcing it to be evaluated per row and making the predicate non-sargable with no visible function."
+    },
+    {
+      "q": "What does WITH (NOLOCK) actually do?",
+      "options": [
+        "It reads under READ UNCOMMITTED isolation, skipping/not honoring locks — trading correctness (possible dirty, duplicate, or skipped reads) for reduced blocking",
+        "It permanently disables locking for the entire database",
+        "It guarantees the fastest possible execution plan for any query",
+        "It automatically commits any open transaction on the table"
+      ],
+      "answer": 0,
+      "explain": "NOLOCK is a correctness tradeoff, not a universal speed switch — it can return uncommitted data that gets rolled back, or duplicate/skip rows during concurrent modification."
+    },
+    {
+      "q": "According to this lesson, when is NOLOCK an acceptable choice?",
+      "options": [
+        "Occasionally, for something like a rough dashboard count where 'close enough' is genuinely acceptable — not as a reflexive fix for blocking that should be properly diagnosed",
+        "Always, on every query, as a default performance optimization",
+        "Only on financial transaction tables",
+        "Only when the table has no indexes at all"
+      ],
+      "answer": 0,
+      "explain": "The lesson frames NOLOCK as a narrow, occasional tradeoff — not a general performance switch, and not a substitute for properly diagnosing blocking."
+    },
+    {
+      "q": "Why does calling a scalar UDF from a WHERE clause act like a hidden cursor, per this lesson?",
+      "options": [
+        "Prior to SQL Server 2019's inlining improvements, a scalar UDF called in a WHERE clause typically executes once per candidate row, mirroring row-by-row overhead",
+        "Scalar UDFs can only be called from inside a cursor loop",
+        "Scalar UDFs always return an entire table rather than a single value",
+        "SQL Server rewrites every scalar UDF call into a CURSOR internally by design, with no performance difference"
+      ],
+      "answer": 0,
+      "explain": "A scalar UDF executed once per row against every candidate row reproduces the same row-by-row overhead Lesson 19 identified in cursors, just disguised as a function call."
+    },
+    {
+      "q": "What is the correct fix for `WHERE OrderNumber = 100245` when OrderNumber is an nvarchar(20) column?",
+      "options": [
+        "WHERE OrderNumber = '100245' — matching the literal's type to the column's actual type",
+        "Add WITH (NOLOCK) to the query",
+        "Wrap OrderNumber in a scalar UDF",
+        "Convert OrderNumber to an int column with no other changes"
+      ],
+      "answer": 0,
+      "explain": "Matching the literal's data type to the column avoids forcing an implicit conversion on the indexed column, keeping the predicate sargable."
+    }
+  ]
+}
