@@ -1,0 +1,21 @@
+# Script — The Toolkit Concept
+
+## Segment 1 (title)
+
+Forty lessons in, you've written dozens of one-off diagnostic queries — and most of them are gone, retyped from memory the next time you needed them. This chapter fixes that. Before assembling a real script library, this lesson covers what actually makes a script worth keeping.
+
+## Segment 2 (code: hardcoded vs. parameterized)
+
+A query with a database name baked into the WHERE clause only ever works against that one database. Declare it as a variable instead — DatabaseName, defaulting to NULL for "check everything" — and the exact same query becomes something you can hand to a teammate or run against any server, unedited.
+
+## Segment 3 (steps: three habits)
+
+Three habits turn a query into a tool. Parameterize — no hardcoded names or thresholds. Guard — a SELECT against a DMV is always safe, but anything that writes needs a dry-run flag. And document — every script opens with the same header: purpose, usage, and when it was last verified.
+
+## Segment 4 (code: the dry-run guard)
+
+A DryRun flag defaults to 1, meaning the script only prints what it would do. Someone has to deliberately flip it to 0 to actually disable a job or kill a session — which means a mistake can't fire by accident.
+
+## Segment 5 (outro)
+
+Parameterize, guard, document — that's the whole concept. Next up: assembling a real combined script — server properties, wait stats, and database space — into one health check you can run on any server in thirty seconds.

@@ -29,9 +29,12 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "SQL Server Architecture",
     lessons: [
-      L(1, "the-database-engine", "The Database Engine"),
-      L(2, "storage-engine-internals", "Storage Engine Internals"),
-      L(3, "memory-architecture", "Memory Architecture"),
+      L(1, "the-database-engine", "The Database Engine", {
+        contentDir: "ch01/01-the-database-engine",
+        // videoUrl/durationLabel pending
+      }),
+      L(2, "storage-engine-internals", "Storage Engine Internals", { contentDir: "ch01/02-storage-engine-internals" }),
+      L(3, "memory-architecture", "Memory Architecture", { contentDir: "ch01/03-memory-architecture" }),
       L(4, "sqlos", "SQLOS"),
       L(5, "editions-and-versions", "Editions & Versions"),
       L(6, "system-databases-deep-dive", "System Databases, Deep Dive"),
@@ -54,7 +57,7 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Database Creation & Configuration",
     lessons: [
-      L(14, "creating-databases", "Creating Databases"),
+      L(14, "creating-databases", "Creating Databases", { contentDir: "ch03/14-creating-databases" }),
       L(15, "file-and-filegroup-design", "File & Filegroup Design"),
       L(16, "database-options", "Database Options"),
       L(17, "recovery-models", "Recovery Models"),
@@ -78,7 +81,7 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Security Fundamentals for SQL Server",
     lessons: [
-      L(26, "authentication-modes", "Authentication Modes"),
+      L(26, "authentication-modes", "Authentication Modes", { contentDir: "ch05/26-authentication-modes" }),
       L(27, "server-principals-and-logins", "Server Principals & Logins"),
       L(28, "database-principals-and-users", "Database Principals & Users"),
       L(29, "fixed-roles", "Fixed Roles"),
@@ -103,7 +106,7 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 7,
     title: "SQL Server Agent Administration",
     lessons: [
-      L(39, "agent-architecture", "Agent Architecture"),
+      L(39, "agent-architecture", "Agent Architecture", { contentDir: "ch07/39-agent-architecture" }),
       L(40, "job-creation", "Job Creation"),
       L(41, "schedules", "Schedules"),
       L(42, "alerts-and-operators", "Alerts & Operators"),

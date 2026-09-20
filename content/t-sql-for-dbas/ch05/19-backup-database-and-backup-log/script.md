@@ -1,0 +1,21 @@
+# Script — BACKUP DATABASE & BACKUP LOG
+
+## Segment 1 (title)
+
+Every recovery strategy starts with BACKUP DATABASE and BACKUP LOG. What those two statements can actually do for you depends entirely on one setting most people set once and never think about again: the recovery model.
+
+## Segment 2 (code: full backups)
+
+A full backup with compression and checksum is the baseline. Compression shrinks the file and usually speeds things up. Checksum verifies page checksums as it reads, so a corrupt page gets caught at backup time instead of surfacing later during a restore.
+
+## Segment 3 (code: differentials)
+
+A differential backup captures every extent changed since the last full backup — not since the last differential. That's why differentials keep growing the further you get from the last full: each one restates everything changed since that full.
+
+## Segment 4 (steps: recovery model dependency)
+
+BACKUP LOG only works in FULL or BULK_LOGGED recovery. In SIMPLE recovery the log truncates automatically at checkpoint, and BACKUP LOG just isn't valid — you'll get an error. That single setting determines your worst-case data loss.
+
+## Segment 5 (outro)
+
+Simple recovery means restoring to your last full or differential and nothing since. Full recovery with log backups means restoring to any point in time. Next up: RESTORE fundamentals — NORECOVERY, RECOVERY, and moving files.

@@ -1,0 +1,21 @@
+# Script — Deadlock Investigation
+
+## Segment 1 (title)
+
+A deadlock is two transactions each holding a lock the other needs. Neither can proceed, so SQL Server kills one as the victim and lets the other continue. It resolves itself in milliseconds — the DBA's job is reading the graph afterward and fixing the root cause.
+
+## Segment 2 (code: system_health)
+
+Since SQL Server 2008, the built-in system_health Extended Events session captures every deadlock automatically, no setup required. Query sys.dm_xe_session_targets and pull the ring buffer's xml_deadlock_report events to get the raw graph for every deadlock still in the buffer.
+
+## Segment 3 (steps: reading the graph)
+
+The graph has two main parts. Process-list shows each session involved, what it was running, and what it was waiting on — the victim is flagged explicitly. Resource-list shows the actual circular wait: process A owns what B wants, and B owns what A wants.
+
+## Segment 4 (code: deadlock priority)
+
+By default SQL Server kills whichever transaction is cheapest to roll back. SET DEADLOCK_PRIORITY lets you override that — set a low-value background job's priority low so it always loses and the important transaction wins.
+
+## Segment 5 (outro)
+
+Almost every real fix comes down to inconsistent access order, a missing index forcing extra locks, or a transaction held open too long. Next up: BACKUP DATABASE and BACKUP LOG, and the recovery models that govern them.

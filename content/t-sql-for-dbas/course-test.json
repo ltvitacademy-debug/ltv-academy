@@ -1,0 +1,225 @@
+{
+  "course": "t-sql-for-database-administrators",
+  "questions": [
+    {
+      "q": "Which of the following does NOT survive a SQL Server service restart?",
+      "options": [
+        "User objects, temp tables, and version-store rows in tempdb used for snapshot isolation",
+        "Server-level login credentials",
+        "The instance's backup and restore history",
+        "Server-wide configuration settings like max server memory"
+      ],
+      "answer": 0,
+      "explain": "tempdb is rebuilt from scratch every time the instance starts, so anything in it — temp tables, table variables, and version-store rows used for snapshot isolation — is gone after a restart, unlike logins, backup history, or sp_configure settings which persist in the other system databases."
+    },
+    {
+      "q": "Which DMV shows currently executing requests along with their wait_type and wait_time_ms?",
+      "options": [
+        "sys.dm_exec_sessions",
+        "sys.dm_exec_requests",
+        "sys.dm_exec_connections",
+        "sys.dm_os_wait_stats"
+      ],
+      "answer": 1,
+      "explain": "sys.dm_exec_requests returns one row per currently executing request, including its wait_type and wait_time_ms; sys.dm_os_wait_stats is a cumulative, instance-wide aggregate rather than a per-request snapshot."
+    },
+    {
+      "q": "Which DMV would you query to see per-database I/O stall time broken out separately for data files and log files?",
+      "options": [
+        "sys.dm_exec_query_stats",
+        "sys.dm_os_performance_counters",
+        "sys.dm_io_virtual_file_stats",
+        "sys.dm_db_index_usage_stats"
+      ],
+      "answer": 2,
+      "explain": "sys.dm_io_virtual_file_stats reports read/write counts and cumulative I/O stall time for every database file, letting a DBA see whether I/O pressure is concentrated on data files, log files, or tempdb."
+    },
+    {
+      "q": "Which column in sys.dm_exec_requests identifies the session that is currently blocking a given request?",
+      "options": [
+        "wait_resource",
+        "session_id",
+        "wait_type",
+        "blocking_session_id"
+      ],
+      "answer": 3,
+      "explain": "blocking_session_id holds the SPID of the session holding the lock the current request is waiting on; a value of 0 means the request isn't blocked at all."
+    },
+    {
+      "q": "Which dynamic management function reports an index's average fragmentation percentage and page count?",
+      "options": [
+        "sys.dm_db_index_physical_stats",
+        "sys.dm_db_index_usage_stats",
+        "sys.indexes",
+        "sys.dm_db_index_operational_stats"
+      ],
+      "answer": 0,
+      "explain": "sys.dm_db_index_physical_stats scans or samples an index's pages and returns avg_fragmentation_in_percent along with page counts, which is the standard basis for rebuild-vs-reorganize decisions."
+    },
+    {
+      "q": "How should a DBA treat the suggestions returned by sys.dm_db_missing_index_details?",
+      "options": [
+        "As a definitive list of indexes that must be created immediately",
+        "As a suggestion based on compiled query plans since the last restart — not a guaranteed performance win",
+        "As a list of indexes that are corrupted and need repair",
+        "As a record of every index that has ever been dropped from the database"
+      ],
+      "answer": 1,
+      "explain": "Missing-index DMVs only accumulate from plans compiled since the last restart, don't account for existing similar indexes or write overhead, and reset on restart — so they're a starting point for investigation, not an automatic action list."
+    },
+    {
+      "q": "Which DMV lists currently active transactions in the instance along with their start time?",
+      "options": [
+        "sys.dm_exec_sessions",
+        "sys.dm_os_wait_stats",
+        "sys.dm_tran_active_transactions",
+        "sys.dm_db_index_usage_stats"
+      ],
+      "answer": 2,
+      "explain": "sys.dm_tran_active_transactions returns one row per active transaction in the instance, including transaction_begin_time, which is essential for finding long-running transactions that are holding locks or preventing log truncation."
+    },
+    {
+      "q": "Under READ COMMITTED SNAPSHOT isolation, what happens when a reader accesses a row that's currently being modified by an uncommitted transaction?",
+      "options": [
+        "It always sees the uncommitted new value immediately",
+        "It blocks until the writer's transaction commits or rolls back",
+        "It raises a deadlock error immediately",
+        "It reads a versioned \"before\" image of the row from the tempdb version store instead of blocking"
+      ],
+      "answer": 3,
+      "explain": "RCSI uses row versioning stored in tempdb so a reader gets a transactionally consistent snapshot of the row as it existed before the write began, avoiding the blocking behavior of default READ COMMITTED."
+    },
+    {
+      "q": "What's required before BACKUP LOG can be used against a database?",
+      "options": [
+        "The database must be in FULL or BULK_LOGGED recovery model — SIMPLE recovery truncates the log and doesn't support log backups",
+        "BACKUP LOG works under any recovery model, including SIMPLE",
+        "RESTORE LOG must be run first to enable log backups",
+        "The database must be set to read-only"
+      ],
+      "answer": 0,
+      "explain": "Log backups only make sense under FULL or BULK_LOGGED recovery, where the log is retained for point-in-time recovery; under SIMPLE recovery the log is truncated on checkpoint and BACKUP LOG is not a supported operation."
+    },
+    {
+      "q": "After restoring a full backup, which RESTORE option leaves the database in a restoring state so a differential or log backup can still be applied?",
+      "options": [
+        "WITH RECOVERY",
+        "WITH NORECOVERY",
+        "WITH STANDBY",
+        "WITH CHECKSUM"
+      ],
+      "answer": 1,
+      "explain": "WITH NORECOVERY keeps the database in a restoring state, ready to accept further differential or log restores; WITH RECOVERY rolls back uncommitted transactions and brings the database fully online, ending the restore sequence."
+    },
+    {
+      "q": "What defines an \"orphaned user\" in a SQL Server database?",
+      "options": [
+        "A login with no server role assigned",
+        "A user account that has been disabled by the DBA",
+        "A database user whose SID doesn't match any server-level login's SID — often after restoring to a different instance",
+        "A user who has never connected to the database"
+      ],
+      "answer": 2,
+      "explain": "Orphaning happens when a database is restored or attached to an instance where the matching login (by SID) doesn't exist, breaking the mapping between the database user and any server login; it's commonly fixed with ALTER USER ... WITH LOGIN or sp_change_users_login."
+    },
+    {
+      "q": "If a user is granted SELECT on a table through a role, but also has an explicit DENY SELECT applied directly, what's the effective permission?",
+      "options": [
+        "GRANT always overrides DENY",
+        "The most recently applied permission wins, regardless of type",
+        "DENY only applies to server-level principals, not database users",
+        "DENY overrides any GRANT the user has, whether direct or inherited through role membership"
+      ],
+      "answer": 3,
+      "explain": "DENY is the strongest permission state in SQL Server's authorization model — it overrides any GRANT the principal holds from any source, including role membership, so the user ends up unable to SELECT."
+    },
+    {
+      "q": "For a SQL Server Agent alert to actually notify a DBA when it fires, what's required?",
+      "options": [
+        "An operator configured and linked to the alert, with Database Mail set up to send the notification",
+        "Nothing — alerts notify automatically with no additional configuration",
+        "Alerts can only be reviewed later in the SQL Server error log",
+        "The instance must be restarted before the alert takes effect"
+      ],
+      "answer": 0,
+      "explain": "An alert on its own only detects a condition; it needs an operator (who to notify) linked to it and a working Database Mail profile for the actual email/page to go out."
+    },
+    {
+      "q": "Which msdb object is the authoritative source for the outcome, duration, and message of every SQL Server Agent job step execution?",
+      "options": [
+        "msdb.dbo.sysjobs",
+        "msdb.dbo.sysjobhistory",
+        "sys.dm_exec_requests",
+        "master.dbo.sysprocesses"
+      ],
+      "answer": 1,
+      "explain": "sysjobs only stores the job's definition; sysjobhistory is the table that actually records each step's run outcome, duration, and any message text every time the job executes."
+    },
+    {
+      "q": "What does DBCC CHECKDB actually validate when run against a database?",
+      "options": [
+        "Only index fragmentation levels",
+        "Only whether all configured logins still exist",
+        "Logical and physical consistency of the database's allocation structures and objects",
+        "Only the size of the transaction log"
+      ],
+      "answer": 2,
+      "explain": "DBCC CHECKDB checks allocation consistency across the whole database plus the structural and logical integrity of every table and index, catching corruption that could otherwise sit undetected until a query fails or a page-level error occurs."
+    },
+    {
+      "q": "Why is setting a data file's autogrowth to a small fixed increment (e.g., 1 MB) problematic on a heavily-written database?",
+      "options": [
+        "It has no measurable impact on a busy database",
+        "It permanently disables instant file initialization",
+        "It causes the transaction log to shrink automatically",
+        "Frequent small autogrowth events cause repeated growth overhead and file fragmentation under write-heavy load"
+      ],
+      "answer": 3,
+      "explain": "Each autogrowth event pauses writes while SQL Server extends the file; tiny increments mean this happens constantly under sustained writes, adding overhead and scattering the file's physical layout — much worse than sizing files appropriately up front."
+    },
+    {
+      "q": "What does Query Store retain that the default plan cache does not?",
+      "options": [
+        "Historical runtime statistics and plan history that persist across restarts and plan cache evictions",
+        "Only the single most recent execution plan per query",
+        "Login audit history for compliance purposes",
+        "Index fragmentation history over time"
+      ],
+      "answer": 0,
+      "explain": "The plan cache is volatile and cleared by restarts, memory pressure, and plan eviction; Query Store persists compiled plans and their runtime statistics to disk, letting a DBA look back at how a query performed days or weeks earlier."
+    },
+    {
+      "q": "A stored procedure runs fast for one parameter value but very slow for another, even though the query text and WHERE clause never change. What's the most likely cause?",
+      "options": [
+        "A syntax error that only manifests with certain parameter values",
+        "Parameter sniffing — the cached plan was compiled and optimized for a parameter value whose data distribution differs sharply from the current call",
+        "TempDB has run out of space",
+        "The procedure needs to be recompiled by renaming it"
+      ],
+      "answer": 1,
+      "explain": "SQL Server compiles a plan using the parameter values present the first time the procedure runs (or after a recompile); if that value's row distribution is atypical, the resulting plan can be badly suited to other parameter values, producing wildly different runtimes."
+    },
+    {
+      "q": "When building reusable DBA scripts for a personal toolkit, why parameterize thresholds like fragmentation percentage or free-space percentage instead of hardcoding them?",
+      "options": [
+        "Parameters make T-SQL scripts run measurably slower",
+        "Hardcoding thresholds is required by SQL Server's security model",
+        "Hardcoded thresholds require editing the script for every server or environment; parameters make one script reusable across many contexts",
+        "SQL Server does not allow variables inside maintenance scripts"
+      ],
+      "answer": 2,
+      "explain": "A script with hardcoded thresholds only fits the one server it was written for; exposing thresholds as parameters (or configuration values) lets the same script run correctly across development, staging, and production environments with different workloads."
+    },
+    {
+      "q": "Why should a DBA toolkit script log its own execution history to a table rather than only printing output to the SSMS results pane?",
+      "options": [
+        "PRINT output is preserved permanently in msdb by default",
+        "Logging automatically resolves any problems the script finds",
+        "SQL Server requires all maintenance scripts to log to a table by policy",
+        "A logged history table lets you track trends over time and prove the script actually ran on schedule, since PRINT output disappears once the session ends"
+      ],
+      "answer": 3,
+      "explain": "Once an SSMS session closes, any PRINT output is gone; writing results to a persistent log table gives a durable audit trail for proving a script ran, comparing results over time, and building alerting on top of it."
+    }
+  ]
+}

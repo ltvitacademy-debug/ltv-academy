@@ -1,0 +1,17 @@
+# Script — Creating Databases
+
+## Segment 1 (title)
+
+Chapter 3 turns to what a DBA actually does most often: creating and configuring individual databases, and getting the file layout right from the start.
+
+## Segment 2 (code: the full syntax)
+
+A production CREATE DATABASE spells out the data file and log file explicitly. ON PRIMARY introduces the primary filegroup's file list. LOG ON introduces the transaction log — which never belongs to a filegroup at all.
+
+## Segment 3 (steps: what each clause controls)
+
+NAME is the logical name T-SQL uses internally. FILENAME is the physical OS path — the directory has to already exist. SIZE sets the initial size, MAXSIZE caps autogrowth, and FILEGROWTH sets the increment used each time the file grows.
+
+## Segment 4 (outro)
+
+Leave off every clause and SQL Server fills them in from the model database and the instance defaults — fine for a scratch database, risky for production. Next up: spreading a database across multiple files and filegroups on purpose.

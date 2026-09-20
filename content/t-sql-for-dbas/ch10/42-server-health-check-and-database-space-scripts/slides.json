@@ -1,0 +1,36 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "T-SQL for Database Administrators · Chapter Ten",
+    "titlePlain": "Server Health Check & ",
+    "titleEmphasis": "Database Space",
+    "titleSuffix": " Scripts",
+    "subtitle": "Lesson 42 · Build Your DBA Toolkit"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Section 1 — what am I looking at",
+    "code": "SELECT\n    SERVERPROPERTY('MachineName')    AS machine_name,\n    SERVERPROPERTY('Edition')        AS edition,\n    SERVERPROPERTY('ProductVersion') AS product_version,\n    si.sqlserver_start_time,\n    DATEDIFF(HOUR, si.sqlserver_start_time, GETDATE())\n        AS hours_since_restart\nFROM sys.dm_os_sys_info AS si;",
+    "caption": "A fresh restart resets wait stats and the plan cache — check this first."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Section 2 — top waits, in context",
+    "code": "SELECT TOP (10)\n    wait_type, wait_time_ms, waiting_tasks_count,\n    wait_time_ms * 1.0 / NULLIF(waiting_tasks_count, 0)\n        AS avg_wait_ms\nFROM sys.dm_os_wait_stats\nWHERE wait_type NOT IN (\n    'SLEEP_TASK', 'LAZYWRITER_SLEEP', 'CHECKPOINT_QUEUE', /* ... */\n)\nORDER BY wait_time_ms DESC;",
+    "caption": "Same query from Lesson 8, now living beside the identity check that qualifies it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Section 3 — database file space",
+    "code": "-- Run inside the target database (USE first)\nSELECT\n    name AS logical_name, type_desc,\n    size / 128.0 AS size_mb,\n    size / 128.0\n      - CAST(FILEPROPERTY(name,'SpaceUsed') AS int) / 128.0\n      AS free_mb,\n    growth, is_percent_growth\nFROM sys.database_files\nORDER BY type_desc;",
+    "caption": "Space runs out quietly, then all at once — this catches it early."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 43",
+    "titlePlain": "Backup Status & ",
+    "titleEmphasis": "Failed Jobs",
+    "titleSuffix": " Scripts",
+    "subtitle": "The script that opens every DBA's morning."
+  }
+]

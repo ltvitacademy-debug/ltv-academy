@@ -1,0 +1,225 @@
+{
+  "course": "sql-server-database-administration",
+  "questions": [
+    {
+      "q": "What is the buffer pool's primary role in SQL Server's memory architecture?",
+      "options": [
+        "Caching data pages read from disk so subsequent reads can be served from memory instead of physical I/O",
+        "Caching compiled execution plans exclusively",
+        "Storing tempdb objects exclusively",
+        "Storing login credentials for authentication"
+      ],
+      "answer": 0,
+      "explain": "The buffer pool is the largest consumer of SQL Server's memory and holds recently used data and index pages, so repeat reads of the same pages avoid an expensive round trip to disk; compiled plans live in a separate plan cache."
+    },
+    {
+      "q": "What is SQLOS's role inside the SQL Server engine?",
+      "options": [
+        "A separately licensed product installed alongside SQL Server",
+        "A layer that manages scheduling, memory, and I/O for SQL Server's own components rather than relying solely on the Windows OS scheduler for every task",
+        "A replacement for the Windows operating system",
+        "A component used only for configuring linked servers"
+      ],
+      "answer": 1,
+      "explain": "SQLOS is a thin abstraction layer inside sqlservr.exe that handles scheduling (via SQL Server's own non-preemptive scheduler), memory allocation, and synchronization for the engine's internal components, giving SQL Server tighter control than leaving everything to the general-purpose Windows scheduler."
+    },
+    {
+      "q": "A database already contains data and objects. What actually happens when you run ALTER DATABASE ... COLLATE to change its default collation?",
+      "options": [
+        "It changes the default collation applied to new objects and unspecified expressions, but existing character columns keep their original column-level collation",
+        "It automatically re-collates every existing character column's data",
+        "It has no effect once a database contains any data",
+        "It only changes the collation used for backups"
+      ],
+      "answer": 0,
+      "explain": "ALTER DATABASE ... COLLATE changes the database-level default, which affects new objects and collation-unaware expressions going forward; existing columns retain the collation they were created with until explicitly altered with ALTER TABLE ... ALTER COLUMN."
+    },
+    {
+      "q": "Why should SQL Server service accounts avoid using Local System or an over-privileged domain account?",
+      "options": [
+        "Local System is technically required for the SQL Server service to start",
+        "A highly privileged domain account measurably improves query performance",
+        "Following least privilege limits the blast radius if the SQL Server process is ever compromised",
+        "Service account privilege has no bearing on security"
+      ],
+      "answer": 2,
+      "explain": "The service account only needs the specific rights SQL Server requires to run; granting it Local System or domain admin means a compromise of the SQL Server process could be leveraged far beyond the database server itself, which is why least privilege is the standard guidance."
+    },
+    {
+      "q": "What breaks when a database is switched from FULL recovery model to SIMPLE and back again without taking a new full backup?",
+      "options": [
+        "Nothing changes about backup and restore capability",
+        "The log backup chain is broken, and point-in-time restore isn't possible for the gap until a new full or differential backup is taken under FULL recovery",
+        "Point-in-time recovery capability actually improves",
+        "Only tempdb is affected by the switch"
+      ],
+      "answer": 1,
+      "explain": "Switching to SIMPLE truncates the log on checkpoint, so the unbroken chain of log backups needed for point-in-time restore is lost; switching back to FULL starts a brand-new chain that isn't usable for restore until a full (or differential) backup anchors it."
+    },
+    {
+      "q": "What's a primary reason to design a large database with multiple filegroups rather than one filegroup with a single data file?",
+      "options": [
+        "Filegroups are mandatory for every SQL Server database",
+        "Filegroups eliminate the need to take backups",
+        "Filegroups only matter for tempdb, not user databases",
+        "Spreading files across separate filegroups (and disks) distributes I/O and enables piecemeal backup/restore of individual filegroups"
+      ],
+      "answer": 3,
+      "explain": "Multiple filegroups let a DBA place heavily used tables on faster storage, spread I/O across physical volumes, and back up or restore individual filegroups independently — useful for very large databases where a single full backup/restore is impractical."
+    },
+    {
+      "q": "On a server with multiple CPU cores, what's the standard tempdb configuration recommendation?",
+      "options": [
+        "Use a single large tempdb data file to simplify management",
+        "Create multiple equally sized tempdb data files (commonly matching logical core count up to about 8) to reduce allocation-page contention",
+        "Disable tempdb autogrowth entirely",
+        "Place tempdb on the same physical drive as the Windows page file to save space"
+      ],
+      "answer": 1,
+      "explain": "A single tempdb data file under high concurrency causes contention on allocation pages like PFS and GAM; splitting tempdb into multiple equally sized files (a common starting point is one per logical core, up to roughly 8) spreads that contention across files."
+    },
+    {
+      "q": "What distinguishes Mixed Mode authentication from Windows Authentication mode in SQL Server?",
+      "options": [
+        "Mixed Mode disables Windows-authenticated logins entirely",
+        "Windows Authentication mode is inherently less secure than Mixed Mode",
+        "Mixed Mode is required before Transparent Data Encryption can be enabled",
+        "Mixed Mode allows both Windows/Entra logins and SQL Server logins with credentials managed inside SQL Server itself, while Windows Authentication mode accepts only OS-validated logins"
+      ],
+      "answer": 3,
+      "explain": "Windows Authentication mode relies entirely on the operating system (or Entra ID) to validate identity; Mixed Mode adds the ability to create SQL Server logins whose username and password are stored and validated inside SQL Server, which is useful for non-domain clients but expands the credential attack surface."
+    },
+    {
+      "q": "What does membership in the db_owner fixed database role grant a user?",
+      "options": [
+        "Read-only access to all tables in the database",
+        "Only the ability to run backups",
+        "Effectively full control over the database, equivalent to nearly all permissions within it",
+        "Only the ability to create new logins at the server level"
+      ],
+      "answer": 2,
+      "explain": "db_owner is one of the most powerful fixed database roles — members can perform virtually any activity within the database, including altering schema, managing permissions, and dropping objects, which is why it should be granted sparingly."
+    },
+    {
+      "q": "Why are Ola Hallengren's maintenance scripts widely adopted as an industry standard over the built-in Maintenance Plan wizard?",
+      "options": [
+        "They're the only supported way to take a SQL Server backup",
+        "They replace SQL Server Agent entirely, so no jobs are needed",
+        "They offer more configurable logic — such as choosing rebuild vs. reorganize by fragmentation threshold and detailed command logging — than the simpler wizard-driven plans",
+        "Microsoft's licensing requires their use in production"
+      ],
+      "answer": 2,
+      "explain": "Ola Hallengren's free scripts implement smarter, well-tested decision logic (fragmentation-based index maintenance, selective statistics updates, detailed logging tables) that goes well beyond what the Maintenance Plan wizard's GUI options expose, which is why they've become a de facto standard in the field."
+    },
+    {
+      "q": "Why should DBCC CHECKDB integrity checks run on a regular schedule instead of only when corruption is suspected?",
+      "options": [
+        "DBCC CHECKDB automatically repairs any corruption it finds, as soon as it's scheduled",
+        "Corruption can go unnoticed until it has propagated into backups too, or until it starts causing query failures in production",
+        "DBCC CHECKDB has no meaningful CPU or I/O cost, so timing is irrelevant",
+        "SQL Server already checks integrity automatically without DBCC"
+      ],
+      "answer": 1,
+      "explain": "Corruption doesn't announce itself — a damaged page can sit untouched for weeks. If checks aren't run regularly, that corruption can end up baked into every subsequent backup, so by the time it's discovered there may be no clean backup left to restore from."
+    },
+    {
+      "q": "Why would a SQL Server Agent job step be configured to run under a proxy account?",
+      "options": [
+        "So the job step (e.g., a CmdExec or PowerShell step) can run under a specific Windows identity, without granting that identity membership in sysadmin",
+        "Proxies are required for every T-SQL job step",
+        "Proxies replace the need for any SQL Server login",
+        "Proxies are only relevant to replication jobs"
+      ],
+      "answer": 0,
+      "explain": "By default, non-sysadmin users' job steps that need OS-level access (CmdExec, PowerShell, etc.) require a proxy mapped to a credential, letting the step run with a scoped identity instead of forcing the SQL Server Agent service account to hold broad rights."
+    },
+    {
+      "q": "A SQL Server Agent job reports overall success, but a DBA later discovers that one of its steps actually failed. What commonly explains this?",
+      "options": [
+        "This scenario is impossible — Agent always reports the true outcome",
+        "A step was configured with an On Failure action like \"Quit the job reporting success,\" or later step/retry logic masked the failure",
+        "msdb has become corrupted and must be rebuilt",
+        "The job needs to be re-created from scratch"
+      ],
+      "answer": 1,
+      "explain": "Each job step has its own On Success/On Failure action; a step can be deliberately (or mistakenly) configured to continue and report the overall job as successful even if that individual step failed, which is why reviewing per-step history in sysjobhistory matters, not just the job's overall outcome."
+    },
+    {
+      "q": "What's a common cause of poor performance when querying data through a linked server?",
+      "options": [
+        "Linked servers always perform identically to purely local queries",
+        "The remote provider often can't push filtering down efficiently, so SQL Server pulls a much larger row set across the network before filtering locally",
+        "Linked servers automatically cache all remote data locally",
+        "Performance problems cannot occur when using linked servers"
+      ],
+      "answer": 1,
+      "explain": "Depending on the provider and query shape, the optimizer may not be able to push a WHERE clause down to the remote server, resulting in the full remote result set being transferred across the network before any filtering happens locally — a frequent, easily missed performance trap."
+    },
+    {
+      "q": "What is \"schema drift\" in a database change-management context?",
+      "options": [
+        "A category of index fragmentation",
+        "A backup failure caused by insufficient disk space",
+        "The actual database schema diverging from what's defined in version-controlled scripts, typically from undocumented manual changes",
+        "An expected and harmless part of every deployment"
+      ],
+      "answer": 2,
+      "explain": "Schema drift happens when someone makes a change directly against a database (a quick fix, a manual DDL statement) that never gets captured in source control, so the live schema and the versioned definition fall out of sync — a real risk for future deployments and audits."
+    },
+    {
+      "q": "Before rolling back a schema change that already ran against production, what should a DBA verify first?",
+      "options": [
+        "That the deployment window has already closed",
+        "Whether data has already been inserted or modified under the new schema that would be lost or broken by reverting, and whether the rollback script has actually been tested",
+        "That the source control repository has been deleted",
+        "Nothing — rollbacks are always safe to run immediately"
+      ],
+      "answer": 1,
+      "explain": "A schema rollback that simply reverses the DDL can silently drop or corrupt data that was written under the new schema; a safe rollback plan accounts for data created in the interim and has itself been validated, not just assumed to be the mirror image of the forward change."
+    },
+    {
+      "q": "During triage of a production incident, what should generally happen before a deep root-cause investigation begins?",
+      "options": [
+        "Root-cause analysis must be completed in full before any mitigation is attempted",
+        "Stabilizing or containing the impact and confirming the scope of the incident",
+        "All communication should wait until the incident is fully resolved",
+        "The SQL Server service should always be restarted immediately as the first step"
+      ],
+      "answer": 1,
+      "explain": "Standard incident-response practice prioritizes limiting user impact and understanding scope first — buying time and reducing damage — before spending time on a full root-cause investigation, which can happen in parallel or afterward."
+    },
+    {
+      "q": "Why run a compatibility assessment tool like the Data Migration Assistant before a SQL Server version upgrade?",
+      "options": [
+        "It's only useful when migrating to Azure, not for on-prem upgrades",
+        "It performs the entire upgrade automatically without further DBA involvement",
+        "To surface breaking changes, deprecated features, and database compatibility-level issues in existing code before they cause failures after the upgrade",
+        "It's only required when the underlying hardware is also being replaced"
+      ],
+      "answer": 2,
+      "explain": "Assessment tools scan existing databases and code for features that behave differently or have been removed in the target version, letting a DBA fix or plan around those issues proactively instead of discovering them as production failures right after the upgrade."
+    },
+    {
+      "q": "A database's transaction log drive fills up completely, blocking new transactions. What's the most direct way to get transactions flowing again?",
+      "options": [
+        "Simply restart the SQL Server service and wait",
+        "Free up log space — typically by taking a log backup if the database is in FULL recovery, or otherwise addressing why the log isn't being reused — rather than just restarting",
+        "Switch the database to SIMPLE recovery without checking anything else",
+        "Manually delete the physical log file while SQL Server is still running"
+      ],
+      "answer": 1,
+      "explain": "A full transaction log usually means the log isn't being truncated — most often because log backups aren't running under FULL recovery, or a long-running transaction is holding it open. Restarting the service doesn't free log space; taking a log backup (or resolving whatever is preventing reuse) does."
+    },
+    {
+      "q": "Why maintain a documented inventory of production SQL Server instances (versions, editions, patch levels, and configuration)?",
+      "options": [
+        "It's only useful for software licensing audits",
+        "SQL Server automatically generates and maintains this information, so manual documentation adds no value",
+        "Documentation has no real operational benefit once servers are running",
+        "It speeds up troubleshooting and patching decisions and reduces reliance on any one person's memory of how each server is configured"
+      ],
+      "answer": 3,
+      "explain": "A current inventory lets a DBA team quickly answer questions like \"which servers are still on an unsupported build\" or \"what's different about this server's configuration,\" turning knowledge that would otherwise live only in one person's head into something the whole team can act on."
+    }
+  ]
+}
