@@ -1,0 +1,60 @@
+{
+  "lesson": "causal-clustering-and-high-availability-in-neo4j",
+  "questions": [
+    {
+      "q": "What is the real difference between a core server and a read replica in Neo4j causal clustering?",
+      "options": [
+        "Core servers hold the full graph and participate in Raft consensus and can become leader; read replicas hold an async copy, serve reads, and can never become leader",
+        "Core servers and read replicas are functionally identical, just named differently",
+        "Read replicas can accept writes but core servers cannot",
+        "Core servers only exist for backups, not for serving traffic"
+      ],
+      "answer": 0,
+      "explain": "Core servers participate in the write-consensus tier; read replicas exist purely to scale read throughput and never join Raft consensus."
+    },
+    {
+      "q": "Why do production Neo4j causal clusters typically run an odd number of core servers, such as three or five?",
+      "options": [
+        "Raft consensus needs a majority to agree before a write or leader election is considered valid, and an odd count avoids tie votes",
+        "Neo4j licensing only permits odd numbers of core servers",
+        "It's an arbitrary convention with no technical reason",
+        "Even numbers of core servers cause data corruption"
+      ],
+      "answer": 0,
+      "explain": "This is the same quorum-based reasoning behind avoiding even-numbered voting members in any consensus-driven cluster."
+    },
+    {
+      "q": "What does 'causal consistency' actually guarantee to a client in a Neo4j causal cluster?",
+      "options": [
+        "A client that writes data and then reads is guaranteed to see its own write, even if the read is routed to a different server",
+        "All clients see all writes from all other clients instantly, everywhere",
+        "Writes are guaranteed to never fail under any circumstances",
+        "Read replicas are guaranteed to always be perfectly in sync with core servers at every instant"
+      ],
+      "answer": 0,
+      "explain": "The guarantee is specifically about a single client's own read-after-write consistency, enforced via bookmarks — not global instant consistency."
+    },
+    {
+      "q": "How do Neo4j drivers enforce causal consistency across sessions?",
+      "options": [
+        "By passing a bookmark from a write session into a subsequent read session, requiring the server has caught up to at least that point",
+        "By routing every read and write to the same single server permanently",
+        "By disabling read replicas entirely until the write has been confirmed",
+        "Causal consistency is not actually enforced by anything in the driver"
+      ],
+      "answer": 0,
+      "explain": "Bookmarks represent how far the transaction log has progressed, and a session can require a server has reached at least that bookmark before running a query."
+    },
+    {
+      "q": "A client wants to add ten read replicas to boost write throughput. What's wrong with this plan?",
+      "options": [
+        "Read replicas only scale read throughput — they don't participate in Raft consensus and cannot accept writes, so adding more of them does nothing for write capacity",
+        "Nothing is wrong — adding read replicas is the correct way to scale writes in Neo4j",
+        "Read replicas actually reduce read throughput, so this makes things worse across the board",
+        "This is impossible because Neo4j clusters cannot have more than three read replicas total"
+      ],
+      "answer": 0,
+      "explain": "Write capacity in a causal cluster is bound by the core server tier and Raft consensus, not by the number of read replicas."
+    }
+  ]
+}

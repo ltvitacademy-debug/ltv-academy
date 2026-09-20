@@ -1,0 +1,21 @@
+# Script — BSON & the MongoDB Document Model
+
+## Segment 1 (title)
+
+Every document you'll insert, query, or edit in this course is stored on disk in one exact format. This lesson explains what that format, BSON, actually is — and why it matters.
+
+## Segment 2 (code: BSON vs JSON types)
+
+BSON stands for Binary JSON — the same nested shape as JSON, but binary-encoded with a type and length prefixing every field. Plain JSON has six data types. BSON adds real ones on top: Date, ObjectId, binary data, distinct integer sizes, and exact decimals.
+
+## Segment 3 (code: a document with real BSON types)
+
+Here's what that looks like in practice. This document's signupDate is a real 64-bit timestamp, not a string you'd have to parse — and accountBalance is a Decimal128, exact decimal arithmetic with no floating-point rounding error.
+
+## Segment 4 (steps: ObjectId construction)
+
+Every document gets an _id field, unique within its collection — the real primary key. If you don't supply one, MongoDB generates an ObjectId: a 4-byte timestamp, a 5-byte random value, and a 3-byte incrementing counter. Generated client-side, no round trip to the server required.
+
+## Segment 5 (outro)
+
+That flexible, richly-typed document is the raw material for this chapter's central design decision. Next up: embedding versus referencing.

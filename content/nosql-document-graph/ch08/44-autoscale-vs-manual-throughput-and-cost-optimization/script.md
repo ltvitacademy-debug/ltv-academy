@@ -1,0 +1,17 @@
+# Script — Autoscale vs. Manual Throughput & Cost Optimization
+
+## Segment 1 (title)
+
+Provisioning throughput in Cosmos DB parallels capacity planning in SQL Server — too little and requests get throttled, too much and you're paying for unused headroom. Choosing the right throughput model is one of the most direct cost levers a DBA has here.
+
+## Segment 2 (code: manual vs autoscale)
+
+Manual throughput is a fixed RU/s you set and are billed for regardless of usage — exceed it and requests get throttled. Autoscale sets a maximum, and Cosmos DB scales actual throughput between that max and a floor of ten percent, automatically.
+
+## Segment 3 (steps: billing and when to use each)
+
+Autoscale bills based on the highest RU/s the system actually scaled to each hour, not the configured maximum. Manual fits steady, predictable traffic at lower cost. Autoscale fits variable or spiky traffic where you'd otherwise over-provision for the worst case.
+
+## Segment 4 (outro)
+
+Beyond the throughput model, real cost optimization also means tuning the indexing policy, choosing a well-distributed partition key, and favoring point reads over cross-partition queries. Next up: how Cosmos DB actually backs up your data — and the real difference between periodic and continuous backup.
