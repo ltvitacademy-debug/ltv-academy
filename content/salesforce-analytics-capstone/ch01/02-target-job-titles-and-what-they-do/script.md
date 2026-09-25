@@ -1,0 +1,25 @@
+# Script — Target Job Titles & What They Actually Do
+
+## Segment 1 (title)
+
+A job title tells you very little. Two postings with the same title can describe completely different work. So here's a working map of the titles this path targets, and how to read a posting before you apply.
+
+## Segment 2 (steps: four core titles)
+
+Four core titles. The Salesforce Data Analyst answers questions: checks filters and data quality, builds reports, writes SOQL for what reports can't do, and presents the result. The Senior Analyst owns the metric definitions and presents to executives. The CRM Analytics Developer builds datasets, recipes, and dashboards for reuse. The Analytics Engineer builds the pipeline and the model, usually in Snowflake with dbt and Git.
+
+## Segment 3 (code: adjacent titles)
+
+Also search the adjacent titles. Sales Operations Analyst, Revenue Operations Analyst, Business Systems Analyst, CRM Analyst, Reporting Analyst. Some Salesforce Administrator postings carry heavy reporting duties too. Titles are company labels, not standards, so read the responsibilities, not just the headline. Searching only for the exact words Salesforce Data Analyst would hide a lot of good openings.
+
+## Segment 4 (steps: three buckets)
+
+To read a posting, sort every line into three buckets. Must-haves are skills repeated in the summary and the requirements. Nice-to-haves come after words like preferred or a plus; almost nobody matches every one. Buzzwords are vague phrases like data-driven mindset. Ignore them and look for concrete verbs and tools.
+
+## Segment 5 (code: keyword map)
+
+Then map the tools to your training. SQL is T-SQL. SOQL and Data Loader are the data management course. Reports and dashboards, Tableau, and Excel each have their own course. CRM Analytics, Snowflake, and dbt are the advanced courses ahead. Most postings match more of what you've learned than you'd expect.
+
+## Segment 6 (outro)
+
+Next: building a portfolio strategy, so those must-haves are backed by real evidence. Do this for two real postings this week and you'll see the pattern quickly.

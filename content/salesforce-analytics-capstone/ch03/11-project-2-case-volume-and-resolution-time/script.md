@@ -1,0 +1,29 @@
+# Script — Case Volume & Resolution Time
+
+## Segment 1 (title)
+
+Is the queue really growing, and are answers really slow? In this lesson you'll build the report family that answers both, and prove the numbers agree with each other.
+
+## Segment 2 (code)
+
+Report one: volume by month, on the standard Cases report type. Filter Created Date to the quarter, group by calendar month, and chart it. Illustrative results: 380 in July, 410 in August, 450 in September. That's 1,240 opened. Rising, but opened cases alone don't prove a bigger queue.
+
+## Segment 3 (screenshot)
+
+Here's a real Salesforce case report grouped by priority, from Trailhead sample data. Yours will have your org's numbers, but the pattern is the same: a grouping, a record count, and a total that must equal the sum of the groups.
+
+## Segment 4 (code)
+
+Report two clones the first but filters on Closed Date: 1,180 closed. So backlog at the end equals backlog at the start, plus opened, minus closed. 150 plus 1,240 minus 1,180 is 210. Check it against a live open-case report, and tell the reader which date that live number describes.
+
+## Segment 5 (code)
+
+Report three: resolution time. Filter to closed cases, group by priority, and summarize the average age. High takes about nine and a half hours, medium 34, low 61. Overall, 38. Verify the blend: fifteen, fifty-five, and thirty percent weights give about 38.4. Name your clock, calendar or business hours.
+
+## Segment 6 (steps)
+
+Your turn. Build all three reports. Decide the chart for each. Compare average with maximum, because a few stale cases can drag an average up. Cross-check totals with a SOQL count grouped by priority. Then write one sentence per report saying what it tells the Head of Support.
+
+## Segment 7 (outro)
+
+Up next, lesson twelve: SLA and escalation analysis.

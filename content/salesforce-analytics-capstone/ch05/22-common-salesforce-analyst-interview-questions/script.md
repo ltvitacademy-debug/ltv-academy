@@ -1,0 +1,33 @@
+# Script — Common Salesforce Analyst Interview Questions
+
+## Segment 1 (title)
+
+Interviews vary by company, so treat this as a practice set, not a prediction. These are themes that commonly come up for Salesforce analyst roles, each with a model answer you can adapt using your own projects.
+
+## Segment 2 (steps: categories)
+
+Five categories to prepare. SOQL. Reports and dashboards. Sharing and security. Data quality. And scenario questions, where the interviewer cares about your reasoning more than a memorized answer.
+
+## Segment 3 (code: SOQL)
+
+SOQL: closed won amount by owner this fiscal year. Select owner name and sum of amount from Opportunity where is won is true and close date equals this fiscal year, grouped by owner name. Explain each part, note that the date literal respects the fiscal year setting, and say you'd confirm any detail you're unsure of.
+
+## Segment 4 (code: dashboard mismatch)
+
+Dashboard total doesn't match the report. Check the running user, since it controls which records the dashboard sees. Then dashboard filters, then whether the source report's filters differ from the report you compared, then the refresh time. Naming the causes in order shows you've debugged this before.
+
+## Segment 5 (code: sharing)
+
+A rep can't see an opportunity a colleague can. Check object permissions on the profile and permission sets, then the organization-wide default, role hierarchy and sharing rules, then who owns the record. For reports, check folder access. And say you'd confirm with an administrator before changing anything.
+
+## Segment 6 (code: scenario)
+
+The pipeline dropped 30 percent this week. Verify before alarming. Look for a changed filter or definition, mass edits, stage changes, close dates pushed out, ownership changes, or a visibility change. Then talk to sales operations, state your assumptions aloud, and finish with what you'd report.
+
+## Segment 7 (steps: answer structure)
+
+A reliable structure for any answer. Restate the question. Describe your approach in order. Add an example from your portfolio. Note a limit or assumption. And if you don't know, say what you'd check. That beats guessing.
+
+## Segment 8 (outro)
+
+Next, practice the question every interview includes: walk me through a project.

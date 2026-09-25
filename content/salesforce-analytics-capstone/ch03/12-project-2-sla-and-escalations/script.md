@@ -1,0 +1,33 @@
+# Script — SLA & Escalation Analysis
+
+## Segment 1 (title)
+
+Average speed tells you how fast the team is. An SLA tells you whether that's fast enough. Today you'll measure how often Alder and Vale keeps its promises, and look at what gets escalated.
+
+## Segment 2 (code)
+
+Start with the target. Illustrative resolution targets: 12 hours for high priority, 48 for medium, 96 for low. First response targets are 1, 4, and 8 hours. Write them on your definitions sheet, because without a stated target, slow is just an opinion.
+
+## Segment 3 (code)
+
+Two ways to measure. If the org uses Entitlements and Milestones, Service Cloud can track milestone targets and violations, so check whether that's set up. If not, build it yourself: a row-level formula for hours, then a second that flags one when hours exceed the target. It's the win-rate pattern, applied to breaches.
+
+## Segment 4 (code)
+
+Illustrative results. Of 1,180 closed cases, 142 breached, so compliance is about 88 percent. But group by priority. High has 41 breaches out of roughly 177 cases, about 23 percent. Low is near 6 percent. The headline hides that your most urgent cases fail most often.
+
+## Segment 5 (screenshot)
+
+Now escalations. This is a real joined report from Trailhead sample data, with cases split into closed, new, and working or escalated blocks. Notice the Escalated status appearing in the third block. Yours might use the Escalated checkbox, the status value, or both, depending on the org.
+
+## Segment 6 (steps)
+
+Illustrative escalation counts: 74 cases, six percent of the quarter. By priority, high is 52 of 186, twenty-eight percent, while medium is under three percent and low under one. Ask how escalation happens before interpreting it. High escalation can mean struggle, or a healthy process sending hard problems upward.
+
+## Segment 7 (steps)
+
+Your turn. Build the compliance report and the escalation report. Pick the charts. Write one hypothesis for why high priority fares worst, and name the data you'd need to test it. Look at whether escalated cases also breached, and whether the escalation came before or after.
+
+## Segment 8 (outro)
+
+Up next, lesson thirteen: agent performance analysis.

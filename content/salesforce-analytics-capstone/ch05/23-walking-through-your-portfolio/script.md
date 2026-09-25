@@ -1,0 +1,29 @@
+# Script — Walking Through Your Portfolio
+
+## Segment 1 (title)
+
+Walk me through a project you're proud of. That prompt shows up in a lot of analyst interviews, and it's where your three Alder and Vale projects earn their keep. A portfolio doesn't speak for itself. You have to tell it.
+
+## Segment 2 (steps: four-part story)
+
+Use the same four-part story every time. Problem: who needed what and why. Approach: the objects, reports and one reason for each choice. Result: the number, the finding, the decision it supported. And what you'd change: one honest improvement. About two minutes per project.
+
+## Segment 3 (code: Project 1 example)
+
+Here's how Project 1 might sound. The sales team wanted to know where deals were being lost. I connected leads, accounts, contacts and opportunities, and built conversion, rep and deal size analyses. The result: a stage where deals stalled. What I'd change: I hard-coded the quota, so next time I'd store it in a field.
+
+## Segment 4 (steps: three projects)
+
+You have three projects, each with a different strength. Project 1 shows you can connect objects and analyze conversion. Project 2 shows service thinking: volume, SLA, agents. Project 3 shows independence and communicating to a VP. Lead with whichever fits the job description best.
+
+## Segment 5 (code: show, don't narrate)
+
+If you share your screen, don't read it aloud. Point to the answer first, then explain the one decision behind it. Keep the one-page result handy, open the dashboard before the call, and know its running user and refresh time.
+
+## Segment 6 (code: follow-ups)
+
+Expect follow-ups. What was hardest? Pick something real, like combining leads, opportunities and cases. What would you change? That's your fourth beat. Was it real customer data? Answer honestly: a fictional company, built to practice realistic decisions.
+
+## Segment 7 (outro)
+
+Rehearse by recording each story in two minutes, then practice with a friend who interrupts. Next up: the conversation about pay.

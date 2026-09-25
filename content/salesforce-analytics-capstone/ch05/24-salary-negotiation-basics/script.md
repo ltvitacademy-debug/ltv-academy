@@ -1,0 +1,29 @@
+# Script — Salary Negotiation Basics
+
+## Segment 1 (title)
+
+You have the skills, the portfolio and the stories. The offer conversation is the last step, and it's where many candidates leave money on the table. This is a starting point, not financial or legal advice, and every range varies by city, employer and year.
+
+## Segment 2 (steps: research)
+
+Research first. Use job postings that list pay, since some places require it. Use salary sites and government data, with caution about any single source. And ask recruiters, mentors and instructors what's realistic for your market. Write down a range for your exact role, city and level.
+
+## Segment 3 (code: ranges)
+
+For this path, typical pay is roughly 65 to 95 thousand dollars to start as a Salesforce data analyst. With CRM Analytics, Data Cloud and Tableau Next skills, senior roles can reach roughly 150 to 200 thousand or more. Those are broad guides, not promises. Your number depends on where and who.
+
+## Segment 4 (code: anchoring)
+
+An anchor is the first number in the conversation, and it pulls the rest toward it. If you can, let the employer share their range first. If you go first, give a range whose bottom you'd happily accept, with a reason. Never state a false number or invent a competing offer.
+
+## Segment 5 (steps: total compensation)
+
+Base pay is only part of it. Ask about bonus and how it's calculated, equity and vesting where it applies, benefits and retirement match, time off, and growth: training budget, certification reimbursement, and remote options. If base is firm, other pieces may still move.
+
+## Segment 6 (code: responding to an offer)
+
+When the offer comes, thank them, ask for a day or two, compare it to your range, make one clear counter with a reason, and get the final version in writing before you accept. Don't accept or decline on the spot, and don't make ultimatums you won't keep.
+
+## Segment 7 (outro)
+
+One lesson left: what to build after this course, and where the Advanced stage takes you.

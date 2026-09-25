@@ -1,0 +1,29 @@
+# Script — Sales Rep Performance Analysis
+
+## Segment 1 (title)
+
+Question three: how is each rep pacing against quota, and who is at risk? This is the analysis a manager reads most closely, so we'll cover the build and how to present it fairly.
+
+## Segment 2 (code: attainment by rep)
+
+Each rep's quarterly quota is three hundred seventy-five thousand. Maya Ortiz has closed four-twenty, one hundred twelve percent. Dev Patel, three-sixty, ninety-six. Lena Fischer, three-thirty, eighty-eight. Marcus Reid, two-forty, sixty-four. Priya Nair, two-ten, fifty-six. Tomas Silva, one-fifty, forty percent. The team is at seventy-six.
+
+## Segment 3 (code: the report recipe)
+
+The recipe. Opportunities report type, close date in the current fiscal quarter, closed won, grouped by Opportunity Owner. Add a summary formula: amount sum divided by three seventy-five thousand. Hard-coding works because every rep has the same quota. If quotas differ, use a bucket column instead.
+
+## Segment 4 (code: joined report and SOQL)
+
+Attainment looks backward, so add the future. A joined report puts closed won and open pipeline side by side, by owner. The SOQL check is a SUM of Amount, grouped by Owner dot Name, where IsWon is true and close date is this quarter.
+
+## Segment 5 (code: coverage per rep)
+
+Now coverage. At about seventy-seven percent through the quarter, pace is roughly two eighty-nine thousand per rep. Maya, Dev, and Lena are ahead. Marcus has one-point-nine times coverage, Priya one-point-four, and Tomas just one-point-one. A commonly cited rule of thumb wants about three times. Tomas and Priya are the clearest risks.
+
+## Segment 6 (steps: reading it responsibly)
+
+Read it responsibly. Attainment is not skill; territory, timing, and ramp all matter, and one quarter is a small sample. Tomas has the largest average deal but only three deals, which points to pipeline volume, not deal size. Frame it as coaching, not a leaderboard. And confirm who's allowed to see rep-level numbers.
+
+## Segment 7 (outro)
+
+Next, deal size and sales cycle.
