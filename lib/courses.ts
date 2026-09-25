@@ -683,7 +683,7 @@ export const COURSES: CourseMeta[] = [
   },
   {
     slug: "ai-and-generative-ai-fundamentals-for-data-scientists",
-    title: "AI & Generative AI Fundamentals for Data Scientists",
+    title: "Artificial Intelligence (AI) & Generative AI Fundamentals for Data Scientists",
     tagline:
       "Neural-network concepts, transformers, LLM fundamentals, embeddings, vector databases, RAG, and using AI APIs — the modern AI toolkit from a data scientist's seat.",
     status: "available",
@@ -710,7 +710,7 @@ export const COURSES: CourseMeta[] = [
   },
   {
     slug: "mlops-for-data-scientists",
-    title: "MLOps for Data Scientists",
+    title: "Machine Learning Operations (MLOps) for Data Scientists",
     tagline:
       "Git/GitHub, Docker, CI/CD, model versioning, MLflow, model monitoring, and automated retraining — taking a model from a notebook to reliable production.",
     status: "available",
@@ -755,7 +755,7 @@ export const COURSES: CourseMeta[] = [
   },
   {
     slug: "docker-and-containers",
-    title: "Docker",
+    title: "Docker Containers for DevOps",
     tagline:
       "Images, containers, Dockerfiles, registries, volumes, networking, and Docker Compose — containers from first principles to production habits.",
     status: "available",
@@ -764,7 +764,7 @@ export const COURSES: CourseMeta[] = [
   },
   {
     slug: "kubernetes-orchestration",
-    title: "Kubernetes",
+    title: "Kubernetes Container Orchestration for DevOps",
     tagline:
       "Pods, Deployments, Services, ConfigMaps, Secrets, Ingress, scaling, and running on AKS and EKS.",
     status: "available",
@@ -773,7 +773,7 @@ export const COURSES: CourseMeta[] = [
   },
   {
     slug: "infrastructure-as-code-with-terraform",
-    title: "Infrastructure as Code",
+    title: "Infrastructure as Code with Terraform for DevOps",
     tagline:
       "Terraform variables, modules, state, and providers — deploying real Azure and AWS infrastructure declaratively and repeatably.",
     status: "available",
@@ -782,7 +782,7 @@ export const COURSES: CourseMeta[] = [
   },
   {
     slug: "ci-cd-pipelines",
-    title: "CI/CD",
+    title: "Continuous Integration & Continuous Delivery (CI/CD) for DevOps",
     tagline:
       "GitHub Actions, Azure DevOps, build and release pipelines, testing, artifacts, and environment promotion — automating the path from commit to production.",
     status: "available",
@@ -800,7 +800,7 @@ export const COURSES: CourseMeta[] = [
   },
   {
     slug: "devsecops-fundamentals",
-    title: "DevSecOps",
+    title: "Security in DevOps (DevSecOps)",
     tagline:
       "Secrets management, IAM, RBAC, vulnerability scanning, container security, pipeline security, Key Vault, and AWS Secrets Manager.",
     status: "available",
