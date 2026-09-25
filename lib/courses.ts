@@ -59,6 +59,27 @@ import { BLOCKCHAIN_APIS_BACKEND_CHAPTERS } from "./blockchain-apis-backend-outl
 import { DEFI_TOKEN_ENGINEERING_CHAPTERS } from "./defi-token-engineering-outline";
 import { BLOCKCHAIN_TESTING_DEVOPS_CHAPTERS } from "./blockchain-testing-devops-outline";
 import { BLOCKCHAIN_ENGINEERING_CAPSTONES_CHAPTERS } from "./blockchain-engineering-capstones-outline";
+import { PYTHON_FOR_DATA_SCIENCE_CHAPTERS } from "./python-for-data-science-outline";
+import { STATISTICS_AND_PROBABILITY_FOR_DATA_SCIENCE_CHAPTERS } from "./statistics-and-probability-for-data-science-outline";
+import { DATA_VISUALIZATION_AND_EDA_CHAPTERS } from "./data-visualization-and-eda-outline";
+import { MACHINE_LEARNING_FUNDAMENTALS_CHAPTERS } from "./machine-learning-fundamentals-outline";
+import { APPLIED_MACHINE_LEARNING_CHAPTERS } from "./applied-machine-learning-outline";
+import { ADVANCED_DATA_SCIENCE_CHAPTERS } from "./advanced-data-science-outline";
+import { AI_AND_GENERATIVE_AI_FUNDAMENTALS_FOR_DATA_SCIENTISTS_CHAPTERS } from "./ai-and-generative-ai-fundamentals-for-data-scientists-outline";
+import { AZURE_DATA_SCIENCE_CHAPTERS } from "./azure-data-science-outline";
+import { AWS_DATA_SCIENCE_CHAPTERS } from "./aws-data-science-outline";
+import { MLOPS_FOR_DATA_SCIENTISTS_CHAPTERS } from "./mlops-for-data-scientists-outline";
+import { DATA_SCIENCE_CAPSTONE_CHAPTERS } from "./data-science-capstone-outline";
+import { IT_NETWORKING_AND_CLOUD_FUNDAMENTALS_CHAPTERS } from "./it-networking-and-cloud-fundamentals-outline";
+import { LINUX_ADMINISTRATION_CHAPTERS } from "./linux-administration-outline";
+import { PYTHON_AND_BASH_AUTOMATION_CHAPTERS } from "./python-and-bash-automation-outline";
+import { DOCKER_AND_CONTAINERS_CHAPTERS } from "./docker-and-containers-outline";
+import { KUBERNETES_ORCHESTRATION_CHAPTERS } from "./kubernetes-orchestration-outline";
+import { INFRASTRUCTURE_AS_CODE_WITH_TERRAFORM_CHAPTERS } from "./infrastructure-as-code-with-terraform-outline";
+import { CI_CD_PIPELINES_CHAPTERS } from "./ci-cd-pipelines-outline";
+import { MONITORING_LOGGING_AND_OBSERVABILITY_CHAPTERS } from "./monitoring-logging-and-observability-outline";
+import { DEVSECOPS_FUNDAMENTALS_CHAPTERS } from "./devsecops-fundamentals-outline";
+import { DEVOPS_CAPSTONE_CHAPTERS } from "./devops-capstone-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -605,6 +626,195 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: BLOCKCHAIN_ENGINEERING_CAPSTONES_CHAPTERS,
     contentBase: "blockchain-engineering-capstones",
+  },
+  {
+    slug: "python-for-data-science",
+    title: "Python for Data Science",
+    tagline:
+      "Python fundamentals, NumPy, pandas, data cleaning, files and APIs, and Jupyter — the working toolkit for every hands-on data science task.",
+    status: "available",
+    chapters: PYTHON_FOR_DATA_SCIENCE_CHAPTERS,
+    contentBase: "python-for-data-science",
+  },
+  {
+    slug: "statistics-and-probability-for-data-science",
+    title: "Statistics & Probability for Data Science",
+    tagline:
+      "Descriptive statistics, probability, distributions, sampling, confidence intervals, hypothesis testing, and correlation vs. causation — the reasoning every model rests on.",
+    status: "available",
+    chapters: STATISTICS_AND_PROBABILITY_FOR_DATA_SCIENCE_CHAPTERS,
+    contentBase: "statistics-and-probability-for-data-science",
+  },
+  {
+    slug: "data-visualization-and-eda",
+    title: "Data Visualization & Exploratory Data Analysis",
+    tagline:
+      "Matplotlib, Plotly, Power BI, and the EDA workflow — finding what's in a dataset and communicating it clearly.",
+    status: "available",
+    chapters: DATA_VISUALIZATION_AND_EDA_CHAPTERS,
+    contentBase: "data-visualization-and-eda",
+  },
+  {
+    slug: "machine-learning-fundamentals",
+    title: "Machine Learning Fundamentals",
+    tagline:
+      "Supervised vs. unsupervised learning, linear and logistic regression, decision trees, random forests, k-means, feature engineering, and train/test splitting.",
+    status: "available",
+    chapters: MACHINE_LEARNING_FUNDAMENTALS_CHAPTERS,
+    contentBase: "machine-learning-fundamentals",
+  },
+  {
+    slug: "applied-machine-learning",
+    title: "Applied Machine Learning",
+    tagline:
+      "scikit-learn, pipelines, cross-validation, hyperparameter tuning, classification and regression metrics, and imbalanced datasets — building models the way practitioners do.",
+    status: "available",
+    chapters: APPLIED_MACHINE_LEARNING_CHAPTERS,
+    contentBase: "applied-machine-learning",
+  },
+  {
+    slug: "advanced-data-science",
+    title: "Advanced Data Science",
+    tagline:
+      "XGBoost and boosting, time-series forecasting, NLP fundamentals, recommendation systems, and model explainability.",
+    status: "available",
+    chapters: ADVANCED_DATA_SCIENCE_CHAPTERS,
+    contentBase: "advanced-data-science",
+  },
+  {
+    slug: "ai-and-generative-ai-fundamentals-for-data-scientists",
+    title: "AI & Generative AI Fundamentals for Data Scientists",
+    tagline:
+      "Neural-network concepts, transformers, LLM fundamentals, embeddings, vector databases, RAG, and using AI APIs — the modern AI toolkit from a data scientist's seat.",
+    status: "available",
+    chapters: AI_AND_GENERATIVE_AI_FUNDAMENTALS_FOR_DATA_SCIENTISTS_CHAPTERS,
+    contentBase: "ai-and-generative-ai-fundamentals-for-data-scientists",
+  },
+  {
+    slug: "azure-data-science",
+    title: "Azure Data Science",
+    tagline:
+      "Azure Machine Learning, MLflow, Databricks, Fabric, model deployment, and monitoring — running data science on Microsoft's cloud.",
+    status: "available",
+    chapters: AZURE_DATA_SCIENCE_CHAPTERS,
+    contentBase: "azure-data-science",
+  },
+  {
+    slug: "aws-data-science",
+    title: "AWS Data Science",
+    tagline:
+      "S3, Glue, Athena, Redshift, SageMaker, and model deployment — running data science on AWS.",
+    status: "available",
+    chapters: AWS_DATA_SCIENCE_CHAPTERS,
+    contentBase: "aws-data-science",
+  },
+  {
+    slug: "mlops-for-data-scientists",
+    title: "MLOps for Data Scientists",
+    tagline:
+      "Git/GitHub, Docker, CI/CD, model versioning, MLflow, model monitoring, and automated retraining — taking a model from a notebook to reliable production.",
+    status: "available",
+    chapters: MLOPS_FOR_DATA_SCIENTISTS_CHAPTERS,
+    contentBase: "mlops-for-data-scientists",
+  },
+  {
+    slug: "data-science-capstone",
+    title: "Data Science Capstone",
+    tagline:
+      "A messy business dataset, taken from business problem to SQL, Python, EDA, a model, evaluation, deployment, and a stakeholder presentation — plus career preparation.",
+    status: "available",
+    chapters: DATA_SCIENCE_CAPSTONE_CHAPTERS,
+    contentBase: "data-science-capstone",
+  },
+  {
+    slug: "it-networking-and-cloud-fundamentals",
+    title: "IT, Networking & Cloud Fundamentals",
+    tagline:
+      "Operating systems, TCP/IP, DNS, HTTP/HTTPS, firewalls, virtual machines, and cloud fundamentals — the ground floor every DevOps job assumes.",
+    status: "available",
+    chapters: IT_NETWORKING_AND_CLOUD_FUNDAMENTALS_CHAPTERS,
+    contentBase: "it-networking-and-cloud-fundamentals",
+  },
+  {
+    slug: "linux-administration",
+    title: "Linux Administration",
+    tagline:
+      "The Linux CLI, files and directories, permissions, users and groups, processes, services, SSH, and Bash scripting.",
+    status: "available",
+    chapters: LINUX_ADMINISTRATION_CHAPTERS,
+    contentBase: "linux-administration",
+  },
+  {
+    slug: "python-and-bash-automation",
+    title: "Python & Bash Automation",
+    tagline:
+      "Bash scripts, Python automation, APIs, JSON/YAML, environment variables, and automating repetitive administration.",
+    status: "available",
+    chapters: PYTHON_AND_BASH_AUTOMATION_CHAPTERS,
+    contentBase: "python-and-bash-automation",
+  },
+  {
+    slug: "docker-and-containers",
+    title: "Docker",
+    tagline:
+      "Images, containers, Dockerfiles, registries, volumes, networking, and Docker Compose — containers from first principles to production habits.",
+    status: "available",
+    chapters: DOCKER_AND_CONTAINERS_CHAPTERS,
+    contentBase: "docker-and-containers",
+  },
+  {
+    slug: "kubernetes-orchestration",
+    title: "Kubernetes",
+    tagline:
+      "Pods, Deployments, Services, ConfigMaps, Secrets, Ingress, scaling, and running on AKS and EKS.",
+    status: "available",
+    chapters: KUBERNETES_ORCHESTRATION_CHAPTERS,
+    contentBase: "kubernetes-orchestration",
+  },
+  {
+    slug: "infrastructure-as-code-with-terraform",
+    title: "Infrastructure as Code",
+    tagline:
+      "Terraform variables, modules, state, and providers — deploying real Azure and AWS infrastructure declaratively and repeatably.",
+    status: "available",
+    chapters: INFRASTRUCTURE_AS_CODE_WITH_TERRAFORM_CHAPTERS,
+    contentBase: "infrastructure-as-code-with-terraform",
+  },
+  {
+    slug: "ci-cd-pipelines",
+    title: "CI/CD",
+    tagline:
+      "GitHub Actions, Azure DevOps, build and release pipelines, testing, artifacts, and environment promotion — automating the path from commit to production.",
+    status: "available",
+    chapters: CI_CD_PIPELINES_CHAPTERS,
+    contentBase: "ci-cd-pipelines",
+  },
+  {
+    slug: "monitoring-logging-and-observability",
+    title: "Monitoring & Observability",
+    tagline:
+      "Azure Monitor, Application Insights, AWS CloudWatch, Prometheus, Grafana, logs, alerts, and troubleshooting.",
+    status: "available",
+    chapters: MONITORING_LOGGING_AND_OBSERVABILITY_CHAPTERS,
+    contentBase: "monitoring-logging-and-observability",
+  },
+  {
+    slug: "devsecops-fundamentals",
+    title: "DevSecOps",
+    tagline:
+      "Secrets management, IAM, RBAC, vulnerability scanning, container security, pipeline security, Key Vault, and AWS Secrets Manager.",
+    status: "available",
+    chapters: DEVSECOPS_FUNDAMENTALS_CHAPTERS,
+    contentBase: "devsecops-fundamentals",
+  },
+  {
+    slug: "devops-capstone",
+    title: "DevOps Capstone",
+    tagline:
+      "GitHub → Application → Docker → Terraform → Azure/AWS → Kubernetes → CI/CD → Monitoring: push a code change and watch the pipeline build, test, package, and deploy it — plus career preparation.",
+    status: "available",
+    chapters: DEVOPS_CAPSTONE_CHAPTERS,
+    contentBase: "devops-capstone",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,

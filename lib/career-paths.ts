@@ -323,6 +323,69 @@ export const CAREER_PATHS: CareerPath[] = [
       "General Salesforce Data Analyst pay is modest on its own — the real ceiling comes from moving beyond CRM reporting into CRM Analytics, Data Cloud, and Tableau Next. A current Salesforce Senior Data Analyst posting combining exactly that stack (plus Snowflake and dbt) reaches $202,600 base in select markets. Salesforce Data Analyst → Senior Salesforce Data Analyst → CRM Analytics Developer → Salesforce Analytics Engineer → Senior Salesforce Analytics Engineer — see the Salesforce Data Architect destination for where that ladder ultimately leads.",
   },
   {
+    slug: "data-scientist",
+    title: "Data Scientist",
+    targetJobs: ["Junior Data Scientist", "Data Science Analyst", "Machine Learning Analyst", "Data Scientist", "Applied Scientist"],
+    description:
+      "This path takes someone from analytics fundamentals into Python, machine learning, cloud ML, and production-ready data science. You'll start from SQL — because every data scientist spends half their time getting data out of databases — then build Python, statistics, and visualization/EDA as separate, properly taught skills before touching machine learning. From there it covers ML fundamentals, the applied scikit-learn workflow, and advanced topics (boosting, forecasting, NLP, recommenders, explainability), then modern AI and generative AI, ML on both Azure and AWS, and MLOps. It closes with a capstone where you take a messy business dataset from business problem to SQL, Python, EDA, model, evaluation, deployment, and presentation.",
+    salaryRange: "$75K–$110K as a Junior Data Scientist / Data Science Analyst · $130K–$180K+ at Senior Data Scientist · $200K+ potential at Staff/Principal Data Scientist or ML Scientist",
+    certification: "Aligned with current Microsoft and AWS credentials (for example Azure Data Scientist Associate and AWS Machine Learning Specialty) rather than built around any single exam — a portfolio of real, deployed projects and strong SQL/statistics fundamentals carry more weight in hiring",
+    stages: [
+      {
+        label: "Job Ready",
+        note: "The whole program — SQL and Python foundations, then statistics, machine learning, AI, cloud ML, and MLOps",
+        courseSlugs: [
+          "t-sql-development",
+          "python-for-data-science",
+          "statistics-and-probability-for-data-science",
+          "data-visualization-and-eda",
+          "machine-learning-fundamentals",
+          "applied-machine-learning",
+          "advanced-data-science",
+          "ai-and-generative-ai-fundamentals-for-data-scientists",
+          "azure-data-science",
+          "aws-data-science",
+          "mlops-for-data-scientists",
+          "data-science-capstone",
+        ],
+      },
+    ],
+    destinationNote:
+      "Data Analyst → Junior Data Scientist → Data Scientist → Senior Data Scientist → Staff/Principal Data Scientist → Head of Data Science. SQL, Python, and cloud knowledge are the common trunk shared with Data Engineering: a Data Engineering student can branch into Data Science (or DevOps) without starting over. If you'd rather build AI applications than models, the AI Engineer path is the better fit.",
+  },
+  {
+    slug: "devops-engineer",
+    title: "DevOps Engineer",
+    targetJobs: ["Junior DevOps Engineer", "Cloud Support Engineer", "Build & Release Engineer", "DevOps Engineer", "Platform Engineer"],
+    description:
+      "This is its own door into LTV, not an add-on to an existing program — no prior course assumed, and much more infrastructure- and automation-oriented than the data paths. You'll start where every DevOps job starts: IT and networking fundamentals, Linux administration, Git, and Python/Bash automation. Then Azure and AWS fundamentals, Docker, Kubernetes, infrastructure as code with Terraform, CI/CD, monitoring and observability, and DevSecOps. It closes with a capstone that builds one real system end to end: push a code change to GitHub and the pipeline builds, tests, packages, and deploys it to Kubernetes on Azure or AWS with monitoring in place.",
+    salaryRange: "$70K–$100K as a Junior DevOps Engineer / Cloud Support Engineer · $120K–$170K+ at Senior DevOps / Platform Engineer · $180K+ potential at Staff Platform Engineer / SRE Lead",
+    certification: "Aligned with AZ-400 (Azure DevOps Engineer Expert), AWS DevOps Engineer Professional, CKA (Certified Kubernetes Administrator), and the HashiCorp Terraform Associate — pick one after the program rather than building around a single exam",
+    stages: [
+      {
+        label: "Job Ready",
+        note: "The whole program — no prior course assumed",
+        courseSlugs: [
+          "it-networking-and-cloud-fundamentals",
+          "linux-administration",
+          "git-github-for-software-engineers",
+          "python-and-bash-automation",
+          "azure-fundamentals",
+          "aws-fundamentals-for-data-engineers",
+          "docker-and-containers",
+          "kubernetes-orchestration",
+          "infrastructure-as-code-with-terraform",
+          "ci-cd-pipelines",
+          "monitoring-logging-and-observability",
+          "devsecops-fundamentals",
+          "devops-capstone",
+        ],
+      },
+    ],
+    destinationNote:
+      "Junior DevOps Engineer → DevOps Engineer → Senior DevOps Engineer → Platform Engineer or Site Reliability Engineer → Staff/Principal Platform Engineer → DevOps/Platform Architect. SQL/Python/cloud knowledge is the common trunk with the data paths, so a Data Engineering student can branch into DevOps without starting over.",
+  },
+  {
     slug: "bi-to-data-architect",
     title: "BI → Data Architect",
     targetJobs: ["Data Analyst", "BI Developer", "BI Engineer", "Analytics Engineer", "Senior Analytics Engineer", "Data Architect"],
