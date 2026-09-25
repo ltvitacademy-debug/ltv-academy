@@ -1,0 +1,33 @@
+# Script — Capstone: Secure It Properly
+
+## Segment 1 (title)
+
+The app now shows every deal and every at-risk renewal. Before anyone else opens it, decide who may see what. Security added after launch tends to get skipped. In this lesson you apply Chapter 8 to Cobalt Ridge, then prove it works with a test plan. Field names are illustrative, and setup varies by org and release.
+
+## Segment 2 (steps)
+
+Security is layers, and each answers a different question. App sharing decides who can open the app. Row-level security decides which rows their queries return. Data Cloud permissions control who can read the source, so use a least-privileged connection user. And auditing shows who used what afterward. Sharing the app does nothing if the dataset returns every row.
+
+## Segment 3 (code)
+
+Start with people. About eighty-five reps see only their own deals. Three regional VPs see their region. Customer Success managers see usage for their own accounts. And executives get an aggregated rollup, not a way around the rules. That last decision keeps the row-level rules simple.
+
+## Segment 4 (code)
+
+Two illustrative predicates. On the opportunity dataset: the owner matches the current user, or the region matches the user's region scope. That field is set only for the three VPs and blank for reps. On the usage dataset: the customer success manager ID matches the current user. Every dataset needs its own decision, even the small targets one.
+
+## Segment 5 (steps)
+
+Sharing inheritance mirrors Salesforce's own record sharing for supported objects. It's attractive when native sharing already matches your rules. Here the region rule is custom and usage comes from outside Salesforce, so predicates fit better. Check current documentation for what inheritance supports in your org.
+
+## Segment 6 (code)
+
+Now test with real users from each persona. The Americas VP should see two point nine million. EMEA, one point five. APAC, point eight. The executive rollup, five point two. And add up the regions. If they don't equal the rollup, a predicate is leaking or over-filtering. Also test blank values, because blank matching blank is a classic leak.
+
+## Segment 7 (steps)
+
+Security decays, so maintain it. Review who has access every quarter, watch for changes to predicates and sharing, and use your org's audit and usage data to see who's viewing the app. And keep personal data out. The usage stream is account level, and there's no reason to load individual emails.
+
+## Segment 8 (outro)
+
+Next up: the wrap-up, an executive presentation and a portfolio write-up.

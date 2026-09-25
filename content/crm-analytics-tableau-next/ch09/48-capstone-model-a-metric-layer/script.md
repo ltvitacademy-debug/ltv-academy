@@ -1,0 +1,29 @@
+# Script — Capstone: Model a Metric Layer
+
+## Segment 1 (title)
+
+The dashboard works, but it has a quiet risk. Win rate is defined inside one tile's query. Next month someone builds another dashboard and defines it again, slightly differently. In this lesson you'll define Cobalt Ridge's headline metrics once, centrally, with owners and written definitions.
+
+## Segment 2 (steps)
+
+Build the model in layers. Start with the objects: opportunity, account, and product usage. Then relationships, so each object joins by account. Then calculations, the measures and business names. Then the metrics themselves, and finally governance: owners, certification, and a change log. Get the relationships right first, because every metric inherits them.
+
+## Segment 3 (screenshot)
+
+This is a real semantic model canvas in Tableau Next, from a Trailhead sample, with account, opportunity, and lead objects. Yours will hold opportunity, account, and usage. Names and menus vary by release, so check current Salesforce documentation for the build path in your org.
+
+## Segment 4 (code)
+
+A metric definition has to be precise enough that two analysts get the same answer. Net New Bookings: sum of amount on closed won deals, new business or expansion, not renewals, by close date. Five point two million. Pipeline coverage: open pipeline over the remaining gap. Win rate: won count over all closed count, trailing four quarters, excluding renewals. Twenty-seven percent.
+
+## Segment 5 (code)
+
+Two more. Sales cycle days: the median days from creation to close on won deals, seventy-four in our example. And seat activation: users active in the last ninety days over licensed seats, per account, sixty-four percent across the portfolio. Every definition names its filter, its time basis, and its exclusions.
+
+## Segment 6 (steps)
+
+Then govern them. Give each metric a named owner. Revenue Operations owns bookings and coverage, Sales Leadership owns win rate, Customer Success owns seat activation. Certify approved metrics, keep a change log, and run a parity test: the dashboard tile and the metric should show the same value for the same period. If they differ, look for a missing filter.
+
+## Segment 7 (outro)
+
+Next up: connect Data Cloud, so seat activation has real product usage behind it.

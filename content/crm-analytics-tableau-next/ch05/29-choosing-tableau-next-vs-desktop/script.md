@@ -1,0 +1,9 @@
+You now know both Tableau Desktop and Tableau Next. In practice the question is not which one is better. It is which one fits this particular job. And the best news is that you often do not have to choose.
+
+Reach for Tableau Next when the data lives in Data 360 and is modeled in a semantic model. When your audience works inside Salesforce, on record pages, in Slack, or alongside Agentforce. And when you want governance and sharing handled in the same platform. Check current release notes, because Tableau Next keeps evolving quickly.
+
+Reach for Tableau Desktop when you need the full depth of its authoring tools. When one workbook has to combine many non-Salesforce sources. Or when your team is already fluent in it and retraining would cost more than it saves. Salesforce's own guidance frames the choice around your working environment and existing workflow.
+
+Here is the trick. Tableau Desktop and Tableau Cloud have a Tableau Semantics connector. You choose it as a data source, enter your Salesforce org address, authenticate, and pick a semantic model. You build with the same definitions Tableau Next uses. Expect limits, such as no extracts, and some authoring features like sets and blending unavailable. Check the current Tableau documentation for the exact list.
+
+So model once, then build where each audience works best. That shared model is the subject of the next chapter. Next up: what is a semantic layer.

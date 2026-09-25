@@ -1,0 +1,25 @@
+# Script — SAQL Fundamentals: the CRM Analytics Query Language
+
+## Segment 1 (title)
+
+Behind every lens and dashboard widget, CRM Analytics runs a query. That query language is SAQL, the Salesforce Analytics Query Language. The interface usually writes it for you, but reading and editing it is what separates a builder from an expert.
+
+## Segment 2 (screenshot: lens editor modes)
+
+You can see SAQL right in the lens editor. The buttons at the top right switch between the chart, a table, and the SAQL editor. Build a chart with clicks, switch modes, and you can read the exact query the platform generated. It is the best way to learn the language.
+
+## Segment 3 (steps: statement pipeline)
+
+A SAQL query is a sequence of statements. Each one takes an input stream and produces an output stream. You load a dataset, filter the rows, group them, generate the columns you want, then order and limit. Each step feeds the next, top to bottom.
+
+## Segment 4 (code: first query)
+
+Here is a simple, illustrative query. Load the dataset into a stream called q. Group by stage. Then foreach generate the stage and a count. Order by that count, and keep the top ten. Field names sit in single quotes, and every statement ends with a semicolon.
+
+## Segment 5 (code: filter and sum)
+
+Now add a filter to narrow the rows before grouping, and swap the count for a sum. Text values take double quotes, fields take single quotes. That is the shape of most queries you will write: load, filter, group, foreach, order, limit.
+
+## Segment 6 (outro)
+
+Next up: how SAQL compares with SOQL and SQL.

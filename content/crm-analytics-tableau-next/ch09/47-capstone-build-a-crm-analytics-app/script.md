@@ -1,0 +1,33 @@
+# Script — Capstone: Build a CRM Analytics App
+
+## Segment 1 (title)
+
+Time to build. In this lesson you'll turn the sales questions into a CRM Analytics app for Cobalt Ridge: a recipe, a dataset, and one executive dashboard. Figures are illustrative, and menu names vary by org and release, so follow the pickers on your screen.
+
+## Segment 2 (steps)
+
+Think of it as a pipeline. Salesforce objects feed a recipe. The recipe writes a dataset. The dataset powers the dashboard. And the app is the container that holds them, and the first layer of sharing. Build the recipe first, because dashboards are only as trustworthy as the data underneath.
+
+## Segment 3 (code)
+
+Choose the grain: one row per opportunity. Join in the account's region, the owner's name, and a targets table, so the quarterly target lives in data, not typed into a formula. Add days since last activity and a stalled flag for open deals idle thirty days or more. Then run the recipe and schedule it nightly.
+
+## Segment 4 (screenshot)
+
+This is a real CRM Analytics dashboard from Trailhead's sample data, not Cobalt Ridge's numbers. Notice the pattern we're borrowing: filters across the top, a chart, a key metrics panel, and a detail table underneath. It's the same layout our five components will follow.
+
+## Segment 5 (code)
+
+Under any chart is a query. This one loads the dataset, filters to won opportunities, groups by region, and sums the amount. Names are illustrative, and you'd add a fiscal quarter filter. Reading the query yourself is how you confirm what a tile really computes.
+
+## Segment 6 (steps)
+
+Five components answer the five questions. Closed won against the eight million dollar target. Coverage of the remaining two point eight million gap. Win rate. Bookings by region as a bar chart. And a table of stalled deals. Add a quarter filter, let a region click filter the table, and keep the first page lean, because every widget is another query.
+
+## Segment 7 (code)
+
+Before you share anything, reconcile. The three regions must add up to five point two million. Compare closed won against a native Salesforce report. Confirm coverage uses the remaining gap, not the full target. Show the last refresh time. If numbers disagree, fix the recipe, not the tile.
+
+## Segment 8 (outro)
+
+Next up: model a metric layer, so these numbers are defined once, for everyone.

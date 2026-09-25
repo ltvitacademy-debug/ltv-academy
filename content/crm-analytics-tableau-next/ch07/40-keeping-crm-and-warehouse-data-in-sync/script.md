@@ -1,0 +1,21 @@
+# Script — Keeping CRM & Warehouse Data in Sync
+
+## Segment 1 (title)
+
+Loading Salesforce data into a warehouse is a project. Keeping it correct is a permanent job. Records change, get deleted, and get merged, and pipelines fail overnight. Here are the habits that keep a copy trustworthy.
+
+## Segment 2 (steps: the chain)
+
+Start by agreeing what fresh means. A daily executive dashboard may be fine overnight, while a lead routing view may not be. Then order the chain: source sync, then dbt transformations, then CRM Analytics sync and recipes, then dashboards. If a downstream job runs early, it processes stale data and nobody sees an error, so use dependency-aware scheduling and alerts.
+
+## Segment 3 (screenshot)
+
+This real Data 360 data stream screen from Trailhead shows a refresh history. Each run lists its refresh mode, duration, status, and records processed. This is your first stop when a number looks wrong. Notice several runs processed zero records. A run can succeed and still be a warning sign.
+
+## Segment 4 (code: reconcile)
+
+Incremental syncs are efficient, but they have a weakness: deletes. A deleted record never shows up as a changed row, so the warehouse keeps a ghost. Handle it by syncing the deleted flag, running periodic full refreshes, or comparing Ids. And always reconcile. Count and sum on the warehouse side, run the equivalent SOQL in Salesforce, and compare. A persistent gap means something is broken.
+
+## Segment 5 (outro)
+
+Define freshness, expect deletes to slip through, order your jobs, and reconcile on a schedule. That completes our integration chapter. Next up: Row-Level Security in CRM Analytics.

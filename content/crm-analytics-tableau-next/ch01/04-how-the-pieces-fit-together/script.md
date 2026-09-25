@@ -1,0 +1,25 @@
+# Script — How the Pieces Fit Together
+
+## Segment 1 (title)
+
+CRM Analytics, Data 360, and Tableau Next can look like three competing products. They're better understood as parts of one ecosystem, built at different times, with overlapping jobs. This lesson draws the map.
+
+## Segment 2 (steps: layers)
+
+Think in layers. At the bottom, sources: Salesforce objects, plus warehouses, files, and other applications. In the middle, the data platform: Data 360 ingests those sources, harmonizes them, and adds identity resolution and insights. On top, the analytics tools people actually look at: native reports, CRM Analytics, and Tableau Next.
+
+## Segment 3 (code: where data comes from)
+
+The most useful thing to remember is where each tool gets its data. Native reports read live Salesforce records. CRM Analytics reads its own prepared datasets. Tableau Next reads Data 360 objects through a semantic model. When a number looks wrong, ask which layer it came from, and when that layer last refreshed.
+
+## Segment 4 (screenshot: semantic model builder)
+
+Here's the semantic model builder. Data objects like Account, Opportunity, and Lead are joined by relationships, and measures are defined once. Every visualization built on this model inherits the same definitions. Chapter 6 builds this into a full metric governance strategy.
+
+## Segment 5 (screenshot: asset picker)
+
+And here's the asset picker, listing types you can add: data lake objects, data model objects, and calculated insight objects. It shows how directly Tableau Next sits on the Data 360 layer.
+
+## Segment 6 (outro)
+
+There's real overlap between CRM Analytics and Tableau Next. Salesforce says Tableau Next is its pathway to the newest AI capabilities, and that CRM Analytics continues for now. Verify any roadmap claim. Next: choosing the right tool.

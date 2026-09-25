@@ -1,0 +1,21 @@
+# Script — Performance Tuning for CRM Analytics
+
+## Segment 1 (title)
+
+A dashboard that takes fifteen seconds to load is a dashboard people stop opening. Every widget is a query, and every interaction can fire more of them. This lesson gives you a method for speed, starting with measurement instead of guesswork.
+
+## Segment 2 (steps: the levers)
+
+Here are the main levers. First, do calculations in the dataset, in the dataflow or recipe, not in dashboard queries. Second, keep query and widget counts lean. Third, split a crowded dashboard into pages, since practitioners report that only the default page's queries run at load. Fourth, prefer global filters over selection-based filters, because they narrow the data before queries run. And fifth, use bindings sparingly, since each can add a round trip.
+
+## Segment 3 (screenshot: lens query limit)
+
+In the lens editor, look at the bottom of the left panel. Query Limit says Default, with an Edit link. It's a reminder that queries return a bounded number of rows, and that fewer results are cheaper. Exact limits vary by query type and release, so check the current limits documentation instead of memorizing numbers.
+
+## Segment 4 (code: routine)
+
+Always measure first. The Dashboard Inspector collects performance metrics and flags bottlenecks like redundant or slow queries. Run it on every layout, and every page, since each can hold different queries. Then fix the slowest query first, and re-measure to prove the change helped.
+
+## Segment 5 (outro)
+
+Next up: deploying CRM Analytics apps and templates, and moving finished work between orgs.

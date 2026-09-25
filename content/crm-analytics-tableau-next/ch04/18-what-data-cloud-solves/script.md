@@ -1,0 +1,25 @@
+# Script — What Data Cloud Solves
+
+## Segment 1 (title)
+
+Chapter 4 steps down a layer, to the data platform underneath Salesforce's newer analytics tools. Before we walk through its parts, one question: what is actually broken that Data Cloud exists to fix? A note on names: Salesforce now calls it Data 360, as of this writing. Same platform.
+
+## Segment 2 (steps: scattered sources)
+
+A company's customer data lives in many places. The CRM has accounts and contacts. A commerce system has orders. A support tool has cases. A marketing platform has engagement. Each uses its own IDs, its own field names, and its own idea of what a customer is.
+
+## Segment 3 (code: same person, three records)
+
+Picture one person, with illustrative names. The CRM has Ana Ruiz with a work email. Commerce has A. Ruiz with a personal email. A web form has Ana R. and only a cookie. To every system, these are three different people. Count customers, and the number is inflated. Ask who has an open case and an active campaign, and you can't answer. You know the failure from T-SQL: no shared key, no join.
+
+## Segment 4 (steps: four jobs)
+
+Data Cloud does four jobs. It ingests data through streams. It harmonizes fields into a common data model. It unifies records that describe the same person through identity resolution. Then calculated insights and segments let you analyze and act on the result, in tools like CRM Analytics and Tableau Next.
+
+## Segment 5 (code: complements)
+
+This complements a warehouse and CRM Analytics instead of replacing them. Features, licensing, and connector lists change every release, so treat specifics as something to verify.
+
+## Segment 6 (outro)
+
+Next up: data streams and ingestion, the first of those four jobs.

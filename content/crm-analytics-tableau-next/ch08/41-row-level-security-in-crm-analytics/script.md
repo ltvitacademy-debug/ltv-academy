@@ -1,0 +1,21 @@
+# Script — Row-Level Security in CRM Analytics
+
+## Segment 1 (title)
+
+You know how roles, sharing rules, and field-level security control what people see in Salesforce. CRM Analytics has its own layer for rows of data: the dataset security predicate. Here's how it works.
+
+## Segment 2 (steps: two layers)
+
+There are two layers. App-level access decides who can open an app and its dashboards, and whether they can view, edit, or manage them. Row-level security decides which rows come back once someone opens it. Two reps can view the same dashboard and see different numbers. And without a predicate, anyone who can query a dataset sees every row. That default surprises new builders.
+
+## Segment 3 (code: ownership predicate)
+
+A predicate is a filter condition attached to a dataset. CRM Analytics applies it for each user at query time, and non-matching rows simply never come back. The classic ownership pattern reads: keep a row only if its OwnerId column equals the current user's Id. Column name in single quotes, user value from the dollar-User variable. Illustrative only. Syntax is strict, so verify against current documentation and test.
+
+## Segment 4 (code: test it)
+
+Set a predicate on every dataset you publish, including recipe outputs, and don't assume protection carries over. External data needs a column that maps rows to users first. Then test as ordinary users, never just as an admin: one who owns records, one who owns none, and a manager if your design gives them wider access.
+
+## Segment 5 (outro)
+
+Start with a simple ownership predicate, and test it. Salesforce can also pass its own sharing rules into datasets, which is a different approach. Next up: Sharing Inheritance versus Custom Security Predicates.

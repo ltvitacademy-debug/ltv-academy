@@ -1,0 +1,25 @@
+# Script — CRM Analytics Architecture
+
+## Segment 1 (title)
+
+Chapter 1 was the wide-angle view. Now we zoom in on CRM Analytics itself. Before you build anything, you need a mental model of how the platform is put together, because refresh, security, and performance all follow from it.
+
+## Segment 2 (screenshot: diagram)
+
+Here's Salesforce's own summary, in three ideas. Connect any data, from Salesforce and from external sources, into datasets. Explore and visualize with lenses. Share the story through apps and dashboards. Everything in the platform fits one of those three moves.
+
+## Segment 3 (screenshot: Analytics Studio home)
+
+This is Analytics Studio, where people consume and build. Home, Browse, and Favorites are on the left, and further down you can see Data Manager, the Template Gallery, and Model Manager. Data Manager is the operations side: that's where you monitor data jobs and manage the pipelines feeding your datasets.
+
+## Segment 4 (steps: journey)
+
+So the journey is: connect the data, prepare it, store it as a dataset, then explore and share. The dataset is the key. It's held inside CRM Analytics in a compressed, indexed form. It is not a Salesforce object, and it won't show up in native reports.
+
+## Segment 5 (code: widget chain)
+
+How does a dashboard widget get its numbers? Every chart or number is powered by a step, which is a query against a dataset, written in a language called SAQL. Nothing on a dashboard talks to Salesforce objects at view time. That's why dashboards are fast, and why their data is only as fresh as the last load.
+
+## Segment 6 (outro)
+
+Next up: datasets and dataflows.

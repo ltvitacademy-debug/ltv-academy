@@ -1,0 +1,25 @@
+# Script — Salesforce + Snowflake
+
+## Segment 1 (title)
+
+You know Snowflake, and Lesson 35 mapped the general patterns. Now the specifics: how Salesforce and Snowflake exchange data. Feature names here keep changing, so verify against current documentation. We will focus on how the data moves and what each path costs, not on Snowflake basics.
+
+## Segment 2 (steps: three paths)
+
+There are three main paths. Federate in: Data 360 queries Snowflake where the data lives. Share out: Data 360 makes its data available to Snowflake without an ETL job. And the classic route: load Salesforce objects into Snowflake and model them with dbt. Salesforce describes the first two as zero-copy, because no duplicate is stored.
+
+## Segment 3 (code: query federation)
+
+With query federation, Data 360 sends a query to Snowflake, and Snowflake's own compute answers it. That is useful, but the compute bill lands on the Snowflake side. Cache settings and warehouse sizing matter. Once connected, the Snowflake tables can be mapped into Data 360 and used in Tableau Next semantic models.
+
+## Segment 4 (code: file federation)
+
+File federation is different. Data 360 reads the underlying files directly, so no Snowflake compute is used. Salesforce's documentation describes it for Snowflake on AWS or Azure, with Apache Iceberg tables, so the prerequisites are stricter. Salesforce recommends it where it is supported, so check whether your setup qualifies.
+
+## Segment 5 (steps: checklist)
+
+Before you connect, ask: who pays for compute, how fresh must the data be, does your cloud and region support it, is the role least-privilege, and do you need history. Federation shows current state. Snapshots need a load. If you must write results back to Salesforce, decide first which system owns each field.
+
+## Segment 6 (outro)
+
+Next up: Salesforce plus dbt.
