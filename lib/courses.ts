@@ -79,6 +79,14 @@ import { INFRASTRUCTURE_AS_CODE_WITH_TERRAFORM_CHAPTERS } from "./infrastructure
 import { CI_CD_PIPELINES_CHAPTERS } from "./ci-cd-pipelines-outline";
 import { MONITORING_LOGGING_AND_OBSERVABILITY_CHAPTERS } from "./monitoring-logging-and-observability-outline";
 import { DEVSECOPS_FUNDAMENTALS_CHAPTERS } from "./devsecops-fundamentals-outline";
+import { MATHEMATICS_FOR_QUANTITATIVE_FINANCE_CHAPTERS } from "./mathematics-for-quantitative-finance-outline";
+import { ADVANCED_PYTHON_FOR_QUANT_RESEARCH_CHAPTERS } from "./advanced-python-for-quant-research-outline";
+import { CPP_FOR_QUANTITATIVE_DEVELOPERS_CHAPTERS } from "./cpp-for-quantitative-developers-outline";
+import { FINANCIAL_MARKETS_AND_QUANTITATIVE_FINANCE_CHAPTERS } from "./financial-markets-and-quantitative-finance-outline";
+import { TIME_SERIES_AND_FINANCIAL_MODELING_CHAPTERS } from "./time-series-and-financial-modeling-outline";
+import { MACHINE_LEARNING_FOR_QUANT_FINANCE_CHAPTERS } from "./machine-learning-for-quant-finance-outline";
+import { ALGORITHMIC_TRADING_AND_BACKTESTING_CHAPTERS } from "./algorithmic-trading-and-backtesting-outline";
+import { QUANT_RESEARCH_AND_TRADING_CAPSTONE_CHAPTERS } from "./quant-research-and-trading-capstone-outline";
 import { DEVOPS_CAPSTONE_CHAPTERS } from "./devops-capstone-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
@@ -815,6 +823,78 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: DEVOPS_CAPSTONE_CHAPTERS,
     contentBase: "devops-capstone",
+  },
+  {
+    slug: "mathematics-for-quantitative-finance",
+    title: "Mathematics for Quantitative Finance",
+    tagline:
+      "Probability, advanced statistics, linear algebra, calculus, optimization, and stochastic processes — the mathematical language every quantitative model is written in.",
+    status: "available",
+    chapters: MATHEMATICS_FOR_QUANTITATIVE_FINANCE_CHAPTERS,
+    contentBase: "mathematics-for-quantitative-finance",
+  },
+  {
+    slug: "advanced-python-for-quant-research",
+    title: "Advanced Python for Quantitative Research",
+    tagline:
+      "NumPy and pandas at scale, vectorization, numerical computing, optimization, profiling, and research frameworks — writing fast, correct, reproducible research code.",
+    status: "available",
+    chapters: ADVANCED_PYTHON_FOR_QUANT_RESEARCH_CHAPTERS,
+    contentBase: "advanced-python-for-quant-research",
+  },
+  {
+    slug: "cpp-for-quantitative-developers",
+    title: "C++ for Quantitative Developers",
+    tagline:
+      "Memory, pointers, object-oriented design, the STL, multithreading, performance optimization, and Python/C++ integration — the language of production trading systems.",
+    status: "available",
+    chapters: CPP_FOR_QUANTITATIVE_DEVELOPERS_CHAPTERS,
+    contentBase: "cpp-for-quantitative-developers",
+  },
+  {
+    slug: "financial-markets-and-quantitative-finance",
+    title: "Financial Markets & Quantitative Finance",
+    tagline:
+      "Equities, bonds, options, futures, market structure, portfolio theory, risk, and derivatives pricing — how markets work and how quants model them.",
+    status: "available",
+    chapters: FINANCIAL_MARKETS_AND_QUANTITATIVE_FINANCE_CHAPTERS,
+    contentBase: "financial-markets-and-quantitative-finance",
+  },
+  {
+    slug: "time-series-and-financial-modeling",
+    title: "Time Series & Financial Modeling",
+    tagline:
+      "Returns, volatility, stationarity, ARIMA, GARCH, factor models, forecasting, and financial feature engineering.",
+    status: "available",
+    chapters: TIME_SERIES_AND_FINANCIAL_MODELING_CHAPTERS,
+    contentBase: "time-series-and-financial-modeling",
+  },
+  {
+    slug: "machine-learning-for-quant-finance",
+    title: "Machine Learning for Quantitative Finance",
+    tagline:
+      "Regression and classification, trees and boosting, clustering, feature engineering, model validation, and overfitting control — ML applied to noisy financial data.",
+    status: "available",
+    chapters: MACHINE_LEARNING_FOR_QUANT_FINANCE_CHAPTERS,
+    contentBase: "machine-learning-for-quant-finance",
+  },
+  {
+    slug: "algorithmic-trading-and-backtesting",
+    title: "Algorithmic Trading & Backtesting",
+    tagline:
+      "Strategy design, signals, backtesting, transaction costs, slippage, position sizing, the Sharpe ratio, drawdown, and avoiding look-ahead bias.",
+    status: "available",
+    chapters: ALGORITHMIC_TRADING_AND_BACKTESTING_CHAPTERS,
+    contentBase: "algorithmic-trading-and-backtesting",
+  },
+  {
+    slug: "quant-research-and-trading-capstone",
+    title: "Quantitative Research & Trading Capstone",
+    tagline:
+      "Start with raw market data and build a complete research project: research question, statistical analysis, feature engineering, model, trading signal, backtest, risk analysis, performance report, and presentation — plus career preparation.",
+    status: "available",
+    chapters: QUANT_RESEARCH_AND_TRADING_CAPSTONE_CHAPTERS,
+    contentBase: "quant-research-and-trading-capstone",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,

@@ -469,6 +469,47 @@ export const CAREER_PATHS: CareerPath[] = [
     destinationNote:
       "Salesforce Data Analyst → Senior Salesforce Data Analyst → CRM Analytics Developer → Salesforce Analytics Engineer → Senior Salesforce Analytics Engineer → Salesforce Data/Analytics Architect → Enterprise/Solution Architect. Notice how little new curriculum this actually needs — Snowflake, SQL, Tableau, and dbt already exist or are planned elsewhere in the catalog; this ladder mostly just reuses them in sequence.",
   },
+  {
+    slug: "quantitative-developer-researcher",
+    title: "Quantitative Developer / Researcher",
+    targetJobs: ["Quantitative Analyst", "Quantitative Developer", "Quantitative Researcher", "Quant ML Researcher", "Low-Latency / High-Frequency Trading (HFT) Engineer"],
+    description:
+      "This isn't a starting point — it's the top of the ladder, shown as where the other paths lead. You arrive already knowing SQL, Python, data engineering, cloud, statistics, machine learning, Git, and data pipelines from the Data Scientist path and a Data Engineering specialty, so none of that is taught again. This is an advanced specialization layer: mathematics for quantitative finance, advanced Python for research, C++ for production systems, financial markets and derivatives, time-series and financial modeling, machine learning built for noisy financial data, and algorithmic trading and backtesting. It closes with a capstone where you take raw market data through a research question, statistical analysis, features, a model, a trading signal, a backtest, risk analysis, a performance report, and a presentation. From there you specialize: Quant Researcher (mathematics, statistics, and research), Quant Developer (C++, Python, and performance engineering), Quant ML Researcher (deep learning, alternative data, NLP, and time series), or Low-Latency / High-Frequency Trading (HFT) Engineer (C++, networking, operating systems, and concurrency).",
+    salaryRange: "$400K+ total compensation (base plus bonus) starting at top-tier hedge funds, proprietary trading firms, and banks · $1M–$1.5M+ at senior researcher and developer level, with the top of the field going higher — compensation is heavily bonus- and performance-driven, and entry at the top firms is extremely competitive",
+    isDestination: true,
+    stages: [
+      {
+        label: "Data science foundation",
+        note: "Levels 1–4 of the ladder: SQL, Python, statistics, machine learning, AI, cloud ML, and MLOps",
+        pathChoiceSlugs: ["data-scientist"],
+      },
+      {
+        label: "Data engineering layer",
+        note: "Level 3: pipelines and cloud — pick one specialty",
+        pathChoiceSlugs: ["azure-fabric-data-engineer", "databricks-lakehouse-engineer", "aws-data-engineer", "snowflake-data-engineer"],
+      },
+      {
+        label: "Quantitative core",
+        note: "Level 5: the new advanced specialization layer",
+        courseSlugs: [
+          "mathematics-for-quantitative-finance",
+          "advanced-python-for-quant-research",
+          "cpp-for-quantitative-developers",
+          "financial-markets-and-quantitative-finance",
+          "time-series-and-financial-modeling",
+          "machine-learning-for-quant-finance",
+          "algorithmic-trading-and-backtesting",
+        ],
+      },
+      {
+        label: "Research capstone",
+        note: "From raw market data to a presented, backtested, risk-analyzed trading strategy",
+        courseSlugs: ["quant-research-and-trading-capstone"],
+      },
+    ],
+    destinationNote:
+      "Quantitative Analyst → Quant Researcher / Quant Developer → Senior Quant → Portfolio Manager, Head of Research, or Head of Quant Development. Level 6 is specialization: Quant Researcher (heavy mathematics, statistics, ML, and research), Quant Developer (C++, Python, distributed systems, and performance engineering), Quant ML Researcher (deep learning, alternative data, NLP, and time series), or Low-Latency / High-Frequency Trading (HFT) Engineer (C++, networking, operating systems, concurrency, and performance optimization). The compensation is real but concentrated: it is mostly total compensation including large performance bonuses, top firms hire very selectively, and reaching $1M+ typically takes years of proven results, not a promise on graduation.",
+  },
 ];
 
 export const getCareerPath = (slug: string) => CAREER_PATHS.find((p) => p.slug === slug);
