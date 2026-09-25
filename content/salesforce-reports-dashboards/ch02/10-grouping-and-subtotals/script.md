@@ -1,0 +1,25 @@
+# Script — Grouping & Subtotals
+
+## Segment 1 (title)
+
+Filters decide which records appear. Grouping decides how they're organized, and it's the feature that turns a flat list into an answer. It's Salesforce's version of GROUP BY, with one twist: the detail rows stay visible unless you hide them.
+
+## Segment 2 (screenshot: leads grouped)
+
+Here's a real Leads report grouped by Lead Source. Each group heading shows its record count in parentheses, Web has seven, and a Subtotal row closes each group. The Total Records number sits above the table.
+
+## Segment 3 (screenshot: cases by priority)
+
+Now the same idea with the details switched off. Closed Cases grouped by Priority shows one line per group with a record count, then a grand total of twenty-three. That is the view most analysts picture when they think GROUP BY.
+
+## Segment 4 (steps)
+
+To build this, open the Outline panel and drag a field into the row groupings. A summary report allows up to three levels of row grouping. Then summarize numeric columns with sum, average, minimum, or maximum. For date fields, pick a granularity such as month or quarter, because one group per day is rarely useful.
+
+## Segment 5 (code: SQL mapping)
+
+The SQL equivalent is straightforward: select Lead Source, a count, and a sum of Amount, group by Lead Source, and order by the sum descending. In the report, you sort each group by its summarized value. One honest limit: the on-screen report caps the detail rows it shows, though totals still cover every matching record.
+
+## Segment 6 (outro)
+
+With grouping in place, you have numbers worth calculating on. Next chapter starts with summary formulas.

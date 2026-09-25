@@ -1,0 +1,25 @@
+# Script — Filter Logic
+
+## Segment 1 (title)
+
+So far you have narrowed reports with standard filters, cross filters, and buckets. Now the harder question: what happens when several field filters have to work together, and the business question sounds like this or that? That is filter logic.
+
+## Segment 2 (screenshot: filters panel)
+
+In the Filters panel, each field filter you add is quietly numbered. Here you can see Lead Source contains Partner, with a Locked checkbox highlighted. By default, every numbered filter is joined with AND, exactly like a WHERE clause with a chain of ANDs. Each extra filter can only shrink the result.
+
+## Segment 3 (code: filter logic)
+
+From the menu beside the Filters heading, add filter logic. Then type an expression using the filter numbers: one AND, open parenthesis, two OR three, close parenthesis. That reads as large opportunities that came from a partner or from the web. Parentheses matter here just as much as they do in T-SQL, so add them whenever you mix operators.
+
+## Segment 4 (screenshot: applied filter)
+
+Notice the padlock on the Lead Source filter. A locked filter can't be changed by people running the report, which protects its core definition. Viewers can still add their own filters on top.
+
+## Segment 5 (steps)
+
+Remember three rules. Standard filters, like Show Me and date range, sit outside your numbered filters. Cross filters are not part of the expression either. And when the OR is on a single picklist field, listing several values in one filter is often simpler than writing logic at all.
+
+## Segment 6 (outro)
+
+Filter logic is just a numbered WHERE clause. Write the clause on paper first, then translate. Next up: grouping and subtotals.
