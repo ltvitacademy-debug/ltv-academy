@@ -28,10 +28,13 @@ export const SOQL_DATA_MANAGEMENT_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "SOQL Fundamentals",
     lessons: [
-      L(1, "select-from-where", "SELECT, FROM & WHERE"),
-      L(2, "order-by-and-limit", "ORDER BY & LIMIT"),
-      L(3, "comparison-and-logical-operators", "Comparison & Logical Operators"),
-      L(4, "soql-vs-sql", "SOQL vs. SQL: What's Actually Different"),
+      L(1, "select-from-where", "SELECT, FROM & WHERE", {
+        contentDir: "ch01/01-select-from-where",
+        // videoUrl/durationLabel pending
+      }),
+      L(2, "order-by-and-limit", "ORDER BY & LIMIT", { contentDir: "ch01/02-order-by-and-limit" }),
+      L(3, "comparison-and-logical-operators", "Comparison & Logical Operators", { contentDir: "ch01/03-comparison-and-logical-operators" }),
+      L(4, "soql-vs-sql", "SOQL vs. SQL: What's Actually Different", { contentDir: "ch01/04-soql-vs-sql" }),
       L(5, "querying-standard-objects", "Querying Standard Objects"),
       L(6, "querying-custom-objects", "Querying Custom Objects"),
     ],
@@ -50,8 +53,8 @@ export const SOQL_DATA_MANAGEMENT_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Relationship Queries",
     lessons: [
-      L(11, "parent-to-child-queries", "Parent-to-Child Queries"),
-      L(12, "child-to-parent-queries", "Child-to-Parent Queries"),
+      L(11, "parent-to-child-queries", "Parent-to-Child Queries", { contentDir: "ch03/11-parent-to-child-queries" }),
+      L(12, "child-to-parent-queries", "Child-to-Parent Queries", { contentDir: "ch03/12-child-to-parent-queries" }),
       L(13, "dot-notation-traversal", "Dot-Notation Traversal"),
       L(14, "semi-joins-and-anti-joins", "Semi-Joins & Anti-Joins"),
       L(15, "subqueries-in-soql", "Subqueries in SOQL"),
@@ -91,7 +94,7 @@ export const SOQL_DATA_MANAGEMENT_CHAPTERS: ChapterMeta[] = [
     n: 7,
     title: "Data Quality & Cleansing",
     lessons: [
-      L(28, "data-quality-issues-in-crm-data", "Data Quality Issues in CRM Data"),
+      L(28, "data-quality-issues-in-crm-data", "Data Quality Issues in CRM Data", { contentDir: "ch07/28-data-quality-issues-in-crm-data" }),
       L(29, "deduplication-strategies", "Deduplication Strategies"),
       L(30, "standardizing-data", "Standardizing Data"),
       L(31, "salesforce-ids-explained", "Salesforce IDs, Explained"),

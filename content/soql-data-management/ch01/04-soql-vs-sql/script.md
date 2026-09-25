@@ -1,0 +1,21 @@
+# Script — SOQL vs. SQL: What's Actually Different
+
+## Segment 1 (title)
+
+Chapter One has spent five lessons showing how close SOQL is to T-SQL. That's true, and it's also only half the story. This lesson consolidates the real, structural differences — the ones that aren't just syntax placement.
+
+## Segment 2 (code: permanent, not a missing feature)
+
+SOQL has no SELECT star, every field must be named explicitly. And it has no JOIN keyword at all — you can't join two unrelated objects on an arbitrary condition. You can only traverse relationships Salesforce already knows about, which is the whole subject of Chapter 3.
+
+## Segment 3 (code: SOQL is read-only)
+
+SOQL is read-only, full stop. There's no SOQL UPDATE, DELETE, or INSERT. Changing data goes through a completely separate layer — DML, executed through Apex, the API, or tools like Data Loader and Workbench, both coming up later in this path.
+
+## Segment 4 (steps: why none of this is arbitrary)
+
+None of this is arbitrary. Salesforce runs on shared, multi-tenant infrastructure and enforces governor limits — hard caps, like the fact a single query can't return unlimited rows without special handling. It's the same reason SELECT star doesn't exist: predictable cost, for everyone sharing the system.
+
+## Segment 5 (outro)
+
+So: same shape, real limits. Next up: querying standard objects — real, worked examples against Account, Contact, and Case.
