@@ -1,0 +1,25 @@
+# Script — Post-Migration Validation
+
+## Segment 1 (title)
+
+Your load finished with a green progress bar. That does not mean the migration is right. This lesson, the last in Chapter Eight, is about proving the data arrived complete and correct, using SOQL.
+
+## Segment 2 (steps: a load that finishes is not a load that is right)
+
+Think in three layers. Counts: the number of source rows should equal the rows loaded plus the rows rejected. Spot checks: compare real records against the source. And integrity: use SOQL to confirm the relationships are intact.
+
+## Segment 3 (code: record-count reconciliation)
+
+Start with reconciliation. Count each object in Salesforce and compare to the source. For Opportunities, go beyond counts: group by stage, and compare both the count and the sum of Amount to the same totals from the source. Matching totals catch problems that matching row counts hide. Also check Data Loader's own files: success rows plus error rows should equal the rows you sent. One caution: run these queries as a user who can see all the records, since SOQL respects sharing.
+
+## Segment 4 (steps: spot checks)
+
+Then spot checks. Pick a sample, plus edge cases and your biggest customers, and compare every field against the source. You are looking for truncated text, wrong dates, and picklist values that were translated incorrectly. A human looking at real records catches things counts never will.
+
+## Segment 5 (code: referential integrity checks)
+
+Finally, integrity. Contacts with no Account, using AccountId equals null, may show a parent lookup that failed to resolve. Accounts with no Contacts, using a NOT IN subquery, may be legitimate, or may signal missing children. Neither result is automatically wrong, so compare with what the source says should be true.
+
+## Segment 6 (outro)
+
+That completes Chapter Eight. Next up, Lesson 37, the Capstone Kickoff, where you put extraction, cleaning, and loading together.

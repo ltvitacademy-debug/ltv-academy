@@ -1,0 +1,74 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "SOQL & Salesforce Data Management · Chapter Nine",
+    "titlePlain": "Extract & Clean ",
+    "titleEmphasis": "a Dataset",
+    "titleSuffix": "",
+    "subtitle": "Lesson 38 · Capstone"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1 · the baseline",
+    "code": "SELECT COUNT() FROM Lead\n\nSELECT LeadSource, COUNT(Id) n\nFROM Lead\nGROUP BY LeadSource\n\nSELECT COUNT() FROM Contact\nWHERE AccountId = null",
+    "caption": "Save these results. They are your before picture."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 · find duplicate groups",
+    "code": "SELECT Email, COUNT(Id) n\nFROM Lead\nWHERE Email != null\nGROUP BY Email\nHAVING COUNT(Id) > 1\n\n-- 2,760 duplicated addresses",
+    "caption": "Groups, not records. It cannot say which Lead to keep."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 · extract the records",
+    "code": "SELECT Id, Email, Company, LeadSource,\n       IsConverted, CreatedDate,\n       LastModifiedDate\nFROM Lead\nWHERE Email != null\nORDER BY Email, CreatedDate",
+    "caption": "Export with Data Loader. Back it up, then clean a copy."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Step 3 · choose the survivor",
+    "titlePlain": "One winner per ",
+    "titleEmphasis": "group",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "CONVERTED", "sub": "always survives" },
+      { "label": "NEWEST", "sub": "latest LastModifiedDate" },
+      { "label": "TIE", "sub": "oldest CreatedDate" },
+      { "label": "TWO CONVERTED", "sub": "manual review" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 4 · standardize LeadSource",
+    "code": "tradeshow          -> Trade Show\nTrade-Show         -> Trade Show\nTradeShow          -> Trade Show\nTrade Show 2021    -> Trade Show\nTrade show - Denver -> Trade Show\n\n3,540 Leads to update\n4,210 blanks stay blank",
+    "caption": "Never invent a value where you have no evidence."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 5 · match orphan Contacts",
+    "code": "SELECT Id, Email, Legacy_Id__c\nFROM Contact\nWHERE AccountId = null\n\nSELECT Id, Name, Legacy_Id__c\nFROM Account\nWHERE Legacy_Id__c != null",
+    "caption": "1,015 match an Account. 225 need 61 new ones."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Predict before you load",
+    "titlePlain": "Write the ",
+    "titleEmphasis": "expected numbers",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "DELETE", "sub": "3,770 surplus Leads" },
+      { "label": "UPDATE", "sub": "3,540 LeadSource values" },
+      { "label": "CREATE", "sub": "61 new Accounts" },
+      { "label": "RELINK", "sub": "1,240 Contacts" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 39",
+    "titlePlain": "Load It ",
+    "titleEmphasis": "Back Safely",
+    "titleSuffix": "",
+    "subtitle": "Upsert, parents before children, then validate."
+  }
+]

@@ -1,0 +1,25 @@
+# Script — Deduplication Strategies
+
+## Segment 1 (title)
+
+Last lesson you saw that duplicates are the most common data quality problem in any long-running org, and that a GROUP BY on Name only catches exact matches. This lesson covers Salesforce's own duplicate management tools, and why they still need people.
+
+## Segment 2 (steps: salesforce's built-in duplicate management)
+
+Duplicate management has two building blocks. A matching rule defines when two records look like the same real-world entity. A duplicate rule decides what happens when a match is found: allow the save with an alert, or block it. Either one can also report the match, so it's logged for later review.
+
+## Segment 3 (code: exact vs. fuzzy matching)
+
+Matching rules can be exact or fuzzy. A fuzzy rule can recognize Acme Corp, Acme Corporation, and ACME Corp with a period as likely matches, which a plain GROUP BY on Name never could. Salesforce ships standard matching rules for accounts, contacts, and leads, and you can build your own.
+
+## Segment 4 (code: review what the rules caught)
+
+When a duplicate rule is set to report, matches are stored in the DuplicateRecordSet and DuplicateRecordItem objects, and you can query them with SOQL like any other data. That gives you a real work list of suspected duplicates instead of guessing. Also remember that loads through the API can trigger these rules too, so expect duplicate errors in your Data Loader error files.
+
+## Segment 5 (steps: rules alone are not enough)
+
+Here's the important point. Rules prevent the obvious duplicates and detect the likely ones, but a person still has to decide which record survives and what data to keep. Two records with the same name might be two real companies. Automation finds candidates; human review makes the call, and then you merge.
+
+## Segment 6 (outro)
+
+Next up: Standardizing Data. We'll look at picklists versus free text, and how GROUP BY reveals the many spellings hiding in a single field.

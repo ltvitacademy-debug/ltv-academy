@@ -1,64 +1,86 @@
 # Dot-Notation Traversal
 
-Lesson 12 stopped at one hop: `Account.Name`. But nothing stops you chaining dot notation
-further — up through as many parent relationships as the object model actually has. The
-chain works exactly the way you'd guess. The part that isn't guessable is where it stops.
+Child-to-parent queries gave you one hop: `Contact.Account.Name`. But Salesforce data is a
+web of lookups, and the field you want is often several records away. Dot notation chains,
+and this lesson is about how far it can go.
 
 ## What you'll learn
 
-- How to chain dot notation across multiple relationship hops
-- The real, enforced limit on how many levels deep a query can traverse
-- Why that limit exists
+- How to chain relationships to reach a field several records away
+- The real limit: five levels of child-to-parent traversal
+- What comes back when a link in the chain is empty
 
-## Chaining multiple hops
+## Chaining hops
 
-```sql
-SELECT Quantity, UnitPrice,
-       Opportunity.Account.Owner.Name
-FROM OpportunityLineItem
-```
-
-Read it left to right: start at `OpportunityLineItem`, go up to its parent `Opportunity`,
-up from there to *its* parent `Account`, up from there to the Account's `Owner` (a User
-record), and pull that User's `Name`. Each `.` is one more hop up the relationship chain,
-and each hop has to be a real relationship field that actually exists on the object you're
-standing on — you can't skip a level.
-
-## The real limit: five levels deep
-
-Salesforce enforces a hard limit on standard relationships: **a SOQL query can traverse up
-to five levels of parent relationships using dot notation.** `Opportunity.Account.Owner.Name`
-above is three levels deep — well inside the limit. Push much further (a sixth or seventh
-`.` in the chain) and the query is rejected before it ever runs, with an error pointing at
-the relationship depth.
+Each dot moves you one relationship further up. Say you're querying Opportunities and want
+the name of the person who owns the Opportunity's Account:
 
 ```sql
--- Five levels: right at the edge, but valid
-A__r.B__r.C__r.D__r.E__r.SomeField
-
--- Six levels: SOQL rejects this
-A__r.B__r.C__r.D__r.E__r.F__r.SomeField
+SELECT Name, Amount, Account.Name, Account.Owner.Name
+FROM Opportunity
 ```
 
-## Why the limit exists
+`Account` is the relationship from Opportunity to its parent Account. `Owner` is the
+relationship from Account to the User who owns it. `Name` is finally a field on that User.
+Three names, two dots, and a single flat query. In T-SQL this would be two joins — Opportunity
+to Account, Account to User — and here the relationship fields do that work for you.
 
-This isn't arbitrary. Every dot-notation hop is effectively another implicit lookup the
-query engine has to resolve before it can return a single row, and Salesforce's governor
-limits exist specifically to stop a query from silently becoming an expensive, deeply nested
-traversal that would be slow and costly to execute on shared, multi-tenant infrastructure.
-Five levels is generous enough for almost any real reporting need — if you're hitting the
-limit, it's usually a sign the query should be restructured, not that the limit should be
-higher.
+The same chain works in `WHERE` and `ORDER BY`, not just in the `SELECT` list:
+
+```sql
+SELECT Name, Amount
+FROM Opportunity
+WHERE Account.Owner.Name = 'Jordan Lee'
+ORDER BY Account.Name
+```
+
+## The relationship name is not the field name
+
+Each step in the chain uses a **relationship name**. For a standard lookup field the
+relationship name is the field name without the trailing `Id`: `AccountId` becomes `Account`,
+`OwnerId` becomes `Owner`, `CreatedById` becomes `CreatedBy`. For a custom lookup field the
+`__c` suffix becomes `__r`. Chains can freely mix both kinds:
+
+```sql
+SELECT Name, Account__r.Owner.Name, Account__r.Parent.Name
+FROM Invoice__c
+```
+
+That reads: from a custom Invoice, up the custom `Account__r` relationship to the Account,
+then on to that Account's Owner, or to its `Parent` Account. Standard and custom
+relationships can appear anywhere in the same chain.
+
+## The limit: five levels
+
+SOQL lets you traverse **up to five levels** of child-to-parent relationships in a single
+query. A chain like `Contact.Account.Owner.Manager.Name` is three relationship levels
+(Account, Owner, Manager) before the final field, comfortably inside the limit. A chain
+with six relationship hops is rejected outright with a query error.
+
+This is a platform limit, not a bug you can configure around. Every hop is a lookup the
+platform must resolve on shared, multi-tenant infrastructure, and Salesforce caps that work
+to keep queries predictable. If you find yourself needing more than five hops, that is
+usually a signal to restructure: query an intermediate object directly, or run two queries
+and join the results yourself.
+
+## When a link in the chain is empty
+
+Lookup fields can be blank. If an Opportunity has no Account, or an Account has no Parent,
+the query does not fail. The field at the end of the chain simply comes back as null for
+that record. This mirrors a T-SQL `LEFT JOIN`, and it means a chained query will not
+silently drop records that are missing a link.
 
 ## Key terms
 
 | Term | Meaning |
 |---|---|
-| Dot-notation chain | Multiple `.` hops traversing several relationships in one query |
-| Relationship depth limit | The maximum number of parent hops SOQL allows — five |
-| Governor limits | Salesforce's platform-wide limits that keep queries predictable and cheap |
+| Dot-notation traversal | Chaining relationship names with dots to reach fields on records several hops up |
+| Relationship name | The name used to traverse a lookup: the field name without `Id`, or `__r` for custom fields |
+| Five-level limit | SOQL allows at most five levels of child-to-parent relationships in one query |
+| Null result | What a chained field returns when an intermediate lookup is empty |
 
 ## Check yourself
 
-`Opportunity.Account.Parent.Parent.Parent.Owner.Name` — how many levels deep is that
-dot-notation chain, and does SOQL allow it?
+You need `Opportunity.Account.Owner.Name` for a report. Name each relationship in that chain
+and say what T-SQL would need to do the same. Then: what happens if your chain needs six
+levels of child-to-parent hops?

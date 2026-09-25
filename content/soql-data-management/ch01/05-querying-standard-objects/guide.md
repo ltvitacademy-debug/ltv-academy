@@ -1,76 +1,91 @@
 # Querying Standard Objects
 
-Everything so far has leaned on `Opportunity`. This lesson puts the same skills to work across
-three more of Salesforce's core standard objects — `Account`, `Contact`, and `Case` — with
-realistic field lists, so the shape of a good SOQL query starts to feel automatic no matter
-which object you're pointed at.
+The last four lessons taught SOQL's grammar one clause at a time. This lesson puts the pieces
+together on the three standard objects you will query more than any others in a real org:
+**Account**, **Contact**, and **Case**. Each one comes with a realistic field list, a real
+filter, and a habit worth building.
 
 ## What you'll learn
 
-- Realistic queries against `Account`, `Contact`, and `Case`
-- How field names map to the kind of business data each standard object holds
-- Why picking the right fields up front matters more in SOQL than in ad-hoc T-SQL
+- The fields you actually reach for on Account, Contact, and Case
+- How to combine SELECT, WHERE, ORDER BY, and LIMIT in one realistic query
+- How a lookup field like `AccountId` links one object to another
+- Why you should confirm field API names before you write the query
 
-## Account: the company record
+## Account: the company
 
 ```sql
-SELECT Id, Name, Industry, AnnualRevenue, BillingCity, BillingState
+SELECT Id, Name, Type, Industry, AnnualRevenue,
+       NumberOfEmployees, BillingCity, BillingState
 FROM Account
 WHERE Industry = 'Technology'
   AND AnnualRevenue > 1000000
 ORDER BY AnnualRevenue DESC
-LIMIT 20
+LIMIT 25
 ```
 
-`Account` represents a company or organization. Notice the query reaches for `BillingCity` and
-`BillingState` rather than a single flat "address" field — Salesforce splits address data into
-several discrete fields, and you name each one you want, same as any other field.
+`Industry` and `Type` are picklists, so the value you filter on has to match one of your
+org's real picklist values. `AnnualRevenue` is a currency field, so you compare it to a bare
+number with no quotes and no currency symbol. The billing address is stored as separate
+fields (`BillingStreet`, `BillingCity`, `BillingState`, `BillingPostalCode`,
+`BillingCountry`), which is why you name `BillingCity` and `BillingState` individually.
 
-## Contact: the person record
+## Contact: the person
 
 ```sql
-SELECT Id, FirstName, LastName, Email, Phone, Title, AccountId
+SELECT Id, FirstName, LastName, Email, Phone,
+       Title, Department, AccountId
 FROM Contact
-WHERE MailingState = 'GA'
-  AND Email != null
-ORDER BY LastName ASC
+WHERE Email != null
+  AND AccountId != null
+ORDER BY LastName, FirstName
 ```
 
-`Contact` represents an individual person, usually tied to an `Account` through the `AccountId`
-lookup field. `Email != null` is a common, practical filter: it screens out contacts you have no
-way to reach by email before you export or act on the list.
+Two things to notice. First, `!= null` is how SOQL tests for a populated field; it works the
+same way as `IS NOT NULL` in T-SQL. Second, `AccountId` is a **lookup field**: it stores the
+`Id` of the Account the contact belongs to. It is the link between the two objects, and you
+already know from Lesson 4 that SOQL has no arbitrary `JOIN`, so this stored `Id` is what
+relationship queries in Chapter 3 will follow.
 
-## Case: the support ticket record
+## Case: the support request
 
 ```sql
-SELECT Id, CaseNumber, Subject, Status, Priority, CreatedDate, ContactId
+SELECT Id, CaseNumber, Subject, Status, Priority,
+       Origin, AccountId, ContactId, CreatedDate
 FROM Case
-WHERE Status != 'Closed'
-  AND Priority IN ('High', 'Critical')
-ORDER BY CreatedDate ASC
+WHERE IsClosed = false
+  AND Priority = 'High'
+ORDER BY CreatedDate DESC
+LIMIT 50
 ```
 
-`Case` represents a customer support ticket. This query is a realistic support-queue view: every
-open case at High or Critical priority, oldest first — exactly the kind of list a support team
-lead pulls to see what needs attention first.
+`CaseNumber` is the human-readable number a support agent sees (like `00001026`), while `Id`
+is the real unique identifier. `IsClosed` is a boolean field Salesforce maintains for you
+based on the case's `Status`, so filtering `IsClosed = false` is safer than listing every
+open status by name, because each org defines its own status values. Booleans are written
+`true` and `false` with no quotes.
 
-## Reading field names like a native
+## Check the API name before you query
 
-A pattern worth internalizing across all three: Salesforce field names are consistently
-descriptive — `BillingCity`, `MailingState`, `CreatedDate` — which makes an unfamiliar standard
-object's field list fairly guessable once you've seen a few. That's a genuine advantage over
-some T-SQL schemas where column names are abbreviated or inconsistent across tables.
+The label a user sees on a page layout is not always the API name you type in SOQL. Before
+writing a query against an unfamiliar object, open Setup, go to Object Manager, choose the
+object, and read the **Fields & Relationships** list: it shows each field's API name and
+data type. SOQL is not case-sensitive for field names, but a misspelled or non-existent name
+fails immediately with an error like `No such column`, which is a much better failure than
+a silently wrong result.
 
 ## Key terms
 
 | Term | Meaning |
 |---|---|
-| Account | Standard object representing a company or organization |
-| Contact | Standard object representing an individual person, usually linked to an Account |
-| Case | Standard object representing a customer support ticket |
-| Lookup field | A field like AccountId or ContactId that links a record to a related object |
+| Standard object | An object that ships with Salesforce itself, such as Account, Contact, Case, or Opportunity |
+| Lookup field | A field that stores the `Id` of a related record, such as `AccountId` on Contact |
+| Picklist | A field limited to a defined list of values, such as `Industry` or `Priority` |
+| CaseNumber | The auto-generated, human-readable case number, distinct from the record's `Id` |
+| API name | The exact field or object name used in SOQL, visible in Object Manager |
 
 ## Check yourself
 
-Write a SOQL query against `Case` that returns `CaseNumber`, `Subject`, and `Status` for every
-case with `Priority = 'Critical'` that is not yet `Closed`, sorted with the newest case first.
+You need every open, high-priority Case, newest first, capped at 50 rows. Which fields and
+clauses would you use, and why is `IsClosed = false` a safer filter than checking `Status`
+against a list of names?

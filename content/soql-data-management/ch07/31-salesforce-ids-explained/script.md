@@ -1,0 +1,25 @@
+# Script — Salesforce IDs, Explained
+
+## Segment 1 (title)
+
+Every Salesforce record has an Id, and this lesson is about something that surprises almost every analyst once: the same record can show up with two different Ids, one with fifteen characters and one with eighteen.
+
+## Segment 2 (code: one record, two forms)
+
+Take an example Id, 001D000000IqhSL, fifteen characters. The eighteen-character version is 001D000000IqhSLIAZ. The first fifteen characters are identical. The first three, zero zero one, are the key prefix that identifies the object, in this case Account. The last three characters are a checksum.
+
+## Segment 3 (steps: case sensitivity is the whole story)
+
+Here's the difference. The fifteen-character Id is case-sensitive, so a capital L and a lowercase l are different characters. The eighteen-character Id is case-insensitive: those extra three characters encode which of the first fifteen were capitals. Both forms point to the same record, and Salesforce accepts either.
+
+## Segment 4 (code: why case matters in a spreadsheet)
+
+Why does it matter? Imagine two records whose fifteen-character Ids differ only in upper and lower case. Excel's VLOOKUP ignores case, so it treats them as the same Id and can return the wrong row. The eighteen-character versions end in different suffixes, IAZ and IAB, so they stay distinct.
+
+## Segment 5 (steps: what to do as an analyst)
+
+So as an analyst, use eighteen-character Ids whenever you join data in a spreadsheet. The API and Data Loader exports return eighteen characters, while the fifteen-character form appears in some places like browser URLs. If you only have fifteen, a formula field using CASESAFEID gives you the eighteen. And on the way back in, Data Loader and the API accept either form.
+
+## Segment 6 (outro)
+
+Next up: Data Validation Rules, which block bad data at the moment it's saved.

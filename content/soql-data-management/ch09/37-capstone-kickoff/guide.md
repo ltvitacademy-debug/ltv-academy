@@ -1,84 +1,84 @@
 # Capstone Kickoff
 
-Eight chapters in, you have every skill this capstone needs: SOQL and SOSL to pull data out
-(Chapters 1-4), Data Loader and Workbench to move it (Chapters 5-6), a real process for
-finding and fixing bad data (Chapter 7), and a real process for sequencing a safe reload
-(Chapter 8). This chapter is one continuous scenario across four lessons — you'll extract a
-genuinely messy dataset, clean it, reload it safely, and wrap it up as a portfolio piece. No
-new syntax gets introduced from here on. This is where you prove you can use what you already
-have.
+Everything in this course so far has been taught on small, clean examples. Real orgs are
+neither. This capstone is one continuous scenario: you'll extract a messy dataset, clean
+it, and reload it safely, using SOQL, Data Loader, Workbench, and the data-quality and
+migration habits from the last few chapters. This lesson sets up the org, the mess, and
+the plan. The next three lessons execute it.
 
 ## What you'll learn
 
-- The Cascade Ridge Outfitters scenario you'll work across all four capstone lessons
-- The three specific data problems you're being asked to fix, with real record counts
-- The plan: extract & profile, clean, reload safely, validate and present
+- The fictional org and dataset you'll work with for the whole capstone
+- Three specific data quality problems, sized with real record counts
+- The five-step plan that turns those problems into a safe, verifiable project
 
-## The org: Cascade Ridge Outfitters
+## The scenario: Summit Ridge Outfitters
 
-You've been brought on as a contract Salesforce Data Analyst for **Cascade Ridge
-Outfitters (CRO)**, a wholesale outdoor-gear distributor that sells camping and hiking
-equipment to independent retailers. CRO's sales team has run the same playbook for six years:
-attend roughly fifteen regional trade shows a year, scan attendee badges with a show-floor
-app, and dump the scanned contacts into Salesforce as Leads. Nobody ever cleaned that pipe.
-You're working in the **CRO Data Cleanup Sandbox**, a full copy of production, so nothing you
-do this chapter touches real data until a final, reviewed load.
+**Summit Ridge Outfitters** is a fictional wholesale distributor of outdoor gear. It sells
+to independent retailers, runs Sales Cloud, and has used the same Salesforce org for six
+years. You've just been hired as its Salesforce Data Analyst, and your first assignment
+from the VP of Sales is: "Our data is a mess and nobody trusts the reports. Fix it, and
+don't break anything."
 
-A quick profiling query on the Lead object tells you the shape of the problem before you dig
-further:
+You have a **Full sandbox** refreshed from production last week, plus read access to
+production for comparison. Every change you make will be rehearsed in the sandbox first.
 
-```sql
-SELECT LeadSource, COUNT(Id)
-FROM Lead
-GROUP BY LeadSource
-ORDER BY COUNT(Id) DESC
-```
+## The messy data, sized
 
-That's Chapter 2's `GROUP BY` and aggregate `COUNT(Id)` — nothing new — pointed at a real
-question: how many different ways has this org typed "trade show" into a picklist over six
-years?
+A first round of counting queries (you'll write these yourself in the next lesson) gives
+the baseline:
 
-## What's actually wrong with the data
+| Object | Records | Problem |
+|---|---|---|
+| Lead | 41,860 | 2,760 email addresses appear on two or more Leads (6,530 records in those groups, so 3,770 surplus copies), left behind by six years of trade-show list imports |
+| Lead | 41,860 | `LeadSource` holds 14 distinct values; six of them are spellings of "Trade Show" (`Trade Show`, `tradeshow`, `Trade-Show`, `TradeShow`, `Trade Show 2021`, `Trade show - Denver`), and 4,210 Leads have it blank |
+| Contact | 28,450 | 1,240 Contacts have no `AccountId`, so they are private contacts nobody but their owner can see |
 
-The Lead object holds **14,820 records**. A first pass turns up three specific, fixable
-problems:
+The first two problems come from imports that bypassed anything a sales rep would have
+seen. `LeadSource` is a picklist that isn't restricted, so an import can write any value
+into it, and that's exactly what happened. The third comes from a legacy ERP migration
+that loaded people before, or without, their companies.
 
-- **Duplicate Leads.** The same badge scan, at the same person, gets re-imported every time
-  they visit a new show. Matching on Email + Company identifies **3,412 duplicate Lead
-  records** — nearly a quarter of the object.
-- **Inconsistent `LeadSource` values.** The profiling query above returns five different
-  spellings that all mean the same channel: `Trade Show`, `TradeShow`, `trade show`,
-  `Conference`, and `Expo`. Any report grouped by Lead Source is currently wrong.
-- **Orphaned Contacts.** A Lead-conversion process that ran for about a year had a bug that
-  never set the resulting Contact's `AccountId`. **1,150 Contact records** exist today with no
-  parent Account at all — invisible on any Account-related report or list view.
+## Your key to safe reloading: the legacy ID
 
-Along the way you'll also find **40 companies** that only ever exist as Leads and Contacts —
-they were scanned at a show, converted, and never got a real Account record created for them.
+Summit Ridge's ERP assigns every customer and every contact a number. Years ago someone
+created a custom text field, `Legacy_Id__c`, on Account and on Contact, and marked it as
+an **External ID**. Most Accounts and roughly 27,000 Contacts carry it. That field is the
+project's backbone: it lets you match records without knowing Salesforce IDs, which is
+exactly what an upsert needs.
 
-## The plan for the next three lessons
+The ERP export also tells you which company each of the 1,240 orphan Contacts belongs to.
+Checking against the sandbox: 1,015 of them belong to Accounts already in Salesforce, and
+225 belong to 61 companies that were never created as Accounts.
 
-- **Lesson 38 — Extract & Clean.** Use SOQL to find and quantify the duplicates and the
-  `LeadSource` variants (Chapters 1-4), then apply Chapter 7's deduplication and
-  standardization approach to decide, record by record, what "clean" means for this dataset.
-- **Lesson 39 — Load It Back Safely.** Use Data Loader and Workbench (Chapters 5-6) to reload
-  the cleaned data, sequenced parents-before-children (Chapter 8), using an upsert-with-
-  external-ID pattern so the load is safe to re-run if something goes wrong.
-- **Lesson 40 — Wrap-Up.** Validate the result with SOQL, and package the whole thing as a
-  portfolio piece.
+## The plan
+
+Five steps, each of which you'll see again in the next lessons:
+
+1. **Extract.** Query the data out with SOQL (Workbench for exploration, Data Loader for
+   volume) and save a CSV backup of everything you're about to change.
+2. **Clean.** In a working copy of the CSV, standardize `LeadSource`, flag which Lead in
+   each duplicate group to keep, and match orphan Contacts to their Accounts.
+3. **Stage.** Build the load files: new Accounts first, then Contact updates, then Lead
+   fixes.
+4. **Load.** Run Data Loader in the sandbox. Use upsert on `Legacy_Id__c`, parents before
+   children, reading the success and error files after every run.
+5. **Validate.** Re-run your baseline queries. The numbers must land exactly where you
+   predicted, or you stop and investigate.
+
+Only after a clean sandbox run do you repeat the load in production.
 
 ## Key terms
 
 | Term | Meaning |
 |---|---|
-| CRO Data Cleanup Sandbox | The full sandbox copy of CRO's production org this capstone works in |
-| Duplicate Lead | Two or more Lead records representing the same real person, caused here by repeat trade-show scans |
-| Orphaned Contact | A Contact record with a blank `AccountId` — no parent Account |
-| Picklist variant | Multiple different stored values that are meant to represent one real-world option (e.g. `TradeShow` vs. `Trade Show`) |
-| Profiling query | A SOQL query run first, purely to measure how bad a data problem actually is, before deciding how to fix it |
+| Capstone | The final project that applies the whole course to one realistic dataset |
+| Baseline | The set of counts you record before changing anything, so you can prove the result afterward |
+| External ID | A custom field flagged so Salesforce can use it to match records during upsert |
+| Private contact | A Contact with no Account, visible only to its owner |
+| Sandbox | A copy of the org used to rehearse changes without touching production |
 
 ## Check yourself
 
-CRO's Lead object has 14,820 records. Name the three specific data problems this capstone
-will fix, and the one SOQL clause (from Chapter 2) that lets you measure how many different
-`LeadSource` spellings actually exist before you write a single line of cleanup logic.
+Why does the plan record baseline counts and back up a CSV of the data before any cleaning
+begins, and why does the whole plan run in a sandbox first?

@@ -1,69 +1,50 @@
 # Installing & Configuring Data Loader
 
-Everything so far in this course has queried data through the Query Editor or a SOQL-aware
-tool one record set at a time. Real Salesforce data work is often bulk work — thousands or
-millions of records at once — and that's what the rest of this chapter is about. First up:
-**Data Loader**, Salesforce's own free desktop application for exactly that job.
+Chapters 1 to 4 were about getting data out with queries. This chapter is about **moving data in bulk**: exporting it to files, loading it back, and changing it safely. The tool for that job is **Data Loader**, and it is the tool most Salesforce data analyst job postings expect you to know.
 
 ## What you'll learn
 
-- What Data Loader is, and how it's different from the tools you've used so far
-- How to install it and log in for the first time
-- The one setting worth understanding before you run your first job: batch size
+- What Data Loader is and what it can and can't do
+- How logging in works, and why the environment choice matters
+- The handful of settings worth understanding before your first load
 
-## What Data Loader actually is
+## What Data Loader is
 
-Data Loader is a free, official Salesforce client application — a real desktop program, not
-a browser tab — built for bulk **insert**, **update**, **upsert**, **export**, and **delete**
-operations against your org's data. It ships from Salesforce itself (download it from Setup,
-under Data Loader, or from Salesforce's own download page) and runs on Windows or macOS.
+Data Loader is Salesforce's own **free, official desktop application**. You install it on your computer, connect it to an org, and use it for bulk operations: **Insert, Update, Upsert, Delete, Hard Delete, Export** and **Export All**. Both the input and the output are **CSV files**, which is why it fits so naturally with the spreadsheet and SQL skills you already have.
 
-The reason it exists: the point-and-click UI you've been working in is great for one record
-at a time, but nobody hand-edits 50,000 Account records through a form. Data Loader reads
-from and writes to plain CSV files, and it's built to move that kind of volume — Salesforce
-documents it as comfortable up to about 5 million records per job.
+It is built for volume. Where a browser tool is fine for a few hundred rows, Data Loader is the standard choice for large loads, and it can also be run from the command line for repeatable jobs.
 
-## Installing it and logging in
+## Logging in
 
-Installation is a standard desktop installer: download the package for your OS, run it, and
-launch the app. The first real step is logging in, and this is where new users often get
-stuck — Data Loader authenticates with your **username** plus your **password immediately
-followed by your security token** typed together as one string (unless your org has
-whitelisted the IP address you're connecting from, or you authenticate via OAuth login in
-newer versions). If you've never generated a security token, it's done from your personal
-Setup settings inside Salesforce itself, and a new one invalidates the old one.
+When you start an operation, Data Loader asks how to connect:
 
-You also need **API access** enabled for your account — a permission controlled by your
-profile — and your org's edition has to support the API at all. Enterprise, Unlimited,
-Performance, and Developer Edition orgs get API access by default; Professional Edition
-needs it added on. If login fails with an authentication error and your password and token
-are both definitely correct, API access is the first thing worth checking.
+- Choose **how to log in**. OAuth, where you approve access in a browser window, is the modern option. Password authentication also exists, and it requires your security token appended to your password when your org needs one.
+- Choose the **environment**: **Production** or **Sandbox**. This is the choice to slow down for. It decides which org your operation actually touches.
+- Your user needs **API access**. Whether API access is included depends on the Salesforce edition, and it is controlled by the **API Enabled** permission on your profile or permission set. If login fails with an API error, that is the first thing to check.
 
-## The setting worth knowing on day one: batch size
+## Settings worth knowing
 
-Once you're logged in, open **Settings → Settings** inside Data Loader. The field that
-matters most early on is **batch size** — how many records Data Loader groups together per
-request to Salesforce. The default is 200 records per batch. If you check the **Use Bulk
-API** option in that same settings screen, batch size can go much higher, up to 10,000
-records per batch, because the Bulk API is built for exactly this kind of high-volume,
-asynchronous loading rather than the standard synchronous API Data Loader uses by default.
+Open **Settings** in Data Loader and you will see several options. The ones that matter first:
 
-You don't need to tune this for a first job — the default works fine for typical operations
-— but knowing where it lives, and that Bulk API is the switch to flip for genuinely large
-jobs, matters the moment you're loading more than a few thousand records at once.
+| Setting | What it does |
+|---|---|
+| Batch Size | Records sent per batch. Default is 200 (the standard API's maximum), and it can go higher when Bulk API is on |
+| Use Bulk API | Processes data with Salesforce's Bulk API, designed for large volumes |
+| Insert Null Values | When on, blank CSV cells overwrite existing field values with nothing |
+| Query request size | How many records come back per request during an export |
+
+The defaults are fine while you are learning. **Insert Null Values** is the one to respect: with it on, a blank cell in an update file erases real data.
 
 ## Key terms
 
 | Term | Meaning |
 |---|---|
-| Data Loader | Salesforce's free, official desktop application for bulk data operations |
-| Security token | A generated code appended to your password to authenticate from an untrusted IP |
-| API access | A profile-level permission (and edition requirement) needed to use Data Loader at all |
-| Batch size | How many records Data Loader sends per request; default 200, up to 10,000 with Bulk API |
-| Bulk API | Salesforce's API built for large, asynchronous data jobs; an option inside Data Loader's settings |
+| Data Loader | Salesforce's free, official desktop app for bulk import, export and update |
+| CSV | The plain-text file format Data Loader reads and writes |
+| Sandbox | A copy of an org used for safe testing, separate from Production |
+| Batch size | The number of records processed together in one request |
+| API Enabled | The permission that lets a user connect through the API |
 
 ## Check yourself
 
-A new Data Loader user enters their correct Salesforce password and clicks login, but
-authentication fails every time. What are the two most likely real causes, and how would
-they fix each one?
+You are about to run your first load. Which two things should you confirm before clicking through the login, and what could go wrong if you skip one of them?
