@@ -1,0 +1,15 @@
+Now that the data is clean, you can finally look at it. In a capstone, exploration has a job. Which signals separate churners from stayers? How strong are they, honestly, given the sample size? And what should the model be allowed to use?
+
+Start by building one exploration table, one row per active customer, with the label and behavior columns, all as of the snapshot. Then rank the numeric signals with a Spearman correlation against churn. The strongest are order rate since signup, tenure, and the late or refunded share of orders. Recent tickets, age, and even days since last order are close to noise.
+
+A number without its sample size is a rumor. So for every group we compute the churn rate, add a ninety five percent error bar, label the bar with its group size, and draw the overall fifteen point four percent as a reference line.
+
+The categorical chart. Premium customers churn at twenty one point four percent, Family at eleven point five, and the error bars do not overlap, so that is real. Social signups churn at eighteen point seven percent, search at thirteen. Region is flat: every bar overlaps the average. Output of the code above.
+
+The behavior chart. Customers ordering under half a box a week since signup churn at twenty three point six percent, those above nine tenths at six percent. Late or refunded share climbs from eight point seven to twenty two percent. And tenure runs the surprising way: eighteen months or more churns at twenty four point nine percent. Output of the code above.
+
+Signals can stack. Cross tenure with late share. Newer customers with few problems churn at eight point eight percent. Longer-tenured customers with more problems churn at twenty seven point three, roughly triple. Both factors add risk.
+
+Keep it honest: this is description, not causation, and small gaps between bars are usually noise.
+
+Next, in lesson seven, you write up a checkpoint review.

@@ -29,17 +29,17 @@ export const MLOPS_FOR_DATA_SCIENTISTS_CHAPTERS: ChapterMeta[] = [
       L(2, "the-ml-lifecycle-and-mlops", "The ML Lifecycle & MLOps", { contentDir: "ch01/02-the-ml-lifecycle-and-mlops" }),
       L(3, "project-structure-for-ml", "Project Structure for ML", { contentDir: "ch01/03-project-structure-for-ml" }),
       L(4, "git-and-github-for-data-scientists", "Git & GitHub for Data Scientists", { contentDir: "ch01/04-git-and-github-for-data-scientists" }),
-      L(5, "reproducible-environments", "Reproducible Environments"),
+      L(5, "reproducible-environments", "Reproducible Environments", { contentDir: "ch01/05-reproducible-environments" }),
     ],
   },
   {
     n: 2,
     title: "Versioning & Tracking",
     lessons: [
-      L(6, "data-versioning", "Data Versioning"),
-      L(7, "model-versioning", "Model Versioning"),
-      L(8, "experiment-tracking-with-mlflow", "Experiment Tracking With MLflow"),
-      L(9, "the-model-registry", "The Model Registry"),
+      L(6, "data-versioning", "Data Versioning", { contentDir: "ch02/06-data-versioning" }),
+      L(7, "model-versioning", "Model Versioning", { contentDir: "ch02/07-model-versioning" }),
+      L(8, "experiment-tracking-with-mlflow", "Experiment Tracking With MLflow", { contentDir: "ch02/08-experiment-tracking-with-mlflow" }),
+      L(9, "the-model-registry", "The Model Registry", { contentDir: "ch02/09-the-model-registry" }),
     ],
   },
   {
@@ -56,10 +56,10 @@ export const MLOPS_FOR_DATA_SCIENTISTS_CHAPTERS: ChapterMeta[] = [
     n: 4,
     title: "CI/CD for Machine Learning",
     lessons: [
-      L(14, "testing-ml-code-and-data", "Testing ML Code & Data"),
-      L(15, "github-actions-for-ml", "GitHub Actions for ML"),
-      L(16, "automated-model-validation", "Automated Model Validation"),
-      L(17, "promotion-between-environments", "Promotion Between Environments"),
+      L(14, "testing-ml-code-and-data", "Testing ML Code & Data", { contentDir: "ch04/14-testing-ml-code-and-data" }),
+      L(15, "github-actions-for-ml", "GitHub Actions for ML", { contentDir: "ch04/15-github-actions-for-ml" }),
+      L(16, "automated-model-validation", "Automated Model Validation", { contentDir: "ch04/16-automated-model-validation" }),
+      L(17, "promotion-between-environments", "Promotion Between Environments", { contentDir: "ch04/17-promotion-between-environments" }),
     ],
   },
   {
@@ -76,9 +76,9 @@ export const MLOPS_FOR_DATA_SCIENTISTS_CHAPTERS: ChapterMeta[] = [
     n: 6,
     title: "Capstone",
     lessons: [
-      L(22, "capstone-kickoff-automate-a-models-full-lifecycle", "Capstone Kickoff: Automate a Model's Full Lifecycle"),
-      L(23, "capstone-build-it", "Capstone: Build It"),
-      L(24, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation"),
+      L(22, "capstone-kickoff-automate-a-models-full-lifecycle", "Capstone Kickoff: Automate a Model's Full Lifecycle", { contentDir: "ch06/22-capstone-kickoff-automate-a-models-full-lifecycle" }),
+      L(23, "capstone-build-it", "Capstone: Build It", { contentDir: "ch06/23-capstone-build-it" }),
+      L(24, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch06/24-capstone-wrap-up-and-portfolio-presentation" }),
     ],
   },
 ];

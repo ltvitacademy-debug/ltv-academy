@@ -1,0 +1,29 @@
+# Script — Resume & LinkedIn for Data Scientists
+
+## Segment 1 (title)
+
+You just finished a project that looks like real work: a churn model for Harvest Table, taken from SQL all the way to a presented recommendation. Now we turn it into a job search, starting with the two documents a recruiter sees first, your resume and your LinkedIn profile. Every number in this lesson is illustrative. Use only results you measured yourself.
+
+## Segment 2 (steps: the pattern)
+
+A strong bullet has three parts. An action: what you did. A metric: how you know it mattered. And a tool: what you used. Recruiters and applicant tracking systems both scan for tools, and hiring managers look for evidence of impact.
+
+## Segment 3 (code: before and after)
+
+Compare. Before: built a churn model using Python. After: built a gradient boosting model in scikit-learn that caught seventy percent of cancellations in the top thirty percent of scored customers, versus thirty percent by random. The metric now has a baseline, and that comparison is what gives a number meaning.
+
+## Segment 4 (code: honest data)
+
+If your project used fictional data, say so on the resume. It costs you nothing, and it protects you in interviews, where you will be asked about every line you wrote.
+
+## Segment 5 (steps: one page)
+
+Keep the resume to one page. Header with your links, then projects, skills, earlier experience, and education. Career changers often put projects first. Pick projects from the whole path, the ones closest to the job posting, and list only skills you could discuss for five minutes.
+
+## Segment 6 (steps: LinkedIn)
+
+On LinkedIn, make the headline searchable: role, core skills, and one proof point. In the About section, write three short paragraphs: who you are, two or three projects with one result each, and what you're looking for. Then feature your GitHub links.
+
+## Segment 7 (outro)
+
+Keep the numbers identical everywhere they appear. Next, we build the GitHub portfolio those links point to.

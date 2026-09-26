@@ -1,0 +1,73 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "MLOps for Data Scientists · Chapter 2",
+    "titlePlain": "Model ",
+    "titleEmphasis": "Versioning",
+    "titleSuffix": "",
+    "subtitle": "Lesson 7 · Versioning & Tracking"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What a model version contains",
+    "titlePlain": "More than ",
+    "titleEmphasis": "a file",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "FINGERPRINT",
+        "sub": "hash of the file's bytes"
+      },
+      {
+        "label": "DATA",
+        "sub": "hash of the training data"
+      },
+      {
+        "label": "RECIPE",
+        "sub": "settings and library versions"
+      },
+      {
+        "label": "RESULT",
+        "sub": "metrics on held-out data"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Fingerprint the model file",
+    "code": "import hashlib\n\ndef file_hash(path):\n    with open(path, \"rb\") as f:\n        return hashlib.sha256(\n            f.read()).hexdigest()\n\nsha = file_hash(\"models/churn.joblib\")\nmodel_id = sha[:12]",
+    "caption": "Simplified; the guide hashes in chunks."
+  },
+  {
+    "type": "code",
+    "eyebrow": "models/churn.meta.json · real output",
+    "code": "{\n  \"model_id\": \"80491b53de98\",\n  \"data_md5\": \"b0189fd5dc0b907e...\",\n  \"params\": {\"C\": 1.0},\n  \"metrics\": {\"accuracy\": 0.753,\n              \"auc\": 0.799},\n  \"python\": \"3.9.13\",\n  \"scikit-learn\": \"1.1.2\"\n}",
+    "caption": "Trimmed for the slide. Plain text, tracked in Git."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Same recipe, same hash · real output",
+    "code": "$ python -m churn.train 1.0\nauc 0.799 -> 80491b53de98\n$ python -m churn.train 1.0\nauc 0.799 -> 80491b53de98\n$ python -m churn.train 0.1\nauc 0.795 -> 9d8ffe4fa947",
+    "caption": "Not guaranteed in general. Hash a file, log a recipe."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Track with DVC, name with Git tags",
+    "code": "$ dvc add models/churn.joblib\n$ git add models/churn.joblib.dvc \\\n    models/churn.meta.json\n$ git commit -m \"Model v1: C=1.0\"\n$ git tag model-v1\n# retrain with C=0.1, repeat the steps\n$ git tag model-v2",
+    "caption": "Tags give every version a readable name."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Restore, then verify before loading",
+    "code": "$ git checkout model-v1 -- \\\n    models/churn.joblib.dvc \\\n    models/churn.meta.json\n$ dvc checkout\nloaded 80491b53de98 C = 1.0 auc = 0.799\n# after appending one byte:\nValueError: model file does not\n  match its metadata",
+    "caption": "Recompute the hash; refuse a mismatch."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 8",
+    "titlePlain": "Experiment Tracking ",
+    "titleEmphasis": "With MLflow",
+    "titleSuffix": "",
+    "subtitle": "Record every run automatically."
+  }
+]

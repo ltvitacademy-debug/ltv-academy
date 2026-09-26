@@ -1,0 +1,13 @@
+Welcome to the Data Science Capstone. Every course so far handed you a tool. This one hands you a problem. You will take one messy business dataset from a vague request to a deployed model, a stakeholder presentation, and a portfolio project.
+
+You already have the skills: SQL to extract, Python to clean, statistics and visualization to explore, machine learning to model, and MLOps to ship. Nothing here re-teaches them. The lessons show how the pieces fit together when the data is imperfect.
+
+Here is the brief. You are the data scientist at Harvest Table, a fictional meal-kit subscription company. The head of retention asks for a list of currently active customers most likely to cancel in the next sixty days, so her team can reach out with an offer. That paragraph is the whole assignment. Turning it into a target, features, and a metric is your first job.
+
+The data is synthetic and seeded, so everyone gets the same database. Run the generator script and check the counts: four thousand and forty customer rows, one hundred forty thousand six hundred forty three orders, four thousand three hundred fifty one tickets, and eight hundred seventy eight cancellations.
+
+Then audit before you trust. Forty duplicate customer rows. Sixteen spellings of four regions. Missing and impossible ages. Signup dates in three different formats. And over fourteen hundred order amounts stored as text with a dollar sign. Write these down; you will fix each one with a documented rule.
+
+The project has three phases: data and exploration, modeling, and deployment with a presentation. After it come eight lessons on career preparation.
+
+Next, in lesson two, you turn the retention head's request into a precise prediction problem.

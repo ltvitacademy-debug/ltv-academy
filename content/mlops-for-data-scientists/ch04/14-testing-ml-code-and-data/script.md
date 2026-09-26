@@ -1,0 +1,13 @@
+Welcome to lesson fourteen, and to Chapter four. Last chapter ended with a smoke test you run by hand. Now we automate checks like that, starting with the tests themselves. A model can run without a single error and still be wrong, so the goal of machine learning testing is to turn silent failures into loud ones.
+
+Test three layers. First, the data: is the table what you expected? Second, the code: do the cleaning and training steps still run? Third, the model's behavior: does it act sensibly? Data breaks far more often than code, so the data layer earns the most attention.
+
+Data tests write your assumptions down. The columns must match the expected list. There must be no missing values. Charges must be positive. Contract types must be from the known set. A pytest fixture loads the churn table once, and every test that names it gets the data. Keep one idea per test, so every problem is reported at once.
+
+For the model, you can't assert an exact score for every input, but you can assert properties. More support tickets should never lower churn risk. An unseen contract type should not crash the service. And a golden customer must still score point nine oh nine, within a small tolerance, never exact float equality. Add a training smoke test that fits on six hundred rows and beats chance, and keep it under a second.
+
+All thirteen tests pass in about a second. Then we simulated a bad export: one negative charge, one contract labelled annual, and one missing tenure. Five tests failed, each with its own name, and the missing tenure even broke a model test. Without these checks, the first sign would be a wrong number in a customer's inbox.
+
+Passing tests do not prove the model is good. They prove it is intact, sane, and consistent. Whether a new model beats the current one is a separate check, coming in lesson sixteen. Keep the suite fast, so people actually run it.
+
+Next, we wire these tests into GitHub Actions, so they run on every push.

@@ -1,0 +1,68 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Data Science Capstone · Chapter 2",
+    "titlePlain": "Extracting Data With ",
+    "titleEmphasis": "SQL",
+    "titleSuffix": "",
+    "subtitle": "Lesson 4 · Phase 1: Data & Exploration"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "You know T-SQL: what changes in SQLite",
+    "titlePlain": "The ",
+    "titleEmphasis": "differences",
+    "titleSuffix": "",
+    "steps": [
+      {"label": "DATES", "sub": "date() and julianday()"},
+      {"label": "TOP N", "sub": "LIMIT n at the end of the query"},
+      {"label": "PARAMS", "sub": ":snap instead of @snap"},
+      {"label": "TYPES", "sub": "Dynamic typing: text can hide in numbers"}
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Dedupe with a window function",
+    "code": "ROW_NUMBER() OVER (\n  PARTITION BY customer_id\n  ORDER BY rowid) AS rn\n\n-- keep rn = 1\n-- SELECT DISTINCT * gives 4000 too:\n--   the duplicates are exact copies\n-- rows: 4040 -> 4000",
+    "caption": "One row per customer, nothing lost."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The text-column trap",
+    "code": "naive  AVG(amount)          64.9212\nfixed  AVG(CAST(REPLACE(\n         amount,'$','') AS REAL))\n                            65.5572\n\n'$119.8' silently reads as 0.0\n1,406 rows affected, no error",
+    "caption": "Output of the SQL run in the guide."
+  },
+  {
+    "type": "code",
+    "eyebrow": "One extract: the shape of the query",
+    "code": "WITH ranked AS (...dedupe...),\n pop   AS (...active + label...),\n o     AS (...order_date <= :snap),\n ord_f AS (...GROUP BY customer),\n tkt_f AS (...GROUP BY customer)\nSELECT pop.*, features\nFROM pop LEFT JOIN ord_f\n         LEFT JOIN tkt_f",
+    "caption": "One row per active customer, as of the snapshot."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Rules baked into the query",
+    "titlePlain": "The snapshot ",
+    "titleEmphasis": "discipline",
+    "titleSuffix": "",
+    "steps": [
+      {"label": "FILTER", "sub": "Every feature: date <= :snap"},
+      {"label": "WINDOWS", "sub": "Last 30 days = days_ago < 30"},
+      {"label": "DISCOUNT", "sub": "Missing discount_pct becomes 0"},
+      {"label": "JOINS", "sub": "LEFT JOIN keeps no-history customers"}
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Sanity checks on the extract",
+    "code": "(3690, 15) 568\nrecency_days min: 0.0\nid unique: True\n\nno filter: min days_ago = -2\n  (orders from the future)\nnever ordered: 27 customers\nno tickets: 1,380 customers",
+    "caption": "Compare with lesson 2: 3,690 active, 568 churners."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 5",
+    "titlePlain": "Cleaning & Preparing in ",
+    "titleEmphasis": "Python",
+    "titleSuffix": "",
+    "subtitle": "Dates, regions, ages, and a reconciliation with SQL."
+  }
+]

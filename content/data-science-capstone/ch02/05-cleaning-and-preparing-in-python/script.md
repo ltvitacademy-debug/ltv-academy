@@ -1,0 +1,15 @@
+Cleaning is where careless projects go quietly wrong. So this lesson works differently. We apply a fixed, written set of rules. We print a before and after count for each one. We package everything in a single function. And we reconcile the Python result against the SQL result.
+
+The six rules. Deduplicate customers on customer id. Parse the signup date. Standardize the region. Treat impossible ages as missing, then fill with the median. Strip the dollar sign from amounts and cast to float. And fill missing discounts with zero.
+
+Dates deserve care. There are three formats, so we try each explicit format in turn instead of letting pandas guess. Slash dates are risky, because zero three slash zero four could be March or April. Here the data settles it. Two hundred seventy one of the four hundred forty one slash dates have a first field above twelve, which can only be a day. Every value parses, with none left over. In a real project you would also confirm with the owner of the source system.
+
+Now the counts. Four thousand forty rows become four thousand. Sixteen region spellings become four. Twelve impossible ages are set to missing, giving one hundred seventy ages to fill, with a median of thirty eight. Fourteen hundred six dollar-sign amounts become floats, and three hundred missing discounts become zero.
+
+One caveat on the median. Computing it on the whole table uses every customer's information. The effect is small, but in the modeling pipeline you can fit an imputer on training data only. The rule stays the same.
+
+Put all of this in clean dot py, with an assert so a new date format fails loudly.
+
+Finally, reconcile. Rebuild the population, the label, and three features in pandas and compare with the SQL extract. Three thousand six hundred ninety customers, five hundred sixty eight churners, and every feature matches. Two independent routes agree, so neither likely has a bug.
+
+Next, in lesson six, you explore the clean data.

@@ -1,0 +1,9 @@
+Phase one ended with a memo and a to-do list for modeling. Now we build the modeling table, and the most important rule is one word: snapshot. Every feature must be something we could have known on the thirtieth of June. The label is what happened in the sixty days after.
+
+That rule has teeth. In this database, three hundred seventy-one orders are dated after the snapshot. Count them, and you are using the future. So every window filters to orders on or before the snapshot date. We extend the code from lessons five and six with orders in the last thirty days, the order trend, discount share, and ticket resolution time, and keep order rate, the strongest signal from exploration.
+
+Then we split before fitting anything: eighty percent train, twenty percent test, stratified. That gives twenty-nine hundred fifty-two training customers and seven hundred thirty-eight test customers, both at fifteen point four percent churn. A time-aware split would be stronger, but we have only one snapshot, so we say so honestly. The test set stays sealed until lesson ten.
+
+Now baselines, measured the way lesson three said: precision among the top ten percent of the list, against the break-even of point two oh eight. A model that only knows the churn rate scores point one five three. The rule everyone guesses first, contact whoever ordered longest ago, reaches only point one eight three. That is below break-even, so acting on it would lose money. Ranking by fewest orders per week reaches point two six eight. Logistic regression reaches point three nine.
+
+Lesson three left the ambition target open until now. With baselines in hand, we set it: cross-validated precision at the top ten percent of at least point three two, five points above the best rule. Next, we compare more flexible models.

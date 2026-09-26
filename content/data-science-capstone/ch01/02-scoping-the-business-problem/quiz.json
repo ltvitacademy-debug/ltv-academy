@@ -1,0 +1,60 @@
+{
+  "lesson": "scoping-the-business-problem",
+  "questions": [
+    {
+      "q": "Why are customers who cancelled before the snapshot dropped from the population?",
+      "options": [
+        "Predicting whether an already-departed customer will cancel is meaningless, so they are out of scope",
+        "They have no rows in the orders table",
+        "SQLite cannot join them",
+        "They would make the churn rate too low to model"
+      ],
+      "answer": 0,
+      "explain": "The model's job is to flag customers who are still active and could be saved. Someone who has already left cannot be retained by an offer."
+    },
+    {
+      "q": "In the label query, which customers get churn_60d = 1?",
+      "options": [
+        "Anyone with a row in the cancellations table",
+        "Active customers whose cancel_date is after the snapshot and within 60 days of it",
+        "Anyone who placed no orders",
+        "Customers who cancelled before the snapshot"
+      ],
+      "answer": 1,
+      "explain": "The CASE requires cancel_date > snapshot AND cancel_date <= snapshot + 60 days. Earlier cancellations were already filtered out by the WHERE clause."
+    },
+    {
+      "q": "The label query finds 4,000 distinct customers, 310 cancelled before the snapshot, and 568 cancelling in the window. What is the baseline churn rate?",
+      "options": [
+        "568 / 4,000 = 14.2%",
+        "310 / 4,000 = 7.8%",
+        "568 / 3,690 = 15.4%",
+        "(568 + 310) / 4,000 = 22.0%"
+      ],
+      "answer": 2,
+      "explain": "The population is the 3,690 customers active at the snapshot, so the rate is 568 / 3,690, about 15.4%. Dividing by 4,000 would include customers who were never at risk."
+    },
+    {
+      "q": "The audit finds 371 orders dated after the snapshot. What is the right response?",
+      "options": [
+        "Keep them; more data is always better",
+        "Delete the orders table",
+        "Use them only for customers who churn",
+        "Filter every feature query to order_date <= the snapshot so the model never sees the future"
+      ],
+      "answer": 3,
+      "explain": "Features must be computable at prediction time. Orders dated after the snapshot are information from the future and would leak into features like recent order counts."
+    },
+    {
+      "q": "Why does the scoping step produce a ranked probability rather than a yes/no verdict for every customer?",
+      "options": [
+        "Probabilities are always more accurate",
+        "The retention team can only contact a limited number of customers, so they need to work down a ranked list",
+        "SQL cannot output yes or no",
+        "Regulators require probabilities"
+      ],
+      "answer": 1,
+      "explain": "The decision is constrained by capacity (about 10% of active customers, as an illustrative assumption). A score lets the team choose how far down the list to go."
+    }
+  ]
+}

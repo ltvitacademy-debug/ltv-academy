@@ -1,0 +1,60 @@
+{
+  "lesson": "extracting-data-with-sql",
+  "questions": [
+    {
+      "q": "SELECT DISTINCT * FROM customers returns 4,000 rows, the same as counting distinct customer_id values. What does this tell you?",
+      "options": [
+        "The table has no duplicates",
+        "The duplicate rows are exact copies, so keeping one row per customer_id loses nothing",
+        "DISTINCT is broken in SQLite",
+        "Customer IDs are reused for different people"
+      ],
+      "answer": 1,
+      "explain": "If rows with the same customer_id were different, SELECT DISTINCT * would keep more than 4,000. Getting 4,000 shows the extra 40 rows are identical copies."
+    },
+    {
+      "q": "In the extract, why does ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY rowid) followed by rn = 1 remove duplicates?",
+      "options": [
+        "It deletes rows from the customers table",
+        "It sorts the table permanently",
+        "It numbers rows within each customer_id, so keeping row 1 leaves one row per customer",
+        "It changes every customer_id to be unique"
+      ],
+      "answer": 2,
+      "explain": "The window function numbers the rows inside each customer_id partition. Filtering to rn = 1 keeps one row per customer without modifying the underlying table."
+    },
+    {
+      "q": "What happens when SQLite averages a text column that contains values like '$119.8'?",
+      "options": [
+        "It raises an error",
+        "It skips those rows",
+        "It strips the dollar sign automatically",
+        "It reads them as 0, so the average is silently too low"
+      ],
+      "answer": 3,
+      "explain": "SQLite converts text to a number by reading up to the first non-numeric character, so a leading dollar sign gives 0. Here 1,406 rows became zeros and the average dropped from 65.56 to 64.92."
+    },
+    {
+      "q": "Why does every feature subquery in the extract include WHERE order_date <= :snap (or created_at <= :snap)?",
+      "options": [
+        "To make the query run faster only",
+        "So features use only information available at the snapshot, preventing leakage from the future",
+        "Because SQLite requires a WHERE clause",
+        "To remove customers who churned"
+      ],
+      "answer": 1,
+      "explain": "Orders dated after the snapshot exist in the data. Without the filter, the minimum days_ago would be -2, and recency and recent-order counts would use the future."
+    },
+    {
+      "q": "The extract uses LEFT JOIN to attach order and ticket features. What does this ensure?",
+      "options": [
+        "Customers with no orders or tickets stay in the population instead of disappearing",
+        "Every customer has at least one ticket",
+        "Duplicate rows are created for each order",
+        "Only churned customers are kept"
+      ],
+      "answer": 0,
+      "explain": "An inner join would drop customers with no orders or tickets. LEFT JOIN keeps all 3,690 active customers, and COALESCE turns their missing counts into zeros."
+    }
+  ]
+}
