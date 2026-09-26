@@ -1,0 +1,33 @@
+# Script — Git & GitHub for Data Scientists
+
+## Segment 1 (title)
+
+You already know how Git works from the Git and GitHub course. This lesson covers what is different on a data science project. The files are big, notebooks are awkward to diff, and an experiment is a change to settings plus a change in results.
+
+## Segment 2 (steps)
+
+Decide what belongs in Git. Code, always. Settings and small metrics files, yes. Notebooks, yes, but with their outputs stripped. Data and trained models, no. They get versioned by other tools, which is the topic of chapter two.
+
+## Segment 3 (code)
+
+Here is what Git sees in our churn project before we add any rules. The raw data and the model file are about to be committed. Our CSV is small, but real datasets are gigabytes, and Git keeps every version forever.
+
+## Segment 4 (code)
+
+A gitignore file fixes it. Skip caches, environments, notebook checkpoints, the data folder, and the model binaries. The small metrics file stays tracked, so every commit records both the settings and the score they produced.
+
+## Segment 5 (code)
+
+A notebook file stores every output and run counter, so re-running a cell changes the file even when nothing meaningful changed. The nbstripout tool installs a Git filter that removes outputs at commit time. In our repo the staged notebook lost twenty-two lines of output. Each teammate runs the install once.
+
+## Segment 6 (code)
+
+Because settings live in a params file, an experiment is just a branch. We changed C from one to ten, retrained, and the diff shows the setting and the accuracy side by side. But careful. Point oh oh eight on two hundred fifty customers is two rows. Git records what you tried. It cannot say whether the gain is real.
+
+## Segment 7 (steps)
+
+On GitHub, add a pull request template for ML changes. Ask which settings changed, the metrics before and after, which test set and data version were used, and confirm no data or notebook outputs were committed.
+
+## Segment 8 (outro)
+
+Your code is now versioned, but it only runs if the environment matches. Next, we make the environment reproducible.

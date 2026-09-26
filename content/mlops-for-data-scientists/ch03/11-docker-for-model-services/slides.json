@@ -1,0 +1,68 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "MLOps for Data Scientists · Chapter 3",
+    "titlePlain": "Docker for ",
+    "titleEmphasis": "Model Services",
+    "titleSuffix": "",
+    "subtitle": "Lesson 11 · Packaging & Serving"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "One image, same everywhere",
+    "titlePlain": "What goes ",
+    "titleEmphasis": "in the image",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "PYTHON", "sub": "the version used in training" },
+      { "label": "LIBRARIES", "sub": "pinned scikit-learn, pandas" },
+      { "label": "SERVICE", "sub": "the FastAPI app from Lesson 10" },
+      { "label": "MODEL", "sub": "the saved pipeline file" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Checked with pip download · two Pythons",
+    "code": "requirements: scikit-learn==1.1.2\n\nPython 3.10 (Linux)\n  -> found scikit_learn-1.1.2 wheel\n\nPython 3.11 (Linux)\n  -> ERROR: No matching distribution\n     (versions start at 1.1.3)",
+    "caption": "The base image must match the training stack."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Dockerfile, part 1 · not run here",
+    "code": "FROM python:3.10-slim\n\nWORKDIR /srv\n\nCOPY requirements.txt .\nRUN pip install --no-cache-dir \\\n    -r requirements.txt",
+    "caption": "Requirements first, so the slow layer is cached."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Dockerfile, part 2 · not run here",
+    "code": "RUN useradd --create-home appuser\nCOPY app.py .\nCOPY models/ models/\nUSER appuser\n\nEXPOSE 8000\nCMD [\"uvicorn\", \"app:app\",\n     \"--host\", \"0.0.0.0\",\n     \"--port\", \"8000\"]",
+    "caption": "Non-root user, exec-form CMD, listening on all interfaces."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Build, run, test · not run here",
+    "code": "docker build -t churn-service:1.0.0 .\n\ndocker run -p 8000:8000 \\\n    churn-service:1.0.0\n\ncurl localhost:8000/health\n# expect {\"status\":\"ok\"}",
+    "caption": "Docker was not installed where this lesson was written."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "ML-specific choices",
+    "titlePlain": "Keep it ",
+    "titleEmphasis": "small and traceable",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "BAKE IN", "sub": "one model version per image tag" },
+      { "label": "LEAN IMAGE", "sub": "no notebooks or training data" },
+      { "label": "ONE PROCESS", "sub": "let the platform replicate" },
+      { "label": "COMPARE", "sub": "container answers match local ones" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 12",
+    "titlePlain": "Batch vs. ",
+    "titleEmphasis": "Real-Time Inference",
+    "titleSuffix": "",
+    "subtitle": "Does every prediction need a live API?"
+  }
+]

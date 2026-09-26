@@ -1,0 +1,13 @@
+A saved model file is only useful to someone who can run Python and knows exactly which columns to pass in. Everyone else, the website, the billing system, the retention team's app, needs an address to send a customer to and get a churn score back. That address is a prediction API.
+
+Start with the contract. What goes in, and what comes out? For our churn model, the input is the five raw columns the pipeline was trained on, and the output is a probability, a yes or no flag, and the model version. Because the saved pipeline already contains its preprocessing, callers never think about scaling or encoding.
+
+We build this with FastAPI. A Pydantic class declares the input fields, and it does more than name them. Tenure must be between zero and one hundred twenty, and the contract must be one of three allowed strings.
+
+The endpoint itself is short. It turns the request into a one-row data frame, calls predict proba, and returns the result. The important part is what happens before that: the model is loaded once, when the server starts, not on every request, because loading is far slower than predicting.
+
+We ran it. A month-to-month customer with three support tickets came back at a churn probability of point nine oh nine. A loyal two-year customer scored point oh oh seven. And when we sent a contract of weekly, the service refused with a status of four twenty-two, before the model ever saw it.
+
+A few habits keep a model API safe to change. Add a health endpoint so platforms know when to send traffic. Validate ranges, not just types. Match the library versions used in training. Never rename or remove response fields silently; version the API instead. And log inputs and outputs, because monitoring will need them.
+
+Next, we package this service into a Docker container so it runs the same everywhere.

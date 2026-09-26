@@ -1,0 +1,62 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "MLOps for Data Scientists · Chapter 3",
+    "titlePlain": "Building a Prediction ",
+    "titleEmphasis": "API",
+    "titleSuffix": "",
+    "subtitle": "Lesson 10 · Packaging & Serving"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "A model service is a contract",
+    "titlePlain": "What goes ",
+    "titleEmphasis": "in and out",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "INPUT", "sub": "the raw columns from training" },
+      { "label": "OUTPUT", "sub": "probability, flag, model version" },
+      { "label": "LOAD ONCE", "sub": "at startup, not per request" },
+      { "label": "VALIDATE", "sub": "reject bad input before the model" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The input schema · FastAPI + Pydantic",
+    "code": "class Customer(BaseModel):\n  tenure_months: int = Field(\n      ge=0, le=120)\n  monthly_charge: float = Field(gt=0)\n  contract: Literal[\"month-to-month\",\n      \"one-year\", \"two-year\"]\n  support_tickets: int = Field(ge=0)\n  autopay: Literal[\"yes\", \"no\"]",
+    "caption": "Types and ranges are enforced on every request."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The endpoint",
+    "code": "@app.post(\"/predict\")\ndef predict(customer: Customer):\n    row = pd.DataFrame(\n        [customer.model_dump()])\n    model = state[\"model\"]\n    p = model.predict_proba(row)[0, 1]\n    return Prediction(\n        churn_probability=round(p, 3),\n        ...)",
+    "caption": "Abridged. The model was loaded once at startup."
+  },
+  {
+    "type": "code",
+    "eyebrow": "We ran it · illustrative data",
+    "code": "POST /predict  (5 mo, month-to-month)\n{\"churn_probability\":0.909,\n \"churn_predicted\":true,\n \"model_version\":\"1.0.0\"}\n\nPOST /predict  (60 mo, two-year)\n{\"churn_probability\":0.007, ...}\n\ncontract = \"weekly\"  ->  HTTP 422",
+    "caption": "Bad input is rejected before it reaches the model."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Habits for a model API",
+    "titlePlain": "Safe to ",
+    "titleEmphasis": "change later",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "HEALTH", "sub": "a /health endpoint for platforms" },
+      { "label": "PIN", "sub": "match training library versions" },
+      { "label": "VERSION", "sub": "never rename fields silently" },
+      { "label": "LOG", "sub": "inputs and outputs for monitoring" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 11",
+    "titlePlain": "Docker for ",
+    "titleEmphasis": "Model Services",
+    "titleSuffix": "",
+    "subtitle": "Packaging the API so it runs the same everywhere."
+  }
+]

@@ -1,0 +1,29 @@
+# Script — The ML Lifecycle & MLOps
+
+## Segment 1 (title)
+
+Lesson one showed how models fail. To prevent that, you need a map of everything a model goes through, and a name for the practice of managing that journey. The map is the machine learning lifecycle. The practice is MLOps.
+
+## Segment 2 (steps)
+
+The lifecycle has four phases. Prepare the data. Train and evaluate the model. Deploy it so an application can call it. Then monitor it. The important part is the arrow from monitoring back to the start. A deployed model is never finished, because the data keeps changing.
+
+## Segment 3 (steps)
+
+MLOps applies DevOps ideas, like version control, automated tests and continuous delivery, to machine learning, plus versioning for data and models. Google Cloud describes three maturity levels. Level zero is manual. Level one automates the training pipeline. Level two adds continuous integration and delivery for the pipeline itself.
+
+## Segment 4 (code)
+
+You can climb the first step today. Put each stage of your notebook into a function, fix your random seeds, and add a validation gate, so the model is only saved if it clears a threshold. That threshold is illustrative for now.
+
+## Segment 5 (code)
+
+Running the script twice gave identical output both times. Seven hundred fifty training rows, two hundred fifty test rows, accuracy point seven six eight, validation passed. Repeatable runs are the foundation for everything that follows.
+
+## Segment 6 (steps)
+
+This course builds the rest of the road. Versioning for data, models and experiments. Packaging, with APIs and Docker. Automation with tests and CI/CD. And monitoring for drift and retraining.
+
+## Segment 7 (outro)
+
+First, that script needs a proper home. Next lesson, we look at how to structure an ML project.

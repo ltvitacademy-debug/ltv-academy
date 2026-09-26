@@ -1,0 +1,15 @@
+Welcome to lesson twenty. Monitoring tells you a model is going stale. A retraining trigger decides what happens next, without anyone having to remember.
+
+There are four common triggers. A schedule retrains every N days, changed or not. A performance trigger fires when A U C stays below its floor, which is the strongest signal but needs labels. A drift trigger is early, yet input drift alone often does not hurt accuracy, so it usually earns an investigation. And a data volume rule waits until enough new labelled rows exist.
+
+Combine them in one plain function, so it is easy to read and test. The cooldown comes first, so a fresh model is never retrained in a loop. Two weeks below the floor, or a model older than ninety days, asks for a retrain, but only if we have at least two thousand labelled rows. Drift alone says investigate.
+
+Run across the eight simulated weeks, the policy holds in weeks one and two, investigates through the drift in weeks three to five, and fires a retrain in week six, the second week in a row below the floor. A ninety-five-day-old model also retrains, on the schedule alone.
+
+Now the retraining job. Train a candidate on weeks five and six, then judge it against the champion on weeks seven and eight, data newer than either model saw. The champion scores point five two nine and the candidate point five nine three, enough to go to staging. But that is still under the point six nine four floor, so the pipeline should say so and open a task for a human.
+
+A scheduled GitHub Actions workflow can run the monitor and the decision every Monday. This one parses with PyYAML, but it was not run on GitHub here, and you should check current action versions in the docs.
+
+Four guardrails. Log every run with its data window. Retrain to a candidate and promote only through the validation gate. Cap how often retraining can fire. And check your labels, because bad labels teach bad models. Automation proposes, and gates and people decide.
+
+Next, governance and model documentation.
