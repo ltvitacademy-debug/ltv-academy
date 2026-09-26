@@ -1,0 +1,15 @@
+Last lesson gave us clean tokens. A model still needs a table of numbers, one row per document, one column per feature. This lesson builds that table two ways: bag-of-words and TF-IDF.
+
+Bag-of-words is simple. Collect every distinct word into a vocabulary, give each word a column, and count how often it appears in each document. Word order is thrown away, as if the words were shaken loose in a bag.
+
+Here are four tiny illustrative reviews. CountVectorizer learns the vocabulary and produces the counts. Four documents, thirteen distinct words.
+
+Here are four of those thirteen columns. Review zero has battery and day. Review one has battery, day and died. The matrix is stored sparse, meaning only non-zero cells are kept. Even here, sixty-three percent of the cells are zero, and with a real vocabulary of tens of thousands of words, that saving is essential.
+
+Bag-of-words treats every word alike, but a word that appears everywhere says little. TF-IDF multiplies how often a word appears in this document by how rare it is across the corpus. In scikit-learn's version, day, which appears in three of four reviews, gets an inverse document frequency of one point two two. Died, which appears in only one, gets one point nine two. Rarer words weigh more.
+
+Once documents are vectors, we can compare them. Cosine similarity measures the angle between two vectors. The sentence "the battery died" lands closest to review one, and the word "the", which the vectorizer never saw, is simply ignored.
+
+Finally, the knobs. Use ngram range to capture phrases like "not good". Use min document frequency to drop rare words, and max features to cap the vocabulary. And one rule: fit the vectorizer on training data only, then transform the test set. Otherwise test information leaks into training.
+
+Remember, four reviews only illustrate the mechanics. Next, we feed these features to a classifier.

@@ -14,35 +14,47 @@
     "titleEmphasis": "pipeline",
     "titleSuffix": "",
     "steps": [
-      { "label": "Normalize", "sub": "Lowercase, strip URLs and symbols" },
-      { "label": "Tokenize", "sub": "Split the string into units" },
-      { "label": "Filter", "sub": "Optionally drop stop words" },
-      { "label": "Reduce", "sub": "Stem or lemmatize to base forms" }
+      {
+        "label": "Normalize",
+        "sub": "Lowercase, strip URLs and symbols"
+      },
+      {
+        "label": "Tokenize",
+        "sub": "Split the string into units"
+      },
+      {
+        "label": "Filter",
+        "sub": "Optionally drop stop words"
+      },
+      {
+        "label": "Reduce",
+        "sub": "Optionally shrink words to a root"
+      }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "Step 1: normalize with regex",
-    "code": "URL = r\"https?://\\S+\"\n\ndef clean(text):\n    text = re.sub(URL, \" \", text.lower())\n    text = re.sub(r\"[^a-z0-9' ]\", \" \", text)\n    return \" \".join(text.split())",
-    "caption": "\"LOVED this blender!!! :)\" becomes \"loved this blender\"."
+    "eyebrow": "Steps 1 and 2 with the standard library",
+    "code": "import re\nraw = (\"Loved it!!! Battery lasts 2 days...\"\n       \" see https://x.co/a1 :) but the\"\n       \" CHARGER isn't great.\")\ntext = raw.lower()\ntext = re.sub(r\"https?://\\S+\", \" \", text)\ntext = re.sub(r\"[^a-z' ]\", \" \", text)\ntokens = re.findall(r\"[a-z']+\", text)\nprint(tokens)",
+    "caption": "Lowercase, drop the URL, keep only letters and apostrophes."
   },
   {
     "type": "code",
-    "eyebrow": "Step 2: tokenize",
-    "code": "word_tokenize(\"Terrible. It broke\n  after 2 days... DON'T buy it.\")\n\n['Terrible', '.', 'It', 'broke',\n 'after', '2', 'days', '...', 'DO',\n \"N'T\", 'buy', 'it', '.']",
-    "caption": "NLTK keeps punctuation and splits DON'T into DO + N'T."
+    "eyebrow": "What we actually got",
+    "code": "print(tokens)\n\n['loved', 'it', 'battery', 'lasts',\n 'days', 'see', 'but', 'the',\n 'charger', \"isn't\", 'great']\n\nlen(tokens)   # 11",
+    "caption": "Eleven tokens. The digit 2 is gone, on purpose."
   },
   {
     "type": "code",
-    "eyebrow": "Step 3: the stop-word trap",
-    "code": "stop = set(stopwords.words(\"english\"))\nlen(stop)            # 198\n\"not\" in stop        # True\n\n[t for t in word_tokenize(\"not good\")\n   if t not in stop]\n# ['good']",
-    "caption": "The default list deletes negations. Careful with sentiment."
+    "eyebrow": "Step 3: stop words, and a trap",
+    "code": "from sklearn.feature_extraction.text import (\n    ENGLISH_STOP_WORDS, CountVectorizer)\n\nlen(ENGLISH_STOP_WORDS)      # 318\n\"not\" in ENGLISH_STOP_WORDS  # True\n\nvec = CountVectorizer(stop_words=\"english\")\nvec.build_analyzer()(\"Not a good battery\")\n# ['good', 'battery']",
+    "caption": "The stop list deletes 'not'. The meaning flips."
   },
   {
     "type": "code",
-    "eyebrow": "Step 4: stemming vs lemmatizing",
-    "code": "# PorterStemmer\nblender run loudli smoothi fantast\n\n# WordNetLemmatizer\nblender running loudly smoothy\nfantastic",
-    "caption": "Stems can be non-words. Lemmas depend on part of speech."
+    "eyebrow": "Step 4: a crude stemmer",
+    "code": "def crude_stem(w):\n    for suf in (\"ing\", \"ed\", \"s\"):\n        if w.endswith(suf):\n            return w[:-len(suf)]\n    return w\n\n# lasts->last     loved->lov\n# charging->charg batteries->batterie\n# was->wa         this->thi",
+    "caption": "Stems can be non-words. Real stemmers are smarter, not perfect."
   },
   {
     "type": "outro",

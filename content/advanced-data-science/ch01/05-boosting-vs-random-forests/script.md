@@ -1,0 +1,29 @@
+# Script — Boosting vs. Random Forests
+
+## Segment 1 (title)
+
+Random forests and gradient boosting are both ensembles of trees, and they're the two most common first models for tabular data. The folklore says boosting is more accurate but fussier. Let's test that on our illustrative churn data.
+
+## Segment 2 (steps)
+
+The two are built differently. A random forest grows many deep trees independently, on random samples, then averages them. Averaging cancels noise, so it mainly reduces variance. Boosting grows small trees one after another, each fixing the errors of the last. It mainly reduces bias, but because the trees depend on each other, it can keep fitting until it starts memorizing noise.
+
+## Segment 3 (code)
+
+The experiment. A forest with three hundred trees and a minimum of twenty rows per leaf, versus a tuned XGBoost from last lesson, with fifty-eight shallow trees. We also try XGBoost with library defaults. Everything is scored on five different train and test splits.
+
+## Segment 4 (code)
+
+The results. On clean labels, the forest scores point eight two eight. Untuned boosting scores point seven nine seven, clearly worse. Tuned boosting scores point eight three five, a modest win of about one standard deviation. Then we flip twenty percent of the training labels. Untuned boosting collapses to point seven two nine, the forest drops to point eight one one, and the shallow tuned booster holds best at point eight two two.
+
+## Segment 5 (screenshot)
+
+This is the output of the code above, on one split. The forest curve rises fast and then stays flat, however many trees you add. The deep booster peaks within about ten rounds and then declines. The shallow booster peaks near round ninety-five, then drifts down slowly. A forest forgives you; boosting needs early stopping.
+
+## Segment 6 (steps)
+
+So how to choose. Need a strong result with little tuning? Start with a forest. Want the last bit of accuracy and willing to tune? Try boosting, with early stopping. Noisy labels or small data? Favor the forest, or a heavily regularized booster. And whichever you pick, compare across several splits.
+
+## Segment 7 (outro)
+
+Next, a new chapter: time-series forecasting, starting with the components of a time series.

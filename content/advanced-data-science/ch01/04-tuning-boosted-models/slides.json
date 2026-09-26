@@ -1,0 +1,88 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced Data Science · Chapter 1",
+    "titlePlain": "Tuning ",
+    "titleEmphasis": "Boosted Models",
+    "titleSuffix": "",
+    "subtitle": "Lesson 4 · Boosting"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "A sensible tuning order",
+    "titlePlain": "Tune in ",
+    "titleEmphasis": "order",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "1. RATE AND TREES",
+        "sub": "early stopping picks the count"
+      },
+      {
+        "label": "2. TREE SHAPE",
+        "sub": "max_depth, min_child_weight"
+      },
+      {
+        "label": "3. RANDOMNESS",
+        "sub": "subsample, colsample_bytree"
+      },
+      {
+        "label": "4. REGULARIZATION",
+        "sub": "reg_lambda, reg_alpha, gamma"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1: choose the tree count",
+    "code": "params = dict(\n    objective=\"binary:logistic\",\n    eval_metric=\"auc\", eta=0.1,\n    max_depth=3, subsample=0.8,\n    colsample_bytree=0.8)\ncv = xgb.cv(params, dtrain, nfold=5,\n    num_boost_round=500, seed=0,\n    early_stopping_rounds=30)\nn_trees = len(cv)   # 58",
+    "caption": "Illustrative churn data, 75% training split."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2: random search",
+    "code": "# model: XGBClassifier, 58 trees\nspace = {\"max_depth\": randint(2, 8),\n \"min_child_weight\": randint(1, 20),\n \"subsample\": uniform(0.6, 0.4),\n \"colsample_bytree\": uniform(0.5, 0.5),\n \"reg_lambda\": uniform(0.5, 9.5)}\nsearch = RandomizedSearchCV(\n model, space, n_iter=25, cv=3,\n scoring=\"roc_auc\")",
+    "caption": "25 sampled settings, 3-fold CV on training data only."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Test AUC, illustrative churn data",
+    "code": "# default settings         0.788\n# after step 1 (58 trees)  0.827\n# after random search      0.826\n\nsearch.best_score_   # 0.8344 (CV)",
+    "caption": "Most of the gain came from step 1, not the search."
+  },
+  {
+    "type": "screenshot",
+    "file": "tuning-trials.png",
+    "eyebrow": "Output of the code above",
+    "caption": "25 search trials by mean CV AUC, with fold-to-fold std as error bars."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Good habits",
+    "titlePlain": "Judge gains against ",
+    "titleEmphasis": "noise",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "TRAINING DATA ONLY",
+        "sub": "touch the test set once"
+      },
+      {
+        "label": "COMPARE TO FOLD NOISE",
+        "sub": "smaller gaps count as ties"
+      },
+      {
+        "label": "PREFER SIMPLE",
+        "sub": "when scores tie, go smaller"
+      }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 5",
+    "titlePlain": "Boosting vs. ",
+    "titleEmphasis": "Random Forests",
+    "titleSuffix": "",
+    "subtitle": "When does boosting actually win?"
+  }
+]

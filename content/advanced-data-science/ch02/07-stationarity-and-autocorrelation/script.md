@@ -1,0 +1,33 @@
+# Script — Stationarity and Autocorrelation
+
+## Segment 1 (title)
+
+Classical forecasting models quietly assume the series behaves the same way over time. Two ideas let you check that: stationarity, and autocorrelation. We'll run the standard tests on illustrative data, and fix what fails.
+
+## Segment 2 (steps)
+
+A stationary series has a constant mean, a constant spread, and correlation that depends only on the gap between points, not on the date. Trend breaks the first rule; seasonality breaks it too. And a random walk, where each value is the last one plus a random step, is not stationary, though its steps are.
+
+## Segment 3 (code)
+
+Two tests. The augmented Dickey-Fuller test has a null hypothesis of non-stationarity, so a small p-value means stationary. KPSS is the reverse. On three hundred points, white noise scores a p-value of zero. The random walk scores point three oh seven, so we can't reject non-stationarity. And its differences score zero again.
+
+## Segment 4 (code)
+
+Now the monthly sales series from last lesson. The Dickey-Fuller p-value is point nine nine nine, and KPSS is point oh one. Both agree: not stationary. Autocorrelation is a series correlated with a shifted copy of itself; lag twelve compares each month with the same month a year earlier.
+
+## Segment 5 (screenshot)
+
+This is the output of the code above. Top: sales, with a slow decay from the trend, and a bump at lag twelve. Middle: after one difference, the trend decay is gone, but a spike at lag twelve, point seven, exposes the seasonal pattern. Bottom: after a seasonal difference too, most of the structure is gone.
+
+## Segment 6 (code)
+
+Differencing subtracts each value from the next, which removes a steady trend. Seasonal differencing subtracts the value from a year earlier. The Dickey-Fuller test said stationary after only the first difference, yet the plot showed seasonality remained. So the test alone isn't enough.
+
+## Segment 7 (steps)
+
+Your checklist. Plot the series. Run both tests, and remember their nulls are opposite. Difference until the slow decay disappears. And always check the autocorrelation plot, because a test can pass while structure remains.
+
+## Segment 8 (outro)
+
+Next, we'll set the bar with baselines and naive forecasts.

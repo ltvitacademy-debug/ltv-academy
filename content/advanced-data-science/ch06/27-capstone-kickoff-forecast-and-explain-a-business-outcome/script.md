@@ -1,0 +1,15 @@
+Welcome to the capstone. You will forecast a business outcome, prove the forecast beats a simple alternative, and explain what drives it to a non-technical audience. This kickoff frames the problem and sets the bar, before we build anything.
+
+Our scenario is a retailer that must decide how many units of one product to order for the next thirteen weeks. Frame it in four lines. The decision: units to order. The horizon: thirteen weekly forecasts. The metric: mean absolute error, in units per week. And the baseline a model must beat.
+
+The data is a seeded synthetic series, so nothing here is a real company. Demand grows steadily, follows a yearly wave, and jumps in promotion and holiday weeks. Because promotions and holidays are planned in advance, they are fair inputs for a forecast.
+
+Plotting it shows a rising trend, a yearly wave, and spikes at the promotion weeks. Promotion weeks average about eight hundred forty-seven units, against six hundred twenty-five otherwise. That is a raw gap, not a proven cause, but it says promotions are worth modeling.
+
+Now protect the test set. Seal the last thirteen weeks, the same length as the real forecast. Compare models on the earlier data with a rolling-origin backtest: train on the past, forecast thirteen weeks, then move the origin forward. The sealed weeks are touched once, at the very end.
+
+Then measure baselines. The naive forecast repeats the last observed value. The seasonal naive forecast copies the same weeks from a year earlier. We score both across four origins.
+
+Surprise: seasonal naive is worse, at one twenty-nine, because promotions do not repeat on a calendar. The bar to beat is naive, at ninety-five point seven units a week. We write our goal down now: at least twenty percent better, and no peeking at the sealed test.
+
+Next lesson, we build the models and explain what drives demand.
