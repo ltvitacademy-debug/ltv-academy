@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AWS Data Science · Chapter 1",
+    "titlePlain": "Redshift for ",
+    "titleEmphasis": "Analytics",
+    "titleSuffix": "",
+    "subtitle": "Lesson 4 · Data on AWS"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Point-in-time features (SQLite stand-in)",
+    "code": "SELECT c.customer_id,\n  COUNT(o.order_date) AS orders_before,\n  COALESCE(SUM(o.amount), 0) AS spend\nFROM customers c LEFT JOIN orders o\n  ON o.customer_id = c.customer_id\n AND o.order_date < '2024-01-01'\nGROUP BY c.customer_id;",
+    "caption": "The cutoff is in the join, so zero-order customers stay."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Leakage inflates the score (run)",
+    "code": "# features from before 2024-01-01\nAUC = 0.775\n\n# feature that peeks at 2024 orders\nAUC = 1.000   <- leakage",
+    "caption": "Synthetic 4,000 customers; logistic regression, run locally."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Redshift Data API (not run here)",
+    "code": "rsd = boto3.client(\"redshift-data\")\nr = rsd.execute_statement(\n    WorkgroupName=\"my-workgroup\",\n    Database=\"dev\",\n    Sql=\"SELECT * FROM churn_features\")\nrsd.describe_statement(Id=r[\"Id\"])",
+    "caption": "Illustrative: asynchronous, so poll for status."
+  },
+  {
+    "type": "code",
+    "eyebrow": "UNLOAD to Parquet (not run here)",
+    "code": "UNLOAD ('SELECT * FROM churn_features')\nTO 's3://my-ds-bucket/unload/churn_'\nIAM_ROLE default\nFORMAT AS PARQUET;",
+    "caption": "Illustrative: the default output is pipe-delimited text."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Redshift ML (not run here)",
+    "code": "CREATE MODEL churn_model\nFROM churn_features\nTARGET churned\nFUNCTION predict_churn\nIAM_ROLE default\nPROBLEM_TYPE BINARY_CLASSIFICATION\nSETTINGS (S3_BUCKET 'my-ds-bucket');",
+    "caption": "Illustrative: trains with SageMaker AI, at extra cost."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 5",
+    "titlePlain": "IAM for ",
+    "titleEmphasis": "Data Science Work",
+    "titleSuffix": "",
+    "subtitle": "The roles and policies behind every call."
+  }
+]

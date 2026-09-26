@@ -1,0 +1,13 @@
+In Lesson 1 we put customer data into S3. But a folder of Parquet files has no name and no schema that other tools can look up. The AWS Glue Data Catalog fixes that. We look at it from the data scientist's seat, since you already met crawlers and jobs in the Data Engineer path.
+
+The catalog stores metadata, not data. A table entry says these Parquet files live under this prefix and have these columns. The data stays in S3. Because Athena, Redshift Spectrum, EMR, Glue jobs and SageMaker AI all integrate with the catalog, you name a table once and every tool sees the same schema.
+
+You can fill the catalog with a crawler that infers the schema, or from Python. The AWS SDK for pandas can write a dataset to S3 and register the table in one call. Another call lists the tables in a database. This is illustrative code and was not run here.
+
+Before scaling anything, get the feature logic right on a sample. This bucketing, ratio and one-hot code ran locally on a fifty thousand row synthetic table. Churn fell from twenty-seven point five percent in the first year to fourteen point one percent for long-tenured customers.
+
+When data no longer fits in a notebook, the same logic becomes a Glue job. Glue jobs come as Spark, Spark Streaming, or Python shell. This skeleton reads a catalog table into a DynamicFrame, then converts it to a Spark DataFrame. It is illustrative, and needs an AWS account.
+
+So which tool when? Use a notebook and pandas for exploring and prototyping on data that fits in memory. Use a Glue Spark job for repeatable, large-scale preparation, billed by the compute your workers use. And use Athena, next, to filter and aggregate with SQL before pulling data into Python.
+
+Whichever you choose, write results to a new versioned prefix. Next up, Athena for ad hoc queries.

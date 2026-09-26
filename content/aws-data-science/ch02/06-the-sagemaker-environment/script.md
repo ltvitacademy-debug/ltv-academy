@@ -1,0 +1,13 @@
+Chapter 1 gave you data and permissions. Now we meet the place where you build models: Amazon SageMaker. This lesson maps the environment, starting with what it is called today, since AWS renames things often.
+
+On December 3, 2024, Amazon SageMaker was renamed SageMaker AI. API names, CLI commands and policy prefixes kept the sagemaker name. The same day, AWS released a wider SageMaker platform for data, analytics and AI, which includes SageMaker Unified Studio. This course focuses on SageMaker AI, the part that builds, trains and deploys models.
+
+Almost everything starts with a domain. A domain has a shared file system volume, a list of authorized users, and security and network settings. Each person gets a user profile. Spaces, private or shared, hold the storage for an application, and an app is the running notebook or IDE. This is a diagram from the AWS documentation.
+
+Where do your files live? Each JupyterLab or Code Editor space gets its own EBS volume, so a notebook disk is not a safe home for anything important. Keep code in Git and data in S3. Studio Classic spaces use the domain's shared file system instead.
+
+Which environment should you choose? The docs recommend SageMaker Studio, which offers JupyterLab, Code Editor, RStudio and Canvas. Studio Classic is the earlier experience. Notebook instances run Jupyter on one machine without a domain. And Studio Lab is free, with no AWS account.
+
+In code, boto3 can list the domains and spaces in an account. And the SageMaker Python SDK version 2 returns a default bucket named sagemaker, region, account ID. That name contains sagemaker, exactly what the managed policy from Lesson 5 covers. These snippets are illustrative and not run here.
+
+Stay cost-aware: turn on idle shutdown for JupyterLab and Code Editor, and check current pricing. Next, Lesson 7 works inside notebooks and Studio.

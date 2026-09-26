@@ -1,0 +1,13 @@
+Until now you trained inside a notebook. A SageMaker training job moves that work onto compute that exists only for one run.
+
+Here is the life of one job. Your data in S3 is copied into the container as named channels. Your script runs inside a managed image. Whatever it saves in the model folder is packed into a model tar gz file and uploaded to S3. Then the instances shut down, and the logs stay in CloudWatch. Notice that your script never talks to S3 or to SageMaker. It just reads and writes local folders.
+
+That is the script-mode contract. Hyperparameters arrive as command-line arguments. The model folder comes from the SM underscore MODEL underscore DIR environment variable, and each input channel from SM underscore CHANNEL underscore its name. If you give each one a local default, the same script runs anywhere.
+
+Test it on your own machine first. I ran this script with the variables set the way SageMaker sets them. It trained a random forest on an illustrative churn table, printed a validation accuracy near sixty-six percent, and wrote model dot joblib.
+
+Now the illustrative launch code, not run here. In the current SDK you describe the job with a ModelTrainer: an image, your source code, and compute. Then you call train with your input channels. Version two used an SKLearn estimator and fit. Check the current docs.
+
+Four controls are worth knowing. A regular expression can turn a log line into a chartable metric. A maximum runtime stops a runaway job. Managed spot training uses spare capacity, and AWS says it can cut cost by up to eighty percent, though it needs checkpoints. And host with the same scikit-learn version you trained with.
+
+Writing your own script is one option. Next, in lesson ten, we compare it with the built-in algorithms, and with bringing your own container.

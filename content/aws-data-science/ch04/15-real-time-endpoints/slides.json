@@ -1,0 +1,68 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AWS Data Science · Chapter 4",
+    "titlePlain": "Real-Time ",
+    "titleEmphasis": "Endpoints",
+    "titleSuffix": "",
+    "subtitle": "Lesson 15 · Deployment & Monitoring"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "From artifact to API",
+    "titlePlain": "Three objects and one ",
+    "titleEmphasis": "call",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Model", "sub": "Image plus model.tar.gz in S3" },
+      { "label": "Endpoint config", "sub": "Variants, instance type, count" },
+      { "label": "Endpoint", "sub": "A named, running deployment" },
+      { "label": "InvokeEndpoint", "sub": "Clients send data, get answers" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The inference script, run locally",
+    "code": "def model_fn(model_dir):\n    return joblib.load(path)\ndef input_fn(body, content_type):\n    ...  # bytes -> DataFrame\ndef predict_fn(data, model):\n    return model.predict_proba(\n        data)[:, 1]\ndef output_fn(pred, content_type): ...",
+    "caption": "model_fn once at start-up; the other three per request."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Output as run locally",
+    "code": "JSON in, JSON out:\n{\"churn_probability\": [0.4114, 0.3291]}\nCSV in, CSV out:\n0.4114\n0.3291\n0.3722\nXML in:\nValueError: Unsupported content type",
+    "caption": "Test handlers here: it costs nothing."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Illustrative, not run here",
+    "code": "sm.create_endpoint_config(\n  EndpointConfigName=cfg,\n  ProductionVariants=[{\n    \"VariantName\": \"AllTraffic\",\n    \"ModelName\": model,\n    \"InstanceType\": \"ml.m5.large\",\n    \"InitialInstanceCount\": 1}])\nsm.create_endpoint(EndpointName=ep,\n  EndpointConfigName=cfg)",
+    "caption": "boto3 shape; create_model comes first."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Illustrative, not run here",
+    "code": "rt = boto3.client(\"sagemaker-runtime\")\nr = rt.invoke_endpoint(\n  EndpointName=ep,\n  ContentType=\"application/json\",\n  Body=json.dumps(payload))\nprint(json.loads(r[\"Body\"].read()))\n# when finished:\nsm.delete_endpoint(EndpointName=ep)",
+    "caption": "Call it with the runtime client, then clean up."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Running it well",
+    "titlePlain": "Four habits that ",
+    "titleEmphasis": "matter",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Auto scaling", "sub": "Target invocations per instance" },
+      { "label": "Variants", "sub": "Split traffic between two models" },
+      { "label": "Monitor", "sub": "Latency and errors in CloudWatch" },
+      { "label": "Delete idle", "sub": "Instances bill while it exists" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 16",
+    "titlePlain": "Batch Transform ",
+    "titleEmphasis": "& Serverless Inference",
+    "titleSuffix": "",
+    "subtitle": "Two ways to serve models without an always-on endpoint."
+  }
+]

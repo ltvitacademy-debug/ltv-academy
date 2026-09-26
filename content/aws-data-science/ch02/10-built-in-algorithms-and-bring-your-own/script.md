@@ -1,0 +1,13 @@
+Writing your own training script is only one way to use SageMaker. This lesson maps the options, and then opens up the container contract behind bring-your-own.
+
+There are four ways to train. A built-in algorithm, where AWS supplies the code and you supply only data. A pre-built framework image with your own script, which is last lesson. An extended image, when you need one more library. And your own image, when nothing pre-built fits. Each step down buys flexibility and costs maintenance, so start at the top.
+
+Built-in algorithms include XGBoost, Linear Learner, LightGBM, K-Means, PCA and DeepAR for forecasting. They are strict about data. For CSV input, the label must be the first column, and there must be no header row. This is how our churn table looks once prepared that way. XGBoost also defaults to libsvm, so a CSV job has to say text slash csv.
+
+Launching one is short, and illustrative here. You look up the algorithm's image with image underscore uris dot retrieve, pass it to a trainer with compute and hyperparameters, and there is no source code at all. For Linear Learner, the one required setting is the predictor type. For XGBoost, pick a supported version, never latest.
+
+When you bring your own image, you follow a contract. Your hyperparameters arrive as a JSON file, every value a string. Data is in a folder per channel. You write the model to the model folder. If training fails, write the reason to the failure file. And the exit code matters: zero means completed, anything else means failed.
+
+I wrote a small program that follows the contract and ran it against a fake folder tree. It read the hyperparameter, trained, saved the model, and exited zero. Then I deleted the training file. The next run exited with code one and left the traceback in the failure file, which SageMaker would report as the failure reason.
+
+Now that you can train a model three ways, next comes making it better. Lesson eleven is hyperparameter tuning.

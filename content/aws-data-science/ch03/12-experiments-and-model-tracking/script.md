@@ -1,0 +1,13 @@
+After a tuning job you have dozens of models and one question: which settings, on which data, produced the best number? Experiment tracking is how you answer that.
+
+For every run, record four things. Parameters, meaning the hyperparameters, features and random seed. Metrics, such as validation accuracy. Artifacts, like the model file and plots. And tags, such as the data version and who ran it. Together they let you reproduce a result, or explain it, months later.
+
+MLflow is open source, and I ran it locally. Each run logs its parameters, a data version tag, a validation accuracy and the saved model file. The tracking location comes from an environment variable, defaulting to a local folder.
+
+Here are six runs, sorted by accuracy, exactly as they came out. Two things only tracking reveals. Runs two and three drew identical settings and produced identical scores, so one was wasted compute. And accuracy fell as depth increased, which tells you where to search next.
+
+SageMaker hosts MLflow for you. The tracking server's compute and metadata are managed by AWS. The artifact store is an S3 bucket in your own account. You connect with the server's ARN, using the sagemaker mlflow plugin, which signs requests with your AWS credentials. And a server that sits idle keeps costing, so stop it when you are done.
+
+Here is the illustrative connection code, not run here. It is the same tracking code as before. The only change is that set tracking uri now receives the server's ARN. SageMaker also has an older Experiments feature, but the developer guide now points new work toward MLflow.
+
+Tracking tells you what happened. Next, lesson thirteen makes the whole workflow repeatable, with SageMaker Pipelines.
