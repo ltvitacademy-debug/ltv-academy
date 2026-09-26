@@ -1,0 +1,13 @@
+Most models you've built treat a row as a bag of features. Language doesn't work that way: the dog bit the man and the man bit the dog use the same words. This lesson is about how networks learned to handle order, and the idea that changed everything: attention.
+
+The classic approach is the recurrent network. It reads one token at a time and carries a hidden state, a vector summarizing everything so far. Each step mixes the previous state with the new token. It's elegant, but it has to run one step after another, and early information has to survive every step.
+
+Does it? Here's a tiny RNN with random weights. We nudge only the first token and measure how much the final state moves. At length two, the effect is about zero point one. At length ten, it's about four in ten thousand. At length forty, it's about ten to the minus twelve. The start of the sequence has vanished. That's the vanishing gradient problem, and it means the network can't learn links between distant words. LSTMs helped a lot, but the path is still as long as the sequence.
+
+Attention removes the long path. Each position scores every other position, a softmax turns the scores into weights, and it takes a weighted average of their value vectors. Here the word it asks a question. Animal gets weight point four eight, tired gets point three two, street only point zero seven. So it pulls most of its meaning from animal, in one step, however far away that is.
+
+The chart shows both results: the RNN's influence collapsing on a log scale, and attention's weights spread across the sentence.
+
+Why did this win? Any token reads any other directly. All positions compute at once as matrix multiplications, which GPUs love. The price is that every pair is compared, so cost grows with the square of the length, one reason context windows are limited.
+
+Next lesson: putting attention together with the other pieces to build the Transformer.
