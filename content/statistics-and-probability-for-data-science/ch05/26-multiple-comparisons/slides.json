@@ -1,0 +1,62 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Statistics & Probability for Data Science · Chapter 5",
+    "titlePlain": "Multiple ",
+    "titleEmphasis": "Comparisons",
+    "titleSuffix": "",
+    "subtitle": "Lesson 26 · Hypothesis Testing"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Every extra test is a lottery ticket",
+    "titlePlain": "False alarms ",
+    "titleEmphasis": "pile up",
+    "titleSuffix": "",
+    "steps": [
+      {"label": "One test", "sub": "5% chance of a false alarm"},
+      {"label": "Twenty true nulls", "sub": "About one false alarm expected"},
+      {"label": "At least one", "sub": "1 - 0.95^20 = 0.642"},
+      {"label": "Simulated", "sub": "1,000 runs gave 0.623"}
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "20 metrics, no real effects, 1,000 runs",
+    "code": "def null_p():\n    x = rng.normal(0, 1, 50)\n    y = rng.normal(0, 1, 50)\n    return stats.ttest_ind(x, y).pvalue\nhits = 0\nfor _ in range(1000):\n    ps = [null_p() for _ in range(20)]\n    hits += min(ps) < 0.05\nprint(hits / 1000)   # 0.623",
+    "caption": "Illustrative simulation."
+  },
+  {
+    "type": "code",
+    "eyebrow": "6 real effects hidden among 20 metrics",
+    "code": "rng = np.random.default_rng(5)\neffects = [0.7] * 6 + [0.0] * 14\nps = np.array([stats.ttest_ind(\n    rng.normal(e, 1, 50),\n    rng.normal(0, 1, 50)).pvalue\n    for e in effects])\nprint((ps < 0.05).sum())       # 8\nprint((ps[6:] < 0.05).sum())  # 2 false",
+    "caption": "Uncorrected: 8 flagged, 2 are false alarms."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Benjamini-Hochberg in a few lines",
+    "code": "def bh(ps, alpha=0.05):\n    m = len(ps)\n    order = np.argsort(ps)\n    thr = alpha * np.arange(1, m+1) / m\n    ok = np.where(ps[order] <= thr)[0]\n    keep = np.zeros(m, bool)\n    if len(ok):\n        keep[order[:ok[-1] + 1]] = True\n    return keep",
+    "caption": "Controls the false discovery rate."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Same 20 metrics, corrected",
+    "titlePlain": "Control versus ",
+    "titleEmphasis": "power",
+    "titleSuffix": "",
+    "steps": [
+      {"label": "Uncorrected", "sub": "8 flagged, 2 false alarms"},
+      {"label": "Bonferroni", "sub": "5 flagged, 0 false, 1 real missed"},
+      {"label": "Holm", "sub": "5 flagged, 0 false, never less power"},
+      {"label": "Benjamini-Hochberg", "sub": "6 flagged, 0 false, controls FDR"}
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 27",
+    "titlePlain": "Correlation vs. ",
+    "titleEmphasis": "Causation",
+    "titleSuffix": "",
+    "subtitle": "When two things move together, and when one moves the other."
+  }
+]

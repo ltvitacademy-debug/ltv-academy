@@ -1,0 +1,13 @@
+Confidence interval formulas work well for a mean. But what about a median, a ratio, or a difference between medians? Formulas for those are messy or missing. The bootstrap is a beautifully simple alternative that works for almost any statistic.
+
+Treat your sample as a stand-in for the population. Draw n values from it, with replacement, so some values repeat and others drop out. That is one resample. Compute your statistic on it, then repeat thousands of times. The spread of those results approximates the sampling distribution, and its percentiles give a confidence interval.
+
+Take forty skewed order values. Resample ten thousand times and average each one. The bootstrap standard error is four point four two, close to the formula's four point five. The percentile interval, the two and a half and ninety-seven and a half percentiles, runs from twenty-seven point five to forty-four point seven six, slightly right-leaning to reflect the skew.
+
+Here the bootstrap earns its keep. There is no simple standard error formula for a median, yet we can bootstrap it. Draw all the row indices at once in one numpy array for speed. The median of twenty-five point four gets an interval of about twenty to forty-two point six. That is wide, honestly reflecting how little forty orders say about the middle of a skewed distribution.
+
+Scipy includes a ready-made function, stats dot bootstrap. Pass the data as a sequence of arrays, plus a statistic function. It reproduces the same median interval. Its default method is BCa, a refinement that adjusts for bias and skew. Argument names have changed across scipy versions, so check the docs for yours.
+
+The bootstrap is not magic. It cannot repair a biased sample, because it only resamples what you already have. It fails for extreme statistics like the maximum. And if your data are dependent, like time series or clusters, you must resample blocks, not individual rows.
+
+That completes sampling and estimation. Up next, the logic of hypothesis testing: moving from estimating a number to deciding whether an effect is real.

@@ -1,0 +1,13 @@
+Regression can describe a relationship, but observational data can never fully rule out hidden confounders. A randomized experiment can. In an A/B test, chance alone decides who sees the change, so the groups differ only in that change. That is what earns the word cause.
+
+Most of the work happens before launch. First decide one hypothesis and one primary metric. Choose the unit of randomization, usually the user. Set your significance level, your power, and the minimum detectable effect. Then fix the sample size in advance.
+
+Suppose conversion is ten percent and we want to detect a lift to twelve percent, with alpha point oh five and eighty percent power. The standard formula uses the two z values, the two proportions, and the squared difference. Run it in Python and we need three thousand eight hundred forty-one users in each group. At an illustrative fifteen hundred users a day, that is about six days, though you should run at least a full week or two.
+
+Notice the squared difference in the denominator. Halve the effect and you roughly quadruple the sample. Detecting a lift from ten to eleven percent takes about fourteen thousand seven hundred fifty users per group, while ten to fifteen percent takes only six hundred eighty-six. So the minimum detectable effect is a business decision as much as a statistical one.
+
+Random assignment is easy. Shuffle a balanced list of labels with a seeded generator, and no user trait can influence who lands where. In production, teams often hash the user ID instead.
+
+Finally, simulate your design. Run two thousand fake experiments with true rates of ten and twelve percent, and about eighty percent are significant, exactly the power we planned. Run an A/A test with identical rates and about five percent still come out significant. That is the false positive rate we accepted.
+
+Next up, analyzing A/B test results.

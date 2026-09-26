@@ -1,0 +1,29 @@
+# Script — Random Variables & Expected Value
+
+## Segment 1 (title)
+
+So far we've talked about events. Data science works with numbers: revenue per customer, orders per week, delivery time. A random variable connects the two by assigning a number to each outcome of a chance process. This lesson finishes Chapter 2.
+
+## Segment 2 (steps: concepts)
+
+A discrete random variable takes countable values, like orders per week, and a probability mass function lists the probability of each. A continuous random variable takes any value in a range, so it's described by a density, with probabilities as areas under the curve. The expected value is the long-run average: each value weighted by its probability.
+
+## Segment 3 (code: pmf and E)
+
+Here's an illustrative distribution for orders per week: zero through four, with probabilities point three, point three five, point two, point one, and point oh five. Each value times its probability, summed, gives an expected value of one point two five. The probability-weighted squared distance from it gives a variance of one point two eight seven five.
+
+## Segment 4 (code: simulation)
+
+Expected value is a long-run average, so we can simulate it. A hundred thousand draws gave a mean of one point two five three. Batches of ten, a thousand, and a hundred thousand draws averaged one point one, one point two two, and one point two four seven, converging on one point two five. And notice that no customer can actually order one point two five.
+
+## Segment 5 (code: linearity and a raffle)
+
+Expected value is linear: if each order brings forty dollars minus a five dollar fee, expected revenue is forty times one point two five, minus five: forty-five dollars. It also guides decisions. A five dollar raffle ticket with a one-in-thirty chance at one hundred dollars has an expected net of minus one dollar sixty-seven.
+
+## Segment 6 (steps: cautions)
+
+Some limits. The expected value may not be a possible outcome. It isn't necessarily the typical outcome, since skew pulls the mean. And it ignores risk: two options with the same expected value can have very different spread.
+
+## Segment 7 (outro)
+
+That completes Chapter 2. Next, in lesson 11, we begin Chapter 3 with the standard discrete distributions you'll see again and again.

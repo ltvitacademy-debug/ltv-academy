@@ -1,0 +1,13 @@
+The experiment has finished, and now you have a table of users, their group, and what they did. Because we fixed the metric and the sample size in advance, the tests from chapter five apply cleanly. Let's walk through an analysis on illustrative data, from sanity checks to a decision.
+
+Step one is a sanity check. Confirm the groups are the size you planned. A sample ratio mismatch, where the split differs from the plan by more than chance allows, usually means a bug in assignment or logging. A chi-square goodness-of-fit test checks it. Here we have four thousand users in each group, so the p-value is one. If this check fires, fix the pipeline before touching outcomes.
+
+Step two is the primary metric. Control converted at ten point eight percent and treatment at twelve point three. Is that gap more than chance? A pooled two-proportion z-test gives a z of about 2.07 and a p-value of 0.039. A chi-square test on the two-by-two table gives the very same p-value, because z squared equals the chi-square statistic.
+
+Step three is the effect and its uncertainty. The lift is about one and a half percentage points, roughly fourteen percent relative. The ninety-five percent interval runs from about 0.08 to 2.9 points. That is the honest story: the lift is very likely positive, but it could be tiny.
+
+Step four checks the secondary metrics. Revenue per user is a little higher in treatment, 7.11 dollars versus 6.59, but a Welch t-test gives a p-value of 0.33, so we cannot tell that from noise.
+
+Step five is the decision. Statistical significance asks whether there is probably a real difference. Practical significance asks whether it is big enough to matter, given what shipping costs. Report the estimate, the interval, the guardrails, and a recommendation, never just p less than point oh five.
+
+Next up, common statistical pitfalls.

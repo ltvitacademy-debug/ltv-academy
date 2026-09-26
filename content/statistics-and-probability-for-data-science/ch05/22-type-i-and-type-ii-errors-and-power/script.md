@@ -1,0 +1,13 @@
+Every decision made under uncertainty can be wrong in two different ways. Understanding those errors, and a concept called power, is what lets you plan an experiment instead of running it and hoping.
+
+Reality either has an effect or it doesn't, and your test either rejects the null or doesn't. Reject a null that's true, and you've raised a false alarm: a Type one error. Its probability is alpha, which you set. Fail to reject when the effect is real, and you've missed it: a Type two error, with probability beta. Power is one minus beta, the chance of detecting a real effect. A common target is eighty percent.
+
+You can measure power by brute force. Simulate many experiments where the effect is real, run the test each time, and count how often it rejects. Here a real seven-fifty lift on a fifty-five dollar average order, tested on four thousand simulated experiments.
+
+Setting the effect to zero estimates the Type one rate: about five percent, as promised. With thirty customers per group, the real lift is detected only forty-eight percent of the time, worse than a coin flip. It takes about sixty-four per group to reach eighty percent.
+
+Four things drive power. Sample size, which you control most. Effect size, since big effects are easier to see. Noise, because less variability helps. And alpha, where looser means more power but more false alarms.
+
+To plan sample size, a standard formula gives the number per group from the standardized effect size d. Small effects, d of point two, need about three hundred ninety-two per group. Large effects need only twenty-five. It's an approximation, and dedicated calculators give slightly higher values.
+
+Do this calculation before collecting data, and be wary of reading a non-significant result from a small sample as no effect. Next: the t-test.

@@ -1,0 +1,13 @@
+The normal distribution, the bell curve, is the most important continuous distribution in statistics. Confidence intervals and t-tests both lean on it. It is also the most over-applied, so in this lesson we cover both its power and its limits.
+
+A normal curve is completely described by two numbers. The mean sets where the center sits, and the standard deviation sets how wide the bell is. Because the variable is continuous, the probability of any single exact value is zero. Instead we ask for the area under the curve across an interval.
+
+Suppose delivery times are roughly normal with a mean of forty minutes and a standard deviation of five. In scipy, loc is the mean and scale is the standard deviation. The cdf at forty-five says about eighty-four percent of deliveries take forty-five minutes or less. The survival function at fifty says only two point three percent take longer than fifty. And ppf, the inverse of the cdf, says ninety-five percent finish within about forty-eight minutes.
+
+The famous rule says about sixty-eight percent of values fall within one standard deviation of the mean, ninety-five percent within two, and ninety-nine point seven percent within three. The code confirms it. A value beyond three standard deviations is genuinely rare, which is why such points are flagged as possible outliers.
+
+A z-score restates a value as how many standard deviations it sits from the mean. A fifty-two minute delivery is twelve minutes above average, divided by five, so a z-score of two point four. Only about eight tenths of one percent of deliveries are that slow. Z-scores strip away units, letting you compare very different measurements.
+
+Real data is never perfectly normal, so check it. Plot a histogram or a Q-Q plot first. Look at skewness, which should sit near zero. And use formal tests like Shapiro cautiously, because with large samples they flag trivial differences. Incomes and order values are usually skewed, but good news is coming in lesson sixteen.
+
+Up next, the other continuous distributions that real data often follows.

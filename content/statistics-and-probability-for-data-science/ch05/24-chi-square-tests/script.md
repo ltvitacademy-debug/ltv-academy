@@ -1,0 +1,13 @@
+The t-test compares averages of numbers. But much business data is categorical: a customer bought or didn't, a ticket was about billing or shipping, a visitor used mobile, desktop or tablet. To test claims about counts in categories, you use a chi-square test.
+
+The idea is simple. Under the null hypothesis, you can work out how many observations to expect in each cell of a table of counts. The chi-square statistic adds up how far the observed counts sit from the expected ones, squared and scaled by the expected count. Small means close; large means divergence. There are two flavors: goodness of fit, for one variable, and independence, for two.
+
+Goodness of fit. Three hundred support tickets over five weekdays. Is the workload even, sixty per day? The statistic is four point six three, and p is point three two seven. That variation is entirely plausible under an even workload, though with only three hundred tickets, moderate imbalances could hide.
+
+Now independence. Two thousand sessions, split by device and whether they bought. The null says purchase and device are independent: same purchase rate everywhere. Chi-square contingency computes each cell's expected count from the row and column totals. Here chi-square is twelve point four eight, with two degrees of freedom, and p is point zero zero one nine. Independence looks implausible.
+
+A significant result says somewhere there is a difference, not where. Purchase rates are twelve percent on mobile, thirteen point six on desktop, and twenty on tablet. Tablets bought sixty times where about forty-one were expected. Cramér's V, an effect size, is only point oh seven nine: a real but small association.
+
+A few cautions. Use counts of independent observations, not percentages. Expected counts should be at least about five in most cells; for small two-by-two tables use Fisher's exact test. Chi-square shows association, not causation. And big samples make trivial associations significant, so check the effect size.
+
+Next up: comparing three or more means at once with ANOVA.

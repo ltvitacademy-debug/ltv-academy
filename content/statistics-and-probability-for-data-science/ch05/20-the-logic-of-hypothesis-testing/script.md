@@ -1,0 +1,11 @@
+Your marketing team sent a redesigned email to forty customers and the old email to another forty. The new group spent about fifty-eight dollars per order, the old group about fifty-two fifty. Is the new email better, or did you just get a lucky batch of shoppers? Hypothesis testing is how we answer that.
+
+Two groups never have exactly the same average, even if the email does nothing. So the real question is whether this gap is bigger than the gaps chance produces on its own. Every test follows four steps. First, state a null hypothesis, which says nothing interesting is happening, and an alternative, which says there is a real difference. We test the null because it is precise: one concrete world we can simulate. Second, pick a test statistic that measures the gap, here the difference in means. Third, ask how often chance alone would produce a gap at least this large if the null were true. Fourth, if that is rare enough, reject the null. Otherwise, don't. It works like a courtroom: presumed innocent until the evidence is unlikely. Failing to convict is not proof of innocence.
+
+Here's the brute-force version, called a permutation test. We generate the two groups of simulated order values, and compute the observed gap: five dollars sixty-two.
+
+Now the key idea. If the email made no difference, the labels old and new are meaningless. So we pool all eighty orders, shuffle them, split into fake groups of forty, and record the gap, ten thousand times. In this run, only about three point four percent of shuffles produced a gap as big as ours, in either direction. That number is the p-value.
+
+So what can we conclude? A small probability means the data are hard to explain by chance alone. It does not tell you how big the effect is, whether it matters commercially, or that the email caused it. And a large probability means inconclusive, not proven identical.
+
+Next lesson: that number, the p-value, and what it really means.
