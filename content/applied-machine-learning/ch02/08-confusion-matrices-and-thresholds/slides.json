@@ -1,0 +1,73 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Applied Machine Learning · Chapter 2",
+    "titlePlain": "Confusion Matrices & ",
+    "titleEmphasis": "Thresholds",
+    "titleSuffix": "",
+    "subtitle": "Lesson 8 · Evaluating Models"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Choosing the cutoff on purpose",
+    "titlePlain": "Dial it in, ",
+    "titleEmphasis": "honestly",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "PROBABILITIES",
+        "sub": "cross_val_predict on train"
+      },
+      {
+        "label": "PRICE ERRORS",
+        "sub": "cost of a false alarm vs a miss"
+      },
+      {
+        "label": "SWEEP",
+        "sub": "pick the cheapest cutoff"
+      },
+      {
+        "label": "CONFIRM",
+        "sub": "once, on the test set"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The dial · cross-validated training rows",
+    "code": "cv_proba = cross_val_predict(\n    model, X_train, y_train, cv=5,\n    method=\"predict_proba\")[:, 1]\n# cutoff flagged precision recall\n# 0.5      107     0.617    0.371\n# 0.3      225     0.502    0.635\n# 0.15     416     0.370    0.865",
+    "caption": "Lower cutoff: more flags, higher recall, lower precision."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Price the errors (assumed costs)",
+    "code": "def cost(y_true, flag,\n         fp_cost=20, fn_cost=100):\n    tn, fp, fn, tp = confusion_matrix(\n        y_true, flag).ravel()\n    return fp_cost * fp + fn_cost * fn\ncosts = [cost(y_train, cv_proba >= t)\n         for t in thresholds]\n# best 0.15: cost 7,640\n# default 0.5: cost 12,020",
+    "caption": "Illustrative costs: $20 per false alarm, $100 per miss."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Confirm once on the test set",
+    "code": "# TN FP FN TP        total cost\n# 0.50: 176 15 43 16    4,600\n# 0.15: 108 83 12 47    2,860\n#\n# flag everyone:        3,820\n# flag nobody:          5,900",
+    "caption": "The tuned cutoff beats the default and both extremes."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Draw the matrices",
+    "code": "fig, axes = plt.subplots(\n    1, 2, figsize=(9, 4.2))\nfor ax, t in zip(axes, [0.5, 0.15]):\n    ConfusionMatrixDisplay.from_predictions(\n        y_test, test_proba >= t,\n        ax=ax, cmap=\"Blues\",\n        display_labels=[\n            \"stayed\", \"churned\"])",
+    "caption": "Colors and titles are set in the full guide code."
+  },
+  {
+    "type": "screenshot",
+    "file": "confusion-matrices.png",
+    "eyebrow": "Output of the code above",
+    "caption": "Cutoff 0.15 trades 43 missed churners for 12, at the cost of more false alarms."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 9",
+    "titlePlain": "Regression Metrics ",
+    "titleEmphasis": "in Practice",
+    "titleSuffix": "",
+    "subtitle": "Scoring models that predict numbers."
+  }
+]

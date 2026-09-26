@@ -1,0 +1,13 @@
+Where churn asks which class, price prediction asks how much. The workflow is the same, but the details change: regression metrics, a skewed target, and errors that grow with the price. Here we predict illustrative house prices from start to finish.
+
+Start with three decisions. The target is price, which runs from about sixty-six thousand to over eight hundred thousand dollars, with a right skew. The metric is mean absolute error, the average dollar miss, which is easy to explain to anyone. And the split is eighty twenty, with the test set locked away until the end.
+
+Compare candidates with five-fold cross-validation. A trick worth testing is a log-transformed target: TransformedTargetRegressor trains on the log of price, then converts predictions back to dollars, so the metric stays in dollars. Wrap each model the same way, and always include the mean-price baseline.
+
+The baseline misses by about ninety-eight thousand dollars. Ridge regression cuts that to thirty-one thousand. Gradient boosting with a log target is best at twenty-eight thousand eight hundred. The log target helped boosting slightly but hurt ridge here, a reminder to test a transformation rather than assume it helps. The differences among the top models are modest.
+
+On the test set, the boosted model gets a mean absolute error of about twenty-nine thousand dollars, and R squared of zero point eight eight four. That is a typical miss of under nine percent. Now look at the diagnostics, because a single number can hide where a model is weak.
+
+The left plot hugs the diagonal, which is good. The right plot shows a funnel: residuals widen as the predicted price rises. The model misses by ten to twenty thousand on cheaper homes, and by fifty thousand or more on some expensive ones. Report that honestly, and consider a percentage error metric if relative accuracy matters to the business.
+
+Up next, a fraud detection walkthrough, where the positive class is extremely rare.

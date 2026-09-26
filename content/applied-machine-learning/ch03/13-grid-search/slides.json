@@ -1,0 +1,92 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Applied Machine Learning · Chapter 3",
+    "titlePlain": "Grid ",
+    "titleEmphasis": "Search",
+    "titleSuffix": "",
+    "subtitle": "Lesson 13 · Tuning Models"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "GridSearchCV",
+    "titlePlain": "Every combination, ",
+    "titleEmphasis": "cross-validated",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "1. Grid",
+        "sub": "A dict of hyperparameter lists"
+      },
+      {
+        "label": "2. Try all",
+        "sub": "Cross-validate every combination"
+      },
+      {
+        "label": "3. Rank",
+        "sub": "Sort by mean validation score"
+      },
+      {
+        "label": "4. Refit",
+        "sub": "Retrain the winner on all the data"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Define the grid and fit",
+    "code": "param_grid = {\n    \"n_estimators\": [50, 200],\n    \"max_depth\": [3, 6, None],\n    \"min_samples_leaf\": [1, 5]}\ngs = GridSearchCV(rf, param_grid,\n    cv=cv, scoring=\"f1\")\ngs.fit(X_tr, y_tr)",
+    "caption": "rf = RandomForestClassifier(random_state=42). 12 combos x 5 folds = 60 fits."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The winner · illustrative churn data",
+    "code": "gs.best_params_\n# {'max_depth': None,\n#  'min_samples_leaf': 1,\n#  'n_estimators': 200}\ngs.best_score_      # 0.917\ngs.best_estimator_  # already refit\ngs.predict(X_te)    # uses the best\n# test F1: 0.918",
+    "caption": "refit=True (the default) retrains the best model for you."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Inspect every combination",
+    "code": "res = pd.DataFrame(gs.cv_results_)\n# n_est depth leaf  mean   std  rank\n#   200  None    1  0.917 0.023     1\n#    50  None    1  0.909 0.038     2\n#   200  None    5  0.891 0.037     3\n#   200     3    5  0.782 0.023    12",
+    "caption": "Top scores sit within one std of each other."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Grid search habits",
+    "titlePlain": "Read the grid, ",
+    "titleEmphasis": "not just the winner",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "EDGE OF GRID",
+        "sub": "Best value at an edge? Widen the grid"
+      },
+      {
+        "label": "COST",
+        "sub": "Combos x folds = number of fits"
+      },
+      {
+        "label": "SPREAD",
+        "sub": "Top scores may be statistical ties"
+      },
+      {
+        "label": "n_jobs=-1",
+        "sub": "Run the fits in parallel"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "With a pipeline: step__parameter",
+    "code": "pipe = Pipeline([\n    (\"scale\", StandardScaler()),\n    (\"clf\", LogisticRegression())])\ngrid = {\"clf__C\": [0.01, 0.1, 1, 10]}\ngs = GridSearchCV(pipe, grid, cv=cv,\n    scoring=\"f1\", n_jobs=-1)\ngs.fit(X_tr, y_tr)\n# best: {'clf__C': 1}  f1 0.73",
+    "caption": "The scaler is refit inside every fold. No leakage."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 14",
+    "titlePlain": "Random & Bayesian ",
+    "titleEmphasis": "Search",
+    "titleSuffix": "",
+    "subtitle": "Smarter ways to search when grids get too big."
+  }
+]

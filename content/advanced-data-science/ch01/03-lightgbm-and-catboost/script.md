@@ -1,0 +1,29 @@
+# Script — LightGBM and CatBoost
+
+## Segment 1 (title)
+
+XGBoost isn't the only serious boosting library. LightGBM, from Microsoft, and CatBoost, from Yandex, are just as widely used. They share the same boosting core you already know, but each makes a design choice that helps in particular situations.
+
+## Segment 2 (steps)
+
+LightGBM grows trees leaf-wise. Instead of splitting every node at a level, it always splits the one leaf that cuts the loss the most. That's fast and accurate, and it makes num leaves the key setting to watch. CatBoost's headline feature is categorical columns. You just name them, and it converts them to numbers using a scheme that avoids leaking the label. XGBoost remains the mature all-rounder.
+
+## Segment 3 (code)
+
+Here's LightGBM on our illustrative churn data. Note that the plan column stays a pandas category with no encoding, and that early stopping is passed as a callback. Row subsampling only takes effect once subsample freq is set. With eight leaves, it stopped at round one fifteen.
+
+## Segment 4 (code)
+
+And here's CatBoost. We pass the plan column as plain strings and list it in cat features. The vocabulary differs a little: iterations, depth, and random seed, in place of the XGBoost names. It stopped at round one twenty-three.
+
+## Segment 5 (code)
+
+The scores on the same split: XGBoost point eight two eight, LightGBM point eight three oh, CatBoost point eight three one. To see whether that ordering means anything, we repeated on five different splits. The average for all three was about point eight three five, with a spread of about point oh oh six. The gaps between libraries are smaller than the noise.
+
+## Segment 6 (steps)
+
+So choose by situation, not by leaderboard. Reach for LightGBM when the data is large and speed matters. Reach for CatBoost when you have many categorical columns or want good defaults. Use XGBoost for its ecosystem. And when it matters, train two or three and let validation data pick.
+
+## Segment 7 (outro)
+
+Next, we'll tune these models properly.

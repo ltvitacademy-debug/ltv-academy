@@ -1,0 +1,29 @@
+# Script — Classification Metrics: Accuracy, Precision & Recall
+
+## Segment 1 (title)
+
+In lesson one, our model scored point seven six eight, and a dummy that predicts stayed for everyone scored point seven six four. Accuracy said the model was barely better than doing nothing. Real problems are lopsided, few churners, few fraud cases, and accuracy hides that. Let's learn the metrics you'll use every day.
+
+## Segment 2 (steps)
+
+Every yes-or-no prediction lands in one of four cells. A true positive is a catch: we predicted churn and it happened. A false positive is a false alarm. A false negative is a miss: the customer left and we didn't flag them. A true negative is a correct stay. Churn is our positive class.
+
+## Segment 3 (code)
+
+The confusion matrix counts them. Rows are the actual class, columns the predicted class. On our two hundred fifty test customers, one hundred seventy-six stayers were correctly kept, fifteen were flagged wrongly, forty-three churners were missed, and only sixteen were caught.
+
+## Segment 4 (code)
+
+Three metrics come from those counts. Accuracy is the share of all predictions that were right: point seven six eight. Precision asks, when we say churn, how often are we right? Sixteen of thirty-one, point five one six. Recall asks, of the real churners, how many did we find? Sixteen of fifty-nine, only point two seven one.
+
+## Segment 5 (code)
+
+Now the dummy baseline. Accuracy point seven six four, but recall zero. It never flags anyone, so it catches nobody. Precision is undefined, and scikit-learn needs zero division set to zero to say so quietly. Always compare against a baseline and read the metrics for the class you care about.
+
+## Segment 6 (steps)
+
+Which metric to favor depends on cost. Accuracy is fine only when classes are balanced and errors cost the same. Favor precision when false alarms are expensive, like costly retention calls. Favor recall when misses are expensive. And always, compare with the dummy.
+
+## Segment 7 (outro)
+
+Next, we combine precision and recall into one score, and judge a model across all thresholds. Lesson 7: F1, ROC, and AUC.

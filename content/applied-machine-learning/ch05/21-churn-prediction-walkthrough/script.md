@@ -1,0 +1,13 @@
+Churn prediction is the classic applied classification project: which customers are likely to leave, so the business can reach out first? This lesson walks the whole project on a seeded, illustrative table, from framing to a call list you can defend.
+
+Start by framing it in one sentence. Each month, rank active customers by churn risk, so the retention team can call the riskiest twenty percent. That tells you the target, the metric, which is ranking quality, and the action, a call list rather than a yes or no. Then split off twenty percent as a test set before touching anything else.
+
+Build a pipeline: scale the numeric columns, one-hot encode contract and autopay, then compare three models with five-fold cross-validation on the training set only. Always include a baseline. The dummy classifier scores zero point five, pure chance. That is the number to beat.
+
+Logistic regression scores zero point eight oh six AUC. The random forest scores zero point seven eight two. The simple model wins, and it is easier to explain. Complexity is not automatically better, especially when the real signal is close to linear.
+
+Now touch the test set once. The test AUC is zero point eight oh two, right in line with cross-validation, so we haven't overfit our choice. But at the default threshold, recall for churners is only forty-five percent. So don't ship a yes-or-no cutoff. Rank customers by probability instead. Contact the riskiest one hundred sixty, and sixty-four percent of them actually churn, against a twenty-seven percent base rate.
+
+Finally, explain the drivers. Permutation importance shuffles one input at a time and measures how far the score falls. Tenure and contract type dominate, while autopay matters least. That gives the business something to act on, not just a number.
+
+Up next, a price prediction walkthrough, where the target is a number instead of a class.

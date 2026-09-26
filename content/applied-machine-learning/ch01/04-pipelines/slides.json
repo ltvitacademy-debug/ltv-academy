@@ -1,0 +1,73 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Applied Machine Learning · Chapter 1",
+    "titlePlain": "",
+    "titleEmphasis": "Pipelines",
+    "titleSuffix": "",
+    "subtitle": "Lesson 4 · The scikit-learn Workflow"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why chain everything together",
+    "titlePlain": "One object, ",
+    "titleEmphasis": "no drift",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "ONE UNIT",
+        "sub": "prep + model stay in sync"
+      },
+      {
+        "label": "RAW ROWS IN",
+        "sub": "no manual preprocessing"
+      },
+      {
+        "label": "NO LEAKS",
+        "sub": "refit inside every CV fold"
+      },
+      {
+        "label": "ONE SAVE",
+        "sub": "preprocessing ships with model"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Prep + model · illustrative data",
+    "code": "model = Pipeline([\n    (\"prep\", pre),\n    (\"clf\", LogisticRegression(\n        max_iter=1000)),\n])\nmodel.fit(X_train, y_train)\nmodel.score(X_test, y_test)\n# 0.768",
+    "caption": "Predict takes the raw DataFrame, gaps and text included."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Look inside, set nested params",
+    "code": "list(model.named_steps)\n# ['prep', 'clf']\nmodel[-1]     # the final model\nmodel[:-1]    # everything before it\nmodel.set_params(clf__C=0.1)\nmodel.get_params()[\"clf__C\"]\n# 0.1",
+    "caption": "step name + two underscores + parameter name."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Cross-validate the whole pipeline",
+    "code": "cross_val_score(model, X, y,\n    cv=5, scoring=\"roc_auc\").mean()\n# 0.783  (logistic regression)\nrf = Pipeline([\n    (\"prep\", pre),\n    (\"clf\", RandomForestClassifier(\n        n_estimators=200,\n        random_state=0))])\n# 0.735  (random forest)",
+    "caption": "Raw X and y go in; each fold refits the preprocessing."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Leakage demo · pure noise, true accuracy 50%",
+    "code": "# 100 rows, 500 random features\n# labels are coin flips\nsel = SelectKBest(f_classif, k=10)\nXsel = sel.fit_transform(Xn, yn)\ncross_val_score(\n    LogisticRegression(),\n    Xsel, yn, cv=5).mean()\n# 0.70  <- leaky",
+    "caption": "Selecting on all labels first fakes a 70% score."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The same task inside a pipeline",
+    "code": "pipe = make_pipeline(\n    SelectKBest(f_classif, k=10),\n    LogisticRegression())\ncross_val_score(\n    pipe, Xn, yn, cv=5).mean()\n# 0.50  <- honest",
+    "caption": "Selection is redone in each training fold."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 5",
+    "titlePlain": "Saving & Loading ",
+    "titleEmphasis": "Models",
+    "titleSuffix": "",
+    "subtitle": "Persisting a trained pipeline for reuse."
+  }
+]
