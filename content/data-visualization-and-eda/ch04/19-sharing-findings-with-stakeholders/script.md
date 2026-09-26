@@ -1,0 +1,13 @@
+You found something worth telling someone. Now the question is how the right person sees it, and only the right person.
+
+First, publish. In Power BI Desktop, select Publish on the Home ribbon, sign in, and choose a workspace. Microsoft's documentation says this sends your data model and reports to that workspace, and you get a link back. Changes made in the service are not saved back to your Desktop file, so keep the Desktop file as your source of truth.
+
+Next, choose how to share. A direct link suits a few named people. A workspace suits teammates who will work on the report with you. An app gives a larger team a polished, read-only experience. And Teams integration lets you discuss findings where people already talk.
+
+A hedge on licensing. As of this writing, sharing generally requires a Pro or Premium Per User license, and recipients need one too, unless the content lives in a Premium or Fabric capacity. Python visuals carry their own licensing note. Ask your Power BI admin before you promise a stakeholder access.
+
+Now the detail that surprises people. When you share a report, you also share access to its underlying data model. Hiding a column or a page is not security. If some people should see only certain rows, use row-level security on the model. And treat Publish to web with real care, because it makes a report public, data included.
+
+Finally, remember that not every stakeholder lives in Power BI. A chart saved from Python as an image, with a title that states the finding, is often the best deliverable.
+
+Next, Chapter 5 begins with telling the story of a dataset.

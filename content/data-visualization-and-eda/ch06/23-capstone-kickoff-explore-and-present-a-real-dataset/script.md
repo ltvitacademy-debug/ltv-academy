@@ -1,0 +1,13 @@
+This capstone pulls the whole course together. You will take one dataset from a raw table to a short, honest presentation, across three lessons: this kickoff, the build, and the wrap-up.
+
+A note on the word real. To keep every number reproducible, the walkthrough uses an illustrative dataset that we generate with a fixed random seed. The workflow is what transfers, so when you build your portfolio version, swap in a real dataset you care about and follow the same steps.
+
+First, frame the question. Ours is: which customers are most likely to leave, and what is one action the team could test to reduce churn? It is specific, it ends in a decision, and it leaves model building for the next course.
+
+Here is the generator. Eight hundred customers, each with a plan, region, tenure, monthly spend, support tickets, and a churned flag. We also blank twelve spend values, to give us a realistic missing-data problem. One warning: the script is an answer key. Real data has no recipe, so try the analysis first and only compare at the end.
+
+Now take a first look. Check how big the table is, what types it holds, what is missing, and how common the outcome is. We see eight hundred rows, seven columns, twelve missing spend values, and a hundred and fifty-seven churned customers. That is a baseline of nineteen point six percent, about one customer in five. Every pattern we find must be compared to that baseline.
+
+Finally, the plan. Check data quality. Look at each variable alone. Compare churn across each variable. Combine two variables and test whether patterns hold up. Then save one clear figure and write the findings.
+
+Next, we build it.

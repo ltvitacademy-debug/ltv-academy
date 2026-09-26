@@ -1,0 +1,25 @@
+# Script — The EDA Mindset & Workflow
+
+## Segment 1 (title)
+
+Welcome to the EDA workflow. Exploratory data analysis is the work you do before you model, report, or build a dashboard. You already know pandas, basic statistics, and how to draw charts. Now we put them together in a repeatable order, so you explore on purpose instead of poking at a dataset at random.
+
+## Segment 2 (steps)
+
+EDA is a loop, not a checklist. Frame a question, take a first look at the data, explore one variable and then several, and finally decide what to do and write it down. You will loop back often, because a strange result in one step sends you back to check an earlier one. Write your questions down before you plot, and keep a running list of surprises. That list becomes your write-up later.
+
+## Segment 3 (code)
+
+Every new dataset gets the same first look. Read the file, check the shape, call info, and count missing values. Our practice table is a made-up, seeded set of five hundred customers, and it has five hundred rows and seven columns. The age column shows only four hundred and eighty non-null values, so twenty ages are missing. Everything else is complete.
+
+## Segment 4 (code)
+
+Next, count duplicated rows. There are none. Then check the balance of the target you care about. About twenty-one percent of these customers churned. That imbalance will matter when you build models later, and you would never know it without looking.
+
+## Segment 5 (code)
+
+Finally, call describe, and read it with suspicion. Look at total spend. The mean is about one eighty-eight, but the median is only one twenty-four, and the maximum is nine thousand eight hundred. A mean far above the median, with a giant maximum, is a flag. Either the variable is skewed, or something is an outlier. The next lessons chase it down.
+
+## Segment 6 (outro)
+
+Assume your data is messy until you have checked it. Up next, univariate analysis: studying one variable at a time.

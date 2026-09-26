@@ -1,0 +1,13 @@
+A written analysis is often the only thing a stakeholder reads after you leave the room. It should let them trust your conclusion, check your work, and act on it, without asking you a single question.
+
+Lead with the answer. Analysts tend to write in the order they worked: load, clean, explore, conclude. Readers want the reverse. Start with a summary that stands alone, then give a question, the data, the findings, the caveats, and next steps. If a busy executive reads only two sentences, those two should hold the finding and the recommendation.
+
+Next, let code write your numbers. The classic error is a sentence that no longer matches the data after you re-ran the analysis. Compute the values, and format them into the text. On our illustrative churn data, the code prints: eight hundred customers, nineteen point six percent churned. Then: three or more tickets, forty-four point seven percent, versus eleven point three percent with none, four times. If the data changes, the sentences change with it.
+
+Be specific about the data. State its size, source, and known problems. Here, twelve customers have a missing spend value, and you should say what you did about them. Give group sizes too. A rate over a hundred and three customers is a stronger statement than the same rate over nine.
+
+Then make it reproducible. Record random seeds, library versions, the data source and date, and the run order. Restart your notebook and run all cells before you share it.
+
+Finally, a notebook is your lab bench, and a write-up is the finished product. Delete dead ends, keep the charts that support the claim, and move the answer to the top.
+
+Next, we present these findings to non-technical audiences.

@@ -1,0 +1,33 @@
+# Script — Outliers & Anomalies in EDA
+
+## Segment 1 (title)
+
+Every lesson in this chapter has bumped into the same two customers, with spend of nine thousand eight hundred and seven thousand four hundred, in a table where the typical customer spends about one twenty-four. Now we deal with them properly. Find them, explain them, and decide.
+
+## Segment 2 (code)
+
+Rule one is the I Q R fence. Flag anything more than one and a half times the interquartile range above the third quartile. It is the same rule a box plot uses. Here the upper fence is about four twenty-six, and nineteen customers are flagged. That is too many to call all errors. Some are simply big spenders in a right-skewed distribution.
+
+## Segment 3 (code)
+
+Rule two is the z-score: how many standard deviations from the mean. With a cutoff of three, only two rows are flagged. The extreme values inflate the standard deviation, which hides the milder cases. Quantile rules are more robust for skewed data.
+
+## Segment 4 (code)
+
+Now look at it. Box plots draw the fence for you. The first panel shows all five hundred rows, and the second drops the two rows above one thousand.
+
+## Segment 5 (screenshot)
+
+On the left, a squashed box and two dots far away. On the right, without the giants, a normal-looking right-skewed distribution with a scatter of ordinary high spenders.
+
+## Segment 6 (code)
+
+A flag is a question, not a verdict. Check a related column. Spend per order has a median of about thirty-seven. The two suspicious rows work out to twenty-four fifty and fourteen eighty per order: forty to sixty-six times typical. That points to a mis-keyed amount or a bulk purchase. The next highest is only about one thirty-four. Those other high spenders simply order a lot.
+
+## Segment 7 (steps)
+
+Then choose. Keep it if it is real. Fix it if you know the true value. Cap or flag it to limit influence while keeping the rows. Remove it only if it is an error you cannot fix. The choice matters: without those two rows, the channel gap from the bivariate lesson vanishes. Whatever you do, write it down.
+
+## Segment 8 (outro)
+
+Up next, automated EDA tools that generate much of this exploration for you.

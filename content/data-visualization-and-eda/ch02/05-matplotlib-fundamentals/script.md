@@ -1,0 +1,13 @@
+Time to move into Python. matplotlib is the foundation almost every other Python plotting library builds on, including seaborn and pandas' own plot method. Learn its model once and everything else gets easier.
+
+The model has two main objects. A Figure is the whole canvas, like a sheet of paper. An Axes is one plot on that canvas: it owns the x-axis, the y-axis, the title and the data you draw. A figure can hold one Axes or many. Think of the figure as the picture frame, and each Axes as a picture inside it.
+
+matplotlib offers two styles. The pyplot style, calling plt dot plot directly, is quick and implicit, and it's fine for a fast look. The object-oriented style is what we'll use: call plt dot subplots to get a figure and axes, then call methods on the axes. It's explicit, so it stays clear when you have several charts.
+
+Here's a line chart of illustrative monthly revenue. We create the figure and axes, plot the series with circle markers, set the title and axis labels, rotate the date labels with autofmt x date, and save the figure as a PNG.
+
+And there's the chart. Revenue climbs from about one hundred to about one hundred forty-six thousand dollars, with a dip in September.
+
+The other chart types follow the same pattern. Axes dot bar for categories, barh for horizontal bars, hist for distributions, scatter for relationships, and boxplot for spread. Same figure and axes, different method. And savefig writes the file to disk, in the resolution you choose. Once you know one of these methods, you know them all.
+
+Next up: customizing charts.

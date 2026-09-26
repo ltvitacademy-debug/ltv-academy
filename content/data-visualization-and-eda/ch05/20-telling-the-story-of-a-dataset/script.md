@@ -1,0 +1,13 @@
+A folder of good charts is not a finding. A finding is a claim, backed by evidence, that matters to someone. This lesson is about shaping that claim.
+
+A chart titled churn rate by support tickets leaves the reader to do the interpreting. A chart titled customers with three or more tickets churn about four times as often gives them the conclusion, and lets them check it against the bars. Do the interpretive work first, then show the evidence.
+
+Borrow a structure from all good stories. Context: what we already knew. About one customer in five churned in our illustrative dataset. Tension: what surprised us. Churn is not evenly spread, it climbs steeply with support contacts. Resolution: what happens next. Flag customers at three tickets for outreach. No tension, and readers ask so what. No resolution, and they ask now what.
+
+Four rules help a chart carry a message. One message per chart. Title the finding, not the variables. Highlight what matters, grey out the context, and give the important bar one strong color. And cut whatever does not help.
+
+Here is the code. We cap the ticket count at three so the last bar means three or more, and color only that bar. The computed churn rates were eleven percent for zero tickets, fifteen for one, twenty-six for two, and forty-five for three or more. That ratio is four, which is where the title comes from. Always compute the number you quote.
+
+Finally, stay honest. Association is not cause. Perhaps unhappy customers both complain and leave. Show group sizes, use words like suggests instead of proves, and say so if you looked at many breakdowns before picking this one.
+
+Next, we turn the story into a written analysis.

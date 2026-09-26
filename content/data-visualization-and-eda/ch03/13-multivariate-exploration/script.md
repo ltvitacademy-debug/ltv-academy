@@ -1,0 +1,29 @@
+# Script — Multivariate Exploration
+
+## Segment 1 (title)
+
+Real questions rarely involve just two columns. Who churns depends on tenure, region, channel, order count, and more, all at once. Multivariate exploration means looking at three or more variables together.
+
+## Segment 2 (steps)
+
+You usually do it by adding a dimension to a chart you already know. Add color with the hue argument. Split a chart into small panels, one per category. Build a grid with a pivot table and draw it as a heatmap. Or group by two keys in a table. Each asks: does this pattern hold once I account for another variable?
+
+## Segment 3 (code)
+
+Here a pivot table computes churn rate for every region and channel pair, drawn as an annotated heatmap. Next to it, the tenure and orders scatter plot is colored by whether the customer churned. Both charts are drawn on a one by two grid of subplots.
+
+## Segment 4 (screenshot)
+
+In the heatmap, South is the darkest row across all three channels, and the highest cell is South app at thirty-five percent. But check cell sizes. South app has only twenty customers, so that cell is a lead, not a finding. In the scatter plot, the orange churned points cluster at low tenure. Churn is more common among newer customers, a story neither chart shows alone.
+
+## Segment 5 (code)
+
+Relplot with a col argument makes one scatter panel per channel, so you can check whether a pattern holds in each. Pair plot surveys every numeric pair at once. Notice the filter: the two extreme spend values would squash every panel, so this exploratory view leaves them out.
+
+## Segment 6 (code)
+
+Tables work too. Cut tenure into bands with pandas cut, then group by band. Churn is about thirty percent in the first year, twenty-four percent in the second, and only twelve percent after two years. This matters because of confounding. If South customers were simply newer, South's high churn might be a tenure effect, not a region effect. Compare regions within a tenure band to find out.
+
+## Segment 7 (outro)
+
+Add variables with color, facets, and grids, and always check the counts behind a rate. Up next, correlation analysis: putting numbers on relationships.

@@ -1,0 +1,25 @@
+# Script — Automated EDA Tools
+
+## Segment 1 (title)
+
+Everything so far in this chapter has been hand-built. That is the right way to learn. But for a first pass on a new table, some libraries generate a whole exploration report in a few lines. This lesson looks at two of them, and how to use them without letting them do your thinking.
+
+## Segment 2 (code)
+
+The first is ydata-profiling, formerly published as pandas-profiling. Wrap your data frame in a ProfileReport, call to file, and you get a self-contained HTML report with an overview, one section per variable, correlations, missing values, and a list of alerts. For our five hundred rows it took a few seconds. I ran this with version four point six point four, and had to line up my package versions to make it work, so check current docs for compatibility.
+
+## Segment 3 (code)
+
+Here is what it flagged on our data. Twenty missing ages. Nineteen customers with zero orders and zero spend. Orders and total spend strongly correlated. And zero duplicate rows. All of it matches what we found by hand. The zeros are a genuine question for the data owner: new accounts, or customers who never purchased?
+
+## Segment 4 (code)
+
+The second tool is Sweetviz. Its strength is comparing two data frames, say a training set and a test set, and relating each variable to a target column. Sweetviz compare takes two named data frames and writes an HTML report. It ran fine for me on version two point three point three.
+
+## Segment 5 (steps)
+
+But notice what the alert list did not name in my run: the two suspicious spend values, seventy-four hundred and ninety-eight hundred. A tool has no context. Deciding that twenty-four fifty per order is implausible took the reasoning from the last lesson. A report is not a finding, and it is easy to generate and ignore, so read every section.
+
+## Segment 6 (outro)
+
+Use these tools for a first pass, then follow up by hand. Up next, Power BI for data scientists, starting with connecting Power BI to Python and SQL data.

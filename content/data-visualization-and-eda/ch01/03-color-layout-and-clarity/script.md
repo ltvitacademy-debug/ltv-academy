@@ -1,0 +1,11 @@
+A correct chart isn't automatically a clear one. Color, layout and labels decide whether the reader gets your point in five seconds, or gives up.
+
+Start with color, and treat it as information, not decoration. Use categorical colors, a few distinct hues, for groups with no order, like regions. Use a sequential palette, light to dark in one hue, for values that run from low to high. Use a diverging palette, two hues meeting at a neutral middle, for values above and below a meaningful center like zero. And never rely on red versus green alone: roughly one in twelve men has some form of red-green color blindness.
+
+Now layout. Give the chart a title that states the finding, not just the topic. Label bars directly so nobody has to trace lines to a legend. Sort categories by value, unless they have a natural order. And remove what doesn't carry data: heavy borders, dense gridlines, drop shadows and redundant legends.
+
+Here's the technique that does the most work: grey everything, and highlight the one thing that matters. We compute average spend by region, color three bars grey and the West bar in a single accent color, add value labels, and write the takeaway as the title.
+
+Compare that with a default chart of the same data: four identical bars and no message. In the clarified version, the eye lands on West, and the title tells you why. That's the goal. The reader should get the point before they've finished reading the axes.
+
+Next up: misleading charts, and how to avoid them.
