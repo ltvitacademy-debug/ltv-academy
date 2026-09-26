@@ -426,6 +426,7 @@ export const CAREER_PATHS: CareerPath[] = [
       "This is not just a theory course. Students work inside an Oracle Fusion Cloud practice environment and complete configurations, transactions, troubleshooting exercises, reporting assignments, and an end-to-end implementation capstone.",
       "The program also adds SQL, financial data analysis, FBDI, ADFdi, REST API concepts, reporting, security, and implementation methodology so students understand both the functional and technical sides of Oracle Fusion Financials.",
     ],
+    salaryRange: "$130K–$270K",
     certification:
       "Aligned with current Oracle Fusion Cloud Financials certification objectives where appropriate — completing this path does not automatically earn an Oracle certification",
     labRequirement: {
