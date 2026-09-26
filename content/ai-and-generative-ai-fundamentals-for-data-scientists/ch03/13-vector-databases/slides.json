@@ -1,0 +1,68 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI & Generative AI Fundamentals for Data Scientists · Chapter 3",
+    "titlePlain": "Vector ",
+    "titleEmphasis": "Databases",
+    "titleSuffix": "",
+    "subtitle": "Lesson 13 · Embeddings & Vector Databases"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What a vector database does",
+    "titlePlain": "Store, index, ",
+    "titleEmphasis": "search",
+    "titleSuffix": "",
+    "steps": [
+      {"label": "Store", "sub": "Vectors plus ids and metadata"},
+      {"label": "Index", "sub": "So a query skips most vectors"},
+      {"label": "Nearest neighbors", "sub": "Top k by cosine, dot, or L2"},
+      {"label": "Filter", "sub": "Similarity plus normal conditions"}
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Baseline: exact search, 50,000 vectors",
+    "code": "def exact_top(q, m=10):\n    s = X @ q\n    idx = np.argpartition(-s, m)[:m]\n    return idx[np.argsort(-s[idx])]\n\n# X: 50,000 unit vectors x 64 dims\n# one query = 50,000 dot products",
+    "caption": "Cost grows linearly with the number of vectors."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Build an IVF-style index once",
+    "code": "km = KMeans(n_clusters=100, n_init=1,\n            random_state=0).fit(X)\nlists = [np.where(km.labels_ == c)[0]\n         for c in range(100)]\n\n# k-means groups vectors into 100 cells\n# lists[c] = ids of vectors in cell c",
+    "caption": "Cluster once; search only nearby cells later."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Approximate search: probe a few cells",
+    "code": "def approx_top(q, m=10, nprobe=5):\n    sims = km.cluster_centers_ @ q\n    near = np.argsort(-sims)[:nprobe]\n    cand = np.concatenate(\n        [lists[c] for c in near])\n    s = X[cand] @ q\n    top = np.argsort(-s)[:m]\n    return cand[top]",
+    "caption": "nprobe = how many cells to search."
+  },
+  {
+    "type": "screenshot",
+    "file": "chart.png",
+    "eyebrow": "Speed versus recall, 50,000 vectors (illustrative)",
+    "caption": "Output of the code above (timings vary by machine)."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Tool landscape, as of this writing",
+    "titlePlain": "Pick by ",
+    "titleEmphasis": "need",
+    "titleSuffix": "",
+    "steps": [
+      {"label": "Faiss", "sub": "Library: exact, IVF, HNSW indexes"},
+      {"label": "pgvector", "sub": "Vectors inside PostgreSQL"},
+      {"label": "Chroma", "sub": "Open-source embedding database"},
+      {"label": "Azure AI Search", "sub": "Managed vector + keyword search"}
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 14",
+    "titlePlain": "Semantic ",
+    "titleEmphasis": "Search",
+    "titleSuffix": "",
+    "subtitle": "Search by meaning, not just keywords."
+  }
+]

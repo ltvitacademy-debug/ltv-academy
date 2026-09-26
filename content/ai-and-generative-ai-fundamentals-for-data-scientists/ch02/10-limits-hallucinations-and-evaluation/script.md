@@ -1,0 +1,11 @@
+Large language models are next-token predictors trained to produce plausible text. That one fact explains most of their failures. Let's see it in miniature, then talk about how to measure it.
+
+Here is the simplest possible next-word model, a bigram model. For each word, we remember which words followed it in a tiny training text, then generate by sampling. Every word pair it produces really did occur in the training data.
+
+But look at the output. The customer renewed the plan appears in the corpus. The customer renewed the report does not. It's fluent, it's plausible, and nobody ever wrote it. Real models are vastly more capable, but the same mechanism, generating what fits the pattern, is why they can cite a paper that doesn't exist. That's a hallucination.
+
+Plan for the other limits too. A knowledge cutoff means your private data isn't in there unless you supply it. The context window caps how much text the model can read at once. Exact arithmetic and multi-step logic are unreliable, so have the model write code and run it. And with a temperature above zero, the same prompt can give different answers.
+
+So evaluate like a data scientist. Build a labeled set, run the system, and score it. Say a stand-in model gets seventeen of twenty right. That's eighty-five percent, but the ninety-five percent Wilson interval runs from about sixty-four to ninety-five. With twenty examples, a five-point improvement is noise.
+
+Use bigger labeled sets, keep them separate from your prompt examples, and add human review for open-ended text. If you use an LLM as a judge, calibrate it against human labels. Next chapter: embeddings.

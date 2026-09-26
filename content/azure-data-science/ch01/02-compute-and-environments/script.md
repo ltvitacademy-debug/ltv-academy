@@ -1,0 +1,15 @@
+On your laptop, where your code runs and what is installed are decided by whatever machine you happen to have. In Azure Machine Learning both are explicit resources: compute is the machine, and an environment is the software recipe.
+
+There are three managed kinds of compute. A compute instance is a cloud workstation for one person, with Jupyter and VS Code built in. A compute cluster is a shared pool that scales up when a job is submitted, and can scale down to zero. And serverless compute means you create nothing at all: submit a job with no compute named and the service finds capacity.
+
+Creating a compute instance in the studio, you choose CPU or GPU and a VM size. Microsoft labels each size with the workload it suits, and shows your remaining core quota, a limit you will hit sooner than you expect.
+
+For a cluster, the settings that matter are the size, the minimum and maximum node counts, and the idle time before scale down. A minimum of zero means no compute charge while nothing runs. This code is illustrative and not run here.
+
+For compute instances, turn on idle shutdown. A forgotten running workstation is the classic surprise bill, so set a shutdown time when you create it.
+
+An environment defines the packages and settings your code needs. Azure builds it into a cached Docker image. It comes in three flavors: curated, prebuilt by Microsoft; a conda specification on top of a base image; or your own container.
+
+Here is a conda spec pinned to the versions installed on the course machine. This is real output. Azure decides whether it can reuse a cached image by hashing the environment definition, and this hash shows the idea: change one version and you get a different environment. Always pin your versions.
+
+Next lesson: data assets and datastores, how your data gets to that compute.

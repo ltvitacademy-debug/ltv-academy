@@ -1,0 +1,61 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Azure Data Science · Chapter 3",
+    "titlePlain": "Feature Engineering ",
+    "titleEmphasis": "at Scale With Spark",
+    "titleSuffix": "",
+    "subtitle": "Lesson 13 · Databricks & Fabric for Data Science"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Same ideas, bigger data",
+    "titlePlain": "Four things that ",
+    "titleEmphasis": "change",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Volume", "sub": "Data outgrows one machine" },
+      { "label": "Syntax", "sub": "pandas ideas, Spark functions" },
+      { "label": "Leakage", "sub": "Only use data before the cutoff" },
+      { "label": "Reuse", "sub": "Save features once, share them" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Windowed features, pandas stand-in",
+    "code": "past = orders[orders.order_date < cutoff]\nlo = cutoff - pd.Timedelta(days=30)\nw = past[past.order_date >= lo]\ng = w.groupby(\"customer_id\")[\"amount\"]\nfeat = g.agg([\"size\", \"sum\"])",
+    "caption": "Simplified from the run. Cutoff 2025-03-01."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The same idea in PySpark, illustrative",
+    "code": "w = past.filter(\n  F.col(\"order_date\")\n  >= F.date_sub(cutoff, 30))\nfeat = w.groupBy(\"customer_id\").agg(\n  F.count(\"*\").alias(\"orders_30d\"),\n  F.sum(\"amount\").alias(\"spend_30d\"))",
+    "caption": "Not run here: no Spark cluster available."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Point-in-time join, run locally",
+    "code": "pd.merge_asof(events, snap,\n    on=\"ts\", by=\"customer_id\")\n\nts          orders_30d\n2025-02-10           3\n2025-03-15           5",
+    "caption": "Each event gets the latest snapshot at or before it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A Databricks feature table, illustrative",
+    "code": "fe = FeatureEngineeringClient()\nfe.create_table(\n    name=\"ml.retail.customer_features\",\n    primary_keys=\"customer_id\",\n    df=feat_df,\n    description=\"Customer features\")",
+    "caption": "Any Delta table with a primary key can qualify."
+  },
+  {
+    "type": "screenshot",
+    "file": "feature-search-example-uc.png",
+    "eyebrow": "Databricks · Features UI",
+    "caption": "Search feature tables by name, tag or comment."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 14",
+    "titlePlain": "Data Science in ",
+    "titleEmphasis": "Microsoft Fabric",
+    "titleSuffix": "",
+    "subtitle": "The same workflow on Microsoft's unified analytics platform."
+  }
+]

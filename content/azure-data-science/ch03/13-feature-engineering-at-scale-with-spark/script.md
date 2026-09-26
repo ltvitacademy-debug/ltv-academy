@@ -1,0 +1,15 @@
+Feature engineering is where most of the modeling effort goes. When the data outgrows one machine, you do the same work with Spark. This lesson is about how that changes, not about Spark basics.
+
+Four things change. Volume, because the data no longer fits in memory. Syntax, because your pandas ideas become Spark functions. Leakage, because you must compute features using only data from before your prediction cutoff. And reuse, because a feature computed once should be saved and shared.
+
+Here is a pandas stand in, which I ran on synthetic retail orders. Keep only orders before the cutoff, take the last thirty days, group by customer, and aggregate to counts and totals. The label, whether a customer bought again in March, comes only from orders after the cutoff. A simple model on these features scored an AUC of about zero point six six, which is modest, and that is fine for illustrative data.
+
+In PySpark the same logic is a filter, a group by, and an agg with count and sum. This is illustrative code, not run here, because no Spark cluster was available. The shape is what matters: pandas thinking, Spark functions.
+
+Time deserves special care. A point in time join gives each event the latest feature snapshot at or before that event, never a later one. Locally, pandas merge as of does this. Databricks feature tables support the same idea with timeseries columns.
+
+To reuse features, Databricks lets you register a table with a primary key as a feature table, using the Feature Engineering client. Later you build a training set with feature lookups, and log the model so it looks up features at inference. That reduces training and serving skew. Check the docs for current API details.
+
+The Features page lets teammates search feature tables by name, tag or comment, so nobody rebuilds the same feature twice.
+
+Next, lesson fourteen brings the same data science workflow to Microsoft Fabric.
