@@ -1,0 +1,29 @@
+# Script — Variables, Types & Control Flow
+
+## Segment 1 (title)
+
+Every analysis is built from three ideas: storing a value under a name, knowing what kind of value it is, and making decisions based on it. This lesson covers all three.
+
+## Segment 2 (steps)
+
+Python has five core types you will use every day. Integers for whole numbers. Floats for decimals. Strings for text. Booleans, true or false. And None, which means no value here, like NULL in SQL. There is no DECLARE and no type declaration. You simply assign a name, and Python works out the type from the value.
+
+## Segment 3 (code)
+
+Customer equals Ada, orders equals twelve, average order equals forty eight point five. Multiply orders by average order and you get five eighty-two point zero, a float, because an integer times a float is a float. An f-string, that is a string starting with the letter f, puts values inside curly braces, and colon dot two f formats money with two decimals.
+
+## Segment 4 (code)
+
+Decisions use if, elif, and else. Python checks each condition from the top and runs the first one that is true. Here, a total over five hundred earns the gold tier. Notice there are no braces. The indented block is the code that belongs to the condition, and four spaces is the convention.
+
+## Segment 5 (code)
+
+A for loop walks through a collection one item at a time. Here it keeps a running total. Use enumerate when you also need the position. Break exits a loop early, continue skips to the next item, and while repeats as long as a condition stays true.
+
+## Segment 6 (code)
+
+Two gotchas to know now. Zero point one plus zero point two does not equal zero point three, because floats are stored in binary, so round before you compare. And plus on two strings joins them: the string five plus the string five gives fifty-five, the classic bug when a number column arrives as text.
+
+## Segment 7 (outro)
+
+With types and control flow in hand, you can now package logic for reuse. Next lesson: functions and comprehensions.

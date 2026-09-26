@@ -1,0 +1,11 @@
+Nearly every business table has a date, and dates are where data goes wrong most often, because they arrive as text in a dozen formats. In this lesson you parse them, pull them apart, do math with them, and summarize by period.
+
+Parsing comes first. Pd dot to datetime converts text into real timestamps. Ambiguity is the classic trap: is oh-three slash oh-four March fourth or April third? By default pandas reads month first. The safest fix is to state the exact format, so nothing is guessed. And errors equals coerce turns junk into NaT, not a time, instead of crashing. Then count the NaTs.
+
+Once a column is a real datetime, the dt accessor exposes its parts: year, month, day name, day of week. Remember that day of week numbers Monday as zero. These are the raw material for features like is weekend or month of purchase.
+
+Subtract two dates and you get a Timedelta; dot dt dot days turns it into a plain number. If the analysis date is March thirty-first, order one is eighty-six days old. That days-since column is the basis of recency measures in customer analysis. You can also filter with plain date strings, and between includes both end points.
+
+To summarize by period, set the date as the index and call resample. Month end sums our illustrative amounts into January, February and March totals. It works like GROUP BY on a truncated date. For simple counts by month, dt dot to period does the job.
+
+Up next: the biggest topic in pandas, group by and aggregation, where you summarize by any category, not just by date.

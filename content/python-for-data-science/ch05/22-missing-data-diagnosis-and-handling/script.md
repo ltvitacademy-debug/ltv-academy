@@ -1,0 +1,15 @@
+# Script — Missing Data: Diagnosis & Handling
+
+Real data is never complete. A customer skips the age field, a sensor drops a reading, a join finds no match. In this lesson you'll learn to find missing values in pandas, ask why they're missing, and choose between dropping them and filling them.
+
+Start by measuring. In pandas a missing value shows up as NaN, and isna gives you a True or False for every cell. Chain it with sum to count the gaps per column, or with mean to get the share. Then filter on isna to look at the actual rows. You already know the T-SQL version: WHERE age IS NULL.
+
+Before you fix anything, ask why the value is missing. Sometimes it's pure chance. Sometimes it depends on another column, like younger customers skipping the age question. And sometimes the gap itself is the signal, such as a blank cancellation date meaning the customer is still active. Each case calls for a different response.
+
+The blunt option is dropna. Dropping on one column keeps six of our eight rows, but dropping every row with any gap leaves only three. That's why you rarely call dropna on the whole table. Use the subset argument to name the columns that truly matter.
+
+The other option is to fill. Fill age with the median, which resists extreme values. Fill a text column with an explicit label like Unknown. Add a flag column first, so you remember which ages were real. For a smarter fill, use groupby with transform, so each row gets its own city's median.
+
+A simple rule of thumb. Diagnose first. Drop only when few rows are affected and the loss looks random. Fill when you need every row, and write down what you did. And never let a fill hide a pattern you should have investigated.
+
+Next up, Lesson 23: duplicates and inconsistent records.

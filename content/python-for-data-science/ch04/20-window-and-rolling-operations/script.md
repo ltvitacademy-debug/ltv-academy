@@ -1,0 +1,11 @@
+Some questions cannot be answered one row at a time. What is the three-day moving average? How much did sales change since yesterday? What is each customer's running total? These need a row to see its neighbors. In SQL they are window functions; in pandas, rolling, cumsum and shift.
+
+Here is the map. Rolling gives moving statistics. Cumsum and expanding accumulate. Shift, diff and pct change compare a row to the one before. And group by makes any of them restart for each customer. One rule first: all of these depend on row order, so sort before you start.
+
+Rolling three builds a window of the current row and the two before it. The first two rows are NaN because a full window does not exist yet. Check the third by hand: one twenty, one thirty-five, one ten, average one twenty-one point six seven. Min periods equals one gives partial results at the start. Moving averages smooth out daily noise.
+
+Cumsum gives the running total. Shift one moves values down a row, so each row can see the previous one: SQL's LAG. Diff subtracts the previous row. Pct change gives relative change. Day two was twelve point five percent above day one, and day six fell forty percent. The first row has no previous value, so it is NaN.
+
+Combine these with group by and the calculation restarts for each customer. Sort by customer and date, then a grouped cumsum gives running spend, shift gives the previous order, and diff on the date gives days since the last order. Customer one-oh-two waited sixty-two days. These are classic features for customer models.
+
+Cumcount plus one gives order number, like ROW NUMBER with PARTITION BY. Next up: working with text data.

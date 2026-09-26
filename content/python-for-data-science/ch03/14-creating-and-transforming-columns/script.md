@@ -1,0 +1,13 @@
+Raw data rarely has exactly the columns your analysis needs. You compute totals, flag categories and fix types. In this lesson you learn the handful of moves that create and transform columns in pandas.
+
+Four tools cover most of it. Arithmetic, for new numbers from old ones. N p dot where, which is SQL's CASE WHEN. Map and pd dot cut, for recoding and bucketing. And astype, for fixing a column's type.
+
+Assign to a column name that does not exist yet and pandas creates it. The math is vectorized, so it hits every row at once. Here we add a tax column at an illustrative eight percent. Notice that a missing amount simply stays missing. Missing values flow through arithmetic instead of raising an error.
+
+N p dot where takes a condition, a value for true, and a value for false. Here is a trap. Order five has a missing amount, and a missing value compared to one hundred is False. So it silently got the label small. When missing data matters, handle it explicitly, or you get quietly wrong answers.
+
+Map translates values with a dictionary, perfect for collapsing status codes into cleaner groups. Anything missing from the dictionary becomes NaN, so make sure it covers every value. Pd dot cut sorts numbers into bands, given the edges and a label for each.
+
+Astype changes a column's type. Rename and drop return a new DataFrame, so assign the result back if you want to keep it. And prefer these vectorized tools over apply, which is slower and harder to read.
+
+Next up: sorting, ranking and counting values, the pandas versions of ORDER BY and a quick frequency table.
