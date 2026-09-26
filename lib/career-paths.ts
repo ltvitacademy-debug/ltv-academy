@@ -16,7 +16,7 @@ export type CareerPath = {
   title: string;
   targetJobs: string[];
   description: string;
-  salaryRange: string;
+  salaryRange?: string; // omitted where no verified range has been supplied
   certification?: string;
   isDestination?: boolean; // shown as an advanced destination, not a first choice
   // Optional richer page content (used by destination pages that need more than one paragraph)
@@ -26,6 +26,22 @@ export type CareerPath = {
   afterFlow?: string[]; // paragraphs shown after the capstone flow
   compensation?: { heading: string; paragraphs: string[] };
   progression?: { heading: string; ladder: string; levels: { label: string; value: string }[] };
+  // Extra one-line detail shown under a course's tagline on the path page, keyed by course slug
+  courseDetails?: Record<string, string>;
+  // A prominent third-party requirement block shown before the course sections
+  labRequirement?: {
+    eyebrow: string;
+    heading: string;
+    intro: string[];
+    optionLabel: string;
+    optionLines: string[];
+    buttonLabel: string;
+    buttonUrl: string;
+    importantNote: string;
+    whenHeading: string;
+    whenText: string;
+    verifiedNote: string;
+  };
   stages: PathStage[];
   destinationNote: string;
 };
@@ -391,6 +407,106 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "Junior DevOps Engineer → DevOps Engineer → Senior DevOps Engineer → Platform Engineer or Site Reliability Engineer → Staff/Principal Platform Engineer → DevOps/Platform Architect. SQL/Python/cloud knowledge is the common trunk with the data paths, so a Data Engineering student can branch into DevOps without starting over.",
+  },
+  {
+    slug: "oracle-fusion-financials-consultant",
+    title: "Oracle Fusion Financials Consultant",
+    targetJobs: [
+      "Oracle Fusion Financials Analyst",
+      "Junior Oracle Financials Functional Consultant",
+      "Oracle ERP Analyst",
+      "Financial Systems Analyst",
+      "Oracle Fusion Financials Consultant",
+      "Senior Oracle Financials Consultant",
+    ],
+    description:
+      "This path takes a student from basic accounting and ERP concepts through hands-on Oracle Fusion Cloud Financials implementation, transactions, reporting, integrations, and production support — General Ledger, Payables, Receivables, Cash Management, Fixed Assets, Expenses, Subledger Accounting, Procure-to-Pay, and Order-to-Cash.",
+    longDescription: [
+      "This path takes a student from basic accounting and ERP concepts through hands-on Oracle Fusion Cloud Financials implementation, transactions, reporting, integrations, and production support. Students learn how a company's financial operations move through General Ledger, Payables, Receivables, Cash Management, Fixed Assets, Expenses, Subledger Accounting, Procure-to-Pay, and Order-to-Cash.",
+      "This is not just a theory course. Students work inside an Oracle Fusion Cloud practice environment and complete configurations, transactions, troubleshooting exercises, reporting assignments, and an end-to-end implementation capstone.",
+      "The program also adds SQL, financial data analysis, FBDI, ADFdi, REST API concepts, reporting, security, and implementation methodology so students understand both the functional and technical sides of Oracle Fusion Financials.",
+    ],
+    certification:
+      "Aligned with current Oracle Fusion Cloud Financials certification objectives where appropriate — completing this path does not automatically earn an Oracle certification",
+    labRequirement: {
+      eyebrow: "Read this before you enroll",
+      heading: "Required Oracle Fusion Practice Environment",
+      intro: [
+        "This career path requires hands-on access to Oracle Fusion Cloud. Oracle Fusion Cloud access is NOT included with your Lifting the Veil IT Academy subscription.",
+        "Students must purchase their own Oracle Fusion Cloud practice-instance access separately from OracleERPGuide (OEG).",
+      ],
+      optionLabel: "Current option",
+      optionLines: [
+        "Oracle Fusion Cloud Practice Instance",
+        "Approximately $85 for 3 months",
+        "Purchased directly from OracleERPGuide",
+      ],
+      buttonLabel: "Get Oracle Fusion Lab Access",
+      buttonUrl: "https://www.oracleerpguide.com/courses/oracle-fusion-cloud-instance-access/",
+      importantNote:
+        "OracleERPGuide is a third-party provider and is separate from Lifting the Veil IT Academy. Lab pricing, availability, features, access duration, and terms are controlled by OracleERPGuide and may change. LTV Academy tuition does not include this fee. Nothing on this page implies sponsorship or endorsement of LTV Academy by Oracle or OracleERPGuide, and LTV Academy does not own, operate, resell, or provide the OracleERPGuide environment.",
+      whenHeading: "When should I purchase it?",
+      whenText:
+        "Do not purchase your lab environment just because you enrolled in LTV Academy. Begin the introductory lessons first. The course will tell you when you have reached the hands-on portion and should activate your practice environment so you can maximize your three-month access period.",
+      verifiedNote:
+        "Third-party pricing last verified September 2026. Verify current pricing with OracleERPGuide before you purchase.",
+    },
+    courseDetails: {
+      "oracle-fusion-procure-to-pay": "Students follow one transaction through the complete purchasing lifecycle.",
+      "oracle-fusion-order-to-cash": "Students follow revenue through the complete customer lifecycle.",
+      "sql-for-oracle-financials": "Example challenge: Finance needs all unpaid supplier invoices over $10,000 that are more than 30 days old.",
+      "troubleshooting-oracle-financials": "Students must identify the cause, resolve the issue and document what they did.",
+      "ltv-manufacturing-corporation-capstone":
+        "Final challenge: It is January 31. The CFO says the books do not balance and the accounting period cannot be closed. The student is the Oracle Fusion Financials Consultant and must investigate AP, AR, Assets, Cash Management, SLA and GL, identify the problems, correct them, reconcile the accounts and complete the month-end close. Final deliverables: Income Statement, Balance Sheet, AP Aging, AR Aging, Reconciliation Report, Issue Log, Implementation Documentation, and a final presentation explaining what was wrong and how it was corrected.",
+    },
+    stages: [
+      {
+        label: "Oracle & Financial Foundations",
+        note: "No accounting or ERP background assumed",
+        courseSlugs: ["oracle-fusion-cloud-and-erp-foundations", "accounting-fundamentals-for-oracle-professionals"],
+      },
+      {
+        label: "Financials Configuration",
+        note: "Hands-on begins here — the course tells you when to activate your practice environment",
+        courseSlugs: ["oracle-fusion-enterprise-structures-and-chart-of-accounts", "oracle-fusion-general-ledger", "oracle-fusion-accounts-payable", "oracle-fusion-accounts-receivable"],
+      },
+      {
+        label: "Financial Operations",
+        courseSlugs: ["oracle-fusion-cash-management", "oracle-fusion-fixed-assets", "oracle-fusion-expenses"],
+      },
+      {
+        label: "End-to-End Business Processes",
+        note: "Follow one transaction from the business event to the General Ledger",
+        courseSlugs: ["oracle-fusion-procure-to-pay", "oracle-fusion-order-to-cash", "oracle-fusion-subledger-accounting"],
+      },
+      {
+        label: "Reporting & Data",
+        courseSlugs: ["oracle-financial-reporting", "oracle-financials-data", "sql-for-oracle-financials"],
+      },
+      {
+        label: "Data Loading & Integrations",
+        courseSlugs: ["fbdi-and-adfdi", "rest-apis-and-integration-fundamentals"],
+      },
+      {
+        label: "Security & Implementation",
+        courseSlugs: ["oracle-fusion-security", "oracle-fusion-implementation-lifecycle"],
+      },
+      {
+        label: "Production Support",
+        courseSlugs: ["troubleshooting-oracle-financials"],
+      },
+      {
+        label: "Capstone",
+        note: "An end-to-end simulated implementation and a month-end close under pressure",
+        courseSlugs: ["ltv-manufacturing-corporation-capstone"],
+      },
+      {
+        label: "Career & Interview Preparation",
+        courseSlugs: ["oracle-financials-career-and-interview-preparation"],
+      },
+    ],
+    destinationNote:
+      "This path is its own door into LTV — no accounting, ERP, or Oracle experience is assumed. A typical progression runs Oracle Fusion Financials Analyst → Junior Oracle Financials Functional Consultant → Oracle ERP Analyst → Financial Systems Analyst → Oracle Fusion Financials Consultant → Senior Oracle Financials Consultant. How far and how fast depends on your experience, the modules you specialize in, and the projects you can walk an interviewer through — the LTV Manufacturing capstone gives you a complete implementation to talk about.",
   },
   {
     slug: "bi-to-data-architect",

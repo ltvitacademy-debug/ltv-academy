@@ -79,10 +79,12 @@ export default async function CareerPathPage({
       )}
 
       <div className="mt-6 flex flex-wrap gap-x-8 gap-y-3 border-y border-ink/10 py-5 text-sm">
-        <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-stone">Salary range</p>
-          <p className="mt-1 font-semibold text-crimson">{path.salaryRange}</p>
-        </div>
+        {path.salaryRange && (
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-stone">Salary range</p>
+            <p className="mt-1 font-semibold text-crimson">{path.salaryRange}</p>
+          </div>
+        )}
         {path.certification && (
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-stone">Certification target</p>
@@ -94,6 +96,55 @@ export default async function CareerPathPage({
           <p className="mt-1 text-ink">{path.targetJobs.join(" → ")}</p>
         </div>
       </div>
+
+      {path.labRequirement && (
+        <section
+          aria-labelledby="lab-requirement"
+          className="mt-12 rounded-[2px] border-2 border-gold bg-crimson-deep p-6 text-gold-pale sm:p-10"
+        >
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">{path.labRequirement.eyebrow}</p>
+          <h2 id="lab-requirement" className="display mt-3 text-3xl text-gold-pale sm:text-4xl">
+            {path.labRequirement.heading}
+          </h2>
+          <div className="mt-5 max-w-2xl space-y-4 text-gold-pale/90">
+            {path.labRequirement.intro.map((para) => (
+              <p key={para}>{para}</p>
+            ))}
+          </div>
+
+          <div className="mt-6 max-w-md rounded-[2px] border border-gold/50 p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">{path.labRequirement.optionLabel}</p>
+            <ul className="mt-3 space-y-1">
+              {path.labRequirement.optionLines.map((line, i) => (
+                <li key={line} className={i === 0 ? "display text-xl text-gold-pale" : "text-gold-pale/90"}>
+                  {line}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <a
+            href={path.labRequirement.buttonUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-block rounded-[2px] bg-gold px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-crimson-deep hover:bg-gold-pale"
+          >
+            {path.labRequirement.buttonLabel} <span aria-hidden="true">↗</span>
+            <span className="sr-only"> (opens OracleERPGuide in a new tab)</span>
+          </a>
+
+          <p className="mt-5 max-w-2xl text-sm text-gold-pale/80">
+            <strong className="font-semibold text-gold">IMPORTANT:</strong> {path.labRequirement.importantNote}
+          </p>
+
+          <div className="mt-8 max-w-2xl border-t border-gold/30 pt-6">
+            <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-gold">{path.labRequirement.whenHeading}</h3>
+            <p className="mt-3 text-gold-pale/90">{path.labRequirement.whenText}</p>
+          </div>
+
+          <p className="mt-6 text-xs text-gold-pale/70">{path.labRequirement.verifiedNote}</p>
+        </section>
+      )}
 
       {path.compensation && (
         <section className="mt-12">
@@ -146,6 +197,9 @@ export default async function CareerPathPage({
                         <div>
                           <h3 className="display text-xl group-hover:text-crimson">{course.title}</h3>
                           <p className="mt-1 max-w-xl text-sm text-stone">{course.tagline}</p>
+                          {path.courseDetails?.[courseSlug] && (
+                            <p className="mt-2 max-w-xl text-sm text-ink">{path.courseDetails[courseSlug]}</p>
+                          )}
                         </div>
                         <span className="whitespace-nowrap text-xs uppercase tracking-[0.14em] text-gold">
                           {lessonCount(course)} lessons
@@ -169,7 +223,7 @@ export default async function CareerPathPage({
                       className="group rounded-[2px] border border-ink/15 p-5 hover:border-crimson"
                     >
                       <h3 className="display text-lg group-hover:text-crimson">{choice.title}</h3>
-                      <p className="mt-2 text-sm text-stone">{choice.salaryRange}</p>
+                      {choice.salaryRange && <p className="mt-2 text-sm text-stone">{choice.salaryRange}</p>}
                     </Link>
                   );
                 })}

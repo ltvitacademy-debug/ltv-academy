@@ -88,6 +88,28 @@ import { MACHINE_LEARNING_FOR_QUANT_FINANCE_CHAPTERS } from "./machine-learning-
 import { ALGORITHMIC_TRADING_AND_BACKTESTING_CHAPTERS } from "./algorithmic-trading-and-backtesting-outline";
 import { QUANT_RESEARCH_AND_TRADING_CAPSTONE_CHAPTERS } from "./quant-research-and-trading-capstone-outline";
 import { DEVOPS_CAPSTONE_CHAPTERS } from "./devops-capstone-outline";
+import { ORACLE_FUSION_CLOUD_AND_ERP_FOUNDATIONS_CHAPTERS } from "./oracle-fusion-cloud-and-erp-foundations-outline";
+import { ACCOUNTING_FUNDAMENTALS_FOR_ORACLE_PROFESSIONALS_CHAPTERS } from "./accounting-fundamentals-for-oracle-professionals-outline";
+import { ORACLE_FUSION_ENTERPRISE_STRUCTURES_AND_CHART_OF_ACCOUNTS_CHAPTERS } from "./oracle-fusion-enterprise-structures-and-chart-of-accounts-outline";
+import { ORACLE_FUSION_GENERAL_LEDGER_CHAPTERS } from "./oracle-fusion-general-ledger-outline";
+import { ORACLE_FUSION_ACCOUNTS_PAYABLE_CHAPTERS } from "./oracle-fusion-accounts-payable-outline";
+import { ORACLE_FUSION_ACCOUNTS_RECEIVABLE_CHAPTERS } from "./oracle-fusion-accounts-receivable-outline";
+import { ORACLE_FUSION_CASH_MANAGEMENT_CHAPTERS } from "./oracle-fusion-cash-management-outline";
+import { ORACLE_FUSION_FIXED_ASSETS_CHAPTERS } from "./oracle-fusion-fixed-assets-outline";
+import { ORACLE_FUSION_EXPENSES_CHAPTERS } from "./oracle-fusion-expenses-outline";
+import { ORACLE_FUSION_PROCURE_TO_PAY_CHAPTERS } from "./oracle-fusion-procure-to-pay-outline";
+import { ORACLE_FUSION_ORDER_TO_CASH_CHAPTERS } from "./oracle-fusion-order-to-cash-outline";
+import { ORACLE_FUSION_SUBLEDGER_ACCOUNTING_CHAPTERS } from "./oracle-fusion-subledger-accounting-outline";
+import { ORACLE_FINANCIAL_REPORTING_CHAPTERS } from "./oracle-financial-reporting-outline";
+import { ORACLE_FINANCIALS_DATA_CHAPTERS } from "./oracle-financials-data-outline";
+import { SQL_FOR_ORACLE_FINANCIALS_CHAPTERS } from "./sql-for-oracle-financials-outline";
+import { FBDI_AND_ADFDI_CHAPTERS } from "./fbdi-and-adfdi-outline";
+import { REST_APIS_AND_INTEGRATION_FUNDAMENTALS_CHAPTERS } from "./rest-apis-and-integration-fundamentals-outline";
+import { ORACLE_FUSION_SECURITY_CHAPTERS } from "./oracle-fusion-security-outline";
+import { ORACLE_FUSION_IMPLEMENTATION_LIFECYCLE_CHAPTERS } from "./oracle-fusion-implementation-lifecycle-outline";
+import { TROUBLESHOOTING_ORACLE_FINANCIALS_CHAPTERS } from "./troubleshooting-oracle-financials-outline";
+import { LTV_MANUFACTURING_CORPORATION_CAPSTONE_CHAPTERS } from "./ltv-manufacturing-corporation-capstone-outline";
+import { ORACLE_FINANCIALS_CAREER_AND_INTERVIEW_PREPARATION_CHAPTERS } from "./oracle-financials-career-and-interview-preparation-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -895,6 +917,204 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: QUANT_RESEARCH_AND_TRADING_CAPSTONE_CHAPTERS,
     contentBase: "quant-research-and-trading-capstone",
+  },
+  {
+    slug: "oracle-fusion-cloud-and-erp-foundations",
+    title: "Oracle Fusion Cloud & ERP Foundations",
+    tagline:
+      "ERP fundamentals, Oracle Fusion Cloud architecture, SaaS, navigation, environments, implementation terminology, and functional versus technical Oracle careers.",
+    status: "available",
+    chapters: ORACLE_FUSION_CLOUD_AND_ERP_FOUNDATIONS_CHAPTERS,
+    contentBase: "oracle-fusion-cloud-and-erp-foundations",
+  },
+  {
+    slug: "accounting-fundamentals-for-oracle-professionals",
+    title: "Accounting Fundamentals for Oracle Professionals",
+    tagline:
+      "Debits and credits, assets, liabilities, equity, revenue, expenses, journal entries, trial balance, financial statements, accounting periods, ledgers and subledgers.",
+    status: "available",
+    chapters: ACCOUNTING_FUNDAMENTALS_FOR_ORACLE_PROFESSIONALS_CHAPTERS,
+    contentBase: "accounting-fundamentals-for-oracle-professionals",
+  },
+  {
+    slug: "oracle-fusion-enterprise-structures-and-chart-of-accounts",
+    title: "Enterprise Structures & Chart of Accounts",
+    tagline:
+      "Legal entities, business units, ledgers, chart of accounts, accounting calendars, currencies and reference data.",
+    status: "available",
+    chapters: ORACLE_FUSION_ENTERPRISE_STRUCTURES_AND_CHART_OF_ACCOUNTS_CHAPTERS,
+    contentBase: "oracle-fusion-enterprise-structures-and-chart-of-accounts",
+  },
+  {
+    slug: "oracle-fusion-general-ledger",
+    title: "General Ledger",
+    tagline:
+      "Ledgers, journals, sources, categories, posting, recurring journals, allocations, balances, inquiries and accounting periods.",
+    status: "available",
+    chapters: ORACLE_FUSION_GENERAL_LEDGER_CHAPTERS,
+    contentBase: "oracle-fusion-general-ledger",
+  },
+  {
+    slug: "oracle-fusion-accounts-payable",
+    title: "Accounts Payable",
+    tagline:
+      "Suppliers, invoices, invoice validation, holds, approvals, matching, payment terms, payments and accounting.",
+    status: "available",
+    chapters: ORACLE_FUSION_ACCOUNTS_PAYABLE_CHAPTERS,
+    contentBase: "oracle-fusion-accounts-payable",
+  },
+  {
+    slug: "oracle-fusion-accounts-receivable",
+    title: "Accounts Receivable",
+    tagline:
+      "Customers, transactions, invoices, credit memos, adjustments, receipts, collections and accounting.",
+    status: "available",
+    chapters: ORACLE_FUSION_ACCOUNTS_RECEIVABLE_CHAPTERS,
+    contentBase: "oracle-fusion-accounts-receivable",
+  },
+  {
+    slug: "oracle-fusion-cash-management",
+    title: "Cash Management",
+    tagline:
+      "Bank accounts, bank statements, transaction matching, reconciliation and cash positioning.",
+    status: "available",
+    chapters: ORACLE_FUSION_CASH_MANAGEMENT_CHAPTERS,
+    contentBase: "oracle-fusion-cash-management",
+  },
+  {
+    slug: "oracle-fusion-fixed-assets",
+    title: "Fixed Assets",
+    tagline:
+      "Asset books, categories, additions, capitalization, depreciation, transfers and retirements.",
+    status: "available",
+    chapters: ORACLE_FUSION_FIXED_ASSETS_CHAPTERS,
+    contentBase: "oracle-fusion-fixed-assets",
+  },
+  {
+    slug: "oracle-fusion-expenses",
+    title: "Expenses",
+    tagline:
+      "Employee expenses, expense reports, corporate cards, approvals, reimbursements and expense accounting.",
+    status: "available",
+    chapters: ORACLE_FUSION_EXPENSES_CHAPTERS,
+    contentBase: "oracle-fusion-expenses",
+  },
+  {
+    slug: "oracle-fusion-procure-to-pay",
+    title: "Procure-to-Pay",
+    tagline:
+      "Requisition → Purchase Order → Receipt → AP Invoice → Payment → Accounting → General Ledger.",
+    status: "available",
+    chapters: ORACLE_FUSION_PROCURE_TO_PAY_CHAPTERS,
+    contentBase: "oracle-fusion-procure-to-pay",
+  },
+  {
+    slug: "oracle-fusion-order-to-cash",
+    title: "Order-to-Cash",
+    tagline:
+      "Customer → Order → Invoice → Receivable → Receipt → Accounting → General Ledger.",
+    status: "available",
+    chapters: ORACLE_FUSION_ORDER_TO_CASH_CHAPTERS,
+    contentBase: "oracle-fusion-order-to-cash",
+  },
+  {
+    slug: "oracle-fusion-subledger-accounting",
+    title: "Subledger Accounting",
+    tagline:
+      "Accounting events, journal lines, account derivation, subledger entries, transfers to General Ledger and reconciliation.",
+    status: "available",
+    chapters: ORACLE_FUSION_SUBLEDGER_ACCOUNTING_CHAPTERS,
+    contentBase: "oracle-fusion-subledger-accounting",
+  },
+  {
+    slug: "oracle-financial-reporting",
+    title: "Oracle Financial Reporting",
+    tagline:
+      "Financial Reporting Center, OTBI, BI Publisher, Smart View, financial statements, operational reports and dashboards.",
+    status: "available",
+    chapters: ORACLE_FINANCIAL_REPORTING_CHAPTERS,
+    contentBase: "oracle-financial-reporting",
+  },
+  {
+    slug: "oracle-financials-data",
+    title: "Oracle Financials Data",
+    tagline:
+      "Understand how suppliers, customers, invoices, payments, journals, ledgers and accounting transactions are represented and related.",
+    status: "available",
+    chapters: ORACLE_FINANCIALS_DATA_CHAPTERS,
+    contentBase: "oracle-financials-data",
+  },
+  {
+    slug: "sql-for-oracle-financials",
+    title: "SQL for Oracle Financials",
+    tagline:
+      "Use SQL concepts to investigate financial data, reconcile transactions, identify exceptions and answer business questions. Example challenge: Finance needs all unpaid supplier invoices over $10,000 that are more than 30 days old.",
+    status: "available",
+    chapters: SQL_FOR_ORACLE_FINANCIALS_CHAPTERS,
+    contentBase: "sql-for-oracle-financials",
+  },
+  {
+    slug: "fbdi-and-adfdi",
+    title: "FBDI & ADFdi",
+    tagline:
+      "File-Based Data Import (FBDI), Application Development Framework desktop integration (ADFdi), spreadsheet uploads, templates, CSV/ZIP processing, validation, failed imports and scheduled processes.",
+    status: "available",
+    chapters: FBDI_AND_ADFDI_CHAPTERS,
+    contentBase: "fbdi-and-adfdi",
+  },
+  {
+    slug: "rest-apis-and-integration-fundamentals",
+    title: "REST APIs & Integration Fundamentals",
+    tagline:
+      "REST APIs, JSON, authentication concepts, integrations and exchanging financial data between Oracle Fusion and external applications.",
+    status: "available",
+    chapters: REST_APIS_AND_INTEGRATION_FUNDAMENTALS_CHAPTERS,
+    contentBase: "rest-apis-and-integration-fundamentals",
+  },
+  {
+    slug: "oracle-fusion-security",
+    title: "Oracle Fusion Security",
+    tagline:
+      "Users, job roles, duty roles, privileges, data access, segregation of duties and Financials security.",
+    status: "available",
+    chapters: ORACLE_FUSION_SECURITY_CHAPTERS,
+    contentBase: "oracle-fusion-security",
+  },
+  {
+    slug: "oracle-fusion-implementation-lifecycle",
+    title: "Oracle Fusion Implementation Lifecycle",
+    tagline:
+      "Requirements gathering, fit-gap analysis, configuration workbooks, DEV/TEST/PROD concepts, data migration, SIT, UAT, deployment and production support.",
+    status: "available",
+    chapters: ORACLE_FUSION_IMPLEMENTATION_LIFECYCLE_CHAPTERS,
+    contentBase: "oracle-fusion-implementation-lifecycle",
+  },
+  {
+    slug: "troubleshooting-oracle-financials",
+    title: "Troubleshooting Oracle Financials",
+    tagline:
+      "Students work realistic support tickets such as: AP invoice will not validate, journal will not post, user cannot access a business unit, payment is missing from GL, supplier was configured incorrectly, FBDI import failed, AR does not reconcile with GL, and accounting period will not close.",
+    status: "available",
+    chapters: TROUBLESHOOTING_ORACLE_FINANCIALS_CHAPTERS,
+    contentBase: "troubleshooting-oracle-financials",
+  },
+  {
+    slug: "ltv-manufacturing-corporation-capstone",
+    title: "LTV Manufacturing Corporation",
+    tagline:
+      "An end-to-end simulated Oracle Fusion Financials implementation: configure the enterprise, run purchasing through General Ledger posting, then investigate and correct a January 31 month-end close.",
+    status: "available",
+    chapters: LTV_MANUFACTURING_CORPORATION_CAPSTONE_CHAPTERS,
+    contentBase: "ltv-manufacturing-corporation-capstone",
+  },
+  {
+    slug: "oracle-financials-career-and-interview-preparation",
+    title: "Oracle Financials Career & Interview Preparation",
+    tagline:
+      "Oracle Financials terminology, functional, scenario-based, troubleshooting and implementation interview questions, resume project descriptions, how to explain the LTV Manufacturing capstone, and Oracle certification preparation guidance.",
+    status: "available",
+    chapters: ORACLE_FINANCIALS_CAREER_AND_INTERVIEW_PREPARATION_CHAPTERS,
+    contentBase: "oracle-financials-career-and-interview-preparation",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,

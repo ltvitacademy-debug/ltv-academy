@@ -43,7 +43,7 @@ export default function CareerPathsPage() {
                 </h2>
                 <p className="mt-2 max-w-2xl text-stone">{p.description}</p>
                 <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-                  <span className="font-semibold text-crimson">{p.salaryRange}</span>
+                  {p.salaryRange && <span className="font-semibold text-crimson">{p.salaryRange}</span>}
                   {p.certification && (
                     <span className="text-stone">
                       Certification: <span className="text-ink">{p.certification.split(" — ")[0]}</span>
@@ -83,7 +83,7 @@ export default function CareerPathsPage() {
                 {p.title}
               </h3>
               <p className="mt-3 text-sm text-gold-pale/80">{p.description}</p>
-              <p className="mt-4 text-sm font-semibold text-gold">{p.salaryRange}</p>
+              {p.salaryRange && <p className="mt-4 text-sm font-semibold text-gold">{p.salaryRange}</p>}
             </Link>
           ))}
         </div>
