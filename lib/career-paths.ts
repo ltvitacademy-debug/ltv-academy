@@ -19,6 +19,13 @@ export type CareerPath = {
   salaryRange: string;
   certification?: string;
   isDestination?: boolean; // shown as an advanced destination, not a first choice
+  // Optional richer page content (used by destination pages that need more than one paragraph)
+  subtitle?: string;
+  longDescription?: string[]; // paragraphs shown before the capstone flow
+  capstoneFlow?: string[]; // steps rendered as an arrow sequence
+  afterFlow?: string[]; // paragraphs shown after the capstone flow
+  compensation?: { heading: string; paragraphs: string[] };
+  progression?: { heading: string; ladder: string; levels: { label: string; value: string }[] };
   stages: PathStage[];
   destinationNote: string;
 };
@@ -472,10 +479,51 @@ export const CAREER_PATHS: CareerPath[] = [
   {
     slug: "quantitative-developer-researcher",
     title: "Quantitative Developer / Researcher",
+    subtitle: "The highest technical destination on the LTV career ladder",
     targetJobs: ["Quantitative Analyst", "Quantitative Developer", "Quantitative Researcher", "Quant ML Researcher", "Low-Latency / High-Frequency Trading (HFT) Engineer"],
     description:
-      "This isn't a starting point — it's the top of the ladder, shown as where the other paths lead. You arrive already knowing SQL, Python, data engineering, cloud, statistics, machine learning, Git, and data pipelines from the Data Scientist path and a Data Engineering specialty, so none of that is taught again. This is an advanced specialization layer: mathematics for quantitative finance, advanced Python for research, C++ for production systems, financial markets and derivatives, time-series and financial modeling, machine learning built for noisy financial data, and algorithmic trading and backtesting. It closes with a capstone where you take raw market data through a research question, statistical analysis, features, a model, a trading signal, a backtest, risk analysis, a performance report, and a presentation. From there you specialize: Quant Researcher (mathematics, statistics, and research), Quant Developer (C++, Python, and performance engineering), Quant ML Researcher (deep learning, alternative data, NLP, and time series), or Low-Latency / High-Frequency Trading (HFT) Engineer (C++, networking, operating systems, and concurrency).",
-    salaryRange: "$400K+ total compensation (base plus bonus) starting at top-tier hedge funds, proprietary trading firms, and banks · $1M–$1.5M+ at senior researcher and developer level, with the top of the field going higher — compensation is heavily bonus- and performance-driven, and entry at the top firms is extremely competitive",
+      "This is not a starting point. Quantitative Development and Research is an advanced destination built on the skills developed throughout the LTV career paths — SQL, Python, statistics, machine learning, data engineering, cloud computing, Git, data pipelines, and MLOps. It takes those skills into one of the most technically demanding areas of technology and finance.",
+    longDescription: [
+      "This is not a starting point. Quantitative Development and Research is an advanced destination built on the skills developed throughout the LTV career paths.",
+      "By the time you reach this specialization, you should already have a strong foundation in SQL, Python, statistics, machine learning, data engineering, cloud computing, Git, data pipelines, and MLOps through the Data Scientist path and a Data Engineering specialty.",
+      "The Quantitative Developer / Researcher path takes those skills into one of the most technically demanding areas of technology and finance.",
+      "Instead of repeating the foundation, you advance into mathematics for quantitative finance, advanced Python for research, C++ for high-performance production systems, financial markets and derivatives, time-series analysis, financial modeling, machine learning for noisy financial data, algorithmic trading, risk modeling, and backtesting.",
+      "The path concludes with a Quantitative Research & Trading Capstone in which you take:",
+    ],
+    capstoneFlow: [
+      "Raw Market Data",
+      "Research Question",
+      "Statistical Analysis",
+      "Feature Engineering",
+      "Model",
+      "Trading Signal",
+      "Backtest",
+      "Risk Analysis",
+      "Performance Report",
+      "Presentation",
+    ],
+    afterFlow: [
+      "From there, students can specialize as a Quantitative Researcher, Quantitative Developer, Quant ML Researcher, or Low-Latency / High-Frequency Trading Engineer.",
+    ],
+    salaryRange: "$250K–$500K+ total compensation early at highly selective firms · $500K–$1M+ experienced and senior · $750K–$1.5M+ senior Quant Researchers at elite firms",
+    compensation: {
+      heading: "Compensation potential",
+      paragraphs: [
+        "$250K–$500K+ total compensation is possible early in a quantitative career at highly selective trading firms and hedge funds.",
+        "Experienced and senior quantitative professionals can reach approximately $500K–$1M+ in total compensation, while successful senior Quant Researchers at elite firms can reach $750K–$1.5M+ and, in exceptional performance-driven positions, considerably more.",
+        "These figures represent total compensation — base salary plus bonuses, incentives, profit sharing, and/or equity — rather than guaranteed base salary.",
+        "Quantitative finance has an unusually wide compensation range because bonuses and performance can represent a substantial portion of earnings. Reaching the highest compensation levels generally requires exceptional technical ability, strong performance, experience, and admission to some of the most selective employers in technology and finance.",
+      ],
+    },
+    progression: {
+      heading: "Career progression",
+      ladder: "Quantitative Analyst → Quantitative Developer / Researcher → Senior Quantitative Developer / Researcher → Lead Quant / Portfolio Manager / Head of Quantitative Research",
+      levels: [
+        { label: "Senior-career target", value: "$500K–$1M+ total compensation" },
+        { label: "High-performing Senior Quant Research", value: "$750K–$1.5M+" },
+        { label: "Elite leadership / performance-driven roles", value: "$1M–$2M+ potential" },
+      ],
+    },
     isDestination: true,
     stages: [
       {
@@ -508,7 +556,7 @@ export const CAREER_PATHS: CareerPath[] = [
       },
     ],
     destinationNote:
-      "Quantitative Analyst → Quant Researcher / Quant Developer → Senior Quant → Portfolio Manager, Head of Research, or Head of Quant Development. Level 6 is specialization: Quant Researcher (heavy mathematics, statistics, ML, and research), Quant Developer (C++, Python, distributed systems, and performance engineering), Quant ML Researcher (deep learning, alternative data, NLP, and time series), or Low-Latency / High-Frequency Trading (HFT) Engineer (C++, networking, operating systems, concurrency, and performance optimization). The compensation is real but concentrated: it is mostly total compensation including large performance bonuses, top firms hire very selectively, and reaching $1M+ typically takes years of proven results, not a promise on graduation.",
+      "Level 6 is specialization: Quantitative Researcher (heavy mathematics, statistics, machine learning, and research), Quantitative Developer (C++, Python, distributed systems, and performance engineering), Quant ML Researcher (deep learning, alternative data, NLP, and time series), or Low-Latency / High-Frequency Trading Engineer (C++, networking, operating systems, concurrency, and performance optimization). Top firms hire very selectively, and the highest compensation levels typically take years of proven results rather than being a promise on graduation.",
   },
 ];
 

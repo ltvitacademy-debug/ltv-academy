@@ -45,7 +45,38 @@ export default async function CareerPathPage({
         <span className="text-crimson">.</span>
       </h1>
 
-      <p className="mt-4 max-w-2xl text-stone">{path.description}</p>
+      {path.subtitle && <p className="mt-3 text-lg font-medium text-crimson-deep">{path.subtitle}</p>}
+
+      {path.longDescription ? (
+        <div className="mt-6 max-w-2xl space-y-4 text-stone">
+          {path.longDescription.map((para) => (
+            <p key={para}>{para}</p>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-4 max-w-2xl text-stone">{path.description}</p>
+      )}
+
+      {path.capstoneFlow && (
+        <ol className="mt-5 flex max-w-3xl flex-wrap items-center gap-x-2 gap-y-2 text-sm">
+          {path.capstoneFlow.map((step, i) => (
+            <li key={step} className="flex items-center gap-2">
+              <span className="rounded-[2px] border border-ink/15 bg-gold-pale px-3 py-1.5 font-medium text-crimson-deep">
+                {step}
+              </span>
+              {i < path.capstoneFlow!.length - 1 && <span className="text-gold">→</span>}
+            </li>
+          ))}
+        </ol>
+      )}
+
+      {path.afterFlow && (
+        <div className="mt-5 max-w-2xl space-y-4 text-stone">
+          {path.afterFlow.map((para) => (
+            <p key={para}>{para}</p>
+          ))}
+        </div>
+      )}
 
       <div className="mt-6 flex flex-wrap gap-x-8 gap-y-3 border-y border-ink/10 py-5 text-sm">
         <div>
@@ -63,6 +94,32 @@ export default async function CareerPathPage({
           <p className="mt-1 text-ink">{path.targetJobs.join(" → ")}</p>
         </div>
       </div>
+
+      {path.compensation && (
+        <section className="mt-12">
+          <h2 className="display border-b border-ink/15 pb-3 text-2xl">{path.compensation.heading}</h2>
+          <div className="mt-4 max-w-2xl space-y-4 text-ink">
+            {path.compensation.paragraphs.map((para) => (
+              <p key={para}>{para}</p>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {path.progression && (
+        <section className="mt-12">
+          <h2 className="display border-b border-ink/15 pb-3 text-2xl">{path.progression.heading}</h2>
+          <p className="mt-4 max-w-3xl font-medium text-ink">{path.progression.ladder}</p>
+          <dl className="mt-5 grid gap-4 sm:grid-cols-3">
+            {path.progression.levels.map((level) => (
+              <div key={level.label} className="rounded-[2px] border border-ink/15 p-4">
+                <dt className="text-xs uppercase tracking-[0.14em] text-stone">{level.label}</dt>
+                <dd className="mt-2 font-semibold text-crimson">{level.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
 
       <div className="mt-12 space-y-10">
         {path.stages.map((stage, i) => (
