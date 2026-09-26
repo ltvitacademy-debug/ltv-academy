@@ -1,0 +1,25 @@
+# Script — Creating New Features
+
+## Segment 1 (title)
+
+A model can only learn from the columns you give it. And raw columns are often not the most useful form of the information. Feature engineering is the craft of reshaping what you already have, so the pattern is easier to learn. It's often the highest-return work in a project, and it's mostly pandas.
+
+## Segment 2 (steps)
+
+There are four reliable recipes. Pull apart dates, because a timestamp hides the month, the weekday, and whether it's a weekend. Build ratios, because two columns often say more together than alone. Transform skewed values with a log. And bin continuous numbers into bands when the band matters more than the exact value.
+
+## Segment 3 (code)
+
+Here it is in pandas. The dt accessor gives you the month and the day of the week. Order total divided by item count gives average item price, a signal neither column shows on its own. Each new feature is one line.
+
+## Segment 4 (code)
+
+Income is right-skewed, so a few very large values stretch the scale. The log one p transform compresses that tail, and it's safe even when a value is zero. And pd dot cut turns income into low, mid, and high bands. Binning throws information away, so use it only when thresholds genuinely matter.
+
+## Segment 5 (steps)
+
+Keep your features honest. Only use information that would exist at prediction time, or you leak the future. Compute anything learned from data, like a mean or a bin edge, on the training split only. And treat every new feature as a hypothesis: keep it only if validation performance improves.
+
+## Segment 6 (outro)
+
+Once you can create many features, you need a way to choose among them, because more is not always better. Next up: feature selection.

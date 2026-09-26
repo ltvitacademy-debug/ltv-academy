@@ -1,0 +1,29 @@
+# Script — Encoding Categorical Variables
+
+## Segment 1 (title)
+
+Most algorithms do arithmetic, so they need numbers. But real tables are full of text categories: city, plan, payment method. Encoding converts them, and the wrong encoding quietly tells the model something false.
+
+## Segment 2 (steps)
+
+First, ask whether the category has an order. Nominal categories, like city, don't. Use one-hot encoding: one zero or one column per category. Ordinal categories, like basic, standard, premium, do have an order. Map them to integers in that order. And for columns with thousands of values, group rare ones, or use frequency encoding.
+
+## Segment 3 (code)
+
+Here's one-hot on an illustrative customer table, with scikit-learn's OneHotEncoder. Two settings matter. Sparse false gives us a plain array, in scikit-learn one point one. And handle unknown ignore means a new city at prediction time won't crash the pipeline. It's a learned transformation, so fit it on training data only.
+
+## Segment 4 (code)
+
+The encoder created one column per city. An Atlanta customer gets one, zero, zero. A Chicago customer gets zero, zero, one. And Denver, a city the encoder never saw, becomes all zeros instead of raising an error.
+
+## Segment 5 (code)
+
+Now the classic mistake: numbering a nominal column. We predict spend from city twice, with city coded zero, one, two, and with one-hot columns. In this illustrative data, Boston customers spend most. With fake numbering the model can only draw a line, and explains four percent. One-hot lets each city have its own level, and explains eighty-one percent.
+
+## Segment 6 (screenshot)
+
+This chart is the output of the code above. Gold is the true average spend by city. Red, the one-hot model, matches it. Gray, the model with city coded zero, one, two, misses badly, because Boston in the middle can't be higher than both neighbors.
+
+## Segment 7 (outro)
+
+One-hot for nominal, explicit order for ordinal, and never number unordered categories. Up next, lesson ten: scaling and normalization.

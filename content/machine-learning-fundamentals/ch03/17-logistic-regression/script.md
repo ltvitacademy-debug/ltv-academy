@@ -1,0 +1,33 @@
+# Script — Logistic Regression
+
+## Segment 1 (title)
+
+Many real questions ask for a category, not a number. Will this customer churn? Is this transaction fraud? Logistic regression is the classic tool for yes-or-no outcomes. Despite its name, it's a classification model, and the bridge from linear models to classifiers.
+
+## Segment 2 (steps)
+
+Why not use a plain line? Because a line can output one point four, or negative point three, and those aren't probabilities. Logistic regression takes the usual linear score and passes it through the sigmoid function, which squashes any number into zero to one. Then a threshold, usually point five, turns the probability into a decision.
+
+## Segment 3 (code)
+
+Here's illustrative churn data: four hundred customers, where longer tenure means lower risk. Fit LogisticRegression, and read the coefficient. Negative point one oh seven: each extra month lowers the score. Note that scikit-learn applies ridge-style regularization by default.
+
+## Segment 4 (code)
+
+Ask for probabilities with predict proba. A six-month customer has an eighty-five percent churn probability. A thirty-six-month customer, eighteen percent. Accuracy on the test set is point seven nine, and the confusion matrix shows where the errors fall: nine false alarms, twelve missed churners.
+
+## Segment 5 (code)
+
+Then plot the fitted probability across every tenure value, with the point five threshold as a dashed line.
+
+## Segment 6 (screenshot)
+
+This is the output of the code above. The dots are actual outcomes, the crimson S-curve is the predicted probability, and it crosses the threshold at about twenty-two months.
+
+## Segment 7 (steps)
+
+To read a coefficient, exponentiate it. E to the negative point one oh seven is about point nine. Each extra month multiplies the odds of churning by about point nine, roughly ten percent lower odds. That's the odds, not the probability. And remember, the decision boundary is still linear.
+
+## Segment 8 (outro)
+
+Now for a very different family of models. Next up: decision trees.

@@ -1,0 +1,29 @@
+# Script — Linear Regression
+
+## Segment 1 (title)
+
+Linear regression is the classic starting point in machine learning. It predicts a number, like a price or a delivery time, by drawing the best straight line through your data. It's simple, fast, easy to explain, and it teaches ideas you'll reuse all course: parameters, loss, and fit.
+
+## Segment 2 (steps)
+
+The model is a line: predicted price equals an intercept plus a slope times square feet. Training means choosing those two numbers. For each house, the residual is the gap between the actual price and the line. We square the residuals and add them up. Ordinary least squares picks the line that makes that sum as small as possible.
+
+## Segment 3 (code)
+
+In scikit-learn, build an X with one column, fit the model, and read the results. On our sixty illustrative houses, the intercept is about forty-five thousand eight hundred and the slope is about one hundred nineteen point five dollars per square foot. We built in a hundred twenty, so it recovered the truth, give or take noise.
+
+## Segment 4 (code)
+
+Then plot it. A scatter of the data, and a line drawn from the model's predictions. Always plot, because a picture shows curves and outliers that a score hides.
+
+## Segment 5 (screenshot)
+
+This is the output of the code above. The line runs through the cloud of points. The score method returns R squared, point nine four nine, meaning the line explains about ninety-five percent of the variation. But that's on training data, so it says nothing yet about new houses.
+
+## Segment 6 (steps)
+
+Keep four assumptions in mind. The relationship should be roughly linear. The errors shouldn't follow a pattern. Their spread should be roughly constant. And remember that squaring makes the line sensitive to outliers.
+
+## Segment 7 (outro)
+
+One feature is rarely enough. Next up: multiple regression, where the line becomes a plane and then a hyperplane.
