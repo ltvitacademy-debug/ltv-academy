@@ -1,0 +1,15 @@
+This is the final lesson. Today you make the project defensible: choose a threshold from costs, evaluate on the test set once, put uncertainty around the result, and package it for your portfolio.
+
+Zero point five is meaningless for an eleven percent event, so we choose the threshold from costs, using out-of-fold predictions on the training data. The cheapest threshold is zero point one one, costing about seven thousand six hundred per thousand customers, against ten thousand for contacting everybody. It agrees with theory: ten divided by one hundred.
+
+Now the test set, once. Average precision is zero point three three three and ROC AUC is zero point seven four four. We flag ninety of the one hundred thirty-three real cancellers and miss forty-three, at the price of three hundred seventy-two unnecessary offers. The cost is seven thousand four hundred thirty-three per thousand, about twenty-six percent below contacting everybody.
+
+That test average precision is higher than the cross-validated zero point two five eight. With only one hundred thirty-three positives, it may be luck. A bootstrap gives a ninety-five percent interval of zero point two six to zero point four one eight.
+
+On the left, cost by threshold, with its minimum near zero point one one. On the right, the test precision-recall curve and our operating point. Output of the code above.
+
+Be honest about limitations. The data is synthetic. The model finds associations, not causes. Assuming every offer saves a customer is optimistic. There is no time dimension. And the test set is small.
+
+Package it as a portfolio project: a README, the data script, a model card with a data fingerprint and library versions, and five to seven slides that lead with the decision, not the algorithm.
+
+Course complete. You can build a full scikit-learn workflow, evaluate it honestly, and defend it. Next in the Data Scientist path is Advanced Data Science.

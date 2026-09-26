@@ -2,59 +2,59 @@
   "lesson": "avoiding-overfitting-the-validation-set",
   "questions": [
     {
-      "q": "Why is best_score_ from a large grid search usually optimistic?",
+      "q": "Why is the best cross-validated score from a large grid search usually too optimistic?",
       "options": [
-        "Cross-validation always inflates scores",
-        "It is computed on the training rows only",
-        "It is the maximum of many noisy scores, so it tends to include some luck",
-        "Grid search modifies the labels"
-      ],
-      "answer": 2,
-      "explain": "Each candidate's score has random error. Choosing the highest of many tends to choose a lucky one, and reporting that score biases it upward."
-    },
-    {
-      "q": "In the lesson, best_score_ was 0.75 while the average score over all 312 combinations was 0.672. What does the gap illustrate?",
-      "options": [
-        "Most combinations are broken",
-        "Selecting the best from many candidates yields a flattering number",
-        "The test set was too small",
-        "Cross-validation failed"
+        "Cross-validation always uses the test set",
+        "The winner is chosen as the maximum of many noisy estimates, so it tends to be one that got lucky",
+        "Grid search trains on the validation folds twice",
+        "Larger grids always overfit the training data"
       ],
       "answer": 1,
-      "explain": "The search reports the top score from 312 tries. Its distance from the typical combination shows how much selection alone can add."
+      "explain": "Each combination's cross-validation score has random error. Selecting the maximum picks a score whose error is likely positive, and the effect grows with the number of combinations."
     },
     {
-      "q": "How is nested cross-validation structured?",
+      "q": "In nested cross-validation, what does the outer loop do?",
       "options": [
-        "A hyperparameter search runs inside each fold of an outer cross-validation",
-        "Two test sets are averaged",
-        "Cross-validation is run twice with the same folds",
-        "The test set is used as an extra fold"
-      ],
-      "answer": 0,
-      "explain": "Nested CV wraps the entire tuning procedure in an outer loop, so each outer fold is scored by a model whose tuning never saw it."
-    },
-    {
-      "q": "In scikit-learn, what is a simple way to run nested cross-validation for a grid search?",
-      "options": [
-        "Call gs.best_score_ twice",
-        "Pass the GridSearchCV object to cross_val_score with an outer cv",
-        "Set refit=False",
-        "Use train_test_split three times"
-      ],
-      "answer": 1,
-      "explain": "cross_val_score(gs, X, y, cv=outer) refits the whole GridSearchCV inside every outer fold."
-    },
-    {
-      "q": "After nested cross-validation has estimated performance, how do you build the final model?",
-      "options": [
-        "Use the model from the best outer fold",
-        "Average the five outer models",
-        "You cannot build one after nested CV",
-        "Run a normal search on all the training data and fit the winner"
+        "Tunes hyperparameters on the whole dataset",
+        "Repeats the final model fit with different random seeds",
+        "Selects which features to drop",
+        "Holds out data the entire tuning procedure never sees, and scores the tuned model on it"
       ],
       "answer": 3,
-      "explain": "Nested CV estimates how well the tuning procedure performs. The final model comes from running the search once on the full training data."
+      "explain": "For each outer fold, a full grid search runs on the remaining data, and the winner is scored on the held-out fold. The average of those scores estimates how the whole tune-then-fit procedure performs."
+    },
+    {
+      "q": "How do you run nested cross-validation in scikit-learn?",
+      "options": [
+        "Pass a GridSearchCV object to cross_val_score with an outer cv",
+        "Call GridSearchCV with nested=True",
+        "Use the test set as the outer loop",
+        "It requires a separate NestedCV class"
+      ],
+      "answer": 0,
+      "explain": "GridSearchCV is an estimator, so cross_val_score(gs, X_tr, y_tr, cv=outer) runs the whole search inside each outer fold."
+    },
+    {
+      "q": "After nested cross-validation gives you an honest estimate, how do you build the model you will deploy?",
+      "options": [
+        "Use any of the models fitted inside the outer folds",
+        "Average the five outer-fold models",
+        "Run a normal grid search on all the training data and use the refit winner",
+        "Retune using the test set"
+      ],
+      "answer": 2,
+      "explain": "Nested CV is for estimating performance, not for building the model. Fit the final model with an ordinary search on all the training data."
+    },
+    {
+      "q": "Which practice best keeps your final performance estimate honest?",
+      "options": [
+        "Look at the test set after each tuning round to guide the next round",
+        "Use the largest search grid possible",
+        "Report best_score_ as your expected performance",
+        "Make all tuning decisions on training data and look at the test set once, at the end"
+      ],
+      "answer": 3,
+      "explain": "Once the test set influences a decision, it stops being an independent check. Tune on training data only, and evaluate on the test set a single time."
     }
   ]
 }
