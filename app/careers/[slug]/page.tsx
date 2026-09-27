@@ -38,6 +38,9 @@ export default async function CareerPathPage({
     }, 0);
   const programTotal = path.stages.reduce((sum, st) => sum + stageTotal(st.courseSlugs), 0);
   const programCourseCount = path.stages.reduce((sum, st) => sum + (st.courseSlugs?.length ?? 0), 0);
+  const startStage = path.stages.find((st) => st.label.startsWith("Start") && st.pathChoiceSlugs?.length === 1);
+  const startPath = startStage ? getCareerPath(startStage.pathChoiceSlugs![0]) : undefined;
+  const startTotal = startPath ? startPath.stages.reduce((sum, st) => sum + stageTotal(st.courseSlugs), 0) : 0;
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
@@ -192,22 +195,33 @@ export default async function CareerPathPage({
         </section>
       )}
 
-      {path.milestones && (
+      {(path.milestones || path.showLessonTotals) && (
         <section className="mt-12">
-          <h2 className="display border-b border-ink/15 pb-3 text-2xl">Program total and milestones</h2>
+          <h2 className="display border-b border-ink/15 pb-3 text-2xl">
+            {path.milestones ? "Program total and milestones" : "Program total"}
+          </h2>
           <p className="mt-4 text-ink">
             <span className="display text-4xl text-crimson">{programTotal}</span> lessons across {programCourseCount} courses in{" "}
             {path.stages.length} numbered sections
           </p>
-          <dl className="mt-5 grid gap-4 sm:grid-cols-3">
-            {path.milestones.map((m) => (
-              <div key={m.label} className="rounded-[2px] border border-ink/15 p-4">
-                <dt className="text-xs uppercase tracking-[0.14em] text-stone">{m.label}</dt>
-                <dd className="mt-2 font-semibold text-crimson">{m.value}</dd>
-              </div>
-            ))}
-          </dl>
-          <p className="mt-3 text-sm text-stone">Approximate milestones only — not a promise of employment or of any certification result.</p>
+          {startPath && startTotal > 0 && (
+            <p className="mt-2 text-sm text-stone">
+              Plus {startTotal} lessons in the shared start, {startPath.title}, which comes first.
+            </p>
+          )}
+          {path.milestones && (
+            <>
+              <dl className="mt-5 grid gap-4 sm:grid-cols-3">
+                {path.milestones.map((m) => (
+                  <div key={m.label} className="rounded-[2px] border border-ink/15 p-4">
+                    <dt className="text-xs uppercase tracking-[0.14em] text-stone">{m.label}</dt>
+                    <dd className="mt-2 font-semibold text-crimson">{m.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-3 text-sm text-stone">Approximate milestones only — not a promise of employment or of any certification result.</p>
+            </>
+          )}
         </section>
       )}
 
