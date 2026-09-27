@@ -160,6 +160,22 @@ import { SFTA_LTV_CUSTOMER_MANAGEMENT_SYSTEM_CHAPTERS } from "./ltv-customer-man
 import { SFTA_LTV_SERVICE_AND_SALES_PLATFORM_CHAPTERS } from "./ltv-service-and-sales-platform-outline";
 import { SFTA_LTV_GLOBAL_ENTERPRISE_TRANSFORMATION_CHAPTERS } from "./ltv-global-enterprise-transformation-outline";
 import { SFTA_SALESFORCE_CAREER_PREPARATION_CHAPTERS } from "./salesforce-career-preparation-outline";
+import { GOV_DATA_GOVERNANCE_FOUNDATIONS_CHAPTERS } from "./data-governance-foundations-outline";
+import { GOV_DATA_QUALITY_MANAGEMENT_CHAPTERS } from "./data-quality-management-outline";
+import { GOV_METADATA_MANAGEMENT_AND_BUSINESS_GLOSSARY_CHAPTERS } from "./metadata-management-and-business-glossary-outline";
+import { GOV_DATA_LINEAGE_AND_IMPACT_ANALYSIS_CHAPTERS } from "./data-lineage-and-impact-analysis-outline";
+import { GOV_MASTER_AND_REFERENCE_DATA_MANAGEMENT_CHAPTERS } from "./master-and-reference-data-management-outline";
+import { GOV_DATA_SECURITY_PRIVACY_AND_CLASSIFICATION_CHAPTERS } from "./data-security-privacy-and-classification-outline";
+import { GOV_MICROSOFT_PURVIEW_CHAPTERS } from "./microsoft-purview-outline";
+import { GOV_MICROSOFT_FABRIC_DATA_GOVERNANCE_CHAPTERS } from "./microsoft-fabric-data-governance-outline";
+import { GOV_DATABRICKS_UNITY_CATALOG_GOVERNANCE_CHAPTERS } from "./databricks-unity-catalog-governance-outline";
+import { GOV_SNOWFLAKE_DATA_GOVERNANCE_CHAPTERS } from "./snowflake-data-governance-outline";
+import { GOV_POWER_BI_GOVERNANCE_CHAPTERS } from "./power-bi-governance-outline";
+import { GOV_CLOUD_DATA_GOVERNANCE_AZURE_AND_AWS_CHAPTERS } from "./cloud-data-governance-azure-and-aws-outline";
+import { GOV_AI_AND_MACHINE_LEARNING_GOVERNANCE_CHAPTERS } from "./ai-and-machine-learning-governance-outline";
+import { GOV_DATA_GOVERNANCE_PROGRAM_MANAGEMENT_CHAPTERS } from "./data-governance-program-management-outline";
+import { GOV_DATA_GOVERNANCE_ARCHITECTURE_CHAPTERS } from "./data-governance-architecture-outline";
+import { GOV_DATA_GOVERNANCE_CAREER_AND_CAPSTONE_CHAPTERS } from "./data-governance-career-and-capstone-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -1615,6 +1631,150 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: SFTA_SALESFORCE_CAREER_PREPARATION_CHAPTERS,
     contentBase: "salesforce-career-preparation",
+  },
+  {
+    slug: "data-governance-foundations",
+    title: "Data Governance Foundations",
+    tagline:
+      "Data governance principles, governance frameworks, operating models, policies, standards, governance councils, data ownership, and stewardship.",
+    status: "available",
+    chapters: GOV_DATA_GOVERNANCE_FOUNDATIONS_CHAPTERS,
+    contentBase: "data-governance-foundations",
+  },
+  {
+    slug: "data-quality-management",
+    title: "Data Quality Management",
+    tagline:
+      "Data profiling, accuracy, completeness, consistency, validity, uniqueness, timeliness, quality rules, remediation, monitoring, and SQL-based quality checks.",
+    status: "available",
+    chapters: GOV_DATA_QUALITY_MANAGEMENT_CHAPTERS,
+    contentBase: "data-quality-management",
+  },
+  {
+    slug: "metadata-management-and-business-glossary",
+    title: "Metadata Management & Business Glossary",
+    tagline:
+      "Business metadata, technical metadata, data dictionaries, business glossaries, critical data elements, data catalogs, definitions, and metadata standards.",
+    status: "available",
+    chapters: GOV_METADATA_MANAGEMENT_AND_BUSINESS_GLOSSARY_CHAPTERS,
+    contentBase: "metadata-management-and-business-glossary",
+  },
+  {
+    slug: "data-lineage-and-impact-analysis",
+    title: "Data Lineage & Impact Analysis",
+    tagline:
+      "Source-to-report lineage, upstream and downstream dependencies, transformations, data flows, impact analysis, and lineage documentation.",
+    status: "available",
+    chapters: GOV_DATA_LINEAGE_AND_IMPACT_ANALYSIS_CHAPTERS,
+    contentBase: "data-lineage-and-impact-analysis",
+  },
+  {
+    slug: "master-and-reference-data-management",
+    title: "Master & Reference Data Management",
+    tagline:
+      "Master Data Management, reference data, golden records, matching, deduplication, survivorship, customer master, product master, vendor master, and enterprise data consistency.",
+    status: "available",
+    chapters: GOV_MASTER_AND_REFERENCE_DATA_MANAGEMENT_CHAPTERS,
+    contentBase: "master-and-reference-data-management",
+  },
+  {
+    slug: "data-security-privacy-and-classification",
+    title: "Data Security, Privacy & Classification",
+    tagline:
+      "PII, sensitive data, data classification, RBAC, least privilege, masking, encryption, retention, deletion, privacy, auditing, and access governance.",
+    status: "available",
+    chapters: GOV_DATA_SECURITY_PRIVACY_AND_CLASSIFICATION_CHAPTERS,
+    contentBase: "data-security-privacy-and-classification",
+  },
+  {
+    slug: "microsoft-purview",
+    title: "Microsoft Purview",
+    tagline:
+      "Microsoft Purview Data Map, Data Catalog, scanning, classifications, glossary, lineage, discovery, governance workflows, and enterprise governance.",
+    status: "available",
+    chapters: GOV_MICROSOFT_PURVIEW_CHAPTERS,
+    contentBase: "microsoft-purview",
+  },
+  {
+    slug: "microsoft-fabric-data-governance",
+    title: "Microsoft Fabric Data Governance",
+    tagline:
+      "OneLake governance, Fabric domains, workspaces, security, lineage, data discovery, semantic models, and governed analytics.",
+    status: "available",
+    chapters: GOV_MICROSOFT_FABRIC_DATA_GOVERNANCE_CHAPTERS,
+    contentBase: "microsoft-fabric-data-governance",
+  },
+  {
+    slug: "databricks-unity-catalog-governance",
+    title: "Databricks Unity Catalog Governance",
+    tagline:
+      "Unity Catalog, catalogs, schemas, permissions, lineage, discovery, auditing, access control, and Lakehouse governance.",
+    status: "available",
+    chapters: GOV_DATABRICKS_UNITY_CATALOG_GOVERNANCE_CHAPTERS,
+    contentBase: "databricks-unity-catalog-governance",
+  },
+  {
+    slug: "snowflake-data-governance",
+    title: "Snowflake Data Governance",
+    tagline:
+      "Snowflake RBAC, masking policies, row access policies, tags, classification, auditing, monitoring, and enterprise governance.",
+    status: "available",
+    chapters: GOV_SNOWFLAKE_DATA_GOVERNANCE_CHAPTERS,
+    contentBase: "snowflake-data-governance",
+  },
+  {
+    slug: "power-bi-governance",
+    title: "Power BI Governance",
+    tagline:
+      "Workspaces, semantic models, RLS, OLS, endorsements, certified datasets, lineage, deployment pipelines, security, and enterprise BI governance.",
+    status: "available",
+    chapters: GOV_POWER_BI_GOVERNANCE_CHAPTERS,
+    contentBase: "power-bi-governance",
+  },
+  {
+    slug: "cloud-data-governance-azure-and-aws",
+    title: "Cloud Data Governance: Azure & AWS",
+    tagline:
+      "Cloud governance architecture, identity and access management, cloud storage governance, catalogs, security, compliance, auditing, and multi-cloud governance.",
+    status: "available",
+    chapters: GOV_CLOUD_DATA_GOVERNANCE_AZURE_AND_AWS_CHAPTERS,
+    contentBase: "cloud-data-governance-azure-and-aws",
+  },
+  {
+    slug: "ai-and-machine-learning-governance",
+    title: "AI & Machine Learning Governance",
+    tagline:
+      "AI data governance, training data, model documentation, AI lineage, security, access, monitoring, responsible AI, risk management, and AI governance frameworks.",
+    status: "available",
+    chapters: GOV_AI_AND_MACHINE_LEARNING_GOVERNANCE_CHAPTERS,
+    contentBase: "ai-and-machine-learning-governance",
+  },
+  {
+    slug: "data-governance-program-management",
+    title: "Data Governance Program Management",
+    tagline:
+      "Governance councils, stewardship programs, policies, standards, KPIs, issue management, governance adoption, stakeholder management, and measuring governance success.",
+    status: "available",
+    chapters: GOV_DATA_GOVERNANCE_PROGRAM_MANAGEMENT_CHAPTERS,
+    contentBase: "data-governance-program-management",
+  },
+  {
+    slug: "data-governance-architecture",
+    title: "Data Governance Architecture",
+    tagline:
+      "Enterprise governance architecture, centralized vs. federated governance, data mesh governance, catalogs, enterprise metadata, security architecture, platform architecture, and governance strategy.",
+    status: "available",
+    chapters: GOV_DATA_GOVERNANCE_ARCHITECTURE_CHAPTERS,
+    contentBase: "data-governance-architecture",
+  },
+  {
+    slug: "data-governance-career-and-capstone",
+    title: "Data Governance Career & Capstone",
+    tagline:
+      "Resume preparation, portfolio development, interviews, scenario-based governance questions, stakeholder presentations, and enterprise governance implementation.",
+    status: "available",
+    chapters: GOV_DATA_GOVERNANCE_CAREER_AND_CAPSTONE_CHAPTERS,
+    contentBase: "data-governance-career-and-capstone",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,

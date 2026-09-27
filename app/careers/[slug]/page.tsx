@@ -108,6 +108,34 @@ export default async function CareerPathPage({
         </div>
       </div>
 
+      {path.specializations && (
+        <section className="mt-10">
+          <h2 className="display border-b border-ink/15 pb-3 text-2xl">{path.specializations.heading}</h2>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-[2px] border-2 border-crimson bg-gold-pale p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">{path.specializations.primaryLabel}</p>
+              <ul className="mt-3 space-y-1">
+                {path.specializations.primary.map((item) => (
+                  <li key={item} className="display text-lg text-crimson-deep">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-[2px] border border-ink/15 p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone">{path.specializations.optionalLabel}</p>
+              <ul className="mt-3 space-y-1">
+                {path.specializations.optional.map((item) => (
+                  <li key={item} className="text-ink">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+      )}
+
       {path.positioning && (
         <section className="mt-10 rounded-[2px] border-l-4 border-crimson bg-gold-pale p-5 sm:p-6">
           <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">{path.positioning.heading}</h2>

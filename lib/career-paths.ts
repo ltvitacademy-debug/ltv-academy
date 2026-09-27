@@ -44,6 +44,7 @@ export type CareerPath = {
     notes: string[];
   };
   milestones?: { label: string; value: string }[];
+  specializations?: { heading: string; primaryLabel: string; primary: string[]; optionalLabel: string; optional: string[] };
   // A prominent third-party requirement block shown before the course sections
   labRequirement?: {
     eyebrow: string;
@@ -656,6 +657,229 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "This path is its own door into LTV — no accounting, ERP, or Oracle experience is assumed. A typical progression runs Oracle Fusion Financials Analyst → Junior Oracle Financials Functional Consultant → Oracle ERP Analyst → Financial Systems Analyst → Oracle Fusion Financials Consultant → Senior Oracle Financials Consultant. How far and how fast depends on your experience, the modules you specialize in, and the projects you can walk an interviewer through — the LTV Manufacturing capstone gives you a complete implementation to talk about.",
+  },
+  {
+    "slug": "data-governance",
+    "title": "Data Governance",
+    "targetJobs": [
+      "Data Governance Analyst",
+      "Data Quality Analyst",
+      "Data Steward",
+      "Data Governance Specialist",
+      "Data Governance Consultant",
+      "Data Governance Lead / Manager",
+      "Data Governance Architect"
+    ],
+    "description": "This path takes a student from SQL and data-engineering foundations into the discipline that makes enterprise data trustworthy: governance, data quality, metadata and business glossaries, lineage, master data, security and privacy, and governance architecture. Students specialize in Microsoft Purview, Fabric, Power BI and Azure governance, with optional tracks in Databricks, Snowflake, AWS, AI governance and master data management.",
+    "longDescription": [
+      "This path takes a student from SQL and data-engineering foundations into the discipline that makes enterprise data trustworthy: data governance, data quality, metadata and business glossaries, lineage, master and reference data, security and privacy, and governance architecture.",
+      "Students learn to work directly with enterprise data, then to govern it — assigning ownership and stewardship, writing quality rules and SQL checks, documenting lineage from source to executive dashboard, and classifying and protecting sensitive data.",
+      "The primary LTV specialization is Microsoft Purview, Microsoft Fabric, Power BI and Azure data governance. Databricks Unity Catalog, Snowflake governance, AWS data governance, AI governance and master data management are optional specializations.",
+      "The path closes with the LTV Global Data Governance Program capstone, in which the student designs a complete governance program for a fictional company whose systems produce different numbers."
+    ],
+    "showLessonTotals": true,
+    "specializations": {
+      "heading": "Specializations",
+      "primaryLabel": "Primary LTV specialization",
+      "primary": [
+        "Microsoft Purview",
+        "Microsoft Fabric",
+        "Power BI",
+        "Azure Data Governance"
+      ],
+      "optionalLabel": "Optional specializations",
+      "optional": [
+        "Databricks Unity Catalog",
+        "Snowflake Governance",
+        "AWS Data Governance",
+        "AI Governance",
+        "Master Data Management"
+      ]
+    },
+    "courseDetails": {
+      "data-lineage-and-impact-analysis": "Students learn to trace: Source → ETL/ELT → Data Lake/Warehouse → Semantic Model → Power BI → Executive Dashboard.",
+      "data-governance-career-and-capstone": "Scenario: executives no longer trust the company's reports because different systems produce different numbers, and the student is hired to design the company's Data Governance Program."
+    },
+    "courseDetailLists": {
+      "data-governance-career-and-capstone": [
+        {
+          "heading": "LTV Global has data spread across",
+          "items": [
+            "SQL Server",
+            "Salesforce",
+            "Oracle Financials",
+            "Azure Data Lake",
+            "Microsoft Fabric",
+            "Databricks",
+            "Snowflake",
+            "Power BI"
+          ]
+        },
+        {
+          "heading": "Students must",
+          "items": [
+            "Identify critical data elements",
+            "Assign data owners",
+            "Assign data stewards",
+            "Create a business glossary",
+            "Build a data dictionary",
+            "Classify sensitive data",
+            "Create data quality rules",
+            "Write SQL data-quality checks",
+            "Document data lineage",
+            "Identify authoritative data sources",
+            "Design access policies",
+            "Create retention policies",
+            "Develop governance KPIs",
+            "Design governance workflows",
+            "Create a governance operating model",
+            "Develop an AI governance strategy"
+          ]
+        },
+        {
+          "heading": "Final deliverables",
+          "items": [
+            "Enterprise Data Governance Strategy",
+            "Business Glossary",
+            "Data Dictionary",
+            "Data Ownership Matrix",
+            "Data Stewardship Matrix",
+            "Data Classification Framework",
+            "Data Quality Scorecard",
+            "Data Lineage Diagram",
+            "Access Control Strategy",
+            "Retention Policy",
+            "Governance KPI Dashboard",
+            "AI Governance Framework",
+            "Governance Architecture Diagram",
+            "Executive Presentation"
+          ]
+        }
+      ]
+    },
+    "stages": [
+      {
+        "label": "T-SQL Development",
+        "note": "Existing LTV course",
+        "courseSlugs": [
+          "t-sql-development"
+        ]
+      },
+      {
+        "label": "Data Engineering Foundations",
+        "note": "Existing LTV course",
+        "courseSlugs": [
+          "data-engineering-foundations"
+        ]
+      },
+      {
+        "label": "Data Governance Foundations",
+        "courseSlugs": [
+          "data-governance-foundations"
+        ]
+      },
+      {
+        "label": "Data Quality Management",
+        "courseSlugs": [
+          "data-quality-management"
+        ]
+      },
+      {
+        "label": "Metadata Management & Business Glossary",
+        "courseSlugs": [
+          "metadata-management-and-business-glossary"
+        ]
+      },
+      {
+        "label": "Data Lineage & Impact Analysis",
+        "courseSlugs": [
+          "data-lineage-and-impact-analysis"
+        ]
+      },
+      {
+        "label": "Master & Reference Data Management",
+        "note": "Optional specialization",
+        "courseSlugs": [
+          "master-and-reference-data-management"
+        ]
+      },
+      {
+        "label": "Data Security, Privacy & Classification",
+        "courseSlugs": [
+          "data-security-privacy-and-classification"
+        ]
+      },
+      {
+        "label": "Microsoft Purview",
+        "note": "Primary LTV specialization",
+        "courseSlugs": [
+          "microsoft-purview"
+        ]
+      },
+      {
+        "label": "Microsoft Fabric Data Governance",
+        "note": "Primary LTV specialization",
+        "courseSlugs": [
+          "microsoft-fabric-data-governance"
+        ]
+      },
+      {
+        "label": "Databricks Unity Catalog Governance",
+        "note": "Optional specialization",
+        "courseSlugs": [
+          "databricks-unity-catalog-governance"
+        ]
+      },
+      {
+        "label": "Snowflake Data Governance",
+        "note": "Optional specialization",
+        "courseSlugs": [
+          "snowflake-data-governance"
+        ]
+      },
+      {
+        "label": "Power BI Governance",
+        "note": "Primary LTV specialization",
+        "courseSlugs": [
+          "power-bi-governance"
+        ]
+      },
+      {
+        "label": "Cloud Data Governance: Azure & AWS",
+        "note": "Azure is a primary specialization; AWS is optional",
+        "courseSlugs": [
+          "cloud-data-governance-azure-and-aws"
+        ]
+      },
+      {
+        "label": "AI & Machine Learning Governance",
+        "note": "Optional specialization",
+        "courseSlugs": [
+          "ai-and-machine-learning-governance"
+        ]
+      },
+      {
+        "label": "Data Governance Program Management",
+        "courseSlugs": [
+          "data-governance-program-management"
+        ]
+      },
+      {
+        "label": "Data Governance Architecture",
+        "courseSlugs": [
+          "data-governance-architecture"
+        ]
+      },
+      {
+        "label": "Data Governance Career & Capstone",
+        "note": "Final capstone: the LTV Global Data Governance Program",
+        "courseSlugs": [
+          "data-governance-career-and-capstone"
+        ],
+        "capstone": true
+      }
+    ],
+    "destinationNote": "Data Governance Analyst → Data Quality Analyst → Data Steward → Data Governance Specialist → Data Governance Consultant → Data Governance Lead / Manager → Data Governance Architect. Job titles and pay vary a great deal by organization, and the senior architect and leadership roles typically take years of hands-on experience — the capstone gives you a complete governance program to talk through in interviews."
   },
   {
     slug: "bi-to-data-architect",
