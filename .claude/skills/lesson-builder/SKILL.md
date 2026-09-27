@@ -11,6 +11,9 @@ Lessons 1-5 successfully. Follow it as documented rather than improvising a
 different approach; the gotchas below were each discovered the hard way.
 
 **Canonical references, don't duplicate their content here:**
+- `scripts/course-build/SCREENSHOTS.md` — the catalog-wide screenshot
+  policy (real screenshots only, minimum 3 per visually-driven lesson,
+  annotate what matters). Applies to every course, not just this one.
 - `scripts/course-build/README.md` — the authoritative pipeline reference.
   If it and this skill ever disagree, the README wins; update this skill to
   match.
@@ -67,28 +70,14 @@ into `content/powerbi/chNN/NN-slug/source-images/`. Verify each with `file`
 and spot-check at least two or three with Read before trusting them — a
 caption written against the wrong screenshot is worse than no screenshot.
 
-**Minimum of 3 real screenshots per lesson, for any lesson that actually has
-UI to show.** One screenshot tells a student a screen exists; three lets you
-walk them through it — the setup, the moment something changes, and the
-result. Treat 3 as the floor for any lesson whose topic is a Power BI screen,
-dialog, or workflow (which is most of this course). The only lessons exempt
-are the ones with nothing to screenshot — pure DAX/formula lessons where the
-content *is* code — see the `code` slide fallback below; don't pad those
-with an unrelated or repeated screenshot just to hit the number. If the
-article you're researching only has one relevant image, that's a sign to
-search further (a companion article, an adjacent step in the same doc, the
-feature's own reference page) rather than stop at one — Microsoft Learn
-articles are usually screenshot-dense once you look at the whole page and
-not just the first image.
-
-**Point at what matters — don't just drop the image in.** A screenshot
-slide's `annotations` field (documented in `gen-slides.js`'s header comment)
-draws a box, circle, or arrow with a short label directly on top of the
-screenshot — composited over the image, never editing the underlying file —
-to call out the one button, field, or result the student should actually
-look at. Use it on at least one of the three screenshots per lesson, more
-if the screen is busy. Keep labels short (a few words) and position them
-over empty space in the screenshot, not over other UI text.
+**Minimum of 3 real screenshots per lesson, annotated — this is a
+catalog-wide rule, not a Power BI–specific one.** See
+`scripts/course-build/SCREENSHOTS.md` for the full policy (it governs every
+course built through `gen-slides.js`, which is all of them) and follow it
+here exactly: 3 real screenshots as the floor for any lesson with real UI to
+show, the `code`/chart fallback only for genuinely non-visual lessons
+(DAX-only, in this course's case), and an `annotations` box/circle/arrow on
+at least one screenshot per lesson pointing at what actually matters.
 
 **Sample data downloads — self-host them, don't link out.** If the lesson
 has students practice on a Microsoft-provided dataset (a sample Excel
