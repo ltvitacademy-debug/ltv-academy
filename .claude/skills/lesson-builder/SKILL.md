@@ -67,6 +67,29 @@ into `content/powerbi/chNN/NN-slug/source-images/`. Verify each with `file`
 and spot-check at least two or three with Read before trusting them — a
 caption written against the wrong screenshot is worse than no screenshot.
 
+**Minimum of 3 real screenshots per lesson, for any lesson that actually has
+UI to show.** One screenshot tells a student a screen exists; three lets you
+walk them through it — the setup, the moment something changes, and the
+result. Treat 3 as the floor for any lesson whose topic is a Power BI screen,
+dialog, or workflow (which is most of this course). The only lessons exempt
+are the ones with nothing to screenshot — pure DAX/formula lessons where the
+content *is* code — see the `code` slide fallback below; don't pad those
+with an unrelated or repeated screenshot just to hit the number. If the
+article you're researching only has one relevant image, that's a sign to
+search further (a companion article, an adjacent step in the same doc, the
+feature's own reference page) rather than stop at one — Microsoft Learn
+articles are usually screenshot-dense once you look at the whole page and
+not just the first image.
+
+**Point at what matters — don't just drop the image in.** A screenshot
+slide's `annotations` field (documented in `gen-slides.js`'s header comment)
+draws a box, circle, or arrow with a short label directly on top of the
+screenshot — composited over the image, never editing the underlying file —
+to call out the one button, field, or result the student should actually
+look at. Use it on at least one of the three screenshots per lesson, more
+if the screen is busy. Keep labels short (a few words) and position them
+over empty space in the screenshot, not over other UI text.
+
 **Sample data downloads — self-host them, don't link out.** If the lesson
 has students practice on a Microsoft-provided dataset (a sample Excel
 workbook, CSV, or `.pbix`), download it too and serve it from this site
@@ -128,8 +151,10 @@ textbook real-world example for active/inactive relationships and
   voice as existing lessons (read one to calibrate tone before writing).
 
 **4. Write `slides.json`** in the lesson folder: one `title` slide, a
-`screenshot` slide per embedded image, optionally a `steps` diagram, one
-`outro` slide teasing the next lesson. Exact field shapes are documented in
+`screenshot` slide per embedded image (at least 3 per the rule above, each
+with an `annotations` box/circle/arrow pointing at what to look at),
+optionally a `steps` diagram, one `outro` slide teasing the next lesson.
+Exact field shapes — including the `annotations` schema — are documented in
 the header comment of `scripts/course-build/gen-slides.js` — read it rather
 than guessing the schema.
 
