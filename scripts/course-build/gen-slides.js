@@ -8,7 +8,17 @@
  * Slide spec shapes (the "type" field selects one):
  *   { "type": "title", "eyebrow", "titlePlain", "titleEmphasis"?, "titleSuffix"?, "subtitle"? }
  *   { "type": "outro", "eyebrow", "titlePlain", "titleEmphasis"?, "titleSuffix"?, "subtitle"? }
- *   { "type": "screenshot", "file", "eyebrow", "caption" }
+ *   { "type": "screenshot", "file", "eyebrow", "caption", "annotations"? }
+ *     annotations (optional): draws pointer/highlight overlays ON TOP of the
+ *     real screenshot to call out what the reader should look at. The base
+ *     image file itself is never modified — this composites a separate
+ *     LTV-brand layer over it, the same way the existing white frame already
+ *     does. Each entry, in coordinates normalized 0-1 relative to the
+ *     displayed image (so they track resizing):
+ *       { "shape": "box",    "x","y","w","h", "label"?, "labelPos"? }
+ *       { "shape": "circle", "x","y","rx","ry", "label"?, "labelPos"? }
+ *       { "shape": "arrow",  "x1","y1","x2","y2", "label"?, "labelPos"? }
+ *     labelPos: "top" (default) | "bottom" | "left" | "right".
  *   { "type": "steps", "eyebrow", "titlePlain", "titleEmphasis"?, "titleSuffix"?,
  *     "steps": [{ "label", "sub" }, ...] }
  *   { "type": "code", "eyebrow", "code" (string, \n-separated lines), "caption" }
@@ -230,6 +240,57 @@ function codeCard(spec, n) {
 </svg>`;
 }
 
+// ---- screenshot annotations --------------------------------------------------
+// Draws pointer/highlight shapes + labels over the composited screenshot.
+// Coordinates in each annotation are 0-1 normalized to the DISPLAYED image
+// (ix/iy/iw/ih), not the full 1920x1080 canvas, so authors don't need to
+// know the final layout to point at "the button in the top-right corner".
+function clampX(x) { return Math.max(170, Math.min(W - 170, x)); }
+function clampY(y) { return Math.max(170, Math.min(H - 60, y)); }
+
+function annotationLabel(cx, topY, bottomY, text, labelPos) {
+  if (!text) return "";
+  const pad = 14;
+  const fontSize = 27;
+  const charW = fontSize * 0.56;
+  const w = text.length * charW + pad * 2;
+  const h = fontSize + pad * 1.2;
+  let lx = cx - w / 2, ly;
+  if (labelPos === "bottom") ly = bottomY + 16;
+  else ly = topY - 16 - h; // "top" default
+  ly = clampY(ly + h / 2) - h / 2; // keep on-canvas, anchor by center
+  lx = Math.max(170, Math.min(W - 170 - w, lx));
+  return `<g>
+    <rect x="${lx}" y="${ly}" width="${w}" height="${h}" rx="6" fill="${C.crimson}"/>
+    <text x="${lx + w / 2}" y="${ly + h / 2 + fontSize * 0.35}" text-anchor="middle" font-family="${SANS}" font-size="${fontSize}" font-weight="700" fill="${C.parchment}">${esc(text)}</text>
+  </g>`;
+}
+
+function renderAnnotation(a, ix, iy, iw, ih) {
+  const strokeW = 5;
+  if (a.shape === "box") {
+    const x = ix + a.x * iw, y = iy + a.y * ih, w = a.w * iw, h = a.h * ih;
+    const shape = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="none" stroke="${C.crimson}" stroke-width="${strokeW}"/>`;
+    return shape + annotationLabel(x + w / 2, y, y + h, a.label, a.labelPos);
+  }
+  if (a.shape === "circle") {
+    const cx = ix + a.x * iw, cy = iy + a.y * ih, rx = a.rx * iw, ry = a.ry * ih;
+    const shape = `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="${C.crimson}" stroke-width="${strokeW}"/>`;
+    return shape + annotationLabel(cx, cy - ry, cy + ry, a.label, a.labelPos);
+  }
+  if (a.shape === "arrow") {
+    const x1 = ix + a.x1 * iw, y1 = iy + a.y1 * ih, x2 = ix + a.x2 * iw, y2 = iy + a.y2 * ih;
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const headLen = 22;
+    const hx1 = x2 - headLen * Math.cos(angle - Math.PI / 6), hy1 = y2 - headLen * Math.sin(angle - Math.PI / 6);
+    const hx2 = x2 - headLen * Math.cos(angle + Math.PI / 6), hy2 = y2 - headLen * Math.sin(angle + Math.PI / 6);
+    const shape = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${C.crimson}" stroke-width="${strokeW}"/>
+      <polygon points="${x2},${y2} ${hx1},${hy1} ${hx2},${hy2}" fill="${C.crimson}"/>`;
+    return shape + annotationLabel(x1, Math.min(y1, y2), Math.max(y1, y2), a.label, a.labelPos || "top");
+  }
+  throw new Error(`Unknown annotation shape "${a.shape}"`);
+}
+
 // ---- screenshot slides ------------------------------------------------------
 // Parchment frame, screenshot fitted, gold eyebrow, ink caption bottom.
 async function screenshotSlide(spec, n) {
@@ -241,6 +302,8 @@ async function screenshotSlide(spec, n) {
   const ix = Math.round((W - iw) / 2), iy = 200 + Math.round((maxH - ih) / 2);
   const img = await sharp(imgPath).resize(iw, ih).png().toBuffer();
 
+  const annotations = (spec.annotations || []).map((a) => renderAnnotation(a, ix, iy, iw, ih)).join("\n");
+
   const frame = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
   <rect width="${W}" height="${H}" fill="${C.parchment}"/>
   <rect x="0" y="0" width="${W}" height="6" fill="${C.gold}"/>
@@ -250,9 +313,13 @@ async function screenshotSlide(spec, n) {
   <line x1="160" y1="930" x2="${W - 160}" y2="930" stroke="${C.ink}" stroke-opacity="0.15"/>
   <text x="160" y="985" font-family="${SERIF}" font-size="38" fill="${C.ink}">${esc(spec.caption)}</text>
 </svg>`;
-  return sharp(Buffer.from(frame))
+  const composited = await sharp(Buffer.from(frame))
     .composite([{ input: img, left: ix, top: iy }])
-    .png();
+    .png()
+    .toBuffer();
+  if (!annotations) return sharp(composited);
+  const overlay = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${annotations}</svg>`;
+  return sharp(composited).composite([{ input: Buffer.from(overlay), left: 0, top: 0 }]).png();
 }
 
 (async () => {
