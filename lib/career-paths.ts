@@ -9,6 +9,8 @@ export type PathStage = {
   note?: string;
   courseSlugs?: string[];
   pathChoiceSlugs?: string[];
+  capstone?: boolean; // rendered as a prominent dark panel
+  checkpoint?: { kind: "checkpoint" | "milestone" | "destination"; label: string; items: string[]; note?: string };
 };
 
 export type CareerPath = {
@@ -28,6 +30,20 @@ export type CareerPath = {
   progression?: { heading: string; ladder: string; levels: { label: string; value: string }[] };
   // Extra one-line detail shown under a course's tagline on the path page, keyed by course slug
   courseDetails?: Record<string, string>;
+  courseDetailLists?: Record<string, { heading: string; items: string[] }[]>;
+  showLessonTotals?: boolean; // show a section lesson total and a program total, computed from the courses
+  positioning?: { heading: string; paragraphs: string[] };
+  certificationRoadmap?: { heading: string; steps: { label: string; items: string[] }[]; notice: string };
+  freeLab?: {
+    eyebrow: string;
+    heading: string;
+    intro: string[];
+    listLabel: string;
+    items: string[];
+    buttons: { label: string; url: string }[];
+    notes: string[];
+  };
+  milestones?: { label: string; value: string }[];
   // A prominent third-party requirement block shown before the course sections
   labRequirement?: {
     eyebrow: string;
@@ -508,6 +524,220 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "This path is its own door into LTV — no accounting, ERP, or Oracle experience is assumed. A typical progression runs Oracle Fusion Financials Analyst → Junior Oracle Financials Functional Consultant → Oracle ERP Analyst → Financial Systems Analyst → Oracle Fusion Financials Consultant → Senior Oracle Financials Consultant. How far and how fast depends on your experience, the modules you specialize in, and the projects you can walk an interviewer through — the LTV Manufacturing capstone gives you a complete implementation to talk about.",
+  },
+  {
+    slug: "salesforce-technical-architect",
+    title: "Salesforce Technical Architect",
+    targetJobs: [
+      "Salesforce Administrator",
+      "Salesforce Business Analyst",
+      "Salesforce Platform Developer",
+      "Salesforce Consultant",
+      "Senior Salesforce Developer",
+      "Salesforce Solution Architect",
+      "Salesforce Application Architect / System Architect",
+      "Salesforce Technical Architect",
+    ],
+    description:
+      "This path takes a beginner from Salesforce fundamentals through administration, application development, automation, Apex, Lightning Web Components, data architecture, security, integrations, DevOps, and enterprise architecture. Salesforce Technical Architect is the destination — not the student's first job.",
+    longDescription: [
+      "This path takes a beginner from Salesforce fundamentals through administration, application development, automation, Apex, Lightning Web Components, data architecture, security, integrations, DevOps, and enterprise architecture.",
+      "Students begin by learning how businesses actually use Salesforce and progress through Administrator, Developer, and Architect-level skills.",
+      "Salesforce Technical Architect is the destination — not the student's first job. Students should expect to gain professional Salesforce experience while progressing through the architecture stages of this path.",
+      "The program closes with advanced architecture case studies and a capstone requiring students to design and defend a secure, scalable, integrated enterprise Salesforce solution.",
+    ],
+    certification:
+      "Salesforce certification journey, Administrator through CTA — see the roadmap below; LTV Academy does not issue Salesforce certifications",
+    showLessonTotals: true,
+    positioning: {
+      heading: "Read this first: what this path is — and is not",
+      paragraphs: [
+        "A student does NOT graduate from this curriculum and instantly become a Salesforce Technical Architect.",
+        "The curriculum teaches the technical foundation and architecture knowledge leading toward that destination. Students should pursue entry-level and intermediate Salesforce employment while progressing through the path.",
+        "CTA represents an advanced professional destination requiring significant real-world architecture experience. LTV Academy does not promise employment, a Salesforce certification, or CTA.",
+      ],
+    },
+    certificationRoadmap: {
+      heading: "Certification journey",
+      steps: [
+        { label: "Foundation", items: ["Salesforce Certified Administrator", "Salesforce Certified Platform App Builder"] },
+        { label: "Developer", items: ["Salesforce Certified Platform Developer I"] },
+        {
+          label: "Architect domain credentials",
+          items: [
+            "Salesforce Certified Platform Data Architect",
+            "Salesforce Certified Platform Sharing and Visibility Architect",
+            "Salesforce Certified Platform Integration Architect",
+            "Salesforce Certified Platform Identity and Access Management Architect",
+            "Salesforce Certified Platform Development Lifecycle and Deployment Architect",
+          ],
+        },
+        { label: "Architect milestones", items: ["Salesforce Certified Application Architect", "Salesforce Certified System Architect"] },
+        { label: "Destination", items: ["Salesforce Certified Technical Architect (CTA)"] },
+      ],
+      notice:
+        "Certification requirements and credential names can change. LTV Academy prepares students for relevant skills and certification objectives but does not issue Salesforce certifications. Students should verify current Salesforce certification requirements before scheduling an exam.",
+    },
+    freeLab: {
+      eyebrow: "Start free",
+      heading: "Free Salesforce Hands-On Environment",
+      intro: [
+        "Unlike many enterprise software platforms, students do not need to purchase an expensive Salesforce environment to complete most of this career path.",
+        "Students can create FREE Salesforce Trailhead Playgrounds and Developer Edition organizations for hands-on practice.",
+      ],
+      listLabel: "Students will use these environments to:",
+      items: [
+        "Create objects and fields",
+        "Build applications",
+        "Configure security",
+        "Create users",
+        "Build reports and dashboards",
+        "Create Flow automations",
+        "Write Apex",
+        "Build Lightning Web Components",
+        "Work with APIs",
+        "Practice integrations",
+        "Use Salesforce CLI",
+        "Practice deployment",
+        "Create scratch orgs",
+        "Complete LTV projects",
+      ],
+      buttons: [
+        { label: "Create a Trailhead Account", url: "https://trailhead.salesforce.com/" },
+        { label: "Salesforce Developer", url: "https://developer.salesforce.com/" },
+      ],
+      notes: [
+        "Some advanced Salesforce products or features may require a special Salesforce-provided trial, training environment, or other environment and may not be available in a standard Trailhead Playground or Developer Edition org.",
+        "Salesforce, Trailhead and Developer Edition are Salesforce products. LTV Academy is independent and is not sponsored, endorsed, or operated by Salesforce.",
+      ],
+    },
+    milestones: [
+      { label: "Foundation", value: "Salesforce Administrator" },
+      { label: "Builder", value: "Salesforce Platform App Builder" },
+      { label: "Developer", value: "Salesforce Platform Developer" },
+      { label: "Architect", value: "Domain Architect Credentials" },
+      { label: "Advanced", value: "Application Architect + System Architect" },
+      { label: "Destination", value: "Salesforce Technical Architect / CTA" },
+    ],
+    courseDetails: {
+      "ltv-service-and-sales-platform": "Students document and present the application.",
+      "ltv-global-enterprise-transformation":
+        "Scenario: LTV Global is a fictional multinational organization replacing disconnected CRM applications with Salesforce. Final defense: the student presents the architecture as though appearing before an enterprise Architecture Review Board, must defend the design, and must explain why alternatives were rejected.",
+    },
+    courseDetailLists: {
+      "architecture-tradeoffs": [
+        { heading: "Tradeoffs", items: ["Security vs. usability", "Performance vs. complexity", "Build vs. buy", "Synchronous vs. asynchronous", "Declarative vs. programmatic", "Real-time vs. batch"] },
+      ],
+      "ltv-customer-management-system": [
+        { heading: "Build", items: ["Accounts", "Contacts", "Leads", "Opportunities", "Custom objects", "Security", "Flows", "Validation rules", "Reports", "Dashboards"] },
+      ],
+      "ltv-service-and-sales-platform": [
+        { heading: "A more advanced application containing", items: ["Custom data model", "Complex Flow", "Apex", "SOQL", "Apex tests", "Lightning Web Components", "REST integration", "Security model", "Reports", "Deployment"] },
+      ],
+      "ltv-global-enterprise-transformation": [
+        { heading: "Salesforce must integrate with", items: ["ERP", "Financial system", "Data warehouse", "Identity provider", "Customer portal", "External APIs"] },
+        { heading: "The company has", items: ["10,000 internal users", "Millions of customer records", "Multiple business units", "International operations", "Complex security requirements", "Legacy applications", "High-volume integrations"] },
+        {
+          heading: "Students must design",
+          items: ["Salesforce application architecture", "Data architecture", "Security architecture", "Sharing architecture", "Identity architecture", "Integration architecture", "API architecture", "Environment strategy", "DevOps strategy", "Migration strategy", "Backup/recovery considerations", "Monitoring strategy", "Governance model"],
+        },
+        {
+          heading: "Deliverables",
+          items: ["Executive architecture diagram", "System context diagram", "Data model", "Integration diagram", "Security model", "Identity design", "Environment strategy", "CI/CD design", "Migration plan", "Risk register", "Architecture decision records", "Implementation roadmap", "Technical architecture document", "Executive presentation"],
+        },
+        { heading: "Final defense: the instructor challenges you on", items: ["Security", "Scalability", "Integration", "Performance", "Data", "Identity", "Deployment", "Failure scenarios", "Architecture tradeoffs"] },
+      ],
+      "salesforce-career-preparation": [
+        {
+          heading: "Covers",
+          items: ["Salesforce resumes", "Trailhead profile", "Portfolio development", "GitHub", "Certification strategy", "Administrator interviews", "Developer interviews", "Consultant interviews", "Architect scenario interviews", "Architecture whiteboarding", "Presenting capstones", "Explaining architecture decisions"],
+        },
+      ],
+    },
+    stages: [
+      {
+        label: "Salesforce Foundations",
+        courseSlugs: ["salesforce-and-crm-foundations", "salesforce-hands-on-environment", "salesforce-data-model-fundamentals"],
+      },
+      {
+        label: "Salesforce Administration",
+        courseSlugs: ["salesforce-administration", "salesforce-security-and-access-fundamentals", "salesforce-data-management", "salesforce-admin-reports-and-dashboards"],
+        checkpoint: { kind: "checkpoint", label: "Certification checkpoint", items: ["Salesforce Certified Administrator"] },
+      },
+      {
+        label: "Declarative Development",
+        courseSlugs: ["salesforce-platform-app-builder", "salesforce-flow-automation", "salesforce-business-process-automation"],
+        checkpoint: { kind: "checkpoint", label: "Certification checkpoint", items: ["Salesforce Certified Platform App Builder"] },
+      },
+      {
+        label: "Salesforce Development",
+        courseSlugs: ["programming-foundations-for-salesforce", "apex-programming", "soql-and-sosl", "apex-testing", "lightning-web-components"],
+        checkpoint: { kind: "checkpoint", label: "Certification checkpoint", items: ["Salesforce Certified Platform Developer I"] },
+      },
+      {
+        label: "Professional Salesforce Development",
+        courseSlugs: ["salesforce-apis", "salesforce-integration-development", "asynchronous-apex", "performance-and-governor-limits"],
+      },
+      {
+        label: "Data Architecture",
+        courseSlugs: ["enterprise-salesforce-data-architecture", "large-data-volumes", "data-migration-architecture", "data-governance"],
+        checkpoint: { kind: "checkpoint", label: "Certification checkpoint", items: ["Salesforce Certified Platform Data Architect"] },
+      },
+      {
+        label: "Enterprise Security Architecture",
+        courseSlugs: ["sharing-and-visibility-architecture", "identity-and-access-management", "enterprise-security-design"],
+        checkpoint: { kind: "checkpoint", label: "Certification checkpoints", items: ["Salesforce Certified Platform Sharing and Visibility Architect","Salesforce Certified Platform Identity and Access Management Architect"] },
+      },
+      {
+        label: "Enterprise Integration Architecture",
+        courseSlugs: ["integration-architecture", "event-driven-salesforce", "integration-security", "integration-architecture-case-studies"],
+        checkpoint: { kind: "checkpoint", label: "Certification checkpoint", items: ["Salesforce Certified Platform Integration Architect"] },
+      },
+      {
+        label: "DevOps & Application Lifecycle",
+        courseSlugs: ["salesforce-dx", "git-and-source-control", "cicd-for-salesforce", "salesforce-environment-strategy", "release-and-governance-architecture"],
+        checkpoint: { kind: "checkpoint", label: "Certification checkpoint", items: ["Salesforce Certified Platform Development Lifecycle and Deployment Architect"] },
+      },
+      {
+        label: "Application Architect",
+        courseSlugs: ["enterprise-application-architecture", "application-architecture-case-studies", "architecture-documentation"],
+        checkpoint: { kind: "milestone", label: "Milestone", items: ["Salesforce Certified Application Architect"] },
+      },
+      {
+        label: "System Architect",
+        courseSlugs: ["enterprise-systems-architecture", "distributed-systems-concepts", "enterprise-integration-case-studies"],
+        checkpoint: { kind: "milestone", label: "Milestone", items: ["Salesforce Certified System Architect"] },
+      },
+      {
+        label: "Technical Architect",
+        note: "The destination — an advanced professional credential, not a graduation outcome",
+        courseSlugs: ["technical-architecture-fundamentals", "architecture-tradeoffs", "architecture-review-boards", "nonfunctional-requirements", "technical-architect-case-studies"],
+        checkpoint: { kind: "destination", label: "Destination", items: ["Salesforce Certified Technical Architect (CTA)"], note: "The Certified Technical Architect (CTA) credential is an advanced destination credential that requires substantial professional experience. It is not an entry-level certification and should never be treated as one." },
+      },
+      {
+        label: "Capstone I — Salesforce Admin / Developer",
+        note: "A portfolio project suitable for an entry-level Salesforce portfolio",
+        courseSlugs: ["ltv-customer-management-system"],
+        capstone: true,
+      },
+      {
+        label: "Capstone II — Salesforce Developer",
+        courseSlugs: ["ltv-service-and-sales-platform"],
+        capstone: true,
+      },
+      {
+        label: "Final Enterprise Architect Capstone",
+        note: "Design and defend a secure, scalable, integrated enterprise Salesforce solution",
+        courseSlugs: ["ltv-global-enterprise-transformation"],
+        capstone: true,
+      },
+      {
+        label: "Career & Interview Preparation",
+        courseSlugs: ["salesforce-career-preparation"],
+      },
+    ],
+    destinationNote:
+      "Salesforce Technical Architect is an advanced professional destination. A typical progression runs Salesforce Administrator → Business Analyst → Platform Developer → Consultant → Senior Developer → Solution Architect → Application Architect / System Architect → Technical Architect, and it takes significant real-world architecture experience — not just coursework. Pursue entry-level and intermediate Salesforce roles while you work through the architecture stages.",
   },
   {
     slug: "bi-to-data-architect",

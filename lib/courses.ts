@@ -110,6 +110,56 @@ import { ORACLE_FUSION_IMPLEMENTATION_LIFECYCLE_CHAPTERS } from "./oracle-fusion
 import { TROUBLESHOOTING_ORACLE_FINANCIALS_CHAPTERS } from "./troubleshooting-oracle-financials-outline";
 import { LTV_MANUFACTURING_CORPORATION_CAPSTONE_CHAPTERS } from "./ltv-manufacturing-corporation-capstone-outline";
 import { ORACLE_FINANCIALS_CAREER_AND_INTERVIEW_PREPARATION_CHAPTERS } from "./oracle-financials-career-and-interview-preparation-outline";
+import { SFTA_SALESFORCE_AND_CRM_FOUNDATIONS_CHAPTERS } from "./salesforce-and-crm-foundations-outline";
+import { SFTA_SALESFORCE_HANDS_ON_ENVIRONMENT_CHAPTERS } from "./salesforce-hands-on-environment-outline";
+import { SFTA_SALESFORCE_DATA_MODEL_FUNDAMENTALS_CHAPTERS } from "./salesforce-data-model-fundamentals-outline";
+import { SFTA_SALESFORCE_ADMINISTRATION_CHAPTERS } from "./salesforce-administration-outline";
+import { SFTA_SALESFORCE_SECURITY_AND_ACCESS_FUNDAMENTALS_CHAPTERS } from "./salesforce-security-and-access-fundamentals-outline";
+import { SFTA_SALESFORCE_DATA_MANAGEMENT_CHAPTERS } from "./salesforce-data-management-outline";
+import { SFTA_SALESFORCE_ADMIN_REPORTS_AND_DASHBOARDS_CHAPTERS } from "./salesforce-admin-reports-and-dashboards-outline";
+import { SFTA_SALESFORCE_PLATFORM_APP_BUILDER_CHAPTERS } from "./salesforce-platform-app-builder-outline";
+import { SFTA_SALESFORCE_FLOW_AUTOMATION_CHAPTERS } from "./salesforce-flow-automation-outline";
+import { SFTA_SALESFORCE_BUSINESS_PROCESS_AUTOMATION_CHAPTERS } from "./salesforce-business-process-automation-outline";
+import { SFTA_PROGRAMMING_FOUNDATIONS_FOR_SALESFORCE_CHAPTERS } from "./programming-foundations-for-salesforce-outline";
+import { SFTA_APEX_PROGRAMMING_CHAPTERS } from "./apex-programming-outline";
+import { SFTA_SOQL_AND_SOSL_CHAPTERS } from "./soql-and-sosl-outline";
+import { SFTA_APEX_TESTING_CHAPTERS } from "./apex-testing-outline";
+import { SFTA_LIGHTNING_WEB_COMPONENTS_CHAPTERS } from "./lightning-web-components-outline";
+import { SFTA_SALESFORCE_APIS_CHAPTERS } from "./salesforce-apis-outline";
+import { SFTA_SALESFORCE_INTEGRATION_DEVELOPMENT_CHAPTERS } from "./salesforce-integration-development-outline";
+import { SFTA_ASYNCHRONOUS_APEX_CHAPTERS } from "./asynchronous-apex-outline";
+import { SFTA_PERFORMANCE_AND_GOVERNOR_LIMITS_CHAPTERS } from "./performance-and-governor-limits-outline";
+import { SFTA_ENTERPRISE_SALESFORCE_DATA_ARCHITECTURE_CHAPTERS } from "./enterprise-salesforce-data-architecture-outline";
+import { SFTA_LARGE_DATA_VOLUMES_CHAPTERS } from "./large-data-volumes-outline";
+import { SFTA_DATA_MIGRATION_ARCHITECTURE_CHAPTERS } from "./data-migration-architecture-outline";
+import { SFTA_DATA_GOVERNANCE_CHAPTERS } from "./data-governance-outline";
+import { SFTA_SHARING_AND_VISIBILITY_ARCHITECTURE_CHAPTERS } from "./sharing-and-visibility-architecture-outline";
+import { SFTA_IDENTITY_AND_ACCESS_MANAGEMENT_CHAPTERS } from "./identity-and-access-management-outline";
+import { SFTA_ENTERPRISE_SECURITY_DESIGN_CHAPTERS } from "./enterprise-security-design-outline";
+import { SFTA_INTEGRATION_ARCHITECTURE_CHAPTERS } from "./integration-architecture-outline";
+import { SFTA_EVENT_DRIVEN_SALESFORCE_CHAPTERS } from "./event-driven-salesforce-outline";
+import { SFTA_INTEGRATION_SECURITY_CHAPTERS } from "./integration-security-outline";
+import { SFTA_INTEGRATION_ARCHITECTURE_CASE_STUDIES_CHAPTERS } from "./integration-architecture-case-studies-outline";
+import { SFTA_SALESFORCE_DX_CHAPTERS } from "./salesforce-dx-outline";
+import { SFTA_GIT_AND_SOURCE_CONTROL_CHAPTERS } from "./git-and-source-control-outline";
+import { SFTA_CICD_FOR_SALESFORCE_CHAPTERS } from "./cicd-for-salesforce-outline";
+import { SFTA_SALESFORCE_ENVIRONMENT_STRATEGY_CHAPTERS } from "./salesforce-environment-strategy-outline";
+import { SFTA_RELEASE_AND_GOVERNANCE_ARCHITECTURE_CHAPTERS } from "./release-and-governance-architecture-outline";
+import { SFTA_ENTERPRISE_APPLICATION_ARCHITECTURE_CHAPTERS } from "./enterprise-application-architecture-outline";
+import { SFTA_APPLICATION_ARCHITECTURE_CASE_STUDIES_CHAPTERS } from "./application-architecture-case-studies-outline";
+import { SFTA_ARCHITECTURE_DOCUMENTATION_CHAPTERS } from "./architecture-documentation-outline";
+import { SFTA_ENTERPRISE_SYSTEMS_ARCHITECTURE_CHAPTERS } from "./enterprise-systems-architecture-outline";
+import { SFTA_DISTRIBUTED_SYSTEMS_CONCEPTS_CHAPTERS } from "./distributed-systems-concepts-outline";
+import { SFTA_ENTERPRISE_INTEGRATION_CASE_STUDIES_CHAPTERS } from "./enterprise-integration-case-studies-outline";
+import { SFTA_TECHNICAL_ARCHITECTURE_FUNDAMENTALS_CHAPTERS } from "./technical-architecture-fundamentals-outline";
+import { SFTA_ARCHITECTURE_TRADEOFFS_CHAPTERS } from "./architecture-tradeoffs-outline";
+import { SFTA_ARCHITECTURE_REVIEW_BOARDS_CHAPTERS } from "./architecture-review-boards-outline";
+import { SFTA_NONFUNCTIONAL_REQUIREMENTS_CHAPTERS } from "./nonfunctional-requirements-outline";
+import { SFTA_TECHNICAL_ARCHITECT_CASE_STUDIES_CHAPTERS } from "./technical-architect-case-studies-outline";
+import { SFTA_LTV_CUSTOMER_MANAGEMENT_SYSTEM_CHAPTERS } from "./ltv-customer-management-system-outline";
+import { SFTA_LTV_SERVICE_AND_SALES_PLATFORM_CHAPTERS } from "./ltv-service-and-sales-platform-outline";
+import { SFTA_LTV_GLOBAL_ENTERPRISE_TRANSFORMATION_CHAPTERS } from "./ltv-global-enterprise-transformation-outline";
+import { SFTA_SALESFORCE_CAREER_PREPARATION_CHAPTERS } from "./salesforce-career-preparation-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -1115,6 +1165,456 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: ORACLE_FINANCIALS_CAREER_AND_INTERVIEW_PREPARATION_CHAPTERS,
     contentBase: "oracle-financials-career-and-interview-preparation",
+  },
+  {
+    slug: "salesforce-and-crm-foundations",
+    title: "Salesforce & CRM Foundations",
+    tagline:
+      "CRM fundamentals, Salesforce ecosystem, clouds, multitenancy, organizations, records, objects, fields, applications, Lightning Experience and Salesforce terminology.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_AND_CRM_FOUNDATIONS_CHAPTERS,
+    contentBase: "salesforce-and-crm-foundations",
+  },
+  {
+    slug: "salesforce-hands-on-environment",
+    title: "Hands-On Salesforce Environment",
+    tagline:
+      "Create a Trailhead account, create Trailhead Playgrounds, understand Developer Edition, navigate Setup and prepare the student's permanent training environment.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_HANDS_ON_ENVIRONMENT_CHAPTERS,
+    contentBase: "salesforce-hands-on-environment",
+  },
+  {
+    slug: "salesforce-data-model-fundamentals",
+    title: "Salesforce Data Model Fundamentals",
+    tagline:
+      "Standard objects, custom objects, fields, relationships, record types, schema design and Salesforce IDs.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_DATA_MODEL_FUNDAMENTALS_CHAPTERS,
+    contentBase: "salesforce-data-model-fundamentals",
+  },
+  {
+    slug: "salesforce-administration",
+    title: "Salesforce Administration",
+    tagline:
+      "Users, licenses, profiles, permission sets, organization settings, applications, tabs, page layouts, record types and administration.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_ADMINISTRATION_CHAPTERS,
+    contentBase: "salesforce-administration",
+  },
+  {
+    slug: "salesforce-security-and-access-fundamentals",
+    title: "Security & Access Fundamentals",
+    tagline:
+      "Profiles, permission sets, roles, organization-wide defaults, sharing rules, role hierarchy and field-level security.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_SECURITY_AND_ACCESS_FUNDAMENTALS_CHAPTERS,
+    contentBase: "salesforce-security-and-access-fundamentals",
+  },
+  {
+    slug: "salesforce-data-management",
+    title: "Data Management",
+    tagline:
+      "Import Wizard, Data Loader concepts, duplicate management, validation, data quality, exports and bulk data operations.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_DATA_MANAGEMENT_CHAPTERS,
+    contentBase: "salesforce-data-management",
+  },
+  {
+    slug: "salesforce-admin-reports-and-dashboards",
+    title: "Reports & Dashboards",
+    tagline:
+      "Report types, filters, grouping, summary reports, matrix reports, joined reports, dashboards and business analytics.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_ADMIN_REPORTS_AND_DASHBOARDS_CHAPTERS,
+    contentBase: "salesforce-admin-reports-and-dashboards",
+  },
+  {
+    slug: "salesforce-platform-app-builder",
+    title: "Salesforce Platform App Builder",
+    tagline:
+      "Custom applications, objects, relationships, page layouts, Lightning pages, business logic and application design.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_PLATFORM_APP_BUILDER_CHAPTERS,
+    contentBase: "salesforce-platform-app-builder",
+  },
+  {
+    slug: "salesforce-flow-automation",
+    title: "Flow Automation",
+    tagline:
+      "Record-triggered flows, screen flows, scheduled flows, subflows, decisions, loops, collections, fault handling and automation architecture.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_FLOW_AUTOMATION_CHAPTERS,
+    contentBase: "salesforce-flow-automation",
+  },
+  {
+    slug: "salesforce-business-process-automation",
+    title: "Business Process Automation",
+    tagline:
+      "Approval processes, validation rules, formulas, notifications and choosing between declarative and programmatic solutions.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_BUSINESS_PROCESS_AUTOMATION_CHAPTERS,
+    contentBase: "salesforce-business-process-automation",
+  },
+  {
+    slug: "programming-foundations-for-salesforce",
+    title: "Programming Foundations for Salesforce",
+    tagline:
+      "Programming concepts for students without a software development background.",
+    status: "available",
+    chapters: SFTA_PROGRAMMING_FOUNDATIONS_FOR_SALESFORCE_CHAPTERS,
+    contentBase: "programming-foundations-for-salesforce",
+  },
+  {
+    slug: "apex-programming",
+    title: "Apex Programming",
+    tagline:
+      "Variables, collections, classes, methods, SOQL, DML, exceptions, triggers, bulkification and governor limits.",
+    status: "available",
+    chapters: SFTA_APEX_PROGRAMMING_CHAPTERS,
+    contentBase: "apex-programming",
+  },
+  {
+    slug: "soql-and-sosl",
+    title: "SOQL & SOSL",
+    tagline:
+      "Query Salesforce data, relationships, aggregate queries, filtering, searching and query optimization.",
+    status: "available",
+    chapters: SFTA_SOQL_AND_SOSL_CHAPTERS,
+    contentBase: "soql-and-sosl",
+  },
+  {
+    slug: "apex-testing",
+    title: "Apex Testing",
+    tagline:
+      "Unit testing, test data, assertions, code coverage, positive and negative tests and deployment requirements.",
+    status: "available",
+    chapters: SFTA_APEX_TESTING_CHAPTERS,
+    contentBase: "apex-testing",
+  },
+  {
+    slug: "lightning-web-components",
+    title: "Lightning Web Components",
+    tagline:
+      "HTML, JavaScript fundamentals, components, properties, events, Apex communication, Lightning Data Service and reusable UI components.",
+    status: "available",
+    chapters: SFTA_LIGHTNING_WEB_COMPONENTS_CHAPTERS,
+    contentBase: "lightning-web-components",
+  },
+  {
+    slug: "salesforce-apis",
+    title: "Salesforce APIs",
+    tagline:
+      "REST API, SOAP concepts, Bulk API, authentication, JSON and external applications.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_APIS_CHAPTERS,
+    contentBase: "salesforce-apis",
+  },
+  {
+    slug: "salesforce-integration-development",
+    title: "Integration Development",
+    tagline:
+      "Callouts, Named Credentials, web services, asynchronous integration, Platform Events and integration patterns.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_INTEGRATION_DEVELOPMENT_CHAPTERS,
+    contentBase: "salesforce-integration-development",
+  },
+  {
+    slug: "asynchronous-apex",
+    title: "Asynchronous Apex",
+    tagline:
+      "Future methods, Queueable Apex, Batch Apex and Scheduled Apex.",
+    status: "available",
+    chapters: SFTA_ASYNCHRONOUS_APEX_CHAPTERS,
+    contentBase: "asynchronous-apex",
+  },
+  {
+    slug: "performance-and-governor-limits",
+    title: "Performance & Governor Limits",
+    tagline:
+      "Bulk processing, query optimization, transaction limits, scalability and performance troubleshooting.",
+    status: "available",
+    chapters: SFTA_PERFORMANCE_AND_GOVERNOR_LIMITS_CHAPTERS,
+    contentBase: "performance-and-governor-limits",
+  },
+  {
+    slug: "enterprise-salesforce-data-architecture",
+    title: "Enterprise Salesforce Data Architecture",
+    tagline:
+      "Enterprise data modeling, relationship design, large data volumes, data ownership, master data and scalability.",
+    status: "available",
+    chapters: SFTA_ENTERPRISE_SALESFORCE_DATA_ARCHITECTURE_CHAPTERS,
+    contentBase: "enterprise-salesforce-data-architecture",
+  },
+  {
+    slug: "large-data-volumes",
+    title: "Large Data Volumes",
+    tagline:
+      "Indexing concepts, selective queries, data skew, archiving and performance.",
+    status: "available",
+    chapters: SFTA_LARGE_DATA_VOLUMES_CHAPTERS,
+    contentBase: "large-data-volumes",
+  },
+  {
+    slug: "data-migration-architecture",
+    title: "Data Migration Architecture",
+    tagline:
+      "Source analysis, mappings, transformation, migration sequencing, validation, reconciliation and cutover.",
+    status: "available",
+    chapters: SFTA_DATA_MIGRATION_ARCHITECTURE_CHAPTERS,
+    contentBase: "data-migration-architecture",
+  },
+  {
+    slug: "data-governance",
+    title: "Data Governance",
+    tagline:
+      "Data ownership, quality, retention, compliance and governance.",
+    status: "available",
+    chapters: SFTA_DATA_GOVERNANCE_CHAPTERS,
+    contentBase: "data-governance",
+  },
+  {
+    slug: "sharing-and-visibility-architecture",
+    title: "Sharing & Visibility Architecture",
+    tagline:
+      "OWD, role hierarchy, sharing rules, teams, manual sharing, Apex sharing and enterprise sharing architecture.",
+    status: "available",
+    chapters: SFTA_SHARING_AND_VISIBILITY_ARCHITECTURE_CHAPTERS,
+    contentBase: "sharing-and-visibility-architecture",
+  },
+  {
+    slug: "identity-and-access-management",
+    title: "Identity & Access Management",
+    tagline:
+      "Authentication, authorization, SSO, OAuth, connected apps, identity providers, MFA and enterprise identity architecture.",
+    status: "available",
+    chapters: SFTA_IDENTITY_AND_ACCESS_MANAGEMENT_CHAPTERS,
+    contentBase: "identity-and-access-management",
+  },
+  {
+    slug: "enterprise-security-design",
+    title: "Enterprise Security Design",
+    tagline:
+      "Security boundaries, least privilege, auditing, threat considerations and security architecture.",
+    status: "available",
+    chapters: SFTA_ENTERPRISE_SECURITY_DESIGN_CHAPTERS,
+    contentBase: "enterprise-security-design",
+  },
+  {
+    slug: "integration-architecture",
+    title: "Integration Architecture",
+    tagline:
+      "Point-to-point integration, middleware, synchronous and asynchronous communication, event-driven architecture, APIs and enterprise integration patterns.",
+    status: "available",
+    chapters: SFTA_INTEGRATION_ARCHITECTURE_CHAPTERS,
+    contentBase: "integration-architecture",
+  },
+  {
+    slug: "event-driven-salesforce",
+    title: "Event-Driven Salesforce",
+    tagline:
+      "Platform Events, Change Data Capture, event-driven integration and decoupled architectures.",
+    status: "available",
+    chapters: SFTA_EVENT_DRIVEN_SALESFORCE_CHAPTERS,
+    contentBase: "event-driven-salesforce",
+  },
+  {
+    slug: "integration-security",
+    title: "Integration Security",
+    tagline:
+      "OAuth, certificates, Named Credentials, API security and service accounts.",
+    status: "available",
+    chapters: SFTA_INTEGRATION_SECURITY_CHAPTERS,
+    contentBase: "integration-security",
+  },
+  {
+    slug: "integration-architecture-case-studies",
+    title: "Integration Architecture Case Studies",
+    tagline:
+      "Students design solutions connecting Salesforce with ERP, financial, data warehouse and external applications.",
+    status: "available",
+    chapters: SFTA_INTEGRATION_ARCHITECTURE_CASE_STUDIES_CHAPTERS,
+    contentBase: "integration-architecture-case-studies",
+  },
+  {
+    slug: "salesforce-dx",
+    title: "Salesforce DX",
+    tagline:
+      "Salesforce CLI, source-driven development, Dev Hub, scratch orgs, project structure and metadata.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_DX_CHAPTERS,
+    contentBase: "salesforce-dx",
+  },
+  {
+    slug: "git-and-source-control",
+    title: "Git & Source Control",
+    tagline:
+      "Git fundamentals, branches, pull requests, merge conflicts and Salesforce development workflows.",
+    status: "available",
+    chapters: SFTA_GIT_AND_SOURCE_CONTROL_CHAPTERS,
+    contentBase: "git-and-source-control",
+  },
+  {
+    slug: "cicd-for-salesforce",
+    title: "CI/CD for Salesforce",
+    tagline:
+      "Automated testing, validation, deployment pipelines and release automation.",
+    status: "available",
+    chapters: SFTA_CICD_FOR_SALESFORCE_CHAPTERS,
+    contentBase: "cicd-for-salesforce",
+  },
+  {
+    slug: "salesforce-environment-strategy",
+    title: "Environment Strategy",
+    tagline:
+      "Development environments, sandboxes, scratch orgs, testing environments, staging and production.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_ENVIRONMENT_STRATEGY_CHAPTERS,
+    contentBase: "salesforce-environment-strategy",
+  },
+  {
+    slug: "release-and-governance-architecture",
+    title: "Release & Governance Architecture",
+    tagline:
+      "Release strategy, governance, change control, rollback and enterprise deployment planning.",
+    status: "available",
+    chapters: SFTA_RELEASE_AND_GOVERNANCE_ARCHITECTURE_CHAPTERS,
+    contentBase: "release-and-governance-architecture",
+  },
+  {
+    slug: "enterprise-application-architecture",
+    title: "Enterprise Application Architecture",
+    tagline:
+      "Requirements analysis, domain modeling, application boundaries, declarative versus programmatic solutions, scalability and maintainability.",
+    status: "available",
+    chapters: SFTA_ENTERPRISE_APPLICATION_ARCHITECTURE_CHAPTERS,
+    contentBase: "enterprise-application-architecture",
+  },
+  {
+    slug: "application-architecture-case-studies",
+    title: "Application Architecture Case Studies",
+    tagline:
+      "Students receive business requirements and design complete Salesforce solutions.",
+    status: "available",
+    chapters: SFTA_APPLICATION_ARCHITECTURE_CASE_STUDIES_CHAPTERS,
+    contentBase: "application-architecture-case-studies",
+  },
+  {
+    slug: "architecture-documentation",
+    title: "Architecture Documentation",
+    tagline:
+      "ERDs, system diagrams, data-flow diagrams, sequence diagrams, decision records and technical documentation.",
+    status: "available",
+    chapters: SFTA_ARCHITECTURE_DOCUMENTATION_CHAPTERS,
+    contentBase: "architecture-documentation",
+  },
+  {
+    slug: "enterprise-systems-architecture",
+    title: "Enterprise Systems Architecture",
+    tagline:
+      "Salesforce within larger enterprise environments, external systems, integration boundaries, security and governance.",
+    status: "available",
+    chapters: SFTA_ENTERPRISE_SYSTEMS_ARCHITECTURE_CHAPTERS,
+    contentBase: "enterprise-systems-architecture",
+  },
+  {
+    slug: "distributed-systems-concepts",
+    title: "Distributed Systems Concepts",
+    tagline:
+      "Availability, scalability, reliability, asynchronous systems, eventual consistency and failure handling.",
+    status: "available",
+    chapters: SFTA_DISTRIBUTED_SYSTEMS_CONCEPTS_CHAPTERS,
+    contentBase: "distributed-systems-concepts",
+  },
+  {
+    slug: "enterprise-integration-case-studies",
+    title: "Enterprise Integration Case Studies",
+    tagline:
+      "CRM + ERP, CRM + Data Warehouse, CRM + Identity Provider, CRM + Customer Portal, CRM + External APIs.",
+    status: "available",
+    chapters: SFTA_ENTERPRISE_INTEGRATION_CASE_STUDIES_CHAPTERS,
+    contentBase: "enterprise-integration-case-studies",
+  },
+  {
+    slug: "technical-architecture-fundamentals",
+    title: "Technical Architecture Fundamentals",
+    tagline:
+      "Translate business requirements into enterprise technical architecture.",
+    status: "available",
+    chapters: SFTA_TECHNICAL_ARCHITECTURE_FUNDAMENTALS_CHAPTERS,
+    contentBase: "technical-architecture-fundamentals",
+  },
+  {
+    slug: "architecture-tradeoffs",
+    title: "Architecture Tradeoffs",
+    tagline:
+      "Security vs. usability, performance vs. complexity, build vs. buy, synchronous vs. asynchronous, declarative vs. programmatic, and real-time vs. batch.",
+    status: "available",
+    chapters: SFTA_ARCHITECTURE_TRADEOFFS_CHAPTERS,
+    contentBase: "architecture-tradeoffs",
+  },
+  {
+    slug: "architecture-review-boards",
+    title: "Architecture Review Boards",
+    tagline:
+      "Present architecture, defend decisions, respond to technical objections and document tradeoffs.",
+    status: "available",
+    chapters: SFTA_ARCHITECTURE_REVIEW_BOARDS_CHAPTERS,
+    contentBase: "architecture-review-boards",
+  },
+  {
+    slug: "nonfunctional-requirements",
+    title: "Nonfunctional Requirements",
+    tagline:
+      "Performance, security, scalability, reliability, maintainability, recoverability and compliance.",
+    status: "available",
+    chapters: SFTA_NONFUNCTIONAL_REQUIREMENTS_CHAPTERS,
+    contentBase: "nonfunctional-requirements",
+  },
+  {
+    slug: "technical-architect-case-studies",
+    title: "Technical Architect Case Studies",
+    tagline:
+      "Students receive ambiguous enterprise requirements and must design complete solutions.",
+    status: "available",
+    chapters: SFTA_TECHNICAL_ARCHITECT_CASE_STUDIES_CHAPTERS,
+    contentBase: "technical-architect-case-studies",
+  },
+  {
+    slug: "ltv-customer-management-system",
+    title: "LTV Customer Management System",
+    tagline:
+      "Student builds a Salesforce solution for a fictional company — suitable for an entry-level Salesforce portfolio.",
+    status: "available",
+    chapters: SFTA_LTV_CUSTOMER_MANAGEMENT_SYSTEM_CHAPTERS,
+    contentBase: "ltv-customer-management-system",
+  },
+  {
+    slug: "ltv-service-and-sales-platform",
+    title: "LTV Service & Sales Platform",
+    tagline:
+      "Build a more advanced application, then document and present it.",
+    status: "available",
+    chapters: SFTA_LTV_SERVICE_AND_SALES_PLATFORM_CHAPTERS,
+    contentBase: "ltv-service-and-sales-platform",
+  },
+  {
+    slug: "ltv-global-enterprise-transformation",
+    title: "LTV Global Enterprise Transformation",
+    tagline:
+      "A fictional multinational replaces disconnected CRM applications with Salesforce; students design, document and defend the enterprise architecture before an Architecture Review Board.",
+    status: "available",
+    chapters: SFTA_LTV_GLOBAL_ENTERPRISE_TRANSFORMATION_CHAPTERS,
+    contentBase: "ltv-global-enterprise-transformation",
+  },
+  {
+    slug: "salesforce-career-preparation",
+    title: "Salesforce Career Preparation",
+    tagline:
+      "Salesforce resumes, Trailhead profile, portfolio development, GitHub, certification strategy, Administrator, Developer, Consultant and Architect scenario interviews, architecture whiteboarding, presenting capstones and explaining architecture decisions.",
+    status: "available",
+    chapters: SFTA_SALESFORCE_CAREER_PREPARATION_CHAPTERS,
+    contentBase: "salesforce-career-preparation",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,

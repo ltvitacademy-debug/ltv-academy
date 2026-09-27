@@ -31,6 +31,14 @@ export default async function CareerPathPage({
   const path = getCareerPath(slug);
   if (!path) notFound();
 
+  const stageTotal = (slugs?: string[]) =>
+    (slugs ?? []).reduce((sum, s) => {
+      const c = getCourse(s);
+      return sum + (c ? lessonCount(c) : 0);
+    }, 0);
+  const programTotal = path.stages.reduce((sum, st) => sum + stageTotal(st.courseSlugs), 0);
+  const programCourseCount = path.stages.reduce((sum, st) => sum + (st.courseSlugs?.length ?? 0), 0);
+
   return (
     <main className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
       <Link href="/careers" className="text-sm font-medium text-stone hover:text-crimson">
@@ -96,6 +104,112 @@ export default async function CareerPathPage({
           <p className="mt-1 text-ink">{path.targetJobs.join(" → ")}</p>
         </div>
       </div>
+
+      {path.positioning && (
+        <section className="mt-10 rounded-[2px] border-l-4 border-crimson bg-gold-pale p-5 sm:p-6">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">{path.positioning.heading}</h2>
+          <div className="mt-3 max-w-2xl space-y-3 text-ink">
+            {path.positioning.paragraphs.map((para) => (
+              <p key={para}>{para}</p>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {path.certificationRoadmap && (
+        <section className="mt-12">
+          <h2 className="display border-b border-ink/15 pb-3 text-2xl">{path.certificationRoadmap.heading}</h2>
+          <ol className="mt-6 space-y-6">
+            {path.certificationRoadmap.steps.map((step, i, arr) => (
+              <li key={step.label} className="grid gap-3 sm:grid-cols-[11rem_1fr] sm:gap-6">
+                <div className="flex items-baseline gap-3">
+                  <span className="display text-2xl text-crimson">{String(i + 1).padStart(2, "0")}</span>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">{step.label}</p>
+                </div>
+                <ul className="grid gap-2 sm:grid-cols-2">
+                  {step.items.map((item) => (
+                    <li
+                      key={item}
+                      className={
+                        i === arr.length - 1
+                          ? "rounded-[2px] border-2 border-gold bg-crimson-deep px-4 py-3 text-sm font-semibold text-gold-pale"
+                          : "rounded-[2px] border border-ink/15 bg-gold-pale px-4 py-3 text-sm font-medium text-crimson-deep"
+                      }
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-6 max-w-2xl text-sm text-stone">{path.certificationRoadmap.notice}</p>
+        </section>
+      )}
+
+      {path.freeLab && (
+        <section
+          aria-labelledby="free-lab"
+          className="mt-12 rounded-[2px] border-2 border-crimson bg-gold-pale p-6 sm:p-10"
+        >
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">{path.freeLab.eyebrow}</p>
+          <h2 id="free-lab" className="display mt-3 text-3xl text-crimson-deep sm:text-4xl">
+            {path.freeLab.heading}
+          </h2>
+          <div className="mt-5 max-w-2xl space-y-4 text-ink">
+            {path.freeLab.intro.map((para) => (
+              <p key={para}>{para}</p>
+            ))}
+          </div>
+          <p className="mt-6 text-sm font-semibold uppercase tracking-[0.14em] text-crimson-deep">{path.freeLab.listLabel}</p>
+          <ul className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
+            {path.freeLab.items.map((item) => (
+              <li key={item} className="flex items-start gap-3 text-ink">
+                <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-crimson" />
+                {item}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-7 flex flex-wrap gap-3">
+            {path.freeLab.buttons.map((b) => (
+              <a
+                key={b.url}
+                href={b.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-parchment hover:bg-crimson-deep"
+              >
+                {b.label} <span aria-hidden="true">↗</span>
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
+            ))}
+          </div>
+          <div className="mt-6 max-w-2xl space-y-2 text-sm text-stone">
+            {path.freeLab.notes.map((note) => (
+              <p key={note}>{note}</p>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {path.milestones && (
+        <section className="mt-12">
+          <h2 className="display border-b border-ink/15 pb-3 text-2xl">Program total and milestones</h2>
+          <p className="mt-4 text-ink">
+            <span className="display text-4xl text-crimson">{programTotal}</span> lessons across {programCourseCount} courses in{" "}
+            {path.stages.length} numbered sections
+          </p>
+          <dl className="mt-5 grid gap-4 sm:grid-cols-3">
+            {path.milestones.map((m) => (
+              <div key={m.label} className="rounded-[2px] border border-ink/15 p-4">
+                <dt className="text-xs uppercase tracking-[0.14em] text-stone">{m.label}</dt>
+                <dd className="mt-2 font-semibold text-crimson">{m.value}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-3 text-sm text-stone">Approximate milestones only — not a promise of employment or of any certification result.</p>
+        </section>
+      )}
 
       {path.labRequirement && (
         <section
@@ -173,64 +287,123 @@ export default async function CareerPathPage({
       )}
 
       <div className="mt-12 space-y-10">
-        {path.stages.map((stage, i) => (
-          <section key={stage.label}>
-            <div className="flex items-baseline gap-4 border-b border-ink/15 pb-3">
-              <span className="display text-2xl text-crimson">{String(i + 1).padStart(2, "0")}</span>
-              <div>
-                <h2 className="display text-2xl">{stage.label}</h2>
-                {stage.note && <p className="text-sm italic text-stone">{stage.note}</p>}
+        {path.stages.map((stage, i) => {
+          const dark = Boolean(stage.capstone);
+          const total = stageTotal(stage.courseSlugs);
+          return (
+            <section
+              key={stage.label}
+              className={dark ? "rounded-[2px] border-2 border-gold bg-crimson-deep p-5 text-gold-pale sm:p-8" : ""}
+            >
+              <div className={`flex items-baseline gap-4 border-b pb-3 ${dark ? "border-gold/40" : "border-ink/15"}`}>
+                <span className={`display text-2xl ${dark ? "text-gold" : "text-crimson"}`}>{String(i + 1).padStart(2, "0")}</span>
+                <div className="flex-1">
+                  <h2 className={`display text-2xl ${dark ? "text-gold-pale" : ""}`}>{stage.label}</h2>
+                  {stage.note && <p className={`text-sm italic ${dark ? "text-gold-pale/80" : "text-stone"}`}>{stage.note}</p>}
+                </div>
+                {path.showLessonTotals && total > 0 && (
+                  <span className="whitespace-nowrap text-xs uppercase tracking-[0.14em] text-gold">Total {total}</span>
+                )}
               </div>
-            </div>
 
-            {stage.courseSlugs && (
-              <ul className="divide-y divide-ink/10">
-                {stage.courseSlugs.map((courseSlug) => {
-                  const course = getCourse(courseSlug);
-                  if (!course) return null;
-                  return (
-                    <li key={courseSlug}>
+              {stage.courseSlugs && (
+                <ul className={`divide-y ${dark ? "divide-gold/20" : "divide-ink/10"}`}>
+                  {stage.courseSlugs.map((courseSlug) => {
+                    const course = getCourse(courseSlug);
+                    if (!course) return null;
+                    return (
+                      <li key={courseSlug}>
+                        <Link
+                          href={`/app/courses/${courseSlug}?path=${path.slug}`}
+                          className="group flex items-center justify-between gap-4 py-5"
+                        >
+                          <div>
+                            <h3 className={`display text-xl ${dark ? "text-gold-pale group-hover:text-gold" : "group-hover:text-crimson"}`}>
+                              {course.title}
+                            </h3>
+                            <p className={`mt-1 max-w-xl text-sm ${dark ? "text-gold-pale/80" : "text-stone"}`}>{course.tagline}</p>
+                            {path.courseDetails?.[courseSlug] && (
+                              <p className={`mt-2 max-w-xl text-sm ${dark ? "text-gold-pale" : "text-ink"}`}>{path.courseDetails[courseSlug]}</p>
+                            )}
+                            {path.courseDetailLists?.[courseSlug]?.map((list) => (
+                              <div key={list.heading} className="mt-3 max-w-xl">
+                                <p className={`text-xs font-semibold uppercase tracking-[0.14em] ${dark ? "text-gold" : "text-crimson-deep"}`}>
+                                  {list.heading}
+                                </p>
+                                <ul className="mt-2 flex flex-wrap gap-2">
+                                  {list.items.map((item) => (
+                                    <li
+                                      key={item}
+                                      className={`rounded-[2px] border px-2 py-1 text-xs ${dark ? "border-gold/40 text-gold-pale" : "border-ink/15 text-ink"}`}
+                                    >
+                                      {item}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
+                          </div>
+                          <span className="whitespace-nowrap text-xs uppercase tracking-[0.14em] text-gold">
+                            {lessonCount(course)} lessons
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+
+              {stage.pathChoiceSlugs && (
+                <div className="mt-5 grid gap-4 sm:grid-cols-3">
+                  {stage.pathChoiceSlugs.map((choiceSlug) => {
+                    const choice = getCareerPath(choiceSlug);
+                    if (!choice) return null;
+                    return (
                       <Link
-                        href={`/app/courses/${courseSlug}?path=${path.slug}`}
-                        className="group flex items-center justify-between gap-4 py-5"
+                        key={choiceSlug}
+                        href={`/careers/${choiceSlug}`}
+                        className="group rounded-[2px] border border-ink/15 p-5 hover:border-crimson"
                       >
-                        <div>
-                          <h3 className="display text-xl group-hover:text-crimson">{course.title}</h3>
-                          <p className="mt-1 max-w-xl text-sm text-stone">{course.tagline}</p>
-                          {path.courseDetails?.[courseSlug] && (
-                            <p className="mt-2 max-w-xl text-sm text-ink">{path.courseDetails[courseSlug]}</p>
-                          )}
-                        </div>
-                        <span className="whitespace-nowrap text-xs uppercase tracking-[0.14em] text-gold">
-                          {lessonCount(course)} lessons
-                        </span>
+                        <h3 className="display text-lg group-hover:text-crimson">{choice.title}</h3>
+                        {choice.salaryRange && <p className="mt-2 text-sm text-stone">{choice.salaryRange}</p>}
                       </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+                    );
+                  })}
+                </div>
+              )}
 
-            {stage.pathChoiceSlugs && (
-              <div className="mt-5 grid gap-4 sm:grid-cols-3">
-                {stage.pathChoiceSlugs.map((choiceSlug) => {
-                  const choice = getCareerPath(choiceSlug);
-                  if (!choice) return null;
-                  return (
-                    <Link
-                      key={choiceSlug}
-                      href={`/careers/${choiceSlug}`}
-                      className="group rounded-[2px] border border-ink/15 p-5 hover:border-crimson"
-                    >
-                      <h3 className="display text-lg group-hover:text-crimson">{choice.title}</h3>
-                      {choice.salaryRange && <p className="mt-2 text-sm text-stone">{choice.salaryRange}</p>}
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </section>
-        ))}
+              {stage.checkpoint && (
+                <div
+                  className={
+                    stage.checkpoint.kind === "destination"
+                      ? "mt-6 rounded-[2px] border-2 border-gold bg-crimson-deep p-5 text-gold-pale sm:p-6"
+                      : stage.checkpoint.kind === "milestone"
+                        ? "mt-6 rounded-[2px] border-2 border-crimson bg-gold-pale p-5 text-crimson-deep sm:p-6"
+                        : "mt-6 rounded-[2px] border-l-4 border-gold bg-gold-pale p-5 text-crimson-deep sm:p-6"
+                  }
+                >
+                  <p
+                    className={`text-xs font-semibold uppercase tracking-[0.18em] ${stage.checkpoint.kind === "destination" ? "text-gold" : "text-crimson"}`}
+                  >
+                    {stage.checkpoint.label}
+                  </p>
+                  <ul className="mt-2 space-y-1">
+                    {stage.checkpoint.items.map((item) => (
+                      <li key={item} className="display text-lg sm:text-xl">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  {stage.checkpoint.note && (
+                    <p className={`mt-3 max-w-2xl text-sm font-medium ${stage.checkpoint.kind === "destination" ? "text-gold-pale" : "text-ink"}`}>
+                      {stage.checkpoint.note}
+                    </p>
+                  )}
+                </div>
+              )}
+            </section>
+          );
+        })}
       </div>
 
       <div className="mt-14 rounded-[2px] bg-gold-pale p-6">
