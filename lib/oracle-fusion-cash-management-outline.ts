@@ -23,26 +23,46 @@ const L = (n: number, slug: string, title: string, extra?: Partial<LessonMeta>):
 export const ORACLE_FUSION_CASH_MANAGEMENT_CHAPTERS: ChapterMeta[] = [
   {
     n: 1,
-    title: "Bank Accounts and Statements",
+    title: "Cash Management Fundamentals",
     lessons: [
-      L(1, "bank-accounts-and-setup", "Bank Accounts and Setup"),
-      L(2, "loading-bank-statements", "Loading Bank Statements"),
+      L(1, "cash-management-overview-and-work-areas", "Cash Management Overview and Work Areas"),
+      L(2, "banks-bank-branches-and-bank-accounts", "Banks, Bank Branches and Bank Accounts"),
+      L(3, "bank-account-uses-and-security", "Bank Account Uses and Security"),
+      L(4, "reconciliation-setup-review", "Reconciliation Setup Review"),
     ],
   },
   {
     n: 2,
-    title: "Reconciliation",
+    title: "Bank Statements",
     lessons: [
-      L(3, "reconciliation-rules-and-transaction-matching", "Reconciliation Rules and Transaction Matching"),
-      L(4, "manual-and-automatic-reconciliation", "Manual and Automatic Reconciliation"),
-      L(5, "handling-unreconciled-items", "Handling Unreconciled Items"),
+      L(5, "bank-statement-formats-bai2-mt940-and-camt-053", "Bank Statement Formats: BAI2, MT940 and CAMT.053"),
+      L(6, "loading-and-importing-bank-statements", "Loading and Importing Bank Statements"),
+      L(7, "bank-statement-transaction-codes", "Bank Statement Transaction Codes"),
+      L(8, "bank-statement-errors-and-corrections", "Bank Statement Errors and Corrections"),
     ],
   },
   {
     n: 3,
-    title: "Cash Positioning",
+    title: "Reconciliation",
     lessons: [
-      L(6, "cash-positioning-and-forecasting", "Cash Positioning and Forecasting"),
+      L(9, "reconciliation-rules-and-matching-rules", "Reconciliation Rules and Matching Rules"),
+      L(10, "automatic-reconciliation", "Automatic Reconciliation"),
+      L(11, "manual-reconciliation", "Manual Reconciliation"),
+      L(12, "reconciling-payables-payments-and-receivables-receipts", "Reconciling Payables Payments and Receivables Receipts"),
+      L(13, "handling-unreconciled-items", "Handling Unreconciled Items"),
+      L(14, "bank-statement-reconciliation-reports", "Bank Statement Reconciliation Reports"),
+    ],
+  },
+  {
+    n: 4,
+    title: "Bank Transactions and Positioning",
+    lessons: [
+      L(15, "external-cash-transactions", "External Cash Transactions"),
+      L(16, "bank-account-transfers", "Bank Account Transfers"),
+      L(17, "cash-positioning", "Cash Positioning"),
+      L(18, "cash-forecasting", "Cash Forecasting"),
+      L(19, "cash-management-accounting", "Cash Management Accounting"),
+      L(20, "cash-management-troubleshooting-practice", "Cash Management Troubleshooting Practice"),
     ],
   },
 ];

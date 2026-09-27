@@ -23,20 +23,45 @@ const L = (n: number, slug: string, title: string, extra?: Partial<LessonMeta>):
 export const REST_APIS_AND_INTEGRATION_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
   {
     n: 1,
-    title: "API Basics",
+    title: "API Foundations",
     lessons: [
-      L(1, "rest-api-basics", "REST API Basics"),
-      L(2, "json-basics", "JSON Basics"),
-      L(3, "authentication-concepts", "Authentication Concepts"),
+      L(1, "what-an-api-is", "What an API Is"),
+      L(2, "rest-api-basics", "REST API Basics"),
+      L(3, "http-methods-and-status-codes", "HTTP Methods and Status Codes"),
+      L(4, "json-basics", "JSON Basics"),
+      L(5, "reading-api-documentation", "Reading API Documentation"),
     ],
   },
   {
     n: 2,
-    title: "Integrating with Oracle Fusion",
+    title: "Working with Oracle Fusion REST APIs",
     lessons: [
-      L(4, "oracle-fusion-rest-resources-and-queries", "Oracle Fusion REST Resources and Queries"),
-      L(5, "integration-patterns", "Integration Patterns"),
-      L(6, "exchanging-financial-data-with-external-applications", "Exchanging Financial Data with External Applications"),
+      L(6, "oracle-fusion-rest-resources-for-financials", "Oracle Fusion REST Resources for Financials"),
+      L(7, "making-your-first-get-request", "Making Your First GET Request"),
+      L(8, "querying-filtering-and-paging-results", "Querying, Filtering and Paging Results"),
+      L(9, "creating-and-updating-records", "Creating and Updating Records"),
+      L(10, "working-with-a-rest-client", "Working with a REST Client"),
+    ],
+  },
+  {
+    n: 3,
+    title: "Authentication and Security",
+    lessons: [
+      L(11, "authentication-concepts", "Authentication Concepts"),
+      L(12, "basic-authentication-vs-token-based-authentication", "Basic Authentication vs. Token-Based Authentication"),
+      L(13, "integration-users-and-security", "Integration Users and Security"),
+      L(14, "handling-errors-and-retries", "Handling Errors and Retries"),
+    ],
+  },
+  {
+    n: 4,
+    title: "Integration Patterns",
+    lessons: [
+      L(15, "integration-patterns-overview", "Integration Patterns Overview"),
+      L(16, "inbound-and-outbound-integrations", "Inbound and Outbound Integrations"),
+      L(17, "oracle-integration-overview", "Oracle Integration Overview"),
+      L(18, "business-events-and-notifications", "Business Events and Notifications"),
+      L(19, "exchanging-financial-data-with-external-applications", "Exchanging Financial Data with External Applications"),
     ],
   },
 ];
