@@ -660,7 +660,7 @@ export const CAREER_PATHS: CareerPath[] = [
   },
   {
     "slug": "data-governance",
-    "title": "Data Governance",
+    "title": "Data Governance Engineer",
     "targetJobs": [
       "Data Governance Analyst",
       "Data Quality Analyst",
@@ -670,6 +670,7 @@ export const CAREER_PATHS: CareerPath[] = [
       "Data Governance Lead / Manager",
       "Data Governance Architect"
     ],
+    "salaryRange": "$90K–$190K as a Data Governance Engineer",
     "description": "This path takes a student from SQL and data-engineering foundations into the discipline that makes enterprise data trustworthy: governance, data quality, metadata and business glossaries, lineage, master data, security and privacy, and governance architecture. Students specialize in Microsoft Purview, Fabric, Power BI and Azure governance, with optional tracks in Databricks, Snowflake, AWS, AI governance and master data management.",
     "longDescription": [
       "This path takes a student from SQL and data-engineering foundations into the discipline that makes enterprise data trustworthy: data governance, data quality, metadata and business glossaries, lineage, master and reference data, security and privacy, and governance architecture.",
