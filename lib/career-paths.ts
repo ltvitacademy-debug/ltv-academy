@@ -90,62 +90,6 @@ export const CAREER_PATHS: CareerPath[] = [
       "This program doesn't lead to a single destination — it leads to a first job. Once you're working, the rest of this catalog becomes optional next steps, not required ones: Analytics Engineer, Azure/Fabric Data Engineer, Snowflake Data Engineer, Azure Database Engineer, and Salesforce Data Analyst all build on exactly what you just learned here. Get job-ready first. Then decide how far you want to go.",
   },
   {
-    slug: "ai-engineer",
-    title: "AI Engineer",
-    targetJobs: ["Junior AI Engineer", "AI Application Developer", "Generative AI Developer", "AI Solutions Developer", "AI Engineer"],
-    description:
-      "This is its own door into LTV, not an add-on to an existing program — no prior course assumed. You'll start from real Python fundamentals and build straight through APIs, classic AI/ML foundations, generative AI and LLMs, prompt and context engineering, retrieval-augmented generation, and AI agents, then round it out with the cloud, deployment, security, and monitoring skills that separate a demo from something running in production. It closes with three flagship portfolio projects: a production RAG knowledge assistant, an AI data analyst that works with SQL and APIs, and a tool-using AI agent with human approval, security, and logging.",
-    salaryRange: "$75K–$110K as a Junior AI Engineer / AI Application Developer · $130K–$180K+ at Senior/Staff AI Engineer · $200K+ potential at Principal AI Engineer / AI Architect",
-    certification: "No single industry-standard certification yet — portfolio and production experience carry more weight in AI hiring than any one exam",
-    stages: [
-      {
-        label: "Job Ready",
-        note: "The whole program — no prior course assumed",
-        courseSlugs: [
-          "python-for-ai-engineering",
-          "git-github-for-software-engineers",
-          "apis-json-for-ai-applications",
-          "ai-ml-foundations",
-          "generative-ai-and-llms",
-          "prompt-and-context-engineering",
-          "rag-and-vector-databases",
-          "ai-agents",
-          "azure-ai-and-cloud-for-ai-engineers",
-          "docker-and-deployment-for-ai-applications",
-          "ai-security-evaluation-and-monitoring",
-          "ai-engineering-capstones",
-        ],
-      },
-    ],
-    destinationNote:
-      "AI Application Developer → AI Engineer → Senior AI Engineer → Staff/Lead AI Engineer → Principal AI Engineer → AI Architect → $200K+ potential — real compensation at the top of that ladder, but it typically requires years of production experience, not a promise on graduation.",
-  },
-  {
-    slug: "blockchain-engineer",
-    title: "Blockchain Engineer",
-    targetJobs: ["Junior Blockchain Developer", "Web3 Developer", "Solidity Developer", "Smart Contract Developer", "Blockchain Engineer"],
-    description:
-      "This is its own door into LTV, not an add-on to an existing program — no prior course assumed. You'll start from real programming fundamentals in JavaScript and TypeScript, then move through blockchain foundations, cryptography, Bitcoin, Ethereum and smart contracts, Solidity, token standards, testing and tooling, and full-stack DApp development, plus a dedicated security auditing course. From there it goes further than most bootcamps: the off-chain backend work every dApp actually needs, deeper DeFi and token-engineering mechanics, and the testing, DevOps, and deployment skills that take a contract from a testnet demo to a real mainnet launch. It closes with three flagship portfolio projects: a full DeFi protocol, an NFT marketplace, and a DAO governance system.",
-    salaryRange: "$70K–$100K as a Junior Blockchain Developer / Web3 Developer · $120K–$160K+ at Senior/Staff Blockchain Engineer · $200K+ potential at Principal Blockchain Engineer / Blockchain Architect",
-    certification: "No single industry-standard certification — a working GitHub portfolio of audited, deployed contracts carries far more weight in blockchain hiring than any exam",
-    stages: [
-      {
-        label: "Job Ready",
-        note: "The whole program — no prior course assumed",
-        courseSlugs: [
-          "js-ts-blockchain",
-          "blockchain",
-          "blockchain-apis-backend",
-          "defi-token-engineering",
-          "blockchain-testing-devops",
-          "blockchain-engineering-capstones",
-        ],
-      },
-    ],
-    destinationNote:
-      "Blockchain Developer → Smart Contract Developer → Blockchain Engineer → Senior Blockchain Engineer → Staff/Lead Blockchain Engineer → Protocol Engineer → Blockchain Architect → $200K+ potential — real compensation at the top of that ladder, but it typically requires years of production experience, not a promise on graduation.",
-  },
-  {
     slug: "data-analyst-bi-engineer",
     title: "Data Analyst → BI Engineer",
     targetJobs: ["Data Analyst", "BI Analyst", "Senior BI Analyst", "BI Developer", "BI Engineer"],
@@ -325,338 +269,6 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "SQL Developer/DBA → Senior DBA → Database Engineer → Senior Database Engineer → Principal Database Engineer → Database Architect. Learn SQL → use SQL like a DBA → administer SQL Server → tune performance → keep databases alive → move to Azure → automate everything → apply it all to Oracle, MySQL, PostgreSQL, MongoDB, Cosmos DB, and Neo4j. Two additional multi-platform courses are enough to give a SQL Server DBA meaningful, credible exposure elsewhere without turning this into a database-of-the-week mega-program — if demand later justifies deeper Oracle, MongoDB, or Cosmos DB training, that becomes its own advanced specialization rather than a redesign of this path.",
-  },
-  {
-    "slug": "salesforce-administrator",
-    "title": "Salesforce Administrator",
-    "targetJobs": [
-      "Salesforce Administrator",
-      "Senior Salesforce Administrator",
-      "Salesforce Business Analyst",
-      "Salesforce Platform App Builder"
-    ],
-    "description": "This path takes a beginner from Salesforce fundamentals through administration, security, data management, reporting, declarative app building, and Flow automation — up to the Administrator and Platform App Builder credentials — and closes with a portfolio capstone. It is the shared start for the two long Salesforce destinations: Salesforce Data Analyst and Salesforce Technical Architect.",
-    "salaryRange": "$75K to start as a Salesforce Administrator — higher with experience and additional credentials",
-    "certification": "Salesforce Certified Administrator → Salesforce Certified Platform App Builder — LTV Academy does not issue Salesforce certifications",
-    "showLessonTotals": true,
-    "certificationRoadmap": {
-      "heading": "Certification journey",
-      "steps": [
-        {
-          "label": "Foundation",
-          "items": [
-            "Salesforce Certified Administrator",
-            "Salesforce Certified Platform App Builder"
-          ]
-        }
-      ],
-      "notice": "Certification requirements and credential names can change. LTV Academy prepares students for relevant skills and certification objectives but does not issue Salesforce certifications. Students should verify current Salesforce certification requirements before scheduling an exam."
-    },
-    "freeLab": {
-      "eyebrow": "Start free",
-      "heading": "Free Salesforce Hands-On Environment",
-      "intro": [
-        "Unlike many enterprise software platforms, students do not need to purchase an expensive Salesforce environment to complete most of this career path.",
-        "Students can create FREE Salesforce Trailhead Playgrounds and Developer Edition organizations for hands-on practice."
-      ],
-      "listLabel": "Students will use these environments to:",
-      "items": [
-        "Create objects and fields",
-        "Build applications",
-        "Configure security",
-        "Create users",
-        "Build reports and dashboards",
-        "Create Flow automations",
-        "Write Apex",
-        "Build Lightning Web Components",
-        "Work with APIs",
-        "Practice integrations",
-        "Use Salesforce CLI",
-        "Practice deployment",
-        "Create scratch orgs",
-        "Complete LTV projects"
-      ],
-      "buttons": [
-        {
-          "label": "Create a Trailhead Account",
-          "url": "https://trailhead.salesforce.com/"
-        },
-        {
-          "label": "Salesforce Developer",
-          "url": "https://developer.salesforce.com/"
-        }
-      ],
-      "notes": [
-        "Some advanced Salesforce products or features may require a special Salesforce-provided trial, training environment, or other environment and may not be available in a standard Trailhead Playground or Developer Edition org.",
-        "Salesforce, Trailhead and Developer Edition are Salesforce products. LTV Academy is independent and is not sponsored, endorsed, or operated by Salesforce."
-      ]
-    },
-    "courseDetailLists": {
-      "ltv-customer-management-system": [
-        {
-          "heading": "Build",
-          "items": [
-            "Accounts",
-            "Contacts",
-            "Leads",
-            "Opportunities",
-            "Custom objects",
-            "Security",
-            "Flows",
-            "Validation rules",
-            "Reports",
-            "Dashboards"
-          ]
-        }
-      ],
-      "salesforce-career-preparation": [
-        {
-          "heading": "Covers",
-          "items": [
-            "Salesforce resumes",
-            "Trailhead profile",
-            "Portfolio development",
-            "GitHub",
-            "Certification strategy",
-            "Administrator interviews",
-            "Developer interviews",
-            "Consultant interviews",
-            "Architect scenario interviews",
-            "Architecture whiteboarding",
-            "Presenting capstones",
-            "Explaining architecture decisions"
-          ]
-        }
-      ]
-    },
-    "stages": [
-      {
-        "label": "Salesforce Foundations",
-        "courseSlugs": [
-          "salesforce-and-crm-foundations",
-          "salesforce-hands-on-environment",
-          "salesforce-data-model-fundamentals"
-        ]
-      },
-      {
-        "label": "Salesforce Administration",
-        "courseSlugs": [
-          "salesforce-administration",
-          "salesforce-security-and-access-fundamentals",
-          "salesforce-data-management",
-          "salesforce-admin-reports-and-dashboards"
-        ],
-        "checkpoint": {
-          "kind": "checkpoint",
-          "label": "Certification checkpoint",
-          "items": [
-            "Salesforce Certified Administrator"
-          ]
-        }
-      },
-      {
-        "label": "Declarative Development",
-        "courseSlugs": [
-          "salesforce-platform-app-builder",
-          "salesforce-flow-automation",
-          "salesforce-business-process-automation"
-        ],
-        "checkpoint": {
-          "kind": "checkpoint",
-          "label": "Certification checkpoint",
-          "items": [
-            "Salesforce Certified Platform App Builder"
-          ]
-        }
-      },
-      {
-        "label": "Capstone — Salesforce Admin",
-        "note": "A portfolio project suitable for an entry-level Salesforce portfolio",
-        "courseSlugs": [
-          "ltv-customer-management-system"
-        ],
-        "capstone": true
-      },
-      {
-        "label": "Career & Interview Preparation",
-        "courseSlugs": [
-          "salesforce-career-preparation"
-        ]
-      },
-      {
-        "label": "Continue to a Salesforce destination",
-        "note": "Both destinations start here — pick the direction you want to go",
-        "pathChoiceSlugs": [
-          "salesforce-data-analyst",
-          "salesforce-technical-architect"
-        ]
-      }
-    ],
-    "destinationNote": "This is the shared start for two long destinations: Salesforce Data Analyst (SQL, analytics, CRM Analytics and the modern data stack) and Salesforce Technical Architect (development, integration, security and enterprise architecture). Neither destination is a first job — work as a Salesforce Administrator or in a related role while you keep progressing."
-  },
-  {
-    slug: "data-scientist",
-    title: "Data Scientist",
-    targetJobs: ["Junior Data Scientist", "Data Science Analyst", "Machine Learning Analyst", "Data Scientist", "Applied Scientist"],
-    description:
-      "This path takes someone from analytics fundamentals into Python, machine learning, cloud ML, and production-ready data science. You'll start from SQL — because every data scientist spends half their time getting data out of databases — then build Python, statistics, and visualization/EDA as separate, properly taught skills before touching machine learning. From there it covers ML fundamentals, the applied scikit-learn workflow, and advanced topics (boosting, forecasting, NLP, recommenders, explainability), then modern AI and generative AI, ML on both Azure and AWS, and MLOps. It closes with a capstone where you take a messy business dataset from business problem to SQL, Python, EDA, model, evaluation, deployment, and presentation.",
-    salaryRange: "$75K–$110K as a Junior Data Scientist / Data Science Analyst · $130K–$180K+ at Senior Data Scientist · $200K+ potential at Staff/Principal Data Scientist or ML Scientist",
-    certification: "Aligned with current Microsoft and AWS credentials (for example Azure Data Scientist Associate and AWS Machine Learning Specialty) rather than built around any single exam — a portfolio of real, deployed projects and strong SQL/statistics fundamentals carry more weight in hiring",
-    stages: [
-      {
-        label: "Job Ready",
-        note: "The whole program — SQL and Python foundations, then statistics, machine learning, AI, cloud ML, and MLOps",
-        courseSlugs: [
-          "t-sql-development",
-          "python-for-data-science",
-          "statistics-and-probability-for-data-science",
-          "data-visualization-and-eda",
-          "machine-learning-fundamentals",
-          "applied-machine-learning",
-          "advanced-data-science",
-          "ai-and-generative-ai-fundamentals-for-data-scientists",
-          "azure-data-science",
-          "aws-data-science",
-          "mlops-for-data-scientists",
-          "data-science-capstone",
-        ],
-      },
-    ],
-    destinationNote:
-      "Data Analyst → Junior Data Scientist → Data Scientist → Senior Data Scientist → Staff/Principal Data Scientist → Head of Data Science. SQL, Python, and cloud knowledge are the common trunk shared with Data Engineering: a Data Engineering student can branch into Data Science (or DevOps) without starting over. If you'd rather build AI applications than models, the AI Engineer path is the better fit.",
-  },
-  {
-    slug: "devops-engineer",
-    title: "DevOps Engineer",
-    targetJobs: ["Junior DevOps Engineer", "Cloud Support Engineer", "Build & Release Engineer", "DevOps Engineer", "Platform Engineer"],
-    description:
-      "This is its own door into LTV, not an add-on to an existing program — no prior course assumed, and much more infrastructure- and automation-oriented than the data paths. You'll start where every DevOps job starts: IT and networking fundamentals, Linux administration, Git, and Python/Bash automation. Then Azure and AWS fundamentals, Docker, Kubernetes, infrastructure as code with Terraform, CI/CD, monitoring and observability, and DevSecOps. It closes with a capstone that builds one real system end to end: push a code change to GitHub and the pipeline builds, tests, packages, and deploys it to Kubernetes on Azure or AWS with monitoring in place.",
-    salaryRange: "$70K–$100K as a Junior DevOps Engineer / Cloud Support Engineer · $120K–$170K+ at Senior DevOps / Platform Engineer · $180K+ potential at Staff Platform Engineer / SRE Lead",
-    certification: "Aligned with AZ-400 (Azure DevOps Engineer Expert), AWS DevOps Engineer Professional, CKA (Certified Kubernetes Administrator), and the HashiCorp Terraform Associate — pick one after the program rather than building around a single exam",
-    stages: [
-      {
-        label: "Job Ready",
-        note: "The whole program — no prior course assumed",
-        courseSlugs: [
-          "it-networking-and-cloud-fundamentals",
-          "linux-administration",
-          "git-github-for-software-engineers",
-          "python-and-bash-automation",
-          "azure-fundamentals",
-          "aws-fundamentals-for-data-engineers",
-          "docker-and-containers",
-          "kubernetes-orchestration",
-          "infrastructure-as-code-with-terraform",
-          "ci-cd-pipelines",
-          "monitoring-logging-and-observability",
-          "devsecops-fundamentals",
-          "devops-capstone",
-        ],
-      },
-    ],
-    destinationNote:
-      "Junior DevOps Engineer → DevOps Engineer → Senior DevOps Engineer → Platform Engineer or Site Reliability Engineer → Staff/Principal Platform Engineer → DevOps/Platform Architect. SQL/Python/cloud knowledge is the common trunk with the data paths, so a Data Engineering student can branch into DevOps without starting over.",
-  },
-  {
-    slug: "oracle-fusion-financials-consultant",
-    title: "Oracle Fusion Financials Consultant",
-    targetJobs: [
-      "Oracle Fusion Financials Analyst",
-      "Junior Oracle Financials Functional Consultant",
-      "Oracle ERP Analyst",
-      "Financial Systems Analyst",
-      "Oracle Fusion Financials Consultant",
-      "Senior Oracle Financials Consultant",
-    ],
-    description:
-      "This path takes a student from basic accounting and ERP concepts through hands-on Oracle Fusion Cloud Financials implementation, transactions, reporting, integrations, and production support — General Ledger, Payables, Receivables, Cash Management, Fixed Assets, Expenses, Subledger Accounting, Procure-to-Pay, and Order-to-Cash.",
-    longDescription: [
-      "This path takes a student from basic accounting and ERP concepts through hands-on Oracle Fusion Cloud Financials implementation, transactions, reporting, integrations, and production support. Students learn how a company's financial operations move through General Ledger, Payables, Receivables, Cash Management, Fixed Assets, Expenses, Subledger Accounting, Procure-to-Pay, and Order-to-Cash.",
-      "This is not just a theory course. Students work inside an Oracle Fusion Cloud practice environment and complete configurations, transactions, troubleshooting exercises, reporting assignments, and an end-to-end implementation capstone.",
-      "The program also adds SQL, financial data analysis, FBDI, ADFdi, REST API concepts, reporting, security, and implementation methodology so students understand both the functional and technical sides of Oracle Fusion Financials.",
-    ],
-    salaryRange: "$130K–$270K",
-    certification:
-      "Aligned with current Oracle Fusion Cloud Financials certification objectives where appropriate — completing this path does not automatically earn an Oracle certification",
-    labRequirement: {
-      eyebrow: "Read this before you enroll",
-      heading: "Required Oracle Fusion Practice Environment",
-      intro: [
-        "This career path requires hands-on access to Oracle Fusion Cloud. Oracle Fusion Cloud access is NOT included with your Lifting the Veil IT Academy subscription.",
-        "Students must purchase their own Oracle Fusion Cloud practice-instance access separately from OracleERPGuide (OEG).",
-      ],
-      optionLabel: "Current option",
-      optionLines: [
-        "Oracle Fusion Cloud Practice Instance",
-        "Approximately $85 for 3 months",
-        "Purchased directly from OracleERPGuide",
-      ],
-      buttonLabel: "Get Oracle Fusion Lab Access",
-      buttonUrl: "https://www.oracleerpguide.com/courses/oracle-fusion-cloud-instance-access/",
-      importantNote:
-        "OracleERPGuide is a third-party provider and is separate from Lifting the Veil IT Academy. Lab pricing, availability, features, access duration, and terms are controlled by OracleERPGuide and may change. LTV Academy tuition does not include this fee. Nothing on this page implies sponsorship or endorsement of LTV Academy by Oracle or OracleERPGuide, and LTV Academy does not own, operate, resell, or provide the OracleERPGuide environment.",
-      whenHeading: "When should I purchase it?",
-      whenText:
-        "Do not purchase your lab environment just because you enrolled in LTV Academy. Begin the introductory lessons first. The course will tell you when you have reached the hands-on portion and should activate your practice environment so you can maximize your three-month access period.",
-      verifiedNote:
-        "Third-party pricing last verified September 2026. Verify current pricing with OracleERPGuide before you purchase.",
-    },
-    courseDetails: {
-      "oracle-fusion-procure-to-pay": "Students follow one transaction through the complete purchasing lifecycle.",
-      "oracle-fusion-order-to-cash": "Students follow revenue through the complete customer lifecycle.",
-      "sql-for-oracle-financials": "Example challenge: Finance needs all unpaid supplier invoices over $10,000 that are more than 30 days old.",
-      "troubleshooting-oracle-financials": "Students must identify the cause, resolve the issue and document what they did.",
-      "ltv-manufacturing-corporation-capstone":
-        "Final challenge: It is January 31. The CFO says the books do not balance and the accounting period cannot be closed. The student is the Oracle Fusion Financials Consultant and must investigate AP, AR, Assets, Cash Management, SLA and GL, identify the problems, correct them, reconcile the accounts and complete the month-end close. Final deliverables: Income Statement, Balance Sheet, AP Aging, AR Aging, Reconciliation Report, Issue Log, Implementation Documentation, and a final presentation explaining what was wrong and how it was corrected.",
-    },
-    stages: [
-      {
-        label: "Oracle & Financial Foundations",
-        note: "No accounting or ERP background assumed",
-        courseSlugs: ["oracle-fusion-cloud-and-erp-foundations", "accounting-fundamentals-for-oracle-professionals"],
-      },
-      {
-        label: "Financials Configuration",
-        note: "Hands-on begins here — the course tells you when to activate your practice environment",
-        courseSlugs: ["oracle-fusion-enterprise-structures-and-chart-of-accounts", "oracle-fusion-general-ledger", "oracle-fusion-accounts-payable", "oracle-fusion-accounts-receivable"],
-      },
-      {
-        label: "Financial Operations",
-        courseSlugs: ["oracle-fusion-cash-management", "oracle-fusion-fixed-assets", "oracle-fusion-expenses"],
-      },
-      {
-        label: "End-to-End Business Processes",
-        note: "Follow one transaction from the business event to the General Ledger",
-        courseSlugs: ["oracle-fusion-procure-to-pay", "oracle-fusion-order-to-cash", "oracle-fusion-subledger-accounting"],
-      },
-      {
-        label: "Reporting & Data",
-        courseSlugs: ["oracle-financial-reporting", "oracle-financials-data", "sql-for-oracle-financials"],
-      },
-      {
-        label: "Data Loading & Integrations",
-        courseSlugs: ["fbdi-and-adfdi", "rest-apis-and-integration-fundamentals"],
-      },
-      {
-        label: "Security & Implementation",
-        courseSlugs: ["oracle-fusion-security", "oracle-fusion-implementation-lifecycle"],
-      },
-      {
-        label: "Production Support",
-        courseSlugs: ["troubleshooting-oracle-financials"],
-      },
-      {
-        label: "Capstone",
-        note: "An end-to-end simulated implementation and a month-end close under pressure",
-        courseSlugs: ["ltv-manufacturing-corporation-capstone"],
-      },
-      {
-        label: "Career & Interview Preparation",
-        courseSlugs: ["oracle-financials-career-and-interview-preparation"],
-      },
-    ],
-    destinationNote:
-      "This path is its own door into LTV — no accounting, ERP, or Oracle experience is assumed. A typical progression runs Oracle Fusion Financials Analyst → Junior Oracle Financials Functional Consultant → Oracle ERP Analyst → Financial Systems Analyst → Oracle Fusion Financials Consultant → Senior Oracle Financials Consultant. How far and how fast depends on your experience, the modules you specialize in, and the projects you can walk an interviewer through — the LTV Manufacturing capstone gives you a complete implementation to talk about.",
   },
   {
     "slug": "data-governance",
@@ -883,6 +495,394 @@ export const CAREER_PATHS: CareerPath[] = [
     "destinationNote": "Data Governance Analyst → Data Quality Analyst → Data Steward → Data Governance Specialist → Data Governance Consultant → Data Governance Lead / Manager → Data Governance Architect. Job titles and pay vary a great deal by organization, and the senior architect and leadership roles typically take years of hands-on experience — the capstone gives you a complete governance program to talk through in interviews."
   },
   {
+    slug: "data-scientist",
+    title: "Data Scientist",
+    targetJobs: ["Junior Data Scientist", "Data Science Analyst", "Machine Learning Analyst", "Data Scientist", "Applied Scientist"],
+    description:
+      "This path takes someone from analytics fundamentals into Python, machine learning, cloud ML, and production-ready data science. You'll start from SQL — because every data scientist spends half their time getting data out of databases — then build Python, statistics, and visualization/EDA as separate, properly taught skills before touching machine learning. From there it covers ML fundamentals, the applied scikit-learn workflow, and advanced topics (boosting, forecasting, NLP, recommenders, explainability), then modern AI and generative AI, ML on both Azure and AWS, and MLOps. It closes with a capstone where you take a messy business dataset from business problem to SQL, Python, EDA, model, evaluation, deployment, and presentation.",
+    salaryRange: "$75K–$110K as a Junior Data Scientist / Data Science Analyst · $130K–$180K+ at Senior Data Scientist · $200K+ potential at Staff/Principal Data Scientist or ML Scientist",
+    certification: "Aligned with current Microsoft and AWS credentials (for example Azure Data Scientist Associate and AWS Machine Learning Specialty) rather than built around any single exam — a portfolio of real, deployed projects and strong SQL/statistics fundamentals carry more weight in hiring",
+    stages: [
+      {
+        label: "Job Ready",
+        note: "The whole program — SQL and Python foundations, then statistics, machine learning, AI, cloud ML, and MLOps",
+        courseSlugs: [
+          "t-sql-development",
+          "python-for-data-science",
+          "statistics-and-probability-for-data-science",
+          "data-visualization-and-eda",
+          "machine-learning-fundamentals",
+          "applied-machine-learning",
+          "advanced-data-science",
+          "ai-and-generative-ai-fundamentals-for-data-scientists",
+          "azure-data-science",
+          "aws-data-science",
+          "mlops-for-data-scientists",
+          "data-science-capstone",
+        ],
+      },
+    ],
+    destinationNote:
+      "Data Analyst → Junior Data Scientist → Data Scientist → Senior Data Scientist → Staff/Principal Data Scientist → Head of Data Science. SQL, Python, and cloud knowledge are the common trunk shared with Data Engineering: a Data Engineering student can branch into Data Science (or DevOps) without starting over. If you'd rather build AI applications than models, the AI Engineer path is the better fit.",
+  },
+  {
+    slug: "ai-engineer",
+    title: "AI Engineer",
+    targetJobs: ["Junior AI Engineer", "AI Application Developer", "Generative AI Developer", "AI Solutions Developer", "AI Engineer"],
+    description:
+      "This is its own door into LTV, not an add-on to an existing program — no prior course assumed. You'll start from real Python fundamentals and build straight through APIs, classic AI/ML foundations, generative AI and LLMs, prompt and context engineering, retrieval-augmented generation, and AI agents, then round it out with the cloud, deployment, security, and monitoring skills that separate a demo from something running in production. It closes with three flagship portfolio projects: a production RAG knowledge assistant, an AI data analyst that works with SQL and APIs, and a tool-using AI agent with human approval, security, and logging.",
+    salaryRange: "$75K–$110K as a Junior AI Engineer / AI Application Developer · $130K–$180K+ at Senior/Staff AI Engineer · $200K+ potential at Principal AI Engineer / AI Architect",
+    certification: "No single industry-standard certification yet — portfolio and production experience carry more weight in AI hiring than any one exam",
+    stages: [
+      {
+        label: "Job Ready",
+        note: "The whole program — no prior course assumed",
+        courseSlugs: [
+          "python-for-ai-engineering",
+          "git-github-for-software-engineers",
+          "apis-json-for-ai-applications",
+          "ai-ml-foundations",
+          "generative-ai-and-llms",
+          "prompt-and-context-engineering",
+          "rag-and-vector-databases",
+          "ai-agents",
+          "azure-ai-and-cloud-for-ai-engineers",
+          "docker-and-deployment-for-ai-applications",
+          "ai-security-evaluation-and-monitoring",
+          "ai-engineering-capstones",
+        ],
+      },
+    ],
+    destinationNote:
+      "AI Application Developer → AI Engineer → Senior AI Engineer → Staff/Lead AI Engineer → Principal AI Engineer → AI Architect → $200K+ potential — real compensation at the top of that ladder, but it typically requires years of production experience, not a promise on graduation.",
+  },
+  {
+    "slug": "salesforce-administrator",
+    "title": "Salesforce Administrator",
+    "targetJobs": [
+      "Salesforce Administrator",
+      "Senior Salesforce Administrator",
+      "Salesforce Business Analyst",
+      "Salesforce Platform App Builder"
+    ],
+    "description": "This path takes a beginner from Salesforce fundamentals through administration, security, data management, reporting, declarative app building, and Flow automation — up to the Administrator and Platform App Builder credentials — and closes with a portfolio capstone. It is the shared start for the two long Salesforce destinations: Salesforce Data Analyst and Salesforce Technical Architect.",
+    "salaryRange": "$75K to start as a Salesforce Administrator — higher with experience and additional credentials",
+    "certification": "Salesforce Certified Administrator → Salesforce Certified Platform App Builder — LTV Academy does not issue Salesforce certifications",
+    "showLessonTotals": true,
+    "certificationRoadmap": {
+      "heading": "Certification journey",
+      "steps": [
+        {
+          "label": "Foundation",
+          "items": [
+            "Salesforce Certified Administrator",
+            "Salesforce Certified Platform App Builder"
+          ]
+        }
+      ],
+      "notice": "Certification requirements and credential names can change. LTV Academy prepares students for relevant skills and certification objectives but does not issue Salesforce certifications. Students should verify current Salesforce certification requirements before scheduling an exam."
+    },
+    "freeLab": {
+      "eyebrow": "Start free",
+      "heading": "Free Salesforce Hands-On Environment",
+      "intro": [
+        "Unlike many enterprise software platforms, students do not need to purchase an expensive Salesforce environment to complete most of this career path.",
+        "Students can create FREE Salesforce Trailhead Playgrounds and Developer Edition organizations for hands-on practice."
+      ],
+      "listLabel": "Students will use these environments to:",
+      "items": [
+        "Create objects and fields",
+        "Build applications",
+        "Configure security",
+        "Create users",
+        "Build reports and dashboards",
+        "Create Flow automations",
+        "Write Apex",
+        "Build Lightning Web Components",
+        "Work with APIs",
+        "Practice integrations",
+        "Use Salesforce CLI",
+        "Practice deployment",
+        "Create scratch orgs",
+        "Complete LTV projects"
+      ],
+      "buttons": [
+        {
+          "label": "Create a Trailhead Account",
+          "url": "https://trailhead.salesforce.com/"
+        },
+        {
+          "label": "Salesforce Developer",
+          "url": "https://developer.salesforce.com/"
+        }
+      ],
+      "notes": [
+        "Some advanced Salesforce products or features may require a special Salesforce-provided trial, training environment, or other environment and may not be available in a standard Trailhead Playground or Developer Edition org.",
+        "Salesforce, Trailhead and Developer Edition are Salesforce products. LTV Academy is independent and is not sponsored, endorsed, or operated by Salesforce."
+      ]
+    },
+    "courseDetailLists": {
+      "ltv-customer-management-system": [
+        {
+          "heading": "Build",
+          "items": [
+            "Accounts",
+            "Contacts",
+            "Leads",
+            "Opportunities",
+            "Custom objects",
+            "Security",
+            "Flows",
+            "Validation rules",
+            "Reports",
+            "Dashboards"
+          ]
+        }
+      ],
+      "salesforce-career-preparation": [
+        {
+          "heading": "Covers",
+          "items": [
+            "Salesforce resumes",
+            "Trailhead profile",
+            "Portfolio development",
+            "GitHub",
+            "Certification strategy",
+            "Administrator interviews",
+            "Developer interviews",
+            "Consultant interviews",
+            "Architect scenario interviews",
+            "Architecture whiteboarding",
+            "Presenting capstones",
+            "Explaining architecture decisions"
+          ]
+        }
+      ]
+    },
+    "stages": [
+      {
+        "label": "Salesforce Foundations",
+        "courseSlugs": [
+          "salesforce-and-crm-foundations",
+          "salesforce-hands-on-environment",
+          "salesforce-data-model-fundamentals"
+        ]
+      },
+      {
+        "label": "Salesforce Administration",
+        "courseSlugs": [
+          "salesforce-administration",
+          "salesforce-security-and-access-fundamentals",
+          "salesforce-data-management",
+          "salesforce-admin-reports-and-dashboards"
+        ],
+        "checkpoint": {
+          "kind": "checkpoint",
+          "label": "Certification checkpoint",
+          "items": [
+            "Salesforce Certified Administrator"
+          ]
+        }
+      },
+      {
+        "label": "Declarative Development",
+        "courseSlugs": [
+          "salesforce-platform-app-builder",
+          "salesforce-flow-automation",
+          "salesforce-business-process-automation"
+        ],
+        "checkpoint": {
+          "kind": "checkpoint",
+          "label": "Certification checkpoint",
+          "items": [
+            "Salesforce Certified Platform App Builder"
+          ]
+        }
+      },
+      {
+        "label": "Capstone — Salesforce Admin",
+        "note": "A portfolio project suitable for an entry-level Salesforce portfolio",
+        "courseSlugs": [
+          "ltv-customer-management-system"
+        ],
+        "capstone": true
+      },
+      {
+        "label": "Career & Interview Preparation",
+        "courseSlugs": [
+          "salesforce-career-preparation"
+        ]
+      },
+      {
+        "label": "Continue to a Salesforce destination",
+        "note": "Both destinations start here — pick the direction you want to go",
+        "pathChoiceSlugs": [
+          "salesforce-data-analyst",
+          "salesforce-technical-architect"
+        ]
+      }
+    ],
+    "destinationNote": "This is the shared start for two long destinations: Salesforce Data Analyst (SQL, analytics, CRM Analytics and the modern data stack) and Salesforce Technical Architect (development, integration, security and enterprise architecture). Neither destination is a first job — work as a Salesforce Administrator or in a related role while you keep progressing."
+  },
+  {
+    slug: "oracle-fusion-financials-consultant",
+    title: "Oracle Fusion Financials Consultant",
+    targetJobs: [
+      "Oracle Fusion Financials Analyst",
+      "Junior Oracle Financials Functional Consultant",
+      "Oracle ERP Analyst",
+      "Financial Systems Analyst",
+      "Oracle Fusion Financials Consultant",
+      "Senior Oracle Financials Consultant",
+    ],
+    description:
+      "This path takes a student from basic accounting and ERP concepts through hands-on Oracle Fusion Cloud Financials implementation, transactions, reporting, integrations, and production support — General Ledger, Payables, Receivables, Cash Management, Fixed Assets, Expenses, Subledger Accounting, Procure-to-Pay, and Order-to-Cash.",
+    longDescription: [
+      "This path takes a student from basic accounting and ERP concepts through hands-on Oracle Fusion Cloud Financials implementation, transactions, reporting, integrations, and production support. Students learn how a company's financial operations move through General Ledger, Payables, Receivables, Cash Management, Fixed Assets, Expenses, Subledger Accounting, Procure-to-Pay, and Order-to-Cash.",
+      "This is not just a theory course. Students work inside an Oracle Fusion Cloud practice environment and complete configurations, transactions, troubleshooting exercises, reporting assignments, and an end-to-end implementation capstone.",
+      "The program also adds SQL, financial data analysis, FBDI, ADFdi, REST API concepts, reporting, security, and implementation methodology so students understand both the functional and technical sides of Oracle Fusion Financials.",
+    ],
+    salaryRange: "$130K–$270K",
+    certification:
+      "Aligned with current Oracle Fusion Cloud Financials certification objectives where appropriate — completing this path does not automatically earn an Oracle certification",
+    labRequirement: {
+      eyebrow: "Read this before you enroll",
+      heading: "Required Oracle Fusion Practice Environment",
+      intro: [
+        "This career path requires hands-on access to Oracle Fusion Cloud. Oracle Fusion Cloud access is NOT included with your Lifting the Veil IT Academy subscription.",
+        "Students must purchase their own Oracle Fusion Cloud practice-instance access separately from OracleERPGuide (OEG).",
+      ],
+      optionLabel: "Current option",
+      optionLines: [
+        "Oracle Fusion Cloud Practice Instance",
+        "Approximately $85 for 3 months",
+        "Purchased directly from OracleERPGuide",
+      ],
+      buttonLabel: "Get Oracle Fusion Lab Access",
+      buttonUrl: "https://www.oracleerpguide.com/courses/oracle-fusion-cloud-instance-access/",
+      importantNote:
+        "OracleERPGuide is a third-party provider and is separate from Lifting the Veil IT Academy. Lab pricing, availability, features, access duration, and terms are controlled by OracleERPGuide and may change. LTV Academy tuition does not include this fee. Nothing on this page implies sponsorship or endorsement of LTV Academy by Oracle or OracleERPGuide, and LTV Academy does not own, operate, resell, or provide the OracleERPGuide environment.",
+      whenHeading: "When should I purchase it?",
+      whenText:
+        "Do not purchase your lab environment just because you enrolled in LTV Academy. Begin the introductory lessons first. The course will tell you when you have reached the hands-on portion and should activate your practice environment so you can maximize your three-month access period.",
+      verifiedNote:
+        "Third-party pricing last verified September 2026. Verify current pricing with OracleERPGuide before you purchase.",
+    },
+    courseDetails: {
+      "oracle-fusion-procure-to-pay": "Students follow one transaction through the complete purchasing lifecycle.",
+      "oracle-fusion-order-to-cash": "Students follow revenue through the complete customer lifecycle.",
+      "sql-for-oracle-financials": "Example challenge: Finance needs all unpaid supplier invoices over $10,000 that are more than 30 days old.",
+      "troubleshooting-oracle-financials": "Students must identify the cause, resolve the issue and document what they did.",
+      "ltv-manufacturing-corporation-capstone":
+        "Final challenge: It is January 31. The CFO says the books do not balance and the accounting period cannot be closed. The student is the Oracle Fusion Financials Consultant and must investigate AP, AR, Assets, Cash Management, SLA and GL, identify the problems, correct them, reconcile the accounts and complete the month-end close. Final deliverables: Income Statement, Balance Sheet, AP Aging, AR Aging, Reconciliation Report, Issue Log, Implementation Documentation, and a final presentation explaining what was wrong and how it was corrected.",
+    },
+    stages: [
+      {
+        label: "Oracle & Financial Foundations",
+        note: "No accounting or ERP background assumed",
+        courseSlugs: ["oracle-fusion-cloud-and-erp-foundations", "accounting-fundamentals-for-oracle-professionals"],
+      },
+      {
+        label: "Financials Configuration",
+        note: "Hands-on begins here — the course tells you when to activate your practice environment",
+        courseSlugs: ["oracle-fusion-enterprise-structures-and-chart-of-accounts", "oracle-fusion-general-ledger", "oracle-fusion-accounts-payable", "oracle-fusion-accounts-receivable"],
+      },
+      {
+        label: "Financial Operations",
+        courseSlugs: ["oracle-fusion-cash-management", "oracle-fusion-fixed-assets", "oracle-fusion-expenses"],
+      },
+      {
+        label: "End-to-End Business Processes",
+        note: "Follow one transaction from the business event to the General Ledger",
+        courseSlugs: ["oracle-fusion-procure-to-pay", "oracle-fusion-order-to-cash", "oracle-fusion-subledger-accounting"],
+      },
+      {
+        label: "Reporting & Data",
+        courseSlugs: ["oracle-financial-reporting", "oracle-financials-data", "sql-for-oracle-financials"],
+      },
+      {
+        label: "Data Loading & Integrations",
+        courseSlugs: ["fbdi-and-adfdi", "rest-apis-and-integration-fundamentals"],
+      },
+      {
+        label: "Security & Implementation",
+        courseSlugs: ["oracle-fusion-security", "oracle-fusion-implementation-lifecycle"],
+      },
+      {
+        label: "Production Support",
+        courseSlugs: ["troubleshooting-oracle-financials"],
+      },
+      {
+        label: "Capstone",
+        note: "An end-to-end simulated implementation and a month-end close under pressure",
+        courseSlugs: ["ltv-manufacturing-corporation-capstone"],
+      },
+      {
+        label: "Career & Interview Preparation",
+        courseSlugs: ["oracle-financials-career-and-interview-preparation"],
+      },
+    ],
+    destinationNote:
+      "This path is its own door into LTV — no accounting, ERP, or Oracle experience is assumed. A typical progression runs Oracle Fusion Financials Analyst → Junior Oracle Financials Functional Consultant → Oracle ERP Analyst → Financial Systems Analyst → Oracle Fusion Financials Consultant → Senior Oracle Financials Consultant. How far and how fast depends on your experience, the modules you specialize in, and the projects you can walk an interviewer through — the LTV Manufacturing capstone gives you a complete implementation to talk about.",
+  },
+  {
+    slug: "devops-engineer",
+    title: "DevOps Engineer",
+    targetJobs: ["Junior DevOps Engineer", "Cloud Support Engineer", "Build & Release Engineer", "DevOps Engineer", "Platform Engineer"],
+    description:
+      "This is its own door into LTV, not an add-on to an existing program — no prior course assumed, and much more infrastructure- and automation-oriented than the data paths. You'll start where every DevOps job starts: IT and networking fundamentals, Linux administration, Git, and Python/Bash automation. Then Azure and AWS fundamentals, Docker, Kubernetes, infrastructure as code with Terraform, CI/CD, monitoring and observability, and DevSecOps. It closes with a capstone that builds one real system end to end: push a code change to GitHub and the pipeline builds, tests, packages, and deploys it to Kubernetes on Azure or AWS with monitoring in place.",
+    salaryRange: "$70K–$100K as a Junior DevOps Engineer / Cloud Support Engineer · $120K–$170K+ at Senior DevOps / Platform Engineer · $180K+ potential at Staff Platform Engineer / SRE Lead",
+    certification: "Aligned with AZ-400 (Azure DevOps Engineer Expert), AWS DevOps Engineer Professional, CKA (Certified Kubernetes Administrator), and the HashiCorp Terraform Associate — pick one after the program rather than building around a single exam",
+    stages: [
+      {
+        label: "Job Ready",
+        note: "The whole program — no prior course assumed",
+        courseSlugs: [
+          "it-networking-and-cloud-fundamentals",
+          "linux-administration",
+          "git-github-for-software-engineers",
+          "python-and-bash-automation",
+          "azure-fundamentals",
+          "aws-fundamentals-for-data-engineers",
+          "docker-and-containers",
+          "kubernetes-orchestration",
+          "infrastructure-as-code-with-terraform",
+          "ci-cd-pipelines",
+          "monitoring-logging-and-observability",
+          "devsecops-fundamentals",
+          "devops-capstone",
+        ],
+      },
+    ],
+    destinationNote:
+      "Junior DevOps Engineer → DevOps Engineer → Senior DevOps Engineer → Platform Engineer or Site Reliability Engineer → Staff/Principal Platform Engineer → DevOps/Platform Architect. SQL/Python/cloud knowledge is the common trunk with the data paths, so a Data Engineering student can branch into DevOps without starting over.",
+  },
+  {
+    slug: "blockchain-engineer",
+    title: "Blockchain Engineer",
+    targetJobs: ["Junior Blockchain Developer", "Web3 Developer", "Solidity Developer", "Smart Contract Developer", "Blockchain Engineer"],
+    description:
+      "This is its own door into LTV, not an add-on to an existing program — no prior course assumed. You'll start from real programming fundamentals in JavaScript and TypeScript, then move through blockchain foundations, cryptography, Bitcoin, Ethereum and smart contracts, Solidity, token standards, testing and tooling, and full-stack DApp development, plus a dedicated security auditing course. From there it goes further than most bootcamps: the off-chain backend work every dApp actually needs, deeper DeFi and token-engineering mechanics, and the testing, DevOps, and deployment skills that take a contract from a testnet demo to a real mainnet launch. It closes with three flagship portfolio projects: a full DeFi protocol, an NFT marketplace, and a DAO governance system.",
+    salaryRange: "$70K–$100K as a Junior Blockchain Developer / Web3 Developer · $120K–$160K+ at Senior/Staff Blockchain Engineer · $200K+ potential at Principal Blockchain Engineer / Blockchain Architect",
+    certification: "No single industry-standard certification — a working GitHub portfolio of audited, deployed contracts carries far more weight in blockchain hiring than any exam",
+    stages: [
+      {
+        label: "Job Ready",
+        note: "The whole program — no prior course assumed",
+        courseSlugs: [
+          "js-ts-blockchain",
+          "blockchain",
+          "blockchain-apis-backend",
+          "defi-token-engineering",
+          "blockchain-testing-devops",
+          "blockchain-engineering-capstones",
+        ],
+      },
+    ],
+    destinationNote:
+      "Blockchain Developer → Smart Contract Developer → Blockchain Engineer → Senior Blockchain Engineer → Staff/Lead Blockchain Engineer → Protocol Engineer → Blockchain Architect → $200K+ potential — real compensation at the top of that ladder, but it typically requires years of production experience, not a promise on graduation.",
+  },
+  {
     slug: "bi-to-data-architect",
     title: "BI → Data Architect",
     targetJobs: ["Data Analyst", "BI Developer", "BI Engineer", "Analytics Engineer", "Senior Analytics Engineer", "Data Architect"],
@@ -925,46 +925,6 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "Already further along than it looks: Career & Capstone's System Design chapter (requirements, estimation, architecture trade-offs, case studies) already covers a real slice of the technical-leadership layer these postings ask for.",
-  },
-  {
-    slug: "salesforce-data-architect",
-    title: "Salesforce Data Architect",
-    targetJobs: [
-      "Salesforce Data Analyst",
-      "Senior Salesforce Data Analyst",
-      "CRM Analytics Developer",
-      "Salesforce Analytics Engineer",
-      "Senior Salesforce Analytics Engineer",
-      "Salesforce Data / Analytics Architect",
-    ],
-    description:
-      "This isn't a starting point — it's shown to students as where the Salesforce Data Analyst path can eventually lead. The road runs through two real technical steps most students never hear named: CRM Analytics Developer (building the analytics system 500 salespeople and executives rely on, not just answering one question yourself) and Salesforce Analytics Engineer (engineering the data platform behind Salesforce analytics — Data Cloud, Snowflake, dbt, and CI/CD). From there, enterprise architecture, governance, and integration leadership are what separate a Senior Analytics Engineer from an Architect.",
-    salaryRange: "$65K–$95K at entry · $110K–$160K+ as a CRM Analytics Developer · $130K–$200K+ as a Salesforce Analytics Engineer · $200K+ potential at Architect — rough market targets, not guarantees",
-    isDestination: true,
-    stages: [
-      {
-        label: "Foundation",
-        note: "The Salesforce Data Analyst path, start to finish",
-        pathChoiceSlugs: ["salesforce-data-analyst"],
-      },
-      {
-        label: "CRM Analytics Developer",
-        note: "SAQL, bindings, dashboard interactions, performance, deployment",
-        courseSlugs: ["salesforce-crm-analytics-and-tableau-next"],
-      },
-      {
-        label: "Salesforce Analytics Engineer",
-        note: "Engineering the platform behind the analytics, not just analyzing it",
-        courseSlugs: ["snowflake", "dbt-analytics-engineering", "git-github-cicd-for-data"],
-      },
-      {
-        label: "Architecture",
-        note: "Already built — not a gap",
-        courseSlugs: ["data-engineering-career-and-capstone"],
-      },
-    ],
-    destinationNote:
-      "Salesforce Data Analyst → Senior Salesforce Data Analyst → CRM Analytics Developer → Salesforce Analytics Engineer → Senior Salesforce Analytics Engineer → Salesforce Data/Analytics Architect → Enterprise/Solution Architect. Notice how little new curriculum this actually needs — Snowflake, SQL, Tableau, and dbt already exist or are planned elsewhere in the catalog; this ladder mostly just reuses them in sequence.",
   },
   {
     "slug": "salesforce-data-analyst",
@@ -1485,6 +1445,46 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     "destinationNote": "Salesforce Technical Architect is an advanced professional destination. A typical progression runs Salesforce Administrator → Business Analyst → Platform Developer → Consultant → Senior Developer → Solution Architect → Application Architect / System Architect → Technical Architect, and it takes significant real-world architecture experience — not just coursework. Pursue entry-level and intermediate Salesforce roles while you work through the architecture stages.",
     "isDestination": true
+  },
+  {
+    slug: "salesforce-data-architect",
+    title: "Salesforce Data Architect",
+    targetJobs: [
+      "Salesforce Data Analyst",
+      "Senior Salesforce Data Analyst",
+      "CRM Analytics Developer",
+      "Salesforce Analytics Engineer",
+      "Senior Salesforce Analytics Engineer",
+      "Salesforce Data / Analytics Architect",
+    ],
+    description:
+      "This isn't a starting point — it's shown to students as where the Salesforce Data Analyst path can eventually lead. The road runs through two real technical steps most students never hear named: CRM Analytics Developer (building the analytics system 500 salespeople and executives rely on, not just answering one question yourself) and Salesforce Analytics Engineer (engineering the data platform behind Salesforce analytics — Data Cloud, Snowflake, dbt, and CI/CD). From there, enterprise architecture, governance, and integration leadership are what separate a Senior Analytics Engineer from an Architect.",
+    salaryRange: "$65K–$95K at entry · $110K–$160K+ as a CRM Analytics Developer · $130K–$200K+ as a Salesforce Analytics Engineer · $200K+ potential at Architect — rough market targets, not guarantees",
+    isDestination: true,
+    stages: [
+      {
+        label: "Foundation",
+        note: "The Salesforce Data Analyst path, start to finish",
+        pathChoiceSlugs: ["salesforce-data-analyst"],
+      },
+      {
+        label: "CRM Analytics Developer",
+        note: "SAQL, bindings, dashboard interactions, performance, deployment",
+        courseSlugs: ["salesforce-crm-analytics-and-tableau-next"],
+      },
+      {
+        label: "Salesforce Analytics Engineer",
+        note: "Engineering the platform behind the analytics, not just analyzing it",
+        courseSlugs: ["snowflake", "dbt-analytics-engineering", "git-github-cicd-for-data"],
+      },
+      {
+        label: "Architecture",
+        note: "Already built — not a gap",
+        courseSlugs: ["data-engineering-career-and-capstone"],
+      },
+    ],
+    destinationNote:
+      "Salesforce Data Analyst → Senior Salesforce Data Analyst → CRM Analytics Developer → Salesforce Analytics Engineer → Senior Salesforce Analytics Engineer → Salesforce Data/Analytics Architect → Enterprise/Solution Architect. Notice how little new curriculum this actually needs — Snowflake, SQL, Tableau, and dbt already exist or are planned elsewhere in the catalog; this ladder mostly just reuses them in sequence.",
   },
   {
     slug: "quantitative-developer-researcher",
