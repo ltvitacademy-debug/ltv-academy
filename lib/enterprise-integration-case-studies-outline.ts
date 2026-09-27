@@ -35,4 +35,28 @@ export const SFTA_ENTERPRISE_INTEGRATION_CASE_STUDIES_CHAPTERS: ChapterMeta[] = 
       L(8, "enterprise-integration-wrap-up", "Enterprise Integration Wrap-Up"),
     ],
   },
+  {
+    n: 2,
+    title: "Deep Dives",
+    lessons: [
+      L(9, "crm-plus-erp-data-ownership-and-sync-design", "CRM + ERP: Data Ownership and Sync Design"),
+      L(10, "crm-plus-erp-failure-and-reconciliation", "CRM + ERP: Failure and Reconciliation"),
+      L(11, "crm-plus-data-warehouse-extraction-and-volume", "CRM + Data Warehouse: Extraction and Volume"),
+      L(12, "crm-plus-identity-provider-federation-design", "CRM + Identity Provider: Federation Design"),
+      L(13, "crm-plus-customer-portal-sharing-and-scale", "CRM + Customer Portal: Sharing and Scale"),
+      L(14, "crm-plus-external-apis-limits-and-resilience", "CRM + External APIs: Limits and Resilience"),
+    ],
+  },
+  {
+    n: 3,
+    title: "Review and Defense",
+    lessons: [
+      L(15, "comparing-designs-across-cases", "Comparing Designs Across Cases"),
+      L(16, "security-and-governance-review", "Security and Governance Review"),
+      L(17, "presenting-an-enterprise-integration-design", "Presenting an Enterprise Integration Design"),
+      L(18, "answering-reviewer-objections", "Answering Reviewer Objections"),
+      L(19, "enterprise-integration-mock-review-board", "Enterprise Integration Mock Review Board"),
+      L(20, "enterprise-integration-portfolio-review", "Enterprise Integration Portfolio Review"),
+    ],
+  },
 ];

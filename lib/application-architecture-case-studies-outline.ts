@@ -35,4 +35,18 @@ export const SFTA_APPLICATION_ARCHITECTURE_CASE_STUDIES_CHAPTERS: ChapterMeta[] 
       L(8, "case-study-financial-services-onboarding", "Case Study: Financial Services Onboarding"),
     ],
   },
+  {
+    n: 2,
+    title: "Working the Cases",
+    lessons: [
+      L(9, "requirements-extraction-practice", "Requirements Extraction Practice"),
+      L(10, "comparing-alternative-designs", "Comparing Alternative Designs"),
+      L(11, "risks-and-assumptions-in-each-case", "Risks and Assumptions in Each Case"),
+      L(12, "presenting-application-designs", "Presenting Application Designs"),
+      L(13, "reviewer-feedback-and-iteration", "Reviewer Feedback and Iteration"),
+      L(14, "application-architecture-mock-review-board", "Application Architecture Mock Review Board"),
+      L(15, "case-study-portfolio-review", "Case Study Portfolio Review"),
+      L(16, "case-studies-wrap-up", "Case Studies Wrap-Up"),
+    ],
+  },
 ];

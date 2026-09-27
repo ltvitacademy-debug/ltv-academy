@@ -23,16 +23,45 @@ const L = (n: number, slug: string, title: string, extra?: Partial<LessonMeta>):
 export const SFTA_SALESFORCE_CAREER_PREPARATION_CHAPTERS: ChapterMeta[] = [
   {
     n: 1,
-    title: "Career Preparation",
+    title: "Building Your Presence",
     lessons: [
-      L(1, "salesforce-resumes-and-your-trailhead-profile", "Salesforce Resumes and Your Trailhead Profile"),
-      L(2, "portfolio-development-and-github", "Portfolio Development and GitHub"),
-      L(3, "certification-strategy", "Certification Strategy"),
-      L(4, "administrator-and-developer-interviews", "Administrator and Developer Interviews"),
-      L(5, "consultant-interviews", "Consultant Interviews"),
-      L(6, "architect-scenario-interviews-and-whiteboarding", "Architect Scenario Interviews and Whiteboarding"),
-      L(7, "presenting-your-capstones", "Presenting Your Capstones"),
-      L(8, "explaining-architecture-decisions", "Explaining Architecture Decisions"),
+      L(1, "salesforce-career-paths-and-roles", "Salesforce Career Paths and Roles"),
+      L(2, "salesforce-resumes", "Salesforce Resumes"),
+      L(3, "your-trailhead-profile", "Your Trailhead Profile"),
+      L(4, "portfolio-development", "Portfolio Development"),
+      L(5, "github-for-salesforce-developers", "GitHub for Salesforce Developers"),
+      L(6, "networking-and-the-trailblazer-community", "Networking and the Trailblazer Community"),
+    ],
+  },
+  {
+    n: 2,
+    title: "Certifications",
+    lessons: [
+      L(7, "certification-strategy", "Certification Strategy"),
+      L(8, "study-plans-for-administrator-and-app-builder", "Study Plans for Administrator and App Builder"),
+      L(9, "study-plans-for-developer-and-architect-credentials", "Study Plans for Developer and Architect Credentials"),
+      L(10, "verifying-current-certification-requirements", "Verifying Current Certification Requirements"),
+    ],
+  },
+  {
+    n: 3,
+    title: "Interviews",
+    lessons: [
+      L(11, "administrator-interviews", "Administrator Interviews"),
+      L(12, "developer-interviews", "Developer Interviews"),
+      L(13, "consultant-interviews", "Consultant Interviews"),
+      L(14, "architect-scenario-interviews", "Architect Scenario Interviews"),
+      L(15, "architecture-whiteboarding", "Architecture Whiteboarding"),
+    ],
+  },
+  {
+    n: 4,
+    title: "Presenting Your Work",
+    lessons: [
+      L(16, "presenting-your-capstones", "Presenting Your Capstones"),
+      L(17, "explaining-architecture-decisions", "Explaining Architecture Decisions"),
+      L(18, "your-first-90-days-in-a-salesforce-role", "Your First 90 Days in a Salesforce Role"),
+      L(19, "long-term-path-toward-cta", "Long-Term Path Toward CTA"),
     ],
   },
 ];

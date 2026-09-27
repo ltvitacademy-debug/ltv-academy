@@ -25,11 +25,32 @@ export const SFTA_DATA_GOVERNANCE_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Governing Data",
     lessons: [
-      L(1, "data-ownership", "Data Ownership"),
-      L(2, "data-quality", "Data Quality"),
-      L(3, "data-retention", "Data Retention"),
-      L(4, "compliance", "Compliance"),
-      L(5, "building-a-governance-framework", "Building a Governance Framework"),
+      L(1, "what-data-governance-is", "What Data Governance Is"),
+      L(2, "data-ownership", "Data Ownership"),
+      L(3, "data-stewardship-roles", "Data Stewardship Roles"),
+      L(4, "data-quality", "Data Quality"),
+      L(5, "data-quality-metrics", "Data Quality Metrics"),
+    ],
+  },
+  {
+    n: 2,
+    title: "Policies and Compliance",
+    lessons: [
+      L(6, "data-retention", "Data Retention"),
+      L(7, "privacy-and-consent-concepts", "Privacy and Consent Concepts"),
+      L(8, "compliance", "Compliance"),
+      L(9, "data-classification", "Data Classification"),
+      L(10, "audit-and-traceability", "Audit and Traceability"),
+    ],
+  },
+  {
+    n: 3,
+    title: "Building Governance",
+    lessons: [
+      L(11, "building-a-governance-framework", "Building a Governance Framework"),
+      L(12, "governance-committees-and-processes", "Governance Committees and Processes"),
+      L(13, "governance-case-study", "Governance Case Study"),
+      L(14, "measuring-governance-success", "Measuring Governance Success"),
     ],
   },
 ];

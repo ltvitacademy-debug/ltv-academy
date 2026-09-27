@@ -546,6 +546,7 @@ export const CAREER_PATHS: CareerPath[] = [
       "Salesforce Technical Architect is the destination — not the student's first job. Students should expect to gain professional Salesforce experience while progressing through the architecture stages of this path.",
       "The program closes with advanced architecture case studies and a capstone requiring students to design and defend a secure, scalable, integrated enterprise Salesforce solution.",
     ],
+    salaryRange: "$75K–$350K — from about $75K as a Salesforce Administrator to about $350K as a Salesforce Technical Architect",
     certification:
       "Salesforce certification journey, Administrator through CTA — see the roadmap below; LTV Academy does not issue Salesforce certifications",
     showLessonTotals: true,

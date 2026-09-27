@@ -23,22 +23,46 @@ const L = (n: number, slug: string, title: string, extra?: Partial<LessonMeta>):
 export const SFTA_SALESFORCE_DATA_MANAGEMENT_CHAPTERS: ChapterMeta[] = [
   {
     n: 1,
-    title: "Getting Data In and Out",
+    title: "Getting Data In",
     lessons: [
-      L(1, "the-import-wizard", "The Import Wizard"),
-      L(2, "data-loader-concepts", "Data Loader Concepts"),
-      L(3, "data-exports-and-backups", "Data Exports and Backups"),
-      L(4, "bulk-data-operations", "Bulk Data Operations"),
+      L(1, "planning-a-data-load", "Planning a Data Load"),
+      L(2, "the-import-wizard", "The Import Wizard"),
+      L(3, "data-loader-concepts", "Data Loader Concepts"),
+      L(4, "preparing-csv-files", "Preparing CSV Files"),
+      L(5, "insert-update-and-upsert-operations", "Insert, Update and Upsert Operations"),
+      L(6, "external-ids-and-relationships-during-loads", "External IDs and Relationships During Loads"),
     ],
   },
   {
     n: 2,
+    title: "Getting Data Out and Keeping It Safe",
+    lessons: [
+      L(7, "data-exports-and-backups", "Data Exports and Backups"),
+      L(8, "weekly-export-service", "Weekly Export Service"),
+      L(9, "bulk-data-operations", "Bulk Data Operations"),
+      L(10, "deleting-and-mass-transferring-records", "Deleting and Mass Transferring Records"),
+      L(11, "recycle-bin-and-data-recovery", "Recycle Bin and Data Recovery"),
+    ],
+  },
+  {
+    n: 3,
     title: "Data Quality",
     lessons: [
-      L(5, "duplicate-management", "Duplicate Management"),
-      L(6, "validation-and-data-quality", "Validation and Data Quality"),
-      L(7, "data-cleaning-practice", "Data Cleaning Practice"),
-      L(8, "data-management-best-practices", "Data Management Best Practices"),
+      L(12, "duplicate-management", "Duplicate Management"),
+      L(13, "matching-rules-and-duplicate-rules", "Matching Rules and Duplicate Rules"),
+      L(14, "validation-and-data-quality", "Validation and Data Quality"),
+      L(15, "standardizing-data", "Standardizing Data"),
+      L(16, "data-cleaning-practice", "Data Cleaning Practice"),
+      L(17, "data-management-best-practices", "Data Management Best Practices"),
+    ],
+  },
+  {
+    n: 4,
+    title: "Applied Data Management",
+    lessons: [
+      L(18, "data-loader-practice-lab", "Data Loader Practice Lab"),
+      L(19, "import-troubleshooting", "Import Troubleshooting"),
+      L(20, "data-management-case-study", "Data Management Case Study"),
     ],
   },
 ];
