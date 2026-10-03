@@ -69,6 +69,25 @@ The **Connection Managers** strip along the bottom is where every package
 defines *how* it connects to the outside world — a SQL Server database,
 a flat file, an FTP server. Lesson 5 covers connection managers in depth.
 
+## A first look at the two engines
+
+You don't need to build anything yet — just recognize the shape of what's
+coming. Here's Microsoft's own diagram of what's happening inside the
+**Data Flow tab**: a Source, one or more Transformations, and a
+Destination, each exposing an output for good rows and a separate error
+output for rows that fail.
+
+![Diagram of a data flow: a Source block feeding a Transformation block feeding a Destination block, each with labeled Output, Error Output, and Input connection points.](/courses/ssis/ch01/01-what-is-ssis/data-flow-tab.gif)
+*This exact shape — source, transformation, destination, with an error path at every step — is what every data flow you build in Chapter 3 onward follows.*
+
+And here's what the **control flow engine** is quietly managing in the
+background: how an event — say, an error on an Execute SQL task — bubbles
+up from the task, to its container, to the package itself, until
+something actually handles it.
+
+![Diagram showing an event bubbling upward: an Execute SQL task raises an event inside a Task Host, which runs the task's own event handler, then the For Loop Container's event handler, then the package's event handler, with "No Event Handler" paths shown branching past any level that doesn't have one.](/courses/ssis/ch01/01-what-is-ssis/event-handlers-tab.gif)
+*You'll build real event handlers in Chapter 6 — for now, just notice that error handling has its own path through a package, separate from the main control flow.*
+
 ## Where SSIS fits next to T-SQL
 
 If you've already worked through T-SQL Development, you already know how

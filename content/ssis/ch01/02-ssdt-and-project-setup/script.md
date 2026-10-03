@@ -25,11 +25,21 @@ ship as their own separate Visual Studio extension — install the
 Integration Services one from Extensions, Manage Extensions, or the
 Marketplace. Once that's in place, go to File, New, Project, and you'll
 see the Integration Services Project template appear right here under
-Business Intelligence. Name your project, pick a location, hit OK — and
-you get a project with exactly one empty package waiting for you,
-called Package.dtsx by default.
+Business Intelligence.
 
-## Segment 4 (outro)
+## Segment 4 (screenshot: target-server-version.png)
+
+Name your project, pick a location, hit OK — and here's what's waiting
+for you the instant it's created. Solution Explorer, on the right,
+already has your project with a Project.params node, a Connection
+Managers folder, and an SSIS Packages folder holding one empty package
+— Package.dtsx by default. And on the left, the Project Property Pages
+— worth a look now, not later — show TargetServerVersion, the SQL
+Server version this project deploys to. Get that wrong and a deployment
+can fail for a version mismatch that has nothing to do with your
+package logic.
+
+## Segment 5 (outro)
 
 Two installs, one template, one empty package — that's project setup.
 Next lesson, we zoom out and look at what's actually running under the

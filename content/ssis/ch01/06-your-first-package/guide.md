@@ -43,6 +43,9 @@ would move data (you'll build a real one starting in Chapter 3).
    precedence constraint — it forces the Execute SQL Task to run to
    completion before the Data Flow Task starts.
 
+![Two Execute SQL tasks connected by a Completion precedence constraint arrow, each with a green checkmark in its top-right corner.](/courses/ssis/ch01/06-your-first-package/multi-task-execution.png)
+*This is what it looks like once you've built, connected, and test-run it — a green checkmark on every task that succeeded.*
+
 ## What a real control flow looks like once it's built
 
 That's the exact shape every control flow in this course takes: tasks
@@ -64,6 +67,13 @@ it's running — instant, visible feedback with no server required,
 because this is a design-time test run, not a deployment. Stop
 debugging (**Shift+F5**) when you're done. This test-run habit is one
 you'll repeat after every single change for the rest of the course.
+
+Want more than a checkmark? The **Progress** tab (renamed **Execution
+Results** after the run finishes) logs every task's validate, start,
+and finish time:
+
+![The Progress tab showing a tree of Validate started, Validate done, Start, Progress, and Finished entries for each task, with elapsed time, and a status bar reading "Package execution completed."](/courses/ssis/ch01/06-your-first-package/debug-control-flow.gif)
+*The full record of one run — proof the whole package finished, not just one task in isolation.*
 
 ## Key terms
 

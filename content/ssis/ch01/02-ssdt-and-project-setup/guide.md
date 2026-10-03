@@ -75,6 +75,14 @@ Explorer. Lesson 4 digs into exactly what a solution, a project, and a
 package each are and how they nest — for now, just know that creating
 the project is what puts that first empty package in front of you.
 
+![Integration Services Project Property Pages on the left, showing TargetServerVersion set to SQL Server 2017; Solution Explorer on the right, showing the new project's tree — Project.params, Connection Managers, an SSIS Packages folder containing Package.dtsx, Package Parts, Control Flow, and Miscellaneous.](/courses/ssis/ch01/02-ssdt-and-project-setup/target-server-version.png)
+*Solution Explorer right after creation (right), and the project property that controls what SQL Server version you can deploy to (left).*
+
+Worth opening right now, not later: **Project Properties → Deployment →
+TargetServerVersion**. It has to match the SQL Server version you'll
+actually deploy to in Chapter 8 — set it wrong and a deployment can fail
+on a version mismatch that has nothing to do with your package logic.
+
 ## Key terms
 
 | Term | Meaning |

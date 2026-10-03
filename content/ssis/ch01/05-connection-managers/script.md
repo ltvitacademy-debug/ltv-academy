@@ -14,12 +14,24 @@ description of one. You set properties like the connection string while
 you're building the package; Integration Services only creates the
 actual physical connection when the package runs. You add one from
 right here, the Connection Managers area docked along the bottom of the
-Control Flow tab. Right-click in that strip, pick a type, or choose New
-Connection to see every built-in option — OLE DB, ADO.NET, Flat File,
-FTP, and a dozen more — and its own configuration editor opens so you
-can set the real details.
+Control Flow tab.
 
-## Segment 3 (steps: package-level vs project-level)
+## Segment 3 (screenshot: add-connection-manager-dialog.png)
+
+Right-click anywhere in that strip and this menu appears — pick a
+common type directly, like New OLE DB Connection, or choose New
+Connection to see every built-in option in one list: OLE DB, ADO.NET,
+Flat File, Analysis Services, File, and more.
+
+## Segment 4 (screenshot: ole-db-connection-editor.png)
+
+Whichever type you pick, its own configuration editor opens. For OLE
+DB, that's this: a Provider, a server name, how to authenticate, and
+which database to connect to. Set it once here, at design time — the
+physical connection gets created from these exact settings every time
+the package actually runs.
+
+## Segment 5 (steps: package-level vs project-level)
 
 There are two scopes to know. Add a connection manager from inside a
 package's own Connection Managers area, and it's package-level — it
@@ -32,7 +44,7 @@ locally owned. Use project-level for anything genuinely shared, like
 your warehouse connection; package-level for anything specific to one
 job.
 
-## Segment 4 (outro)
+## Segment 6 (outro)
 
 Design-time description, run-time connection, two scopes to choose
 from — that's connection managers. Next lesson, we put everything from

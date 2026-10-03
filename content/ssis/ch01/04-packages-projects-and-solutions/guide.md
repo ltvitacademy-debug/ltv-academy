@@ -26,6 +26,13 @@ met in Lesson 1. Formally, it's an organized collection of:
 - **Event handlers, variables, parameters, and logging** — the
   supporting cast that makes a package configurable and observable
 
+The **Package Explorer** tab (the fifth tab from Lesson 1) lists every
+one of those categories as a tree, for whatever package is open —
+nothing hidden, nothing summarized:
+
+![The Package Explorer tab showing a tree with nodes for Connection Managers, Log Providers, Executables, Precedence Constraints, Parameters, Event Handlers, and Variables.](/courses/ssis/ch01/04-packages-projects-and-solutions/package-explorer.gif)
+*Package Explorer — the complete, literal inventory of one package's objects.*
+
 ![A package containing a control flow with a Data Flow Task, and the data flow of source, transformation, and destination that task runs.](/courses/ssis/ch01/04-packages-projects-and-solutions/ssis-package.gif)
 *A package's control flow, with a Data Flow Task's own data flow inside it.*
 

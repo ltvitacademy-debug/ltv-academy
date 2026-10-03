@@ -36,9 +36,16 @@ Right-click anywhere in that strip and you can either pick a common
 connection manager type directly, or choose **New Connection** to open
 the **Add SSIS Connection Manager** dialog box, which lists every
 built-in type — OLE DB, ADO.NET, Flat File, Excel, FTP, HTTP, ODBC, and
-more. Selecting a type and clicking **Add** (or **OK**) opens that
-type's own configuration editor, where you set the actual connection
-details.
+more.
+
+![Right-click context menu over the Connection Managers strip, listing New OLE DB Connection, New Flat File Connection, New ADO.NET Connection, New Analysis Services Connection, New File Connection, and New Connection.](/courses/ssis/ch01/05-connection-managers/add-connection-manager-dialog.png)
+*The common types are right there on the menu — New Connection opens the full list.*
+
+Selecting a type and clicking **Add** (or **OK**) opens that type's own
+configuration editor, where you set the actual connection details:
+
+![OLE DB Connection Manager editor showing a Provider dropdown, Server name field, Windows Authentication selector, and a Connect to a database section with a database name field.](/courses/ssis/ch01/05-connection-managers/ole-db-connection-editor.png)
+*The OLE DB editor — provider, server, authentication, and database, all set once at design time.*
 
 ## Package-level vs. project-level
 

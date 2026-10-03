@@ -20,10 +20,26 @@ grouped into categories like Favorites, Common, and Containers — every
 task you'll drag onto a package lives here. Across the top are five tabs
 — Control Flow, Data Flow, Parameters, Event Handlers, and Package
 Explorer — each one a different surface for building a different part
-of your package. And along the bottom, Connection Managers, where every
-package defines how it actually connects to the outside world.
+of your package.
 
-## Segment 3 (steps: two engines)
+## Segment 3 (screenshot: data-flow-tab)
+
+Here's what's actually happening inside that Data Flow tab, conceptually:
+a Source, one or more Transformations, and a Destination, each one
+exposing an output for good rows and a separate error output for rows
+that fail. This is the shape every data flow you build in this course
+follows — Chapter 3 gets you building it for real.
+
+## Segment 4 (screenshot: event-handlers-tab)
+
+And here's the kind of thing the control flow engine is quietly managing
+the whole time — how an event, like an error on an Execute SQL task,
+bubbles up: first to that task's own event handler, then to its
+container's, then to the package's, until something actually catches it.
+You'll build real event handlers in Chapter 6, but it's worth seeing the
+shape of it now.
+
+## Segment 5 (steps: two engines)
 
 Underneath all of that sit two completely separate engines, and getting
 this distinction straight now will save you confusion for the rest of
@@ -37,7 +53,7 @@ in control flow, and Chapter 3 onward in data flow — but every real
 package needs both, because control flow is what decides when a data
 flow actually runs.
 
-## Segment 4 (outro)
+## Segment 6 (outro)
 
 If you've already worked through T-SQL, think of it this way: T-SQL is
 how you query and shape data once it's already sitting in a table. SSIS

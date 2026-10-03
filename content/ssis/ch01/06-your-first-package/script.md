@@ -16,10 +16,16 @@ Then connect them: every task gets its own connector arrow the moment
 you add it, so drag the one hanging off your first task onto the
 second. That arrow is a precedence constraint — it's what forces the
 first task to finish before the second one starts. Last step, press F5.
-Each task lights up green as it succeeds, right there inside SSDT, no
-server involved at all — that's a design-time test run.
 
-## Segment 3 (screenshot: ssis-controlflowelmt.gif)
+## Segment 3 (screenshot: multi-task-execution.png)
+
+This is exactly what that looks like: two tasks, a Completion
+precedence constraint between them, and a green checkmark on each one
+— SSIS's way of telling you, right on the design surface, that both ran
+without errors. No server involved at all, because this is a
+design-time test run, straight inside SSDT.
+
+## Segment 4 (screenshot: ssis-controlflowelmt.gif)
 
 And this is the shape you're building toward, at any scale. Tasks and
 containers, connected by precedence constraint arrows, executing in the
@@ -28,7 +34,15 @@ nested inside it — containers group work, and they can repeat it, which
 is exactly what For Loop and Foreach Loop containers do starting next
 chapter.
 
-## Segment 4 (outro)
+## Segment 5 (screenshot: debug-control-flow.gif)
+
+If you want more than a green checkmark, the Progress tab gives you the
+full record: when each task validated, when it started, when it
+finished, and exactly how long it took. That status line at the bottom
+— package execution completed — is your confirmation the whole run
+succeeded, not just one task in isolation.
+
+## Segment 6 (outro)
 
 Drag, name, connect, test — that's every package you'll ever build,
 scaled up. That's a wrap on Chapter 1. Chapter 2 goes deep on control
