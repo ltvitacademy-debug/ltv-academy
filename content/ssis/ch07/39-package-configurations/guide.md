@@ -56,10 +56,23 @@ walks through the **Package Configuration Wizard**:
 1. On the **SSIS** menu, select **Package Configurations**, then check
    **Enable Package Configurations** in the Package Configuration
    Organizer.
+
+   ![The Package Configurations Organizer window, with the Enable package configurations checkbox unchecked, an empty Configurations grid, and Add/Edit/Remove buttons.](/courses/ssis/ch07/39-package-configurations/package-config-organizer-enable.png)
+   *Nothing happens until this checkbox is on — Add stays greyed out otherwise.*
+
 2. Click **Add** to launch the wizard, and choose a **Configuration
    type** — XML configuration file is the default and most common.
+
+   ![The Package Configuration Wizard's Select Configuration Type page, with Configuration type set to XML configuration file and the two placement options (direct file, or an environment variable holding the file's location).](/courses/ssis/ch07/39-package-configurations/package-config-wizard-xml-default.png)
+   *XML configuration file is what the wizard opens to — but the dropdown holds four other real sources.*
+
 3. Point it at a file location (or, for an indirect configuration, an
-   environment variable holding that location).
+   environment variable holding that location). Switch that same
+   **Configuration type** dropdown to a different value, and the rest of
+   the page changes to match it:
+
+   ![The same Select Configuration Type page, with Configuration type switched to Registry entry and a Registry entry field in place of the XML file fields.](/courses/ssis/ch07/39-package-configurations/package-config-wizard-registry-entry.png)
+   *Registry entry chosen instead — the page's fields change shape per configuration type, but it's still the same one dropdown driving all five.*
 4. On **Select Properties to Export**, expand the object tree —
    Variables, Connection Managers, Tasks — and check exactly the
    properties this configuration should be allowed to override.

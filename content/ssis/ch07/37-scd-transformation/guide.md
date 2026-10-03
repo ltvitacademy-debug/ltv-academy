@@ -43,6 +43,19 @@ dimension column into one of three change types:
   still report on what a customer's address *used to be* at any point in
   time.
 
+You pick the type per column on the wizard's **Slowly Changing Dimension
+Columns** page — the main page in the whole wizard:
+
+![The Slowly Changing Dimension Columns page, with BirthDate and EmailAddress already marked Fixed attribute, and the Change Type dropdown for LastName open showing the three real options: Fixed attribute, Changing attribute, Historical attribute.](/courses/ssis/ch07/37-scd-transformation/scd-columns-fixed-changing-historical.png)
+*The Change Type dropdown, open — this is the actual three-way choice every dimension column gets, column by column.*
+
+Mark a column as **Historical attribute** and a new page appears later in
+the wizard — **Historical Attribute Options** — asking exactly how you
+want to track that history:
+
+![The Historical Attribute Options page, showing the "Use start and end dates to identify current and expired records" option selected, with Start date column, End date column, and Variable to set date values fields.](/courses/ssis/ch07/37-scd-transformation/scd-historical-attribute-options.png)
+*Two ways to track history: a single current/expired indicator column, or — shown here, selected — separate Start date and End date columns the wizard stamps for you.*
+
 ## What the wizard builds for you
 
 After you answer its questions — pick the dimension table, map the

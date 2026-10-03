@@ -19,16 +19,32 @@ package variable, or a SQL Server table. The most common by far is an
 XML file, often set up indirectly — an environment variable that just
 holds the file's location, so even that can move between servers freely.
 
-Setting one up walks you through the Package Configuration Wizard: enable
-package configurations from the SSIS menu, choose a configuration type,
-point it at a location, and then, on the key step, expand the object
-tree and check exactly which properties — a connection manager's
-connection string, a variable's value — this configuration is allowed to
-override. Finish the wizard, and from then on, every run reads that
-external source first and overwrites the matching properties before a
-single task executes.
+## Segment 3 (screenshot: package-config-organizer-enable.png)
 
-## Segment 3 (outro)
+It all starts here — the Package Configurations Organizer, opened from
+the SSIS menu. Notice Enable package configurations is unchecked, and
+the Add button is greyed out because of it. Check that one box first, and
+everything else on this window — the Add, Edit, and Remove buttons —
+comes alive.
+
+## Segment 4 (screenshot: package-config-wizard-xml-default.png)
+
+Click Add, and the wizard opens straight to Select Configuration Type.
+XML configuration file is the default you'll see every time — specify a
+file name directly, or tick the option below it to read that file's
+location out of an environment variable instead.
+
+## Segment 5 (screenshot: package-config-wizard-registry-entry.png)
+
+But that Configuration type dropdown isn't locked to XML. Switch it, and
+the whole page reshapes around whatever you picked — here it's Registry
+entry, with a single Registry entry field replacing the file-path
+controls. The same wizard, five genuinely different ways to supply the
+override value, and on the next page you'll expand the object tree and
+check exactly which connection manager or variable properties this
+configuration is allowed to touch.
+
+## Segment 6 (outro)
 
 One important caveat: configurations only work with the legacy Package
 Deployment Model. If you're on the Project Deployment Model, you already

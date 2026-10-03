@@ -44,12 +44,31 @@ else:
 
 1. **Master package starts.** It may first read shared setup values —
    a batch ID, a run date — into package variables.
-2. **First Execute Package Task runs a child.** The child package
-   executes as if it were run on its own; if `ExecuteOutOfProcess` is
-   `False` (the default), it shares the parent's process.
+2. **First Execute Package Task runs a child.** Double-click the task to
+   open its editor — the General tab is just a name and description,
+   like any other task:
+
+   ![The Execute Package Task Editor's General tab, with Name set to "Execute Package From Project Reference" and a Description field.](/courses/ssis/ch07/40-master-child-package-patterns/execute-package-task-general.jpg)
+   *Nothing special here yet — the real configuration is one tab over.*
+
+   The **Package** tab is where the task actually points at a child: set
+   **ReferenceType** to **Project Reference** for a child package in the
+   same project, then pick it from the **PackageNameFromProjectReference**
+   dropdown. If `ExecuteOutOfProcess` is `False` (the default), the child
+   shares the parent's process.
+
+   ![The Execute Package Task Editor's Package tab, with ReferenceType set to Project Reference and the PackageNameFromProjectReference, Password, and ExecuteOutOfProcess properties.](/courses/ssis/ch07/40-master-child-package-patterns/execute-package-task-package-tab.jpg)
+   *ReferenceType and PackageNameFromProjectReference together are what actually wire this task to a specific child package.*
+
 3. **Values pass down, if needed.** The parent can pass parameters (in
    the Project Deployment Model) or expose parent package variables (via
-   Package Configurations, Lesson 39) that the child reads.
+   Package Configurations, Lesson 39) that the child reads. In the
+   Project Deployment Model, that mapping happens on the Execute Package
+   Task Editor's own **Parameter bindings** tab:
+
+   ![The Execute Package Task Editor's Parameter bindings tab, mapping Child package parameter entries (Parameter, Parameter1, Parameter2) to Binding parameter or variable values (User::Variable, User::Variable1, User::Variable2).](/courses/ssis/ch07/40-master-child-package-patterns/execute-package-task-parameter-bindings.png)
+   *Each row maps one child package parameter to a parent variable or parameter — no Package Configuration needed in this deployment model.*
+
 4. **Control returns to the master** once the child finishes — success
    or failure bubbles back up, and the next precedence constraint decides
    what runs next.

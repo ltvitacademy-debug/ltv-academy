@@ -27,6 +27,25 @@ Both use **VSTA** (Visual Studio Tools for Applications) as their code
 editor, and both are edited from a task/component editor dialog with a
 **Script** page and an **Edit Script...** button that opens the VSTA IDE.
 
+The Script page's **ScriptLanguage** property is where that choice
+actually gets made:
+
+![The Script Task Editor's Script page, with the ScriptLanguage dropdown open showing the two real choices: Microsoft Visual Basic 2012 and Microsoft Visual C# 2012.](/courses/ssis/ch07/38-script-tasks-and-components/script-task-editor-scriptlanguage.png)
+*ScriptLanguage, open — pick once per task, and it can't be changed after you click Edit Script...*
+
+Once ScriptLanguage, EntryPoint, and your `ReadOnlyVariables`/
+`ReadWriteVariables` are set, the same Script page's **Edit Script...**
+button is what actually launches the code editor:
+
+![The Script Task Editor's Script page, with ScriptLanguage, EntryPoint, ReadOnlyVariables, ReadWriteVariables, and the Edit Script... button visible at the bottom.](/courses/ssis/ch07/38-script-tasks-and-components/script-task-editor-edit-script-button.png)
+*Edit Script... is the door into VSTA — nothing you type counts until you click it.*
+
+Click it, and VSTA opens a real Visual Studio-based project with one file
+already scaffolded for you, `ScriptMain.cs`:
+
+![The VSTA IDE window, showing ScriptMain.cs open with a real Main() method reading package variables through Dts.Variables.](/courses/ssis/ch07/38-script-tasks-and-components/vsta-code-editor.png)
+*This is the actual code editor — Solution Explorer, IntelliSense, everything a real Visual Studio project has, just scoped to one script.*
+
 ## Script Task vs. Script Component
 
 They look similar, but they solve different problems:

@@ -7,29 +7,44 @@ and a Conditional Split. This lesson, we look at a transformation that's
 purpose-built for one specific job: keeping dimension tables correct as
 their data changes over time.
 
-## Segment 2 (screenshot: scd-wizard-data-flow)
+## Segment 2 (screenshot: scd-columns-fixed-changing-historical.png)
 
 A slowly changing dimension is a dimension table where values change
 occasionally, not on every load — a customer moves, a product gets
 reclassified — and the question is always the same: overwrite the old
 value, or keep a history of it? The Slowly Changing Dimension Wizard asks
-you that question column by column. Fixed attributes should never
-change. Changing attributes just get overwritten — that's Type 1, no
-history. Historical attributes are Type 2 — the old record gets marked
-expired, and a brand-new record gets inserted with the new value, so you
-can still query what it used to be.
+you that question column by column, on its main page — Slowly Changing
+Dimension Columns. Here it is: BirthDate and EmailAddress are already set
+to Fixed attribute, and the dropdown for LastName is open, showing the
+actual three choices. Fixed attributes should never change. Changing
+attributes just get overwritten — that's Type 1, no history. Historical
+attributes are Type 2 — the old record gets marked expired, and a
+brand-new record gets inserted with the new value, so you can still query
+what it used to be.
+
+## Segment 3 (screenshot: scd-historical-attribute-options.png)
+
+Mark even one column as a Historical attribute, and the wizard adds a page
+you won't see otherwise: Historical Attribute Options. This is where you
+tell it exactly how to track that history. You can use a single column
+that just flips between a "current" and "expired" value, or — selected
+here — separate Start date and End date columns, plus a variable the
+wizard uses to stamp both of them automatically when a row changes. This
+is the mechanics underneath "Type 2," made concrete.
+
+## Segment 4 (screenshot: scd-wizard-data-flow.gif)
 
 Once you answer those questions, the wizard builds this entire data flow
 for you. The Slowly Changing Dimension transformation sits in the middle
 with multiple outputs — Changing Attribute Updates and Inferred Member
 Updates each go straight to their own OLE DB Command for an in-place
 update. Historical Attribute Inserts runs through a Derived Column first,
-to stamp expiration values, then its own OLE DB Command. And both that
-path and the New Output for brand-new rows funnel through a Union All
-into one shared OLE DB Destination. You never dragged a single one of
-these connections yourself.
+to stamp those expiration values you just configured, then its own OLE DB
+Command. And both that path and the New Output for brand-new rows funnel
+through a Union All into one shared OLE DB Destination. You never dragged
+a single one of these connections yourself.
 
-## Segment 3 (outro)
+## Segment 5 (outro)
 
 One more piece worth knowing: inferred members. If a fact row shows up
 referencing a dimension key that doesn't exist yet, the wizard can create
