@@ -25,6 +25,9 @@ Real packages almost always use both mechanisms together: an OnError event
 handler to alert someone *right now*, and a text-file or database log to
 give that person something to actually diagnose *after* the alert.
 
+![The Configure SSIS Logs dialog box, opened from the SSIS menu's Logging command, showing the Containers pane on the left and the Providers and Logs tab on the right with the Provider type dropdown.](/courses/ssis/ch06/33-logging-providers/configure-ssis-logs-dialog.png)
+*No design surface this time — just a configuration screen with two tabs.*
+
 ## Five log providers, each writing somewhere different
 
 On the **Providers and Logs** tab, you pick a **Provider type** and click
@@ -43,6 +46,9 @@ same type, all writing independently:
 - **SSIS log provider for SQL Server Profiler** — writes a trace file
   Profiler can open directly. Needs a File connection manager.
 
+![The Provider type dropdown open on the Providers and Logs tab, listing all five SSIS log providers: SQL Server, Windows Event Log, Text files, SQL Server Profiler, and XML files.](/courses/ssis/ch06/33-logging-providers/provider-and-logs-tab.png)
+*Five log providers, each writing somewhere different, all in one list.*
+
 For each log you add, you get editable **Name** and **Description** fields,
 plus a **Configuration** column where you pick or create the connection
 manager it writes through.
@@ -58,6 +64,9 @@ To give a specific task its own logging behavior, click its dimmed checkbox
 twice: the first click clears it, the second selects it and unlocks its own
 provider and event choices, independent of its parent.
 
+![The Configure SSIS Logs dialog with the top-level package checkbox unchecked and a child Execute SQL Task already checked, with the dialog's own warning banner reading "To configure unique logging options for this container, enable logging for it in the tree view."](/courses/ssis/ch06/33-logging-providers/enable-logging-tree.png)
+*Package unchecked, task checked — a child doesn't inherit once it's enabled on its own.*
+
 ## Picking which events actually get written
 
 The **Details** tab is where you choose *what* to log, and it applies to
@@ -69,6 +78,9 @@ whichever container is selected in the Containers pane:
   information categories available for each one: Computer, Operator,
   SourceName, SourceID, ExecutionID, MessageText. By default every category
   is selected once you check an event; Advanced lets you trim that down.
+
+![The Details tab in Basic view: a checklist of events from OnError through DiagnosticEx with a Description column, and the Advanced >> button at the bottom.](/courses/ssis/ch06/33-logging-providers/details-tab-basic.png)
+*Just a checklist of events — Advanced expands each one into info categories to capture.*
 
 You can **Save** a configuration as an XML template and **Load** it back
 into another package later, so you don't have to rebuild the same log

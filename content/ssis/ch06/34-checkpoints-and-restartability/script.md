@@ -7,34 +7,51 @@ one fails. Without a restart strategy, fixing the problem and rerunning the
 package means redoing all three that already succeeded. This lesson is
 about not doing that: checkpoints.
 
-## Segment 2 (steps: three properties)
+## Segment 2 (screenshot: failed-package-progress.png)
 
-SSIS writes progress to a checkpoint file as a package runs. If the
-package fails, that file records exactly how far it got — rerun it, and it
-picks up from the point of failure instead of the beginning. Three
-properties turn this on, all set on the package itself from Control Flow
-properties. SaveCheckpoints is the master switch — set it to True to
-actually write the file. CheckpointFileName is just the file path.
-CheckpointUsage controls the restart behavior itself: Never ignores the
-file, Always requires it to exist and fails if it doesn't, and IfExists —
-the one you'll use most — restarts from it if it's there and runs clean
-if it's not. One more property matters just as much: FailPackageOnFailure,
-set to True on every task you actually want as a restart point.
+Here's that scenario in miniature. Task 1 ran clean — source to
+destination, six rows, both green. Task 2 failed loading its own six rows
+into the OLE DB destination. Without checkpoints, fixing that and rerunning
+the package reruns Task 1 all over again for no reason. SSIS writes
+progress to a checkpoint file as a package runs specifically so a rerun
+doesn't have to repeat the work that already succeeded.
 
-## Segment 3 (steps: the granularity limit)
+## Segment 3 (screenshot: checkpoint-properties.png)
+
+Three properties turn this on, all set on the package itself from Control
+Flow properties. SaveCheckpoints is the master switch — set it to True to
+actually write the file. CheckpointFileName is just the file path, here
+C:\temp\checkpoint.xml. CheckpointUsage controls the restart behavior
+itself: Never ignores the file, Always requires it to exist and fails if
+it doesn't, and IfExists — the one you'll use most — restarts from it if
+it's there and runs clean if it's not.
+
+## Segment 4 (screenshot: failpackageonfailure-property.png)
+
+One more property matters just as much: FailPackageOnFailure, set to True
+on every task you actually want as a restart point. You can see it
+selected here on a Data Flow task, with SSIS's own tooltip underneath
+spelling out exactly what it does — without it, that task's failure won't
+register correctly for checkpoint purposes.
+
+## Segment 5 (screenshot: rerun-from-checkpoint.png)
+
+And here's the payoff: same package, same failure fixed, rerun with the
+checkpoint file in place. Data Flow Task and Update Records both come back
+green — the package picked up from where it left off instead of starting
+over from task one.
+
+## Segment 6 (steps: the granularity limit)
 
 Here's the part people get wrong. A package can only restart at the
 control flow level — the task host container is the smallest atomic unit
 that can be a restart point. You cannot restart partway through a single
 Data Flow task; if it fails five minutes into a ten-minute load, the whole
-task reruns from its own beginning. If that granularity actually matters,
-the fix isn't inside the data flow — it's splitting the work into multiple
-smaller Data Flow tasks in Control Flow. And two more limits worth
-remembering: For Loop and Foreach Loop containers don't checkpoint their
-iterations at all, and variables of type Object never get saved in the
-checkpoint file.
+task reruns from its own beginning. And two more limits worth remembering:
+For Loop and Foreach Loop containers don't checkpoint their iterations at
+all, and variables of type Object never get saved in the checkpoint file.
 
-## Segment 4 (outro)
+## Segment 7 (outro)
 
 One more warning worth taking seriously: checkpoints and transactions
 don't mix well in the same container — a restart can end up replaying a

@@ -27,6 +27,9 @@ records exactly how far it got. Rerun the package, and it picks up from
 the point of failure instead of the beginning — reload only the fourth
 dimension table, not all five.
 
+![Two task groups after a run: Task 1, Source Table to Destination table, both with green success icons; Task 2, Source Table 1 to OLE DB Destination, with the destination marked by a red failure icon.](/courses/ssis/ch06/34-checkpoints-and-restartability/failed-package-progress.png)
+*Task 1 finished clean. Task 2 failed on the destination — only Task 2 should have to rerun.*
+
 ## Three properties turn it on
 
 You set these on the package itself, from **Control Flow** → right-click
@@ -43,10 +46,19 @@ the background → **Properties**:
   checkpoint if the file is there, otherwise start clean — the setting
   you'll use most often).
 
+![The package's Properties panel, scoped to "checkpoint Package", with the Checkpoints category expanded: CheckpointFileName set to C:\temp\checkpoint.xml, CheckpointUsage set to IfExists, SaveCheckpoints set to True.](/courses/ssis/ch06/34-checkpoints-and-restartability/checkpoint-properties.png)
+*The three properties that turn checkpoint-based restart on, set together.*
+
 One more property matters just as much: **FailPackageOnFailure**, set to
 `True` on every task or container you actually want to serve as a restart
 point. Without it, that container's failure won't register correctly for
 checkpoint purposes.
+
+![The Properties panel on a Data Flow task, FailPackageOnFailure row selected and set to True, with its tooltip description visible underneath.](/courses/ssis/ch06/34-checkpoints-and-restartability/failpackageonfailure-property.png)
+*FailPackageOnFailure, set to True — without it, this task's failure won't register as a restart point.*
+
+![The same package re-run with the checkpoint file in place: Data Flow Task and Update Records both show green success icons.](/courses/ssis/ch06/34-checkpoints-and-restartability/rerun-from-checkpoint.png)
+*Rerun with the checkpoint file in place — this time it picks up and finishes instead of starting over.*
 
 ## The restart granularity you actually get
 
