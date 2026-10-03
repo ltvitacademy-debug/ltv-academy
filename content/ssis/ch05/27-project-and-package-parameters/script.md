@@ -21,11 +21,19 @@ forces a real value to exist before the package is even allowed to run.
 If a value needs to be shared across every package in the project — a
 source folder path, an environment name — that's a project parameter
 instead, and it lives in exactly one place: Project.params, right here in
-Solution Explorer. Double-click it, add parameters the same way you would
-on a package's Parameters tab, and every package in the project can now
-read that same value.
+Solution Explorer. Double-click it, and you get the exact same grid you
+just saw on a package's Parameters tab.
 
-## Segment 4 (steps: design/server/execution)
+## Segment 4 (screenshot: project-parameters-with-values)
+
+Here's what that grid looks like with real values in it — ServerName and
+DatabaseName, two project parameters every package in this project can
+now read. Notice the Required column: both are set to False here, which
+means the design value alone is good enough to run with. Check that box
+instead, and nothing executes until a real server or execution value
+replaces it.
+
+## Segment 5 (steps: design/server/execution)
 
 Once a project is deployed, a parameter's actual value can come from
 three layers, and only one wins per run. The design value is the default
@@ -35,7 +43,7 @@ execution. And the execution value is set for one specific run only —
 through the Execute Package dialog or dtexec — and it overrides both of
 the others, but only for that one run.
 
-## Segment 5 (outro)
+## Segment 6 (outro)
 
 Parameters and variables both need a common language to actually get
 manipulated and combined — string concatenation, date math, casting one

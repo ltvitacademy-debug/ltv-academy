@@ -37,7 +37,11 @@ Merge requires that the merged columns have **matching metadata** — you
 can't merge a numeric column with a character column, and if you're
 merging string columns, the second input's column length must be less
 than or equal to the first's. The SSIS Designer automatically maps
-columns with identical metadata for you.
+columns with identical metadata for you — and leaves the rest ignored
+until you map them yourself:
+
+![The Merge Transformation Editor, with columns Output Column Name, Merge Input 1, and Merge Input 2. Most Merge Input 2 cells read "<ignore>"; a handful — Id, CreationDate, ParentId, Score, Title — carry a real mapped value.](/courses/ssis/ch04/25-merge-and-merge-join/merge-editor-sqlshack2.png)
+*SSIS auto-maps columns with matching metadata; everything else is left as &lt;ignore&gt; until you map it.*
 
 ## Merge Join — for actual joins
 
@@ -53,6 +57,18 @@ both add columns from a second source based on matching keys — but
 Merge Join works with two data flow *inputs* directly (no reference
 dataset, no caching modes), and it natively supports outer joins the way
 Lookup's Match/No Match model doesn't as directly.
+
+Picking up right where Lesson 24 left off — both Sort outputs wired into
+the still-unconfigured Merge Join:
+
+![A data flow diagram showing EmpSalary feeding Sort, EmpLocation feeding Sort 1, and both Sort outputs connected into a Merge Join transformation that is still flagged with an error.](/courses/ssis/ch04/25-merge-and-merge-join/mj-wired-unconfigured.png)
+*Both sorted outputs now feed the same Merge Join — still flagged, because the join itself isn't configured yet.*
+
+Opening that Merge Join shows exactly what's missing — a join type, and
+a join key checked on both sides:
+
+![The Merge Join Transformation Editor, with Join type set to Inner join, and both Sort panels — Sort and Sort 1 — showing Name checked as the Join Key, in matching sort-key order.](/courses/ssis/ch04/25-merge-and-merge-join/mj-editor-inner.png)
+*Inner join selected; Name is the join key on both sides, checked in matching sort-key order.*
 
 ## The shared requirement: sorted input
 

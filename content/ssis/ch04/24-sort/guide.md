@@ -30,6 +30,12 @@ produces output sorted by region first, then by city within each
 region — exactly the same idea as `ORDER BY CountryRegion, City` in
 T-SQL.
 
+Here's the Sort Transformation Editor configured with two sort keys —
+EmpName sorting first, EmpLocation breaking ties within it:
+
+![The Sort Transformation Editor, with EmpName and EmpLocation checked in Available Input Columns, and a grid below showing both set to Sort Type ascending — EmpName at Sort Order 1, EmpLocation at Sort Order 2.](/courses/ssis/ch04/24-sort/sort-editor2.png)
+*Two sort keys — EmpName first, EmpLocation second — both ascending.*
+
 ## Removing duplicates in the same pass
 
 The Sort transformation can also **remove rows with duplicate sort
@@ -54,6 +60,19 @@ what comes *next*. Both the **Merge** transformation and the **Merge
 Join** transformation (Lesson 25) require their inputs to already be
 sorted on the columns they'll merge or join on. The Sort transformation
 is how you guarantee that before the data ever reaches them.
+
+In practice, that means one Sort transformation **per source**, not one
+shared Sort for everything — each input gets sorted independently before
+it goes anywhere near a Merge or Merge Join:
+
+![A data flow diagram showing two separate sources, EmpSalary and EmpLocation, each feeding its own Sort transformation (Sort and Sort 1).](/courses/ssis/ch04/24-sort/sort-verified.png)
+*Two separate sources, two separate Sort transformations — each one sorting its own input before anything downstream touches it.*
+
+Zoom out one step further and the reason both exist becomes obvious —
+both sorted outputs are headed for the same downstream component:
+
+![The same data flow diagram, now showing a Merge Join transformation below the two Sort transformations, still unconnected and flagged with an error.](/courses/ssis/ch04/24-sort/sort-full-pipeline.png)
+*Both Sort outputs are headed for the same Merge Join — which is exactly why they both had to be sorted first.*
 
 ## Key terms
 

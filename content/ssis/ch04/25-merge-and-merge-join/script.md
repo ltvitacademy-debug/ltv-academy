@@ -19,7 +19,34 @@ datasets the way a SQL join does — combining columns from two different
 sources into wider rows — using a FULL, LEFT, or INNER join that you
 choose explicitly.
 
-## Segment 3 (steps: sorted input requirement)
+## Segment 3 (screenshot: merge-editor-sqlshack2.png)
+
+Here's the Merge Transformation Editor itself, merging two versions of
+the same dataset. Look at the Merge Input 2 column — most rows say
+"ignore," and only a handful of columns, the ones that actually exist in
+both inputs with matching metadata, carry a real value across. SSIS maps
+what it can automatically; anything else stays ignored until you decide
+otherwise.
+
+## Segment 4 (screenshot: mj-wired-unconfigured.png)
+
+This is the exact package from last lesson, one step further along. Both
+Sort outputs are now wired into the same Merge Join — you can see the
+connectors landing on it — but it's still flagged with an error, because
+wiring the inputs isn't the same as configuring the join. It still needs
+a join type and a join key before it'll actually run.
+
+## Segment 5 (screenshot: mj-editor-inner.png)
+
+And here's that configuration. Up top, Join type is set to Inner join —
+your three choices are FULL, LEFT, or INNER. Below that, both sort panels
+show Name checked as the Join Key on each side — that's the column the
+join actually matches on, and it has to line up with the sort-key
+position from each upstream Sort transformation. Everything else in each
+panel — Address on the left, Salary on the right — just rides along into
+the output without being part of the match.
+
+## Segment 6 (steps: sorted input requirement)
 
 Here's what both of them insist on, no exceptions. First, sorted input
 — on the exact columns you're merging or joining on. That's the entire
@@ -31,7 +58,7 @@ join a numeric column against a character column. And third, neither
 transformation gives you an error output, so any error handling you
 need has to happen before the data ever reaches them.
 
-## Segment 4 (outro)
+## Segment 7 (outro)
 
 That closes out Chapter 4's data flow transformations — Lookup,
 Conditional Split, Derived Column, Data Conversion, Aggregate, Sort, and

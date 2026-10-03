@@ -6,7 +6,17 @@ The Aggregate transformation brings GROUP BY-style logic straight into
 your data flow — no database round trip required. Let's break down what
 it can actually do.
 
-## Segment 2 (steps: the operations)
+## Segment 2 (screenshot: agg-editor-operations.jpg)
+
+This is the Aggregate Transformation Editor's Aggregations tab.
+EnglishCountryRegionName, StateProvinceName, and City are all checked
+and set to Group by — that's the grouping. UnitPrice is checked too, and
+look at its Operation dropdown, open right here: Group by, Count, Count
+distinct, Sum, Average, Minimum, Maximum. That's the complete list,
+right there in one dropdown, and Sum is the one selected for this
+column.
+
+## Segment 3 (steps: the operations)
 
 Seven operations, all working off one input. Group By divides your
 rows into groups by whatever column value you choose — any data type
@@ -18,7 +28,7 @@ time columns — you can apply more than one of these operations to the
 very same input column if you need to, say, both the sum and the
 average of the same Sales figure.
 
-## Segment 3 (code: SQL comparison)
+## Segment 4 (code: SQL comparison)
 
 If you've ever written this exact query — group by CountryRegion, sum
 the Population — you already understand the Aggregate transformation.
@@ -26,12 +36,27 @@ It does the same job, but entirely inside the pipeline, on rows that
 are already streaming through your package. One detail worth knowing:
 the Aggregate transformation only outputs the columns actually involved
 in grouping or aggregating. Any other column on the input — say, a City
-column that nothing referenced — just disappears from the output. And
-because it can't finalize a group's total until it's seen every row in
-that group, it has to consume the entire rowset before it publishes
-anything at all — that's what makes it an asynchronous transformation.
+column that nothing referenced — just disappears from the output.
 
-## Segment 4 (outro)
+## Segment 5 (screenshot: agg-pipeline-position.jpg)
+
+In the data flow itself, this transformation is about as simple as it
+looks — one source feeding straight into Aggregate, Aggregate feeding
+straight into a destination. One input, one output. The complexity
+isn't in the wiring; it's in what has to happen inside that box before
+a single row is allowed to leave it.
+
+## Segment 6 (screenshot: agg-row-collapse.jpg)
+
+And here's that complexity made visible, from an actual package run.
+4,704,615 rows go into the Aggregate transformation. 587 rows come out.
+Because it can't finalize a group's total until it's seen every row
+that belongs to that group, it has to consume the entire rowset before
+it publishes anything at all — that's what makes it an asynchronous
+transformation, and that gap between 4.7 million and 587 is exactly
+what that buys you.
+
+## Segment 7 (outro)
 
 Aggregate collapses rows into summaries. Next lesson, we cover Sort —
 the transformation that puts rows in order, and the one both Merge and

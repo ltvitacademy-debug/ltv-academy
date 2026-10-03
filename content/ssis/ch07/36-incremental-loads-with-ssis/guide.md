@@ -54,9 +54,21 @@ know:
 - A **Lookup Transformation** (Lesson 19) checks each extracted row
   against the destination table's business key to find out whether it's
   brand new or already exists.
+
+![The Lookup Transformation Editor's General page, with Full cache selected under Cache mode, OLE DB connection manager selected under Connection type, and the "Specify how to handle rows with no matching entries" dropdown near the bottom.](/courses/ssis/ch07/36-incremental-loads-with-ssis/incremental-load-lookup-editor-general.png)
+*The Lookup, configured to check each extracted row against the destination's business key — the same editor from Lesson 19, now doing the "is this row new or existing?" check.*
+
 - A **Conditional Split** (Lesson 20) routes matched-existing rows to an
   update path (an `OLE DB Command`) and unmatched-new rows to an insert
   path (an `OLE DB Destination`).
+
+Once the Lookup is configured, you wire its **Match Output** straight
+into the Conditional Split's input — the same "which output do you mean?"
+dialog you saw back in Lesson 19:
+
+![The Input Output Selection dialog, with Output set to Lookup Match Output and Input set to Conditional Split Input.](/courses/ssis/ch07/36-incremental-loads-with-ssis/incremental-load-lookup-to-split-wiring.png)
+*Wiring the Lookup's Match Output into the Conditional Split — rows that matched the destination's business key move on to get classified as new or changed.*
+
 - A final **Execute SQL Task** updates the watermark control table with
   the new maximum value, so next run picks up exactly where this one left
   off.
@@ -70,6 +82,11 @@ diagram walks through:
    rows to update.
 4. **Save new watermark** — Execute SQL Task writes the new maximum
    value for next run.
+
+Assembled and run against a real extract, that pattern looks like this:
+
+![The completed data flow: OLE DB Source feeding 14 rows into a Lookup, whose Match Output of 14 rows feeds a Conditional Split, which routes 4 rows to an OLE DB Destination (INSERT) and 10 rows to an OLE DB Command (UPDATE) — every component shown with a green success checkmark after running.](/courses/ssis/ch07/36-incremental-loads-with-ssis/incremental-load-data-flow-complete.png)
+*14 rows extracted past the watermark, split into 4 brand-new rows and 10 changed rows — nothing reloaded that didn't need to be.*
 
 ## Incremental loads vs. the SCD Transformation
 

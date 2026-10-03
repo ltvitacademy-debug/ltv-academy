@@ -4,14 +4,26 @@
 
 A package you build on your machine has one specific server name, one specific connection string, baked in. This lesson is about how that same package runs correctly in dev, test, and production, without you hand-editing it every time you promote it.
 
-## Segment 2 (steps: legacy pattern)
+## Segment 2 (screenshot: package-configurations-menu)
 
-Before the Project Deployment Model existed, SSIS solved this with package configurations — an XML file, a SQL Server table, or an OS environment variable, each mapping a value onto a package property the moment it starts running. If you ever inherit an older package still using the Package Deployment Model, use configurations there, not parameters — parameters simply aren't invoked under that model.
+Before the Project Deployment Model existed, SSIS solved this with package configurations, and here's where you turn the whole system on — right-click the Control Flow canvas and pick Package Configurations.
 
-## Segment 3 (steps: current pattern)
+## Segment 3 (screenshot: package-configurations-organizer)
+
+That opens the Package Configurations Organizer. Check Enable package configurations, and the Add button lights up — click it, and a wizard walks you through creating one configuration entry at a time.
+
+## Segment 4 (screenshot: package-configuration-wizard-type)
+
+The wizard's first real decision is which configuration type to use. Here it's set to Environment variable, reading a value from one named SSIS_CONFIG_DB on the machine running the package. There are two other types available, and you'll see both in a second.
+
+## Segment 5 (steps: legacy pattern)
+
+An XML file, a SQL Server table, or an OS environment variable — each one maps a value onto a package property the moment the package starts running. If you ever inherit an older package still using the Package Deployment Model, use configurations there, not parameters — parameters simply aren't invoked under that model.
+
+## Segment 6 (steps: current pattern)
 
 Every package in this course targets the Project Deployment Model instead, and that means parameters plus SSISDB environments. Deploy the project, create environments like DEV, TEST, and PROD in the catalog, add the real values as environment variables inside each one, and map your parameters to them through an environment reference. Promoting from TEST to PROD becomes a server-side change — re-point the reference, and nothing about the deployed project itself changes.
 
-## Segment 4 (outro)
+## Segment 7 (outro)
 
 That closes out Chapter 5. Next, we move into error handling and logging — event handlers, error outputs, and making sure a failure is something you find out about, not something that just silently happens.

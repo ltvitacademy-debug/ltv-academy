@@ -11,15 +11,6 @@
 - One real gotcha: default 50-character string columns, and why they
   cause silent truncation
 
-## No dialog screenshot for this one
-
-Just like the last lesson, the current Microsoft docs for the Flat
-File Source, Flat File Destination, and Flat File Connection Manager
-are entirely text-based — no dialog-box screenshots remain, even in
-the official step-by-step tutorial that walks through building one.
-This lesson uses two diagram slides built from the real, documented
-options instead of a fabricated screenshot.
-
 ## Three text file formats
 
 Every flat file SSIS reads or writes is one of three formats,
@@ -54,6 +45,9 @@ manager, configuring the format once there means every Flat File
 Source and Destination that references it inherits the same column
 metadata.
 
+![The Flat File Connection Manager Editor's General page: File name, Locale, Code page, Format set to Delimited, Text qualifier, Header row delimiter, Header rows to skip, and Column names in the first data row.](/courses/ssis/ch03/17-flat-file-source-and-destination/flat-file-connection-manager-general.jpg)
+*The General page — file path, format, and header options all live here, not on the source or destination editor.*
+
 ## Configuring the Flat File Source
 
 The **Flat File Source Editor** itself just picks which connection
@@ -62,6 +56,15 @@ in the data flow (default: false — it substitutes empty strings or
 zeros instead), and maps external columns to output columns on its
 Columns page — plus the same Error Output page pattern you saw with
 OLE DB Source.
+
+![The Flat File Source Editor's Connection Manager page: a Flat file connection manager dropdown, a Retain null values from the source as null values in the data flow checkbox, and a Preview button.](/courses/ssis/ch03/17-flat-file-source-and-destination/flat-file-source-editor-connection.jpg)
+*The Connection Manager page — thin by design, because the real configuration already happened on the connection manager.*
+
+![The Flat File Source Editor's Columns page: Available External Columns with checkboxes, and a mapping grid of External Column to Output Column.](/courses/ssis/ch03/17-flat-file-source-and-destination/flat-file-source-columns-page.jpg)
+*The Columns page — same pattern as OLE DB Source: check the columns you want, rename output columns if needed.*
+
+![The Flat File Source Editor's Error Output page: a grid listing each column with Error and Truncation dropdowns set to Fail component.](/courses/ssis/ch03/17-flat-file-source-and-destination/flat-file-source-error-output.jpg)
+*The Error Output page — decide per column what happens on a conversion error or truncation.*
 
 ## Configuring the Flat File Destination
 

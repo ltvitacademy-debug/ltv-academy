@@ -59,6 +59,14 @@ Double-click **Project.params** to open it, then add parameters exactly
 the same way as package parameters: **Add Parameter**, then set Name,
 Data Type, Value, Sensitive, and Required.
 
+![Project.params with two real parameters filled in: ServerName and DatabaseName, both String, with their Sensitive and Required columns set to False.](/courses/ssis/ch05/27-project-and-package-parameters/project-parameters-with-values.png)
+*Two real project parameters — ServerName and DatabaseName, with Sensitive and Required columns actually set.*
+
+Here, both parameters have **Required** set to `False` — the design
+values are good enough to run with. Check that box instead, and the
+package (or any package in the project) refuses to run until a real
+server or execution value replaces the design default.
+
 ## Three layers of value: design, server, execution
 
 Once a project is deployed to the SSISDB catalog, a parameter can pick up

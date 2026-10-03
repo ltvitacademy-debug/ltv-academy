@@ -20,7 +20,25 @@ shows exactly that: two sources feed a transformation, and a second red
 main green path keeps going to its own destination untouched. Rows that
 fail get redirected down that red path instead of failing the component.
 
-## Segment 3 (steps: error vs truncation vs disposition)
+## Segment 3 (screenshot: configure-error-output-dialog.png)
+
+Here's where you actually set that up — the Configure Error Output dialog,
+opened from the component's editor. One row per column, and opened fresh,
+every single one defaults to the same thing: Fail Component, on both the
+Error column and the Truncation column. Nothing's redirected until you
+change it.
+
+## Segment 4 (screenshot: redirect-row-selected.png)
+
+Select the rows you want, pick a disposition from the dropdown at the
+bottom, and hit Apply. Here the Error column's been changed to Redirect
+Row across every output column — now a conversion failure on any of them
+sends that row down the error output instead of stopping the whole task.
+Truncation stays configurable separately, column by column, which is
+exactly the point: you can be strict about real errors and lenient about a
+string that just got clipped.
+
+## Segment 5 (steps: error vs truncation vs disposition)
 
 SSIS actually tracks two separate problems here. An error is unequivocal —
 a conversion that just can't happen, producing a NULL. A truncation is
@@ -33,7 +51,7 @@ columns automatically — ErrorCode and ErrorColumn — and a common pattern is
 piping those into a Script Component that calls GetErrorDescription to turn
 the code into an actual sentence before it lands in a file.
 
-## Segment 4 (outro)
+## Segment 6 (outro)
 
 Get comfortable redirecting rows instead of letting one bad value fail an
 entire load — it's one of the most practical error-handling habits in this

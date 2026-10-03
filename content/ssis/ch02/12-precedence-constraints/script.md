@@ -19,19 +19,39 @@ Completion, blue — the constrained executable runs no matter what,
 success or failure, as long as the precedence executable actually
 finished.
 
-## Segment 3 (code: expression and constraint)
+## Segment 3 (screenshot: success-constraint-series.png)
+
+Here's that default in a real package — a solid green line between two
+Execute SQL Tasks, and after a run, both tasks flagged with a green
+checkmark. The second task only ever started because the first one
+succeeded.
+
+## Segment 4 (screenshot: precedence-constraint-editor.png)
+
+Double-click any connector and this is what opens — the Precedence
+Constraint Editor. Evaluation operation and Value at the top set the
+constraint itself. Down at the bottom, under Multiple constraints, is a
+setting that only matters once a task has more than one incoming
+connector: Logical AND, the default, requires every single incoming
+constraint to evaluate true before the task runs.
+
+## Segment 5 (code: expression and constraint)
 
 A constraint value isn't the only option — you can add an expression
 too, any valid SSIS expression that evaluates to true or false. Say
 Task A connects to Task B with a Success constraint and the expression
 "X is greater than or equal to Z," combined using Expression and
 Constraint. Task B only runs if both things are true: Task A actually
-succeeded, and the expression evaluated to true. Switch that to
-Expression or Constraint instead, and only one of the two needs to be
-true. And when several constraints feed the same task, the LogicalAnd
-property decides whether all of them have to be true, or just one.
+succeeded, and the expression evaluated to true.
 
-## Segment 4 (outro)
+## Segment 6 (screenshot: logical-and-or.png)
+
+Switch that Multiple constraints setting to Logical OR, and SSIS
+Designer tells you at a glance — the lines turn dotted instead of
+solid. Now only one of the incoming constraints has to be true, not
+all of them.
+
+## Segment 7 (outro)
 
 Success, Failure, Completion, and expressions on top of any of them —
 that's the full toolkit for precedence constraints. That wraps up

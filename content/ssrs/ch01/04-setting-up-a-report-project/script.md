@@ -10,8 +10,12 @@ In Visual Studio, go to File, New, Project, and search for Report Server Project
 
 ## Segment 3 (screenshot: solution-explorer-add-report)
 
-Once it's created, Solution Explorer organizes your project into three folders — Shared Data Sources, Shared Datasets, and Reports — and every file in all three gets deployed together when you publish the project. To add your first report, right-click Reports, choose Add, New Item, pick the Report template, and name it ending in dot-r-d-l. Report Designer opens it straight into Design view.
+Once it's created, Solution Explorer organizes your project into three folders — Shared Data Sources, Shared Datasets, and Reports — and every file in all three gets deployed together when you publish the project. To add your first report, right-click Reports, choose Add, New Item, pick the Report template, and name it ending in dot-r-d-l.
 
-## Segment 4 (outro)
+## Segment 4 (screenshot: report-designer-design-view)
+
+And this is what that "Add" actually gets you — Report Designer opens the new file straight into Design view, with the Design and Preview tabs right at the top, and Solution Explorer still showing all three folders behind it. An empty canvas, ready for data sources, datasets, and report items — exactly where Chapter 2 picks up.
+
+## Segment 5 (outro)
 
 Next lesson, we take that project and actually deploy it — setting the properties that tell SSDT which report server to publish to.

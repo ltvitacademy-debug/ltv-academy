@@ -27,17 +27,16 @@ an environment is a named container of variables — think `Dev`, `Test`,
 whichever environment is active for a given execution, instead of using
 its fixed default.
 
-This isn't a real screenshot lesson — the Environment Properties and
-project Configure dialogs don't currently have official screenshots
-published on Microsoft Learn, so the steps below are the exact,
-documented procedure instead of a claimed image.
-
 ## Creating an environment and its variables
 
 1. In Object Explorer, expand your folder under **SSISDB** and locate
    the **Environments** folder.
 2. Right-click **Environments** and select **Create Environment**.
    Give it a name — `Production`, for example — and click **OK**.
+
+![Create Environment dialog in SSMS Object Explorer, with an Environment name field and an empty Environment description box.](/courses/ssis/ch08/43-environments-and-environment-variables/create-environment-dialog.png)
+*Naming the environment is the whole first step — everything else happens in its Properties.*
+
 3. Right-click the new environment and select **Properties** to open
    **Environment Properties**.
 4. On the **Variables** page, add a variable: pick its **Type**, give
@@ -46,6 +45,9 @@ documented procedure instead of a claimed image.
    encrypts sensitive values the same way it encrypts sensitive
    parameters).
 5. Click **OK** to save.
+
+![Environment Properties dialog on the Variables page, with a grid showing a ServerName variable of type String, value localhost, and an unchecked Sensitive checkbox.](/courses/ssis/ch08/43-environments-and-environment-variables/environment-properties-variables.png)
+*One row per variable — type, value, and whether SSISDB should encrypt it.*
 
 The variable's name doesn't need to match the parameter it will
 eventually feed — you map the two together in the next step.
@@ -57,6 +59,10 @@ eventually feed — you map the two together in the next step.
 2. On the **References** page, click **Add**, choose the environment
    you just created, and click **OK** — this is the **environment
    reference** that makes the environment available to this project.
+
+![The project's Configure dialog, References page, with the Browse Environments picker open and an environment named MSSQLTips selected under the SSISDB tree.](/courses/ssis/ch08/43-environments-and-environment-variables/configure-references-browse-environments.png)
+*Picking the environment here is what makes it available to this project at all — nothing is wired to a parameter yet.*
+
 3. Right-click the project again and select **Configure**.
 4. On the **Parameters** page's **Parameters** tab, click the browse
    button next to a parameter's **Value** field, select **Use

@@ -46,7 +46,8 @@ Double-click the Data Flow Task and switch to the Data Flow tab:
 ```
 
 1. **OLE DB Source** (Chapter 3, Lesson 16), against the
-   `AdventureWorks2012` connection manager, using this query:
+   `AdventureWorks2012` connection manager. Set **Data access mode** to
+   **SQL command** and paste in this query:
 
    ```sql
    SELECT
@@ -61,20 +62,40 @@ Double-click the Data Flow Task and switch to the Data Flow tab:
        ON sod.SalesOrderID = soh.SalesOrderID;
    ```
 
+   ![The OLE DB Source Editor with Data access mode set to SQL command and an empty SQL command text box, plus Parameters, Build Query, Browse, and Parse Query buttons.](/courses/ssis/ch09/47-capstone-building-a-real-etl-package/ole-db-source-sql-command.jpg)
+   *The SQL command text box — this is exactly where the join query above goes.*
+
+   Switch to the editor's **Columns** page and confirm all six columns
+   — `SalesOrderID`, `OrderDate`, `ProductID`, `OrderQty`, `UnitPrice`,
+   `LineTotal` — are checked as output columns:
+
+   ![The OLE DB Source Editor's Columns page, with a checklist of Available External Columns and a mapping grid of External Column to Output Column underneath.](/courses/ssis/ch09/47-capstone-building-a-real-etl-package/ole-db-source-columns.jpg)
+   *Every checked column here becomes an output column the rest of the data flow can reference.*
+
 2. **Lookup Transformation** (Chapter 4, Lesson 19), against the
    `AdventureWorksDW2014` connection manager, matching incoming
    `ProductID` to `CapstoneDimProduct.ProductID` and adding
    `ProductKey` to the pipeline. Rows with no match go to the Lookup's
    error output for now — Lesson 48 is where that stops being ignored.
+   (Lesson 19 already has four real screenshots of this exact editor —
+   General, Connection, Columns pages, and the Match/No Match output
+   picker — so they aren't repeated here.)
 3. **Derived Column** (Chapter 4, Lesson 21) adding two new columns:
    - `DateKey` = `(DT_I4)(YEAR(OrderDate) * 10000 + MONTH(OrderDate) *
      100 + DAY(OrderDate))` — matching `DimDate`'s `yyyymmdd` integer
      format exactly.
    - `ExtendedAmount` = `OrderQty * UnitPrice`
+
+   ![The Derived Column Transformation Editor, with the Date/Time Functions folder expanded to YEAR(<date>) and a grid of Derived Column Name, Derived Column, Expression, and Data Type.](/courses/ssis/ch09/47-capstone-building-a-real-etl-package/derived-column-editor.png)
+   *Same editor, same YEAR() function your DateKey expression uses — add one row per new column, each with its own expression.*
+
 4. **OLE DB Destination** (Chapter 3, Lesson 16), against
    `AdventureWorksDW2014`, mapped to `dbo.CapstoneFactOrderSales`:
    `SalesOrderID`, `DateKey`, `ProductKey`, `OrderQty`, and
    `ExtendedAmount`.
+
+   ![The OLE DB Destination Editor's Mappings page, with a drag-to-map diagram between Available Input Columns and Available Destination Columns, plus an Input Column to Destination Column grid below.](/courses/ssis/ch09/47-capstone-building-a-real-etl-package/ole-db-destination-mappings.png)
+   *The Mappings page — every column the fact table needs gets paired up here before the destination will let you close the editor.*
 
 ## Why this order, specifically
 
@@ -105,8 +126,15 @@ Build the package above for real:
    precedence constraint between them.
 2. Build the data flow exactly as described, using the query above for
    the source.
-3. Run the package in SSDT (F5). Confirm rows land in
-   `dbo.CapstoneFactOrderSales` by querying it directly:
+3. Run the package in SSDT (F5). A successful run puts a green
+   checkmark on every component and a row count on every path between
+   them:
+
+   ![A Data Flow tab after a successful run, with green checkmarks on the OLE DB Source and OLE DB Destination and a row-count label on the path between them.](/courses/ssis/ch09/47-capstone-building-a-real-etl-package/data-flow-success-checkmarks.png)
+   *Green checkmarks and a row count on every path mean the run completed — your own path has two more components in between (Lookup, Derived Column), but the same checkmarks appear on each.*
+
+   Confirm rows land in `dbo.CapstoneFactOrderSales` by querying it
+   directly:
 
    ```sql
    SELECT COUNT(*) FROM dbo.CapstoneFactOrderSales;

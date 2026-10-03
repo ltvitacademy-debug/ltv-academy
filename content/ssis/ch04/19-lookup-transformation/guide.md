@@ -41,6 +41,9 @@ The General page of the Lookup Transformation Editor is where you pick
 how the reference dataset gets cached — and this choice affects both
 performance and how current the data is:
 
+![The Lookup Transformation Editor's General page, showing Cache mode radio buttons (Full cache, Partial cache, No cache), Connection type, and a dropdown for how to handle rows with no matching entries, set to Fail component.](/courses/ssis/ch04/19-lookup-transformation/lookup-editor-general.png)
+*The General page — cache mode, connection type, and how to handle unmatched rows.*
+
 - **Full cache** — the entire reference dataset is queried once and
   loaded into memory before the Lookup runs. Fast per-row lookups, but
   uses more memory and the cache reflects a single point in time.
@@ -55,9 +58,32 @@ manager** (letting you share a prebuilt cache across multiple packages).
 Partial cache and No cache always query live through an OLE DB
 connection manager.
 
+## Pointing at a reference table, then mapping the join
+
+The Connection page is where you actually choose what the Lookup joins
+against — an OLE DB connection manager, then either a table/view or the
+results of your own SQL query:
+
+![The Lookup Transformation Editor's Connection page, with an OLE DB connection manager dropdown, a selected table or view, and an option to use the results of a SQL query instead.](/courses/ssis/ch04/19-lookup-transformation/lookup-editor-connection.png)
+*The Connection page — point the Lookup at its reference dataset.*
+
+Then on the Columns page, you build the join itself by dragging a column
+from **Available Input Columns** onto its match in **Available Lookup
+Columns**, and check any extra lookup columns you want added to the
+output — each one gets its own row in the mapping grid below, with an
+editable **Output Alias**:
+
+![The Lookup Transformation Editor's Columns page, showing a drag-to-join diagram between Available Input Columns and Available Lookup Columns, plus a mapping grid with Lookup Column, Lookup Operation, and Output Alias.](/courses/ssis/ch04/19-lookup-transformation/lookup-editor-columns.png)
+*The Columns page — drag to join, then map the output column's alias.*
+
 ## Three outputs: Match, No Match, Error
 
-Every Lookup transformation has one input and up to three outputs:
+Every Lookup transformation has one input and up to three outputs. The
+moment you drag a connector off the Lookup onto a downstream component,
+SSIS asks you directly which output you mean:
+
+![The Input Output Selection dialog, with an Output dropdown expanded to show Lookup Match Output and Lookup No Match Output as the two choices.](/courses/ssis/ch04/19-lookup-transformation/lookup-input-output-selection.png)
+*Connecting a destination asks directly: Lookup Match Output, or Lookup No Match Output.*
 
 - **Match output** — rows that found at least one matching row in the
   reference dataset.

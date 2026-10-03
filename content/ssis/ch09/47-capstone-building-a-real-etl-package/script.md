@@ -21,16 +21,53 @@ an inconsistent state.
 
 Inside that Data Flow Task, four components do the real work. An OLE
 DB Source runs a query joining SalesOrderHeader and SalesOrderDetail in
-AdventureWorks2012 — real order rows, no dimensional shape yet. A
-Lookup transformation matches each row's ProductID against
-CapstoneDimProduct and adds a resolved ProductKey — and it has to
-happen before the destination, because there's no surrogate key to
-write until that lookup runs. A Derived Column builds two new columns:
-a DateKey in the same yyyymmdd integer format DimDate already uses, and
-an ExtendedAmount computed from quantity times unit price. And an OLE
-DB Destination writes the finished row into CapstoneFactOrderSales.
+AdventureWorks2012. A Lookup transformation matches each row's
+ProductID against CapstoneDimProduct and adds a resolved ProductKey —
+and it has to happen before the destination, because there's no
+surrogate key to write until that lookup runs. A Derived Column builds
+two new columns: a DateKey in the same yyyymmdd integer format DimDate
+already uses, and an ExtendedAmount computed from quantity times unit
+price. And an OLE DB Destination writes the finished row into
+CapstoneFactOrderSales. Let's look at each one.
 
-## Segment 4 (outro)
+## Segment 4 (screenshot: ole-db-source-sql-command.jpg)
+
+The OLE DB Source starts here — Data access mode set to SQL command,
+with an empty SQL command text box waiting for a query. This is
+exactly where the SalesOrderHeader and SalesOrderDetail join from the
+guide goes, typed straight in or built with Query Builder.
+
+## Segment 5 (screenshot: ole-db-source-columns.jpg)
+
+Switch to the Columns page and every column that query returns shows
+up here, checked by default. Whatever's checked becomes an output
+column the rest of the data flow — the Lookup, the Derived Column, the
+Destination — can actually reference downstream.
+
+## Segment 6 (screenshot: derived-column-editor.png)
+
+After the Lookup resolves ProductKey, the Derived Column editor is
+where DateKey and ExtendedAmount get built. This is the same editor,
+with the same Date/Time Functions folder and the same YEAR function
+this lesson's DateKey expression calls — add one row per new column
+here, each with its own expression typed into the grid.
+
+## Segment 7 (screenshot: ole-db-destination-mappings.png)
+
+Last stop: the OLE DB Destination's Mappings page. Every column the
+fact table needs — SalesOrderID, DateKey, ProductKey, OrderQty,
+ExtendedAmount — gets paired up here, input column to destination
+column, before the editor will even let you close it.
+
+## Segment 8 (screenshot: data-flow-success-checkmarks.png)
+
+Run it, and a successful execution puts a green checkmark on every
+component and a row count on every path connecting them. Your own data
+flow has two more components in between — the Lookup and the Derived
+Column — but the same checkmarks and the same row counts appear on
+every single path once the run completes cleanly.
+
+## Segment 9 (outro)
 
 Run it, and query the fact table directly to confirm rows actually
 landed. Run it a second time, and the row count should stay exactly the

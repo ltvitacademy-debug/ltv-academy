@@ -31,6 +31,25 @@ on the package (often a variable's Value, which a property expression
 then propagates elsewhere). Configurations get applied to the package the
 moment it starts running, before anything else evaluates.
 
+You turn the system on from the Control Flow tab's own right-click menu:
+
+![Right-click context menu over the Control Flow canvas, with Package Configurations highlighted among Logging, Digital Signing, and Variables.](/courses/ssis/ch05/30-configuration-patterns/package-configurations-menu.jpg)
+*Right-click the Control Flow canvas and select Package Configurations...*
+
+That opens the **Package Configurations Organizer** — check **Enable
+package configurations**, then click **Add** to launch the wizard for
+each configuration entry you need:
+
+![The Package Configurations Organizer dialog, with the Enable package configurations checkbox checked and an empty Configurations grid showing Configuration Name, Configuration Type, Configuration String, and Target columns.](/courses/ssis/ch05/30-configuration-patterns/package-configurations-organizer.jpg)
+*Enable package configurations, then Add to start the wizard.*
+
+The wizard's first real decision is which of the three configuration
+types to use — here it's set to **Environment variable**, reading from a
+variable named `SSIS_CONFIG_DB`:
+
+![The Package Configuration Wizard's Select Configuration Type page, with Configuration type set to Environment variable and Environment variable set to SSIS_CONFIG_DB.](/courses/ssis/ch05/30-configuration-patterns/package-configuration-wizard-type.jpg)
+*One of three configuration types — here, an environment variable named SSIS_CONFIG_DB.*
+
 - **XML configuration file** — the most common configuration type; a
   flat XML file sitting next to the package on disk, edited outside SSDT
   entirely, one per environment.

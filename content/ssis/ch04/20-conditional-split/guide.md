@@ -24,6 +24,14 @@ This transformation has one input, one or more outputs you define, plus
 a required **default output** and an error output. Every row goes to
 exactly one output — never zero, and never more than one.
 
+Here's the Conditional Split Transformation Editor configured for a
+payroll-style split — three named cases testing a `PayType` column, plus
+a default output renamed from the generic "Case 1" style to something
+descriptive:
+
+![The Conditional Split Transformation Editor, showing Employee Name, Rate, and PayType as input columns on the left, a function palette on the right, and a conditions grid with three cases — Permanent, Temporary, Casual — each testing PayType, plus a Default output name field set to "Other".](/courses/ssis/ch04/20-conditional-split/cond-split-config2.png)
+*Three named cases, each with its own condition, plus a required default output.*
+
 ## Order is significant
 
 This is the detail that trips people up the most: **order matters**.
@@ -54,6 +62,19 @@ expression by hand. Each output gets a name — the default is a numbered
 `Case 1`, `Case 2`, and so on, but a descriptive name (like
 `HighValueOrders` or `MissingEmail`) makes the package far easier to
 read six months from now.
+
+Those names matter again the moment you wire the Conditional Split into
+the rest of the data flow — drag a connector onto a downstream
+component, and SSIS asks you to pick which output you mean, by name:
+
+![The Input Output Selection dialog, with an Output dropdown expanded to show four named outputs — Casual, Other, Permanent, Temporary — from a Conditional Split transformation.](/courses/ssis/ch04/20-conditional-split/cond-split-outputs.png)
+*Each case gets its own named output — pick one by name, the same way Lesson 19's Lookup asked Match or No Match.*
+
+A finished Conditional Split in the data flow fans out into as many
+separate downstream paths as you defined outputs for:
+
+![A data flow diagram showing one source feeding a Conditional Split labeled "Split for Different Pay Types", which branches into four separate destinations labeled Casual, Permanent, Temporary, and Other.](/courses/ssis/ch04/20-conditional-split/cond-split-output-config.png)
+*One Conditional Split, four named outputs, four separate downstream destinations.*
 
 ## Where you've already seen this pattern
 

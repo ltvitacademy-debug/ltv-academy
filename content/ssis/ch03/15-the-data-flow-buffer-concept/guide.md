@@ -10,12 +10,13 @@
 - What "buffers spooled" means, and why it's a performance warning
 - Why removing unused columns actually speeds up a data flow
 
-## No dialog box for this one
+## Mostly not a dialog-box topic — with one exception
 
-Buffers are an internal engine concept — there's no editor, no design
-surface, nothing to screenshot. Microsoft's own documentation covers
-this entirely in text and log-message tables. This lesson uses two
-diagram slides instead of a fabricated screenshot.
+A buffer itself has no editor, no design surface, nothing to
+screenshot — it's an internal engine concept, and Microsoft's own
+documentation covers most of this topic in text and log-message tables.
+But the two properties that control buffer size *do* have a real,
+visible home: the Data Flow task's own **Properties** window.
 
 ## Rows travel in batches, not one at a time
 
@@ -41,6 +42,9 @@ and both have real, documented defaults:
   bytes (10 MB)**. The absolute maximum a buffer can grow to is
   2³¹−1 bytes.
 - **DefaultMaxBufferRows** — buffers hold **10,000 rows by default**.
+
+![The Data Flow task's Properties window, Misc category, showing AutoAdjustBufferSize, DefaultBufferMaxRows, and DefaultBufferSize fields alongside EngineThreads and LoggingMode.](/courses/ssis/ch03/15-the-data-flow-buffer-concept/data-flow-task-properties-buffer-settings.jpg)
+*Right-click a Data Flow task on the Control Flow surface and open Properties — both settings live under Misc.*
 
 The engine actually tunes the buffer at runtime and logs it: a
 **BufferSizeTuning** log entry records exactly why and by how much it

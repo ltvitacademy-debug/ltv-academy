@@ -22,6 +22,9 @@ to a PDF or Word document, page breaks and all. Think invoices, account
 statements, and regulatory filings — documents where the exact layout
 matters, not just the numbers inside it.
 
+![A paginated table report grouped by sales date, subcategory, and product, with a running subtotal printed at every group break.](/courses/ssrs/ch01/01-what-is-ssrs-and-paginated-reporting/basic-table-report.png)
+*A real paginated report — notice the subtotal at every group break. That's layout a page can hold still for; an interactive dashboard can't.*
+
 ## Why this isn't "the old Power BI"
 
 If you've already worked through the Power BI course, you might assume
@@ -47,6 +50,20 @@ Notice what else lives in that same menu: **Folder** (organizing content),
 this course covers), **Dataset** and **Data Source** (shared, reusable
 pieces you'll build starting in Chapter 2). A paginated report is one
 citizen among several in this same web portal.
+
+## "Exactly right" also means exportable
+
+That fixed layout isn't just for the screen — once a report runs, the
+web portal's **Export** menu can turn it into a file that keeps the
+exact same layout.
+
+![The web portal's Export dropdown on a rendered report, listing XML file with report data, CSV, PDF, MHTML, Excel, PowerPoint, TIFF, and Word.](/courses/ssrs/ch01/01-what-is-ssrs-and-paginated-reporting/export-formats.png)
+*Same report, same page breaks, whichever format you pick — PDF included.*
+
+This is the concrete payoff of "paginated": the report doesn't
+reflow or resize itself for the export format the way a web page
+would. A PDF or printed copy looks exactly like what you saw on
+screen, because the layout was fixed from the start.
 
 ## Report definitions and RDL
 

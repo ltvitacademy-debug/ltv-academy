@@ -6,20 +6,29 @@ The Execute Package Task lets a package run another package as part of
 its own workflow. Let's look at why you'd actually want to do that, and
 how the two packages relate.
 
-## Segment 2 (steps: parent calls child)
+## Segment 2 (screenshot: general-page.jpg)
 
-The package containing the Execute Package Task is the parent package;
-the package it runs is the child package. On the task itself, the
-ReferenceType property decides how it finds that child — Project
-Reference, if the child lives in the same project, or External
-Reference, if it's stored in the SQL Server msdb database or out on the
-file system. Once it runs, the child package can execute in the
-parent's own process, or in a separate process entirely — that's the
-ExecuteOutOfProcess property — and either way, logging details and, if
-you've set it up, an active transaction both flow back up to the
-parent.
+Here's the real Execute Package Task Editor. Its General page is almost
+nothing — just a name and a description. That's deliberate: every
+setting that actually matters lives one page over, on Package.
 
-## Segment 3 (steps: reasons to break workflow apart)
+## Segment 3 (screenshot: package-page.jpg)
+
+And here's Package. ReferenceType is the first decision — Project
+Reference if the child package lives in the same project as this one,
+or External Reference if it's stored in the SQL Server msdb database or
+out on the file system. Below that, ExecuteOutOfProcess decides whether
+the child runs in this package's own process or gets a process of its
+own.
+
+## Segment 4 (screenshot: package-page-selected.jpg)
+
+With Project Reference selected, PackageNameFromProjectReference turns
+into a dropdown — and it only lists packages that live in the same
+project as this one. Pick the child package here, and that's the whole
+wiring: this task now runs that package every time it executes.
+
+## Segment 5 (steps: reasons to break workflow apart)
 
 Why bother splitting a package up at all? Three real reasons. It
 simplifies workflow — building one package per dimension table instead
@@ -29,7 +38,7 @@ can be called from several different parent packages. And it improves
 security — you can grant a package author access to just the packages
 relevant to their work, instead of one all-or-nothing package.
 
-## Segment 4 (outro)
+## Segment 6 (outro)
 
 Parent and child packages, connected by one task — that's the whole
 pattern. Next lesson, we look at the two looping containers: For Loop

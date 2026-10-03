@@ -33,14 +33,21 @@ SSIS ships with two variable namespaces:
 
 Every package you build in this course gets its variables through the
 **Variables** window, docked by default below the Connection Managers area
-in SSIS Designer. If it isn't visible, open it from the **SSIS** menu →
-**Variables**.
+in SSIS Designer. If it isn't visible, right-click the design surface and
+select **Variables**, or open it from the **SSIS** menu → **Variables**.
+
+![Right-click context menu over the Control Flow canvas, with Variables highlighted among Logging, Digital Signing, Connections, Work Offline, and other options.](/courses/ssis/ch05/26-package-variables/variables-window-open.png)
+*Right-click the design surface and select Variables to open it.*
 
 ## Working with the Variables window
 
 1. Click somewhere on the design surface to set the variable's **scope**
    (more on this in a moment), then open the Variables window.
 2. Click **Add Variable**. A new row appears in the grid.
+
+   ![The Variables window immediately after clicking Add Variable, showing one new row — Name "Variable", Scope "Package", Data type "Int32", Value "0" — in the Name/Scope/Data type/Value/Expression grid.](/courses/ssis/ch05/26-package-variables/variables-window-add-variable.png)
+   *A new row appears in the grid the moment you click Add Variable.*
+
 3. Set **Name**, **Data Type**, and **Value** directly in the grid, or in
    the Properties window.
 4. Optionally, click the ellipsis next to the **Expression** column to
@@ -67,6 +74,12 @@ specific task) *before* opening the Variables window: whatever is selected
 when you click **Add Variable** becomes that variable's scope. If you need
 to move a variable to a different scope later, select it and click **Move
 Variable** — you can't just edit the Scope column directly.
+
+A package's grid is rarely one lonely row — most packages end up with
+several variables side by side, and not every one holds a plain literal:
+
+![The Variables window with five package-scoped variables: DatabaseName, ParentFolder, ProductCategoryName, ProductFileName, and ServerName. ProductFileName has a small expression icon next to its name and a real expression in the Expression column, while the other four hold plain literal values.](/courses/ssis/ch05/26-package-variables/variables-window-with-expression.png)
+*Five variables; ProductFileName's small icon and Expression column mark it as expression-driven.*
 
 ## A variable set by an expression
 

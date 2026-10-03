@@ -65,6 +65,16 @@ thing here. Once TargetServerURL is set on your active configuration:
 Watch the **Output** window while deploying — that's where publishing
 errors (like an invalid TargetServerURL) actually show up.
 
+![Visual Studio's Output window during a deployment, listing each report and data source as it publishes, ending with Deploy complete -- 0 errors, 0 warnings.](/courses/ssrs/ch01/05-deploying-to-report-server/deploy-output-window.png)
+*A clean deploy — every report and data source listed by name, then the final tally. An invalid TargetServerURL would show up here instead.*
+
+Then confirm it for real in the web portal — the project's folder
+should appear in **Home**, holding every report and data source that
+just deployed:
+
+![The web portal's Home folder after a deployment, showing the newly published project folder alongside a Data Sources folder.](/courses/ssrs/ch01/05-deploying-to-report-server/web-portal-deployed-folder.png)
+*The payoff — your project's folder, visible in the web portal, exactly where TargetServerURL and TargetReportFolder said it would land.*
+
 ## Key terms
 
 | Term | Meaning |

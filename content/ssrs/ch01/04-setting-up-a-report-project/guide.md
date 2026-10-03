@@ -67,6 +67,9 @@ select **Add**. Report Designer opens the new file directly in
 **Design** view, ready for you to drag in data sources, datasets, and
 report items — which is exactly where Chapter 2 picks up.
 
+![Report Designer open on a new .rdl file in Design view, with the Design and Preview tabs at the top and Solution Explorer showing the Shared Data Sources, Shared Datasets, and Reports folders.](/courses/ssrs/ch01/04-setting-up-a-report-project/report-designer-design-view.png)
+*This is what "Add" actually gets you — an empty report on the design surface, and all three project folders visible in Solution Explorer.*
+
 ## Key terms
 
 | Term | Meaning |

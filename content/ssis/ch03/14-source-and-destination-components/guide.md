@@ -12,14 +12,20 @@
   of an external one
 - How to pick the right component before you even open its editor
 
-## No real screenshot for this one
+## Where sources and destinations live in the Toolbox
 
-Modern SSIS documentation dropped the old Toolbox screenshots — the
-official pages for the Toolbox and for every individual source and
-destination are text-only descriptions now. Rather than fake a
-screenshot of a dialog that doesn't exist in the current docs, this
-lesson uses two diagram slides built from the real, current component
-names and descriptions straight from Microsoft Learn.
+When the Data Flow tab is active, the **Favorites** category at the top
+of the Toolbox puts **Source Assistant** and **Destination Assistant**
+front and center — the fastest way to add either one, because they
+guide you straight to a connection instead of making you hunt through
+the full component list first.
+
+![The SSIS Toolbox's Favorites category showing Source Assistant and Destination Assistant above the Common category's source and destination components, with the Source Assistant - Add New Source dialog open listing SQL Server, Excel, Flat File, and Oracle.](/courses/ssis/ch03/14-source-and-destination-components/source-assistant-add-new-source.png)
+*Source Assistant — pick a source type, then pick or create the connection manager it needs.*
+
+Click **Source Assistant**, pick a source type, and the assistant
+either hands you a connection manager you already have or walks you
+into creating a new one.
 
 ## Common source components
 
@@ -65,6 +71,13 @@ The matching set of destinations:
   part of the package can use the results without landing them
   anywhere external at all.
 
+Whichever destination you pick, connecting it to an actual database
+goes through the same **Connection Manager** dialog a source uses —
+provider, server, authentication, and the database to write to:
+
+![The Connection Manager dialog with Provider set to Native OLE DB\SQL Server Native Client 11.0, a Server name field, Windows Authentication selected, and a database picker.](/courses/ssis/ch03/14-source-and-destination-components/destination-connection-manager.png)
+*The same Connection Manager dialog, whether you're opening it from a source or a destination's "New..." button.*
+
 ## Picking a component before you open its editor
 
 Notice the pattern: almost every source has a same-named destination
@@ -74,6 +87,12 @@ are SQL Server Destination — a load-only, bulk-insert specialist with
 no matching "SQL Server Source" — and Recordset Destination, which has
 no source counterpart because its whole point is to keep data inside
 the package rather than write it externally.
+
+Here's what a real data flow built from these pieces actually looks
+like once you've picked your components and wired them together:
+
+![A real data flow: OLE DB Source feeding a Derived Column transformation into a Lookup, whose Match Output goes to an OLE DB Destination and whose No Match Output goes to a Multicast.](/courses/ssis/ch03/14-source-and-destination-components/data-flow-with-destinations.png)
+*Source, transformations, and a destination — the same shapes from Lesson 13, now with real component names on them.*
 
 ## Key terms
 

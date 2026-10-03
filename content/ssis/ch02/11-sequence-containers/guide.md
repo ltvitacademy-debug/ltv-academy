@@ -24,6 +24,16 @@ a package: drag them onto the container instead of the package's
 design surface, and connect them with precedence constraints just as
 you would anywhere else.
 
+![An empty Sequence Container named "Sunday" sitting on the Control Flow design surface, next to three separate Execute SQL Tasks connected by green and orange Failure precedence constraints.](/courses/ssis/ch02/11-sequence-containers/empty-sequence-container.png)
+*A freshly-added Sequence Container — empty until you drag tasks inside it, exactly like this.*
+
+Once the three tasks are moved inside, the pattern repeats for every
+day of the week this package needs to handle — each one its own
+Sequence Container, holding its own copy of the same three-task flow:
+
+![Seven Sequence Containers labeled Sunday through Saturday, each one grouping its own Task1, Task2, and Task3 connected by precedence constraints, arranged side by side on the Control Flow surface.](/courses/ssis/ch02/11-sequence-containers/sequence-containers-grouped-tasks.png)
+*Seven containers, seven self-contained groups — each one collapsible and manageable on its own.*
+
 ## Four real benefits
 
 The Sequence Container earns its place in nearly every serious package
@@ -33,6 +43,9 @@ for four practical reasons:
   to `True` and every task and container inside it stops running —
   useful for isolating one part of a package while you troubleshoot
   another.
+
+![Right-click context menu over the Tuesday Sequence Container, with Edit, Disable (highlighted), Parameterize, Add Annotation, Add Precedence Constraint, Group, Autosize, Collapse, and other options listed.](/courses/ssis/ch02/11-sequence-containers/disable-context-menu.png)
+*Right-click any Sequence Container and Disable turns off everything inside it — no need to touch the three tasks individually.*
 - **Managing properties in one place.** Instead of setting a property
   on ten individual tasks, set it once on the Sequence Container that
   holds them.

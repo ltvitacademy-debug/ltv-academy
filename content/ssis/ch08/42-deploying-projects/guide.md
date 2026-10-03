@@ -55,6 +55,9 @@ Whichever way you launch it, the wizard walks the same five steps:
 3. **Select Destination** — enter the target SQL Server instance name,
    then **Browse** to pick (or create) the destination folder and
    project path inside SSISDB.
+
+![Integration Services Deployment Wizard's Select Destination page, with a Server name field, an Authentication dropdown, and a Path field showing /SSISDB/Football/PowerQueryExample.](/courses/ssis/ch08/42-deploying-projects/deployment-wizard-select-destination.png)
+*Type the server, then Browse to the folder and project path — this is where the project actually lands.*
 4. **Review** — a summary of every selection you made. Click any step
    in the left-hand pane to jump back and change it, or click
    **Deploy** to proceed.

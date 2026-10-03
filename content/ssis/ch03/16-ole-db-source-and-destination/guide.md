@@ -12,14 +12,6 @@
 - The Mappings page, and what happens when a destination column isn't
   mapped
 
-## No dialog screenshot for this one
-
-Current Microsoft documentation for both the OLE DB Source and OLE DB
-Destination editors is entirely text-based option tables — the old
-screenshots of these dialog boxes have been removed from the docs
-site. This lesson uses two diagram slides built from the real, current
-option names instead of a fabricated screenshot.
-
 ## The OLE DB Source Editor
 
 You'll open this dialog by double-clicking an OLE DB Source component
@@ -35,15 +27,25 @@ you've dropped on the Data Flow surface. It has three pages:
     parameterized with `?` placeholders mapped to variables.
   - **SQL command from variable** — the entire query text comes from a
     variable.
+
+![The OLE DB Source Editor's Connection Manager page with the Data access mode dropdown open, listing Table or view, Table name or view name variable, SQL command, and SQL command from variable.](/courses/ssis/ch03/16-ole-db-source-and-destination/source-data-access-mode.png)
+*The Connection Manager page — the connection manager and the data access mode are both set here.*
+
 - **Columns page** — maps each external (source) column to an output
   column, and lets you rename output columns.
 - **Error Output page** — for each column, choose what happens on an
   error or truncation: ignore, redirect to the error output, or fail
   the component.
 
+![The OLE DB Source Editor's Columns page: a list of available external columns with checkboxes, and a mapping grid showing each external column next to its output column name.](/courses/ssis/ch03/16-ole-db-source-and-destination/columns-page-select.png)
+*The Columns page — check the external columns you want, and rename output columns if you need to.*
+
 **Preview** is available from the Connection Manager page and shows up
 to 200 rows before you commit to the configuration — always check it
-before moving on.
+before moving on:
+
+![SQL command mode with a real query typed in, and the Preview Query Results dialog open showing CityID, CityName, StateProvinceID, and LatestRecordedPopulation columns for up to 200 rows.](/courses/ssis/ch03/16-ole-db-source-and-destination/source-sql-command-preview.png)
+*SQL command mode plus Preview — confirm the rows look right before you commit.*
 
 ## The OLE DB Destination Editor
 
@@ -78,6 +80,9 @@ map every destination column — but if an unmapped column doesn't allow
 nulls, the load will fail at run time. This is the same "know your
 destination schema before you build the mapping" discipline you
 practiced with T-SQL `INSERT` statements, just done visually.
+
+![The OLE DB Destination Editor's Mappings page: available input columns on the left, available destination columns on the right, connected by mapping lines, with a right-click menu showing Select All Mappings, Delete Selected Mappings, and Map Items by Matching Names.](/courses/ssis/ch03/16-ole-db-source-and-destination/destination-column-mappings.png)
+*The Mappings page — drag lines by hand, or right-click and let SSIS match by name.*
 
 ## Key terms
 

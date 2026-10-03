@@ -38,6 +38,10 @@ you need to deploy something to it. In SQL Server Management Studio:
 1. Connect to the SQL Server Database Engine, then in Object Explorer
    right-click **Integration Services Catalogs** and select
    **Create Catalog**.
+
+![Right-click context menu on Integration Services Catalogs in Object Explorer, with Create Catalog highlighted.](/courses/ssis/ch08/41-the-ssis-catalog/create-catalog-menu.jpg)
+*Right-click Integration Services Catalogs — this is the only way to provision SSISDB.*
+
 2. Select **Enable CLR Integration**. This isn't optional — the catalog
    is implemented with CLR stored procedures, so CLR integration has to
    be turned on at the instance level for the catalog to work at all.
@@ -51,6 +55,9 @@ you need to deploy something to it. In SQL Server Management Studio:
    connection manager values — save it somewhere secure, because you'll
    need it (or a backup of the master key) to recover the catalog onto a
    different instance.
+
+![Create Catalog dialog box with the Enable CLR Integration checkbox, the Name of the catalog database field pre-filled with SSISDB, and Password / Retype Password fields.](/courses/ssis/ch08/41-the-ssis-catalog/create-catalog-dialog.jpg)
+*CLR Integration and the master key password are the two decisions this dialog actually asks for.*
 
 That's it — SQL Server creates the `SSISDB` database, and a new
 **Integration Services Catalogs** node appears in Object Explorer with

@@ -12,7 +12,7 @@
 - Where the **Expression Builder** fits into building and testing an
   expression before you commit to it
 
-## Expressions are a language, not a dialog
+## Expressions are a language, not one dialog
 
 Variables and parameters both need a way to actually get combined,
 compared, and transformed — that's what the **SSIS expression language**
@@ -22,6 +22,14 @@ constantly: assigned to a variable's Expression property, assigned to a
 task or connection manager's property (a **property expression** —
 Lesson 29 covers this in depth), and inside the Conditional Split and
 Derived Column transformations back in Chapter 4.
+
+You've actually already seen the expression-building UI without knowing
+it — the Derived Column Transformation Editor's own expression grid uses
+the exact same tree and function folders you'll use everywhere else in
+this lesson:
+
+![The Derived Column Transformation Editor, with a Variables and Parameters tree on the left and Mathematical, String, Date/Time, NULL, Type Casts, and Operators function folders on the right, above an empty Derived Column Name/Expression mapping grid.](/courses/ssis/ch05/28-expressions/derived-column-expression-tree.png)
+*The Derived Column Transformation Editor's own Variables and Parameters tree, plus every function family.*
 
 ## Referencing a variable or parameter
 
@@ -89,13 +97,25 @@ enumerated property must use the numeric value, not the name.
 ## The Expression Builder
 
 Rather than typing an expression blind, the **Expression Builder** dialog
-gives you a **Variables** tree and function-family folders you can drag
-terms from directly into the **Expression** box, plus an **Evaluate
-Expression** button that shows you the real evaluated result before you
-commit. You'll see the Expression Builder open from several places —
-the Variables window, a task's Property Expressions Editor, the
-Conditional Split and Derived Column editors — and Lesson 29 walks
-through opening it from a connection manager specifically.
+gives you a **Variables and Parameters** tree and function-family folders
+you can drag terms from directly into the **Expression** box:
+
+![The Expression Builder dialog for a connection manager's ConnectionString property, with a Variables and Parameters tree, function folders, and a multi-line Expression box containing a real string-concatenation property expression.](/courses/ssis/ch05/28-expressions/expression-builder-connectionstring.png)
+*A real property expression, typed directly into the Expression box.*
+
+Below the Expression box sits an **Evaluate Expression** button and an
+**Evaluated value** field — click it, and the Expression Builder actually
+runs your expression and shows you the real result, so you find out an
+expression is broken (or exactly what it produces) before you commit to
+it, not after the package fails at run time:
+
+![The Expression Builder dialog for a Foreach Loop container's Directory property, with the expression @[User::ParentFolder] and, after clicking Evaluate Expression, the Evaluated value field showing the real result E:\Data\SourceFiles.](/courses/ssis/ch05/28-expressions/expression-builder-directory.png)
+*Evaluate Expression shows the real result — no guessing whether the syntax is right.*
+
+You'll see the Expression Builder open from several places — the
+Variables window, a task's Property Expressions Editor, the Conditional
+Split and Derived Column editors — and Lesson 29 walks through opening it
+from a connection manager specifically.
 
 ## Key terms
 

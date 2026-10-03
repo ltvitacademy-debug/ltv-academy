@@ -35,6 +35,13 @@ Concatenating names, extracting substrings, rounding numeric values, and
 pulling parts out of a date are the four moves you'll use in almost
 every real package.
 
+Here's the Derived Column Transformation Editor configured with four
+expressions at once — concatenating a full name, a shorter name, and
+casting a year out of a date:
+
+![The Derived Column Transformation Editor, showing four derived columns — Name, Full Name, Father Full Name, and NumericDate — each with its own expression in the Expression column and an auto-detected Data Type.](/courses/ssis/ch04/21-derived-column/dc-expressions.png)
+*Four derived columns, each with its own expression — the editor auto-detects every one's data type.*
+
 ## New column vs. replacing an existing one
 
 For every derived column you define, the editor asks you to choose: add
@@ -49,6 +56,13 @@ value** — not the value the transformation is about to write. Chained
 transformations don't leak into each other mid-execution the way you
 might expect from imperative code.
 
+Same editor, same grid — here's that choice made concrete. Four columns
+are set to add as new, and the last row, `YearlyIncome`, is explicitly
+set to **Replace**:
+
+![The Derived Column Transformation Editor's grid, with four rows set to "add as new column" and a fifth row — YearlyIncome — set to "Replace 'YearlyIncome'", running REPLACENULL([YearlyIncome], 0).](/courses/ssis/ch04/21-derived-column/dc-replace-option.jpg)
+*Four columns added as new; YearlyIncome explicitly set to Replace — same grid, one dropdown choice apart.*
+
 ## Data type, length, precision, and scale
 
 When you add a result to a **new** column, the Derived Column
@@ -60,6 +74,13 @@ convenient, but it also means a poorly written expression can silently
 produce a wider or narrower type than you expected — always check the
 inferred type before wiring the output into a strongly-typed
 destination.
+
+The editor doesn't just infer types silently — it actively validates
+your expression as you build it, and flags anything it can't resolve
+immediately:
+
+![An invalid expression, "asd"/2, flagged by an inline error tooltip in the Derived Column Transformation Editor, listing the exact errors: the data type DT_WSTR cannot be used with the binary operator "/".](/courses/ssis/ch04/21-derived-column/dc-error-tooltip.png)
+*An invalid expression gets flagged right in the grid, with the exact error spelled out.*
 
 ## Key terms
 

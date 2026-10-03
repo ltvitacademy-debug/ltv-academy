@@ -16,11 +16,20 @@ vocabulary this whole capstone speaks. Chapters 4 through 6 gave you
 the transformations that shape data and the error handling that keeps
 a package honest when something goes wrong. Chapters 7 and 8 gave you
 the incremental-load pattern your watermark is a direct application of,
-and the deployment concepts — the SSIS Catalog, environments — that
-would take this exact package from your own machine into a real,
-scheduled production job.
+and the deployment concepts that would take this exact package from
+your own machine into a real, scheduled production job.
 
-## Segment 3 (steps: presenting-it-right)
+## Segment 3 (screenshot: ssisdb-catalog-object-explorer.png)
+
+This is that destination — the SSIS Catalog, expanded in Object
+Explorer. Your capstone package never actually gets deployed here;
+it's lived in SSDT on your own machine the whole time. But it's built
+exactly the way a project deployed into this catalog expects to be
+built, and Chapter 8 walks through getting a project from your machine
+into this exact tree, step by step, whenever you're ready to take it
+further.
+
+## Segment 4 (steps: presenting-it-right)
 
 When you show this off, order matters. Start with one plain sentence
 about the problem it solves, not the implementation. Then walk through
@@ -32,7 +41,7 @@ them honestly: that's the difference between a script that happens to
 work once and a package you'd actually trust running unattended every
 night.
 
-## Segment 4 (outro)
+## Segment 5 (outro)
 
 Keep the package file and a short README describing the two databases
 and the architecture, and you've got a real, inspectable portfolio

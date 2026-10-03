@@ -7,7 +7,7 @@ something breaks. This lesson is about what SSIS does the moment something
 breaks: event handlers, the mechanism behind almost every real-world
 failure notification you'll ever build.
 
-## Segment 2 (screenshot: event-handlers-tab)
+## Segment 2 (screenshot: event-handlers-tab.gif)
 
 Every executable in SSIS — the package itself, a container, a task — raises
 events as it runs. OnPreExecute right before it starts, OnPostExecute right
@@ -19,11 +19,26 @@ This is the Event Handlers tab, and here's the part that surprises people —
 it isn't a special dialog, it's a full second design surface. Same Toolbox,
 same tasks, same Connection Managers area as Control Flow. Two dropdowns
 scope it: Executable picks which package, container, or task the handler
-belongs to, and Event handler picks which event — OnError, OnWarning, and
-so on. Pick OnError on the package, and you get a blank canvas to build a
-response on — send an e-mail, log something custom, refresh a lookup table.
+belongs to, and Event handler picks which event.
 
-## Segment 3 (steps: event bubbling)
+## Segment 3 (screenshot: event-handler-dropdown-list.png)
+
+Open that Event handler dropdown and here's every event an executable can
+raise — eleven of them, from OnPreValidate all the way through OnWarning.
+You won't build a handler for most of these. But knowing the full list
+matters, because it's the same list no matter which executable you've
+selected on the left.
+
+## Segment 4 (screenshot: task-on-event-handler-surface.png)
+
+Pick OnError on the package, and SSIS hands you a blank canvas — click the
+link, and you can drag a task straight onto it, just like any other control
+flow. This one's an Execute SQL Task sitting on the OnError handler's own
+surface, and it only runs when that specific event actually fires on that
+specific executable. Send an e-mail, log something custom, refresh a lookup
+table — whatever the failure actually calls for.
+
+## Segment 5 (steps: event bubbling)
 
 Here's the piece that makes one handler go a long way. If a task raises
 OnError and that task has no handler of its own, the event doesn't vanish —
@@ -33,7 +48,7 @@ it finally runs. That's exactly why one package-level OnError handler is
 often enough to catch a failure anywhere in the package, without wiring an
 individual handler onto every single task.
 
-## Segment 4 (outro)
+## Segment 6 (outro)
 
 You won't build handlers for most of the available events day to day — but
 OnError, wired to something like a Send Mail Task, shows up in nearly every

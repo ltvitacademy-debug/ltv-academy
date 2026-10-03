@@ -5,21 +5,32 @@
 Not every container loops. The Sequence Container's whole job is
 grouping — let's look at what that actually buys you.
 
-## Segment 2 (steps: no custom editor)
+## Segment 2 (screenshot: empty-sequence-container.png)
 
-A Sequence Container sits in a package's control flow just like any
-other task would, but instead of doing work itself, it holds its own
-tasks and containers, connected by their own precedence constraints —
-exactly the same way you'd build any other part of a control flow.
-From the outside, though, that whole group behaves as one unit — you
-can collapse it, disable it, or scope variables to just what's inside
-it. And here's the thing worth remembering: unlike almost every other
-container and task in this course, the Sequence Container has no custom
-editor dialog at all. Double-click it, and nothing task-specific opens,
-because there's no enumerator or SQL statement to configure — you set
-everything through the Properties window instead.
+Here's a Sequence Container the moment it's dropped onto the design
+surface — completely empty. Adding tasks to it works exactly like
+adding them to a package: drag them in, and connect them with
+precedence constraints just like you would anywhere else. Right now
+these three Execute SQL Tasks are still sitting outside it, waiting to
+move in.
 
-## Segment 3 (steps: four real benefits)
+## Segment 3 (screenshot: sequence-containers-grouped-tasks.png)
+
+And here's the pattern repeated seven times — one Sequence Container
+per day of the week, each one holding its own copy of the same
+three-task flow. From the outside, each container behaves as a single
+unit, even though three tasks and their precedence constraints live
+inside it.
+
+## Segment 4 (screenshot: disable-context-menu.png)
+
+That grouping pays off immediately. Right-click any one of these
+containers — say, Tuesday — and Disable turns off every task inside it
+at once. You don't touch Task1, Task2, or Task3 individually; the whole
+group stops running in one click, and the other six containers keep
+working normally.
+
+## Segment 5 (steps: four real benefits)
 
 So why use one? Four practical reasons. It sharpens debugging — disable
 the whole container in one click to isolate a subset of the package.
@@ -30,7 +41,7 @@ inside it. And it supports transactions at a finer grain than the whole
 package — commit or roll back everything inside the container as one
 unit.
 
-## Segment 4 (outro)
+## Segment 6 (outro)
 
 Grouping, scope, and transactions, with zero looping involved — that's
 the Sequence Container. Next lesson, we go deep on the connectors that

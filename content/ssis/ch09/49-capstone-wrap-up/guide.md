@@ -82,7 +82,10 @@ outputs, and logging this capstone's error handling is built from.
 Chapter 7 gave you the incremental-load pattern this capstone's
 watermark is a direct application of. Chapter 8 covers exactly how a
 package like this one gets deployed to the SSIS Catalog and scheduled
-for real, once you're ready to take it further than your own machine.
+for real, once you're ready to take it further than your own machine:
+
+![SSMS Object Explorer with Integration Services Catalogs expanded to show the SSISDB catalog database under a server node.](/courses/ssis/ch09/49-capstone-wrap-up/ssisdb-catalog-object-explorer.png)
+*The real deployment target — Chapter 8 walks through creating this catalog and deploying a project into it step by step. This capstone's package never leaves your own machine, but it's built exactly the way a project deployed here expects.*
 
 ## Where to go from here
 

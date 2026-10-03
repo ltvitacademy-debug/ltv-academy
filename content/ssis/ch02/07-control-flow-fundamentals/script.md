@@ -23,7 +23,22 @@ Services lets you nest containers inside containers to any depth. And
 down at the bottom, the same Connection Managers strip from Lesson 5,
 now actually wired up to the tasks above it.
 
-## Segment 3 (steps: three control flow elements)
+## Segment 3 (screenshot: toolbox-control-flow.jpg)
+
+Everything you drag onto that surface comes from one place — the
+Toolbox. Containers don't get their own special panel; they sit right
+in the same list as every task, alphabetically, next to Execute SQL and
+File System Task. Right here are the two looping containers, For Loop
+and Foreach Loop — Sequence Container is further down the same list.
+
+## Segment 4 (screenshot: task-dropped-canvas.jpg)
+
+And here's step two actually happening — drag any item out of that list
+and drop it on the design surface, and SSIS Designer adds it
+immediately. No dialog box, no confirmation. This is a Data Flow Task
+the instant it lands, still shown selected.
+
+## Segment 5 (steps: three control flow elements)
 
 Building a control flow always comes down to the same three moves.
 First, add containers that give the package structure — a loop, a
@@ -36,7 +51,7 @@ with no incoming constraint runs the moment the package starts; a task
 with one waits for its precedence task to succeed, fail, or just
 finish, depending on how that constraint is set.
 
-## Segment 4 (outro)
+## Segment 6 (outro)
 
 That's the shape of every control flow you'll ever build. The rest of
 this chapter fills in the specifics — Execute SQL Task, Execute Package

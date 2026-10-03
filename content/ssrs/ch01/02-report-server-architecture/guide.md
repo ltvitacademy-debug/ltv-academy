@@ -59,6 +59,19 @@ access goes through the report server itself — via the web portal,
 SQL Server Management Studio, or one of the programmatic interfaces
 (URL access, the web service, the WMI provider).
 
+Both databases get created and named from the same place: the
+**Reporting Services Configuration Manager** that runs the first time
+you set up a native-mode install.
+
+![The Reporting Services Configuration Manager's Database page, showing SQL Server Name, Database Name, and Report Server Mode for the current installation.](/courses/ssrs/ch01/02-report-server-architecture/database-configuration-manager.jpg)
+*The Database page — this is where a report server is first pointed at (or creates) its ReportServer database.*
+
+Clicking **Change Database** opens a short wizard, and its Database
+page is where both default names actually get set at once:
+
+![The Report Server Database Configuration Wizard's Database page, with Database Name set to ReportServer and Temp Database Name set to ReportServerTemp.](/courses/ssrs/ch01/02-report-server-architecture/database-names-wizard.png)
+*Both databases, named together in one step — you're not creating ReportServerTempDB separately.*
+
 ## The web portal: the piece you'll actually spend time in
 
 The **web portal** is the browser-based front end built on top of the

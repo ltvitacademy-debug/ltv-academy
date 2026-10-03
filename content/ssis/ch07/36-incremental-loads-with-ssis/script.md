@@ -28,7 +28,38 @@ Execute SQL Task saves the new maximum value as next run's watermark.
 Notice there's no single "Incremental Load Task" in the Toolbox — every
 piece of this pattern is something you already built in Chapters 2 and 4.
 
-## Segment 3 (outro)
+## Segment 3 (screenshot: incremental-load-lookup-editor-general.png)
+
+Here's the Lookup doing that business-key check — the same Lookup
+Transformation Editor from Lesson 19, General page, set to Full cache
+against an OLE DB connection manager. The piece to watch is this
+dropdown: how to handle rows with no matching entries. Leave it on the
+default and SSIS treats every unmatched row as a hard error. Set it to
+redirect to the No Match output instead, and you get exactly what an
+incremental load needs — a clean signal for "this row is brand new."
+
+## Segment 4 (screenshot: incremental-load-lookup-to-split-wiring.png)
+
+Once the Lookup's configured, you wire its Match Output straight into
+the Conditional Split's input — the same Input Output Selection dialog
+you saw back in Lesson 19, just pointed at a different downstream
+component this time. Rows that matched the destination's business key
+move on to get classified: did a tracked column actually change, or is
+this an exact repeat?
+
+## Segment 5 (screenshot: incremental-load-data-flow-complete.png)
+
+And here's the whole thing assembled and actually run. Fourteen rows
+came out of the extract past the watermark. All fourteen matched
+something in the Lookup. The Conditional Split then found four of them
+were genuinely new — off to an OLE DB Destination as inserts — and ten
+were existing rows with a changed value — off to an OLE DB Command as
+updates. Every component green-checked, nothing reloaded that didn't
+need to be. That's the entire pattern, built from an Execute SQL Task, an
+OLE DB Source, a Lookup, and a Conditional Split — four pieces you
+already know.
+
+## Segment 6 (outro)
 
 This pattern and next lesson's Slowly Changing Dimension Transformation
 solve overlapping problems, but at different scopes — this one is a

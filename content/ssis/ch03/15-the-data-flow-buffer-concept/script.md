@@ -27,12 +27,21 @@ here's the part that matters for real packages: a buffer's capacity is
 bytes, not rows. So a narrower row — fewer columns, smaller data types
 — lets more rows fit in that same ten megabytes. That's the actual
 reason experienced SSIS developers are strict about dropping columns a
-data flow doesn't need as early as possible. And if the machine
-genuinely doesn't have enough memory for the buffers a package needs,
-SSIS spools them to disk instead — watch the "Buffers spooled"
-counter, because a rising number there is a real performance problem.
+data flow doesn't need as early as possible.
 
-## Segment 4 (outro)
+## Segment 4 (screenshot: data-flow-task-properties-buffer-settings.jpg)
+
+And those two properties aren't just numbers in a doc — they're real
+fields, right here, on the Data Flow task's own Properties window.
+Right-click the task on your Control Flow surface, open Properties,
+and under Misc you'll find DefaultBufferMaxRows and DefaultBufferSize
+sitting there, editable, exactly like every other property you've
+already touched on other tasks. And if the machine genuinely doesn't
+have enough memory for the buffers a package needs, SSIS spools them
+to disk instead — watch the "Buffers spooled" counter, because a
+rising number there is a real performance problem.
+
+## Segment 5 (outro)
 
 Now that you understand how rows physically move, let's configure the
 component you'll build into almost every package you write: the OLE DB

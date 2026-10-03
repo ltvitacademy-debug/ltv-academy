@@ -28,6 +28,9 @@ it opens with an Office-like ribbon interface built for business
 users and IT professionals who want to create or tweak a report
 quickly, without a project-based workflow getting in the way.
 
+![The web portal's New menu with Paginated Report highlighted — selecting it launches Report Builder directly.](/courses/ssrs/ch01/03-report-builder-vs-ssdt/web-portal-new-paginated-report.png)
+*No project, no Visual Studio — this one click is the entire on-ramp into Report Builder.*
+
 ![A Report Builder-authored paginated report: a matrix with sparklines and a summary chart, alongside a map of sales by state.](/courses/ssrs/ch01/03-report-builder-vs-ssdt/report-builder-getting-started.png)
 *A sample Report Builder report — matrix, sparklines, chart, and a spatial map, all in one authoring surface.*
 

@@ -41,6 +41,9 @@ Designer displays as a color on the connector line:
   whether the precedence executable succeeded or failed, as long as it
   finished.
 
+![Two Execute SQL Tasks joined by a solid green line, both flagged with a green checkmark after a successful package run.](/courses/ssis/ch02/12-precedence-constraints/success-constraint-series.png)
+*A Success constraint, the default — solid green, and the second task only runs after the first one succeeds.*
+
 ## Adding an expression
 
 A precedence constraint can also use an **expression** — any valid SSIS
@@ -60,6 +63,9 @@ and the expression `@X >= @Z`, using **Expression and Constraint**,
 Task B only runs when Task A finishes successfully *and* the value of
 variable `X` is at least the value of `Z`.
 
+![Precedence Constraint Editor with the Value dropdown open over Success (highlighted), Failure, and Completion, and Logical AND / Logical OR radio buttons below under "Multiple constraints," Logical AND currently selected.](/courses/ssis/ch02/12-precedence-constraints/precedence-constraint-editor.png)
+*The Precedence Constraint Editor — Evaluation operation and Value at the top, Logical AND/OR at the bottom for when several constraints feed one task.*
+
 ## When multiple constraints feed one task
 
 A constrained executable can have more than one incoming precedence
@@ -75,6 +81,9 @@ constraints combine:
 So if D requires A to succeed, B to fail, and C to succeed, all three
 constraints set to Logical AND, then D only runs when all three of
 those specific outcomes actually happen.
+
+![Two tasks feeding a third task with dotted green lines, instead of the usual solid lines.](/courses/ssis/ch02/12-precedence-constraints/logical-and-or.png)
+*Dotted lines are the visual tell for Logical OR — solid lines mean Logical AND, SSIS Designer's default.*
 
 ## Setting the default
 

@@ -30,6 +30,9 @@ Data Flow task itself is just a wrapper: at run time it builds an
 execution plan from whatever data flow you drew inside it, and the data
 flow engine executes that plan.
 
+![SSIS Designer's workspace — Toolbox docked on the left, Connection Managers strip docked along the bottom.](/courses/ssis/ch03/13-data-flow-architecture/designer-and-toolbox.gif)
+*The same designer frame every tab uses — only the Toolbox's contents change when you switch from Control Flow to Data Flow.*
+
 ## The three kinds of data flow components
 
 Every data flow is built from three kinds of components, connected by
@@ -78,6 +81,24 @@ chapter:
   where. You'll wire these up explicitly in Chapter 5's error-handling
   lessons; for now, just recognize the little red arrow every source
   and transformation offers.
+
+## One package, multiple data flows
+
+A **Data Flow task** is just a task — like any other control-flow item,
+a package can hold more than one of them, each wired into the control
+flow wherever it belongs. Each Data Flow task gets its **own** data
+flow, completely independent of every other one in the package: its own
+sources, its own transformations, its own destinations, none of it
+shared.
+
+![Two independent data flows side by side, each its own column of a source feeding transformations down to a destination.](/courses/ssis/ch03/13-data-flow-architecture/multiple-data-flows.gif)
+*Two Data Flow tasks in one package — two completely separate data flows, each with its own source-to-destination chain.*
+
+A common real pattern: one Data Flow task stages raw extracts, a second
+cleans and conforms them, a third loads the warehouse — three Data Flow
+tasks, sequenced on the control flow with precedence constraints,
+each one a self-contained pipeline you can open, debug, and reason
+about on its own.
 
 ## Where this is going
 

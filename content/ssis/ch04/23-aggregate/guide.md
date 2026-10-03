@@ -46,6 +46,13 @@ transformation — and you can even route different aggregations to
 **different outputs**, since the Aggregate transformation supports more
 than one output.
 
+Here's the Aggregate Transformation Editor configured with three
+grouping columns and a fourth column mid-configuration — its Operation
+dropdown open on the complete list:
+
+![The Aggregate Transformation Editor's Aggregations tab, with EnglishCountryRegionName, StateProvinceName, and City set to Group by, and UnitPrice's Operation dropdown open showing Group by, Count, Count distinct, Sum, Average, Minimum, and Maximum, with Sum selected.](/courses/ssis/ch04/23-aggregate/agg-editor-operations.jpg)
+*Three columns grouped by, a fourth — UnitPrice — with its Operation dropdown open on all seven choices.*
+
 ## Only the relevant columns survive
 
 Here's a detail that surprises people the first time they hit it: the
@@ -62,7 +69,19 @@ Most transformations you've seen so far process rows one at a time as
 they stream through. The Aggregate transformation is **asynchronous** —
 it has to consume the *entire* rowset before it can publish anything,
 because it can't know a group's final sum until every row in that group
-has been seen. That makes it a natural place to watch for memory and
+has been seen. In the data flow, it looks deceptively simple — one
+input, one output, nothing unusual about the wiring:
+
+![A data flow diagram showing OLE DB Source feeding into Aggregate feeding into OLE DB Destination.](/courses/ssis/ch04/23-aggregate/agg-pipeline-position.jpg)
+*A straightforward position in the data flow — source in, Aggregate, destination out.*
+
+But run that same package and watch the row counts, and the asynchronous
+behavior becomes obvious:
+
+![The same data flow diagram during execution, showing 4,704,615 rows flowing from OLE DB Source into Aggregate, and only 587 rows flowing out of Aggregate into OLE DB Destination.](/courses/ssis/ch04/23-aggregate/agg-row-collapse.jpg)
+*4,704,615 rows in; 587 rows out. Nothing downstream sees a single row until the whole group is final.*
+
+That makes it a natural place to watch for memory and
 performance considerations: setting the **Keys** or **KeysScale**
 property tells the transformation roughly how many groups to expect, so
 it can size its internal cache efficiently instead of guessing.

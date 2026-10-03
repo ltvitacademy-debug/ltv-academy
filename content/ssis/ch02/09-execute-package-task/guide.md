@@ -32,6 +32,9 @@ there are four solid reasons to reach for it:
 - **Controlling security.** Package authors can be granted access to
   only the packages relevant to them, instead of one giant package.
 
+![Execute Package Task Editor's General page, showing Name and Description both set to "Execute Package Task."](/courses/ssis/ch02/09-execute-package-task/general-page.jpg)
+*The Execute Package Task Editor — General is just the name and description; the real configuration lives on Package.*
+
 ## Project Reference vs. External Reference
 
 The **ReferenceType** property decides how the task finds its child
@@ -49,6 +52,12 @@ package:
 
 An Execute Package Task can also run a **database maintenance plan**,
 since a maintenance plan is stored in `msdb` the same way a package is.
+
+![The Package page of the Execute Package Task Editor, with ReferenceType set to Project Reference, PackageNameFromProjectReference empty, a masked Password field, and ExecuteOutOfProcess set to False.](/courses/ssis/ch02/09-execute-package-task/package-page.jpg)
+*The Package page before a child is chosen — ReferenceType is already Project Reference.*
+
+![The same Package page with PackageNameFromProjectReference now set to "INNER JOIN.dtsx," selected from a dropdown of packages in the project.](/courses/ssis/ch02/09-execute-package-task/package-page-selected.jpg)
+*Pick the child package from the dropdown — this only lists packages in the same project.*
 
 ## In-process or out-of-process?
 

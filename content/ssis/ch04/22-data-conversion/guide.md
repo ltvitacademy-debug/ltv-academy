@@ -23,7 +23,12 @@ for instance) and a destination needs it typed another way.
 
 You can apply multiple conversions to a single input column, and this
 transformation has exactly one input, one regular output, and one error
-output.
+output. It's a common sight right after a Flat File Source, fixing types
+before anything downstream has to deal with text where it expected a
+number:
+
+![A data flow diagram showing Flat File Source feeding into Data Conversion, which feeds into Derived Column.](/courses/ssis/ch04/22-data-conversion/dconv-pipeline-position.png)
+*A Flat File Source hands off text columns; Data Conversion fixes the types before Derived Column ever sees them.*
 
 ## The four things you can set per column
 
@@ -43,6 +48,12 @@ column's value is always in **ISO format**, regardless of your locale
 settings — a detail worth remembering the first time a report looks
 "wrong" purely because of a display format assumption.
 
+Here's the editor configured with three real conversions — two integers
+and a numeric with explicit precision and scale:
+
+![The Data Conversion Transformation Editor, with ProductID and Units checked and converted to a four-byte signed integer, and Revenue converted to a numeric type with Precision 18 and Scale 6.](/courses/ssis/ch04/22-data-conversion/dconv-mssqltips-editor.png)
+*Three converted columns — two to integers, one to a numeric with explicit precision and scale.*
+
 ## Code pages and truncation
 
 Whenever you copy between two columns with a string data type, both
@@ -52,6 +63,16 @@ output column's length is shorter than the input column's length, the
 data gets **truncated** — SSIS treats this as a row-level error you can
 handle through **Configure Error Output**, the same error-handling
 pattern you'll formalize in Chapter 6.
+
+Worth knowing: these same four fields aren't exclusive to Data
+Conversion. A source component's own **Advanced Editor** — the Input
+and Output Properties tab — exposes the identical DataType, Length,
+Precision, and Scale properties for any output column, letting you
+change a column's type in place instead of adding a separate
+transformation:
+
+![The Advanced Editor for OLE DB Source, Input and Output Properties tab, with a rowguid column selected and its Data Type Properties group expanded showing DataType set to "unique identifier [DT_GUID]", plus Length, Precision, and Scale fields.](/courses/ssis/ch04/22-data-conversion/dconv-advanced-editor.png)
+*A source's own Advanced Editor exposes the identical DataType, Length, Precision, and Scale fields — an in-place alternative to a separate Data Conversion transformation.*
 
 ## Key terms
 

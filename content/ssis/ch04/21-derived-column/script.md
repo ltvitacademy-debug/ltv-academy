@@ -6,7 +6,18 @@ Derived Column is the transformation you'll reach for constantly — any
 time you need to compute a new value or reshape an existing one, this is
 where that logic lives.
 
-## Segment 2 (code: expression examples)
+## Segment 2 (screenshot: dc-expressions.png)
+
+This is the Derived Column Transformation Editor, configured with four
+derived columns at once. Name concatenates FirstName and LastName. Full
+Name adds a middle name into the mix. Father Full Name pulls just the
+middle and last name together. And NumericDate does something more
+involved — casting a year out of a date into a four-byte integer. Look at
+the Data Type column on the right: every single one of these was
+auto-detected from the expression itself. You never typed "Unicode
+string" or "four-byte signed integer" — the editor worked it out.
+
+## Segment 3 (code: expression examples)
 
 These four patterns cover most of what you'll actually do with this
 transformation. Concatenating FirstName and LastName into a FullName.
@@ -17,21 +28,39 @@ combine columns, variables, functions, and operators in any combination
 you need, and a single Derived Column transformation can define as many
 of these as your package requires.
 
-## Segment 3 (steps: new column vs replace)
+## Segment 4 (screenshot: dc-replace-option.jpg)
+
+Same grid, one more row, and here's the distinction made concrete. The
+first four derived columns are all set to "add as new column" — brand-new
+output columns sitting alongside the originals. But look at the bottom
+row: YearlyIncome is set to "Replace 'YearlyIncome'" instead, running
+REPLACENULL against the original column and overwriting it in place. Same
+editor, same kind of expression — the only difference is that one
+dropdown choice in the Derived Column field.
+
+## Segment 5 (steps: new column vs replace)
 
 For each derived column, you make one choice: add the result as a
-brand-new output column, or replace the value in an existing column.
-Both run the exact same expression — the only difference is where the
-result ends up. Here's the subtlety worth remembering: if an expression
+brand-new output column, or replace the value in an existing column. Both
+run the exact same expression — the only difference is where the result
+ends up. Here's the subtlety worth remembering: if an expression
 references a column that this same transformation is also overwriting,
 that expression sees the original value, not the new one being derived.
 SSIS doesn't let expressions leak into each other mid-execution the way
-you might expect. And when you're adding to a new column, the editor
-automatically figures out the data type, length, precision, and scale
-for you — just double check it before wiring that output somewhere
-strongly typed.
+you might expect.
 
-## Segment 4 (outro)
+## Segment 6 (screenshot: dc-error-tooltip.png)
+
+And this is what happens when an expression doesn't hold up. Here,
+someone tried to divide a string literal by a number — "asd" divided by
+2 — and the editor catches it immediately, right there in a tooltip,
+spelling out exactly why the binary operator doesn't work on that data
+type. This is the same validation that's quietly running every time you
+add a new column: the editor is evaluating your expression, inferring a
+type, and flagging anything it can't resolve before you ever run the
+package.
+
+## Segment 7 (outro)
 
 Derived Column is how you compute new values inside the pipeline. Next
 lesson: Data Conversion, the transformation you use when a value's

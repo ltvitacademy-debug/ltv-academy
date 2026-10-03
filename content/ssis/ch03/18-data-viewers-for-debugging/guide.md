@@ -12,13 +12,6 @@
 - Why Data Viewers are a development-time tool, not something you leave
   running in production
 
-## No dialog screenshot for this one
-
-Microsoft's current Data Viewer reference page is entirely text-based —
-no screenshot of the Data Viewer window itself remains in the docs. This
-lesson uses two diagram slides built from the real, documented behavior
-instead of a fabricated screenshot.
-
 ## Why you need a special tool for this
 
 In Chapter 1 you learned that the data flow engine moves rows through
@@ -34,10 +27,19 @@ flowing through it, one buffer at a time.
 
 Every path in a Data Flow has a **Data Flow Path Editor**, opened by
 right-clicking the path and selecting **Enable Data Viewer** (or from
-the path's properties). Once enabled:
+the path's properties).
+
+![A right-click context menu on a data flow path, with Edit..., Resolve References, Enable Data Viewer, Autosize, and Zoom.](/courses/ssis/ch03/18-data-viewers-for-debugging/enable-data-viewer-menu.png)
+*Right-click any path between two components and select Enable Data Viewer.*
+
+Once enabled:
 
 - At design time, SSIS Designer adds a small data viewer icon directly
   on the path in the design surface — a visual reminder it's active.
+
+![A data flow (two Flat File sources, Sort, Merge Join, Multicast) with a small magnifying-glass icon reading "4 rows" sitting on the path out of Merge Join.](/courses/ssis/ch03/18-data-viewers-for-debugging/close-data-viewer.png)
+*That small "4 rows" icon on the path is the design-time reminder a Data Viewer is attached here.*
+
 - At run time, a separate **Data Viewer window** opens the moment data
   starts flowing through that path, and **execution pauses** until you
   tell it to continue.
@@ -54,6 +56,9 @@ the path's properties). Once enabled:
   behavior.
 - **Copy Data** — copy the current buffer's rows to the clipboard, handy
   for pasting into a spreadsheet or another tool to inspect further.
+
+![An actual run-time Data Viewer window titled "Unpivot Output Data Viewer 1 at Unpivot.Unpivot Output," with a green Continue arrow, Detach, and Copy Data buttons, a grid of MonthDay / SalesForecast / CATEGORY rows, and a status bar reading "Attached   Total rows: 48, buffers: 1."](/courses/ssis/ch03/18-data-viewers-for-debugging/data-viewer-window.jpg)
+*The Data Viewer window itself — Continue, Detach, and Copy Data, plus the exact buffer it paused on.*
 
 ## Where to put one
 

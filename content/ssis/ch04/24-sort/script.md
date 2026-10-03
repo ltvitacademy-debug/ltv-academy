@@ -6,7 +6,15 @@ The Sort transformation looks simple — order some rows — but it sets up
 two of the most important transformations still to come. Let's see
 exactly how it works.
 
-## Segment 2 (code: numbered sort keys)
+## Segment 2 (screenshot: sort-editor2.png)
+
+This is the Sort Transformation Editor itself. EmpName and EmpLocation
+are both checked in Available Input Columns, and down in the grid,
+they're both set to ascending — EmpName at Sort Order 1, EmpLocation at
+Sort Order 2. That number is the whole story: it's the priority. EmpName
+sorts first, and EmpLocation only breaks ties within that first sort.
+
+## Segment 3 (code: numbered sort keys)
 
 Here's how a multi-column sort actually gets configured. Every column
 you want sorted gets a number — the column numbered 1 sorts first, the
@@ -18,7 +26,7 @@ from ORDER BY CountryRegion, City in T-SQL. Any column left at sort
 order 0 — like Revenue here — isn't part of the sort at all, but it
 still rides along in the output.
 
-## Segment 3 (steps: what sort does)
+## Segment 4 (steps: what sort does)
 
 Three things worth remembering about this transformation. First, it
 handles a full multi-column sort using those numbered keys. Second, it
@@ -30,7 +38,24 @@ Join transformation absolutely require their inputs to already be
 sorted on the columns they're combining. This transformation is how you
 guarantee that before the data ever reaches them.
 
-## Segment 4 (outro)
+## Segment 5 (screenshot: sort-verified.png)
+
+Here's that pattern in an actual package. Two completely separate
+sources — EmpSalary and EmpLocation — and two completely separate Sort
+transformations, Sort and Sort 1, one per source. Each one only sorts
+the data coming from its own source. There's no shared sort happening
+here — every input that needs to arrive sorted gets its own Sort
+transformation.
+
+## Segment 6 (screenshot: sort-full-pipeline.png)
+
+And here's why both of those exist. Zoom out one more step, and you can
+see both Sort outputs are headed toward the same place — a Merge Join
+transformation, still unconnected and still flagged with an error here,
+because it's waiting on exactly this: sorted input from both sides
+before it can do its job.
+
+## Segment 7 (outro)
 
 Sort gets your data flow into the exact order two upcoming
 transformations depend on. Next lesson: Merge and Merge Join — two

@@ -46,6 +46,13 @@ Microsoft's own documentation diagrams exactly how these tools connect:
   from Lesson 28, opened in property-expression context instead of
   variable context.
 
+A task or container gets to the same place through its own **Expressions**
+page — here's the Execute SQL Task Editor's version, with the Expressions
+collection on the right and the same ellipsis:
+
+![The Execute SQL Task Editor with the Expressions page selected on the left (General, Parameter Mapping, Result Set, Expressions), showing a Misc section on the right with an Expressions row and an ellipsis button.](/courses/ssis/ch05/29-dynamic-connection-strings/execute-sql-task-expressions-page.png)
+*The Execute SQL Task Editor's own Expressions page — click the ellipsis to open the Property Expressions Editor.*
+
 Connection managers are a special case worth calling out: you can only
 reach their property expressions through the **Properties** window (not
 an Expressions page), and only after selecting the connection manager in
@@ -67,6 +74,12 @@ updates on every iteration:
    **Expression Builder**, expand **Variables**, and drag in the
    variable — for example `@[User::varFileName]`.
 5. Click **OK** on both dialogs, then save the package.
+
+Here's that exact mapping, real and complete — `ConnectionString` on the
+left, `@[User::SourceFilePath]` on the right:
+
+![The Property Expressions Editor with one row: Property ConnectionString, Expression @[User::SourceFilePath].](/courses/ssis/ch05/29-dynamic-connection-strings/property-expressions-editor-connectionstring.png)
+*ConnectionString mapped to @[User::SourceFilePath] — the exact loop-over-files pattern.*
 
 From that point on, every time the Foreach Loop container updates
 `varFileName` with the next file's path, the connection manager's

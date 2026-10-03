@@ -12,6 +12,14 @@ Right-click your project in Solution Explorer and select Properties. Every deplo
 
 Once TargetServerURL is set, the workflow is simple: set that property, then go to the Build menu and choose Deploy Solution — or right-click the project itself and pick the same command. That publishes every report and every shared data source in the project together. Then browse to the web portal and confirm your folder and report actually showed up. If a report depends on a shared data source that isn't already on the server, deploy that data source too, or the published report won't have anything to connect to.
 
-## Segment 4 (outro)
+## Segment 4 (screenshot: deploy-output-window)
+
+Watch the Output window while this runs — this is what a clean deploy actually looks like. Every report and data source listed by name as it publishes, then the tally at the end: Deploy complete, zero errors, zero warnings. An invalid TargetServerURL or a permissions problem would show up right here instead, as an error in this same window.
+
+## Segment 5 (screenshot: web-portal-deployed-folder)
+
+And here's the payoff in the web portal itself — the project's folder, sitting right in Home, holding everything that just deployed. This is exactly what the lab asks you to go confirm: browse to the portal, and your folder and report should be sitting there waiting.
+
+## Segment 6 (outro)
 
 That closes out Chapter 1's fundamentals. Chapter 2 is where we actually start building — datasets, data sources, and the report design surface itself.

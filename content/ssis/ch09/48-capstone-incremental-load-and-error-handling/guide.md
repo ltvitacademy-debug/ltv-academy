@@ -67,7 +67,20 @@ Lesson 47 let the Lookup's error output quietly drop unmatched rows.
 That's the kind of silent data loss Chapter 6 exists to stop.
 
 1. On the Lookup transformation, change its error-output setting from
-   *Fail Component* to **Redirect Row** (Chapter 6, Lesson 32).
+   *Fail Component* to **Redirect Row** (Chapter 6, Lesson 32). Every
+   data flow component opens the same **Configure Error Output**
+   dialog to do this — by default every column is set to fail the
+   whole component the moment one row errors:
+
+   ![The Configure Error Output dialog, a grid of Input or Output, Column, Error, Truncation, and Description, every row's Error and Truncation columns set to Fail component.](/courses/ssis/ch09/48-capstone-incremental-load-and-error-handling/configure-error-output-dialog.png)
+   *The default on every data flow component — one bad row fails the whole thing.*
+
+   Switch the Error column to **Redirect row** instead, for every
+   column you want this behavior on:
+
+   ![The same Configure Error Output dialog, with the Error column for every row switched from Fail component to Redirect row.](/courses/ssis/ch09/48-capstone-incremental-load-and-error-handling/redirect-row-selected.png)
+   *Redirect row — the component keeps running, and the offending row goes down a separate path instead of killing the task.*
+
 2. Send that redirected output to a new **Flat File Destination**,
    `capstone_lookup_errors.csv`, so every unmatched `ProductID` is
    captured, not discarded.
@@ -82,10 +95,25 @@ That's the kind of silent data loss Chapter 6 exists to stop.
    Flow Task that inserts a row into a simple log table —
    `dbo.CapstoneRunLog (RunTime, PackageName, ErrorMessage)` — so a
    failure leaves a record even if nobody was watching the console.
+   Event handlers live on their own tab, with one dropdown for which
+   executable raises the event and another for which event to handle:
+
+   ![The Event Handlers tab's design surface, with Executable set to Package and Event handler set to OnError, showing a small control flow of connected tasks.](/courses/ssis/ch09/48-capstone-incremental-load-and-error-handling/event-handlers-tab.gif)
+   *Pick the Data Flow Task as the executable, OnError as the event, then build the logging logic on this blank surface — same tab, same idea, different executable than the example shown.*
+
+   The **Event handler** dropdown lists every event an executable can
+   raise — eleven of them — and OnError is the one this lesson needs:
+
+   ![The Event handler dropdown open, listing OnError, OnExecStatusChanged, OnInformation, OnPostExecute, OnPostValidate, OnPreExecute, OnPreValidate, OnProgress, OnQueryCancel, OnTaskFailed, OnVariableValueChanged, and OnWarning.](/courses/ssis/ch09/48-capstone-incremental-load-and-error-handling/event-handler-dropdown.png)
+   *Eleven events available on any executable — OnError is the one that fires when something actually breaks.*
+
 2. Turn on the **SSIS log provider for SQL Server** at the package
    level (Chapter 6, Lesson 33) so `OnPreExecute`/`OnPostExecute` events
    land in `sysssislog` automatically, giving you a full run history for
-   free, on top of the custom log table.
+   free, on top of the custom log table. (No real screenshot of this
+   specific dialog exists on current or archived Microsoft Learn pages
+   — Lesson 33 already flagged the same gap — so there's no image for
+   this one step.)
 3. Optionally, enable a **checkpoint file** on the package (Chapter 6,
    Lesson 34) so a mid-run failure can restart from the failed task
    instead of the very beginning — useful once the package has more

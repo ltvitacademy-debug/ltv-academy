@@ -65,6 +65,18 @@ whatever order makes sense for your package:
    connector that SSIS Designer automatically attaches to each item you
    drop on the surface.
 
+Every container and task you drag onto the surface comes from the same
+place: the Toolbox.
+
+![The SSIS Toolbox's General category, listing every task alphabetically alongside the three container types — For Loop Container, Foreach Loop Container, and Sequence Container.](/courses/ssis/ch02/07-control-flow-fundamentals/toolbox-control-flow.jpg)
+*The Toolbox — containers sit in the same list as tasks, ready to drag onto the surface.*
+
+Drag any item out of that list and drop it on the design surface, and
+SSIS Designer adds it immediately — no dialog box, no confirmation.
+
+![A Data Flow Task immediately after being dragged from the Toolbox and dropped onto the Control Flow design surface, shown selected with a purple highlight.](/courses/ssis/ch02/07-control-flow-fundamentals/task-dropped-canvas.jpg)
+*A task the instant it lands on the canvas — this is step two, "add tasks," actually happening.*
+
 Nothing runs in isolation. A task with no incoming constraint runs
 immediately when the package starts; a task with an incoming constraint
 waits for its precedence task to finish (and, depending on the

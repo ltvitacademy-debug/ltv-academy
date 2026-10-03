@@ -82,6 +82,33 @@ own real `dbo.DimDate` table (its `DateKey` is an `int` in `yyyymmdd`
 format, e.g. `20140315`) — there's no need to build your own date
 dimension when a correct one already exists in the same database.
 
+## Setting up both sides, for real
+
+Both halves of this lab run through screens you've already used earlier
+in this course — SSMS for the warehouse side, SSDT for the project
+itself — so nothing here is new mechanics, just a new, real target.
+
+Open SSMS, connect to the instance holding both `AdventureWorks2012`
+and `AdventureWorksDW2014`, and right-click the server in **Object
+Explorer** to open a fresh query editor against it:
+
+![SSMS Object Explorer's right-click context menu, with New Query highlighted among Connect, Disconnect, Register, and Activity Monitor.](/courses/ssis/ch09/46-capstone-kickoff/ssms-new-query-menu.png)
+*Right-click the server (or a database) in Object Explorer — New Query opens the editor your CREATE TABLE statements run in.*
+
+Paste in the two `CREATE TABLE` statements from the Lab section below,
+make sure the query window is pointed at `AdventureWorksDW2014` (not
+`master`), and select **Execute**:
+
+![SSMS's query editor toolbar with the Execute button highlighted, alongside a sample CREATE DATABASE script in the editor pane.](/courses/ssis/ch09/46-capstone-kickoff/ssms-execute-query.png)
+*The same Execute button runs any script in the editor — your two CREATE TABLE statements included.*
+
+Then switch to SSDT and create the project itself: **File > New >
+Project**, then pick **Integration Services Project** from the
+Business Intelligence node and name it `SSIS_Capstone`:
+
+![Visual Studio's New Project dialog, with Integration Services Project selected under the Business Intelligence category, and a Name field reading "Integration Services Project1."](/courses/ssis/ch09/46-capstone-kickoff/ssdt-new-project-dialog.png)
+*The same New Project dialog from Lesson 2 — pick this template, then rename the project SSIS_Capstone.*
+
 ## Key terms
 
 | Term | Meaning |
@@ -97,7 +124,9 @@ Before Lesson 47, get both sides of the pipeline ready:
 
 1. In SSMS, connect to the SQL Server instance holding both
    `AdventureWorks2012` and `AdventureWorksDW2014` (the same instance
-   this catalog's T-SQL and Data Warehousing courses use).
+   this catalog's T-SQL and Data Warehousing courses use). Right-click
+   the server (or `AdventureWorksDW2014` directly) and choose **New
+   Query**.
 2. Run this against `AdventureWorksDW2014` to create the capstone target:
 
    ```sql

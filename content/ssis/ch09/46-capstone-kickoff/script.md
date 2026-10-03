@@ -38,7 +38,29 @@ yourself is the date dimension — AdventureWorksDW2014 already has a
 correct DimDate table, and the capstone's fact table joins straight to
 it.
 
-## Segment 4 (outro)
+## Segment 4 (screenshot: ssms-new-query-menu.png)
+
+Both halves of this lab run through screens you've already seen —
+nothing new here, just a new real target. In SSMS, right-click the
+server in Object Explorer and choose New Query. That opens the editor
+your two CREATE TABLE statements are about to run in.
+
+## Segment 5 (screenshot: ssms-execute-query.png)
+
+Paste the statements in, make sure the editor's pointed at
+AdventureWorksDW2014, and select Execute. Same toolbar button you've
+used all course — it just happens to be creating the capstone's two
+tables this time instead of something from an earlier lesson's lab.
+
+## Segment 6 (screenshot: ssdt-new-project-dialog.png)
+
+Then it's SSDT's turn. File, New, Project, and this dialog opens — pick
+Integration Services Project under the Business Intelligence node, and
+name it SSIS_Capstone instead of the generic default. Add two OLE DB
+connection managers afterward — one to AdventureWorks2012, one to
+AdventureWorksDW2014 — and both sides of the pipeline are ready.
+
+## Segment 7 (outro)
 
 Before Lesson 47, get both sides ready: create the two Capstone tables
 in AdventureWorksDW2014, and set up a new Integration Services project

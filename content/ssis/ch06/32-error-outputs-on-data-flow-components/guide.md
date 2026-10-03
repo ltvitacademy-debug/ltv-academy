@@ -45,6 +45,23 @@ Because they're tracked separately, you can tell a component to fail on a
 real error but only ignore a truncation on a column you don't care much
 about — or the reverse.
 
+## Setting it for real: the Configure Error Output dialog
+
+Every error-output-capable component has a **Configure Error Output**
+button on its editor. Click it, and you get a grid with one row per
+column, and two columns of your own to set — **Error** and
+**Truncation** — both starting at the same default.
+
+![The Configure Error Output dialog for a Data Conversion transformation, listing seven output columns, with both the Error and Truncation columns set to "Fail component" for every row.](/courses/ssis/ch06/32-error-outputs-on-data-flow-components/configure-error-output-dialog.png)
+*Opened fresh, every column defaults to Fail Component on both Error and Truncation.*
+
+Select a column (or several, with Ctrl/Shift-click), pick a disposition
+from the **Set this value to selected cells** dropdown at the bottom, and
+click **Apply**:
+
+![The same Configure Error Output dialog with the Error column changed to "Redirect row" for every row, and the Truncation dropdown open on one cell showing "Fail compo..." as the current value.](/courses/ssis/ch06/32-error-outputs-on-data-flow-components/redirect-row-selected.png)
+*Error set to Redirect Row across every column — now a bad conversion goes down the error output instead of failing the task.*
+
 ## The three dispositions
 
 For every column on an input or output, and for the input/output as a

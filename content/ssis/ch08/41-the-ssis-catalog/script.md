@@ -7,7 +7,7 @@ this point has lived inside SSDT, on your own machine. Starting now, we
 move packages into production, and the first thing production needs is
 a place to deploy to: the SSISDB catalog.
 
-## Segment 2 (screenshot: ssisdb-catalog-object-explorer)
+## Segment 2 (screenshot: ssisdb-catalog-object-explorer.png)
 
 Here's what that looks like in SQL Server Management Studio. The
 SSISDB catalog isn't a separate service or a special edition of SQL
@@ -19,11 +19,15 @@ environments, and its entire execution history all live — everything
 we cover for the rest of this chapter assumes this catalog is already
 here.
 
-## Segment 3 (steps: create catalog)
+## Segment 3 (screenshot: create-catalog-menu.jpg)
 
 SQL Server doesn't create SSISDB for you automatically — you provision
 it once per instance. Right-click Integration Services Catalogs and
-select Create Catalog. You'll be asked to enable CLR integration, which
+select Create Catalog.
+
+## Segment 4 (screenshot: create-catalog-dialog.jpg)
+
+That opens this. You'll be asked to enable CLR integration, which
 isn't optional — the catalog's stored procedures are actually
 implemented in CLR code, so this has to be turned on for it to work at
 all. Then you set a master key password. That password protects the
@@ -32,7 +36,7 @@ connection strings and secrets — save it somewhere safe, because you
 need it to recover the catalog later. Click OK, and SSISDB appears,
 ready for folders, and inside those folders, projects and environments.
 
-## Segment 4 (outro)
+## Segment 5 (outro)
 
 That's the destination. Next lesson, we actually deploy a project into
 it, using the Integration Services Deployment Wizard — both from inside

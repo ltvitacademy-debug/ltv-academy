@@ -44,10 +44,16 @@ Two dropdowns at the top of that tab do all the scoping:
 - **Event handler** — which event on that executable you're building a
   response for (OnError, OnWarning, OnPostExecute, and so on).
 
+![The Event handler dropdown open, listing every event an executable can raise: OnError highlighted at the top, followed by OnExecStatusChanged, OnInformation, OnPostExecute, OnPostValidate, OnPreExecute, OnPreValidate, OnProgress, OnQueryCancel, OnTaskFailed, OnVariableValueChanged, and OnWarning.](/courses/ssis/ch06/31-event-handlers/event-handler-dropdown-list.png)
+*Every event an executable can raise shows up in this one list — OnError is just the one you'll reach for most.*
+
 Pick a combination that doesn't have a handler yet, click the link on the
 design surface, and SSIS gives you a blank canvas — drag tasks onto it,
 connect them with precedence constraints, add a Data Flow task if you need
 one, exactly like building any other control flow.
+
+![The Event Handlers design surface for a package's OnError handler, with a single Execute SQL Task dropped onto it, flagged with a small red status icon.](/courses/ssis/ch06/31-event-handlers/task-on-event-handler-surface.png)
+*A task dropped onto the handler's own canvas — this one runs only when the OnError event it's scoped to actually fires.*
 
 ## Where an unhandled event goes
 
