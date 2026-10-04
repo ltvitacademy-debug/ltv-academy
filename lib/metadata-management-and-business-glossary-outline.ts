@@ -28,7 +28,7 @@ export const GOV_METADATA_MANAGEMENT_AND_BUSINESS_GLOSSARY_CHAPTERS: ChapterMeta
       L(1, "what-metadata-is", "What Metadata Is", { contentDir: "ch01/01-what-metadata-is" }),
       L(2, "business-technical-and-operational-metadata", "Business, Technical and Operational Metadata", { contentDir: "ch01/02-business-technical-and-operational-metadata" }),
       L(3, "metadata-standards", "Metadata Standards", { contentDir: "ch01/03-metadata-standards" }),
-      L(4, "the-metadata-management-lifecycle", "The Metadata Management Lifecycle"),
+      L(4, "the-metadata-management-lifecycle", "The Metadata Management Lifecycle", { contentDir: "ch01/04-the-metadata-management-lifecycle" }),
       L(5, "metadata-repositories", "Metadata Repositories"),
     ],
   },
