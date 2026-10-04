@@ -1,0 +1,40 @@
+# Lesson 10 — Building a Business Glossary · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+This lesson is a concrete, repeatable process for starting a glossary
+from nothing, pulling together everything this chapter has covered.
+
+## S2 · STEPS CARD (six steps)
+
+Six steps. Pick one domain, not the whole organization. List the terms
+people actually argue about today. Draft definitions using the
+four-part test. Route each draft through approval. Model relationships
+as the term count grows. And publish and announce it — a glossary
+nobody knows exists provides zero value.
+
+## S3 · CODE CARD (worked mini-glossary)
+
+Here's a worked mini-glossary for the Customer domain. Customer,
+approved, parent of Active Customer. Active Customer, approved, child
+of Customer. Churned Customer, approved, related to Active Customer.
+Client, deprecated, a synonym pointing back to Customer. Four terms,
+small, but genuinely trustworthy.
+
+## S4 · STEPS CARD (common mistakes)
+
+Three mistakes break glossaries early. Trying to cover every domain on
+day one, which leads to dozens of shallow, unreviewed drafts. Skipping
+approval just this once to move faster — the first wrong unapproved
+term costs the whole glossary its credibility. And writing definitions
+nobody outside the project team reviewed.
+
+## S5 · OUTRO CARD
+
+A small, real, fully governed glossary beats a comprehensive but
+shallow one every time, especially at the start. Next: Chapter 3, data
+dictionaries — the glossary's technical counterpart.
