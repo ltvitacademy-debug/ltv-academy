@@ -1809,13 +1809,14 @@ export function loadLessonContent(lesson: LessonMeta, contentBase: string) {
   const dir = path.join(process.cwd(), "content", contentBase, lesson.contentDir);
   const guidePath = path.join(dir, "guide.md");
   const quizPath = path.join(dir, "quiz.json");
-  const guideHtml = fs.existsSync(guidePath)
-    ? (marked.parse(fs.readFileSync(guidePath, "utf8")) as string)
+  const guideMd = fs.existsSync(guidePath)
+    ? fs.readFileSync(guidePath, "utf8")
     : null;
+  const guideHtml = guideMd ? (marked.parse(guideMd) as string) : null;
   const quiz: Quiz | null = fs.existsSync(quizPath)
     ? JSON.parse(fs.readFileSync(quizPath, "utf8"))
     : null;
-  return { guideHtml, quiz };
+  return { guideHtml, guideMd, quiz };
 }
 
 // A course's final test — 20 questions covering the whole course, 90% (18/20)

@@ -3,6 +3,18 @@ import { notFound } from "next/navigation";
 import { COURSES, findLesson, getCourse, loadLessonContent } from "@/lib/courses";
 import Quiz from "@/components/app/Quiz";
 import MarkComplete from "@/components/app/MarkComplete";
+import LessonChat from "@/components/app/LessonChat";
+
+// AI lesson helper is scoped to the Microsoft Data & BI Developer path for now
+// (the career path this was built for) — see lib/career-paths.ts.
+const AI_CHAT_COURSE_SLUGS = new Set([
+  "t-sql-development",
+  "ssis-development",
+  "ssrs-development",
+  "power-bi",
+  "data-modeling-and-data-warehousing",
+  "microsoft-bi-capstone",
+]);
 
 export function generateStaticParams() {
   return COURSES.flatMap((c) =>
@@ -84,6 +96,16 @@ export default async function LessonPage({
           <Quiz
             storageKey={`quiz:${course.slug}:${lesson.slug}`}
             questions={content.quiz.questions}
+          />
+        </div>
+      )}
+
+      {AI_CHAT_COURSE_SLUGS.has(course.slug) && (
+        <div className="mt-14 border-t-2 border-gold pt-8">
+          <LessonChat
+            courseTitle={course.title}
+            lessonTitle={lesson.title}
+            guideExcerpt={content?.guideMd ?? ""}
           />
         </div>
       )}
