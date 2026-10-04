@@ -58,7 +58,7 @@ export const GOV_METADATA_MANAGEMENT_AND_BUSINESS_GLOSSARY_CHAPTERS: ChapterMeta
     n: 4,
     title: "Critical Data Elements",
     lessons: [
-      L(16, "identifying-critical-data-elements", "Identifying Critical Data Elements"),
+      L(16, "identifying-critical-data-elements", "Identifying Critical Data Elements", { contentDir: "ch04/16-identifying-critical-data-elements" }),
       L(17, "prioritizing-critical-data-elements", "Prioritizing Critical Data Elements"),
       L(18, "critical-data-element-documentation", "Critical Data Element Documentation"),
       L(19, "critical-data-elements-and-regulatory-reporting", "Critical Data Elements and Regulatory Reporting"),
