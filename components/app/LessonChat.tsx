@@ -52,10 +52,17 @@ export default function LessonChat({
 
   return (
     <div>
-      <p className="eyebrow mb-1">AI lesson helper</p>
-      <p className="mb-6 text-sm text-stone">
-        This is an automated assistant (powered by Claude) — not your instructor. Ask
-        it to explain or simplify anything from this lesson.
+      <p className="eyebrow mb-1">AI Lesson Assistant</p>
+      <p className="display mb-2 text-xl">Need help with this lesson?</p>
+      <p className="mb-2 text-sm text-stone">
+        Ask the AI Lesson Assistant a question anytime. It can explain concepts in
+        simpler terms, give you examples, walk you through confusing topics, or help
+        you review what you just learned.
+      </p>
+      <p className="mb-6 text-xs text-stone/70">
+        AI-generated answers are designed to support your learning and may
+        occasionally make mistakes. Your LTV instructor and course materials are the
+        final source of truth.
       </p>
 
       {history.length > 0 && (
@@ -70,7 +77,7 @@ export default function LessonChat({
               }
             >
               <p className="eyebrow mb-1 text-xs">
-                {turn.role === "user" ? "You" : "Lesson helper"}
+                {turn.role === "user" ? "You" : "AI Lesson Assistant"}
               </p>
               <p className="whitespace-pre-wrap">{turn.content}</p>
             </div>
@@ -90,7 +97,7 @@ export default function LessonChat({
               ask();
             }
           }}
-          placeholder={`Ask about "${lessonTitle}"...`}
+          placeholder="What would you like help understanding?"
           rows={2}
           disabled={pending}
           className="flex-1 border border-ink/15 bg-parchment p-3 text-sm text-ink focus:border-crimson focus:outline-none disabled:opacity-60"
@@ -101,7 +108,7 @@ export default function LessonChat({
           disabled={pending || !draft.trim()}
           className="rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment enabled:hover:bg-crimson-deep disabled:opacity-40"
         >
-          {pending ? "Thinking…" : "Ask"}
+          {pending ? "Thinking…" : "Ask AI"}
         </button>
       </div>
     </div>
