@@ -44,10 +44,21 @@ box, image, or chart:
 3. Select **Go to report**.
 4. In **Specify a report**, either **Browse** to the target report or
    type its name — Browse fills in the correct path automatically.
+
+   ![Series Properties dialog, Action tab, with Go to report selected under Enable as an action and the Specify a report dropdown open showing the list of target reports.](/courses/ssrs/ch06/27-drillthrough-reports/drillthrough-action-specify-report.jpg)
+   *The Action tab's four options — None, Go to report, Go to bookmark, Go to URL — live in the same place on every report item.*
+
 5. In **Use these parameters to run the report**, select **Add** for
    each parameter the target report needs. For each row, set the
    **Name** (the target report's parameter) and the **Value** (a static
    value or an expression from the main report's fields).
+
+   ![Parameters grid with the Name column's dropdown open, ParaCountry highlighted among the target report's available parameters.](/courses/ssrs/ch06/27-drillthrough-reports/drillthrough-parameter-name.jpg)
+   *The Name dropdown only lists the target report's actual parameters — pick the one you're feeding.*
+
+   ![Parameters grid with the Value column's dropdown open, [Country] highlighted among the main report's available fields.](/courses/ssrs/ch06/27-drillthrough-reports/drillthrough-parameter-value.jpg)
+   *Value comes from the main report's own fields — here, the Country field supplies ParaCountry.*
+
 6. Select **OK**, then test by running the main report and clicking the
    linked item.
 

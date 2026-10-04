@@ -45,6 +45,9 @@ open the report's **Manage** menu and select **Subscriptions**, then
 can change the owner later from the subscription's properties, but not at
 creation time.
 
+![The New Subscription page: Description, Owner, Type of Subscription, and a preview of the Schedule section below it.](/courses/ssrs/ch07/30-standard-subscriptions/new-subscription-page.png)
+*The New Subscription page: Description, Owner, Type of Subscription, and Schedule — all on one page.*
+
 Under **Type of Subscription**, this is the fork in the road: **Standard
 subscription** generates and delivers one report, one time per schedule
 trigger. **Data-driven subscription** generates and delivers one report

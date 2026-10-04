@@ -4,16 +4,22 @@
 
 We're starting Chapter 7 — Subscriptions and Delivery. Up to now, every report you've built ran when someone opened it. Starting today, reports can deliver themselves. First up: the standard subscription.
 
-## Segment 2 (screenshot: type-of-subscription)
+## Segment 2 (screenshot: new-subscription-page)
 
-A standard subscription is the one an individual user sets up when they want a specific report delivered automatically — through e-mail, or dropped onto a shared folder. What makes it "standard" is that it uses static values: exactly one set of report parameters, one destination, one schedule, every single time it runs. If you need the recipient list or the parameter values to change based on a query, that's a data-driven subscription's job — next lesson.
+From the web portal, right-click the report and choose Subscribe — or open its Manage menu, go to Subscriptions, then New Subscription. You'll set a Description, and notice Owner is locked to whoever's creating it; you can hand it off later from the subscription's properties, just not at creation time. Below that is where the real fork happens: Type of Subscription.
 
-Before New Subscription even shows up as an option, two things have to be true: the report's data source needs stored credentials, or no credentials at all, since a subscription runs unattended with nobody there to log in. And any parameters the report uses need default values, for the same reason. Once those are in place, you right-click the report, choose Subscribe, and this is the fork in the road — Type of Subscription. Standard generates and delivers one report. Data-driven generates one per row in a dataset. Everything past this choice — the actual Destination and Schedule sections — gets its own full lesson, because both deserve real depth.
+## Segment 3 (screenshot: type-of-subscription)
 
-## Segment 3 (screenshot: manage-subscriptions)
+A standard subscription is the one an individual user sets up when they want a specific report delivered automatically — through e-mail, or dropped onto a shared folder. What makes it "standard" is that it uses static values: exactly one set of report parameters, one destination, one schedule, every single time it runs. If you need the recipient list or the parameter values to change based on a query, that's a data-driven subscription's job — next lesson. Standard generates and delivers one report. Data-driven generates one per row in a dataset.
+
+## Segment 4 (screenshot: manage-subscriptions)
 
 Once it's created, every subscription shows up on the report's Subscriptions page — Edit, Enable, Disable, Run Now, Delete, all right there. The Result column is the first place to look if something didn't behave the way you expected; it holds the outcome or error from the most recent run. And Run Now is genuinely useful while you're testing — it fires the subscription immediately instead of making you wait for its schedule to come around.
 
-## Segment 4 (outro)
+## Segment 5 (steps: before New Subscription shows up)
+
+Before New Subscription even shows up as an option, two things have to be true: the report's data source needs stored credentials, or no credentials at all, since a subscription runs unattended with nobody there to log in. And any parameters the report uses need default values, for the same reason. Everything past the Type of Subscription choice — the actual Destination and Schedule sections — gets its own full lesson, because both deserve real depth.
+
+## Segment 6 (outro)
 
 Next lesson, we flip to the other subscription type — data-driven — where the recipient list and parameter values come from a live query instead of a fixed set of values.
