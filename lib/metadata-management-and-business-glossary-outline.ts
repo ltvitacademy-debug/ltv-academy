@@ -47,7 +47,7 @@ export const GOV_METADATA_MANAGEMENT_AND_BUSINESS_GLOSSARY_CHAPTERS: ChapterMeta
     n: 3,
     title: "Data Dictionaries",
     lessons: [
-      L(11, "data-dictionary-concepts", "Data Dictionary Concepts"),
+      L(11, "data-dictionary-concepts", "Data Dictionary Concepts", { contentDir: "ch03/11-data-dictionary-concepts" }),
       L(12, "documenting-tables-and-columns", "Documenting Tables and Columns"),
       L(13, "data-dictionary-standards", "Data Dictionary Standards"),
       L(14, "building-a-data-dictionary", "Building a Data Dictionary"),
