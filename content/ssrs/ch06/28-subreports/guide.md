@@ -63,6 +63,11 @@ missing parameter is fine as long as the subreport has a default value
 defined for it. In **Report Designer** (SSDT), *every* required
 parameter must be listed, or the subreport won't display correctly.
 
+## What it looks like once it's wired up
+
+![A main Sales Order report with a standalone Contacts report embedded inside it, showing a short list of purchasing contacts with names, titles, and phone numbers.](/courses/ssrs/ch06/28-subreports/rendered-report-with-subreport.gif)
+*A completely standalone Contacts report, rendered live inside the main report's body — to the reader, it's just part of the page.*
+
 ## Subreports in dynamic rows or columns
 
 You can drop a subreport into a dynamic row or column of a table or

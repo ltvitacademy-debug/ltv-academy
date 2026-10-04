@@ -12,6 +12,13 @@ To add one, you go to the Insert tab, select Subreport, and drag a box onto the 
 
 If the embedded report takes parameters, switch to the Parameters tab — this is what that looks like, one row per parameter: a Name that has to match a report parameter defined in the subreport, not a query parameter, and a Value that can be static or an expression pulling from the main report's own fields. One tooling difference worth knowing: in Report Builder, a missing parameter is fine if the subreport has a default value. In Report Designer, every required parameter must be listed, or the subreport won't display correctly. And if you're tempted to drop a subreport into a dynamic row of a table so it runs once per row — stop and consider a nested data region first. That per-row report execution gets expensive fast.
 
-## Segment 4 (outro)
+## Segment 4 (screenshot: rendered-report-with-subreport)
+
+And here's what it actually looks like once it's wired up — a
+completely standalone Contacts report, with its own layout and its
+own data, rendered live inside the main Sales Order report's body. To
+the reader, it just looks like part of the page.
+
+## Segment 5 (outro)
 
 Next lesson: bookmarks and document maps — in-report navigation links and a clickable table of contents, so users can jump around a long report without any of the mechanisms we've covered so far.
