@@ -4,6 +4,7 @@ import { COURSES, findLesson, getCourse, loadLessonContent } from "@/lib/courses
 import Quiz from "@/components/app/Quiz";
 import MarkComplete from "@/components/app/MarkComplete";
 import LessonChat from "@/components/app/LessonChat";
+import GuideProtection from "@/components/app/GuideProtection";
 
 export function generateStaticParams() {
   return COURSES.flatMap((c) =>
@@ -75,6 +76,7 @@ export default async function LessonPage({
               className="book-page"
               dangerouslySetInnerHTML={{ __html: content.guideHtml }}
             />
+            <GuideProtection />
           </div>
         </>
       )}
