@@ -209,6 +209,19 @@ function highlightDaxLine(line) {
     .join("");
 }
 
+// A caption rendered as a single fixed-size <text> silently ran off the
+// right edge of the canvas for anything longer than ~80-90 characters
+// (first caught while building the Data Quality Management course, but the
+// bug is in this shared renderer, so it affects any course's screenshot/code
+// caption of that length). Wrap it the same way stepsCard() already wraps
+// a long "sub" label, instead of trusting every caption to stay short.
+function captionTspans(x, startY, caption, maxWidth = 1600, fontSize = 38, lineH = 46) {
+  const { lines } = wrapToFit(caption, maxWidth, fontSize, fontSize, 0.52);
+  return lines
+    .map((line, i) => `<tspan x="${x}" y="${startY + i * lineH}">${esc(line)}</tspan>`)
+    .join("");
+}
+
 function codeCard(spec, n) {
   const lines = String(spec.code).split("\n");
   const longest = Math.max(...lines.map((l) => l.length));
@@ -236,7 +249,7 @@ function codeCard(spec, n) {
   <rect x="${boxX}" y="${boxY}" width="${boxW}" height="${boxH}" rx="10" fill="#ffffff" stroke="${C.ink}" stroke-opacity="0.18" stroke-width="1.5"/>
   ${codeLines}
   <line x1="160" y1="930" x2="${W - 160}" y2="930" stroke="${C.ink}" stroke-opacity="0.15"/>
-  <text x="160" y="985" font-family="${SERIF}" font-size="38" fill="${C.ink}">${esc(spec.caption)}</text>
+  <text font-family="${SERIF}" font-size="38" fill="${C.ink}">${captionTspans(160, 985, spec.caption)}</text>
 </svg>`;
 }
 
@@ -311,7 +324,7 @@ async function screenshotSlide(spec, n) {
   <text x="${W - 160}" y="120" text-anchor="end" font-family="${SERIF}" font-size="44" fill="${C.crimson}">${n}</text>
   <rect x="${ix - 10}" y="${iy - 10}" width="${iw + 20}" height="${ih + 20}" fill="#ffffff" stroke="${C.ink}" stroke-opacity="0.18" stroke-width="1"/>
   <line x1="160" y1="930" x2="${W - 160}" y2="930" stroke="${C.ink}" stroke-opacity="0.15"/>
-  <text x="160" y="985" font-family="${SERIF}" font-size="38" fill="${C.ink}">${esc(spec.caption)}</text>
+  <text font-family="${SERIF}" font-size="38" fill="${C.ink}">${captionTspans(160, 985, spec.caption)}</text>
 </svg>`;
   const composited = await sharp(Buffer.from(frame))
     .composite([{ input: img, left: ix, top: iy }])

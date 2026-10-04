@@ -1,0 +1,23 @@
+# Lesson 10 — Interpreting Profiling Results · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+## S1 · TITLE
+
+Over the last three lessons you ran real queries and got real numbers. None of those numbers, by themselves, tell you whether there's an actual problem. Today's lesson is about making that jump correctly.
+
+## S2 · STEPS — Four questions
+
+Run every finding through four questions. Is this actually abnormal, or did I just notice it — a 2% null rate might be fine on an optional field and a real problem on a required one. What's the scale — 188 out of 10,000 reads very differently from 188 out of 200. Is this new, or has it always been this way — that's a question only monitoring over time can answer. And who actually needs to know, and what decision does it change?
+
+## S3 · STEPS — Real problem or false alarm
+
+Say Lesson 9's pattern check found 188 emails that didn't match the simple pattern. Before reporting "188 bad emails," pull a sample. If most are genuinely malformed, that's a real finding. If many are legitimate but unusual — a plus sign in a Gmail address, an uncommon domain — that's a pattern that needs refining, not 188 rows of bad data.
+
+## S4 · STEPS — From finding to handoff
+
+A finding is only useful once it reaches the right person in a form they can act on. State what was checked, what was found as a percentage not just a raw count, how it compares to a baseline, and what decision you're actually asking for. That's the difference between a query result and something a data owner can act on.
+
+## S5 · OUTRO
+
+Profiling tells you what's actually in the data — these four questions are the bridge to everything that follows. Chapter 3 starts next, with Accuracy, the first of the six dimensions covered in full depth.

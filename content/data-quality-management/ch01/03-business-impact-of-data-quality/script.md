@@ -1,0 +1,23 @@
+# Lesson 3 — Business Impact of Data Quality · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+## S1 · TITLE
+
+It's tempting to treat data quality as a technical housekeeping concern. The research says otherwise — bad data has a real, measurable price tag, and the whole organization pays it, not just the data team.
+
+## S2 · STEPS — Two sourced numbers
+
+Gartner research puts the average cost of poor data quality at 12.9 million dollars a year per organization. Separately, IBM estimated the yearly cost of poor-quality data to the US economy alone at 3.1 trillion dollars, a figure reported in the Harvard Business Review. Treat these as directional, not gospel — the honest takeaway is that independent researchers, years apart, both landed on a meaningful fraction of the economy, not a rounding error.
+
+## S3 · STEPS — Where the cost actually leaks out
+
+That money leaks out four concrete ways: bad decisions made with confidence on data that looks fine but isn't; wasted operational time, with surveys putting data cleanup at around half of an analyst's week; direct customer-facing failures like a misship from a bad address; and compliance exposure, where a single bad field can trace straight to a failed audit.
+
+## S4 · STEPS — Why it stays invisible
+
+Here's what makes this dangerous: these problems don't throw an error. A NULL in a rarely-used column, a duplicate customer, a stale timestamp — they sit quietly until a report is wrong or a customer complains. That silence is exactly why Chapter 2's profiling techniques matter: profiling finds the problem before it becomes an incident, not after.
+
+## S5 · OUTRO
+
+Two numbers, four categories, one theme: the cost is real even when the symptom isn't visible yet. Next up: Lesson 4 asks who's actually responsible for catching this before it costs anyone money.
