@@ -43,6 +43,12 @@ property:
 4. Select **OK**. Optionally, format the linking text as blue and
    underlined on the Home tab, since SSRS doesn't do that automatically.
 
+![Text Box Properties dialog, Action tab, with all four "Enable as an action" choices visible — None, Go to report, Go to bookmark, Go to URL.](/courses/ssrs/ch06/29-bookmarks-and-document-maps/action-tab-four-types.jpg)
+*The Action tab's four choices. This capture has Go to URL selected, but Go to bookmark sits right above it in the same radio group — pick that one and enter the target's bookmark ID.*
+
+![Text Box Properties dialog, Font tab, with Color set to Blue and Effects set to Underline, and the Sample box previewing blue underlined text.](/courses/ssrs/ch06/29-bookmarks-and-document-maps/link-text-font-format.jpg)
+*Formatting the linking text yourself, on the same dialog's Font tab — Color: Blue, Effects: Underline.*
+
 ## Document maps: an automatic table of contents
 
 A **document map** goes further than a hand-built set of bookmark
@@ -60,6 +66,9 @@ the report to the matching area. You build one by setting the
   matching the group's own expression. Each unique value (say, each
   color in a color-grouped table) becomes its own link.
 
+![Report Builder's HTML preview viewer, showing a Document Map side pane listing three clickable entries next to the rendered report.](/courses/ssrs/ch06/29-bookmarks-and-document-maps/document-map-pane-rendered.jpg)
+*Rendered in the HTML viewer: each DocumentMapLabel becomes a clickable entry in the side pane on the left; selecting one jumps the report to that section.*
+
 ## How other renderers represent a document map
 
 The document map pane itself is an HTML-viewer feature — Preview and
@@ -72,6 +81,12 @@ differently:
   hierarchy, alongside separate worksheets for each report section.
 - **Word** — includes it as the document's table of contents.
 - **Atom, TIFF, XML, CSV** — ignore the document map entirely.
+
+![Excel worksheet named "Sales by Region DM and Bookmarks," listing the same three entries as blue hyperlinks.](/courses/ssrs/ch06/29-bookmarks-and-document-maps/document-map-excel-worksheet.jpg)
+*Exported to Excel, the document map becomes its own worksheet — the same entries, now as hyperlinks into each sheet.*
+
+![PDF reader with the document map rendered as the native Bookmarks pane on the left, listing the same three entries.](/courses/ssrs/ch06/29-bookmarks-and-document-maps/document-map-pdf-bookmarks.jpg)
+*Exported to PDF, the document map becomes the reader's own Bookmarks pane — same entries, same hierarchy, just living inside the PDF reader's native feature.*
 
 ## Key terms
 
