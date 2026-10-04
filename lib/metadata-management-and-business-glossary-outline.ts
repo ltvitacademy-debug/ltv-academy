@@ -51,7 +51,7 @@ export const GOV_METADATA_MANAGEMENT_AND_BUSINESS_GLOSSARY_CHAPTERS: ChapterMeta
       L(12, "documenting-tables-and-columns", "Documenting Tables and Columns", { contentDir: "ch03/12-documenting-tables-and-columns" }),
       L(13, "data-dictionary-standards", "Data Dictionary Standards", { contentDir: "ch03/13-data-dictionary-standards" }),
       L(14, "building-a-data-dictionary", "Building a Data Dictionary", { contentDir: "ch03/14-building-a-data-dictionary" }),
-      L(15, "keeping-dictionaries-current", "Keeping Dictionaries Current"),
+      L(15, "keeping-dictionaries-current", "Keeping Dictionaries Current", { contentDir: "ch03/15-keeping-dictionaries-current" }),
     ],
   },
   {
