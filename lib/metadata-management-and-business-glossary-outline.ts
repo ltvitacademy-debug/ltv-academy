@@ -70,7 +70,7 @@ export const GOV_METADATA_MANAGEMENT_AND_BUSINESS_GLOSSARY_CHAPTERS: ChapterMeta
     lessons: [
       L(20, "data-catalog-concepts", "Data Catalog Concepts", { contentDir: "ch05/20-data-catalog-concepts" }),
       L(21, "catalog-capabilities-and-search", "Catalog Capabilities and Search", { contentDir: "ch05/21-catalog-capabilities-and-search" }),
-      L(22, "cataloging-business-and-technical-metadata", "Cataloging Business and Technical Metadata"),
+      L(22, "cataloging-business-and-technical-metadata", "Cataloging Business and Technical Metadata", { contentDir: "ch05/22-cataloging-business-and-technical-metadata" }),
       L(23, "metadata-quality", "Metadata Quality"),
       L(24, "catalog-adoption", "Catalog Adoption"),
       L(25, "metadata-case-study", "Metadata Case Study"),
