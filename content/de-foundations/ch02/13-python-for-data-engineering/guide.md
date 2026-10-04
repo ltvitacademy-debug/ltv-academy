@@ -57,6 +57,57 @@ follow, not to professional software development.
 - **`pip`** — Python's package installer, how you'll get `pandas` and
   `requests` (Lessons 21 and 23) onto your machine
 
+## Where you actually run this stuff
+
+Every code block from here through Lesson 27 goes in the same place:
+a **`.py` file**, opened in VS Code, run from inside VS Code. That's
+it — there's no separate "Python console" app, no website. Here's the
+exact loop you'll repeat for every lesson in this chapter:
+
+1. **Open a folder in VS Code.** File → Open Folder, and pick (or
+   create) a folder for this course's exercises — something like
+   `de-foundations-python`.
+2. **Create a new file ending in `.py`** — VS Code recognizes the
+   extension and switches into Python mode automatically (the blue
+   Python logo appears next to the filename).
+
+   ![VS Code Explorer panel showing a file named hello.py just created inside a folder called HELLO, with the file open and empty in the editor to the right.](/courses/de-foundations/ch02/13-python-for-data-engineering/hello-py-created.png)
+   *A new `.py` file in VS Code — this is the file every code example in this chapter goes into.*
+
+3. **Type the code.** For example:
+   ```python
+   msg = "Roll a dice!"
+   print(msg)
+   ```
+4. **Run it.** The ▷ **Run** button in the top-right corner of the
+   editor runs the whole file. (Right-click anywhere in the file and
+   choose **Run Python File in Terminal** does the exact same thing —
+   use whichever you find faster.)
+
+   ![VS Code editor with hello.py open, the Run (play) button highlighted in the top-right toolbar, and two lines of code: msg = "Roll a dice!" and print(msg).](/courses/de-foundations/ch02/13-python-for-data-engineering/run-button.png)
+   *Click Run (or right-click → Run Python File in Terminal) — there's no separate "execute" step beyond this.*
+
+5. **Read the output in the Terminal panel** that opens along the
+   bottom of VS Code. That panel is just running `python hello.py` for
+   you and showing you exactly what it printed:
+
+   ![VS Code's integrated Terminal panel showing the command "python.exe c:/hello/hello.py" and its output, "Roll a dice!"](/courses/de-foundations/ch02/13-python-for-data-engineering/output-in-terminal.png)
+   *The Terminal panel — this is where every `print()` statement in this chapter actually shows up.*
+
+That five-step loop — open the folder once, then create a `.py` file,
+type code, click Run, read the Terminal — is the entire workflow for
+this chapter and for Lesson 27's full ETL script. Nothing about it
+changes as the code gets longer; a 40-line script runs exactly the
+same way a 2-line one does.
+
+**One more option worth knowing about, not required for this course:**
+Jupyter notebooks (`.ipynb` files) let you run code one small block at
+a time instead of the whole file at once, which many data scientists
+prefer for exploration. VS Code supports them with the Jupyter
+extension. This course sticks to plain `.py` files and the Run button
+because that's what production ETL scripts and Spark jobs actually are
+— but if a future lesson mentions a notebook, this is what it means.
+
 ## A preview of where this is going
 
 ```python
@@ -83,15 +134,29 @@ Lesson 27.
 
 ## Lab
 
-Install Python 3.10+ and Visual Studio Code if you haven't already,
-then open a terminal and run:
+1. Install Python 3.10+ and Visual Studio Code if you haven't already,
+   then open a terminal (VS Code's own Terminal panel works fine —
+   View → Terminal) and run:
+   ```bash
+   python --version
+   pip --version
+   ```
+   Confirm both commands return a version number.
+2. Create a folder for this course, open it in VS Code, and create a
+   file named `first_script.py` inside it.
+3. Type this into the file and save it:
+   ```python
+   fare_amount = 14.50
+   passenger_count = 1
+   print("Fare:", fare_amount, "| Passengers:", passenger_count)
+   ```
+4. Click **Run** (or right-click → **Run Python File in Terminal**) and
+   confirm you see `Fare: 14.5 | Passengers: 1` printed in the Terminal
+   panel at the bottom of VS Code.
 
-```bash
-python --version
-pip --version
-```
-
-Confirm both commands return a version number before Lesson 14.
+Every lesson from here on gives you code the same way — type it into
+this same kind of `.py` file, run it the same way, and check the
+Terminal for the output.
 
 ## Check yourself
 
