@@ -68,6 +68,25 @@ That's not a coincidence — a chart *is* organized like a matrix
 underneath. If a matrix already makes sense to you, use that mental
 model rather than memorizing chart-specific rules from scratch.
 
+## Formatting one series: Series Properties
+
+Once a field is sitting in Values, right-click it in the Chart Data pane —
+or right-click the series directly on the design surface — to reach a
+short context menu: Delete Series, Chart (swap the type for just this
+series), 3D Effects, Show Data Labels, Add Calculated Series, and
+**Series Properties**.
+
+![Right-click menu on the Sales series in the Chart Data pane's Values area, with Series Properties listed below Add Calculated Series.](/courses/ssrs/ch05/22-charts-in-ssrs/chart-series-properties-menu.png)
+*Right-click a series in Values to reach Series Properties — color, border, and markers for that one series alone.*
+
+Series Properties is where you set that one series' color, border, and
+markers independently of every other series on the chart — useful the
+moment you want a "Last Year" series rendered as a thin line instead of a
+full column, overlaid on the same columns. **Add Calculated Series**, right
+above it, is worth a second look too: it derives a new series from an
+existing one — a moving average, for example — without adding another
+field to your dataset.
+
 ## Choosing a chart type
 
 The fastest path is **Insert → Chart → Chart Wizard**, which walks you

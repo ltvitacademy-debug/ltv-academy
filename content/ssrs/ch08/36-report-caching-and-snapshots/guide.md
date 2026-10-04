@@ -34,6 +34,12 @@ whether or not anyone's watching, which is exactly what you want for a
 report driven by a long-running query, or one that shouldn't touch its
 data source during business hours.
 
+Here's all three modes on the same page — a report's **Caching**
+settings, reached from its **Manage** menu in the web portal:
+
+![A report's Caching page in the web portal, with three radio buttons: Always run with the most recent data, Cache copies of this report and use them when available, and Always run this report against pregenerated snapshots.](/courses/ssrs/ch08/36-report-caching-and-snapshots/caching-execution-modes.png)
+*The same three choices from the text above, as an actual settings page — one radio button, one execution mode.*
+
 ## What can't be cached or snapshotted
 
 Not every report qualifies. A report **can't be cached or run as a
@@ -44,6 +50,41 @@ result is different per user, so there's no single copy that's safe to
 reuse. Parameterized reports add one more wrinkle for snapshots
 specifically: since a snapshot locks in one specific data pull, you must
 supply a default parameter value for the snapshot to run against.
+
+## Setting it up: expiration and refresh plans
+
+Switch the radio button to **Cache copies of this report and use them
+when available** and a **Cache Expiration** section appears: expire the
+cache after a fixed number of minutes, or on a schedule instead. Below
+that, **Cache Refresh Plans** let you proactively re-run the query on a
+schedule — so the cache is already warm before the first real user asks
+for the report, instead of making that first request pay the full cost.
+
+![The same Caching page with Cache copies selected, showing Cache Expiration (30 minutes) and an empty Cache Refresh Plans table.](/courses/ssrs/ch08/36-report-caching-and-snapshots/caching-expiration-settings.png)
+*Cache Expiration controls how long a cached copy lives; Cache Refresh Plans keep it warm proactively.*
+
+Click into a refresh plan and you're scheduling exactly like a
+subscription: a shared schedule, or a report-specific one, plus which
+parameter values that refresh should run against.
+
+![The Edit Company Sales refresh-plan dialog, with a report-specific schedule set to 7:00 AM every day and a Year parameter using its default value.](/courses/ssrs/ch08/36-report-caching-and-snapshots/cache-refresh-plan-schedule.png)
+*A refresh plan is a schedule plus parameter values — the query that pre-warms the cache before anyone asks.*
+
+## History snapshots: scheduled and retained
+
+Switch the Caching page's radio button to **Always run this report
+against pregenerated snapshots** instead, and a separate
+**History Snapshots** page controls when those snapshots are captured
+and how many stick around:
+
+![The History Snapshots schedule and settings page: Create history snapshots on a schedule (7:00 AM every day), Allow people to create snapshots manually, and retention options including Retain the 10 most recent history snapshots.](/courses/ssrs/ch08/36-report-caching-and-snapshots/history-snapshot-schedule.png)
+*A snapshot schedule, plus how many snapshots to retain — the mechanics behind "Report snapshot" from the three modes above.*
+
+Notice **Allow people to create snapshots manually**, checked here — that's
+what makes the manual "New History Snapshot" button on a report's History
+page actually work, independent of the schedule. And retention is its own
+decision: keep the system default, cap it at a specific count, or retain
+every snapshot ever taken.
 
 ## Where the cache actually helps — and where it doesn't
 
@@ -63,17 +104,22 @@ exactly the case caching was built for.
 | Cached copy | A rendered copy served to subsequent requesters until it expires |
 | Report snapshot | Data and layout captured on a schedule, stored in the report server database |
 | Cache expiration | Minutes-based or schedule-based rule that invalidates a cached copy |
+| Cache refresh plan | A schedule that proactively re-runs the query to keep a cache warm |
 | Report history | The collection of snapshots retained over time for one report |
 
 ## Lab
 
 1. In the web portal, open any report's **Manage** menu and select
-   **Processing Options** (or **Caching**, depending on version). Note
-   which of the three execution modes is currently selected.
+   **Caching**. Note which of the three execution modes is currently
+   selected.
 2. If the report qualifies (no per-user data, no Windows-integrated
-   security), try switching it to **Cache a temporary copy of the
-   report**, set an expiration of a few minutes, and confirm you can see
-   the setting take effect the next two times you open the report.
+   security), try switching it to **Cache copies of this report and use
+   them when available**, set a Cache Expiration of a few minutes, and
+   confirm you can see the setting take effect the next two times you
+   open the report.
+3. Still in Manage, open **History Snapshots** and look at **Schedule
+   and Settings**. Note whether snapshots run on a schedule, whether
+   manual snapshots are allowed, and which retention option is set.
 
 ## Check yourself
 

@@ -73,9 +73,23 @@ for every row the report renders.
 ## Measure before and after
 
 Reporting Services logs how long each report actually took to process
-in the report server's **execution log**. Don't guess — check the
-execution log before making a change and after, so "this feels faster"
-becomes an actual number.
+in the report server's **execution log** — the `ExecutionLog3` view in
+the report server database, with one row per execution: which report,
+who ran it, when, which output format, and how many milliseconds each
+processing phase took. Don't guess — check the execution log before
+making a change and after, so "this feels faster" becomes an actual
+number.
+
+That's not just raw rows, either — once you have that data, it's a
+dataset like any other, and a report built against it turns "which
+reports are actually the problem" into a real answer instead of a
+guess:
+
+![A Report Execution Summary report, showing Total No. Executions, Successful/Failed Executions, and bar charts of executions per day of month and per day of week.](/courses/ssrs/ch08/37-performance-considerations/execution-summary-report-part1.jpg)
+*Built on execution-log data — total runs, failures, and when load actually happens.*
+
+![The same report's lower half: Top 10 Most Executed, Top 10 Longest Running, Top 10 Largest Reports, and Top 10 Users tables.](/courses/ssrs/ch08/37-performance-considerations/execution-summary-report-part2.jpg)
+*This is the "is it every report, or just one?" question, answered — Top 10 Longest Running points straight at the one report worth tuning first.*
 
 ## Key terms
 
@@ -86,6 +100,7 @@ becomes an actual number.
 | Shared dataset caching | Caching a dataset's results independently of any one report that uses it |
 | Calculated field | A value computed once at the data source, instead of re-derived by a repeated expression |
 | Execution log | Reporting Services' record of how long each report actually took to process |
+| ExecutionLog3 | The report server database view the execution log is actually stored in |
 
 ## Lab
 
@@ -95,6 +110,9 @@ becomes an actual number.
 2. Find one expression in that report that's repeated in more than one
    textbox. Decide whether it belongs in the query, a calculated field,
    or genuinely needs to stay as a report expression — and explain why.
+3. If you have access to the report server database, query
+   `ExecutionLog3` directly (or picture the two reports above): which of
+   your own reports would show up under Top 10 Longest Running, and why?
 
 ## Check yourself
 

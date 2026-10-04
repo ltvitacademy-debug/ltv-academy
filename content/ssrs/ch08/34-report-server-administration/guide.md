@@ -26,8 +26,8 @@ The **web portal's Site Settings page** is the opposite: it's where
 day-to-day administration happens, entirely in the browser, and it's the
 tool a content manager or site admin actually lives in.
 
-![The web portal's gear-icon menu, with Site settings highlighted below My subscriptions.](/courses/ssrs/ch08/34-report-server-administration/settings-icon-menu.png)
-*Site settings sits under the gear icon, right alongside My subscriptions — the everyday admin entry point.*
+![The report server web portal home page, showing its folder/KPI/report tiles and the gear icon in the top-right toolbar.](/courses/ssrs/ch08/34-report-server-administration/web-portal-home-gear-icon.png)
+*The gear icon, top-right — that's the entry point into Site Settings from anywhere in the web portal.*
 
 ## What's on the Site Settings page
 
@@ -44,6 +44,25 @@ Once you're in Site Settings, the tabs cover the ongoing knobs:
 Notice what's *not* here: the service account, the database connection,
 and the URLs. Those stay in the Configuration Manager, on the server
 itself — Site Settings can't touch them.
+
+The Security tab is a plain grid: who holds a system role, and which one.
+A fresh install grants the local administrators group **System
+Administrator** and nothing else — everyone else has to be added
+explicitly.
+
+![The Site Settings Security tab, listing BUILTIN\Administrators with the System Administrator role, and a New Role Assignment button above the grid.](/courses/ssrs/ch08/34-report-server-administration/site-settings-security-grid.jpg)
+*One row per group or user, with the system role(s) they hold — New Role Assignment adds another.*
+
+Click **New Role Assignment** and you land on a page that only offers two
+roles, because at the system level that's all there is: **System
+Administrator** (view and modify system role assignments, system role
+definitions, system properties, and shared schedules) and **System User**
+(view system properties and shared schedules — no changes). Compare that
+short list to the five item-level roles Lesson 35 covers on a report or
+folder — system-level security is deliberately narrow.
+
+![The New System Role Assignment page, with a Group or user name field and checkboxes for System Administrator and System User.](/courses/ssrs/ch08/34-report-server-administration/new-system-role-assignment.jpg)
+*Only two roles exist at the system level — System Administrator and System User.*
 
 ## Scale-out deployments
 

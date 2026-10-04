@@ -12,10 +12,14 @@ A chart is just another data region, sitting alongside Table, Matrix, and List o
 
 Here's where the actual work happens. Select a chart on the design surface and Report Builder opens the Chart Data pane, with three drop zones: Category Groups, Series Groups, and Values. Values is what actually gets plotted — drop a numeric field there and it's wrapped in Sum by default. Category Groups defines your x-axis — each distinct value becomes one data point, and Report Builder builds the matching group for you automatically. And Series Groups is the one people forget: leave it empty, and you get exactly one series, fixed at design time. Add a field like Year to it, and the number of distinct years in your data determines how many series draw on the chart — completely dynamically. And if you've already worked with a Matrix, this should feel familiar, because a chart really is organized like a matrix underneath: Category Groups maps to Columns, Series Groups maps to Rows, Values maps to the Data area.
 
-## Segment 4 (steps: chart wizard types)
+## Segment 4 (screenshot: chart-series-properties-menu)
+
+Once a field's sitting in Values, right-click it — or right-click the series itself on the canvas — and you get a short menu: Delete Series, Chart, 3D Effects, Show Data Labels, Add Calculated Series, and Series Properties. Series Properties is the one you'll reach for most: it sets that single series' color, border, and markers, independent of every other series on the chart — exactly what you need when "Last Year" should render as a thin line instead of a full column, sitting on top of the same columns. And don't skip past Add Calculated Series right above it — it derives a brand-new series, like a moving average, straight from an existing one, with nothing added to your dataset.
+
+## Segment 5 (steps: chart wizard types)
 
 The fastest path to a first chart is Insert, Chart, Chart Wizard — it walks you through five of the most common types: column, line, pie, bar, and area. Need something the wizard doesn't offer — scatter, polar, range, stock, shape charts? Skip the wizard. Use Insert, Chart, Insert Chart instead, which drops an empty chart onto the design surface and opens the full Select Chart Type dialog with every type and sub-type Reporting Services supports.
 
-## Segment 5 (outro)
+## Segment 6 (outro)
 
 Next lesson, we go from a whole series of data points down to just one — gauges, for showing a single KPI value against a defined range.

@@ -56,10 +56,27 @@ item-specific role assignment — the web portal calls this
 **customizing security** — but every item in the hierarchy must be
 secured by *something*; you can't leave an item unsecured.
 
-Here's that override in practice, on a specific report's Security page:
+Here's the Security page at the Home folder itself — this is the grid
+every report and subfolder inherits from, until something overrides it:
 
-![The web portal Security page for a report named Product_Sales, with Add group or user highlighted and BUILTIN\Administrators already listed.](/courses/ssrs/ch08/35-security-and-role-assignments/report-add-group-user.png)
-*Once security is customized for this item, Add group or user creates a role assignment scoped to it alone — no longer inherited from Home.*
+![The Security page at the Home folder, listing BUILTIN\Administrators with the Content Manager role, and a New Role Assignment button above the grid.](/courses/ssrs/ch08/35-security-and-role-assignments/item-security-role-grid.jpg)
+*One row per group or user and the item-level role(s) they hold — New Role Assignment adds another, right here at Home.*
+
+Click **New Role Assignment** and, unlike the two-role list Lesson 34
+showed at the system level, item-level security offers the full set:
+Browser, Content Manager, My Reports, Publisher, and Report Builder —
+the predefined roles described above, each with a longer description of
+exactly what it permits.
+
+![The New Role Assignment page for item-level security, with a Group or user name field and checkboxes for Browser, Content Manager, My Reports, Publisher, and Report Builder.](/courses/ssrs/ch08/35-security-and-role-assignments/new-role-assignment-item.jpg)
+*Five roles at the item level, against two at the system level — item-level security is where the real granularity lives.*
+
+Folder-level security is the common case, but you can go one step
+further and override security on a single item inside an already-secured
+folder:
+
+![A single report's Properties > Security page, with Edit Item Security and a grid showing BUILTIN\Administrators holding Content Manager on that one report.](/courses/ssrs/ch08/35-security-and-role-assignments/item-level-security-override.jpg)
+*Edit Item Security on one report breaks its inheritance from the folder — everything else in that folder is untouched.*
 
 Notice the left-hand menu on that same page — Properties, Parameters,
 Data sources, Subscriptions, Caching, History snapshots, Security. Lesson

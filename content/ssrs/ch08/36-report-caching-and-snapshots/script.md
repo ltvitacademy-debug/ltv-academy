@@ -8,10 +8,26 @@ Every report you build has to pick one of three ways to execute — and picking 
 
 Always run with the most recent data issues a fresh query every single time — most accurate, most expensive, since ten simultaneous users means ten simultaneous queries. Cache a temporary copy runs the query once, then serves that same rendered copy to everyone else until it expires, either after a set number of minutes or on a schedule. And a report snapshot goes further — it captures the data and the layout at a specific point in time, on its own schedule, independent of whether anyone's even viewing the report.
 
-## Segment 3 (steps: what disqualifies a report)
+## Segment 3 (screenshot: caching-execution-modes)
+
+Here's all three of those modes on the same real page — a report's Caching settings, under its Manage menu in the web portal. Three radio buttons, same order we just covered: most recent data, cached copies, pregenerated snapshots. Whichever one's selected is the mode that report actually runs in — there's no fourth option hiding anywhere else.
+
+## Segment 4 (steps: what disqualifies a report)
 
 Not every report qualifies for caching or snapshots. If a report's output depends on who's viewing it, or it prompts for credentials, or it uses Windows-integrated security to reach its data source, there's no single safe copy to reuse — so neither caching nor snapshotting works. And for a parameterized report to run as a snapshot, you have to supply a default parameter value, since there's no user around at snapshot time to type one in.
 
-## Segment 4 (outro)
+## Segment 5 (screenshot: caching-expiration-settings)
+
+Switch that radio button to Cache copies, and a Cache Expiration section appears — expire after a fixed number of minutes, or on a schedule instead. Below it, Cache Refresh Plans let you get ahead of the first request entirely: re-run the query proactively, on a schedule, so the cache is already warm before a real user ever asks for the report.
+
+## Segment 6 (screenshot: cache-refresh-plan-schedule)
+
+Click into a refresh plan and it's scheduling exactly like a subscription — a report-specific schedule here, running at 7 AM every day — plus the parameter values that run should use. This Year parameter's using its default value. That's the whole mechanism: a schedule plus parameter values, producing a cache that's already warm when someone actually opens the report.
+
+## Segment 7 (screenshot: history-snapshot-schedule)
+
+Switch to pregenerated snapshots instead, and a separate History Snapshots page takes over — its own schedule, 7 AM every day here, and notice Allow people to create snapshots manually, checked. That's what makes the manual New History Snapshot button actually work, independent of the schedule. Retention is its own call too: system default, a specific count like the 10 shown here, or keep every snapshot ever taken.
+
+## Segment 8 (outro)
 
 Last lesson of the chapter: performance considerations — pulling together dataset design, caching strategy, and expression complexity into one coherent approach.
