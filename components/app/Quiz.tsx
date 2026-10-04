@@ -4,6 +4,45 @@ import { useState } from "react";
 
 type Question = { q: string; options: string[]; answer: number; explain: string };
 
+// Many quiz.json files were authored with the correct option always listed
+// first — shuffle each question's options so the answer position isn't a
+// visible pattern. This is a static export: Quiz renders once at build time
+// for the prerendered HTML and again on the client during hydration, so the
+// shuffle must be deterministic (seeded from storageKey) rather than
+// Math.random() — otherwise the two renders disagree and React throws a
+// hydration mismatch.
+function hashSeed(str: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function mulberry32(seed: number) {
+  let a = seed;
+  return function random() {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffleQuestion(q: Question, rand: () => number): Question {
+  const order = q.options.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return {
+    ...q,
+    options: order.map((i) => q.options[i]),
+    answer: order.indexOf(q.answer),
+  };
+}
+
 export default function Quiz({
   questions,
   storageKey,
@@ -11,26 +50,30 @@ export default function Quiz({
   questions: Question[];
   storageKey: string;
 }) {
+  const [shuffled] = useState<Question[]>(() => {
+    const rand = mulberry32(hashSeed(storageKey));
+    return questions.map((q) => shuffleQuestion(q, rand));
+  });
   const [picks, setPicks] = useState<(number | null)[]>(
-    questions.map(() => null)
+    shuffled.map(() => null)
   );
   const [submitted, setSubmitted] = useState(false);
 
-  const score = picks.filter((p, i) => p === questions[i].answer).length;
+  const score = picks.filter((p, i) => p === shuffled[i].answer).length;
 
   function submit() {
     setSubmitted(true);
     try {
       localStorage.setItem(
         storageKey,
-        JSON.stringify({ score, total: questions.length, at: Date.now() })
+        JSON.stringify({ score, total: shuffled.length, at: Date.now() })
       );
     } catch {}
   }
 
   return (
     <div className="space-y-8">
-      {questions.map((question, qi) => (
+      {shuffled.map((question, qi) => (
         <fieldset key={qi}>
           <legend className="display text-xl">
             <span className="text-crimson">{qi + 1}.</span> {question.q}
@@ -93,7 +136,7 @@ export default function Quiz({
       ) : (
         <p className="display text-2xl">
           You scored <span className="text-crimson">{score}</span> of{" "}
-          {questions.length}.
+          {shuffled.length}.
         </p>
       )}
     </div>
