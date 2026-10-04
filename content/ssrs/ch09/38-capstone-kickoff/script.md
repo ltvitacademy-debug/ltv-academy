@@ -12,6 +12,18 @@ Here's the shape of it. A summary report — a matrix of sales by territory and 
 
 The summary report leans on three real warehouse tables — FactInternetSales, DimSalesTerritory, and DimDate. The detail report leans on three real transactional tables — SalesOrderHeader, SalesOrderDetail, and Product. And there's one column that makes the whole suite hang together: DimSalesTerritory's SalesTerritoryAlternateKey, which is just the original TerritoryID from AdventureWorks2012, carried into the warehouse unchanged. That's the bridge a drillthrough action passes across.
 
-## Segment 4 (outro)
+## Segment 4 (screenshot: data-source-properties-general)
+
+Every report in this suite starts from the same dialog — Data Source Properties. You'll open it twice: once pointed at AdventureWorksDW2014, once at AdventureWorks2012. Don't skip Test Connection — a data source that silently fails to connect is the single most common reason a capstone report just doesn't run next lesson.
+
+## Segment 5 (screenshot: query-designer-edit-as-text)
+
+Before Lesson 39 writes the real dataset query, open the query designer against AdventureWorksDW2014 and confirm FactInternetSales, DimSalesTerritory, and DimDate actually relate the way this lesson claims. Edit as Text drops you straight into SQL if you'd rather type it than drag fields around the relational designer.
+
+## Segment 6 (screenshot: query-designer-run-results)
+
+Run a query here, and the results grid fills in below with real rows before you ever touch a report's layout. That's exactly what this lesson's two verification queries should produce — against both databases — before you move on.
+
+## Segment 7 (outro)
 
 Before next lesson, confirm both data sources connect, and that you can see matching territory IDs on both sides. Next lesson, we build both reports for real — the datasets, the matrix layout, the parameters, and the drillthrough link that ties them together.

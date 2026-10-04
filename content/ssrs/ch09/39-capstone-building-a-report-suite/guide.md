@@ -72,7 +72,18 @@ Then create the report parameters:
 
 Because `dsSalesSummary`'s own `WHERE` clause filters on both, changing
 either parameter re-runs the query against the database — not just
-re-filters what's already on screen.
+re-filters what's already on screen. Here's that mechanism live — a
+parameter prompt backed by a dataset query instead of a typed-in list:
+
+![A report parameter prompt labeled "Store name" with an open dropdown list showing "<Select a Value>" highlighted and four real store names below it, plus a View Report button.](/courses/ssrs/ch09/39-capstone-building-a-report-suite/parameter-prompt-dropdown.png)
+*A parameter prompt populated from a dataset query — the same mechanism TerritoryGroup uses, just with store names instead of territory groups.*
+
+Once you create a parameter, Report Builder or SSDT surfaces it in two
+places at once — the Report Data pane's **Parameters** node, and a
+**Parameters** pane right on the design surface:
+
+![The Report Data pane on the left with a Parameters node expanded to show a selected StoreID parameter, and a Parameters pane on the right showing a Store ID row with an empty value box.](/courses/ssrs/ch09/39-capstone-building-a-report-suite/report-data-parameters-node.png)
+*Both TerritoryGroup and CalendarYear will show up in exactly these two spots once you build them.*
 
 ### The layout: a matrix
 
@@ -85,7 +96,11 @@ Drag a **Matrix** (Chapter 2, Lesson 9) onto the design surface:
 Apply a currency format to the data cell and right-align it (Chapter 4
 covers the expression and formatting details) — a matrix full of
 unformatted numbers is exactly the kind of layout mistake Chapter 2,
-Lesson 11 warns against.
+Lesson 11 warns against. Here's what that grouped, formatted shape
+looks like once it's actually built:
+
+![A finished Report Builder matrix with Territory, Sales Date rows down the left and nested Subcategory, weekday columns across the top, every data cell formatted as currency with row and column totals.](/courses/ssrs/ch09/39-capstone-building-a-report-suite/matrix-row-column-groups.png)
+*A finished matrix with nested row and column groups, formatted and totaled — the same grouped shape RegionalSalesSummary follows, with territory and year in place of these fields.*
 
 ## Report 2: OrderDetailByTerritory.rdl
 
@@ -133,8 +148,13 @@ by `SalesOrderID` (Chapter 2, Lesson 10):
 
 ## Wiring the drillthrough
 
-Back in `RegionalSalesSummary.rdl`, select the matrix's data cell,
-open its **Action** properties, and set (Chapter 6, Lesson 27):
+Back in `RegionalSalesSummary.rdl`, select the matrix's data cell —
+not a row header, not a column header, the cell itself:
+
+![A matrix cell showing [Territory] selected with resize handles visible around its border, distinct from the bold "Territory" column header above it.](/courses/ssrs/ch09/39-capstone-building-a-report-suite/matrix-select-data-cell.png)
+*Select the cell, not the header — its Action property is what gets the Go to report setting.*
+
+Then open its **Action** properties, and set (Chapter 6, Lesson 27):
 
 - **Action**: Go to report
 - **Specify a report**: `OrderDetailByTerritory`

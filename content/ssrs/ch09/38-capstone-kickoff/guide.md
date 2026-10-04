@@ -51,6 +51,21 @@ Lesson 39 builds every one of those four pieces, for both reports, in
 one sitting. Nothing here is thrown away between lessons; Lesson 40
 evaluates the same two `.rdl` files you're about to build.
 
+## Before you build: two working data sources
+
+Every report in this suite starts from the same dialog box — the
+**Data Source Properties** editor, where you pick a connection type and
+point it at a server:
+
+![The Data Source Properties dialog's General tab, with a Name field, a "Use a connection embedded in my report" option selected, a Select connection type dropdown set to Microsoft SQL Server, a Connection string box, and Build and Test Connection buttons.](/courses/ssrs/ch09/38-capstone-kickoff/data-source-properties-general.png)
+*The dialog you'll open twice for this project — once for AdventureWorksDW2014, once for AdventureWorks2012.*
+
+This lesson's lab has you open this exact dialog twice, with two
+different connection strings — one for the warehouse, one for the OLTP
+database. Don't skip **Test Connection**; a data source that silently
+fails to connect is the single most common reason a capstone report
+"just doesn't run" next lesson.
+
 ## The summary source: AdventureWorksDW2014
 
 The summary report's dataset queries three real dimensional tables in
@@ -70,6 +85,15 @@ OLTP source, carried into the warehouse unchanged. That single column
 is the bridge between the summary report's warehouse data and the
 detail report's transactional data.
 
+Before Lesson 39 builds the real dataset query, use the query designer
+against `AdventureWorksDW2014` to confirm the three tables above exist
+and relate the way this lesson claims — switch to **Edit as Text** if
+you'd rather type the SQL directly than drag fields in the relational
+designer:
+
+![The New Table or Matrix wizard's "Design a query" page, with Edit as Text, Import, and Run Query buttons across the top, a Database view tree of Tables/Views/Stored Procedures on the left, and empty Selected fields, Relationships, and Applied filters panes on the right.](/courses/ssrs/ch09/38-capstone-kickoff/query-designer-edit-as-text.png)
+*The query designer you'll open against both databases — Edit as Text drops you straight into SQL.*
+
 ## The detail source: AdventureWorks2012
 
 The detail report's dataset queries three real OLTP tables in
@@ -85,6 +109,13 @@ the summary report:
 These are the same ordinary transactional tables the SSIS Development
 capstone extracted from — no dimensional shape, just the rows a sales
 system actually writes.
+
+Run a query in that same designer and the **Query results** pane fills
+in below with real rows before you ever touch the report's layout —
+exactly what the lab's two verification queries below should produce:
+
+![The query designer with a typed SQL SELECT statement across the top and a Query results grid underneath showing real returned rows with SalesDate, Subcategory, Product, Sales, and Quantity columns.](/courses/ssrs/ch09/38-capstone-kickoff/query-designer-run-results.png)
+*Select Run and the result set appears immediately underneath — if a query against either database can't produce this, fix that before Lesson 39.*
 
 ## Key terms
 

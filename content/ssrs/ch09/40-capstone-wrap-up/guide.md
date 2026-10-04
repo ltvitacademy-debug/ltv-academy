@@ -30,6 +30,14 @@ because it has extra features nobody asked for, but because it does
 exactly what Lesson 38 scoped, and does it as one connected suite
 rather than two unrelated reports.
 
+The drillthrough row is the one worth double-checking against something
+real. Here's the same mechanic at work in a different report: clicking a
+value in a summary report's own column opens a second report already
+scoped to just that value.
+
+![Two connected paginated reports: a "2009 Product Category Sales" summary table with clickable category names, and below it a "Sales and Returns for Category: Games and Toys" detail table that the Games and Toys link opens.](/courses/ssrs/ch09/40-capstone-wrap-up/summary-to-detail-drillthrough.gif)
+*A summary report's own column value opening a second report already scoped to just that value — the same mechanic your matrix cell uses with TerritoryID and Year.*
+
 ## Presenting it like a real project
 
 A working report suite isn't the same thing as a report suite someone
@@ -69,6 +77,19 @@ built in Lesson 39, not something you're claiming. If you keep both
 architecture table above, that's a real, inspectable portfolio artifact
 — something Chapter 7's subscription concepts would turn into an actual
 scheduled email delivery in a real workplace.
+
+"Inspectable" means someone else can actually open it. Once deployed,
+your two reports sit in a report server folder like any other —
+each with its own menu for managing it:
+
+![A "Paginated reports" folder listing showing a "Company Sales" report with a three-dot ellipsis menu in the corner.](/courses/ssrs/ch09/40-capstone-wrap-up/web-portal-report-folder.png)
+*A deployed paginated report in its report server folder — this is where RegionalSalesSummary and OrderDetailByTerritory would live once published.*
+
+Open that menu and Manage, and you land on a Properties screen with the
+report's name, description, and a direct download link:
+
+![An "Edit Company Sales" properties screen with Name and Description fields, and a toolbar with Delete, Move, Create Linked Report, Edit in Report Builder, Download, and Replace buttons.](/courses/ssrs/ch09/40-capstone-wrap-up/web-portal-report-properties.png)
+*A deployed report's Properties screen, with a direct Download link — the difference between a project on your own machine and one someone else can actually open.*
 
 ## What you've built, across nine chapters
 
