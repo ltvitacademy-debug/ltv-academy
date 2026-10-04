@@ -60,6 +60,16 @@ export default async function LessonPage({
       </p>
       <h1 className="display text-3xl sm:text-4xl">{lesson.title}</h1>
 
+      {AI_CHAT_COURSE_SLUGS.has(course.slug) && (
+        <div className="mt-8 border border-gold/60 bg-gold/5 p-6">
+          <LessonChat
+            courseTitle={course.title}
+            lessonTitle={lesson.title}
+            guideExcerpt={content?.guideMd ?? ""}
+          />
+        </div>
+      )}
+
       {lesson.videoUrl ? (
         <div className="mt-8 border border-ink/15 bg-ink">
           <video
@@ -96,16 +106,6 @@ export default async function LessonPage({
           <Quiz
             storageKey={`quiz:${course.slug}:${lesson.slug}`}
             questions={content.quiz.questions}
-          />
-        </div>
-      )}
-
-      {AI_CHAT_COURSE_SLUGS.has(course.slug) && (
-        <div className="mt-14 border-t-2 border-gold pt-8">
-          <LessonChat
-            courseTitle={course.title}
-            lessonTitle={lesson.title}
-            guideExcerpt={content?.guideMd ?? ""}
           />
         </div>
       )}
