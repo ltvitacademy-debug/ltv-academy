@@ -41,12 +41,18 @@ typed into the **For Loop Editor**:
 - **AssignExpression** (optional) — updates the counter after every
   pass. For example, `@Counter = @Counter + 1`.
 
+![The For Loop Editor just opened, with InitExpression, EvalExpression, and AssignExpression all blank under For Loop Properties, and Name/Description set to "For Loop Container" under General.](/courses/ssis/ch02/10-for-loop-and-foreach-loop/for-loop-empty.png)
+*The For Loop Editor right after you drop the container in — all three expressions start blank.*
+
 With those three expressions, a For Loop container with a Send Mail
 task inside it and `@Counter < 4` as its EvalExpression sends exactly
 four e-mails, one per pass, before the loop stops. A For Loop container
 can only have one EvalExpression, so every task inside it runs the same
 number of times — but you can nest another For Loop container inside it
 for more complex, multi-level looping.
+
+![The For Loop Container dropped onto the Control Flow design surface, with the Variables window open beside it showing a CounterNumber variable of type Int32, value 0.](/courses/ssis/ch02/10-for-loop-and-foreach-loop/for-loop-canvas-and-variable.png)
+*Most For Loop containers are driven by a package variable like this one — exactly what you'd reference in all three expressions.*
 
 ## The Foreach Loop container's enumerators
 
@@ -67,6 +73,15 @@ A package can only use one enumerator type per Foreach Loop container —
 if you need to loop over two different kinds of things, you need two
 containers.
 
+![The Foreach Loop Editor's General page, with General, Collection, Variable Mappings, and Expressions listed in the left-hand nav, and Name set to "SSIS Foreach Loop FILE Enumerator."](/courses/ssis/ch02/10-for-loop-and-foreach-loop/foreach-general.png)
+*The Foreach Loop Editor — General, Collection, Variable Mappings, and Expressions are its four pages.*
+
+On **Collection**, you pick the enumerator type first — the configuration
+area underneath changes to match whatever that enumerator needs. For
+Foreach File, that's a folder, a `*.txt`-style file filter, how to
+retrieve the file name (name only, fully qualified path, or name and
+extension), and a **Traverse subfolders** checkbox.
+
 ## Getting values out of the loop: variable mappings
 
 Neither container is useful unless the rest of your control flow can
@@ -78,6 +93,11 @@ the Foreach File enumerator's current file path to a variable, then use
 a property expression to update a File Connection Manager's
 `ConnectionString` with that variable — so the same connection manager
 points at a different file on every pass.
+
+On **Variable Mappings**, you pick an existing variable or create one on
+the spot from the **Variable** dropdown, and set its **Index** — `0` for
+a single-value enumerator like Foreach File, since there's only one
+value coming out per pass.
 
 ## Key terms
 

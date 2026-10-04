@@ -1,4 +1,4 @@
-# Script — Execute SQL Task
+# Script — The Execute SQL Task
 
 ## Segment 1 (title)
 
@@ -6,24 +6,34 @@ The Execute SQL Task is one of the tasks you'll reach for in nearly
 every package you build. Let's look at what it actually runs, and how
 to configure it correctly.
 
-## Segment 2 (steps: four things you configure)
+## Segment 2 (screenshot: task-on-canvas.png)
 
-At its core, the Execute SQL Task runs SQL statements or stored
-procedures straight from your control flow — no Data Flow Task
-required. You'll use it to truncate a table before a load, create or
-drop objects, re-create fact and dimension tables, run a stored
-procedure, or save a query's result into a variable for later tasks to
-use.
+It starts the same way every control flow task does — drag it from the
+Toolbox, drop it on the Control Flow surface. One task, ready to
+configure.
 
-Configuring it comes down to four things. First, Connection — which
-connection manager type it uses: OLE DB, ODBC, ADO, ADO.NET, or
-SQLMOBILE. Second, SQLSourceType — where the statement itself comes
-from: typed directly in, read from a file, or pulled from a variable.
-Third, Parameter Mapping — binding variables to the statement's Input,
-Output, and ReturnValue parameters. And fourth, ResultSet — what kind of
-result comes back: None, Single row, Full result set, or XML.
+## Segment 3 (screenshot: general-page.png)
 
-## Segment 3 (code: OLE DB parameter markers)
+Double-click it, and here's the real Execute SQL Task Editor. Its
+General page is where three of the four things you're configuring
+actually live — Connection, SQLSourceType, and SQLStatement — and the
+left-hand nav shows the other two pages you'll use: Parameter Mapping
+and Result Set, plus Expressions for anything you want driven
+dynamically.
+
+## Segment 4 (steps: three key properties)
+
+Three properties decide almost everything else. ConnectionType picks
+the connection manager family — OLE DB, ODBC, ADO, ADO.NET, or
+SQLMOBILE — and that choice also decides which parameter marker syntax
+you're allowed to use later. SQLSourceType decides where the statement
+text comes from — typed directly in, read from a file connection, or
+pulled from a variable at run time. And ResultSet decides what, if
+anything, comes back — None for most INSERTs and UPDATEs, Single row
+for something like a COUNT, Full result set for a multi-row SELECT, or
+XML for a SELECT FOR XML statement.
+
+## Segment 5 (code: parameter markers)
 
 Here's where most Execute SQL Task mistakes actually happen —
 parameter markers. OLE DB, Excel, and ODBC connections all use a
@@ -34,7 +44,16 @@ zero. ADO.NET connections are different — they use named markers like
 style for your connection type, and the task fails before it even runs
 your SQL.
 
-## Segment 4 (outro)
+## Segment 6 (screenshot: parameter-mapping.png)
+
+Once your statement has markers, Parameter Mapping is where you bind
+them. Every row ties a package variable to a parameter — Variable Name
+on the left, Direction, Data Type, Parameter Name, and Parameter Size
+filling out the rest of the row. The order these rows appear in has to
+match the order the markers appear in your statement, because the task
+binds them positionally, not by name.
+
+## Segment 7 (outro)
 
 Combine the Execute SQL Task with the looping containers from Lesson
 10, and you can run the same parameterized statement once per file, or

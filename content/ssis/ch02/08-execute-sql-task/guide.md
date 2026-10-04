@@ -32,6 +32,28 @@ and when you combine it with the For Loop or Foreach Loop containers
 from Lesson 10, it can run the same statement repeatedly with different
 parameter values each time.
 
+![An Execute SQL Task dropped onto the Control Flow design surface, selected, with its connector handle showing below it.](/courses/ssis/ch02/08-execute-sql-task/task-on-canvas.png)
+*Drag it from the Toolbox, drop it on the canvas — the same motion as every other control flow task.*
+
+## Configuring the task
+
+Four things drive most of the configuration work, whichever way you get
+there — through **SSIS Designer** or programmatically. The Execute SQL
+Task Editor spreads them across its own four pages:
+
+![The Execute SQL Task Editor's General page, with General, Parameter Mapping, Result Set, and Expressions listed in the left-hand nav and ConnectionType, SQLSourceType, and SQLStatement visible under a SQL Statement heading.](/courses/ssis/ch02/08-execute-sql-task/general-page.png)
+*The General page — ConnectionType, SQLSourceType, and SQLStatement live here; Parameter Mapping, Result Set, and Expressions are the other three pages in the left nav.*
+
+- **Connection** — the type of connection manager and which specific
+  connection to use.
+- **SQLSourceType** — direct input, file connection, or variable, as
+  above.
+- **Parameter Mapping** — binding variables to the **Input**, **Output**,
+  and **ReturnValue** parameters your statement or stored procedure
+  uses.
+- **ResultSet** — what kind of result, if any, comes back: **None**,
+  **Single row**, **Full result set**, or **XML**.
+
 ## Connecting to a data source
 
 The task doesn't talk to a database on its own — it uses whichever
@@ -58,21 +80,6 @@ The **SQLSourceType** property has three options:
 - **Variable** — the statement is the value of a variable, set at
   design time or computed at run time.
 
-## Configuring the task
-
-Four things drive most of the configuration work, whichever way you get
-there — through **SSIS Designer** or programmatically:
-
-- **Connection** — the type of connection manager and which specific
-  connection to use.
-- **SQLSourceType** — direct input, file connection, or variable, as
-  above.
-- **Parameter Mapping** — binding variables to the **Input**, **Output**,
-  and **ReturnValue** parameters your statement or stored procedure
-  uses.
-- **ResultSet** — what kind of result, if any, comes back: **None**,
-  **Single row**, **Full result set**, or **XML**.
-
 ## Parameters and parameter markers
 
 Every connection type has its own marker syntax, and getting this wrong
@@ -95,6 +102,9 @@ WHERE ProductID > ? AND ProductID < ?
 The order of your parameter mappings must match the order the markers
 appear in the statement — the task binds them positionally, not by
 name.
+
+![The Parameter Mapping page's grid, with Variable Name, Direction, Data Type, Parameter Name, and Parameter Size columns, and one mapped row: System::CancelEvent, Input, LONG, NewParameterName, -1.](/courses/ssis/ch02/08-execute-sql-task/parameter-mapping.png)
+*One row per parameter — Variable Name on the left, the matching Parameter Name/ordinal on the right.*
 
 ## Result sets
 
