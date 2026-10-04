@@ -35,15 +35,27 @@ is your "what's happening on this server at this exact moment" view.
 For history, SSMS ships a set of **standard reports**, opened the same
 way: right-click **SSISDB → Reports → Standard Reports**.
 
+![Right-click context menu on SSISDB under Integration Services Catalogs, with Reports flyout open to Standard Reports, listing Integration Services Dashboard, All Executions, All Validations, All Operations, and All Connections.](/courses/ssis/ch08/45-monitoring-package-execution/ssisdb-reports-context-menu.png)
+*Every report on this flyout reads from the same SSISDB catalog data — none of them are separate logs.*
+
 - **Integration Services Dashboard** — the default landing view: how
   many executions failed, succeeded, or are still running in the last 24
   hours, plus which connections failed. From here you can drill into any
   package's **Overview** (task-by-task status), **All Messages** (every
   event and error message), or **Execution Performance** report.
+
+![Integration Services Dashboard report showing Failed 1, Running 0, Succeeded 1, Others 0 for the past 24 hours, a connection information table, and a packages detailed information table with Overview / All Messages / Execution Performance links per row.](/courses/ssis/ch08/45-monitoring-package-execution/integration-services-dashboard.png)
+*The failed/running/succeeded counts up top are the first thing to check after a scheduled run.*
+
 - **All Executions** — every execution across a date range you choose
-  (not locked to the last 24 hours like the Dashboard), including the
-  exact parameter values used for each run — useful for confirming which
-  environment's values actually applied to a specific historical run.
+  (not locked to the last 24 hours like the Dashboard), with the same
+  per-row Overview / All Messages / Execution Performance links — useful
+  for confirming exactly what happened on a specific day, not just
+  today.
+
+![All Executions report listing three historical executions with ID, Status, Report links, Folder Name, Project Name, Package Name, Start Time, End Time, and Duration columns.](/courses/ssis/ch08/45-monitoring-package-execution/all-executions-report.png)
+*Each row's Execution Performance link opens the same per-run report Lesson 44's logging level controls.*
+
 - **All Connections** — every connection that has *failed* across
   executions, with the connection string and how many times it failed.
 - **All Operations** / **All Validations** — the broader picture beyond
@@ -59,6 +71,9 @@ that detail simply isn't there to look at later, no matter how badly you
 need it after the fact. This is the direct payoff of Lesson 44's
 logging-level decision: choose it with monitoring in mind, not just at
 random.
+
+![Execution Performance report for one execution: Operation ID, Package, Environment, Status, Duration, Start/End Time, and Caller fields, a past-executions duration line chart, and an empty Data Flow Components Information table at the bottom.](/courses/ssis/ch08/45-monitoring-package-execution/execution-performance-report.png)
+*This run's Environment field shows which SSISDB environment resolved its parameters — and its Data Flow Components table is empty, because this run's logging level was Basic.*
 
 ## Key terms
 

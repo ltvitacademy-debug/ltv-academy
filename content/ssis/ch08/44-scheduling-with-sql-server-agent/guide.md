@@ -27,6 +27,10 @@ In SQL Server Management Studio, under the **SQL Server Agent** node in
 Object Explorer:
 
 1. Right-click **Jobs → New Job**, give it a name, and select **Enabled**.
+
+![SQL Server Agent node in Object Explorer, with the Jobs folder right-clicked and New Job… highlighted in the context menu.](/courses/ssis/ch08/44-scheduling-with-sql-server-agent/new-job-menu.png)
+*This is the whole shell — nothing runs yet until a step is added.*
+
 2. On the **Steps** page, add a **New** step and set its **Type** to
    **SQL Server Integration Services Package**.
 3. Set **Run as** to either the SQL Server Agent Service Account, or (the
@@ -38,6 +42,9 @@ Object Explorer:
    course's Project Deployment Model), then browse to the deployed
    package under Integration Services Catalogs in Object Explorer.
 
+![New Job Step dialog, Package tab, with Type set to SQL Server Integration Services Package, Package source set to SSIS Catalog, and a package path under SSISDB filled in.](/courses/ssis/ch08/44-scheduling-with-sql-server-agent/job-step-package-tab.png)
+*The Type dropdown is the one setting that turns a generic job step into one that runs a deployed SSIS package.*
+
 ## Where parameters and environments plug in
 
 This is where Lesson 30 and Lesson 43 connect directly to scheduling:
@@ -47,6 +54,9 @@ literal, or — the pattern this course uses — by selecting **Environment**
 and pointing at the SSISDB environment (e.g. `PROD`) whose environment
 variables should resolve those values for this specific job's runs.
 
+![Same New Job Step dialog, Configuration tab, Parameters sub-tab, with a grid of parameters and the Environment checkbox checked at the bottom pointing at a DEV environment.](/courses/ssis/ch08/44-scheduling-with-sql-server-agent/job-step-configuration-environment.png)
+*Check Environment and pick the SSISDB environment this job's runs should resolve their parameter values from.*
+
 ## Scheduling and logging level
 
 Once the step is configured, the **Schedules** page attaches a recurring
@@ -55,6 +65,9 @@ what makes it actually unattended. On the step's **Configuration** tab,
 you also pick a **logging level** (`None`, `Basic`, `Performance`, or
 `Verbose`) that controls how much detail the SSISDB catalog records for
 each run — Lesson 45 uses exactly this logged data.
+
+![New Job dialog's own Schedules page, with an empty schedule list and New / Pick / Edit / Remove buttons along the bottom.](/courses/ssis/ch08/44-scheduling-with-sql-server-agent/new-job-schedules-page.png)
+*This is a separate page on the job itself, not the job step — click New to attach a recurrence.*
 
 ## When a job step fails but SSDT runs fine
 
