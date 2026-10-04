@@ -25,7 +25,7 @@ export const GOV_METADATA_MANAGEMENT_AND_BUSINESS_GLOSSARY_CHAPTERS: ChapterMeta
     n: 1,
     title: "Metadata Foundations",
     lessons: [
-      L(1, "what-metadata-is", "What Metadata Is"),
+      L(1, "what-metadata-is", "What Metadata Is", { contentDir: "ch01/01-what-metadata-is" }),
       L(2, "business-technical-and-operational-metadata", "Business, Technical and Operational Metadata"),
       L(3, "metadata-standards", "Metadata Standards"),
       L(4, "the-metadata-management-lifecycle", "The Metadata Management Lifecycle"),
