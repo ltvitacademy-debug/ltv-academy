@@ -5,17 +5,6 @@ import Quiz from "@/components/app/Quiz";
 import MarkComplete from "@/components/app/MarkComplete";
 import LessonChat from "@/components/app/LessonChat";
 
-// AI lesson helper is scoped to the Microsoft Data & BI Developer path for now
-// (the career path this was built for) — see lib/career-paths.ts.
-const AI_CHAT_COURSE_SLUGS = new Set([
-  "t-sql-development",
-  "ssis-development",
-  "ssrs-development",
-  "power-bi",
-  "data-modeling-and-data-warehousing",
-  "microsoft-bi-capstone",
-]);
-
 export function generateStaticParams() {
   return COURSES.flatMap((c) =>
     (c.chapters ?? []).flatMap((ch) =>
@@ -100,15 +89,13 @@ export default async function LessonPage({
         </div>
       )}
 
-      {AI_CHAT_COURSE_SLUGS.has(course.slug) && (
-        <div className="mt-14 border-t-2 border-gold pt-8">
-          <LessonChat
-            courseTitle={course.title}
-            lessonTitle={lesson.title}
-            guideExcerpt={content?.guideMd ?? ""}
-          />
-        </div>
-      )}
+      <div className="mt-14 border-t-2 border-gold pt-8">
+        <LessonChat
+          courseTitle={course.title}
+          lessonTitle={lesson.title}
+          guideExcerpt={content?.guideMd ?? ""}
+        />
+      </div>
 
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-ink/15 pt-6">
         <MarkComplete storageKey={`done:${course.slug}:${lesson.slug}`} lessonHref={`/app/courses/${course.slug}/${lesson.slug}`} lessonTitle={lesson.title} courseSlug={course.slug} />
