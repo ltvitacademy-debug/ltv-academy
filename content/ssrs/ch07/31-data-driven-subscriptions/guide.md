@@ -67,6 +67,16 @@ dataset you just built. That mapping step is what actually turns raw
 query columns into "who gets this report, with what parameters, delivered
 how."
 
+![Delivery options (E-Mail) grid: To, Cc, Bcc, Reply-To, Include Report, Render Format, Priority, Subject, Comment, and Include Link, each with a Source of value dropdown and a Value/field column.](/courses/ssrs/ch07/31-data-driven-subscriptions/map-email-fields-to-dataset.png)
+*Every delivery field gets set to a literal value or mapped to a dataset column.*
+
+Each row has a **Source of value** — leave it blank, type a literal value,
+or choose **Get value from dataset**, which unlocks a **Value/field**
+dropdown listing every column your query returned. Set **To**'s source to
+the dataset and its field to a column like `ToEmailAddress`, and that one
+row is what turns a flat list of addresses into one correctly-addressed
+delivery per row.
+
 ## Key terms
 
 | Term | Meaning |

@@ -22,9 +22,18 @@ item, and then referenced by any number of reports and subscriptions. A
 **report-specific schedule** is defined inline, right inside the
 subscription (or report execution properties) that uses it — there's no
 separate item to manage, just settings baked into that one subscription.
+
+![New Subscription page's Schedule section: a Shared schedule radio with a Select a shared schedule dropdown, and a Report-specific schedule radio (selected) with an Edit schedule link and 'At 2:00 AM every day, starting 10/1/2020' underneath.](/courses/ssrs/ch07/33-subscription-scheduling/schedule-shared-vs-report-specific.png)
+*Shared schedule (pick from a dropdown) or report-specific (defined inline).*
+
 Both express the same underlying recurrence patterns — hourly, daily,
 weekly, monthly, or a one-time run — the difference is entirely about
 where the schedule information lives and how many things can point at it.
+Clicking **Edit schedule** on a report-specific schedule opens the same
+recurrence picker a shared schedule uses when you create one:
+
+![Edit Schedule page: Hour/Day/Week/Month/Once recurrence radios with Day selected, the daily day-of-week checkboxes, start time, and start/end dates.](/courses/ssrs/ch07/33-subscription-scheduling/edit-schedule.png)
+*Both schedule types express the same recurrence patterns underneath.*
 
 ## Why shared schedules win at scale
 
@@ -56,14 +65,21 @@ again, and you're back to managing each one by hand.
 A schedule you create doesn't run itself — it's backed by real
 infrastructure. Creating a schedule writes its recurrence information to
 the report server database and creates a corresponding **SQL Server
-Agent** job. When that job fires, it drops an event into a queue the
-**Scheduling and Delivery Processor** polls at regular intervals (every
-10 seconds, by default). The processor picks the event up, calls the
-report processor to run or refresh the report, and hands the result to
-whichever delivery extension the subscription specifies. Stop SQL Server
-Agent for a stretch of time, and every scheduled operation that should
-have fired during that window is simply lost — it isn't queued up to
-catch up later.
+Agent** job.
+
+![SQL Server Management Studio's Object Explorer with SQL Server Agent expanded, showing the Jobs folder and a long list of GUID-named jobs underneath it.](/courses/ssrs/ch07/33-subscription-scheduling/agent-jobs-folder.jpg)
+*Every schedule becomes a real Agent job — this is what that looks like.*
+
+That's what the jobs actually look like in SQL Server Agent: one entry
+per schedule, named with an unreadable GUID rather than the report's
+name, because a single schedule can back more than one subscription. When
+the job fires, it drops an event into a queue the **Scheduling and
+Delivery Processor** polls at regular intervals (every 10 seconds, by
+default). The processor picks the event up, calls the report processor to
+run or refresh the report, and hands the result to whichever delivery
+extension the subscription specifies. Stop SQL Server Agent for a stretch
+of time, and every scheduled operation that should have fired during that
+window is simply lost — it isn't queued up to catch up later.
 
 ## Key terms
 

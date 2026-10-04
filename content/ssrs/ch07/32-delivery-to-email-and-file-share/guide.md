@@ -68,6 +68,16 @@ instance) simply aren't available once the report's been rendered and
 shipped. That's a reason to avoid formats that only make sense
 interactively, like HTML 4.0, for either delivery extension.
 
+![Render Format dropdown open over the Windows File Share delivery options, listing Word, Excel, PowerPoint, PDF, TIFF file, MHTML (web archive), CSV (comma delimited), XML file with report data, and Data Feed.](/courses/ssrs/ch07/32-delivery-to-email-and-file-share/render-format-options.png)
+*The same dropdown, every destination: nine output formats to choose from.*
+
+It's the same **Render Format** dropdown behind both destinations — nine
+choices in total. Office formats (Word, Excel, PowerPoint) and PDF cover
+most business needs; TIFF renders the report as a paginated image; MHTML
+is the one that lets an e-mail subscription embed the report in the
+message body instead of attaching it; CSV, XML, and Data Feed exist for
+feeding the output into some other system rather than a person.
+
 ## Key terms
 
 | Term | Meaning |

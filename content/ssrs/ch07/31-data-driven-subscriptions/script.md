@@ -12,8 +12,16 @@ Before any of that works, you need a dataset — a data source, plus a query or 
 
 ## Segment 3 (screenshot: query-section)
 
-Selecting Edit Dataset takes you to the Query section, which actually tells you which fields your query needs to return — it lists the exact delivery options and report parameters based on what you've configured elsewhere in the wizard. Two things about that result set matter more than anything else. Columns determine what you're allowed to map to delivery settings and parameters — an email subscription needs a column of email addresses. And rows determine how many deliveries get generated: ten thousand rows means ten thousand separate notifications. Microsoft's own advice is worth following here — run the query in Management Studio first, confirm the results look right, before you ever paste it into this wizard.
+Selecting Edit Dataset takes you to the Query section, which actually tells you which fields your query needs to return — it lists the exact delivery options and report parameters based on what you've configured elsewhere in the wizard.
 
-## Segment 4 (outro)
+## Segment 4 (screenshot: map-email-fields-to-dataset)
+
+Once the query validates, this is where it actually gets used: a Delivery options grid, one row per field the subscription needs — To, Cc, Bcc, Include Report, Render Format, Subject, and the rest. Each row gets a source of value — a literal value you type in, or Get value from dataset, which hands you a Value/field dropdown listing every column your query returned. Set To's source to the dataset and its field to ToEmailAddress, and that one row alone is what turns a flat list of email addresses into a thousand individual, correctly-addressed deliveries.
+
+## Segment 5 (steps: what the result set controls)
+
+Two things about that result set matter more than anything else. Columns determine what you're allowed to map to delivery settings and parameters — an email subscription needs a column of email addresses. And rows determine how many deliveries get generated: ten thousand rows means ten thousand separate notifications. Microsoft's own advice is worth following here — run the query in Management Studio first, confirm the results look right, before you ever paste it into this wizard.
+
+## Segment 6 (outro)
 
 Next lesson, we go deep on the two delivery extensions every subscription eventually hands off to — email and Windows file share — and exactly what each one asks for.
