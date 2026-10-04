@@ -36,7 +36,7 @@ export const GOV_METADATA_MANAGEMENT_AND_BUSINESS_GLOSSARY_CHAPTERS: ChapterMeta
     n: 2,
     title: "Business Glossary",
     lessons: [
-      L(6, "business-glossary-concepts", "Business Glossary Concepts"),
+      L(6, "business-glossary-concepts", "Business Glossary Concepts", { contentDir: "ch02/06-business-glossary-concepts" }),
       L(7, "writing-good-definitions", "Writing Good Definitions"),
       L(8, "glossary-governance-and-approval", "Glossary Governance and Approval"),
       L(9, "glossary-terms-and-hierarchies", "Glossary Terms and Hierarchies"),
