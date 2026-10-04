@@ -16,6 +16,10 @@ Finish the wizard, and this is what lands on the design surface — a fully wire
 
 So when do you reach for a List instead of a Table? A Table is a fixed grid — rows and columns, spreadsheet-style. A List repeats an entire freeform block per record instead — think a directory of employee cards, not a spreadsheet. If what you're picturing looks like rows and columns, use Table. If it looks like a repeated card or form, use List.
 
-## Segment 5 (outro)
+## Segment 5 (screenshot: report-builder-free-form-report-complete)
+
+Here's what that looks like finished — a newsletter-style List report. One List contains a headline, a greeting, body text, a product sales table, and two charts, all bound together inside that dashed List boundary. Report Builder repeats the whole block once per territory, the same way a Table repeats one row at a time.
+
+## Segment 6 (outro)
 
 Next lesson, we add a second dimension — literally — with the Matrix data region.

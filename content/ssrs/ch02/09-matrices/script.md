@@ -4,18 +4,22 @@
 
 A Table groups data down the page. This lesson, we group it both ways — rows and columns — with the Matrix data region. Same wizard as last time, one more box actually gets used.
 
-## Segment 2 (screenshot: report-builder-row-and-column-groups)
+## Segment 2 (screenshot: report-builder-arrange-fields-report-wizard)
+
+Here's that same Arrange fields page from the wizard. Row groups gets Territory, then SalesDate nested under it, going down. Column groups — empty last time, for a Table — now gets Subcategory, then Product nested under it, going across. And Values gets Sales and Quantity, both summed by default.
+
+## Segment 3 (screenshot: report-builder-row-and-column-groups)
 
 This time, both the Row Groups pane and the Column Groups pane get populated. Territory with SalesDate nested under it, going down. Subcategory with Product nested under it, going across. Two independent grouping hierarchies, side by side — that's the whole difference between a matrix and a table.
 
-## Segment 3 (screenshot: report-builder-matrix-tutorial)
+## Segment 4 (screenshot: report-builder-matrix-tutorial)
 
 Run it, and every row-and-column combination gets its own cell. Central territory crossed with Accessories, North crossed with Digital, and so on — with totals in both directions, because subtotaling applies independently to each dimension. This is a genuine cross-tab, the same shape as a pivot table.
 
-## Segment 4 (steps: matrix-grows-sideways)
+## Segment 5 (steps: matrix-grows-sideways)
 
 Here's the catch. A table only gets taller as data grows. A matrix can get wider too — every distinct value in that column-group field adds another column. Microsoft's own docs put it bluntly: expand a subcategory with a lot of products, and the report "quickly gets wide." That's a real problem for anything you're printing. Two fixes: resize columns down to just what's needed, and rotate labels 270 degrees with the WritingMode property to save horizontal space.
 
-## Segment 5 (outro)
+## Segment 6 (outro)
 
 Next lesson, we go deeper into that Grouping pane itself — Row Groups, Column Groups, and how sorting fits alongside them.

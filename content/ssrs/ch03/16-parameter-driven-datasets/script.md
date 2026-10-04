@@ -6,12 +6,16 @@ This lesson ties the whole chapter together: parameter-driven datasets — how t
 
 ## Segment 2 (screenshot: dataset-properties-parameters-mapping)
 
-Every technique in this chapter comes down to the same mechanism. A dataset's query contains a placeholder like at-StoreID, and that placeholder gets mapped to a report parameter's value right here, on the Dataset Properties dialog's Parameters tab. Read it left to right: Parameter Name is what the query text uses. Parameter Value is the expression supplying it — almost always bracket-at-StoreID, which is shorthand for equals-Parameters-bang-StoreID-dot-Value. When a query variable gets created automatically, Report Builder sets up this exact mapping for you.
+Every technique in this chapter comes down to the same mechanism. A dataset's query contains a placeholder like at-StoreID, and that placeholder gets mapped to a report parameter's value right here, on the Dataset Properties dialog's Parameters tab. Read it left to right: Parameter Name is what the query text uses. Parameter Value is the expression supplying it — almost always bracket-at-ReportYear, which is shorthand for equals-Parameters-bang-ReportYear-dot-Value. When a query variable gets created automatically, Report Builder sets up this exact mapping for you.
 
-## Segment 3 (code: WHERE clause)
+## Segment 3 (screenshot: dataset-query-text-where-in-param)
 
-The query itself is ordinary T-SQL with one addition. WHERE StoreID equals at-StoreID, in parentheses — for a single value. If that same parameter later becomes multi-value, the clause has to change its operator: WHERE StoreID IN at-StoreID. IN tests the column against a set of values, which is exactly what a multi-value parameter supplies. Nothing exotic here — it's the same parameterized query pattern you'd use calling a stored procedure from application code. What's different is that the mapping itself is entirely visual, with no glue code required.
+And here's the placeholder itself, living right inside an ordinary query. No special syntax, no separate parameter language — at-JobTitleParam is typed directly into the WHERE clause, exactly where a literal value would otherwise go. For a single value you'd see an equals sign; here, because this parameter allows multiple values, it's IN instead.
 
-## Segment 4 (outro)
+## Segment 4 (screenshot: profiler-executed-query-resolved-values)
+
+And this is the part that proves it's not just a design-time convenience. SQL Server Profiler captured exactly what the server received for this query — and at-JobTitleParam is gone, replaced with the literal values the reader actually checked. The mapping is visual at design time; what actually runs is ordinary parameterized T-SQL, the same pattern you'd use calling a stored procedure from application code.
+
+## Segment 5 (outro)
 
 Next lesson, we move into the Expression Editor — where report values get calculated and formatted, starting the next part of this course.

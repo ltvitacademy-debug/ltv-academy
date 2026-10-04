@@ -70,6 +70,13 @@ Rule of thumb: if what you're picturing looks like a spreadsheet,
 reach for **Table**. If it looks like a repeated form or card layout,
 reach for **List**.
 
+Here's a finished List report — a "newsletter" built from one List
+containing a text block, a table, and two charts, repeated once for
+every territory in the dataset:
+
+![A finished List-based report: a red "Newsletter for Central" headline, a personalized greeting, body text, a product sales table with a total, and a pie chart and bar chart on the right.](/courses/ssrs/ch02/08-tables-and-lists/report-builder-free-form-report-complete.png)
+*Everything inside the dashed List boundary is one unit — Report Builder repeats the whole thing once per group, the same way a Table repeats one row.*
+
 ## Key terms
 
 | Term | Meaning |

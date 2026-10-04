@@ -8,14 +8,22 @@ Now that you know where a report's data comes from, let's get oriented in the Re
 
 This is the whole Report Builder window, numbered. One is the ribbon — Home, Insert, View. Two is Parameters, empty until you add some. Three is the Report Part Gallery, a deprecated feature you'll rarely open. Four is Properties, showing whatever's currently selected. Five is the actual design surface — the canvas. Six is Report Data, the pane from last lesson. Seven is Grouping — Row Groups and Column Groups. And eight is Run, which switches you into a live preview.
 
-## Segment 3 (steps: not-wysiwyg)
+## Segment 3 (screenshot: report-builder-selected-table-ribbon)
+
+Select anything on that design surface — a table, a text box, an image — and you get the same two selection affordances every time. A small move handle in the upper-left corner drags the whole item, and square resize handles around the border stretch it. Same behavior, whatever you've selected.
+
+## Segment 4 (steps: not-wysiwyg)
 
 Here's the single most common surprise: the design surface is not a page preview. Its size has no relationship to the physical page you'll print or export to. Growing the canvas doesn't grow your print area. Item position does matter — Report Builder preserves spacing when it renders — but the canvas itself is just a workspace. To actually see page breaks, you switch to Print Layout from the Run tab.
 
-## Segment 4 (steps: right-click-targets)
+## Segment 5 (screenshot: report-builder-run-tab-ribbon)
+
+And here's that Run tab's ribbon. Design and Zoom on the left. Navigation in the middle — page count, Refresh, Stop, Back. Then the Print group, with Page Setup and Print Layout sitting right next to the Print button itself. That's the one button that actually simulates the printed page instead of the flexible design canvas.
+
+## Segment 6 (steps: right-click-targets)
 
 And there are three completely different Properties dialogs depending on exactly where you right-click. The white body area, outside any item, gets you Body Properties. The gray area around the design surface gets you Report Properties — page setup lives there. And any specific item — a table, a text box — gets you that item's own Properties. Right-clicking the wrong spot is the single most common early mistake.
 
-## Segment 5 (outro)
+## Segment 7 (outro)
 
 Next lesson, we finally put something on that design surface — the Table and List data regions.

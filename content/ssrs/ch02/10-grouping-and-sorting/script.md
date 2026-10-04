@@ -16,6 +16,10 @@ Two different relationships live in this same pane. Drag a field under another o
 
 And there are two completely different kinds of sort. Design-time sort is baked into the report — set it once through Group Properties, and it controls render order every time. Interactive sort is different: it's a clickable button you add to a column header so the person viewing the report can re-sort detail rows on demand, without touching the report definition at all. You add it through Text Box Properties, Interactive Sorting. The two aren't mutually exclusive — you can have a sensible default and still let viewers override it per column.
 
-## Segment 5 (outro)
+## Segment 5 (screenshot: interactive-sorting-tab)
+
+Here's that Interactive Sorting tab itself, inside Text Box Properties. Check Enable interactive sorting on this text box, choose whether you're sorting Detail rows or Groups, then pick the field in Sort by. There's also a checkbox to apply the same sorting to every group and data region in the report, if you want it everywhere at once.
+
+## Segment 6 (outro)
 
 Last lesson in this chapter: pulling all of this together into genuine print-friendly report layout.

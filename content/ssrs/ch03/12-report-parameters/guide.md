@@ -29,6 +29,9 @@ parameter, and a report parameter to go with it, both named `StoreID`.
 You didn't have to build the report parameter by hand — the query
 variable created it for you.
 
+![Query Designer with the dataset query's WHERE StoreID = (@StoreID) clause visible, and the Define Query Parameters dialog that pops up on Run, showing Parameter Name @StoreID and a Parameter Value of 200.](/courses/ssrs/ch03/12-report-parameters/ssrb-parameter-tutorial-add-value.png)
+*Run the query with an unresolved `@StoreID` in the WHERE clause, and Report Builder prompts for a value right here — then builds the dataset parameter from it.*
+
 ## Where parameters live: the Report Data pane
 
 Every report parameter you create — whether Report Builder made it
@@ -63,6 +66,9 @@ parameter → **Parameter Properties**) is where you shape it:
 - **Visible / Hidden** — whether the parameter appears on the toolbar
   at all (hidden parameters are common when a value is supplied by
   another report via drillthrough, not typed by a person)
+
+![The report viewer toolbar showing a 'Store name:' prompt with a '<Select a Value>' dropdown next to a View Report button.](/courses/ssrs/ch03/12-report-parameters/ssrb-parameter-tutorial-select-value.png)
+*This is the Prompt property at work — "Store name:" is exactly what was typed into that field, nothing more.*
 
 A parameter created automatically from a query variable defaults to
 data type **Text** — even when the underlying value, like a store ID,

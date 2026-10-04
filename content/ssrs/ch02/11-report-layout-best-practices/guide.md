@@ -41,9 +41,19 @@ use:
   session — reopen the report, and it reverts to the design-mode
   defaults.
 
+![The Report Properties dialog's Page Setup page: Page units (Inches/Centimeters), Paper size with Orientation set to Portrait and size A4, Width and Height fields, and Margins (Left, Right, Top, Bottom) all set to 2cm.](/courses/ssrs/ch02/11-report-layout-best-practices/page-setup-dialog-default.jpg)
+*Everything that determines the physical, printed page lives on this one dialog page — page units, paper size, orientation, and all four margins.*
+
 Margins are measured inward from the physical page edge. Any report
 item that extends into the margin area gets clipped in hard page-break
 renders — it simply won't render past that boundary.
+
+Change the settings, and they stick — this is the same dialog, now set
+to Landscape orientation, Letter paper, and a quarter-inch margin on
+every side:
+
+![The same Report Properties Page Setup page, now with Inches selected as the page unit, Landscape chosen under Orientation, Letter as the paper size (11in by 8.5in), and all four margins set to 0.25in.](/courses/ssrs/ch02/11-report-layout-best-practices/page-setup-dialog-landscape.jpg)
+*Nothing here is Microsoft's default anymore — every value was chosen on purpose, which is exactly the habit this checklist is pushing you toward.*
 
 ## Fixing the two most common overflow problems
 
@@ -55,6 +65,13 @@ renders — it simply won't render past that boundary.
    Lesson 9: narrow columns to only what the data actually needs,
    rename long headers to short ones, and consider `WritingMode =
    Rotate270` on a label column to reclaim horizontal space.
+
+Here's problem 1 in the wild — a simple table report with no explicit
+page width management, rendering across four separate pages instead of
+one:
+
+![An SSRS table-report preview toolbar showing "1 of 4" in the page navigation, with the first page of a Product Name/Color/Orders/Product Cost/Sales/Tax table beneath it.](/courses/ssrs/ch02/11-report-layout-best-practices/table-report-multiple-pages.png)
+*Four pages for what should be a single wide table — the report body's width was never checked against the physical page width.*
 
 ## A print-friendly layout checklist
 

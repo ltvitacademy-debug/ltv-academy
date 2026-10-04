@@ -29,6 +29,9 @@ time you actually use the **Column groups** box:
 - **Column groups**: `Subcategory`, then `Product` nested under it
 - **Values**: `Sales` and `Quantity`, both summed by default
 
+![The Arrange fields page of the New Table or Matrix wizard, with Row groups holding Territory and SalesDate, Column groups holding Subcategory and Product, and Values holding Sum(Sales) and Sum(Quantity).](/courses/ssrs/ch02/09-matrices/report-builder-arrange-fields-report-wizard.png)
+*Same wizard page as the Table in Lesson 8 — this time Column groups actually has fields in it.*
+
 Finish the wizard, and the **Row Groups** and **Column Groups** panes
 both populate — this is what confirms the matrix actually has two
 independent grouping hierarchies, not one:

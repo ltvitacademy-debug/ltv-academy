@@ -40,6 +40,14 @@ numbered:
    is currently selected; more in Lesson 10.
 8. **Run** — switches from design view to a live preview of the report.
 
+Select any item on the design surface — a table, a text box, an image —
+and Report Builder shows you exactly the same selection affordances no
+matter what the item is: a small move handle in the upper-left corner,
+and resize handles around the border:
+
+![A selected table on the design surface, with the Home/Insert/View ribbon above, the Report Data pane on the left, and the Row Groups/Column Groups panes below.](/courses/ssrs/ch02/07-the-report-design-surface/report-builder-selected-table-ribbon.png)
+*The move handle (top-left) drags the whole item; the square resize handles around the border stretch it.*
+
 ## Not WYSIWYG — and the design surface isn't the page
 
 The single most common surprise for someone new to Report Builder: the
@@ -49,7 +57,10 @@ area, and shrinking it doesn't shrink it either. Item position on the
 canvas *does* matter — Report Builder preserves relative spacing between
 items when it renders — but the canvas itself is just a workspace, not
 a page preview. To actually see page breaks, switch to **Print Layout**
-from the **Run** tab once you're previewing.
+from the **Run** tab once you're previewing:
+
+![The Run tab's ribbon: Design and Zoom on the left, Navigation (page count, Refresh, Stop, Back) in the middle, then Print, Page Setup, and Print Layout, then Export and Options.](/courses/ssrs/ch02/07-the-report-design-surface/report-builder-run-tab-ribbon.png)
+*Print Layout, right there in the Print group — the one button that actually simulates the printed page.*
 
 ## Three different right-click targets, three different dialogs
 

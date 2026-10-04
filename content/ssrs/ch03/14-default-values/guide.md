@@ -22,6 +22,15 @@ has to fill in every prompt before anything renders. For a report with
 several parameters, that's a real difference in how the report feels
 to use.
 
+![Report preview with the Country parameter already showing 'Australia' and a results table already populated below it, with no prompt waiting for input.](/courses/ssrs/ch03/14-default-values/default-value-auto-run.png)
+*This is what a defaulted parameter buys you — the report is already run by the time it opens.*
+
+A default isn't a lock, though — the parameter dropdown stays live, and
+the reader can open it and pick something else whenever they want:
+
+![The Country dropdown open on an already-run report, with United Kingdom highlighted among the other available countries.](/courses/ssrs/ch03/14-default-values/default-value-still-changeable.png)
+*Still just a starting point — the default saves the common case, not the only case.*
+
 ## The Default Values tab: three options
 
 Open a parameter's **Report Parameter Properties** dialog and select
@@ -39,6 +48,9 @@ Open a parameter's **Report Parameter Properties** dialog and select
    you default a parameter to "whatever the first row of this lookup
    dataset happens to be," or combine it with a filter so the default
    is always something meaningful, like the current fiscal quarter.
+
+   ![The same dialog with Get values from a query selected, pointing at a CountryDataSet dataset and an EnglishCountryRegionName value field.](/courses/ssrs/ch03/14-default-values/default-values-get-from-query.png)
+   *Get values from a query — the default comes from a dataset field instead of a value you typed.*
 
 ## What you can't do
 

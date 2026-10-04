@@ -62,6 +62,9 @@ There are two entirely different kinds of "sort" in a report:
   **Interactive Sorting**, checking **Enable interactive sorting on
   this text box**, and specifying which field to sort by.
 
+![The Text Box Properties dialog with Interactive Sorting selected: an unchecked "Enable interactive sorting on this text box" checkbox, a "Choose what to sort" section with Detail rows and Groups options, a Sort by dropdown, and an "Apply this sorting to all groups and data regions in" checkbox.](/courses/ssrs/ch02/10-grouping-and-sorting/interactive-sorting-tab.jpg)
+*Check the box, pick Detail rows or Groups, then choose the field to sort by — three clicks and the column header becomes clickable at runtime.*
+
 The two aren't mutually exclusive — a report can have a sensible
 default (design-time) sort order and still let the viewer override it
 per column (interactive sort) at runtime.

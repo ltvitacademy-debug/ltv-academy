@@ -36,20 +36,15 @@ yourself.
 ## The query itself: real syntax
 
 The actual `WHERE` clause is ordinary T-SQL with one addition — the
-`@` placeholder:
+`@` placeholder, sitting right inside the dataset's own Query tab:
 
-```sql
-WHERE StoreID = (@StoreID)
-```
+![Dataset Properties dialog, Query tab, with the query text ending in WHERE JobTitle IN (@JobTitleParam).](/courses/ssrs/ch03/16-parameter-driven-datasets/dataset-query-text-where-in-param.png)
+*No special syntax, no separate parameter language — `@JobTitleParam` is written directly into the WHERE clause, exactly where a literal value would otherwise go.*
 
 For a single-value parameter, `=` compares the column against the one
-value the reader chose. If that parameter later becomes multi-value
-(Lesson 15), the same clause has to change its operator:
-
-```sql
-WHERE StoreID IN (@StoreID)
-```
-
+value the reader chose — `WHERE StoreID = (@StoreID)`. If that
+parameter later becomes multi-value (Lesson 15), the same clause has
+to change its operator to `IN`, as it has here with `@JobTitleParam`:
 `IN` tests the column against a *set* of values — exactly what a
 multi-value parameter supplies. This is the same rule from Lesson 15,
 seen from the query's side rather than the parameter's side: the
@@ -64,7 +59,13 @@ procedure from application code. What makes it powerful in SSRS is
 that the *mapping itself* — which report parameter feeds which query
 placeholder — is entirely visual, managed through the Report Data pane
 and Dataset Properties dialog, with no procedural glue code required
-to pass the value at runtime.
+to pass the value at runtime. And it's a real parameterized query at
+execution time, not just a design-time convenience — this is what SQL
+Server Profiler actually captured the server receiving for the query
+above:
+
+![SQL Server Profiler capturing the executed query: SELECT [NationalIDNumber], [BirthDate], [MaritalStatus], [Gender] FROM [HumanResources].[Employee] WHERE JobTitle IN (N'Application Specialist', N'Assistant to the Chief Financial Officer').](/courses/ssrs/ch03/16-parameter-driven-datasets/profiler-executed-query-resolved-values.png)
+*By the time this reaches SQL Server, `@JobTitleParam` is gone — replaced with the literal values the reader actually checked. The mapping is visual at design time; the query that runs is ordinary parameterized T-SQL.*
 
 ## Key terms
 

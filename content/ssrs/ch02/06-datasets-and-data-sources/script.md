@@ -16,6 +16,10 @@ The alternative is a shared data source — instead of embedding the connection,
 
 Once you have a data source, you need a dataset — a query run against it that actually produces rows and columns. In the Report Data pane, right-click your data source, select Add Dataset, pick a query type — Text is what you'll use most, for a real SQL SELECT statement — and refresh fields to populate the field collection you'll drag onto the design surface next lesson.
 
-## Segment 5 (outro)
+## Segment 5 (screenshot: report-builder-query-designer)
+
+Instead of typing SQL by hand, you can click Query Designer and get a graphical builder instead. Pick a table or view from the Database view tree on the left, drag the fields you want into Selected fields, and Report Builder writes the SELECT statement for you — Relationships and Applied filters are right there too, if you need them.
+
+## Segment 6 (outro)
 
 Next lesson, we look at that design surface itself — the ribbon, the panes, and where everything actually lives in the Report Builder window.

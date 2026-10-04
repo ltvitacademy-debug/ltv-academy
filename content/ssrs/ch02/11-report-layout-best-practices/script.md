@@ -4,18 +4,30 @@
 
 We've built tables, matrices, and grouped and sorted data across this whole chapter. Let's close it out with the thing that actually determines whether any of it survives being printed: real page layout.
 
-## Segment 2 (steps: two-page-sizes)
+## Segment 2 (screenshot: page-setup-dialog-default)
+
+This is the Page Setup page of the Report Properties dialog — page units, paper size and orientation, and all four margins, all in one place. Everything that determines the physical, printed page lives right here.
+
+## Segment 3 (steps: two-page-sizes)
 
 There are two page sizes, and only one of them prints. The report body on the design surface is elastic — it grows to fit whatever you place on it, no ceiling. The physical page is fixed, 8.5 by 11 inches by default, and it's what PDF, Image, and Print renderers actually paginate against. If the report body's width, including margins, exceeds that physical page width, you get unwanted extra pages. That's the single biggest cause of "why did this print across three pages."
 
-## Segment 3 (steps: where-settings-live)
+## Segment 4 (screenshot: page-setup-dialog-landscape)
+
+Change the settings, and they stick. Here's that same dialog, now set to Landscape orientation, Letter paper, and a quarter-inch margin on every side. Nothing here is left at Microsoft's default — every value was chosen on purpose, which is exactly the habit this checklist is pushing you toward.
+
+## Segment 5 (steps: where-settings-live)
 
 Page size and margins live in two different places. Design mode — right-click the gray area around the design surface, Report Properties, Page Setup — saves permanently into the report definition. Run mode's Page Setup, on the Run tab, is session-only; close the report and it reverts. And margins are measured inward from the page edge — anything extending into that space simply gets clipped.
 
-## Segment 4 (steps: print-friendly-checklist)
+## Segment 6 (screenshot: table-report-multiple-pages)
+
+And here's that overflow problem in the wild. A simple table report, no explicit page-width management, rendering across four separate pages instead of one — because the report body's width, including margins, was never checked against the physical page width.
+
+## Segment 7 (steps: print-friendly-checklist)
 
 So the checklist: set an explicit page size and orientation, don't rely on the default. Set deliberate margins — even a half-inch on all sides. Strip out unused white space between data regions. Use rectangles as containers once layouts get complex. And if you're targeting PDF specifically, set an exact report width that accounts for the page size and margins together. Then preview in Print Layout — it's the only view that actually simulates the printed page.
 
-## Segment 5 (outro)
+## Segment 8 (outro)
 
 That closes out Chapter 2. Chapter 3 moves into report parameters — making reports genuinely interactive instead of static.

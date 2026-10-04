@@ -62,6 +62,12 @@ Both live in the **Report Data** pane on the left side of Report Builder:
    populate the dataset's field collection — the list of columns you'll
    drag onto the design surface next lesson.
 
+Click **Query Designer** instead of typing SQL by hand, and you get a
+graphical builder instead of a blank text box:
+
+![The Query Designer window: a Database view tree on the left listing Tables, Views, and Stored Procedures, with Selected fields, Relationships, and Applied filters panes on the right, and a Query results grid at the bottom.](/courses/ssrs/ch02/06-datasets-and-data-sources/report-builder-query-designer.png)
+*Pick a table or view from the tree on the left, drag fields into Selected fields, and Report Builder writes the SELECT statement for you.*
+
 ## Key terms
 
 | Term | Meaning |

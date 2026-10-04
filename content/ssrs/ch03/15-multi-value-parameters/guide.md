@@ -21,6 +21,9 @@ that parameter instead of exactly one. But that checkbox alone doesn't
 make a working multi-value parameter — three other things have to
 change to match it:
 
+![Report Parameter Properties dialog, General tab, with Name JobTitleParam, Prompt Job Title, Data type Text, and the Allow multiple values checkbox checked.](/courses/ssrs/ch03/15-multi-value-parameters/allow-multiple-values-checkbox.png)
+*The checkbox lives right here on the General tab, next to Allow blank value and Allow null value — easy to miss, impossible to undo without touching three other places.*
+
 1. **The dataset query.** A single-value filter like
    `WHERE StoreID = (@StoreID)` has to change to
    `WHERE StoreID IN (@StoreID)`. The `IN` operator tests for inclusion
@@ -52,6 +55,9 @@ store ID — it returns however many the reader selected. That's exactly
 why direct display expressions need `Join(...)` to flatten the array
 into readable text, and why filters need `In` instead of `=` to test
 each row against the whole set.
+
+![A rendered report with a Job Title multi-value dropdown and a text box reading 'Parameter Values: Accounts Manager, Accounts Payable Specialist, Accounts Receivable Specialist'.](/courses/ssrs/ch03/15-multi-value-parameters/multivalue-join-display-result.png)
+*This is `Join(Parameters!JobTitleParam.Label, ", ")` doing its job — three selected labels, flattened into one comma-separated line a reader can actually read.*
 
 ## Key terms
 
