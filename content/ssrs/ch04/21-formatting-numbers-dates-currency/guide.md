@@ -50,6 +50,25 @@ box mixes a number with literal text — for example
 `=Format(Fields!SellStartDate.Value, "MMM-yy")` renders a date field
 as `Sep-26` instead of a full date, right inside a sentence.
 
+## A real before/after: a C2-style currency format applied
+
+Here's the effect in a real report, not just a table of format codes.
+Before any Number-page format is applied, a `Tax Amount` column
+renders as a raw decimal straight out of the dataset:
+
+![A report preview showing the Tax Amount column rendering raw decimals like 286.2616, before any number format is applied.](/courses/ssrs/ch04/21-formatting-numbers-dates-currency/unformatted-tax-amount.jpg)
+*Before: 286.2616, 271.9992 — whatever precision the underlying data happens to carry.*
+
+After setting the **Number** page to a Currency-style format (the
+equivalent of typing `C2` into Custom), the same column on the same
+report renders as real currency:
+
+![The same report, same Tax Amount column, now rendering as formatted currency like $286.26.](/courses/ssrs/ch04/21-formatting-numbers-dates-currency/formatted-currency-tax-amount.jpg)
+*After: $286.26, $272.00 — same underlying values, the Number page's Currency format doing the rounding and the dollar sign.*
+
+Nothing about the underlying data changed between these two
+screenshots — only the **Number** page's format setting did.
+
 ## What happens with an invalid format string
 
 If you mistype a format string, SSRS doesn't throw an error — it

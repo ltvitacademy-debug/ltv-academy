@@ -8,10 +8,18 @@ We closed out the last lesson looking at currency formatting in passing — let'
 
 Right-click a text box — or a table cell, which is really just a text box — and select Text Box Properties, then Number. That's this dialog. You'll notice the Home ribbon has Currency and Date buttons; those are shortcuts straight into this same Number page, nothing more. Here, someone's applied the Date option to a Last Purchase column, and the dropdown shows every option this page exposes: Default, Number, Currency, Date, Time, Percentage, Scientific, and Custom.
 
-## Segment 3 (code: format strings)
+## Segment 3 (screenshot: unformatted-tax-amount)
 
-Here's the part that matters: every one of those buttons is really just a shortcut to a standard dot-NET format string. Currency with 2 decimals is C2 — that's 1234.56 rendering as $1,234.56. A plain number with no decimals is N0. A percentage with no decimals is P0. A short date is lowercase d; a long date, spelled out with the month name, is uppercase D. If the dialog doesn't have a button for what you need, you type any valid dot-NET format string directly into Custom — there's no separate SSRS-only formatting language to learn. And one debugging tip: if you ever type an invalid format string, SSRS doesn't error — it just displays that string as literal text, which is your signal something's misspelled.
+Before any of that gets applied, here's what a number column actually looks like — raw. This is a real report preview, Tax Amount column, straight out of the dataset: 286.2616, 271.9992, whatever precision the underlying data happens to carry. Nobody wants to read that in a report.
 
-## Segment 4 (outro)
+## Segment 4 (screenshot: formatted-currency-tax-amount)
+
+Same report, same column, after setting the Number page to a Currency-style format. 286.2616 is now $286.26 — rounded to two decimals, dollar sign added, thousands separator ready for bigger numbers. Nothing about the underlying data changed between these two screenshots, only the format setting did.
+
+## Segment 5 (code: format strings)
+
+Here's the part that matters: every one of those buttons is really just a shortcut to a standard dot-NET format string. Currency with 2 decimals is C2 — that's exactly what produced the dollar amount you just saw. A plain number with no decimals is N0. A percentage with no decimals is P0. A short date is lowercase d; a long date, spelled out with the month name, is uppercase D. If the dialog doesn't have a button for what you need, you type any valid dot-NET format string directly into Custom — there's no separate SSRS-only formatting language to learn. And one debugging tip: if you ever type an invalid format string, SSRS doesn't error — it just displays that string as literal text, which is your signal something's misspelled.
+
+## Segment 6 (outro)
 
 That wraps up Chapter 4 — expressions, conditional formatting, text box formatting, and number formatting, all in one toolkit. Chapter 5 moves into charts: turning that same data into visual data regions instead of tables and text boxes.

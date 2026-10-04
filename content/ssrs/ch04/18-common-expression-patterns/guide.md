@@ -31,7 +31,20 @@ these, combined with operators and functions.
 The `&` operator concatenates. `Fields!FirstName.Value & " " &
 Fields!LastName.Value` joins a first and last name with a literal
 space between them — one of the most common expressions in any
-report.
+report. Here it is built for real in the Expression dialog, with
+`LastName` picked from the **Values** list rather than typed from
+memory:
+
+![The Expression dialog box building =Left(Fields!FirstName.Value,1)&". "&Fields!LastName.Value, with LastName highlighted in the Fields (Expressions) Values list.](/courses/ssrs/ch04/18-common-expression-patterns/fields-concatenation-expression.png)
+*A real Fields!X.Value reference, picked from the list, feeding a concatenation expression.*
+
+And this is where the other half of the pattern — the parameter a
+`Parameters!Y.Value` expression references — actually comes from: the
+Report Data pane's **Parameters** folder, right-clicked, with **Add
+Parameter** chosen from the context menu.
+
+![The Report Data pane's Parameters folder, right-clicked, with Add Parameter highlighted in the context menu.](/courses/ssrs/ch04/18-common-expression-patterns/adding-a-report-parameter.png)
+*Right-click Parameters, choose Add Parameter — this is the named parameter `[@Store]` and `Parameters!Store.Value` both point to.*
 
 ## IIF and Switch: making a decision inside an expression
 
@@ -50,6 +63,13 @@ returning the value tied to the first one that evaluates to true.
 Both come straight from Microsoft's own expression-examples reference
 — these aren't invented syntax, they're the real patterns you'll reuse
 in Lesson 19 to drive conditional formatting.
+
+Here's a real Switch in the wild — not the generic syntax above, but
+the actual Expression dialog, aimed at a **BackgroundColor** property,
+picking a color based on a `pctFree` field crossing two thresholds:
+
+![The Expression dialog box with a real Switch expression, =Switch(Fields!pctFree.Value<0.1,"Tomato",Fields!pctFree.Value<0.2,"Gold"), set on a BackgroundColor property.](/courses/ssrs/ch04/18-common-expression-patterns/switch-expression-pctfree.png)
+*The same Switch pattern above, built for real and aimed at a BackgroundColor property — exactly the kind of expression Lesson 19 builds on.*
 
 ## Key terms
 

@@ -23,6 +23,9 @@ to open the same dialog box. Anything you build in the Expression
 dialog gets saved starting with an equal sign (`=`) and evaluated by
 the report processor when the report runs.
 
+![Right-click context menu on a report item showing an Expression... menu item highlighted.](/courses/ssrs/ch04/17-the-expression-editor/opening-the-expression-dialog.png)
+*Right-click, choose Expression — or click the fx button next to the property. Same dialog either way.*
+
 ## Reading the dialog box
 
 ![The Expression dialog box after inserting the Left function — Category tree on the left, Item list in the middle, Description and Example on the right.](/courses/ssrs/ch04/17-the-expression-editor/expression-editor-left-function.png)
@@ -52,6 +55,12 @@ The dialog is really four regions working together:
 Double-clicking anything in **Item** inserts it into the expression
 text area at the cursor position — you don't type function names from
 memory, you pick them.
+
+Pick a different **Category** and **Item** changes with it — it isn't
+only for functions:
+
+![The Expression dialog box with Constants selected in the Category tree, and the Values list showing a grid of named color swatches instead of functions.](/courses/ssrs/ch04/17-the-expression-editor/category-constants-values.png)
+*Select Constants instead of a function category, and Item/Values becomes a color picker — same four regions, different contents.*
 
 ## Why this matters before you write a single expression
 

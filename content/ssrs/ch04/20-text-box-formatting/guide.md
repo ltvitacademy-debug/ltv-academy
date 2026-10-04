@@ -49,6 +49,22 @@ techniques at once:
   **WritingMode** property in the Properties pane, changed from
   `Default` to `Rotate270`, so the label reads bottom-to-top.
 
+## Isolating the rotation technique
+
+The finished report above combines all three techniques at once, which
+can make it hard to tell which property did what. Microsoft's same
+tutorial sequence has two earlier steps that isolate the rotation:
+
+![The same report mid-tutorial — the Link Text hyperlink already works, but the Territory column is still horizontal.](/courses/ssrs/ch04/20-text-box-formatting/hyperlink-before-rotation.png)
+*An earlier step: the hyperlink is already a working blue underlined link, but WritingMode hasn't been touched yet — Territory still reads left to right.*
+
+![The same report, one step later — Territory now rotated 270 degrees so Central, North, and South read bottom-to-top.](/courses/ssrs/ch04/20-text-box-formatting/territory-rotated-270.png)
+*The next step: WritingMode just changed from Default to Rotate270 on the Territory column — nothing else on the report changed.*
+
+Comparing these two confirms that **WritingMode** is the only property
+responsible for the rotation — the hyperlink styling from the previous
+step carries over untouched.
+
 ## Key terms
 
 | Term | Meaning |

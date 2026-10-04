@@ -4,14 +4,22 @@
 
 Now that you know your way around the Expression dialog, let's cover the handful of patterns that make up the overwhelming majority of expressions you'll actually write — field references, parameter references, concatenation, and one decision function.
 
-## Segment 2 (code: fields/parameters/concatenation)
+## Segment 2 (screenshot: fields-concatenation-expression)
 
-Drag a field onto the design surface and Report Builder shows you the shorthand "Sales" in brackets — underneath, that's really the expression equals Fields bang Sales dot Value. A parameter reference works the same way: at-Store in brackets is really equals Parameters bang Store dot Value underneath. And when you want to join two of those together — say, a first and last name — you use the ampersand, the string concatenation operator: Fields bang FirstName dot Value, ampersand, a literal space in quotes, ampersand, Fields bang LastName dot Value.
+Here's a field reference built for real. This is the Expression dialog, mid-build, on a Value property. The text area at top reads equals Left, Fields bang FirstName dot Value, comma 1, close paren, ampersand, a literal period and space in quotes, ampersand, Fields bang LastName dot Value. LastName down in the Values list is highlighted blue — that's where it came from. You don't type Fields bang LastName dot Value from memory, you select FirstName and LastName from this list and the dialog writes the real syntax for you.
 
-## Segment 3 (code: decision functions)
+## Segment 3 (screenshot: adding-a-report-parameter)
 
-The other pattern you'll reach for constantly is making a decision inside an expression. IIF returns one of two values depending on a single true-or-false test — here, True if LineTotal is over 100, otherwise False. Once you have three or more outcomes instead of just two, Switch is the cleaner tool: it returns the value tied to the first condition in the list that evaluates true. Both of these come straight from Microsoft's own expression reference — real syntax, not invented shorthand — and you'll reuse both immediately in the next lesson.
+And this is where the other half of that pattern comes from. In the Report Data pane, right-click the Parameters folder and choose Add Parameter. Whatever you name it there is exactly what shows up on the design surface as at-sign ParameterName, and underneath, as equals Parameters bang ParameterName dot Value. Same relationship as Fields, just a different collection.
 
-## Segment 4 (outro)
+## Segment 4 (code: decision functions)
+
+The other pattern you'll reach for constantly is making a decision inside an expression. IIF returns one of two values depending on a single true-or-false test — here, True if LineTotal is over 100, otherwise False. Once you have three or more outcomes instead of just two, Switch is the cleaner tool: it returns the value tied to the first condition in the list that evaluates true.
+
+## Segment 5 (screenshot: switch-expression-pctfree)
+
+And here's Switch for real, not just generic syntax — the Expression dialog again, this time set on a BackgroundColor property. Equals Switch, Fields bang pctFree dot Value less than point-1, comma Tomato, comma, Fields bang pctFree dot Value less than point-2, comma Gold. Two thresholds, two colors, first match wins — the exact same shape as the syntax on the previous slide, just pointed at a real property with real field names.
+
+## Segment 6 (outro)
 
 Next lesson, we take these exact patterns — especially IIF — and point them at a property like Color or BackgroundColor, to build real conditional formatting.

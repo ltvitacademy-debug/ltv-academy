@@ -39,6 +39,12 @@ region. `MOD 2` returns 1 for odd rows and 0 for even ones — since 0
 is treated as `False` and any nonzero number as `True`, the IIF
 alternates between the color a parameter supplies and plain white.
 
+Here's that same expression's real, rendered result — one IIF on one
+property, and every other row of the report comes out shaded:
+
+![The rendered report preview, showing every other row shaded pink from the banded-color IIF expression.](/courses/ssrs/ch04/19-conditional-formatting/preview-banded-rows.png)
+*The actual visible result — alternating pink and white rows, produced by the expression above and nothing else.*
+
 ## A second real example: color from a field's value
 
 Microsoft's own expression reference gives this exact pattern for
@@ -56,6 +62,14 @@ produces a traffic-light effect on a percent-complete field:
 =IIF(Fields!PctComplete.Value >= 10, "Green",
   IIF(Fields!PctComplete.Value >= 1, "Blue", "Red"))
 ```
+
+Microsoft's own tutorial demonstrates this exact pattern live, with a
+`Gender` field driving a `BackgroundColor` through **Switch** instead
+of IIF — the same "field's value becomes a color" idea, a second real
+example:
+
+![The Expression dialog box showing =Switch(Fields!Gender.Value="Male","CornflowerBlue",Fields!Gender.Value="Female","Tomato") set on a BackgroundColor property.](/courses/ssrs/ch04/19-conditional-formatting/gender-color-switch-expression.png)
+*A second, distinct real example — Gender turned into CornflowerBlue or Tomato through Switch, same concept as the Profit example above.*
 
 ## Key terms
 
