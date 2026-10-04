@@ -68,7 +68,7 @@ export const GOV_METADATA_MANAGEMENT_AND_BUSINESS_GLOSSARY_CHAPTERS: ChapterMeta
     n: 5,
     title: "Data Catalogs",
     lessons: [
-      L(20, "data-catalog-concepts", "Data Catalog Concepts"),
+      L(20, "data-catalog-concepts", "Data Catalog Concepts", { contentDir: "ch05/20-data-catalog-concepts" }),
       L(21, "catalog-capabilities-and-search", "Catalog Capabilities and Search"),
       L(22, "cataloging-business-and-technical-metadata", "Cataloging Business and Technical Metadata"),
       L(23, "metadata-quality", "Metadata Quality"),
