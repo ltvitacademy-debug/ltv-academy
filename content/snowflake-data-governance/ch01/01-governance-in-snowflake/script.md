@@ -1,0 +1,54 @@
+# Lesson 1 — Governance in Snowflake · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+---
+
+## S1 · TITLE
+
+Welcome to Snowflake Data Governance. This whole course is about one
+operational question: who can see what, what gets masked before they
+see it, and what gets tracked when they look. Let's start with how
+Snowflake frames that problem.
+
+## S2 · SCREENSHOT — Governance nav tab
+
+Open Snowsight and look at the left navigation under Monitoring, and
+you'll find Governance sitting right next to Query History and Task
+History — a first-class tab, not a bolted-on add-on. Snowflake bundles
+all of this under an umbrella brand called Snowflake Horizon: it's
+built into the platform you already use, not a separate product you
+have to buy and wire in.
+
+## S3 · STEPS — Three pillars
+
+This course covers three pillars. Access control — roles that decide
+who can do what. Data protection — masking and row access policies
+that decide what a given role actually sees once they're in. And tags
+and classification — the metadata layer that drives both of those at
+scale, across thousands of columns, without hand-writing a policy for
+each one.
+
+## S4 · SCREENSHOT — System roles
+
+Every Snowflake account ships with six system-defined roles:
+ACCOUNTADMIN, ORGADMIN, PUBLIC, SECURITYADMIN, SYSADMIN, and
+USERADMIN. These aren't optional extras — they're the access-control
+foundation this course builds on, and Lessons 3 and 4 walk through
+exactly what each one can do and how custom roles sit underneath them.
+
+## S5 · SCREENSHOT — Tag references
+
+Here's a real query result against TAG_REFERENCES_ALL_COLUMNS,
+showing a custom TASTY_PII tag applied across name, email, phone, and
+birthday columns. This is the metadata layer in action — a tag like
+this is what lets Snowflake automatically mask a column, or flag it
+for discovery, without anyone writing a one-off policy per table.
+Chapter 3 is built entirely around this mechanism.
+
+## S6 · OUTRO
+
+Next up: Snowflake's object hierarchy — account, database, schema,
+and the objects underneath. Every governance object you build for the
+rest of this course lives inside that structure, so it's worth
+getting comfortable with it before we touch a single role or policy.

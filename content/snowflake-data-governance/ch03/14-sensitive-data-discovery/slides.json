@@ -1,0 +1,71 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Snowflake Data Governance · Chapter Three",
+    "titlePlain": "Sensitive Data ",
+    "titleEmphasis": "Discovery",
+    "titleSuffix": "",
+    "subtitle": "Lesson 14 · Tags and Classification"
+  },
+  {
+    "type": "screenshot",
+    "file": "unrecognized-identifier-in-data.png",
+    "eyebrow": "A format nothing built-in recognizes",
+    "caption": "This looks sensitive and structured, but nothing built-in recognizes the PLACEKEY pattern."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Confirm the pattern first",
+    "code": "-- next let's test the Regular Expression (Regex) that our Data Engineer\n-- has created to locate the Placekey value\nSELECT\n    placekey\nFROM raw_pos.location\nWHERE placekey REGEXP('^[a-zA-Z0-9d]{3}-[a-zA-Z0-9d]{3,4}@[a-zA-Z0-9d]{3}-[a-zA-Z0-9d]{3}-.*$');",
+    "caption": "Test the regex as a plain SELECT before wiring it into a classifier."
+  },
+  {
+    "type": "screenshot",
+    "file": "testing-the-discovery-regex.png",
+    "eyebrow": "Pattern confirmed",
+    "caption": "13.1K rows matched — confirmed before wiring it up.",
+    "annotations": [
+      {
+        "shape": "box",
+        "x": 0.02,
+        "y": 0.22,
+        "w": 0.35,
+        "h": 0.65,
+        "label": "Pattern confirmed before wiring it up",
+        "labelPos": "bottom"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Teaching Snowflake the pattern",
+    "code": "CREATE OR REPLACE SCHEMA classifiers\n  COMMENT = 'Schema containing Custom Classifiers';\n\nCREATE OR REPLACE snowflake.data_privacy.custom_classifier classifiers.placekey();\n\nCALL placekey!ADD_REGEX(\n  'PLACEKEY',   -- semantic category\n  'IDENTIFIER', -- privacy category\n  '^[a-zA-Z0-9d]{3}-[a-zA-Z0-9d]{3,4}@[a-zA-Z0-9d]{3}-[a-zA-Z0-9d]{3}-.*$', -- regex\n  'PLACEKEY*',  -- column-name regex\n  'Add a regex to identify Placekey'\n);",
+    "caption": "A CUSTOM_CLASSIFIER in your own schema, taught a pattern with ADD_REGEX."
+  },
+  {
+    "type": "screenshot",
+    "file": "custom-classifier-discovery-run.png",
+    "eyebrow": "Running alongside the built-ins",
+    "caption": "The custom classifier runs in the same SYSTEM$CLASSIFY call as Snowflake's own built-in classifiers."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Classifying with the custom classifier",
+    "code": "CALL SYSTEM$CLASSIFY('raw_pos.location', {'custom_classifiers': ['placekey'], 'auto_tag':true});\n\nSELECT tag_name, level, tag_value, column_name\nFROM TABLE(information_schema.tag_references_all_columns('raw_pos.location','table'))\nWHERE tag_value = 'PLACEKEY';",
+    "caption": "custom_classifiers names the classifier to include; auto_tag writes the result immediately."
+  },
+  {
+    "type": "screenshot",
+    "file": "discovery-confirmed-by-tag.png",
+    "eyebrow": "Discovery confirmed",
+    "caption": "Discovery complete — the column is now formally flagged for whatever governance policy applies next."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 15",
+    "titlePlain": "Governance Through ",
+    "titleEmphasis": "Tags",
+    "titleSuffix": "",
+    "subtitle": "Tying roles, masking, and tags together at scale."
+  }
+]

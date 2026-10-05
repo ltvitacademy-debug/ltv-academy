@@ -1,0 +1,59 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Snowflake Data Governance · Chapter Two",
+    "titlePlain": "Masking ",
+    "titleEmphasis": "Policies",
+    "titleSuffix": "",
+    "subtitle": "Lesson 7 · Data Protection"
+  },
+  {
+    "type": "screenshot",
+    "file": "columns-needing-different-policy-types.png",
+    "eyebrow": "Why two policies, not one",
+    "caption": "Name, e-mail, and phone are STRING; birthday is DATE — the policy's RETURNS type must match the column."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The two real policy definitions",
+    "code": "CREATE OR REPLACE MASKING POLICY governance.tasty_pii_string_mask\nAS (val STRING) RETURNS STRING ->\nCASE\n  WHEN CURRENT_ROLE() IN ('ACCOUNTADMIN','SYSADMIN')\n    THEN val\n  WHEN SYSTEM$GET_TAG_ON_CURRENT_COLUMN('TAGS.TASTY_PII') = 'PHONE_NUMBER'\n    THEN CONCAT(LEFT(val,3), '-***-****')\n  WHEN SYSTEM$GET_TAG_ON_CURRENT_COLUMN('TAGS.TASTY_PII') = 'EMAIL'\n    THEN CONCAT('**~MASKED~**','@', SPLIT_PART(val, '@', -1))\n  ELSE '**~MASKED~**'\nEND;\n\nCREATE OR REPLACE MASKING POLICY governance.tasty_pii_date_mask\nAS (val DATE) RETURNS DATE ->\nCASE\n  WHEN CURRENT_ROLE() IN ('ACCOUNTADMIN','SYSADMIN')\n    THEN val\n  WHEN SYSTEM$GET_TAG_ON_CURRENT_COLUMN('TAGS.TASTY_PII') = 'BIRTHDAY'\n    THEN DATE_FROM_PARTS(YEAR(val) - (YEAR(val) % 5), 1, 1)\n  ELSE NULL\nEND;",
+    "caption": "Privileged roles exit first; everyone else falls through to a tag-driven CASE branch."
+  },
+  {
+    "type": "screenshot",
+    "file": "date-masking-policy-result.png",
+    "eyebrow": "The DATE policy's result",
+    "caption": "BIRTHDAY_DATE bucketed to the 1st of a 5-year window — DATE_FROM_PARTS at work.",
+    "annotations": [
+      {
+        "shape": "box",
+        "x": 0.645,
+        "y": 0.61,
+        "w": 0.11,
+        "h": 0.40,
+        "label": "DATE-returning policy result",
+        "labelPos": "bottom"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Managing the policy object",
+    "code": "SHOW MASKING POLICIES IN SCHEMA governance;\nDESCRIBE MASKING POLICY governance.tasty_pii_string_mask;\n\n-- applying a policy directly to a single column (no tag involved):\nALTER TABLE raw_customer.customer_loyalty\n  MODIFY COLUMN last_name\n  SET MASKING POLICY governance.tasty_pii_string_mask;\n\n-- removing it again:\nALTER TABLE raw_customer.customer_loyalty\n  MODIFY COLUMN last_name\n  UNSET MASKING POLICY;",
+    "caption": "SHOW / DESCRIBE to inspect; SET / UNSET on ALTER TABLE ... MODIFY COLUMN to attach or remove."
+  },
+  {
+    "type": "screenshot",
+    "file": "policy-identity-is-invisible-downstream.png",
+    "eyebrow": "Direct or tag-based — same result",
+    "caption": "How a policy got attached is invisible at query time; only the masking behavior shows."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 8",
+    "titlePlain": "Row Access ",
+    "titleEmphasis": "Policies",
+    "titleSuffix": "",
+    "subtitle": "The row-level counterpart to everything you just saw at the column level."
+  }
+]

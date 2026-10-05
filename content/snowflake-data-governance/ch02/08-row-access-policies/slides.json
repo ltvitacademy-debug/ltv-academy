@@ -1,0 +1,53 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Snowflake Data Governance · Chapter Two",
+    "titlePlain": "Row Access ",
+    "titleEmphasis": "Policies",
+    "titleSuffix": "",
+    "subtitle": "Lesson 8 · Data Protection"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The mapping-table pattern",
+    "code": "USE ROLE accountadmin;\n\nCREATE OR REPLACE TABLE governance.public.row_policy_map\n  (role STRING, city_permissions STRING);\n\nINSERT INTO governance.row_policy_map\nVALUES ('TB_TEST_ROLE','Tokyo');",
+    "caption": "A real table of role/permission pairs — a new role's access is an INSERT, not a policy rewrite."
+  },
+  {
+    "type": "code",
+    "eyebrow": "CREATE ROW ACCESS POLICY and attaching it",
+    "code": "CREATE OR REPLACE ROW ACCESS POLICY governance.customer_city_row_policy\nAS (city STRING) RETURNS BOOLEAN ->\n  CURRENT_ROLE() IN ('ACCOUNTADMIN','SYSADMIN')\n  OR EXISTS (\n    SELECT rp.role\n    FROM governance.row_policy_map rp\n    WHERE rp.role = CURRENT_ROLE()\n      AND rp.city_permissions = city\n  )\n  COMMENT = 'Limits rows by mapping table of ROLE and CITY';\n\nALTER TABLE raw_customer.customer_loyalty\n  ADD ROW ACCESS POLICY governance.customer_city_row_policy ON (city);",
+    "caption": "TRUE means the row is visible; FALSE means it's silently filtered out — no error, it's just gone."
+  },
+  {
+    "type": "screenshot",
+    "file": "row-policy-filters-to-tokyo.png",
+    "eyebrow": "Queried by the restricted role",
+    "caption": "Every row: Tokyo only. Masking (Lessons 6-7) is still stacking independently on the same table.",
+    "annotations": [
+      {
+        "shape": "box",
+        "x": 0.553,
+        "y": 0.605,
+        "w": 0.103,
+        "h": 0.39,
+        "label": "Every row: Tokyo only",
+        "labelPos": "bottom"
+      }
+    ]
+  },
+  {
+    "type": "screenshot",
+    "file": "row-policy-propagates-downstream.png",
+    "eyebrow": "The downstream view, grouped by city",
+    "caption": "The view spans every city in the base table — but the restricted role only ever sees Tokyo."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 9",
+    "titlePlain": "Secure ",
+    "titleEmphasis": "Views",
+    "titleSuffix": "",
+    "subtitle": "Hiding a view's own definition, not just its rows or values."
+  }
+]
