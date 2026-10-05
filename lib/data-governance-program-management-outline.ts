@@ -69,11 +69,11 @@ export const GOV_DATA_GOVERNANCE_PROGRAM_MANAGEMENT_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Sustaining Governance",
     lessons: [
-      L(21, "governance-roadmaps", "Governance Roadmaps"),
-      L(22, "funding-and-business-cases", "Funding and Business Cases"),
-      L(23, "program-maturity-assessment", "Program Maturity Assessment"),
-      L(24, "program-management-case-study", "Program Management Case Study"),
-      L(25, "program-management-practice-lab", "Program Management Practice Lab"),
+      L(21, "governance-roadmaps", "Governance Roadmaps", { contentDir: "ch05/21-governance-roadmaps" }),
+      L(22, "funding-and-business-cases", "Funding and Business Cases", { contentDir: "ch05/22-funding-and-business-cases" }),
+      L(23, "program-maturity-assessment", "Program Maturity Assessment", { contentDir: "ch05/23-program-maturity-assessment" }),
+      L(24, "program-management-case-study", "Program Management Case Study", { contentDir: "ch05/24-program-management-case-study" }),
+      L(25, "program-management-practice-lab", "Program Management Practice Lab", { contentDir: "ch05/25-program-management-practice-lab" }),
     ],
   },
 ];
