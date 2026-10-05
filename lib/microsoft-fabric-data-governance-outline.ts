@@ -39,7 +39,7 @@ export const GOV_MICROSOFT_FABRIC_DATA_GOVERNANCE_CHAPTERS: ChapterMeta[] = [
       L(6, "onelake-governance", "OneLake Governance", { contentDir: "ch02/06-onelake-governance" }),
       L(7, "lakehouse-and-warehouse-governance", "Lakehouse and Warehouse Governance", { contentDir: "ch02/07-lakehouse-and-warehouse-governance" }),
       L(8, "onelake-security", "OneLake Security", { contentDir: "ch02/08-onelake-security" }),
-      L(9, "shortcuts-and-governance", "Shortcuts and Governance"),
+      L(9, "shortcuts-and-governance", "Shortcuts and Governance", { contentDir: "ch02/09-shortcuts-and-governance" }),
       L(10, "data-access-roles", "Data Access Roles", { contentDir: "ch02/10-data-access-roles" }),
     ],
   },
