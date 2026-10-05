@@ -25,12 +25,12 @@ export const GOV_DATA_SECURITY_PRIVACY_AND_CLASSIFICATION_CHAPTERS: ChapterMeta[
     n: 1,
     title: "Sensitive Data Foundations",
     lessons: [
-      L(1, "data-security-and-privacy-concepts", "Data Security and Privacy Concepts"),
-      L(2, "pii-and-personal-data", "PII and Personal Data"),
-      L(3, "sensitive-and-confidential-data", "Sensitive and Confidential Data"),
-      L(4, "regulations-gdpr-ccpa-and-hipaa-overview", "Regulations: GDPR, CCPA and HIPAA Overview"),
-      L(5, "regulations-sox-and-industry-rules", "Regulations: SOX and Industry Rules"),
-      L(6, "privacy-by-design", "Privacy by Design"),
+      L(1, "data-security-and-privacy-concepts", "Data Security and Privacy Concepts", { contentDir: "ch01/01-data-security-and-privacy-concepts" }),
+      L(2, "pii-and-personal-data", "PII and Personal Data", { contentDir: "ch01/02-pii-and-personal-data" }),
+      L(3, "sensitive-and-confidential-data", "Sensitive and Confidential Data", { contentDir: "ch01/03-sensitive-and-confidential-data" }),
+      L(4, "regulations-gdpr-ccpa-and-hipaa-overview", "Regulations: GDPR, CCPA and HIPAA Overview", { contentDir: "ch01/04-regulations-gdpr-ccpa-and-hipaa-overview" }),
+      L(5, "regulations-sox-and-industry-rules", "Regulations: SOX and Industry Rules", { contentDir: "ch01/05-regulations-sox-and-industry-rules" }),
+      L(6, "privacy-by-design", "Privacy by Design", { contentDir: "ch01/06-privacy-by-design" }),
     ],
   },
   {
