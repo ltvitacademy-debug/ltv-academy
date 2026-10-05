@@ -1,0 +1,27 @@
+# Lesson 12 — Model Documentation and Model Cards · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+## S1 · TITLE
+
+Welcome to Chapter Three: Model Governance. We start with the most basic question — when you hand someone a trained model, what do they actually know about it?
+
+## S2 · STEPS — Why models need documentation
+
+A trained model is a black box by default. Two people can hold the same file and neither can tell you what data it learned from, what it's meant to decide, or where it quietly fails — unless someone wrote that down. That's fine until the person who built it leaves, or the model gets reused for something it was never tested on.
+
+## S3 · STEPS — The model card, a standard shape
+
+A model card is a short, structured document that answers the same questions every time: intended use, out-of-scope use, training data, evaluation results, and known limitations. The format comes from a widely adopted 2019 research paper and is now the default shape for this kind of documentation industry-wide.
+
+## S4 · CODE — A model card skeleton
+
+Here's what that looks like filled in: a model name, its intended use, what it's explicitly not for, a summary of training data, one evaluation metric, a known limitation, and an owner responsible for keeping the card current.
+
+## S5 · STEPS — Who actually reads it
+
+A good model card serves two audiences at once: the engineer or reviewer who needs the technical detail, and the compliance officer or regulator who needs the plain-language version — what this model is allowed to decide, and what it was never supposed to be used for. That second line is usually what prevents the worst incidents.
+
+## S6 · OUTRO
+
+Next lesson: once a model has a card, where does that card actually live? We cover the model inventory and registry — the system of record for every model an organization runs.
