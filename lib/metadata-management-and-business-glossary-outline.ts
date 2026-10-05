@@ -73,7 +73,7 @@ export const GOV_METADATA_MANAGEMENT_AND_BUSINESS_GLOSSARY_CHAPTERS: ChapterMeta
       L(22, "cataloging-business-and-technical-metadata", "Cataloging Business and Technical Metadata", { contentDir: "ch05/22-cataloging-business-and-technical-metadata" }),
       L(23, "metadata-quality", "Metadata Quality", { contentDir: "ch05/23-metadata-quality" }),
       L(24, "catalog-adoption", "Catalog Adoption", { contentDir: "ch05/24-catalog-adoption" }),
-      L(25, "metadata-case-study", "Metadata Case Study"),
+      L(25, "metadata-case-study", "Metadata Case Study", { contentDir: "ch05/25-metadata-case-study" }),
     ],
   },
 ];
