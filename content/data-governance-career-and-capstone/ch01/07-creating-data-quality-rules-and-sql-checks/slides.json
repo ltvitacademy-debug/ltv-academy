@@ -1,0 +1,67 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Data Governance Career & Capstone · Chapter One",
+    "titlePlain": "Creating Data Quality Rules and SQL ",
+    "titleEmphasis": "Checks",
+    "titleSuffix": "",
+    "subtitle": "Lesson 7 · SQL Data Quality Checks"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Rule 1 — OrderTotal must be positive",
+    "code": "-- RULE: ORD-001 — OrderTotal must be positive\nSELECT OrderId, CustomerId, OrderTotal\nFROM dbo.Orders\nWHERE OrderTotal <= 0\nORDER BY OrderTotal ASC;",
+    "caption": "Owned by steward Sam Okonjo — a zero or negative total means a failed calculation or an unvoided cancellation."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Rule 2 — Email must be present and well-formed",
+    "code": "-- RULE: CUST-001 — Email must be present and well-formed\nSELECT CustomerId, Email\nFROM dbo.Customers\nWHERE Email IS NULL\n   OR Email NOT LIKE '%_@_%._%';",
+    "caption": "Owned by steward Priya Anand — ties directly back to Lesson 1's access-request gap."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Rule 3 — SKU must be unique",
+    "code": "-- RULE: PROD-001 — SKU must be unique\nSELECT SKU, COUNT(*) AS RecordCount\nFROM dbo.Products\nGROUP BY SKU\nHAVING COUNT(*) > 1;",
+    "caption": "Owned by steward Diego Marsh — enforces Lesson 5's \"SKUs are never reused\" rule."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Rule 4 — referential integrity",
+    "code": "-- RULE: ORD-002 — every OrderLine must belong to a real Order\nSELECT ol.OrderLineId, ol.OrderId\nFROM dbo.OrderLines AS ol\nWHERE NOT EXISTS (\n    SELECT 1 FROM dbo.Orders AS o\n    WHERE o.OrderId = ol.OrderId\n);",
+    "caption": "An orphaned line quietly breaks any report that joins Orders to OrderLines."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Combining checks, part 1 — Rules 1 and 2",
+    "code": "SELECT 'ORD-001: OrderTotal must be positive' AS RuleName,\n       CAST(OrderId AS VARCHAR(20)) AS RecordKey\nFROM dbo.Orders WHERE OrderTotal <= 0\nUNION ALL\nSELECT 'CUST-001: Email must be present and well-formed',\n       CAST(CustomerId AS VARCHAR(20))\nFROM dbo.Customers\nWHERE Email IS NULL OR Email NOT LIKE '%_@_%._%';",
+    "caption": "The first two branches of the failures report — same RuleName and RecordKey shape."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Combining checks, part 2 — Rules 3 and 4",
+    "code": "SELECT 'PROD-001: SKU must be unique', SKU\nFROM dbo.Products GROUP BY SKU HAVING COUNT(*) > 1\nUNION ALL\nSELECT 'ORD-002: OrderLine must belong to a real Order',\n       CAST(ol.OrderLineId AS VARCHAR(20))\nFROM dbo.OrderLines AS ol\nWHERE NOT EXISTS (\n    SELECT 1 FROM dbo.Orders AS o WHERE o.OrderId = ol.OrderId\n);",
+    "caption": "Appended to part 1 with another UNION ALL — one row per violation, labeled by rule."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Writing checks that are safe to run",
+    "titlePlain": "Four ",
+    "titleEmphasis": "best practices",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "READ-ONLY", "sub": "a check never updates or deletes" },
+      { "label": "SARGABLE WHERE", "sub": "don't wrap indexed columns in functions" },
+      { "label": "CONSISTENT CASTING", "sub": "match types across UNION ALL branches" },
+      { "label": "OFF-PEAK SCHEDULING", "sub": "heavy checks run outside business hours" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 8",
+    "titlePlain": "Documenting Data ",
+    "titleEmphasis": "Lineage",
+    "titleSuffix": "",
+    "subtitle": "Tracing this same data from Atlas into Summit."
+  }
+]
