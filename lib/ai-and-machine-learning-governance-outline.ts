@@ -71,20 +71,20 @@ export const GOV_AI_AND_MACHINE_LEARNING_GOVERNANCE_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Responsible AI and Risk",
     lessons: [
-      L(23, "responsible-ai-principles", "Responsible AI Principles"),
-      L(24, "ai-risk-management", "AI Risk Management"),
-      L(25, "ai-governance-frameworks-overview", "AI Governance Frameworks Overview"),
-      L(26, "ai-regulation-overview", "AI Regulation Overview"),
-      L(27, "auditing-ai-systems", "Auditing AI Systems"),
+      L(23, "responsible-ai-principles", "Responsible AI Principles", { contentDir: "ch05/23-responsible-ai-principles" }),
+      L(24, "ai-risk-management", "AI Risk Management", { contentDir: "ch05/24-ai-risk-management" }),
+      L(25, "ai-governance-frameworks-overview", "AI Governance Frameworks Overview", { contentDir: "ch05/25-ai-governance-frameworks-overview" }),
+      L(26, "ai-regulation-overview", "AI Regulation Overview", { contentDir: "ch05/26-ai-regulation-overview" }),
+      L(27, "auditing-ai-systems", "Auditing AI Systems", { contentDir: "ch05/27-auditing-ai-systems" }),
     ],
   },
   {
     n: 6,
     title: "Applied AI Governance",
     lessons: [
-      L(28, "ai-governance-case-study-credit-decisioning", "AI Governance Case Study: Credit Decisioning"),
-      L(29, "ai-governance-case-study-customer-facing-generative-ai", "AI Governance Case Study: Customer-Facing Generative AI"),
-      L(30, "building-an-ai-governance-program", "Building an AI Governance Program"),
+      L(28, "ai-governance-case-study-credit-decisioning", "AI Governance Case Study: Credit Decisioning", { contentDir: "ch06/28-ai-governance-case-study-credit-decisioning" }),
+      L(29, "ai-governance-case-study-customer-facing-generative-ai", "AI Governance Case Study: Customer-Facing Generative AI", { contentDir: "ch06/29-ai-governance-case-study-customer-facing-generative-ai" }),
+      L(30, "building-an-ai-governance-program", "Building an AI Governance Program", { contentDir: "ch06/30-building-an-ai-governance-program" }),
     ],
   },
 ];
