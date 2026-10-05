@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Snowflake Data Governance · Chapter Four",
+    "titlePlain": "Auditing ",
+    "titleEmphasis": "Access",
+    "titleSuffix": "",
+    "subtitle": "Lesson 18 · Auditing and Monitoring"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "From views to a repeatable audit",
+    "titlePlain": "An audit answers ",
+    "titleEmphasis": "three",
+    "titleSuffix": " questions",
+    "steps": [
+      { "label": "WHO", "sub": "which users touched this object" },
+      { "label": "WHAT", "sub": "did they read it, modify it, or both" },
+      { "label": "WHEN & HOW OFTEN", "sub": "one time, or an ongoing pattern" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Who read a sensitive table, last 30 days",
+    "code": "SELECT DISTINCT user_name, query_id, query_start_time\nFROM SNOWFLAKE.ACCOUNT_USAGE.ACCESS_HISTORY,\n     LATERAL FLATTEN(base_objects_accessed) AS f1\nWHERE f1.value:\"objectName\"::STRING = 'ANALYTICS_DB.FINANCE.PAYROLL'\n  AND query_start_time >= DATEADD(day, -30, CURRENT_TIMESTAMP())\nORDER BY query_start_time DESC;",
+    "caption": "FLATTEN unpacks ACCESS_HISTORY's semi-structured object list so you can filter to one specific table by name."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Did a masking policy actually apply?",
+    "code": "SELECT query_id, query_start_time, user_name, policies_referenced\nFROM SNOWFLAKE.ACCOUNT_USAGE.ACCESS_HISTORY\nWHERE query_start_time >= DATEADD(day, -7, CURRENT_TIMESTAMP())\n  AND policies_referenced IS NOT NULL;",
+    "caption": "policies_referenced proves a masking or row access policy from Chapter 2 actually evaluated for that query — not just that it exists."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Turning a query into an audit",
+    "titlePlain": "One query, run on a ",
+    "titleEmphasis": "schedule",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "DEFINE THE QUESTION", "sub": "which object, which users, what counts as a hit" },
+      { "label": "SCHEDULE IT", "sub": "a Snowflake Task, run daily or weekly" },
+      { "label": "REVIEW THE OUTPUT", "sub": "unexplained access becomes an escalation, not a surprise" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Monitoring ",
+    "titleEmphasis": "Governance",
+    "titleSuffix": "",
+    "subtitle": "One audit query is a check. A program is many, running continuously."
+  }
+]

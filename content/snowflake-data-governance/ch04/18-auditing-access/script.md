@@ -1,0 +1,29 @@
+# Lesson 18 — Auditing Access · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Lessons 16 and 17 covered the views. Auditing is about asking a specific question of them, repeatably.
+
+## S2 · STEPS CARD (three questions)
+
+A real access audit answers three things: who touched this object, what they did to it — read, write, or both — and when, and how often. A single access last quarter is a very different story than daily access by someone who shouldn't have it.
+
+## S3 · CODE CARD (who touched this table)
+
+Here's how you find every user who touched one specific table. base_objects_accessed holds a semi-structured array, so LATERAL FLATTEN unpacks it into rows you can filter by object name.
+
+## S4 · CODE CARD (did the masking policy fire)
+
+Writing a masking policy in Chapter 2 isn't the same as proving it applied. policies_referenced records exactly which policies evaluated for a given query — the closest thing to a receipt that your controls are actually doing something.
+
+## S5 · STEPS CARD (query to audit)
+
+A query you ran once during an investigation isn't an audit — it's a one-off. Define the question precisely, schedule it with a Snowflake Task, and review the output on a cadence. That's what separates knowing the SQL from having a governance practice.
+
+## S6 · OUTRO CARD
+
+Next lesson: Monitoring Governance — one audit query is a check. A program is many of them, running continuously.
