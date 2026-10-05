@@ -36,12 +36,12 @@ export const GOV_DATA_LINEAGE_AND_IMPACT_ANALYSIS_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "Tracing Data",
     lessons: [
-      L(6, "source-systems-and-extraction", "Source Systems and Extraction"),
-      L(7, "etl-and-elt-lineage", "ETL and ELT Lineage"),
-      L(8, "lineage-through-data-lakes-and-warehouses", "Lineage Through Data Lakes and Warehouses"),
-      L(9, "lineage-through-semantic-models", "Lineage Through Semantic Models"),
-      L(10, "lineage-into-power-bi", "Lineage Into Power BI"),
-      L(11, "lineage-to-executive-dashboards", "Lineage to Executive Dashboards"),
+      L(6, "source-systems-and-extraction", "Source Systems and Extraction", { contentDir: "ch02/06-source-systems-and-extraction" }),
+      L(7, "etl-and-elt-lineage", "ETL and ELT Lineage", { contentDir: "ch02/07-etl-and-elt-lineage" }),
+      L(8, "lineage-through-data-lakes-and-warehouses", "Lineage Through Data Lakes and Warehouses", { contentDir: "ch02/08-lineage-through-data-lakes-and-warehouses" }),
+      L(9, "lineage-through-semantic-models", "Lineage Through Semantic Models", { contentDir: "ch02/09-lineage-through-semantic-models" }),
+      L(10, "lineage-into-power-bi", "Lineage Into Power BI", { contentDir: "ch02/10-lineage-into-power-bi" }),
+      L(11, "lineage-to-executive-dashboards", "Lineage to Executive Dashboards", { contentDir: "ch02/11-lineage-to-executive-dashboards" }),
     ],
   },
   {

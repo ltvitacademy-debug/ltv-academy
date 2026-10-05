@@ -1,0 +1,23 @@
+# Lesson 8 — Lineage Through Data Lakes and Warehouses · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+## S1 · TITLE
+
+Lesson 7 ended with raw data landing somewhere. This lesson follows it the rest of the way — through a lake's bronze, silver, gold layers, and into a warehouse's dimensional model.
+
+## S2 · STEPS — MEDALLION PATTERN
+
+Bronze is raw data, untouched, exactly as extracted. Silver is cleaned and conformed — deduplicated, typed, bad rows flagged. Gold is business-ready — aggregated and joined for a specific use. Lineage through this pattern is a chain of hops, each one a transformation job, and every column in gold should trace back through silver to bronze.
+
+## S3 · STEPS — VIEWS VS MATERIALIZED
+
+Here's a wrinkle that only shows up in a warehouse. A view recomputes from its source tables every time you query it — no lag, always current. A materialized table reflects whatever its last refresh pulled — it can be hours stale. Both are valid lineage, but knowing which one you're looking at tells you whether a wrong number could still be in flight upstream, or is already frozen.
+
+## S4 · CODE — MULTI-HOP LINEAGE
+
+A raw file lands in bronze untouched, gets cleaned into silver, then aggregated and joined into a gold fact table. Each arrow here is a separate lineage edge that has to be independently traceable — when something breaks, you need to know which hop caused it, not just that the chain exists.
+
+## S5 · OUTRO
+
+Next lesson: what happens between the warehouse and the report — lineage through semantic models, and why measures add their own lineage layer on top of columns.
