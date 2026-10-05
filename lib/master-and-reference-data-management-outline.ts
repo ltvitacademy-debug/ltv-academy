@@ -36,12 +36,12 @@ export const GOV_MASTER_AND_REFERENCE_DATA_MANAGEMENT_CHAPTERS: ChapterMeta[] = 
     n: 2,
     title: "Matching and Consolidation",
     lessons: [
-      L(6, "data-matching-concepts", "Data Matching Concepts"),
-      L(7, "deterministic-vs-probabilistic-matching", "Deterministic vs. Probabilistic Matching"),
-      L(8, "deduplication", "Deduplication"),
-      L(9, "golden-records", "Golden Records"),
-      L(10, "survivorship-rules", "Survivorship Rules"),
-      L(11, "match-review-and-stewardship", "Match Review and Stewardship"),
+      L(6, "data-matching-concepts", "Data Matching Concepts", { contentDir: "ch02/06-data-matching-concepts" }),
+      L(7, "deterministic-vs-probabilistic-matching", "Deterministic vs. Probabilistic Matching", { contentDir: "ch02/07-deterministic-vs-probabilistic-matching" }),
+      L(8, "deduplication", "Deduplication", { contentDir: "ch02/08-deduplication" }),
+      L(9, "golden-records", "Golden Records", { contentDir: "ch02/09-golden-records" }),
+      L(10, "survivorship-rules", "Survivorship Rules", { contentDir: "ch02/10-survivorship-rules" }),
+      L(11, "match-review-and-stewardship", "Match Review and Stewardship", { contentDir: "ch02/11-match-review-and-stewardship" }),
     ],
   },
   {
