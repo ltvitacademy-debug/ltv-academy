@@ -1,0 +1,35 @@
+# Lesson 20 — Impact Analysis in Fabric · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+## S1 · TITLE
+
+Lesson 20 closes out Chapter Four with Fabric's impact analysis feature — how to size up the blast radius of a change before you make it.
+
+## S2 · STEPS — The gap lineage view leaves open
+
+Lineage view, from last lesson, maps how items connect inside one workspace. Genuinely useful, but it stops there — it won't tell you how far a change ripples downstream, especially once that ripple crosses into other workspaces you don't normally look at. That's the exact gap impact analysis fills: run it on a dataset before you rename a column, remove a measure, or delete it outright, and it tells you what actually breaks.
+
+## S3 · SCREENSHOT — Entry point one
+
+The first way in: every card in lineage view has an impact analysis icon in its footer, right next to the refresh and highlight-lineage controls. Select it on the item you're considering changing, and the pane opens centered on that item.
+
+## S4 · SCREENSHOT — Entry point two
+
+The second way in: open the item's own details page, select the Lineage dropdown in the toolbar, and choose Impact analysis instead of Open lineage view. Same destination, different starting point.
+
+## S5 · SCREENSHOT — Reading the results
+
+The pane gives you two independent ways to slice the same list. Child Items shows only what depends on this one directly, one step away; All downstream items expands that to everything further down the chain, across workspaces. You can also group that same list by item type or by workspace — here, the same 34 impacted items split across 2 workspaces, shown both ways.
+
+## S6 · SCREENSHOT — Notify contacts
+
+Once you know who's affected, Notify contacts sends one email to the contact lists of every impacted workspace — even ones you personally can't access — with your name attached so people know who to reply to.
+
+## S7 · STEPS — Permission and privacy
+
+Two rules worth knowing. You need write permission on the item to run impact analysis on it at all. And for anything downstream you don't have access to, Fabric shows "Limited access" instead of the real name — the name itself can carry information you're not cleared to see. Notify contacts still reaches those workspaces anyway, even though you never learn their names.
+
+## S8 · OUTRO
+
+That closes Chapter Four — discovery and lineage. Chapter 5 turns to governed analytics — semantic models, self-service, and Purview integration.
