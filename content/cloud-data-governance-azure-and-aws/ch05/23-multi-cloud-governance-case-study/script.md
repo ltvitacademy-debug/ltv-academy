@@ -1,0 +1,29 @@
+# Lesson 23 — Multi-Cloud Governance Case Study · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Briarcliff Outdoor Gear, a fictional mid-sized retailer, runs its core business on Azure. Two years ago it acquired a smaller competitor whose entire clickstream analytics platform already lived on AWS — S3 and Redshift — and nobody has migrated it, because it isn't broken.
+
+## S2 · STEPS CARD (the problem)
+
+When a regulator asks who can access customer browsing data across every system, nobody can answer confidently. Security can run a clean access review on Azure in an afternoon. AWS is a black box — different console, no one on the team has AWS credentials, and the only documentation is a three-year-old wiki page.
+
+## S3 · STEPS CARD (Chapters 1-2 applied)
+
+Chapter 1: the team treats the AWS footprint as its own landing zone, with the same environment discipline Azure already has. Chapter 2: rather than separate AWS logins, they federate Entra ID into AWS IAM roles — one identity source of truth driving access reviews on both clouds through the same quarterly process.
+
+## S4 · STEPS CARD (Chapters 3-4 applied)
+
+Chapter 3: the S3 buckets get registered into their existing Purview catalog using the multicloud connector, so a steward can finally search customer browsing data and see Azure and AWS systems in one result list. Chapter 4: one encryption standard, implemented with Key Vault on Azure and KMS on AWS, and the Azure Policy requirement gets translated into an AWS service control policy as part of the same change — closing the policy-drift gap before it opens.
+
+## S5 · STEPS CARD (the result)
+
+Six months later, one search answers the regulator's question — every system touching browsing data, Azure and AWS both, each with an owner listed. Nothing about the AWS pipeline itself changed. It still runs exactly as the acquired team built it. What changed is that it's now governed, not just running.
+
+## S6 · OUTRO CARD
+
+Multi-cloud governance didn't require migrating AWS onto Azure, and it didn't require a new universal tool — it required one identity system and an actively maintained map between the two clouds' controls. Next lesson: build that control map yourself, in a hands-on practice lab.

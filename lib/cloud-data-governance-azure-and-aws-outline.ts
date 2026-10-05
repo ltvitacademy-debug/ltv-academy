@@ -69,11 +69,11 @@ export const GOV_CLOUD_DATA_GOVERNANCE_AZURE_AND_AWS_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Multi-Cloud Governance",
     lessons: [
-      L(21, "multi-cloud-governance-challenges", "Multi-Cloud Governance Challenges"),
-      L(22, "cross-cloud-cataloging-and-lineage", "Cross-Cloud Cataloging and Lineage"),
-      L(23, "multi-cloud-governance-case-study", "Multi-Cloud Governance Case Study"),
-      L(24, "cloud-governance-practice-lab", "Cloud Governance Practice Lab"),
-      L(25, "cloud-governance-review-checklist", "Cloud Governance Review Checklist"),
+      L(21, "multi-cloud-governance-challenges", "Multi-Cloud Governance Challenges", { contentDir: "ch05/21-multi-cloud-governance-challenges" }),
+      L(22, "cross-cloud-cataloging-and-lineage", "Cross-Cloud Cataloging and Lineage", { contentDir: "ch05/22-cross-cloud-cataloging-and-lineage" }),
+      L(23, "multi-cloud-governance-case-study", "Multi-Cloud Governance Case Study", { contentDir: "ch05/23-multi-cloud-governance-case-study" }),
+      L(24, "cloud-governance-practice-lab", "Cloud Governance Practice Lab", { contentDir: "ch05/24-cloud-governance-practice-lab" }),
+      L(25, "cloud-governance-review-checklist", "Cloud Governance Review Checklist", { contentDir: "ch05/25-cloud-governance-review-checklist" }),
     ],
   },
 ];
