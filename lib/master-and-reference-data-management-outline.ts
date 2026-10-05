@@ -25,11 +25,11 @@ export const GOV_MASTER_AND_REFERENCE_DATA_MANAGEMENT_CHAPTERS: ChapterMeta[] = 
     n: 1,
     title: "MDM Foundations",
     lessons: [
-      L(1, "what-master-data-is", "What Master Data Is"),
-      L(2, "master-vs-reference-vs-transactional-data", "Master vs. Reference vs. Transactional Data"),
-      L(3, "mdm-architecture-styles", "MDM Architecture Styles"),
-      L(4, "the-mdm-business-case", "The MDM Business Case"),
-      L(5, "mdm-governance", "MDM Governance"),
+      L(1, "what-master-data-is", "What Master Data Is", { contentDir: "ch01/01-what-master-data-is" }),
+      L(2, "master-vs-reference-vs-transactional-data", "Master vs. Reference vs. Transactional Data", { contentDir: "ch01/02-master-vs-reference-vs-transactional-data" }),
+      L(3, "mdm-architecture-styles", "MDM Architecture Styles", { contentDir: "ch01/03-mdm-architecture-styles" }),
+      L(4, "the-mdm-business-case", "The MDM Business Case", { contentDir: "ch01/04-the-mdm-business-case" }),
+      L(5, "mdm-governance", "MDM Governance", { contentDir: "ch01/05-mdm-governance" }),
     ],
   },
   {
@@ -70,10 +70,10 @@ export const GOV_MASTER_AND_REFERENCE_DATA_MANAGEMENT_CHAPTERS: ChapterMeta[] = 
     title: "Enterprise Consistency",
     lessons: [
       L(21, "distributing-master-data", "Distributing Master Data"),
-      L(22, "master-data-quality", "Master Data Quality"),
-      L(23, "master-data-integration-patterns", "Master Data Integration Patterns"),
-      L(24, "mdm-tools-overview", "MDM Tools Overview"),
-      L(25, "mdm-case-study", "MDM Case Study"),
+      L(22, "master-data-quality", "Master Data Quality", { contentDir: "ch05/22-master-data-quality" }),
+      L(23, "master-data-integration-patterns", "Master Data Integration Patterns", { contentDir: "ch05/23-master-data-integration-patterns" }),
+      L(24, "mdm-tools-overview", "MDM Tools Overview", { contentDir: "ch05/24-mdm-tools-overview" }),
+      L(25, "mdm-case-study", "MDM Case Study", { contentDir: "ch05/25-mdm-case-study" }),
     ],
   },
 ];

@@ -1,0 +1,41 @@
+# Lesson 23 — Master Data Integration Patterns · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Lesson 3 asked where the authoritative record lives — registry,
+consolidation, coexistence, or centralized. This lesson asks the
+follow-up: once you've picked a style, how does the data actually move?
+
+## S2 · STEPS CARD (four styles, as data movement)
+
+Registry style is a lightweight lookup — ask who holds the record, go
+get it there. Consolidation pushes assembled golden records out, mostly
+one direction. Coexistence syncs both ways, as source systems keep
+editing locally. Centralized has no sync at all — every write happens
+directly against the hub.
+
+## S3 · STEPS CARD (three mechanisms)
+
+Whatever the style, the plumbing is usually one of three things. Batch
+and file-based — simple, auditable, but can be a full day stale.
+API-based, request and response — as fresh as the last call. Event-
+driven publish-subscribe — the hub announces a change once, and every
+subscriber reacts on its own schedule.
+
+## S4 · STEPS CARD (matching pattern to scenario)
+
+A nightly product sync to a warehouse fits batch. A real-time customer
+lookup during a support call fits an API call. Edits from multiple
+source systems that need to reach every downstream app within minutes
+fit event-driven. None of these are a law — they're a starting
+intuition based on freshness and consumer count.
+
+## S5 · OUTRO CARD
+
+Next lesson: MDM tools overview — the real commercial and platform
+products that implement these architecture styles and integration
+mechanisms, and how to evaluate one against another.
