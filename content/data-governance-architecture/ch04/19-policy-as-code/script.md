@@ -1,0 +1,27 @@
+# Lesson 19 — Policy as Code · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+## S1 · TITLE
+
+This lesson is about writing governance rules as actual code, instead of settings clicked by hand in a console.
+
+## S2 · STEPS — What policy as code means
+
+Instead of an admin clicking a setting, the rule is a file in a known syntax, checked into source control, applied programmatically. The policy gets a real history — who changed it, when, why — the same history application code already has, instead of living only in an admin's memory.
+
+## S3 · CODE — Azure Policy
+
+Azure Policy definitions are JSON, built around a policyRule: an "if" condition paired with a "then" effect — deny, audit, append. Here's a simplified example denying any resource outside an approved location list. Same shape real Azure Policy definitions use underneath: policyRule, if, then-effect.
+
+## S4 · CODE — Open Policy Agent
+
+Open Policy Agent is vendor-neutral — policies are written in its own language, Rego, evaluated against any JSON input, which is why it shows up across cloud, Kubernetes, and CI pipelines alike. Here's an illustrative rule: deny access to anything tagged confidential, unless the requester holds a data-steward role.
+
+## S5 · STEPS — The tradeoff
+
+A console checkbox is easy for one change. Policy as code demands someone who can read and write the syntax, and somewhere to store and deploy it — real overhead for a small team. The payoff — audit history, testability, consistency across hundreds of resources — is what makes it close to mandatory once that number gets large.
+
+## S6 · OUTRO
+
+Next lesson: how four real platforms — Purview, Fabric, Databricks, and Snowflake — actually implement everything this chapter has covered.
