@@ -1,0 +1,32 @@
+# Lesson 7 — Standards and Procedures · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+## S1 · TITLE
+
+Foundations drew the line between policy and standard. This lesson adds a third layer underneath
+both — the procedure — and shows how all three stack without repeating each other.
+
+## S2 · STEPS — A checkable standard
+
+A standard has to answer a yes-or-no question, not an opinion. "Customer data should be reasonably
+protected" isn't checkable. "PII fields must be encrypted at rest using AES-256 or stronger" is —
+you can look at a system and answer yes or no.
+
+## S3 · STEPS — What a procedure is
+
+Most employees never read a policy and rarely read a standard, but they follow procedures
+constantly without even thinking of it as governance. A procedure is the exact, ordered steps for
+a specific task. A clear procedure makes compliance the easy path; a confusing one pushes people
+toward workarounds.
+
+## S4 · STEPS — Three layers, no overlap
+
+Policy answers what and why, and rarely changes. Standard answers exactly what, specifically, and
+shifts as technology does. Procedure answers how, step by step, and changes most often as tools
+change. Each layer should only say what belongs at its own altitude.
+
+## S5 · OUTRO
+
+Next lesson: how these documents actually move through an organization in real time —
+governance workflows.
