@@ -1,0 +1,29 @@
+# Lesson 2 — Fabric Tenant and Capacity Governance · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Everything you'll govern in this course lives inside one of two structures: the tenant, and the capacity. This lesson covers both.
+
+## S2 · STEPS CARD (the tenant)
+
+A Fabric tenant is the top-level governance boundary. It maps one-to-one with your organization's Microsoft Entra ID — the same tenant Power BI already uses. One Entra ID means one Fabric tenant, and everything else in this course — domains, workspaces, items, permissions — lives inside that one boundary.
+
+## S3 · STEPS CARD (capacity)
+
+A capacity is the compute and governance unit workspaces are assigned to — an F-SKU or trial capacity. Every workspace runs on exactly one capacity. A capacity has its own region, and its own set of capacity admins, separate from the tenant admins managing the tenant as a whole.
+
+## S4 · SCREENSHOT CARD (tenants-capacities diagram)
+
+This is Microsoft's own diagram. Retail company A: one organizational tenant, three regional capacities — US, UK, Germany — each holding its own named workspaces. Retail company B shows the other valid pattern: two separate tenants, each independently structured the same tenant-to-capacity-to-workspace way underneath.
+
+## S5 · STEPS CARD (why the structure matters)
+
+One tenant can hold many capacities, split by region or business unit. That's the structural reason tenant admins don't have to manage every decision centrally forever — many tenant settings can be delegated down to capacity admins, who then control certain settings for just their own capacity's workspaces.
+
+## S6 · OUTRO CARD
+
+Next lesson: the admin portal itself — the actual screen where tenant and capacity settings get configured, including how delegation gets turned on.
