@@ -69,11 +69,11 @@ export const GOV_DATABRICKS_UNITY_CATALOG_GOVERNANCE_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Lakehouse Governance",
     lessons: [
-      L(21, "delta-sharing-and-governance", "Delta Sharing and Governance"),
-      L(22, "governing-machine-learning-assets", "Governing Machine Learning Assets"),
-      L(23, "migrating-to-unity-catalog", "Migrating to Unity Catalog"),
-      L(24, "unity-catalog-case-study", "Unity Catalog Case Study"),
-      L(25, "unity-catalog-practice-lab", "Unity Catalog Practice Lab"),
+      L(21, "delta-sharing-and-governance", "Delta Sharing and Governance", { contentDir: "ch05/21-delta-sharing-and-governance" }),
+      L(22, "governing-machine-learning-assets", "Governing Machine Learning Assets", { contentDir: "ch05/22-governing-machine-learning-assets" }),
+      L(23, "migrating-to-unity-catalog", "Migrating to Unity Catalog", { contentDir: "ch05/23-migrating-to-unity-catalog" }),
+      L(24, "unity-catalog-case-study", "Unity Catalog Case Study", { contentDir: "ch05/24-unity-catalog-case-study" }),
+      L(25, "unity-catalog-practice-lab", "Unity Catalog Practice Lab", { contentDir: "ch05/25-unity-catalog-practice-lab" }),
     ],
   },
 ];
