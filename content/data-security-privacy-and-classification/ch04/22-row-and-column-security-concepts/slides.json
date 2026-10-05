@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Data Security, Privacy & Classification · Chapter Four",
+    "titlePlain": "Row and Column ",
+    "titleEmphasis": "Security",
+    "titleSuffix": "",
+    "subtitle": "Lesson 22 · Protecting Data"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Column-level security with GRANT",
+    "code": "-- HR can see these three columns of Employees — nothing else\nGRANT SELECT ON dbo.Employees(EmployeeId, Name, Department) TO HRRole;\n\n-- Payroll additionally needs Salary — a separate, narrower role\nGRANT SELECT ON dbo.Employees(EmployeeId, Salary) TO PayrollRole;",
+    "caption": "Least privilege scoped to specific columns, not the whole table."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Row-Level Security: predicate and policy",
+    "code": "CREATE FUNCTION Security.fn_tenantAccessPredicate(@TenantId AS INT)\nRETURNS TABLE\nWITH SCHEMABINDING\nAS\nRETURN SELECT 1 AS fn_result\nWHERE @TenantId = CAST(SESSION_CONTEXT(N'TenantId') AS INT);\nGO\n\nCREATE SECURITY POLICY TenantFilterPolicy\nADD FILTER PREDICATE Security.fn_tenantAccessPredicate(TenantId)\nON dbo.Sales\nWITH (STATE = ON);",
+    "caption": "Every query against dbo.Sales is now silently filtered to the matching tenant."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Filter predicate vs. block predicate",
+    "code": "-- Filter predicate (above): silently hides non-matching rows on reads\n\n-- Block predicate: actively rejects a write that violates the rule\nALTER SECURITY POLICY TenantFilterPolicy\nADD BLOCK PREDICATE Security.fn_tenantAccessPredicate(TenantId)\nON dbo.Sales AFTER INSERT;",
+    "caption": "Filter predicates handle reads; block predicates handle writes."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why the engine, not the app",
+    "titlePlain": "A guarantee, not a ",
+    "titleEmphasis": "habit",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "EVERY QUERY PATH", "sub": "reports, ad-hoc tools, future bugs" },
+      { "label": "ENFORCED IN THE ENGINE", "sub": "not dependent on app code" },
+      { "label": "NO FORGOTTEN FILTER", "sub": "applies no matter who wrote the query" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 5, Lesson 23",
+    "titlePlain": "Data ",
+    "titleEmphasis": "Retention",
+    "titleSuffix": "",
+    "subtitle": "Chapter 4 complete — next, the data lifecycle and compliance."
+  }
+]

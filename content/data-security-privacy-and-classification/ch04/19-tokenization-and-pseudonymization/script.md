@@ -1,0 +1,43 @@
+# Lesson 19 — Tokenization and Pseudonymization · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Masking hid values from a query. These two techniques go further: they
+replace the sensitive value itself with a substitute, each in a
+different, specific way.
+
+## S2 · STEPS CARD (tokenization)
+
+Tokenization replaces a value with a token that has no mathematical
+relationship to the original — unlike encryption, you can't compute your
+way back. The only path back is a lookup in a tightly controlled token
+vault. That makes tokens safe to let flow through logs and integrations.
+
+## S3 · STEPS CARD (pseudonymization)
+
+Pseudonymization replaces identifiers with a consistent substitute across
+a whole dataset, with a separate reversible mapping. Customer 48213
+becomes Patient-X92 everywhere, so analysts can still see patterns without
+seeing who the real person is.
+
+## S4 · STEPS CARD (vs anonymization)
+
+This distinction matters legally. Anonymization removes re-identification
+entirely — no mapping exists to reverse. Pseudonymization is reversible
+by design for someone holding the mapping, which is exactly why GDPR still
+treats it as personal data, just lower-risk.
+
+## S5 · STEPS CARD (the shared dependency)
+
+Both techniques depend on one thing: protecting the vault or the mapping
+table as rigorously as the original data. An unsecured vault doesn't
+protect anything — it just relocates the sensitive data to a second place.
+
+## S6 · OUTRO CARD
+
+Next up: encryption — the technique that is mathematically reversible
+with a key, and the real T-SQL behind protecting data at rest.

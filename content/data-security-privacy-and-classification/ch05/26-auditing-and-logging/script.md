@@ -1,0 +1,42 @@
+# Lesson 26 — Auditing and Logging · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Plenty of systems log something — errors, timings, stack traces.
+That's not the same as an audit trail: a record built specifically to
+answer who did what, to which data, when, and with what outcome.
+
+## S2 · STEPS CARD (five questions)
+
+A usable audit entry answers five questions every time. Who —  a
+specific authenticated identity, not a shared account. What — the
+exact action and record touched. When — a precise timestamp. From
+where — the originating system or address. And outcome — success,
+failure, or denial. "User accessed customer data" answers none of
+these specifically enough to be useful.
+
+## S3 · CODE CARD (worked entry)
+
+Here's a worked example. A timestamp, an actor by name and role, the
+action — read — the exact resource and fields touched, the source
+address, and the outcome. If this customer later complains their data
+was viewed without cause, this entry is exactly what gets pulled up
+first.
+
+## S4 · STEPS CARD (logs need protection)
+
+A log is itself a sensitive asset — it often contains the same personal
+data it describes. If an attacker can edit or delete entries after the
+fact, the audit trail stops being trustworthy. That calls for
+tamper-evident, append-only storage. And it creates a retention tension:
+logs need to last long enough to support an investigation, but not so
+long they become their own breach liability.
+
+## S5 · OUTRO CARD
+
+Next lesson: breach response concepts — what this audit trail actually
+gets used for when something goes wrong.

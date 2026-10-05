@@ -1,0 +1,38 @@
+# Lesson 14 — Least Privilege · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+RBAC told us how to grant access to a role. Least privilege tells us how
+much that role's permission list should actually contain — the minimum
+required to do the job, nothing added for convenience.
+
+## S2 · STEPS CARD (the test)
+
+The test is simple to state. For every permission on an account, can you
+name the specific task that requires it? "No, but it might be useful
+someday" means that permission shouldn't be there. "Just in case" access
+is the enemy — it does nothing until the account is compromised.
+
+## S3 · STEPS CARD (permission creep)
+
+Permission creep is least privilege eroding gradually. Someone moves
+across three teams over four years, each move adds access, and nobody
+removes the old team's access. After four years they hold the union of
+everything they've ever needed — far more than their current job requires.
+
+## S4 · STEPS CARD (JIT elevation + blast radius)
+
+Least privilege also applies to time, not just scope. Just-in-time
+elevation grants a powerful permission only for the window it's needed,
+then revokes it automatically. Both ideas exist to shrink blast radius —
+the damage one compromised account can actually do.
+
+## S5 · OUTRO CARD
+
+Next up: segregation of duties — splitting a sensitive process across
+multiple people so no single compromised or malicious account can
+complete it alone.
