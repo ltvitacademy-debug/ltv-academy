@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Databricks Unity Catalog Governance · Chapter Three",
+    "titlePlain": "Dynamic ",
+    "titleEmphasis": "Views",
+    "titleSuffix": "",
+    "subtitle": "Lesson 13 · Fine-Grained Security"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The original fine-grained mechanism",
+    "titlePlain": "Logic ",
+    "titleEmphasis": "inside",
+    "titleSuffix": " the SELECT",
+    "steps": [
+      { "label": "IS_ACCOUNT_GROUP_MEMBER()", "sub": "account-level group check — recommended" },
+      { "label": "IS_MEMBER()", "sub": "legacy workspace-level — avoid on UC data" },
+      { "label": "SESSION_USER()", "sub": "identity-based logic, not group-based" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Column-level permissions",
+    "code": "CREATE VIEW sales_redacted AS\nSELECT\n  user_id,\n  CASE WHEN is_account_group_member('auditors')\n    THEN email ELSE 'REDACTED'\n  END AS email,\n  country, product, total\nFROM sales_raw",
+    "caption": "Auditors see the real email; everyone else gets 'REDACTED' — every other column passes through untouched."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Row-level permissions",
+    "code": "CREATE VIEW sales_redacted AS\nSELECT user_id, country, product, total\nFROM sales_raw\nWHERE CASE\n    WHEN is_account_group_member('managers') THEN TRUE\n    ELSE total <= 1000000\n  END;",
+    "caption": "Only managers see transactions over $1M — the WHERE clause silently filters everyone else's rows."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Still real, but not the first choice anymore",
+    "titlePlain": "When to ",
+    "titleEmphasis": "still",
+    "titleSuffix": " use one",
+    "steps": [
+      { "label": "STILL FULLY SUPPORTED", "sub": "regexp-based masking, ad hoc views" },
+      { "label": "ROW FILTERS/MASKS PREFERRED NOW", "sub": "attach to the table, protect every consumer" },
+      { "label": "NEVER GRANT THE RAW TABLE", "sub": "only the dynamic view itself" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 14",
+    "titlePlain": "ABAC and Governed ",
+    "titleEmphasis": "Tags",
+    "titleSuffix": "",
+    "subtitle": "Policies that apply automatically, based on how data is tagged."
+  }
+]

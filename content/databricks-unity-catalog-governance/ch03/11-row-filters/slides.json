@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Databricks Unity Catalog Governance · Chapter Three",
+    "titlePlain": "Row ",
+    "titleEmphasis": "Filters",
+    "titleSuffix": "",
+    "subtitle": "Lesson 11 · Fine-Grained Security"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Beyond all-or-nothing grants",
+    "titlePlain": "Filtering ",
+    "titleEmphasis": "rows",
+    "titleSuffix": ", not tables",
+    "steps": [
+      { "label": "GRANT IS BINARY", "sub": "see every row of a table, or none of it" },
+      { "label": "A ROW FILTER IS A UDF", "sub": "attached to a table, evaluated per row" },
+      { "label": "FALSE ROWS ARE EXCLUDED", "sub": "silently, at query time, no app changes" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "CREATE FUNCTION + ALTER TABLE",
+    "code": "CREATE FUNCTION us_filter(region STRING)\nRETURN IF(IS_ACCOUNT_GROUP_MEMBER('admin'), true, region = 'US');\n\nCREATE TABLE sales (region STRING, id INT);\nALTER TABLE sales SET ROW FILTER us_filter ON (region);",
+    "caption": "Admins see every row; everyone else only sees region = 'US' — same SELECT, different result."
+  },
+  {
+    "type": "code",
+    "eyebrow": "ACL-style filtering with a mapping table",
+    "code": "CREATE TABLE valid_users (username STRING);\nINSERT INTO valid_users VALUES ('fred@databricks.com');\n\nCREATE FUNCTION row_filter()\n  RETURN EXISTS(\n    SELECT 1 FROM valid_users v\n    WHERE v.username = SESSION_USER());\n\nCREATE TABLE data_table (x INT, y INT, z INT)\n  WITH ROW FILTER row_filter ON ();",
+    "caption": "SESSION_USER() checks the querying identity against an ordinary table — update access with INSERT/DELETE, no redeploy."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Changing your mind later",
+    "titlePlain": "Disable, replace, ",
+    "titleEmphasis": "remove",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "DROP ROW FILTER", "sub": "disables it — future queries return every row" },
+      { "label": "CREATE OR REPLACE FUNCTION", "sub": "updates the logic in place" },
+      { "label": "DROP FILTER BEFORE FUNCTION", "sub": "wrong order leaves the table inaccessible" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 12",
+    "titlePlain": "Column ",
+    "titleEmphasis": "Masks",
+    "titleSuffix": "",
+    "subtitle": "The same enforcement model, applied inside a column instead of across rows."
+  }
+]

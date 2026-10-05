@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Databricks Unity Catalog Governance · Chapter Three",
+    "titlePlain": "Column ",
+    "titleEmphasis": "Masks",
+    "titleSuffix": "",
+    "subtitle": "Lesson 12 · Fine-Grained Security"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The companion to a row filter",
+    "titlePlain": "Masking what's ",
+    "titleEmphasis": "inside",
+    "titleSuffix": " a column",
+    "steps": [
+      { "label": "SAME UDF MODEL", "sub": "a function registered in Unity Catalog" },
+      { "label": "RETURNS A VALUE, NOT BOOLEAN", "sub": "real value, or a redacted one" },
+      { "label": "SUBSTITUTED AUTOMATICALLY", "sub": "wherever the column appears in results" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "CREATE FUNCTION + SET MASK",
+    "code": "CREATE FUNCTION ssn_mask(ssn STRING)\n  RETURN CASE WHEN is_account_group_member('HumanResourceDept')\n    THEN ssn ELSE '***-**-****' END;\n\nCREATE TABLE users (name STRING, ssn STRING);\nALTER TABLE users ALTER COLUMN ssn SET MASK ssn_mask;",
+    "caption": "Non-HR users see '***-**-****'; HumanResourceDept members see the real SSN — same query, different result."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Conditional masking with USING COLUMNS",
+    "code": "CREATE FUNCTION mask_address_by_country(\n    address STRING, country STRING,\n    group_suffix STRING DEFAULT '_address_viewers')\nRETURN IF(is_account_group_member(country || group_suffix), address, 'REDACTED');\n\nALTER TABLE customers ALTER COLUMN address\n  SET MASK mask_address_by_country USING COLUMNS (country, '_address_viewers');",
+    "caption": "The mask reads another column in the same row — US_address_viewers see US addresses, REDACTED everywhere else."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Python logic and removal",
+    "titlePlain": "Wrapping and ",
+    "titleEmphasis": "dropping",
+    "titleSuffix": " a mask",
+    "steps": [
+      { "label": "PYTHON NEEDS A SQL WRAPPER", "sub": "SET MASK only accepts a SQL function" },
+      { "label": "DIRECT PYTHON UDF FAILS", "sub": "ROUTINE_NOT_FOUND if you skip the wrapper" },
+      { "label": "ALTER COLUMN DROP MASK", "sub": "removes it — original values return" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 13",
+    "titlePlain": "Dynamic ",
+    "titleEmphasis": "Views",
+    "titleSuffix": "",
+    "subtitle": "Row- and column-level control built into the view itself."
+  }
+]

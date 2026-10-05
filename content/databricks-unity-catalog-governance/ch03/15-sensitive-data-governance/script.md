@@ -1,0 +1,31 @@
+# Lesson 15 — Sensitive Data Governance · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+## S1 · TITLE
+
+A catalog can hold thousands of tables nobody has manually reviewed. This lesson covers how Databricks finds the sensitive columns inside them automatically.
+
+## S2 · STEPS — What classification does
+
+Data Classification runs an agentic AI system that scans Unity Catalog tables, detects columns likely to hold sensitive data — email addresses, government IDs, credit card numbers — and tags them with governed class dot star tags. Scanning is incremental: once enabled, new or changed data gets picked up automatically within about 24 hours.
+
+## S3 · SCREENSHOT — Turning it on
+
+This is the real enablement dialog. You choose which schemas to scan, and "all selected and future schemas" means anything created later gets covered automatically — nobody has to remember to add a new schema to the list.
+
+## S4 · SCREENSHOT — Reading the results
+
+The results page lists every classification type detected, how many columns, whether auto-tagging is active, and — this is the number governance teams actually watch — what percentage of users accessed that data completely unmasked in the last 7 days.
+
+## S5 · SCREENSHOT — Reviewing a detection
+
+Clicking into a specific tag shows the real detected columns with sample values, so a reviewer can confirm the detection is correct before acting on it — and exclude it here if it's wrong, which also improves future accuracy.
+
+## S6 · CODE — From detection to enforcement
+
+Detection alone doesn't protect anything — it just tags. The real next step is an ABAC policy built directly off that tag, masking every column classified as contact information across the whole catalog. And because every detection lands in a queryable system table, a governance team can track coverage over time without opening the UI at all.
+
+## S7 · OUTRO
+
+Next lesson: data discovery — how the same tagged, classified catalog becomes searchable, so the right people can actually find and use the data that's been governed.
