@@ -1,0 +1,46 @@
+# Lesson 8 — Self-Consistency & Multiple Sampling · Voiceover script
+
+Segments map 1:1 to slides. Target: ~300 words / 2.5-3 minutes.
+
+---
+
+## S1 · TITLE CARD
+
+Last lesson, chain-of-thought gave the model room to work through a
+problem instead of guessing. But one run through that reasoning still
+isn't guaranteed to land correctly. This lesson's fix: ask more than once.
+
+## S2 · CODE CARD (three sampled runs)
+
+Self-consistency means running the same chain-of-thought prompt several
+times independently, then taking the answer that shows up most often.
+Here, a train-distance problem run three times — two runs land on 195
+miles, one makes an arithmetic slip and gets 185.
+
+## S3 · CODE CARD (majority vote)
+
+The majority answer, 195 miles, wins — the outvoted run's mistake gets
+caught without anyone having to spot the error by hand. A single run, if
+it happened to be that third one, would have silently returned the wrong
+number.
+
+## S4 · STEPS CARD (why it works)
+
+Why does this work? Different sampled runs take slightly different
+reasoning paths. When most of them converge on the same answer, that
+agreement is itself evidence the answer is right. When they disagree,
+that's a signal the question needs more work — not just noise.
+
+## S5 · CODE CARD (the real cost)
+
+But it isn't free. One sample costs once. Five samples cost five times
+the tokens and latency for a strong majority signal. Ten samples cost ten
+times, for only a little more confidence past about five. This is a tool
+for high-stakes answers, not a default on every prompt.
+
+## S6 · OUTRO CARD
+
+Sample multiple times, vote on the answer, pay for it only when a wrong
+answer actually costs something. Next lesson, we shift from reasoning
+reliability to a different lever entirely: giving the model a role to
+play.
