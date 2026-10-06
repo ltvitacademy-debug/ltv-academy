@@ -1,0 +1,25 @@
+# Script — Approval Processes and Flow for Apps
+
+## Segment 1 (title)
+
+Validation rules block, formulas calculate, roll-ups aggregate — none of them route anything. When a record needs a human sign-off, or the logic is too branched for one formula, you need the two tools built for that: approval processes and Flow.
+
+## Segment 2 (steps: anatomy of an approval process)
+
+Every approval process has the same shape. Entry criteria decide which records can be submitted. Initial submission actions fire the moment one enters — often locking the record. One or more approval steps follow, each with its own approver and a rule for multiple approvers: unanimous, or first response. And final approval, rejection, or recall actions fire once it resolves.
+
+## Segment 3 (code: Flow submitting for approval)
+
+Flow doesn't replace the approval process — it can trigger one. An auto-launched or record-triggered Flow can include a Submit for Approval action, deciding whether and when to submit based on logic a static entry-criteria filter alone can't express: loops, subflows, a rolling total across other records. The approval process still does the routing; Flow decides when routing should even start.
+
+## Segment 4 (steps: Flow types)
+
+Four Flow types matter for app building. Screen Flow is a guided multi-step form, launched from a quick action or embedded on a page. Record-triggered Flow runs automatically on create, update, or delete — the modern replacement for most workflow rule and process builder use cases. Auto-launched Flow runs on demand, called from a button or another process. And scheduled-triggered Flow runs on a recurring schedule against a batch of records.
+
+## Segment 5 (code: which tool, when)
+
+Use an approval process when the requirement is genuinely "named humans sign off, in sequence or parallel" — it's purpose-built, with locking and a visible approval history out of the box. Use Flow when the logic branches, loops, touches multiple objects, or needs a screen. Plenty of real apps use both: a Flow evaluates complex conditions, and when they're met, calls Submit for Approval to hand off to the routing tool.
+
+## Segment 6 (outro)
+
+Approval processes route; Flow branches, loops, and can decide when to route. Next: lesson eighteen pulls this whole chapter's five tools into one decision framework.

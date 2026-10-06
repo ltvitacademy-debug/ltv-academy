@@ -1,0 +1,25 @@
+# Script — Reports and Dashboards for Apps
+
+## Segment 1 (title)
+
+An application nobody can see data from isn't finished — it's half-built. Chapter three gave the app its logic; this lesson gives it visibility: reports and dashboards wired for the custom objects you designed, embedded right into the app instead of living on a separate tab.
+
+## Segment 2 (steps: report formats)
+
+Four formats, matched to the question. Tabular is a flat list — fast, but no subtotals. Summary groups rows with subtotals, the default for "how much, broken down by X." Matrix groups by rows and columns at once — a true cross-tab, like opportunities by owner and by stage. Joined puts multiple report blocks on one page, used sparingly for dashboards that need two different shapes side by side.
+
+## Segment 3 (code: dashboards as a layer)
+
+A dashboard component doesn't query data itself — it visualizes a source report's results. Change the report's filters or groupings, and every component built on it updates. That's why dashboard design starts with getting the report right first, then choosing a chart type that represents it honestly.
+
+## Segment 4 (steps: dynamic dashboards)
+
+A dashboard can run as one specified user, or dynamically as the logged-in viewer. For an app shared across roles — reps seeing their own records, managers seeing the team's — a dynamic dashboard is what keeps one dashboard honest for everyone, instead of maintaining a separate copy per role.
+
+## Segment 5 (code: embedding on the app page)
+
+Reports and dashboards don't have to live on a separate tab. From Lightning App Builder, a Dashboard or Report Chart component drops directly onto a record page or app home page. A manager opens the app and the pipeline matrix is already there, filtered and current. That's a real part of what makes something feel like an application instead of a database with a UI.
+
+## Segment 6 (outro)
+
+Match the format to the question, remember a dashboard only visualizes its source report, and embed it on the app's own pages. Next: the security model that makes different viewers seeing different data correct in the first place.
