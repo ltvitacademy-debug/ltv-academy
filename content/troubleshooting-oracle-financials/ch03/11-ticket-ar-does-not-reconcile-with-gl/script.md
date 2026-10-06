@@ -1,0 +1,21 @@
+# Script — Ticket: AR Does Not Reconcile with GL
+
+## Segment 1 (title)
+
+Harbor & Vance Logistics, ticket forty-four-oh-two. The controller says the Receivables aging total doesn't match the AR control account balance in GL — nine thousand dollars off — and wants it explained before the period closes. High severity.
+
+## Segment 2 (steps)
+
+Normally Receivables and the GL control account agree, because every dollar that moves through AR flows through the same accounting pipeline into the same account. There's a report built specifically to confirm that: run Prepare AR to GL Reconciliation, then review the Receivables to Ledger Reconciliation Report. It breaks the comparison out by transaction type, so a gap shows up at the category level instead of just one unexplained number.
+
+## Segment 3 (steps)
+
+Here, the nine thousand dollar gap isolates to a category with no corresponding Receivables transaction behind it at all. Drilling into the GL journal detail for the period finds it: one manual journal, exactly nine thousand dollars, posted directly to the AR control account, described only as Q3 adjustment. Tracing who entered it: a GL user correcting a prior period AR balance they believed was overstated — but they adjusted it in GL directly instead of through Receivables.
+
+## Segment 4 (code)
+
+The adjustment itself might be completely legitimate. The problem is where it was entered — a direct journal to the control account that Receivables never saw, so the subledger and GL now disagree by exactly that amount. The fix: reverse the direct journal, and enter the same adjustment properly, as a Receivables transaction against the actual customer it relates to, so it flows through the subledger and reconciles naturally from here on.
+
+## Segment 5 (outro)
+
+Resolution note: name the exact journal, the exact root cause — a direct posting that bypassed the subledger — and the fix, reversed and re-entered correctly. Recommend GL users route AR corrections through Receivables, not direct journals. Up next, lesson twelve: a receipt applied to the wrong invoice.

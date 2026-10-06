@@ -1,0 +1,21 @@
+# Script — Ticket: Duplicate Invoice Entered
+
+## Segment 1 (title)
+
+BrightPath Facilities Group, ticket forty-two-fifty-four. An AP clerk got a Potential Duplicate hold on an invoice from Allied Janitorial Services, and their gut says it isn't actually a duplicate.
+
+## Segment 2 (steps)
+
+Worth knowing first: Oracle runs two different duplicate checks. The standard one, always on, compares business unit, supplier, supplier site, and invoice number. BrightPath also has an optional check enabled, which compares supplier, invoice type, amount, currency, and date instead — built specifically to catch an invoice that comes in under a different number but is financially identical to one already in the system.
+
+## Segment 3 (steps)
+
+That's exactly what fired here. Oracle matched this invoice against an existing one, INV-7731 — same supplier, same type, same three thousand two hundred dollar amount, same date, but a different invoice number: INV-7756. Pulling the actual source PDFs settles it: it's the same monthly janitorial invoice. The supplier resent it after an email bounce with a new reference number, and two different clerks each entered a copy without knowing about the other's entry.
+
+## Segment 4 (code)
+
+So this one really is a duplicate — but don't resolve this hold on instinct in either direction. A supplier can legitimately bill the same flat amount twice in a month for different actual services, which would also trip this check and not be a duplicate at all. Here, the source documents confirm it is the same charge. The fix: cancel the second invoice, INV-7756, and let the original, INV-7731, proceed normally through validation and payment.
+
+## Segment 5 (outro)
+
+Resolution note: name both invoice numbers, state how you confirmed it — comparing the actual source documents, not a guess — and recommend clerks check for an existing entry before re-keying a resent invoice. That closes out Payables tickets. Up next, chapter three: Receivables and Cash tickets, starting with AR that won't reconcile to GL.

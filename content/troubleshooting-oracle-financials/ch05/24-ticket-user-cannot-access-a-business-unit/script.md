@@ -1,0 +1,21 @@
+# Script — Ticket: User Cannot Access a Business Unit
+
+## Segment 1 (title)
+
+BrightPath Facilities Group, ticket forty-seven-eighteen. A new AP clerk can open Manage Invoices just fine, but searching anything in the Westfield Campus business unit returns zero results. Their manager says they should see those.
+
+## Segment 2 (steps)
+
+Two separate things decide what a user can do, and they're easy to confuse. A job role, and its bundled function privileges, decides whether a user can see a page or function at all — the menu item, the button. Data access — which specific business units, ledgers, or legal entities that function actually works on — comes from data roles and the security profiles attached to them. Someone can have full access to Manage Invoices and still see zero invoices if the security profile doesn't include the right business unit.
+
+## Segment 3 (steps)
+
+Here, the page opens fine, search fields work — so function privilege isn't the problem at all. Checking the clerk's data role in Security Console: it correctly carries AP transaction privileges, but its security profile only includes Riverside Campus. The clerk was actually hired to support Westfield Campus — whoever provisioned the account copied a template built for a Riverside-based role and never updated the business unit scope.
+
+## Segment 4 (code)
+
+So the fix is narrow and specific: update the security profile — or assign a different data role — so it includes Westfield Campus, matching what this clerk was actually hired to support. Confirm with the manager which business units the role should actually include, rather than just adding every BU to make the symptom go away.
+
+## Segment 5 (outro)
+
+Resolution note: name exactly which business unit was missing and why — a copied template that was never corrected — and recommend onboarding explicitly confirm BU scope whenever a role is copied from a template. Up next, lesson twenty-five: a similar access problem, but for journals in GL instead of invoices in Payables.

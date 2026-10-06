@@ -1,0 +1,21 @@
+# Script — The Support Ticket Workflow
+
+## Segment 1 (title)
+
+Welcome to Troubleshooting Oracle Financials, the Production Support course in the Oracle Fusion Financials Consultant path. Everything before this was about building the system correctly. This course is about what happens after it's live, when something that's supposed to work isn't working, and it's your job to find out why.
+
+## Segment 2 (steps)
+
+Every ticket moves through the same six stages. Intake, where the problem gets logged. Triage, where it gets a severity. Reproduce and scope, where you confirm it's real and figure out how far it spreads. Investigate, where you trace the symptom back to its actual cause. Resolve, where you apply and verify the fix. And document and close, where you write down what happened so the next person isn't starting from zero.
+
+## Segment 3 (steps)
+
+Here's the shape of a real one, at a company we'll call Meridian Steel Fabricators. Ticket forty-one-twelve: an AP clerk can't validate an invoice for a supplier called Summit Freight Carriers — it just sits there. That's Medium severity, one invoice, one clerk. You'll work that exact ticket in chapter two, lesson four. For now, just notice what the consultant does next: not guess, but reproduce it themselves and read what Oracle actually says.
+
+## Segment 4 (steps)
+
+One trap to avoid: severity is not the same thing as root cause. A critical ticket because the whole AP team is stuck might turn out to be one disabled account combination that every journal in the batch happens to use. A low severity ticket from one confused user might take longer to diagnose because the symptom is vague. Triage tells you what to work on first. It tells you nothing about why it's actually broken.
+
+## Segment 5 (outro)
+
+Production support is a different skill from implementation: find the actual cause, fix the actual cause, and touch nothing else that's currently working. Next up, lesson two: a systematic method for stage four, diagnosing problems step by step.

@@ -1,0 +1,21 @@
+# Script — Ticket: AutoInvoice Rejected Transactions
+
+## Segment 1 (title)
+
+Meridian Steel Fabricators, ticket forty-four-forty-one. This morning's AutoInvoice run imported two hundred fourteen transactions and rejected eighteen — and the billing coordinator needs to know what's wrong before manually creating anything. High severity, it's the daily billing run.
+
+## Segment 2 (steps)
+
+Context on AutoInvoice: it pulls lines from an interface table fed by an external order system and turns them into real Receivables transactions, validating customer, item, tax, and accounting along the way. Anything that fails lands in RA_INTERFACE_ERRORS_ALL instead of becoming an invoice. And there's a real distinction in the execution report: a line rejected for missing setup shows only a count, no reason. A line that errors shows the actual message. That difference changes where you look first.
+
+## Segment 3 (steps)
+
+Here, all eighteen are in error, with real messages — and all eighteen say the same thing: invalid tax rate code. Tracing the source: every one of them came from a product line recently added in the upstream order system, a new SKU category tagged with a tax rate code that was never set up in Oracle's tax configuration.
+
+## Segment 4 (code)
+
+One detail that matters here: an invalid tax rate code rejects the entire invoice, not just the one taxable line. If even a single line on a multi-line invoice carries a bad tax code, none of that invoice imports. The fix: add the missing tax rate code to Receivables tax setup — confirmed with whoever owns tax rates, not invented just to clear the error — correct the eighteen interface rows, and re-run AutoInvoice for just those.
+
+## Segment 5 (outro)
+
+Resolution note: name the shared cause across all eighteen, the fix, and the verification — re-ran AutoInvoice, zero errors on this batch. Recommend the upstream team notify Receivables before adding a new product category and tax code combination. Up next, lesson fourteen: a customer statement that's showing the wrong balance.

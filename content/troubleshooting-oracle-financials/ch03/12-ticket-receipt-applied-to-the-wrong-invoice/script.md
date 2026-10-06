@@ -1,0 +1,21 @@
+# Script — Ticket: Receipt Applied to the Wrong Invoice
+
+## Segment 1 (title)
+
+BrightPath Facilities Group, ticket forty-four-eighteen. A customer, Vantage Retail Partners, is on the phone saying an invoice is showing unpaid that they already paid — their check cleared weeks ago.
+
+## Segment 2 (steps)
+
+Quick context: a receipt isn't just recorded, it has to be applied to a specific invoice. Until then it sits on account — cash received, matched to nothing. If it gets applied to the wrong invoice, two things go wrong at once: the invoice that was actually paid still shows open, because nothing reduced it, and some other invoice shows paid even though the customer never sent money for that one specifically.
+
+## Segment 3 (steps)
+
+Here, Vantage sent four thousand one hundred dollars three weeks ago for invoice INV-9042. Checking where it actually landed: INV-9039 instead — a different open invoice for the same customer with a similar balance. The remittance advice attached to the original payment explicitly names INV-9042. This was a clerical mis-keying, not an ambiguous payment.
+
+## Segment 4 (steps)
+
+The fix is a clean unapply and reapply: unapply the receipt from INV-9039, which restores its open balance, then apply it correctly to INV-9042. Both steps stay in the receipt's application history — nothing gets deleted, so there's a full record of what happened and when it was corrected. But don't stop there. Check what the wrong application touched downstream: did a customer statement already go out showing the wrong balance? Did INV-9039 get flagged for a dunning letter while it looked unpaid for the wrong reason?
+
+## Segment 5 (outro)
+
+Resolution note: name both invoices, the exact amount, the fix — unapplied and reapplied correctly — and confirm you checked for downstream effects like a dunning notice. Up next, lesson thirteen: what happens when a whole batch of transactions gets rejected by AutoInvoice before they even become invoices.

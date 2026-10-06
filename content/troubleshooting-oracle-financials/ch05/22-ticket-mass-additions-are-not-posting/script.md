@@ -1,0 +1,21 @@
+# Script — Ticket: Mass Additions Are Not Posting
+
+## Segment 1 (title)
+
+Cascade Outdoor Supply, ticket forty-six-sixty-eight. Six new delivery trucks bought last week, and all six are stuck in Mass Additions, On Hold. None of them will post. High severity.
+
+## Segment 2 (steps)
+
+Quick walkthrough of the queue itself. New means it just arrived from Payables, untouched. On Hold means Prepare Mass Additions ran but couldn't derive something it needed. Post means a line is confirmed good and ready. Posted means it's already a real asset. And here's exactly how that derivation works: Prepare Mass Additions takes the invoice's clearing account and overlays it with the natural account segment of the depreciation expense account defined on the asset's category. No expense account on the category, nothing to overlay with — straight to On Hold.
+
+## Segment 3 (steps)
+
+All six lines: On Hold. Opening one and checking Assignments: the expense account field is blank, exactly what you'd expect from a failed derivation. All six share one asset category, Vehicles - Delivery Trucks, created last month for this new fleet. Checking that category's setup: it has a cost account, it has an accumulated depreciation account, but no depreciation expense account at all. That's the missing piece.
+
+## Segment 4 (code)
+
+So this isn't six separate problems — it's one category setup gap hitting six lines at once. Add the missing depreciation expense account to the category's setup for this book, confirmed with whoever owns Fixed Assets setup since it decides where this whole vehicle category's depreciation posts going forward. Then re-run Prepare Mass Additions for all six held lines in one pass — no need to touch them individually, since the fix was at the category level.
+
+## Segment 5 (outro)
+
+Resolution note: name the one missing account on the one category, and confirm all six lines cleared together once it was added. Recommend a checklist step verifying full category setup — cost, accumulated depreciation, and expense accounts — whenever a new category gets created. Up next, lesson twenty-three: an expense report stuck in approval.

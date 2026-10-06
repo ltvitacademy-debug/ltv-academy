@@ -1,0 +1,21 @@
+# Script — Ticket: Journal Will Not Post
+
+## Segment 1 (title)
+
+Meridian Steel Fabricators, ticket forty-five-twelve. A GL accountant is trying to post the month-end accrual batch and it's failing — forty journals in the batch, no idea which one is the problem. High severity, this blocks month-end.
+
+## Segment 2 (steps)
+
+Won't post is one symptom with several unrelated causes. Unbalanced — debits don't equal credits, blocked unless the ledger allows suspense posting, which routes the difference to a suspense account instead of rejecting it. A closed period. An invalid or disabled account on a line. Or the batch simply hasn't finished approval yet. Which one it is completely changes the fix.
+
+## Segment 3 (steps)
+
+Checking the actual posting log instead of just "failed": one journal, line three, references an account combination that's disabled. Testing whether this is isolated: the other thirty-nine journals post cleanly on their own. One bad line is blocking the entire batch's run. Checking why that account's disabled: it was retired two weeks ago as part of a chart-of-accounts cleanup project, and this accrual was still coded to it.
+
+## Segment 4 (code)
+
+So this forty-journal emergency is actually a one-line correction. Fix the one line to the current active account for this accrual type — confirmed with GL, not guessed — and leave the other thirty-nine journals exactly as they are. Re-run posting for the whole batch.
+
+## Segment 5 (outro)
+
+Resolution note: name the one disabled account, confirm thirty-nine of forty journals were never the problem, and verify by re-posting the full batch successfully. Recommend the cleanup project circulate disabled values to GL accountants first next time. Up next, lesson seventeen: when the problem happens earlier, during Journal Import itself.

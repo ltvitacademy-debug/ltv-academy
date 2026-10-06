@@ -1,0 +1,21 @@
+# Script — Ticket: Payment Process Request Failed
+
+## Segment 1 (title)
+
+Meridian Steel Fabricators, ticket forty-three-oh-one. An AP supervisor ran the weekly payment batch and it came back Failed Document Validation — forty-six invoices were supposed to be in it, and this one's High severity.
+
+## Segment 2 (steps)
+
+Quick context on how a Payment Process Request actually moves: Select, Build, Format, Confirm. Select gathers eligible invoices. Build constructs the actual payment documents. Format produces the file sent to the bank. Confirm finalizes it. Where it fails changes what the error even looks like — a clerk might call all of these "the payment run failed," but Build and Format failures are completely different problems.
+
+## Segment 3 (steps)
+
+Failed Document Validation is a Build-stage failure — invoices were selected fine, but at least one couldn't become a valid payment document. The Resolve Payment Validation Errors page lists exactly which invoice and why, instead of failing the whole batch opaquely. Here, forty-five invoices validated fine. One supplier, Keystone Rigging Supply, shows a specific error: document payee bank account number is required.
+
+## Segment 4 (code)
+
+Keystone was recently added as a new supplier, set up for electronic payment — but nobody ever entered a bank account on that supplier site. Oracle correctly refused to build an EFT payment with nowhere to send it. The supervisor confirms the bank account actually arrived from the supplier that morning, it just hadn't been entered yet. So the fix is straightforward: add the bank account to the supplier site, then resubmit.
+
+## Segment 5 (outro)
+
+Resolution note: name the one invoice that failed and exactly why, confirm the fix — the bank account is now on file — and verify by resubmitting the full batch, all forty-six invoices. Recommend the onboarding checklist catch this before a new supplier's first payment run. That wraps this ticket. Up next, lesson ten: a supplier configured incorrectly from the start.

@@ -1,0 +1,21 @@
+# Script — Diagnosing Problems Step by Step
+
+## Segment 1 (title)
+
+Lesson two: a repeatable method for the investigate stage, the one that works no matter which module the ticket lands in. By the end of this, you'll have four questions to ask before you ever open a setup page, and a map of where the actual evidence lives in Oracle Fusion.
+
+## Segment 2 (steps)
+
+Ask these four, in order. Is it one record, or many — one invoice, or every invoice from that supplier? Is it one user, or everyone — because one person missing access is almost always security, not data. Did it ever work, or is this new — a field that's always been blank is missing setup, a process that broke this month means something changed. And what actually changed recently — a new supplier, a new segment value, a setup change last week. Tickets are disproportionately caused by something new, not by Oracle suddenly behaving differently.
+
+## Segment 3 (steps)
+
+Those four questions point you at where to actually look. The real error message, read exactly, not paraphrased. The Holds or Review tab, for why one transaction is blocked. The scheduled process log, for why a background job like Journal Import or Create Accounting failed or warned. The interface error tables, for which specific rows didn't survive a bulk load, and why. And the diagnostic and reconciliation reports, for whether the subledger and the ledger actually agree.
+
+## Segment 4 (steps)
+
+One more habit before you touch anything: confirm the theory before you fix it. Query the data, read the full log, check one more record that should behave the same way. If you can't write one sentence stating exactly what's wrong and why, you're not ready to apply a fix yet. A few extra minutes of confirming is cheap. Fixing the wrong thing in a financial system is not.
+
+## Segment 5 (outro)
+
+Isolate, narrow, confirm, then fix. That's the method you'll run on every ticket for the rest of this course. Next up, lesson three: documenting the resolution once you've actually found and fixed the cause.

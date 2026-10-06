@@ -1,0 +1,21 @@
+# Script — Ticket: Bank Statement Will Not Reconcile
+
+## Segment 1 (title)
+
+Thornfield Materials Holdings, ticket forty-four-eighty-nine. Automatic reconciliation on the operating account left fourteen lines in the exception queue overnight. The treasury analyst can clear most of them, but a few don't make sense.
+
+## Segment 2 (steps)
+
+This ticket leans on the Cash Management course directly — automatic and manual reconciliation, matching rules, tolerance, clearing accounts. The question here is why each of these fourteen specific lines failed to auto-match, not a general refresher. Sorting them by reason instead of treating all fourteen the same: nine are bank fees and interest with no system counterpart at all. Three are outstanding checks, issued and recorded, just not yet cleared by the bank. Two show an amount mismatch beyond tolerance.
+
+## Segment 3 (steps)
+
+The nine fee lines and three outstanding checks aren't errors — they're exactly the normal exception type automatic reconciliation is supposed to route to a human. The two amount mismatches are the real problem. Pulling the actual receipts: one customer's wire arrived two hundred dollars short, an apparent fee deducted in transit. The other is a straightforward data entry error — fourteen thousand seven fifty keyed in, when the actual wire was fourteen thousand five seventy. Transposed digits.
+
+## Segment 4 (code)
+
+Three different fixes for three different categories. For the fee lines, create the missing external transactions so they have something to reconcile against. For the outstanding checks, leave them unreconciled — that's correct until the bank actually clears them, not a problem to solve. For the wire reduced by a transit fee, record that fee separately and reconcile the net. For the transposed digits, correct the receipt to fourteen thousand five seventy, then reconcile.
+
+## Segment 5 (outro)
+
+Resolution note: separate the categories explicitly — nine normal exceptions, three normal timing differences, two genuine corrections — so nobody reading it later assumes all fourteen were errors. That closes out chapter three. Up next, chapter four: General Ledger and Subledger tickets, starting with a journal that simply won't post.
