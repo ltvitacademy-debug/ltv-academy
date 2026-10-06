@@ -131,7 +131,7 @@ export default function CareerPathsPage() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+      <div id="paths" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
         <p className="eyebrow mb-4">Destination paths</p>
         <h2 className="display max-w-2xl text-3xl sm:text-4xl">
           Choose your <em className="text-crimson">path</em>.
