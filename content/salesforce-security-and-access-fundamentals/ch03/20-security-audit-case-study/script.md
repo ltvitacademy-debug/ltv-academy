@@ -1,0 +1,25 @@
+# Script — Security Audit Case Study
+
+## Segment 1 (title)
+
+One worked case study, pulling together design, troubleshooting, and the mistake patterns from this whole chapter into a real-looking security audit — a fictional company, Brightwell Insurance Group.
+
+## Segment 2 (steps: findings 1 and 2)
+
+Finding one: Opportunity OWD is Public Read/Write with no documented reason — just a setup-wizard default nobody revisited as the org grew. Finding two: three near-identical profiles — Agent, Senior Agent, Agent Commercial Lines — that differ by two fields and one tab. Both are mistakes from last lesson, found in the wild.
+
+## Segment 3 (code: findings 3 and 4)
+
+Finding three: a "Data Migration Support" permission set grants Modify All on five objects to four users, and nobody can explain why — a broad grant from a past project, never revisited. Finding four: a sensitive Claim Investigation object where the Claims Processing sharing rule grants broader read access than policy allows for in-progress investigations — exactly the gap a restriction rule is built for.
+
+## Segment 4 (steps: prioritizing)
+
+Not every finding is equally urgent. The active exposure on in-progress investigations comes first. The unexplained Modify All grant comes second. The Opportunity OWD gap is real but lower-sensitivity and unreported, so it's third. The profile explosion is the easiest fix here but the lowest urgency — it's a maintenance cost, not an active exposure.
+
+## Segment 5 (code: the audit-note format)
+
+Each finding gets written the same way: what's wrong, specifically; what the recommended fix is; and why that fix is low-risk or high-priority. That's what makes an audit finding actionable instead of just a complaint.
+
+## Segment 6 (outro)
+
+Four findings, prioritized by data sensitivity and current exposure, not ease of fix. That closes out Chapter 3's applied security work. Chapter 4 goes beyond the basics — starting with sharing settings and recalculation.

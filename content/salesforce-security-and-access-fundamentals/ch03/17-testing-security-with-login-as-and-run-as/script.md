@@ -1,0 +1,25 @@
+# Script — Testing Security with Login As and Run As
+
+## Segment 1 (title)
+
+Every design from the last three lessons is a theory until someone actually checks it. Salesforce gives you two tools for that: Login As, for the UI a real human sees, and Run As, for what Apex code sees.
+
+## Segment 2 (steps: Login As)
+
+Login As lets an admin log in to Salesforce as another active user, without their password — same page layouts, same record access, same button visibility they'd get. Turn it on under Login Access Policies, then select Login next to any active user in Setup's user list. It's not available for inactive users — there's no session to step into.
+
+## Segment 3 (code: using it deliberately)
+
+Every Login As session is logged — it's a verification tool, not a general-purpose way to browse as other people. Use it to confirm one specific decision at a time: can this profile see this field, does this sharing rule actually reach this record.
+
+## Segment 4 (code: Run As in Apex tests)
+
+Apex normally runs in system context, ignoring sharing and field-level security entirely — which makes it easy to write a test that passes even though a real user would be blocked. Wrapping test code in System.runAs() executes it under a specified user's actual permissions, so sharing applies the way it would for that real person. It only works inside test methods, and it's mainly proving sharing behavior, not a blanket guarantee of field-level security unless the code path actually checks it.
+
+## Segment 5 (steps: a repeatable checklist)
+
+Pick one real user per role, not per individual. List exactly what they should and shouldn't be able to do. Log in as or run as that user and check each item. When something doesn't match, fix the actual responsible tool — OWD, sharing rule, restriction rule, permission set — not the symptom. Then re-test, because a sharing change can ripple to related objects.
+
+## Segment 6 (outro)
+
+Login As for what a human sees, Run As for what Apex sees, and a role-by-role checklist to make the testing repeatable. Next lesson covers what to do when testing turns up a mismatch: troubleshooting and access reviews.
