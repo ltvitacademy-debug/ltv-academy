@@ -93,43 +93,6 @@ export default function CareerPathsPage() {
 
   return (
     <main>
-      {/* Hero */}
-      <section className="relative flex min-h-[64vh] flex-col justify-end overflow-hidden bg-crimson-deep">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/careers/hero.jpg"
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover object-[65%_30%]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/10" />
-        <div className="relative mx-auto w-full max-w-6xl px-4 pb-14 pt-32 sm:px-6">
-          <p className="eyebrow mb-4">Choose your path</p>
-          <h1 className="display max-w-2xl text-4xl text-parchment sm:text-5xl">
-            Most paths start at <em className="text-gold-pale">T-SQL</em>. A
-            couple have their own door in.
-          </h1>
-          <p className="mt-5 max-w-xl text-parchment/80">
-            The catalog isn&rsquo;t dozens of unrelated courses — most of it
-            branches from one shared SQL foundation into {firstChoicePaths.length}{" "}
-            career paths, plus {destinationPaths.length} longer destinations
-            that show where the road eventually leads.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-x-10 gap-y-4 border-t border-gold/25 pt-6 text-sm text-parchment/80">
-            <span>
-              <span className="display mr-2 text-gold-pale">{firstChoicePaths.length}</span>
-              real career paths, beginner to elite
-            </span>
-            <span>
-              <span className="display mr-2 text-gold-pale">{DESTINATION_COUNT}</span>
-              advanced destinations
-            </span>
-            <span>
-              <span className="display mr-2 text-gold-pale">$180K&ndash;$500K+</span>
-              at the top of the ladder
-            </span>
-          </div>
-        </div>
-      </section>
 
       <div id="paths" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
         <p className="eyebrow mb-4">Destination paths</p>
