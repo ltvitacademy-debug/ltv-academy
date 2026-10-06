@@ -1,0 +1,25 @@
+# Script — Service Performance Reporting
+
+## Segment 1 (title)
+
+Support teams live by a different set of numbers than sales — not pipeline value, but how fast cases get resolved and how satisfied customers are. Same tools, different questions.
+
+## Segment 2 (steps: the four metrics)
+
+Four numbers dominate most service dashboards. Case volume — is the queue growing or shrinking. Case age — how long open cases have been sitting. Response and resolution time against whatever target applies. And customer satisfaction, when a post-case survey is in use.
+
+## Segment 3 (code: the foundation report)
+
+The foundation looks a lot like pipeline reporting. Cases report type, grouped by Status, record count for volume. Add Priority as a second grouping in a Matrix, and "how many are open" becomes "how many urgent cases are sitting open" — a much more actionable number.
+
+## Segment 4 (steps: age and milestones)
+
+Two more layers matter. Case age — days since opened, for still-open cases — catches the support version of a stuck deal, invisible on a pure volume total. And time-to-first-response, time-to-resolution, reported as an average and a percent breaching target, turns "are we fast enough" into an actual number.
+
+## Segment 5 (steps: the balanced dashboard)
+
+A balanced service dashboard needs all three dimensions together. A metric widget for open case count. A gauge for average resolution time against target. A table for cases breaching SLA. And a chart of satisfaction over time where that data exists. Volume alone, or speed alone, only tells half the story.
+
+## Segment 6 (outro)
+
+Different object, same report-and-dashboard playbook — pick the metrics that actually matter, then build toward them. Next up: a full case study pulling pipeline and service reporting together for one fictional company.

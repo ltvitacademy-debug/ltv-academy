@@ -1,0 +1,25 @@
+# Script — Scheduling and Subscriptions
+
+## Segment 1 (title)
+
+Nobody should have to manually run the same report every Monday and email it around. A subscription does that automatically, on a schedule, for as many people as you want.
+
+## Segment 2 (screenshot: subscribe entry point)
+
+Subscribe is sitting right in the dropdown on every report or dashboard row — here it is in the row-level menu on the Dashboards list, right next to Edit and Delete. That's the entry point whether you're starting from a list or from an open report.
+
+## Segment 3 (screenshot: Subscribe button on a dashboard)
+
+Open the item itself and Subscribe moves up to the toolbar — here it is on a live dashboard, next to Refresh and Edit. Click it and you set a schedule: daily, weekly, or monthly, plus the day and time.
+
+## Segment 4 (steps: schedule and delivery)
+
+Two more choices shape delivery. Attach File turns the emailed results into a real file — a formatted dot-x-l-s-x report, or a details-only dot-c-s-x — so people can open it without logging in. And recipients default to just you, but Edit Recipients lets you add other users, groups, or roles, as long as they already have access to the underlying report.
+
+## Segment 5 (steps: run as and conditions)
+
+Two settings decide what actually gets sent. Run Report As chooses whose data access the results reflect — yours, or someone else's, which can mean recipients see more or less than they'd normally see. And conditions, up to five of them, turn a routine delivery into an alert: the report only sends when every condition is true that run.
+
+## Segment 6 (outro)
+
+Get subscriptions right and reports reach people automatically, with the right data, only when it matters. Next up: getting that same data out of Salesforce entirely, into a spreadsheet.
