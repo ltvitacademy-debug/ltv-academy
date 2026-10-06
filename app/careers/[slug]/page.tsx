@@ -3,6 +3,12 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { CAREER_PATHS, getCareerPath } from "@/lib/career-paths";
 import { getCourse, lessonCount } from "@/lib/courses";
+import PathDetailRedesign from "@/components/careers/PathDetailRedesign";
+
+// Piloting the new photo-hero / stat-tier / stepper / curriculum-grid design
+// on these two paths before rolling it out to all 23. Remove this gate (and
+// the branch below) once the redesign is approved for everyone.
+const REDESIGN_PILOT_SLUGS = new Set(["analytics-engineer", "bi-to-data-architect"]);
 
 export function generateStaticParams() {
   return CAREER_PATHS.map((p) => ({ slug: p.slug }));
@@ -30,6 +36,10 @@ export default async function CareerPathPage({
   const { slug } = await params;
   const path = getCareerPath(slug);
   if (!path) notFound();
+
+  if (REDESIGN_PILOT_SLUGS.has(path.slug)) {
+    return <PathDetailRedesign path={path} />;
+  }
 
   const stageTotal = (slugs?: string[]) =>
     (slugs ?? []).reduce((sum, s) => {
