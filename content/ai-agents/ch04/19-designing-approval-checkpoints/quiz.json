@@ -1,0 +1,60 @@
+{
+  "lesson": "designing-approval-checkpoints",
+  "questions": [
+    {
+      "q": "Why is a checkpoint that only asks \"proceed? y/n\" worse than having no checkpoint at all?",
+      "options": [
+        "It costs more in API tokens than any other design",
+        "It trains the reviewer to click yes without reading, creating the illusion of oversight without the substance of it",
+        "The Claude API rejects tool_result blocks sent after a yes/no prompt",
+        "It is technically impossible to implement"
+      ],
+      "answer": 1,
+      "explain": "A vague confirmation prompt gives a reviewer nothing to actually evaluate, so they rubber-stamp it — which looks like oversight happened when it didn't."
+    },
+    {
+      "q": "What are the three pieces of information this lesson says a reviewer needs to make a real approval decision?",
+      "options": [
+        "The agent's full conversation history, the model name, and the API latency",
+        "The exact tool name and arguments, why the agent is doing this, and what concretely happens if they approve",
+        "Only the tool's name — the arguments can be inferred",
+        "A screenshot of the agent's internal reasoning tokens"
+      ],
+      "answer": 1,
+      "explain": "Exact arguments (not a paraphrase), the reasoning or goal behind the call, and the concrete effect of approval are what let a reviewer judge the action rather than just click a button."
+    },
+    {
+      "q": "In the real tool_result format, how does a rejected action differ from an approved one?",
+      "options": [
+        "A rejected action uses a completely different content block type called tool_reject",
+        "Both use the same tool_use_id in a tool_result block; a rejection sets is_error: true with the reason in content and the tool is never actually called",
+        "A rejected action is simply omitted from the conversation entirely",
+        "Rejections can only be communicated through the system prompt"
+      ],
+      "answer": 1,
+      "explain": "Approval and rejection are both tool_result blocks for the same tool_use_id — the difference is that on rejection the real tool never runs, and is_error: true with an explanatory content string tells Claude the action didn't happen and why."
+    },
+    {
+      "q": "Why does this lesson recommend persisting a pending approval request and stopping the loop, rather than blocking synchronously while waiting for a human?",
+      "options": [
+        "Synchronous blocking is not supported by any programming language",
+        "A process that blocks waiting on a human response is fragile and expensive to keep running; a durable, resumable queue is what makes this workable in production",
+        "Persisting requests is required by the Claude API's terms of service",
+        "It has no practical benefit over synchronous blocking"
+      ],
+      "answer": 1,
+      "explain": "Humans can take minutes or hours to respond; keeping a process alive and blocked the whole time doesn't scale. Persisting the pending request lets the loop resume later once a decision is made."
+    },
+    {
+      "q": "If a human rejects a delete_customer_record call because the ID looks malformed, what should the tool_result content and is_error field reflect?",
+      "options": [
+        "content should be empty and is_error should be false, since the agent made no technical error",
+        "content should explain the reviewer declined and why (malformed ID), and is_error should be true, since the requested action did not happen",
+        "The tool_use_id should be changed to a new random value",
+        "No tool_result should be sent at all in this case"
+      ],
+      "answer": 1,
+      "explain": "A rejection is not an application bug, but from Claude's perspective the action didn't succeed — is_error: true with a clear explanation in content is the correct signal so the model can adjust its next step instead of assuming the delete happened."
+    }
+  ]
+}

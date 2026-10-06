@@ -1,0 +1,21 @@
+# Script — Escalation Patterns
+
+## Segment 1 (title)
+
+A checkpoint that blocks on one human has an obvious failure mode — what if they don't respond? A pending request with no backup plan doesn't fail safely, it just hangs. Escalation is the plan for when the first approver can't answer.
+
+## Segment 2 (code: timeout escalation)
+
+The simplest pattern: timeout escalation. If the assigned reviewer hasn't responded in fifteen minutes, it routes to a team queue. Still nothing after an hour, it pages an on-call manager. Right default for anything time-sensitive but not safety-critical.
+
+## Segment 3 (steps: tiered and fallback)
+
+Two more patterns. Tiered approval — bigger risk needs more than one approver, like a two-signature check. And fallback to the safe default — for some tools, if nobody answers in time, default to the conservative, reversible outcome instead of waiting forever.
+
+## Segment 4 (steps: while the agent waits)
+
+And the agent isn't just frozen while it waits. It can report status back to the user, keep working on independent sub-tasks that don't depend on this approval, and eventually — this is Lesson 23's territory — time out the whole task if nothing can proceed. None of these patterns is universally correct; which one you pick should match how risky and how time-sensitive the specific tool actually is.
+
+## Segment 5 (outro)
+
+Whichever pattern fires, it needs a record. Next up: audit logging — capturing exactly what the agent asked for, who approved or escalated it, and when.

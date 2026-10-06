@@ -1,0 +1,21 @@
+# Script — Designing Approval Checkpoints
+
+## Segment 1 (title)
+
+A checkpoint that just asks "proceed, yes or no" isn't a safety control — it trains the reviewer to click yes without reading. A real checkpoint has to show enough that the reviewer can actually decide.
+
+## Segment 2 (steps: three things a reviewer needs)
+
+Three things, every time. The exact tool name and arguments, not a paraphrase. Why the agent is doing this — the reasoning or goal behind the call. And what happens, concretely, if they approve. Without all three, it's not oversight, it's a formality.
+
+## Segment 3 (code: approve and reject as real tool_results)
+
+Here's the mechanism. Approval and rejection are just two different tool_result payloads for the same tool_use_id. Approved: run the real tool, send back its real output. Rejected: never call the tool, send back is_error true with the reason in content — so Claude knows the action didn't happen and can actually adjust.
+
+## Segment 4 (steps: where the checkpoint lives in the loop)
+
+Structurally: receive the tool_use block, check if this tool needs approval, and if so, persist the pending request and stop the loop — don't poll in a tight spin. A human reviews it out of band, then your code resumes and builds that tool_result.
+
+## Segment 5 (outro)
+
+That persisted, resumable design matters more once not every reviewer is available instantly. Next up: what happens when the first approver can't respond — escalation.

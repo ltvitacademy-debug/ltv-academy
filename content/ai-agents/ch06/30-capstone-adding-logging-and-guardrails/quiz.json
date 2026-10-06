@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-adding-logging-and-guardrails",
+  "questions": [
+    {
+      "q": "What does this lesson mean by describing its additions as \"additive wrapping\" around the Lesson 29 build?",
+      "options": [
+        "The tool schemas and approval checkpoint logic from Lesson 29 are rewritten from scratch",
+        "Audit logging, stopping conditions, budgets, and credential scoping are added around the existing, working handle_tool_use logic without modifying that core logic itself",
+        "The entire capstone project is discarded and restarted",
+        "Lesson 30 removes the approval checkpoint built in Lesson 29"
+      ],
+      "answer": 1,
+      "explain": "The lesson is explicit that a working, tested core shouldn't be disturbed just to add safety layers — every new control wraps around the existing handler rather than changing it."
+    },
+    {
+      "q": "According to this lesson's audit-logging code, which calls should produce a log entry?",
+      "options": [
+        "Only calls to issue_refund that get approved",
+        "Only calls that get rejected",
+        "Every call — approved, rejected, or ungated (like get_order) — should write one audit entry",
+        "No calls should be logged until the entire task completes"
+      ],
+      "answer": 2,
+      "explain": "The entry is built and appended for every tool_use handled, regardless of whether it was gated, approved, or rejected — consistent with Lesson 21's guidance to log more than just successes."
+    },
+    {
+      "q": "Why does this lesson use MAX_ITERATIONS = 8 and budget_usd = 0.50 instead of the larger numbers used as general examples in Lessons 23 and 24?",
+      "options": [
+        "Because these are hard-coded values that must always be used for every agent",
+        "Because this specific refund-lookup task genuinely needs fewer iterations and less budget than an open-ended task, illustrating Lesson 24's point that budgets should be sized per task, not copy-pasted generically",
+        "Because the Claude API enforces these exact limits automatically",
+        "Because larger numbers are not technically supported by the API"
+      ],
+      "answer": 1,
+      "explain": "The lesson explicitly notes these numbers are task-specific — a refund lookup is cheap and bounded, so its budget and iteration cap are set smaller than a general-purpose example would need."
+    },
+    {
+      "q": "What does scoping the capstone's credential to scopes: [\"refunds:write\", \"orders:read\"] instead of [\"*\"] accomplish?",
+      "options": [
+        "It makes the API calls run measurably faster",
+        "It applies least privilege so that even if every other control somehow failed, the credential itself cannot reach anything outside orders and refunds, such as account settings or stored payment methods",
+        "It has no real security benefit over a full-access key",
+        "It automatically generates the audit log entries"
+      ],
+      "answer": 1,
+      "explain": "A scoped credential, per Lesson 25's least-privilege principle, structurally limits the worst-case damage regardless of what the agent's logic does or fails to do — a guarantee the full-access key wouldn't provide."
+    },
+    {
+      "q": "If MAX_RECORDS_MODIFIED = 1 and the agent attempted to call issue_refund on a second, different order within the same task, what should happen according to this lesson's framing?",
+      "options": [
+        "The second call should be allowed, since the budget only applies to cost, not to how many records are touched",
+        "The action-scope limit should stop the second call, since it would exceed the one-record limit for this task — the same stopping-condition pattern from Lesson 23/24 applied here",
+        "The entire audit log should be deleted and restarted",
+        "The agent's credentials should be upgraded to scopes: [\"*\"] to allow it"
+      ],
+      "answer": 1,
+      "explain": "MAX_RECORDS_MODIFIED is exactly the kind of action-scope limit from Lesson 24 — it should stop a second record-modifying call from proceeding, since this task is scoped to touch exactly one order."
+    }
+  ]
+}

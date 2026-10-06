@@ -1,0 +1,21 @@
+# Script — Monitoring Agent Behavior
+
+## Segment 1 (title)
+
+Every guardrail this chapter built produces a signal when it fires — a rejection, a budget running out, an injection flag. Monitoring is what turns those individual facts into an ongoing picture of how the agent actually behaves in production.
+
+## Segment 2 (code: four signals)
+
+Anthropic's guidance calls for transparency — showing the agent's planning steps so a human can actually monitor and intervene. Four signals worth tracking continuously: rejection rate per tool, how often limits trip, injection-screen flags, and cost per task over time. None of these means anything as a one-time check — it's the trend that matters.
+
+## Segment 3 (steps: debugging vs audit vs drift)
+
+Lesson 21 drew the line between a debug log and an audit log. Monitoring is a third lens on the same data — not what happened in one run, not the permanent record, but how the aggregate pattern is changing. Same underlying data, a different question asked regularly.
+
+## Segment 4 (steps: closing the loop)
+
+And it closes the loop on everything else in this chapter. Escalations piling up on one queue is a staffing problem. A tool that keeps needing rollback after approval means its checkpoint design needs tightening, not just better logging. The pattern, not just the individual event, is what makes every other control actually improve.
+
+## Segment 5 (outro)
+
+That's Chapter 5 — stopping conditions, budgets, sandboxing, injection defenses, and the monitoring that watches all of it. Next: the capstone, where you build a tool-using agent with every one of these controls in it.
