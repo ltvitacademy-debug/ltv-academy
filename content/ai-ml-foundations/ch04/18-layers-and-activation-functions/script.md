@@ -1,0 +1,29 @@
+# Script — Layers & Activation Functions
+
+## Segment 1 (title)
+
+The activation function looks like a minor finishing touch on a neuron. It isn't. Remove it, and stacking layers buys you nothing at all. This lesson proves that with numbers, then covers the three activations you'll see constantly.
+
+## Segment 2 (code)
+
+Two linear layers, no activation. Layer one scales by two and adds one. Layer two scales by three and subtracts one. Work through the algebra, and the two layers collapse into a single linear function: multiply by six, add two. Same answers, every time, at every input. No activation means no real depth.
+
+## Segment 3 (code)
+
+Here are the three you'll meet constantly. Sigmoid squashes anything into zero to one. Tanh squashes into negative one to one, centered on zero. Relu is the simplest of all: negative inputs become exactly zero, positive inputs pass straight through.
+
+## Segment 4 (code)
+
+Same five inputs through all three. At two, sigmoid gives point eight eight, tanh gives point nine six, relu just gives back two. At negative two, sigmoid and tanh are both near their floor, while relu is flat at zero.
+
+## Segment 5 (steps)
+
+Why does relu dominate hidden layers despite being that simple? It's cheap to compute, and it doesn't squash large positive values the way sigmoid and tanh do. The cost is the dying relu problem: a neuron stuck outputting zero for every input stops learning entirely, because its gradient is zero too.
+
+## Segment 6 (steps)
+
+So the rule of thumb: relu in hidden layers, sigmoid for a yes-or-no output, softmax when there are several classes to choose between, and no activation at all — just a number — for plain regression.
+
+## Segment 7 (outro)
+
+Lesson seventeen's hidden neurons used sigmoid to keep the arithmetic familiar, but real networks lean on relu in their hidden layers. Next lesson puts these same activation functions to work computing gradients — how a network actually learns its weights.

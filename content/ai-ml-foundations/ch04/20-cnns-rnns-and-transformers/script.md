@@ -1,0 +1,29 @@
+# Script — CNNs vs. RNNs vs. Transformers, Conceptually
+
+## Segment 1 (title)
+
+Every network so far in this chapter connected every input to every neuron. That works for small tabular data, but it ignores structure that real data actually has. A photo has spatial structure. A sentence has sequential structure. CNNs, RNNs, and transformers are three different answers to the same question.
+
+## Segment 2 (code)
+
+A CNN slides a small grid of weights — a kernel — across an image, instead of connecting every pixel to every neuron. Here's one kernel, by hand, on a tiny four by four image: it detects the left-right contrast, producing a small two by two output of plus ones and minus ones exactly where the contrast actually is.
+
+## Segment 3 (steps)
+
+The same small kernel gets reused at every position in the image, which is what makes convolutions so much cheaper than a dense layer on image-sized input. A real CNN learns many kernels — edges first, then textures, then whole shapes in deeper layers — the same way lesson nineteen learned weights: backpropagation, the chain rule, gradient descent.
+
+## Segment 4 (code)
+
+An RNN reads a sequence one element at a time, carrying a hidden state forward as a summary of everything read so far. Step two updates the summary from step one. Step three updates it again. The same small set of weights handles a sequence of any length.
+
+## Segment 5 (steps)
+
+The cost is a bottleneck. Step fifty can only see earlier tokens through whatever survived being compressed, again and again, into one hidden state. And the steps can't run in parallel — step three needs step two's result first. Long documents lose information, and training is slow.
+
+## Segment 6 (steps)
+
+A transformer replaces that step-by-step hidden state with self-attention: every token looks directly at every other token at once, all in parallel, with nothing having to survive a long chain of compression. That's the one-sentence version — next lesson is the whole story.
+
+## Segment 7 (outro)
+
+Fully connected for independent inputs, CNNs for spatial structure, RNNs for sequences processed step by step, transformers for relationships seen all at once. Lesson twenty-one is dedicated entirely to why that last shift reshaped the whole field.

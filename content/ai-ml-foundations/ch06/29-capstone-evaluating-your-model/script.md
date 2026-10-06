@@ -1,0 +1,25 @@
+# Script — Capstone: Evaluating Your Model
+
+## Segment 1 (title)
+
+Lesson 28 produced 114 predictions. This lesson scores them properly — not just accuracy, but the confusion matrix, precision and recall per class, and what the model actually learned.
+
+## Segment 2 (code)
+
+98.2% accuracy. That sounds decisive, but lesson 27's rule was no cherry-picking — one number can't say which predictions were wrong, or whether both kinds of mistake cost the same. The confusion matrix: 41 and 1 on top, 1 and 71 on the bottom.
+
+## Segment 3 (steps)
+
+Two mistakes happened, and they are not equal. One false alarm — predicted malignant, actually benign — means an unnecessary follow-up test. One missed case — predicted benign, actually malignant — means a real cancer told it was nothing. That second kind is the one that matters most in a screening context.
+
+## Segment 4 (code)
+
+Precision and recall, per class. 97.6% recall on malignant means the model caught 41 of 42 true malignant cases — the same single miss, expressed as a rate. 97.6% precision means of everything it called malignant, 97.6% actually was.
+
+## Segment 5 (code)
+
+LogisticRegression is interpretable. Its top five coefficients by size are all negative — worst texture, radius error, worst area, concave points, worst radius — meaning larger, more irregular tumor measurements push the model toward predicting malignant. That matches how pathologists actually describe these tumors.
+
+## Segment 6 (outro)
+
+98.2% accuracy, one false alarm, one missed case, and a model whose reasoning actually makes sense. Lesson 30 wraps up the whole capstone: how to write this up, honestly, as a portfolio piece.

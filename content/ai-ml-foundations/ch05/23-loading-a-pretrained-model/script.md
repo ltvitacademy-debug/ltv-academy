@@ -1,0 +1,29 @@
+# Script — Loading a Pretrained Model
+
+## Segment 1 (title)
+
+Lesson 22 was the map of the Hugging Face ecosystem. This lesson picks one real model and actually loads it — the two-line pattern that works for almost anything on the Hub.
+
+## Segment 2 (screenshot)
+
+Before any code, you need a name. This is the Hub's real full-text search — filter by models, datasets, or spaces, and it returns real repositories. That owner-slash-model-name string is exactly what gets passed into the code.
+
+## Segment 3 (code)
+
+Two lines load almost any model: AutoTokenizer dot from_pretrained, AutoModel dot from_pretrained, both given the same name. These are auto classes — they read the model's own config and pick the right underlying architecture for you, automatically.
+
+## Segment 4 (screenshot)
+
+This is what from_pretrained actually downloads — the real Files tab of a Hugging Face model. Config json for the architecture's shape, a weights file with the trained parameters, and the tokenizer's own files. Three groups, every time.
+
+## Segment 5 (code)
+
+Once loaded, the tokenizer turns a sentence into numeric IDs, and the model turns those IDs into a vector per token — seven hundred sixty eight numbers each, for this particular model. That raw output is the building block later lessons build on.
+
+## Segment 6 (screenshot)
+
+A model name is just a string — from_pretrained will try to download a typo just as happily as a real model. Before trusting one, its own page is the check: this real model shows two hundred fifty four thousand downloads last month and two hundred forty eight public spaces built on it. Real, checkable signals.
+
+## Segment 7 (outro)
+
+For common tasks, pipeline wraps this same two-line pattern into one call, pre- and post-processing included. Both cache locally after the first download, so the second run is instant. Next lesson asks: when should you use a loaded model exactly as-is, and when should you fine-tune it?

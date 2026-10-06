@@ -1,0 +1,29 @@
+# Script — Why Transformers Changed Everything
+
+## Segment 1 (title)
+
+Last lesson ended with a one-sentence claim: every token looks directly at every other token. This lesson works out what that actually means, by hand, on three toy words, and why it mattered enough to reshape the entire field.
+
+## Segment 2 (code)
+
+Three tiny word vectors: The, cat, sat. The query is sat, asking "what matters to me?" The score against each token is a dot product — how aligned two vectors are. Sat scores highest against itself, two point zero, and equally against the and cat, one point zero each.
+
+## Segment 3 (code)
+
+Turn those raw scores into weights that sum to one with softmax. Sat ends up attending mostly to itself, fifty eight percent, but still pulls twenty one percent of its new representation from each of the and cat. Every token runs this same calculation, independently, against every other token.
+
+## Segment 4 (steps)
+
+That independence is the detail that changes everything. An RNN had to read step by step, each one waiting on the last. Self-attention has no relay — a relationship between word one and word five hundred is exactly as direct as one between word one and word two.
+
+## Segment 5 (steps)
+
+And because no token's calculation waits on another's, every one of them can be computed at the same time, on hardware built for exactly that kind of parallel arithmetic. That parallelism is what made training far larger models on far larger datasets computationally feasible in the first place.
+
+## Segment 6 (code)
+
+One thing attention gives up: dot products don't care about order. Swap two tokens and the scores between them don't change on their own. Transformers add that back explicitly with positional encoding — a pattern marking each token's position, so word order still matters.
+
+## Segment 7 (outro)
+
+Every large language model the next course in this path covers is this same mechanism, scaled up — thousands of dimensions instead of three, dozens of attention layers instead of one. Chapter four closes here. Chapter five starts using real, already-trained models built on exactly this architecture.
