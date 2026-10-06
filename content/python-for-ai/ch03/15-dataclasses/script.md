@@ -1,0 +1,46 @@
+# Lesson 15 — Dataclasses · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Plenty of classes you write exist purely to hold a bundle of related
+values — a config, a parsed response, a request payload. Writing init,
+repr, and equals by hand for each one gets repetitive fast. Python's
+dataclass decorator writes that boilerplate for you.
+
+## S2 · CODE: The plain-class pain point
+
+Here's a plain class holding an API key and base URL, with a hand-written
+init. Print an instance and you get this unhelpful default — just a
+memory address, no actual field values. That's the problem dataclasses
+solve.
+
+## S3 · CODE: The dataclass version
+
+Add the dataclass decorator, declare fields as name colon type, and Python
+writes init, a readable repr, and equality for you. base_url and timeout
+have defaults, so only api_key is required. Printing the instance now
+shows every field by name — dramatically more useful for debugging.
+
+## S4 · CODE: Equality compares values
+
+A dataclass's generated equals compares field values, not object identity.
+Build two separate APIConfig instances with the same api_key, and they
+compare equal — even though they're two different objects in memory.
+That's constantly useful when writing tests.
+
+## S5 · CODE: frozen equals True
+
+Pass frozen equals True to the decorator and the instance becomes
+read-only — trying to reassign a field after construction raises a
+FrozenInstanceError. Reach for this when a value, like a fixed
+configuration, should never change once it's created.
+
+## S6 · OUTRO CARD
+
+Dataclasses trade hand-written boilerplate for one decorator and a list of
+typed fields. Next lesson, we connect all of this — classes, inheritance,
+dataclasses — to why OOP specifically matters for working with AI SDKs.
