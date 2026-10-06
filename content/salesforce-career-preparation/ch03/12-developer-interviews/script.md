@@ -1,0 +1,27 @@
+# Lesson 12 — Developer Interviews · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+## S1 · TITLE
+
+Developer interviews add a layer Administrator interviews don't have: code. This lesson covers what to actually expect and how to prepare for it.
+
+## S2 · STEPS — A different interview
+
+Expect some mix of a live coding exercise, a take-home assignment, or a "read this code and tell me what's wrong" exercise, layered on top of the same behavioral questions every role gets. The skill being tested isn't memorized syntax under pressure -- it's whether you read code carefully and reason out loud.
+
+## S3 · STEPS — Governor limits, in your own words
+
+Salesforce is multi-tenant, so one org's badly-written code can't be allowed to degrade the platform for everyone else sharing it -- that's why governor limits exist. Know the shape of the limits that matter day to day: synchronous SOQL count, DML count, heap size, CPU time. Interviewers want the reasoning, not a memorized number.
+
+## S4 · STEPS — The two classic trigger bugs
+
+Bulkification: a trigger that runs a query or DML per record inside a loop works with one test record and fails the first time 200 records update at once. Recursion: a trigger whose own DML causes it to fire again, usually guarded with a static boolean flag. Reach for these two patterns before anything exotic.
+
+## S5 · STEPS — Talk about LWC and async Apex honestly
+
+If your LWC experience is coursework-level, say so, and talk clearly about what you do understand: components, events, and the decorators that shape a property's behavior. For async Apex, know which tool fits which job -- future, Queueable, Batch, Scheduled -- naming the right one usually matters more than reciting syntax.
+
+## S6 · OUTRO
+
+Next lesson: Consultant interviews -- a role judged on client conversations, not code.
