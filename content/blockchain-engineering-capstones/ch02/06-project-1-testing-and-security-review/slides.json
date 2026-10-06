@@ -1,0 +1,77 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Blockchain Engineering Capstones · Chapter Two",
+    "titlePlain": "Testing & Security ",
+    "titleEmphasis": "Review",
+    "titleSuffix": "",
+    "subtitle": "Lesson 6 · A Full DeFi Protocol"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Beyond the happy path",
+    "titlePlain": "A three-layer testing ",
+    "titleEmphasis": "pyramid",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "UNIT TESTS", "sub": "specific, hand-picked inputs — the happy path" },
+      { "label": "FUZZ TESTS", "sub": "the same function, hundreds of randomized inputs" },
+      { "label": "INVARIANT TESTS", "sub": "a property that must hold after any call sequence" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Fuzz test — Foundry",
+    "code": "contract SimplePoolTest is Test {\n    SimplePool pool;\n    function setUp() public { pool = new SimplePool(tokenA, tokenB); }\n    function testFuzz_Swap(uint256 amountIn) public {\n        amountIn = bound(amountIn, 1, 1_000e18);\n        uint256 kBefore = pool.reserveA() * pool.reserveB();\n        pool.swapAforB(amountIn);\n        assertGe(pool.reserveA() * pool.reserveB(), kBefore);\n    }\n}",
+    "caption": "bound() clamps the randomized amountIn to a realistic range; the test checks a fee-paying swap never decreases the pool's constant product."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Invariant test — Foundry",
+    "code": "contract PoolInvariantTest is Test {\n    SimplePool pool;\n    function setUp() public { pool = deployPool(); targetContract(address(pool)); }\n    function invariant_BalanceMatchesReserves() public view {\n        assertGe(tokenA.balanceOf(address(pool)), pool.reserveA());\n        assertGe(tokenB.balanceOf(address(pool)), pool.reserveB());\n    }\n}",
+    "caption": "targetContract tells Foundry to run long, randomized call sequences; this checks the pool's real balance never falls below its own bookkeeping."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Security-review checklist, confirmed",
+    "titlePlain": "What this pool's design ",
+    "titleEmphasis": "already",
+    "titleSuffix": " handles",
+    "steps": [
+      { "label": "REENTRANCY", "sub": "checks-effects-interactions ordering, confirmed in Lesson 4" },
+      { "label": "OVERFLOW/UNDERFLOW", "sub": "Solidity 0.8's built-in checks, no SafeMath needed" },
+      { "label": "DIVISION BY ZERO", "sub": "first-depositor branch avoids it on the pool's first deposit" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Security-review checklist, flagged",
+    "titlePlain": "Stated ",
+    "titleEmphasis": "explicitly",
+    "titleSuffix": ", not hidden",
+    "steps": [
+      { "label": "NO ACCESS CONTROL", "sub": "intentional — this pool is permissionless by design" },
+      { "label": "NO SLIPPAGE PROTECTION", "sub": "missing minAmountOut — a known, unresolved gap" },
+      { "label": "ROUNDING / DUST", "sub": "integer division can trap tiny amounts over time" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Events for indexing",
+    "titlePlain": "Emit, or ",
+    "titleEmphasis": "replay",
+    "titleSuffix": " every block",
+    "steps": [
+      { "label": "Swap(trader, amountIn, amountOut, aForB)", "sub": "one event per state-changing function" },
+      { "label": "LiquidityAdded(provider, amtA, amtB, minted)", "sub": "the same indexing problem from the backend course" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 7",
+    "titlePlain": "Testnet Deployment & ",
+    "titleEmphasis": "Wrap-Up",
+    "titleSuffix": "",
+    "subtitle": "Deploying to Sepolia and finishing the README."
+  }
+]

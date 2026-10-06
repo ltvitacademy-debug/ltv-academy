@@ -1,0 +1,65 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Blockchain Engineering Capstones · Chapter Two",
+    "titlePlain": "Designing the Pool ",
+    "titleEmphasis": "Contracts",
+    "titleSuffix": "",
+    "subtitle": "Lesson 4 · A Full DeFi Protocol"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Architecture — teaching simplification",
+    "titlePlain": "One contract, ",
+    "titleEmphasis": "no",
+    "titleSuffix": " factory",
+    "steps": [
+      { "label": "REAL AMM", "sub": "factory + pair contract + router, split apart" },
+      { "label": "THIS TEACHING VERSION", "sub": "one SimplePool, shares in a mapping, no LP token" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "State — SimplePool.sol",
+    "code": "pragma solidity ^0.8.24;\ncontract SimplePool {\n    IERC20 public tokenA;\n    IERC20 public tokenB;\n    uint256 public reserveA;\n    uint256 public reserveB;\n    uint256 public totalShares;\n    mapping(address => uint256) public shares;\n}",
+    "caption": "Two token references, two reserve counters, a running share total, and each address's own share balance."
+  },
+  {
+    "type": "code",
+    "eyebrow": "addLiquidity — minting LP shares",
+    "code": "function addLiquidity(uint256 amtA, uint256 amtB) external returns (uint256 minted) {\n    tokenA.transferFrom(msg.sender, address(this), amtA);\n    tokenB.transferFrom(msg.sender, address(this), amtB);\n    minted = totalShares == 0 ? sqrt(amtA * amtB)\n        : min(amtA * totalShares / reserveA, amtB * totalShares / reserveB);\n    shares[msg.sender] += minted;\n    totalShares += minted;\n    (reserveA, reserveB) = (reserveA + amtA, reserveB + amtB);\n}",
+    "caption": "The first depositor prices the pool via sqrt(amtA * amtB); every depositor after mints shares proportional to the smaller side of their deposit."
+  },
+  {
+    "type": "code",
+    "eyebrow": "swapAforB — constant product with a fee",
+    "code": "function swapAforB(uint256 amountIn) external returns (uint256 amountOut) {\n    uint256 amtInFee = amountIn * 997 / 1000;\n    amountOut = (amtInFee * reserveB) / (reserveA + amtInFee);\n    tokenA.transferFrom(msg.sender, address(this), amountIn);\n    reserveA += amountIn;\n    reserveB -= amountOut;\n    tokenB.transfer(msg.sender, amountOut);\n}",
+    "caption": "A 0.3% fee (997/1000) is baked into the formula. Reserves update before the outbound transfer — checks-effects-interactions blocking reentrancy. swapBforA mirrors this with tokens reversed."
+  },
+  {
+    "type": "code",
+    "eyebrow": "removeLiquidity — burning LP shares",
+    "code": "function removeLiquidity(uint256 sharesIn) external returns (uint256 amtA, uint256 amtB) {\n    amtA = (sharesIn * reserveA) / totalShares;\n    amtB = (sharesIn * reserveB) / totalShares;\n    shares[msg.sender] -= sharesIn;\n    totalShares -= sharesIn;\n    (reserveA, reserveB) = (reserveA - amtA, reserveB - amtB);\n    tokenA.transfer(msg.sender, amtA);\n    tokenB.transfer(msg.sender, amtB);\n}",
+    "caption": "Same state-before-transfer ordering: shares and reserves update before either token leaves the pool."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What this contract deliberately simplifies",
+    "titlePlain": "Flagged, not ",
+    "titleEmphasis": "hidden",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "NO EXPLICIT REENTRANCY GUARD", "sub": "ordering does the work; production adds nonReentrant too" },
+      { "label": "NO minAmountOut SLIPPAGE PARAM", "sub": "a known gap — revisited directly in Lesson 6" },
+      { "label": "MAPPING, NOT AN LP TOKEN", "sub": "shares aren't a transferable ERC-20 here" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 5",
+    "titlePlain": "Building the ",
+    "titleEmphasis": "Frontend",
+    "titleSuffix": "",
+    "subtitle": "Reading live pool state and wiring up wallet actions."
+  }
+]

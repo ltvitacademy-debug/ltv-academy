@@ -29,19 +29,19 @@ export const BLOCKCHAIN_ENGINEERING_CAPSTONES_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Capstone Overview",
     lessons: [
-      L(1, "program-overview-and-portfolio-strategy", "Program Overview & Portfolio Strategy"),
-      L(2, "choosing-your-project-emphasis", "Choosing Your Project Emphasis"),
+      L(1, "program-overview-and-portfolio-strategy", "Program Overview & Portfolio Strategy", { contentDir: "ch01/01-program-overview-and-portfolio-strategy" }),
+      L(2, "choosing-your-project-emphasis", "Choosing Your Project Emphasis", { contentDir: "ch01/02-choosing-your-project-emphasis" }),
     ],
   },
   {
     n: 2,
     title: "Project 1 — A Full DeFi Protocol",
     lessons: [
-      L(3, "project-1-kickoff", "Project 1 Kickoff"),
-      L(4, "project-1-designing-the-pool-contracts", "Designing the Pool Contracts"),
-      L(5, "project-1-building-the-frontend", "Building the Frontend"),
-      L(6, "project-1-testing-and-security-review", "Testing & Security Review"),
-      L(7, "project-1-testnet-deployment-and-wrap-up", "Testnet Deployment & Wrap-Up"),
+      L(3, "project-1-kickoff", "Project 1 Kickoff", { contentDir: "ch02/03-project-1-kickoff" }),
+      L(4, "project-1-designing-the-pool-contracts", "Designing the Pool Contracts", { contentDir: "ch02/04-project-1-designing-the-pool-contracts" }),
+      L(5, "project-1-building-the-frontend", "Building the Frontend", { contentDir: "ch02/05-project-1-building-the-frontend" }),
+      L(6, "project-1-testing-and-security-review", "Testing & Security Review", { contentDir: "ch02/06-project-1-testing-and-security-review" }),
+      L(7, "project-1-testnet-deployment-and-wrap-up", "Testnet Deployment & Wrap-Up", { contentDir: "ch02/07-project-1-testnet-deployment-and-wrap-up" }),
     ],
   },
   {
