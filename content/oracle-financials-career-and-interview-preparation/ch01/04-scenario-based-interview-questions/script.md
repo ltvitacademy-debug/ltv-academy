@@ -1,0 +1,23 @@
+# Lesson 4 — Scenario-Based Interview Questions · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+## S1 · TITLE
+
+Scenario questions hand you a messy business situation and watch how you think. There usually isn't one correct answer - the interviewer is listening for your reasoning.
+
+## S2 · STEPS — A structure that works under pressure
+
+Restate the scenario in your own words - it confirms you understood it and buys you a second to think. Ask one clarifying question only if it would genuinely change your answer. State your recommendation with the reasoning behind it, not just the conclusion. Then name the trade-off or risk you're accepting.
+
+## S3 · STEPS — Design and process scenarios
+
+A client planning an acquisition? Design the balancing segment discipline now - retrofitting it later is far more disruptive. A three-day close target when AP approvals take five days? That's really an approval-cycle problem, not just a deadline - say so.
+
+## S4 · STEPS — Controls and investigation scenarios
+
+A long-tenured user wants to override journals without approval "like the old system"? That's a segregation-of-duties question in disguise. Depreciation looks double what it should? Narrate the actual investigation: pull the asset, check its category and useful life, see if it was recently reclassified.
+
+## S5 · OUTRO
+
+When two reports disagree and you're pressured for an instant answer, resist guessing - say you need a few minutes to trace both to source, then actually do it. Next lesson: troubleshooting questions.
