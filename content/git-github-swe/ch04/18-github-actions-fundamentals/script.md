@@ -1,0 +1,25 @@
+# Script — GitHub Actions Fundamentals
+
+## Segment 1 (title)
+
+Every GitHub Actions workflow is a YAML file in .github/workflows/. Committing it there is the entire setup — no separate registration anywhere.
+
+## Segment 2 (code: workflow structure)
+
+Three pieces make up every workflow: on, the trigger defining what event starts a run; jobs, each running on its own fresh virtual machine; and steps, the ordered commands inside a job. actions/checkout is the single most common step — it clones your repo onto a runner that otherwise starts with no code at all.
+
+## Segment 3 (screenshot: actions tab)
+
+Once that file is pushed, GitHub runs it automatically on the next matching event. Every run, across every workflow file in the repository, shows up on the Actions tab.
+
+## Segment 4 (screenshot: run summary)
+
+Clicking into a run shows what triggered it, how long it took, and whether each job succeeded — trigger, duration, and status, all at a glance.
+
+## Segment 5 (screenshot: step logs)
+
+Clicking into the job expands every step in the order it actually ran, each with its own duration. This is where you actually debug a failing pipeline — the specific step that failed, not just the job's overall red X.
+
+## Segment 6 (outro)
+
+Next lesson: running tests automatically on every commit — turning this mechanism into a real quality gate.
