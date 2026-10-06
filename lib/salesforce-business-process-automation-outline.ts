@@ -47,20 +47,20 @@ export const SFTA_SALESFORCE_BUSINESS_PROCESS_AUTOMATION_CHAPTERS: ChapterMeta[]
     n: 3,
     title: "Applied Automation",
     lessons: [
-      L(11, "business-process-case-study-quote-approval", "Business Process Case Study: Quote Approval"),
-      L(12, "business-process-case-study-service-level-escalation", "Business Process Case Study: Service Level Escalation"),
-      L(13, "automation-documentation-and-handoff", "Automation Documentation and Handoff"),
-      L(14, "business-process-automation-practice-lab", "Business Process Automation Practice Lab"),
-      L(15, "testing-business-processes", "Testing Business Processes"),
-      L(16, "business-process-review", "Business Process Review"),
+      L(11, "business-process-case-study-quote-approval", "Business Process Case Study: Quote Approval", { contentDir: "ch03/11-business-process-case-study-quote-approval" }),
+      L(12, "business-process-case-study-service-level-escalation", "Business Process Case Study: Service Level Escalation", { contentDir: "ch03/12-business-process-case-study-service-level-escalation" }),
+      L(13, "automation-documentation-and-handoff", "Automation Documentation and Handoff", { contentDir: "ch03/13-automation-documentation-and-handoff" }),
+      L(14, "business-process-automation-practice-lab", "Business Process Automation Practice Lab", { contentDir: "ch03/14-business-process-automation-practice-lab" }),
+      L(15, "testing-business-processes", "Testing Business Processes", { contentDir: "ch03/15-testing-business-processes" }),
+      L(16, "business-process-review", "Business Process Review", { contentDir: "ch03/16-business-process-review" }),
     ],
   },
   {
     n: 4,
     title: "Working With Stakeholders",
     lessons: [
-      L(17, "gathering-process-requirements", "Gathering Process Requirements"),
-      L(18, "mapping-processes-before-you-build", "Mapping Processes Before You Build"),
+      L(17, "gathering-process-requirements", "Gathering Process Requirements", { contentDir: "ch04/17-gathering-process-requirements" }),
+      L(18, "mapping-processes-before-you-build", "Mapping Processes Before You Build", { contentDir: "ch04/18-mapping-processes-before-you-build" }),
     ],
   },
 ];
