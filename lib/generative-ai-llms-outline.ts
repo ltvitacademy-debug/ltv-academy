@@ -75,19 +75,19 @@ export const GENERATIVE_AI_LLMS_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Multimodal & Beyond-Text Models",
     lessons: [
-      L(25, "image-generation-models-overview", "Image Generation Models, Overview"),
-      L(26, "vision-language-models", "Vision-Language Models"),
-      L(27, "audio-and-speech-models-overview", "Audio & Speech Models, Overview"),
-      L(28, "choosing-multimodal-vs-text-only", "Choosing Multimodal vs. Text-Only"),
+      L(25, "image-generation-models-overview", "Image Generation Models, Overview", { contentDir: "ch05/25-image-generation-models-overview" }),
+      L(26, "vision-language-models", "Vision-Language Models", { contentDir: "ch05/26-vision-language-models" }),
+      L(27, "audio-and-speech-models-overview", "Audio & Speech Models, Overview", { contentDir: "ch05/27-audio-and-speech-models-overview" }),
+      L(28, "choosing-multimodal-vs-text-only", "Choosing Multimodal vs. Text-Only", { contentDir: "ch05/28-choosing-multimodal-vs-text-only" }),
     ],
   },
   {
     n: 6,
     title: "Capstone",
     lessons: [
-      L(29, "capstone-kickoff", "Capstone Kickoff"),
-      L(30, "capstone-building-a-chat-application", "Capstone: Building a Simple Chat Application"),
-      L(31, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation"),
+      L(29, "capstone-kickoff", "Capstone Kickoff", { contentDir: "ch06/29-capstone-kickoff" }),
+      L(30, "capstone-building-a-chat-application", "Capstone: Building a Simple Chat Application", { contentDir: "ch06/30-capstone-building-a-chat-application" }),
+      L(31, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch06/31-capstone-wrap-up" }),
     ],
   },
 ];
