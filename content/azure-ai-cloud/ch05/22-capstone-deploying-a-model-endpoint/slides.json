@@ -1,0 +1,53 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Azure AI & Cloud for AI Engineers · Chapter Five",
+    "titlePlain": "Capstone: Deploying a Model ",
+    "titleEmphasis": "Endpoint",
+    "titleSuffix": " on Azure",
+    "subtitle": "Lesson 22 · The SDK path, start to finish"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1: connect to your project",
+    "code": "from azure.ai.ml import MLClient\nfrom azure.identity import InteractiveBrowserCredential\n\nml_client = MLClient(\n    credential=InteractiveBrowserCredential(),\n    subscription_id=\"<your-subscription-id>\",\n    resource_group_name=\"<your-resource-group>\",\n    workspace_name=\"<your-project-name>\",\n)",
+    "caption": "A browser sign-in window pops up the first time — expected. Every later call goes through this client."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2: create the endpoint",
+    "code": "import time\nfrom azure.ai.ml.entities import ManagedOnlineEndpoint\n\nendpoint_name = \"capstone-endpoint-\" + str(int(time.time()))\n\nendpoint = ManagedOnlineEndpoint(\n    name=endpoint_name, auth_mode=\"key\"\n)\nml_client.online_endpoints.begin_create_or_update(endpoint).wait()",
+    "caption": "The container, not the model yet. Takes two to three minutes."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 3: deploy the model into it",
+    "code": "deployment = ManagedOnlineDeployment(\n    name=\"capstone-deploy\",\n    endpoint_name=endpoint_name,\n    model=\"azureml://registries/azureml/models/Phi-4/versions/8\",\n    instance_type=\"Standard_DS3_v2\",\n    instance_count=1,\n)\nml_client.online_deployments.begin_create_or_update(deployment).wait()\nendpoint.traffic = {\"capstone-deploy\": 100}\nml_client.online_endpoints.begin_create_or_update(endpoint).result()",
+    "caption": "A new deployment starts at 0% traffic — the last two lines explicitly route to it."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two fields, checked every time",
+    "titlePlain": "Verify it's ",
+    "titleEmphasis": "really",
+    "titleSuffix": " live",
+    "steps": [
+      { "label": "Provisioning state", "sub": "Succeeded — the resource was created" },
+      { "label": "Deployment state", "sub": "Healthy — the model is actually serving requests" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 4: send it a real request",
+    "code": "response = ml_client.online_endpoints.invoke(\n    endpoint_name=endpoint_name,\n    deployment_name=\"capstone-deploy\",\n    request_file=\"./sample_score.json\",\n)\nprint(response)",
+    "caption": "A real response back, not an error — that's the proof this deliverable is done."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 23",
+    "titlePlain": "Securing & ",
+    "titleEmphasis": "Monitoring",
+    "titleSuffix": " It",
+    "subtitle": "The Target URI and key you just copied, handled correctly."
+  }
+]

@@ -71,10 +71,10 @@ export const AZURE_AI_CLOUD_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Capstone",
     lessons: [
-      L(21, "capstone-kickoff", "Capstone Kickoff"),
-      L(22, "capstone-deploying-a-model-endpoint", "Capstone: Deploying a Model Endpoint on Azure"),
-      L(23, "capstone-securing-and-monitoring", "Capstone: Securing & Monitoring It"),
-      L(24, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation"),
+      L(21, "capstone-kickoff", "Capstone Kickoff", { contentDir: "ch05/21-capstone-kickoff" }),
+      L(22, "capstone-deploying-a-model-endpoint", "Capstone: Deploying a Model Endpoint on Azure", { contentDir: "ch05/22-capstone-deploying-a-model-endpoint" }),
+      L(23, "capstone-securing-and-monitoring", "Capstone: Securing & Monitoring It", { contentDir: "ch05/23-capstone-securing-and-monitoring" }),
+      L(24, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch05/24-capstone-wrap-up" }),
     ],
   },
 ];
