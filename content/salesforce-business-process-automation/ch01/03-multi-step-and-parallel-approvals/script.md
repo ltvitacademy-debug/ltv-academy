@@ -1,0 +1,25 @@
+# Script — Multi-Step and Parallel Approvals
+
+## Segment 1 (title)
+
+A process with zero approval steps doesn't route to anyone. Each step you add is its own mini-configuration, and today we're adding more than one, in two completely different shapes: serial and parallel.
+
+## Segment 2 (screenshot: step criteria)
+
+Here's the New Approval Step screen, Step Criteria. This is what makes multi-step approvals possible. Should every record reaching this step enter it, or only records matching a condition? For our discount example, Step 2 can require the discount be over 20%, so only the biggest discounts continue past the sales manager to a VP. A 15% discount just stops after step one, already approved.
+
+## Segment 3 (screenshot: assigned approver)
+
+This is also where parallel approval lives. A single step can route to more than one approver at once, not one after another, simultaneously. When you do that, you choose how responses combine: approve or reject based on the first response, which is fastest but lets any one approver decide alone, or require unanimous approval, where every assigned approver has to sign off and a single rejection stops it.
+
+## Segment 4 (screenshot: queue setup)
+
+Instead of hard-coding one person's name, you can assign a step to a queue, a group of users who share responsibility. Any queue member can act on the request. It's the same queues feature you'd use for case or lead routing, reused here, and it's usually the more maintainable choice for any team bigger than one person.
+
+## Segment 5 (screenshot: preview approvals)
+
+Here's what that looks like laid out end to end. Step 1 has three approvers running in parallel. Step 2 adds another, and Step 3 a final one, each running only after the step before it clears. Serial and parallel aren't either-or. A real process nests parallel approval inside one step of a longer serial sequence.
+
+## Segment 6 (outro)
+
+We've now built a complete, multi-step approval process. Next, we switch tools entirely: validation rules, which stop a bad save before any of this even starts.

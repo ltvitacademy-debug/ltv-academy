@@ -1,0 +1,21 @@
+# Script — Business Processes in Salesforce
+
+## Segment 1 (title)
+
+Welcome to Business Process Automation. Before we touch a single setting, let's agree on what a "business process" even is — because the term gets thrown around a lot more than it gets defined.
+
+## Segment 2 (steps: business processes you already know)
+
+Strip away the jargon, and a business process is just a repeatable sequence of steps: someone does something, it triggers someone else to do something, until the work is done. An expense report gets submitted, then approved, then reimbursed. A rep asks for a bigger discount than they're allowed to give alone, and a manager has to sign off. A case sits open too long and escalates to a supervisor. None of that is specific to software — businesses ran all of this on paper and email long before Salesforce existed.
+
+## Segment 3 (steps: the declarative toolbox)
+
+What Salesforce adds is a place where the record, the rule, and the notification all live together. This chapter covers four tools for that: Approval Processes, which route a record for sign-off; Validation Rules, which block a bad save outright; Formulas, the expression language every one of those tools leans on; and Email Alerts, which tell a human it's their turn to act.
+
+## Segment 4 (steps: clicks before code)
+
+You'll hear admins repeat "clicks before code," and it's not just dogma. A validation rule can go from idea to production in an afternoon, read and changed later by the next admin with no deployment pipeline. Apex needs tests, review, and a deploy window. That doesn't make code wrong — some logic genuinely needs it — but Chapter 2 gives you the real decision criteria instead of a slogan.
+
+## Segment 5 (outro)
+
+Through this chapter we'll build one running example — a discount approval process for Opportunities — one piece at a time. Next up: approval processes themselves, starting with the standard setup wizard.

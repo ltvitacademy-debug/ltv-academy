@@ -1,0 +1,25 @@
+# Script — Approval Processes
+
+## Segment 1 (title)
+
+A validation rule can only say yes or no, instantly, from data already on the record. The moment a process needs a human to actually decide something, you need an approval process. Let's build one.
+
+## Segment 2 (screenshot: wizard dropdown)
+
+Here's the real Approval Processes setup page. From Setup you pick the object, click Create New Approval Process, and choose a wizard. Jump Start gives you Salesforce's defaults in one step, fine for the simplest case. Standard Setup Wizard breaks everything into named steps, and it's the one you'll use for anything real, because it exposes entry criteria and editability individually instead of guessing for you.
+
+## Segment 3 (screenshot: entry criteria)
+
+Step 2 is Specify Entry Criteria, and it's the most consequential screen in the whole wizard. This decides which records even enter the process. Leave it blank and every single record enters the moment someone clicks Submit. For our running example, a discount approval, the criteria filters to opportunities where the discount is actually over the threshold that needs a manager's eyes.
+
+## Segment 4 (screenshot: approver editability)
+
+Step 3 answers two questions at once: can you automatically route to an approver using a hierarchy field, like a user's manager, instead of hard-coding a name? And who's allowed to edit the record while it's locked for approval? By default that's administrators only, but you can loosen it to let the current approver fix a value before they approve it.
+
+## Segment 5 (screenshot: submit for approval)
+
+Once the process is active, a Submit for Approval action shows up right on the record. A user clicks it, the record locks, and the first approver gets notified by the email template you picked in Step 4. Every response and comment lands in the Approval History related list, which is exactly the audit trail a discount approval needs.
+
+## Segment 6 (outro)
+
+We've covered the process-level setup, but we haven't added an actual approval step yet, and real processes almost always need more than one. Next up: multi-step and parallel approvals.
