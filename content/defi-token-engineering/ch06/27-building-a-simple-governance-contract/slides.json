@@ -1,0 +1,55 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "DeFi & Token Engineering · Chapter Six",
+    "titlePlain": "Building a Simple ",
+    "titleEmphasis": "Governance",
+    "titleSuffix": " Contract",
+    "subtitle": "Lesson 27 · DAOs & Governance"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The Proposal struct",
+    "code": "struct Proposal {\n    address target;\n    bytes data;\n    uint256 snapshotBlock;\n    uint256 voteEnd;\n    uint256 forVotes;\n    uint256 againstVotes;\n    bool executed;\n}",
+    "caption": "Simplified teaching example -- snapshotBlock is the snapshot mechanic from Lesson 25, as a field."
+  },
+  {
+    "type": "code",
+    "eyebrow": "propose() -- creating a proposal",
+    "code": "function propose(address target, bytes calldata data)\n    external returns (uint256 id)\n{\n    id = proposalCount++;\n    proposals[id] = Proposal(\n        target, data, block.number,\n        block.timestamp + VOTING_PERIOD,\n        0, 0, false\n    );\n}",
+    "caption": "snapshotBlock is fixed at block.number here, and never changed again."
+  },
+  {
+    "type": "code",
+    "eyebrow": "castVote() -- casting a vote",
+    "code": "function castVote(uint256 id, bool support) external {\n    Proposal storage p = proposals[id];\n    require(block.timestamp <= p.voteEnd, \"closed\");\n    require(!hasVoted[id][msg.sender], \"voted\");\n    uint256 weight = token.getPastVotes(msg.sender, p.snapshotBlock);\n    require(weight > 0, \"no power\");\n    hasVoted[id][msg.sender] = true;\n    if (support) p.forVotes += weight;\n    else p.againstVotes += weight;\n}",
+    "caption": "Weight is read at p.snapshotBlock, not the current block -- the Lesson 25 snapshot, enforced."
+  },
+  {
+    "type": "code",
+    "eyebrow": "execute() -- quorum, majority, execution",
+    "code": "function execute(uint256 id) external {\n    Proposal storage p = proposals[id];\n    require(block.timestamp > p.voteEnd && !p.executed, \"not ready\");\n    uint256 total = p.forVotes + p.againstVotes;\n    require(total >= QUORUM, \"no quorum\");\n    require(p.forVotes > p.againstVotes, \"defeated\");\n    p.executed = true;\n    (bool ok, ) = p.target.call(p.data);\n    require(ok, \"failed\");\n}",
+    "caption": "Lesson 24's quorum and majority checks, as require statements. No timelock delay here."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What production adds on top",
+    "titlePlain": "This is a ",
+    "titleEmphasis": "skeleton",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Delegation", "sub": "handled by a real ERC20Votes token" },
+      { "label": "Timelock", "sub": "TimelockController queues execute() behind a delay" },
+      { "label": "Proposal threshold", "sub": "minimum balance required to call propose()" },
+      { "label": "Audit", "sub": "never deploy an unaudited governance contract" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter Seven · Lesson 28",
+    "titlePlain": "ERC-721 & ",
+    "titleEmphasis": "ERC-1155",
+    "titleSuffix": " Review",
+    "subtitle": "NFTs beyond collectibles -- starting with the standards themselves."
+  }
+]
