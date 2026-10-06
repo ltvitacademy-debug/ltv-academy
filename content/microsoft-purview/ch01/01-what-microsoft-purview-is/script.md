@@ -1,0 +1,29 @@
+# Lesson 1 — What Microsoft Purview Is · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Welcome to Microsoft Purview. This course takes everything you've learned about data governance theory and shows you exactly where it lives inside one real, widely-deployed product.
+
+## S2 · STEPS CARD (three pillars)
+
+Microsoft Purview isn't one tool — it's a product family organized into three pillars. Data security dynamically protects data throughout its lifecycle. Data compliance manages critical risk and regulatory requirements. And data governance — the Data Map and the Unified Catalog — responsibly unlocks value from data by making it discoverable and trustworthy. This course lives almost entirely in that middle pillar.
+
+## S3 · SCREENSHOT (pillar diagram)
+
+Here's Microsoft's own diagram of those three pillars, straight from their documentation. Data governance sits in the middle — that's where the Data Map and Unified Catalog live, and that's where this course spends nearly all of its time.
+
+## S4 · STEPS CARD (Data Map / Unified Catalog)
+
+Inside data governance, two services work together. The Data Map is the technical backbone — it connects to, scans, and catalogs your actual data sources. Classification and sensitivity labels get applied to what the Data Map finds. And the Unified Catalog is the business-facing layer on top — domains, glossary terms, and data products a business user can actually search.
+
+## S5 · STEPS CARD (roadmap)
+
+Seven chapters, broad to narrow. Foundations and the Data Map first — the portal, roles, collections, and scanning. Then classification and labels. Then the Catalog and lineage — Unified Catalog, glossary, and lineage from tools like Data Factory and Power BI. And finally governance workflows, a case study, and a hands-on practice lab.
+
+## S6 · OUTRO CARD
+
+This course assumes you already know governance theory from earlier courses in this catalog — it's not re-teaching that. Next lesson: a real walkthrough of the Purview portal itself, its home page, and its navigation.
