@@ -1,0 +1,21 @@
+# Script — User Acceptance Testing
+
+## Segment 1 (title)
+
+SIT proved the project team's own build works. User Acceptance Testing proves something more important: that the people who will actually use Oracle Fusion every day agree it meets their needs. This lesson covers what makes UAT distinct, and why a formal sign-off is almost always a go-live gate.
+
+## Segment 2 (steps)
+
+UAT is executed by actual business users, not the project team. A consultant tests against their understanding of the requirement; a business user tests against their actual daily experience, sometimes surfacing a usability problem or edge case a consultant never would have scripted. UAT runs in an environment that's already configuration-complete and SIT-clean.
+
+## Segment 3 (steps)
+
+While UAT often reuses or adapts SIT's scripts, a strong UAT also asks business users to run their own real scenarios: the exact transactions they process weekly, with the edge cases they know from experience. A script written by a consultant can miss a pattern that's obvious to someone who lives in the process daily.
+
+## Segment 4 (steps)
+
+A formal UAT sign-off, usually from business process owners and often the executive sponsor, certifies that the system meets acceptance criteria, not that it's bug-free. Minor defects can remain open with an agreed plan. This sign-off is the exit criterion for TCM's Validate phase and the entry criterion for Transition.
+
+## Segment 5 (outro)
+
+Brightfield's Treasury Manager retests the partial-payment scenario, now fixed, and also runs a foreign-currency wire scenario the SIT script never covered, surfacing a new defect that gets fixed before sign-off closes Validate for Cash Management. Up next, lesson nineteen: how defects like these get managed from discovery to closure.

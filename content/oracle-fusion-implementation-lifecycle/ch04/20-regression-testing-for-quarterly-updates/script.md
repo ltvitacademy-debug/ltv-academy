@@ -1,0 +1,21 @@
+# Script — Regression Testing for Quarterly Updates
+
+## Segment 1 (title)
+
+Every testing lesson so far described a one-time event: test, fix, sign off, go live. Regression testing is different. It's the testing discipline that never actually ends, because Oracle changes Fusion Cloud under every customer's feet four times a year whether they ask for it or not.
+
+## Segment 2 (steps)
+
+Oracle's quarterly update cadence applies on a fixed, cohort-based schedule to every environment. Each update can change standard functionality or default behavior that a company's configuration or extensions depend on. A company that tested thoroughly once, at go-live, and never again is exposed the first time an update changes something it relies on.
+
+## Segment 3 (steps)
+
+Running a full UAT every quarter isn't realistic. Instead, teams maintain a regression test suite: a curated, smaller subset of scripts covering critical processes and anything a specific update's release notes flag as changed. This suite gets re-run every quarter, in the Test environment, during the window after Test gets the update but before Production does.
+
+## Segment 4 (steps)
+
+Because Test receives each update two weeks ahead of Production, that window exists specifically for this purpose: review the readiness documentation, re-run the regression suite, and decide which optional new features to opt into, all before the same update reaches Production. Any failure found gets fixed before it ever reaches the live system.
+
+## Segment 5 (outro)
+
+A few months after go-live, Brightfield's consultant spots a changed default in reconciliation matching behavior in the update's readiness notes, adds that scenario to the regression suite alongside a re-run of CM-TS-07, and the suite passes before the update reaches Production with no surprises. Up next, chapter five: cutover planning, the first step toward actually going live.

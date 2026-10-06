@@ -1,0 +1,21 @@
+# Script — Deployment and Go-Live
+
+## Segment 1 (title)
+
+The rehearsed cutover plan now runs for real. This lesson covers the go-live event itself: the final decision to proceed, how the first days of live use are typically staffed, and the realistic limits of a rehearsal no matter how well it was run.
+
+## Segment 2 (steps)
+
+Cutover's last major checkpoint is the final go or no-go decision, typically made by a steering committee of the executive sponsor, both project managers, and the solution architect, based directly on the cutover validation results. This isn't a vote on confidence; it's grounded in the same validation discipline practiced since chapter three.
+
+## Segment 3 (steps)
+
+Once go-live happens, the implementation team staffs a command center, physical or virtual, where consultants are available in real time to triage issues as business users transact in the live system for the first time. Super users are often the first line of contact for colleagues, escalating only when they can't resolve something themselves.
+
+## Segment 4 (steps)
+
+Even a thoroughly tested, well-rehearsed go-live almost always surfaces something new: a scenario slightly outside any script, an edge case only visible at real transaction volume. This isn't a sign testing failed, it's the expected reality of go-live, and exactly why hypercare follows immediately rather than the team walking away.
+
+## Segment 5 (outro)
+
+Brightfield's steering committee reviews Saturday's validation results and gives a formal go for Monday. The command center fields eleven day-one issues, mostly navigation questions handled by super users, plus one real configuration fix completed within hours. Up next, lesson twenty-three: hypercare, the sustained support period that follows.

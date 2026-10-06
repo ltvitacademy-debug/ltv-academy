@@ -1,0 +1,21 @@
+# Script — Setup and Maintenance and Implementation Projects
+
+## Segment 1 (title)
+
+Design is signed off. Chapter three is where the configuration workbook finally becomes a live Oracle Fusion configuration. This lesson covers Setup and Maintenance itself, and the Implementation Project that organizes and tracks the work inside it.
+
+## Segment 2 (steps)
+
+Setup and Maintenance is the work area where every configuration task lives, organized through Functional Setup Manager. FSM groups related steps into functional areas, like Cash Management, which break down into task lists, which contain individual tasks. This is the exact structure the configuration workbook was built to mirror.
+
+## Segment 3 (steps)
+
+Rather than exposing every possible task list across all of Oracle Fusion, a team creates an Implementation Project: a named container scoped to just the functional areas relevant to this implementation. Each task gets an owner and a target date, and FSM tracks completion percentage automatically.
+
+## Segment 4 (steps)
+
+Oracle's full task catalog spans every module Oracle offers. Scoping an Implementation Project tightly to just what's in Phase 1 keeps a consultant looking at only the task lists relevant to their module, instead of hunting through hundreds of tasks across modules that aren't even being implemented.
+
+## Segment 5 (outro)
+
+Brightfield's partner creates an Implementation Project scoped to GL, AP, AR, and Cash Management, with the Cash Management consultant assigned every task list under that functional area, feeding a tracked completion percentage straight into the weekly status report. Up next, lesson twelve: moving that configuration between environments using configuration packages.

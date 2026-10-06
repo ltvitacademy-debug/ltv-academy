@@ -1,0 +1,21 @@
+# Script — Stakeholder Interviews and Workshops
+
+## Segment 1 (title)
+
+Requirements don't appear in a document by themselves — someone has to extract them from the people who do the work. This lesson covers the two main techniques: one-on-one interviews and group workshops, and the discipline that keeps both productive.
+
+## Segment 2 (steps)
+
+A one-on-one interview works well for a single process owner who can speak authoritatively about one area, producing depth. A group workshop brings multiple stakeholders together so conflicts between departments surface immediately instead of in a design review weeks later. Workshops take more coordination but pay off whenever a process crosses departments, which most finance processes do.
+
+## Segment 3 (steps)
+
+A well-run workshop has an agenda distributed in advance, a facilitator who keeps discussion on topic, a scribe capturing requirement IDs in real time, and clear objectives. Oracle Modern Best Practice flows are often used as a visual aid: walk the group through the standard flow and ask, at each step, does this work for us, or is this a gap?
+
+## Segment 4 (steps)
+
+Workshops drift. The standard discipline is a parking lot: a visible list of off-topic or unresolved items, captured so the group feels heard, assigned an owner, and followed up after the meeting. And nothing is final until the write-up goes back to stakeholders for sign-off — the business's chance to catch a misunderstanding before it becomes a funded design decision.
+
+## Segment 5 (outro)
+
+Brightfield's Cash Management workshop surfaces a gap: wire transfers are matched manually across three regional accounts in a spreadsheet, which doesn't map onto Oracle's automatic reconciliation rules. That goes to the parking lot and becomes the seed of a fit-gap item. Up next, chapter two: turning everything gathered so far into a formal fit-gap analysis.

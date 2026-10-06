@@ -1,0 +1,21 @@
+# Script — DEV, TEST and PROD Environments
+
+## Segment 1 (title)
+
+Lesson twelve talked about promoting configuration packages upward between environments. This lesson defines what those environments actually are in Oracle Fusion Cloud, and why Oracle's update schedule matters every quarter, not just at go-live.
+
+## Segment 2 (steps)
+
+Oracle Fusion Cloud customers get at least one non-production environment and one production environment; many implementations add a second non-production instance so configuration work and formal testing don't compete for the same space. Instance counts and names vary by subscription — what matters functionally is the discipline, not the label.
+
+## Segment 3 (steps)
+
+Oracle applies quarterly updates to every environment on a fixed schedule. Test environments update on the first Friday of the update month; Production updates two weeks later, on the third Friday. That gap gives a customer time to test changes and decide which opt-in features to turn on before Production gets the same update.
+
+## Segment 4 (steps)
+
+Customers are grouped into update cohorts, commonly A, B, and C, tied to different sets of months, so Oracle doesn't push every customer in the same week. During the two-week gap, Test and Production briefly sit on different release levels, sometimes called a blackout period, when a refresh between them can't run.
+
+## Segment 5 (outro)
+
+Brightfield schedules its final cutover rehearsal to avoid landing in the middle of a Test update week, wanting a stable, known configuration during rehearsal rather than a system that changed underneath the team two days earlier. Up next, lesson fourteen: the strategy for migrating legacy data into these environments.
