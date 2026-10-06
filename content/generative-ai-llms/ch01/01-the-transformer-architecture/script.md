@@ -1,0 +1,42 @@
+# Lesson 1 — The Transformer Architecture, Conceptually · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Every major language model you've heard of — GPT, Claude, Gemini, Llama — runs on the same
+underlying architecture: the transformer. Before we touch tokens, embeddings, or prompting, we
+need the shape of what's actually happening inside the model when it reads your text and writes
+a reply.
+
+## S2 · STEPS CARD (Tokens / Embeddings / Attention / Prediction)
+
+Four stages, every time. Tokenize breaks your text into pieces. Embed converts each piece into a
+vector of numbers that captures meaning. Attend lets every token look at every other token and
+decide what's relevant. And predict turns all of that into a probability distribution over what
+word comes next. We'll spend a full lesson on each of the other three — this lesson is about
+stage three, attention, because it's the actual 2017 innovation.
+
+## S3 · CODE CARD (attention weights toy example)
+
+Here's the idea in miniature. Take the sentence, "The cat sat because it was tired." For the
+model to understand "it," the word "it" needs to connect strongly back to "cat" — not to "sat,"
+not to "the." Self-attention computes exactly that: for every token, a weighted relevance score
+against every other token in the sequence, no matter how far apart they are. These numbers are
+illustrative, not a real model's output, but the shape is accurate — "cat" dominates.
+
+## S4 · STEPS CARD (Parallel vs. sequential — why this replaced RNNs)
+
+Before transformers, models processed text one word at a time, in order, carrying a single
+running summary forward — that's a recurrent neural network, or RNN. Two problems: it's slow,
+because you can't parallelize across words, and long-range connections degrade the further back
+you go. Transformers process the whole sequence at once and let any token connect directly to
+any other token. That's also why GPUs are such a good fit — they're built for exactly this kind
+of massively parallel computation.
+
+## S5 · OUTRO CARD
+
+Tokens, embeddings, attention, prediction — that's the whole pipeline at a glance. Next lesson,
+we slow down on step one: what a token actually is, and why it's not the same thing as a word.

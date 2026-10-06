@@ -1,0 +1,52 @@
+# Lesson 13 — Chat Completion Basics · Voiceover script
+
+Segments map 1:1 to slides. Each segment is one TTS call so slide timing follows the
+audio. Target: ~3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Welcome to Chapter 3 of the Generative AI and LLMs course — working with LLM APIs
+directly. We've spent the last two chapters on how models work and how to choose one. Now
+we actually call one. This lesson covers the single most important shape in this whole
+chapter: the chat completion.
+
+## S2 · CODE CARD: Anthropic request
+
+Here's a real request to Anthropic's Messages API. Strip away everything optional, and
+only two fields are actually required: model, which model answers, and max_tokens, a hard
+cap on how long the reply is allowed to run. Everything else you see here — system, the
+messages array — is there to shape the conversation, but the API will accept a request
+with just those two fields and a messages array.
+
+## S3 · CODE CARD: the response
+
+And here's what comes back. id identifies this exact response. content is an array, not a
+plain string — that matters later, because Lesson 17 puts tool calls in that same array,
+and Lesson 18 puts structured JSON there too. stop_reason tells you why the model stopped;
+end_turn means it finished naturally. usage tells you exactly how many tokens this call
+cost, on both sides.
+
+## S4 · STEPS CARD: the mental model
+
+Boil it all down and this is the entire mental model for a chat completion: a messages
+array goes in holding the conversation so far, the model generates exactly one new
+message, that message's content array holds text or tool calls, and usage plus
+stop_reason tell you the cost and the reason it stopped. Every other lesson in this
+chapter is a variation on this same shape.
+
+## S5 · CODE CARD: OpenAI contrast
+
+You'll run into OpenAI's Chat Completions API just as often, and it shapes the same idea
+slightly differently. The system role lives inside the messages array as its own entry,
+instead of a separate top-level field. And the reply comes back wrapped in a choices
+array instead of a plain content field. Different packaging, same underlying idea: messages
+in, one message out.
+
+## S6 · OUTRO CARD
+
+That's a chat completion end to end: required fields, the response shape, and how two
+major providers package the same idea. Next lesson digs into something that trips people
+up constantly — why Anthropic treats "system" as its own separate thing instead of just
+another role in the list. See you there.

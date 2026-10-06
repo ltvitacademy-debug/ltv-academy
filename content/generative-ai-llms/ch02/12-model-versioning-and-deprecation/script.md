@@ -1,0 +1,39 @@
+# Lesson 12 — Model Versioning & Deprecation · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Every specific model name in this chapter will eventually stop working. That's not a flaw — it's
+a documented lifecycle, and this lesson closes Chapter 2 by showing you exactly how it runs.
+
+## S2 · STEPS CARD (Active / Legacy / Deprecated / Retired)
+
+Checked directly against Anthropic's own documentation, every model moves through four states.
+Active: fully supported. Legacy: still works, no longer updated. Deprecated: still functional,
+not recommended, with a replacement and retirement date assigned. Retired: gone — requests fail
+outright. Anthropic commits to at least sixty days' notice before that final step; OpenAI commits
+to at least six months for its generally-available models.
+
+## S3 · CODE CARD (a real deprecation case)
+
+Here's an actual case, pulled from Anthropic's published history, not a hypothetical. September
+thirtieth, 2026: Anthropic notifies developers that Claude Sonnet 4.5 will retire November
+thirtieth — sixty-one days out — with Sonnet 5.5 named as the replacement. Same pattern, every
+time: a dated model ID, a retirement date, a named replacement.
+
+## S4 · STEPS CARD (what this means for your code)
+
+Four practices follow directly. Pin specific, dated model IDs in production instead of always
+floating to newest. Actively watch deprecation notices — providers notify by email and docs, but
+only if someone's watching. Test against the replacement before the retirement date, not after.
+And budget real engineering time for this — it's not a one-time cost, it's ongoing.
+
+## S5 · OUTRO CARD
+
+Active, legacy, deprecated, retired — a documented lifecycle every model moves through, with a
+real notice window every time. That closes Chapter 2: the landscape of providers, families, the
+open-closed split, choosing a model, what it costs, and how fast all of it changes. Chapter 3
+goes hands-on with the API itself.

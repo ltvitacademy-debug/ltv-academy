@@ -1,0 +1,50 @@
+# Lesson 16 — Streaming Completions · Voiceover script
+
+Segments map 1:1 to slides. Target: ~3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+A non-streaming call makes you wait for the entire reply before you see anything — for a
+long answer, that can be several seconds staring at a blank screen. Streaming fixes that
+by sending the reply back incrementally. This lesson covers the real, exact sequence of
+events that arrive when you turn it on.
+
+## S2 · STEPS CARD: why stream
+
+Turning streaming on is a single field: stream, set to true. A blocking call waits for
+the full reply and shows it all at once. A streaming call sends tokens as they're
+generated, over a persistent connection. The total time to the very last token is roughly
+the same either way — what actually improves is perceived latency, the time until the
+user sees something happening at all.
+
+## S3 · CODE CARD: event sequence
+
+Here's the real, documented sequence of server-sent events for a simple text reply.
+Message_start opens with an empty content array. Content_block_start announces a new
+block beginning. Content_block_delta repeats, each one carrying a small fragment of text.
+Content_block_stop closes that block. Message_delta carries the final stop_reason and
+usage counts. And message_stop ends the stream. Six named event types, always in that
+order.
+
+## S4 · CODE CARD: one delta in full
+
+Zoom into just one of those content_block_delta events, and here's exactly what it
+carries: an index saying which content block it belongs to, and a delta object with
+type text_delta and the actual text fragment — in this case, just the word "Hello." Your
+client appends each of these fragments to build up the full reply as it streams in.
+
+## S5 · CODE CARD: OpenAI contrast
+
+OpenAI streams the same underlying idea differently. Instead of named event types, you
+get a sequence of partial JSON chunks, each one a tiny slice of the final response shape,
+with the new text sitting in choices zero delta content. The stream ends with a literal
+DONE sentinel instead of a dedicated stop event.
+
+## S6 · OUTRO CARD
+
+That's streaming end to end: six named events on Anthropic's side, partial chunks and a
+DONE marker on OpenAI's. Next lesson covers something that changes what's actually inside
+those content blocks — tool calling, where the model doesn't just generate text, it asks
+your code to go do something. See you there.

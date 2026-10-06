@@ -1,0 +1,39 @@
+# Lesson 4 — Next-Token Prediction · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Strip away everything that feels like reasoning or knowledge, and an LLM's actual job is one
+mechanical task, repeated over and over: given the text so far, predict what token comes next.
+
+## S2 · CODE CARD (probability distribution toy example)
+
+Give the model "The capital of France is," and it doesn't look anything up — it computes a
+probability for every token in its vocabulary being next. "Paris" comes out far ahead, because of
+everything attention and embeddings encoded about that context during training. These numbers are
+illustrative, not a real model's actual output, but the shape of it is accurate.
+
+## S3 · STEPS CARD (Greedy / Temperature / Top-k-top-p)
+
+A probability list isn't an answer by itself — something has to pick one token. Greedy always
+takes the single highest-probability option, which can get repetitive. Temperature-based sampling
+adds controlled randomness, still weighted toward likely tokens. And top-k or top-p sampling
+restricts the random choice to only the most plausible handful of candidates. Chapter 3 goes deep
+on tuning this.
+
+## S4 · CODE CARD (autoregressive loop)
+
+Once a token is picked, it gets appended to the sequence, and the whole process runs again — now
+predicting the token after that one. That's autoregressive generation. It's why longer responses
+visibly take longer: every single token means a fresh pass over everything generated so far. And
+it's why an early mistake can compound — once a token is out, it's permanent context for
+everything that follows.
+
+## S5 · OUTRO CARD
+
+Probabilities, sampling, and a loop that feeds its own output back in — that's generation,
+end to end. Next lesson: context windows, and what happens when a conversation outgrows
+how much the model can actually hold onto at once.

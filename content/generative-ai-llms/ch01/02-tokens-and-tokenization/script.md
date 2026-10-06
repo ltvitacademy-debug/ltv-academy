@@ -1,0 +1,41 @@
+# Lesson 2 — Tokens & Tokenization · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+LLMs don't read words. They read tokens — and once you see what that actually looks like, a lot
+of odd behavior around pricing, context limits, and non-English text stops being mysterious.
+
+## S2 · SCREENSHOT (tokenizer default example)
+
+This is OpenAI's own public tokenizer tool, and it's worth using yourself. Paste in text, and it
+highlights every token in a different color. Look at what happens here: most whole words get one
+token each, but an emoji gets split into the raw bytes underneath it, and a run of digits gets
+grouped into its own chunks. Fifty-seven tokens for this paragraph — not fifty-seven words.
+
+## S3 · SCREENSHOT (GPT-3.5/4 tokenizer tab)
+
+Same tool, a short test phrase: "TestingDocs.com LLM Tokenization Test." Under the current
+GPT-3.5 and GPT-4 tokenizer, that's eight tokens for thirty-seven characters — a rough three-ish
+characters per token, in line with the general rule of thumb.
+
+## S4 · SCREENSHOT (GPT-3 legacy tokenizer tab)
+
+Same exact text, but switch the tool to the older GPT-3 legacy tokenizer, and it comes out to ten
+tokens instead of eight. Same string, different token count — because tokenization isn't one
+universal standard, it's specific to each tokenizer a model generation was trained with.
+
+## S5 · STEPS CARD (why it matters: cost / context / language)
+
+Three places this shows up in practice. API pricing is billed per token, both what you send and
+what comes back. Context windows are measured in tokens, not words. And tokenization isn't evenly
+fair across languages — non-English text and code generally split into more tokens per word than
+plain English does, which means the same idea can cost more depending on how it's written.
+
+## S6 · OUTRO CARD
+
+Tokens are the raw material. Next lesson: what happens to each token once it becomes a vector —
+embeddings, and how meaning gets represented as geometry.
