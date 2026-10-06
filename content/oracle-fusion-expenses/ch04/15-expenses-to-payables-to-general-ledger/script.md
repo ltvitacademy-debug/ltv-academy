@@ -1,0 +1,25 @@
+# Script — Expenses to Payables to General Ledger
+
+## Segment 1 (title)
+
+Lesson fourteen showed the accounting entry Expenses generates. This lesson follows one expense item all the way from submission to the General Ledger - exactly the tracing skill a consultant needs when a client asks why the GL shows a particular number.
+
+## Segment 2 (steps)
+
+Follow Marcus's four hundred ten dollar client dinner through six stages. First, the expense item itself lives in Expenses, tied to his report. Second, audit and approval happen - the audit note and approval history stay attached permanently. Third, once approved, Subledger Accounting creates the actual accounting event: debit Client Entertainment Expense, credit Employee Expense Payable.
+
+## Segment 3 (steps)
+
+Fourth, Process Expense Reimbursement creates a standard Payables invoice for four ten, payee Marcus, referencing the original report. Fifth, a Payment Process Request eventually pays that invoice, generating its own entry that clears the liability. Sixth, both the accounting event and the payment entry post as journal entries to the General Ledger, landing on the trial balance.
+
+## Segment 4 (code)
+
+Here's the whole trail end to end: expense item in Expenses, audit and approval in Expenses and BPM, the accounting event in Subledger Accounting, the invoice in Payables, the payment in Payables, and finally the journal entries in the General Ledger.
+
+## Segment 5 (steps)
+
+Why three separate systems? Each answers a different question. Expenses answers what was claimed and was it approved. Payables answers has this actually been paid, and to whom. The General Ledger answers what this does to the company's financial position. If a report shows approved but Marcus says he hasn't been paid, the problem is almost certainly in the Payables payment process, not back in Expenses.
+
+## Segment 6 (outro)
+
+In practice, consultants more often work this trail backward - the CFO sees Travel and Entertainment running high this quarter, and you trace from the GL balance back through the accounting events to the individual reports that drove it. Up next, lesson sixteen: using Oracle's reporting tools to analyze expense data instead of tracing one item at a time.

@@ -1,0 +1,25 @@
+# Script — Cash Advances
+
+## Segment 1 (title)
+
+Not every employee can float a company's travel costs on a personal card for weeks before reimbursement. A cash advance is money paid ahead of a trip to cover anticipated incidental costs, netted against the expense report once it's submitted afterward.
+
+## Segment 2 (steps)
+
+A cash advance covers genuinely upfront, hard-to-predict costs - tips, local transportation where cards aren't accepted, small purchases on a multi-week assignment. It is not a substitute for a corporate card, and it's not meant to cover planned costs like airfare or hotel, which get booked and paid for directly ahead of time.
+
+## Segment 3 (steps)
+
+The employee submits a cash advance request with an amount and business purpose. It routes to the same manager who approves their expense reports. Once approved, Castellan pays it through Payables as a standalone payment - not an expense item, since nothing's been spent yet.
+
+## Segment 4 (steps)
+
+Later, when the employee submits an expense report and an outstanding advance exists, Expenses intercepts submission with an Apply Cash Advances prompt. They either select the advance to apply, or choose not to apply one and type a justification. Advances apply at the report level only - there's no way to say an advance covers just one line.
+
+## Segment 5 (code)
+
+Here's the math on a field assignment: a six hundred dollar advance was issued and paid through Payables. The expense report totals one thousand forty dollars. The advance applies against it, leaving a net reimbursement of four hundred forty dollars to the employee.
+
+## Segment 6 (outro)
+
+But what if spending comes in under the advance? If Jordan gets a six hundred dollar advance but only spends four ten, the report still nets against the full six hundred, meaning Jordan owes the company one hundred ninety back - collected through payroll, a future reimbursement, or a manual repayment depending on setup. Up next, lesson nine: corporate cards and how card transactions flow into Expenses automatically.
