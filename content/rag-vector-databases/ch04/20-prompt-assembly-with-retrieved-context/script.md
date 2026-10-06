@@ -1,0 +1,21 @@
+# Script — Prompt Assembly With Retrieved Context
+
+## Segment 1 (title)
+
+Everything through retrieval and re-ranking exists to produce one thing: a short, ordered list of genuinely relevant chunks. Prompt assembly turns that list into the literal text a model reads — simple mechanically, but the structure is what makes a model actually use it.
+
+## Segment 2 (code: a real assembled request)
+
+Here's a real Messages API call built from retrieved chunks. The behavioral instruction — answer only using the Context — lives in system, separate from the data. The retrieved chunks and the user's question live together in the messages array, as a single user turn.
+
+## Segment 3 (steps: why the instruction matters)
+
+Without an explicit instruction to stay grounded in the Context, a capable model will often answer correctly from its own training knowledge even when the retrieved chunks don't cover it — which defeats the purpose of building RAG at all. The instruction does two things: tells the model where its answer should come from, and gives it permission to say "I don't know" instead of guessing.
+
+## Segment 4 (steps: numbering chunks)
+
+Each chunk in the example is prefixed with a number before its text. That's not cosmetic — citing a specific source later depends on the model being able to refer back to that number, and that only works if the chunk was labeled when it was assembled into the prompt. It's too late to add that labeling after the model has already responded.
+
+## Segment 5 (outro)
+
+Next lesson: citation and source attribution — turning those numbered references in the model's answer into something a user can actually trust and verify.

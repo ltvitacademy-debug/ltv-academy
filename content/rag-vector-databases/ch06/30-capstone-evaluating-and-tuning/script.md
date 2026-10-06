@@ -1,0 +1,21 @@
+# Script — Capstone: Evaluating & Tuning It
+
+## Segment 1 (title)
+
+Following Lesson 27's guidance, this capstone's evaluation set needs real questions, including at least one the pipeline should honestly decline to answer — checking that the abstention path actually fires, not just that the pipeline answers well when it should.
+
+## Segment 2 (code: running the evaluation)
+
+Each test case runs through the real pipeline from Lesson 29, capturing what retrieval actually returned and what the model actually answered — the evaluation has to run against real behavior, not a hand-written guess at it. Evaluate returns scores for faithfulness, context recall, and context precision.
+
+## Segment 3 (steps: reading the scores)
+
+Three distinct scores point at three distinct places to look. Low context precision means retrieval is pulling in noise — check the threshold or chunk size. Low context recall means retrieval is missing real answers — check top_k or chunking. Low faithfulness means the model is adding unsupported claims even with good context — check the grounding instruction before blaming retrieval.
+
+## Segment 4 (steps: one measured tuning change)
+
+Say faithfulness is strong but context recall is weak — real answers exist but retrieval isn't finding them. That points specifically at retrieval. A reasonable first change: raise top_k, giving retrieval more room. Then re-run the exact same evaluation set — a change isn't done until the metric that flagged the problem is re-measured and shows it's actually fixed.
+
+## Segment 5 (outro)
+
+Next lesson: wrapping up the capstone — presenting this build, with its evaluation numbers, as a real portfolio piece.

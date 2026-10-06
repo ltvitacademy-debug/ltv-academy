@@ -1,0 +1,25 @@
+# Script — Re-Ranking Retrieved Results
+
+## Segment 1 (title)
+
+Vector search guarantees chunks whose embedded meaning is closest to the query's — a very good approximation of relevance, but not a perfect one. Two chunks can score similarly close while only one of them actually answers the question.
+
+## Segment 2 (steps: what a re-ranker does differently)
+
+A re-ranker takes the query and a candidate chunk together, as one input, and scores how relevant that specific pairing is — rather than comparing two independently-computed vectors. That joint comparison is more accurate, but far more expensive: it has to run fresh for every query-chunk pair, so it can't be pre-computed and stored the way embeddings can.
+
+## Segment 3 (code: a real re-ranking call)
+
+Here's the real request shape for Cohere's Rerank API. Documents is the candidate list vector search already narrowed down — typically the top 20 to 50 chunks, not the whole collection. Top_n is how many of those to return after scoring.
+
+## Segment 4 (steps: the response)
+
+The response reorders that list by actual relevance. Each result's index points back to the original documents array — so index 1 being ranked first means the second document sent in was actually the most relevant, even if vector search had ranked it lower. Relevance_score is a sharper signal than raw similarity — genuinely relevant documents often score well above 0.9.
+
+## Segment 5 (steps: where this fits)
+
+The order matters. Vector search retrieves a wider candidate set cheaply. Re-ranking narrows and reorders that set accurately. Only then does the smaller, better-ordered result move on to prompt assembly. Running a re-ranker against the whole collection instead would work, but at a cost and latency that doesn't scale.
+
+## Segment 6 (outro)
+
+Next lesson: prompt assembly — taking this final, re-ranked set of chunks and actually building the prompt the model will answer from.
