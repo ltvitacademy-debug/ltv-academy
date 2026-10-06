@@ -1,0 +1,23 @@
+# Lesson 6 — Networking and the Trailblazer Community · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+## S1 · TITLE
+
+Trailhead is the learning platform. The Trailblazer Community is the people layer built around it -- and this lesson is about actually using it.
+
+## S2 · STEPS — Four real places
+
+The real community breaks down into four places. Feed, where you ask and answer questions tied to your profile. Groups, organized by role, region, or interest. Topics, for trending discussions. And Group Meetings -- real local meetups happening in cities worldwide.
+
+## S3 · STEPS — Why it actually helps
+
+Two things make this different from just collecting badges. Your answers on the Feed are visible and attributable, tied to the same public profile from Lesson 3. And a local group meeting is a room full of people who already work in Salesforce -- sometimes including the people doing the hiring.
+
+## S4 · STEPS — How to start
+
+Start small and sustainable. Join one group in your region or specialty. Attend one meeting before you're job-searching under pressure. Answer one real question every week or two, close to your actual capstone work.
+
+## S5 · OUTRO
+
+Next up: Chapter Two, starting with certification strategy -- sequencing your credentials sensibly instead of chasing every exam at once.
