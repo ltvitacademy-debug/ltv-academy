@@ -8,7 +8,7 @@ const DESTINATION_COUNT = CAREER_PATHS.filter((p) => p.isDestination).length;
 
 // Photos still being produced — renders a marked placeholder instead of a
 // broken image. Remove an entry here once public/careers/<slug>.jpg lands.
-const PENDING_PHOTOS = new Set(["aws-data-engineer"]);
+const PENDING_PHOTOS = new Set<string>([]);
 
 export const metadata: Metadata = {
   title: "Career Paths",
