@@ -1,0 +1,225 @@
+{
+  "lesson": "docker-ai-deployment",
+  "questions": [
+    {
+      "q": "Why is `latest` a risky tag to rely on for reproducibility, per this lesson?",
+      "options": [
+        "It's reserved and cannot actually be pushed to",
+        "It only works with private repositories",
+        "It's an ordinary, overwritable tag \u2014 just whatever was last pushed without an explicit version",
+        "It always points to the oldest version of an image"
+      ],
+      "answer": 2,
+      "explain": "`latest` isn't a special guarantee \u2014 it's an ordinary tag that gets reassigned to whatever is pushed next without an explicit version."
+    },
+    {
+      "q": "Why does a virtual machine typically take a minute or more to start, versus about a second for a comparable container?",
+      "options": [
+        "Virtual machines are always run on remote, higher-latency servers",
+        "Virtual machines use slower storage hardware",
+        "A VM boots an entire guest operating system and kernel on a hypervisor, which a container skips",
+        "Containers are always smaller files than virtual machine disk images"
+      ],
+      "answer": 2,
+      "explain": "The VM has to boot a full guest OS and kernel; a container just starts an isolated process on the kernel that's already running."
+    },
+    {
+      "q": "In the example compose.yaml, what's the difference between the `api` and `redis` services?",
+      "options": [
+        "api pulls a published image; redis builds from a Dockerfile",
+        "There is no difference \u2014 both behave identically",
+        "api builds from a local Dockerfile; redis pulls a published image",
+        "redis requires a separate docker run command; api does not"
+      ],
+      "answer": 2,
+      "explain": "`build: .` builds from the local Dockerfile, while `image: redis:7-alpine` pulls an already-published image \u2014 the two ways a service can get its container."
+    },
+    {
+      "q": "What does the EXPOSE instruction actually do?",
+      "options": [
+        "It opens the specified port so traffic can reach the container",
+        "It documents which port the app expects \u2014 it does not open the port itself",
+        "It installs a web server inside the image",
+        "It removes a port from the container's network interface"
+      ],
+      "answer": 1,
+      "explain": "EXPOSE is documentation. Actually publishing a port to the host happens with the -p flag at `docker run`, covered in Lesson 4."
+    },
+    {
+      "q": "Why does the dependency-layer caching pattern from Lesson 3 matter even more for an AI app's Dockerfile?",
+      "options": [
+        "AI apps never need a requirements.txt file",
+        "Packages like torch or transformers are much larger than typical web dependencies, so an uncached reinstall costs minutes, not seconds",
+        "AI apps cannot use a base image smaller than 1GB",
+        "Caching only works for Flask applications"
+      ],
+      "answer": 1,
+      "explain": "A full dependency reinstall for a PyTorch-style stack is far more expensive than for a typical web framework, so avoiding unnecessary cache invalidation matters more."
+    },
+    {
+      "q": "Why doesn't a container get GPU access by default, even on a machine that has a GPU?",
+      "options": [
+        "A container's isolation hides host hardware like the GPU by default; it needs an explicit path to the driver",
+        "GPUs cannot be used by any containerized process",
+        "Only Windows containers support GPU access",
+        "Docker Desktop disables GPU access permanently"
+      ],
+      "answer": 0,
+      "explain": "The same isolation that makes containers lightweight also hides host hardware like a GPU unless something explicitly passes it through."
+    },
+    {
+      "q": "What's the key difference between a Dockerfile's `ENV` and `docker run`'s `-e` flag?",
+      "options": [
+        "ENV is baked into the image at build time, visible to anyone who pulls it; -e is supplied only when a container starts",
+        "There is no difference \u2014 they behave identically",
+        "-e can only be used for numeric values",
+        "ENV only works with Python images"
+      ],
+      "answer": 0,
+      "explain": "ENV becomes part of the image itself; -e exists only for that one running container and is never written to the image."
+    },
+    {
+      "q": "What's the main downside of baking a large model checkpoint directly into an image with COPY?",
+      "options": [
+        "It makes every build, push, and pull slower, and the registry stores a multi-gigabyte blob per image version",
+        "COPY cannot be used with files larger than 1MB",
+        "It requires a GPU to build",
+        "It automatically deletes the application code"
+      ],
+      "answer": 0,
+      "explain": "Baked-in weights bloat the image, slowing the build/push/pull cycle and duplicating large blobs across image versions even when only the code changed."
+    },
+    {
+      "q": "Why does this lesson say gateway-level rate limiting matters more for an AI app than a typical CRUD API?",
+      "options": [
+        "AI apps never need authentication, so rate limiting is the only protection available",
+        "AI inference calls are comparatively slow and expensive, so a careless client loop can run up a large bill or cause an outage fast",
+        "CRUD APIs cannot be deployed behind a gateway at all",
+        "AI apps don't use HTTPS, so gateways handle encryption instead"
+      ],
+      "answer": 1,
+      "explain": "A plain CRUD API's requests are small and cheap; an AI app's prompt payloads and inference calls are larger and far more expensive per request, so unmetered traffic is a bigger risk."
+    },
+    {
+      "q": "What does a service's 'default domain' refer to, in this lesson's deploy walkthrough?",
+      "options": [
+        "The real, public HTTPS URL the platform assigns once the service is running",
+        "The internal-only hostname used for container-to-container traffic",
+        "The name of the Dockerfile used to build the image",
+        "A placeholder URL that must be manually replaced before going live"
+      ],
+      "answer": 0,
+      "explain": "Once the service reaches 'Running,' the console shows a default domain: a real public URL someone else can call."
+    },
+    {
+      "q": "What actually happens at the moment of a blue-green cutover, per this lesson?",
+      "options": [
+        "A full redeploy of the application to new servers",
+        "A routing change at the gateway/load balancer, not a redeploy",
+        "Both environments are torn down and rebuilt simultaneously",
+        "The model weights are retrained on the new instance"
+      ],
+      "answer": 1,
+      "explain": "The cutover is just a routing switch -- that's exactly what makes it near-instant in either direction."
+    },
+    {
+      "q": "Why can a rolling update briefly serve two different, both 'correct,' answers to the same question?",
+      "options": [
+        "Because the load balancer is broken during a rollout",
+        "Because old and new instances run different, unrelated application code",
+        "Because old and new versions serve traffic at the same time, and can be running different model checkpoints",
+        "Because rolling updates always disable the model entirely during rollout"
+      ],
+      "answer": 2,
+      "explain": "The side-by-side window means a request can land on an old-checkpoint instance or a new-checkpoint instance at the same moment, mid-rollout."
+    },
+    {
+      "q": "According to this lesson, why do spot instances fit a queue-and-worker architecture better than a synchronous request a user is actively waiting on?",
+      "options": [
+        "Spot instances are not compatible with queues at all",
+        "A reclaimed worker just means the job gets retried by another worker, rather than a user seeing an error",
+        "Queue-and-worker architectures never use GPUs",
+        "Synchronous requests are always cheaper than async ones"
+      ],
+      "answer": 1,
+      "explain": "A queued job tolerates losing a worker mid-task because another worker can simply retry it -- a live, waiting user cannot tolerate that the same way."
+    },
+    {
+      "q": "How does semantic caching decide whether a new prompt can reuse a cached response?",
+      "options": [
+        "It requires the new prompt's text to match a stored prompt character-for-character",
+        "It compares the new prompt's embedding against stored prompts' embeddings for similarity",
+        "It always reuses the most recently cached response regardless of content",
+        "It checks whether the user's account ID matches a cached user"
+      ],
+      "answer": 1,
+      "explain": "Semantic caching embeds the new prompt and compares it to stored prompt embeddings -- similar enough, and the cached response is reused."
+    },
+    {
+      "q": "What does the 'max instances' setting protect against?",
+      "options": [
+        "Cold starts during low-traffic periods",
+        "Model checkpoint mismatches between instances",
+        "Your budget and GPU quota from a runaway traffic spike or a bug",
+        "Slow image builds during CI/CD"
+      ],
+      "answer": 2,
+      "explain": "Max instances caps scaling so a traffic spike or bug doesn't translate into an unconstrained bill or exceed a GPU quota."
+    },
+    {
+      "q": "In the asynchronous pattern described in this lesson, what does the client receive immediately after submitting a request?",
+      "options": [
+        "The final generated response",
+        "A job ID, with the result fetched or pushed later",
+        "A permanent error message",
+        "A new container image"
+      ],
+      "answer": 1,
+      "explain": "Async returns a job ID right away; the client polls or receives a webhook for the actual result once a worker finishes it."
+    },
+    {
+      "q": "What does deploying FeedbackScope in this lesson reuse from Lesson 12?",
+      "options": [
+        "A requirement to use AWS App Runner specifically, with no alternative",
+        "The same rollback mechanism used for rolling updates",
+        "The exact same container image, unmodified",
+        "The two-screen pattern: point the platform at the image and port, then add a health check"
+      ],
+      "answer": 3,
+      "explain": "This capstone deploy step is explicitly the same build-config / service-config pattern taught in Lesson 12."
+    },
+    {
+      "q": "By the end of this capstone, what is FeedbackScope, per this lesson?",
+      "options": [
+        "An untested prototype that never actually ran",
+        "A manually-scaled service with no autoscaling policy",
+        "A containerized, deployed, and autoscaled service where every configuration choice has a stated reason",
+        "A service that still runs on the developer's laptop only"
+      ],
+      "answer": 2,
+      "explain": "That's the lesson's own summary of what the two prior lessons actually produced -- not just a running service, but one with justified configuration."
+    },
+    {
+      "q": "According to this lesson's structure, what gets built in Lesson 24?",
+      "options": [
+        "The initial Dockerfile and first deploy",
+        "A real autoscaling policy, a health check endpoint, and a caching decision",
+        "The final portfolio presentation",
+        "A completely new, unrelated project"
+      ],
+      "answer": 1,
+      "explain": "Lesson 24 is 'Adding Autoscaling' -- it adds the autoscaling policy, health check, and caching decision on top of the already-deployed service."
+    },
+    {
+      "q": "Why is max_instances capped at 5 in this capstone's policy?",
+      "options": [
+        "As a hard ceiling on cost, since this is a portfolio project without a production budget",
+        "Because 5 is the maximum any cloud provider allows",
+        "Because higher counts would exceed the model's accuracy limits",
+        "Because the health check only supports 5 concurrent instances"
+      ],
+      "answer": 0,
+      "explain": "Max instances here is explicitly a cost ceiling appropriate for a learning project's real but small cloud bill."
+    }
+  ]
+}
