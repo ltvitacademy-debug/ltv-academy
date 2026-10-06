@@ -1,0 +1,21 @@
+# Script — Prompt Engineering vs. Context Engineering
+
+## Segment 1 (title)
+
+Prompt engineering and context engineering sound like the same thing. They're not — one is a sentence, the other is everything else in the window.
+
+## Segment 2 (code: what the model actually receives)
+
+Here's what actually goes out on a real call: a system prompt, three tool schemas, five turns of history, two retrieved document chunks, and then the user's actual words — refund this order, forty tokens. The literal prompt is a rounding error next to the context around it.
+
+## Segment 3 (steps: two different jobs)
+
+Prompt engineering is the wording, examples, and format of that one instruction. Context engineering is deciding what surrounds it — system rules, history, tools, retrieved material — so it fits inside the model's hard token ceiling, the context window.
+
+## Segment 4 (steps: why it split into its own discipline)
+
+This split matters more as systems get more agentic. In a single-turn question-and-answer, the prompt's wording was most of the problem. Once you add multiple turns, tool calls, and retrieval, assembled context dwarfs the user's words — and a bad answer can mean bad context, not a badly worded prompt.
+
+## Segment 5 (outro)
+
+Knowing which one you're debugging is the whole point of this distinction — before fixing a failing response, ask whether the instruction was wrong, or whether it was fine and drowned in the wrong surrounding context. Next: managing context window budgets — turning "what fits" into an actual number you plan around.

@@ -1,0 +1,21 @@
+# Script — Managing Context Window Budgets
+
+## Segment 1 (title)
+
+A context window has a hard token ceiling. Managing it like a budget — with real numbers, not vibes — is what keeps a long-running agent from quietly breaking.
+
+## Segment 2 (code: a real budget worksheet)
+
+Here's a worked budget for a 200,000-token window. Reserve 8,000 for the model's output first. That leaves 192,000 for input. Subtract fixed costs — a 1,800-token system prompt, 4,200 tokens for five tool schemas — leaving 186,000. Cap the variable costs: 40,000 for conversation history, 20,000 for retrieved content. What's left, 126,000 tokens, is your safety margin.
+
+## Segment 3 (steps: budgeting order of operations)
+
+The order matters. Reserve the output budget first, because a response that gets cut off mid-answer is worse than a slightly smaller input budget. Subtract fixed costs next — the system prompt and tool schemas don't shrink. Then cap the variable costs, history and retrieval, so either one can grow without silently eating the whole window.
+
+## Segment 4 (code: estimating tokens)
+
+You don't need a tokenizer running to catch a budget problem early. English text runs roughly four characters per token, or about three-quarters of a word per token. A three-thousand-word document is roughly four thousand tokens. Code and non-English text tokenize less efficiently per character, so budget extra for those.
+
+## Segment 5 (outro)
+
+A budget without caps on the variable parts isn't a budget — it's a number you'll blow past the first time a conversation runs long or a retrieval pulls in too much. Set the caps before you need them. Next: context compression — what to actually do once history or retrieval hits its cap.
