@@ -1,0 +1,21 @@
+# Script — Cross-Validation Rules
+
+## Segment 1 (title)
+
+A chart of accounts with several independent segments can combine into millions of possible combinations, and most would be nonsense. Cross-validation rules are what stop a user from creating most of them in the first place.
+
+## Segment 2 (steps)
+
+Segments are independent by default — any value in one can combine with any value in another, unless something stops it. A cross-validation rule determines whether a selected value in one segment can combine with specific values in another.
+
+## Segment 3 (code)
+
+Every rule has two parts. A condition filter identifies which account combinations the rule applies to. A validation filter defines what's actually allowed once that condition is met — a manufacturing cost center must pair with a manufacturing-allowed account range, for example.
+
+## Segment 4 (steps)
+
+Cross-validation combination sets are a related, simpler tool: an explicit list of valid combinations across up to five segments, instead of a condition and validation filter pair. Good for a finite, well-known list, but it doesn't scale as well as a pattern-based rule.
+
+## Segment 5 (outro)
+
+A rule can reference a value range or a hierarchy node instead of listing every value, so a new cost center added under Manufacturing is automatically covered with no rule change. That completes chapter five. Chapter six puts the whole course together.

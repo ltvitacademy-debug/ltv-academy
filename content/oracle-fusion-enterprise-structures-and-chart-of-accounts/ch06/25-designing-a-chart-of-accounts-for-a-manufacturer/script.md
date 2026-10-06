@@ -1,0 +1,25 @@
+# Script — Designing a Chart of Accounts for a Manufacturer
+
+## Segment 1 (title)
+
+Chapters one through five gave you every individual piece. This lesson puts them together in one worked example: a chart of accounts for a fictional manufacturer, LTV Manufacturing Corporation — the same company you'll return to for this path's capstone.
+
+## Segment 2 (steps)
+
+LTV Manufacturing is a mid-sized manufacturer with two legal entities, a US parent and a Canadian subsidiary, three departments per entity, and a need to track intercompany transactions. The goal: the simplest structure that satisfies these real requirements.
+
+## Segment 3 (code)
+
+Five segments. Company carries the primary balancing label, one value per legal entity. Cost Center carries the cost center label, grouped under Manufacturing and Corporate parents. Account carries the natural account label. Intercompany mirrors Company's values exactly. Future is reserved, unlabeled.
+
+## Segment 4 (steps)
+
+A tempting fifth "real" segment would be Product Line, since LTV makes more than one product. It was deliberately left out — the business doesn't yet need product-level reporting. That's the simplest-structure principle in action, with Future reserved in case that changes.
+
+## Segment 5 (steps)
+
+Every earlier chapter shows up here. Legal entities map to Company values. Business units will be assigned against this structure. Calendar and currency apply per ledger. Labels, value sets, hierarchies, and cross-validation rules are what made this design coherent.
+
+## Segment 6 (outro)
+
+A real design starts from the company's actual operating structure, applies the simplest-structure principle, and reserves room for predictable growth. Next up, lesson twenty-six: deploying flexfields and structures.
