@@ -1,0 +1,21 @@
+# Script — Deliverables: Reports, Issue Log and Implementation Documentation
+
+## Segment 1 (title)
+
+Fixing the problem isn't the end of a real engagement — proving it's fixed, in writing, is. This lesson assembles the seven deliverables Elena Marsh needs before the board meeting.
+
+## Segment 2 (steps)
+
+Two financial statements: an Income Statement with correctly posted freight, overhead allocation, and depreciation, and a Balance Sheet with cash, receivables, assets, payables, and intercompany all tying out. Two aging reports: AP matching the GL exactly, and AR finally telling Harborview's true story.
+
+## Segment 3 (steps)
+
+A reconciliation report covering the bank, the accrual, and intercompany — each with evidence attached. And an issue log: six entries, one per root cause, each written as symptom, cause, fix, and verification, the same format used throughout the Troubleshooting course.
+
+## Segment 4 (code)
+
+Implementation documentation closes it out — a narrative record of why LTV's enterprise structure, chart of accounts, and master data are built the way they are, so the next person who touches this instance understands the reasoning, not just the configuration screens.
+
+## Segment 5 (outro)
+
+Elena doesn't just need the numbers right — she needs to defend them to her board. Up next, lesson twenty-three: the final presentation, where you walk her through what was wrong and how it was corrected.

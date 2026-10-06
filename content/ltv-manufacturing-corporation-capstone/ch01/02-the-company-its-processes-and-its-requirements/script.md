@@ -1,0 +1,21 @@
+# Script — The Company, Its Processes and Its Requirements
+
+## Segment 1 (title)
+
+This lesson is the one canonical reference for the entire capstone. LTV Manufacturing Corporation is a fictional industrial control equipment manufacturer — the same company from Enterprise Structures, Procure-to-Pay, and Order-to-Cash — with a US parent in Savannah, Georgia, and a Canadian subsidiary in Windsor, Ontario.
+
+## Segment 2 (steps)
+
+Ten people matter for the rest of this capstone. Elena Marsh is the CFO and your executive sponsor. Victor Okafor is the Controller. Sarah Lindqvist handles subledger accounting and GL posting. Chen Liu runs Payables, Mateo Rios runs Receivables, Grace Olsen handles Treasury, and Derek Shaw owns Fixed Assets. Marcus Ibarra buys, Dana Whitfield requests, and Priya Nandan receives, on the plant floor.
+
+## Segment 3 (steps)
+
+Core business relationships: Meridian Bearing Supply Co. is the preferred MRO supplier. Harborview Industrial Supply is the largest customer. Regions Bank in Savannah holds the primary US operating account; Royal Bank of Canada in Windsor holds the Canadian account. Two legal entities, one chart of accounts design, real intercompany activity between them.
+
+## Segment 4 (steps)
+
+Elena Marsh's charge breaks into five requirements: a two-entity enterprise structure, a chart of accounts that tracks cost centers and supports intercompany elimination, fully configured suppliers, customers, banks, and assets, a full month of real transactions, and a clean first month-end close. That fifth requirement is the one that goes wrong.
+
+## Segment 5 (outro)
+
+Up next, lesson three: designing the enterprise structure — turning this company profile into actual ledgers, legal entities, and business units.

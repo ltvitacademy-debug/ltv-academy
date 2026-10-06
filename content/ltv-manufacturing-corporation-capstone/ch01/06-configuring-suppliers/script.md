@@ -1,0 +1,21 @@
+# Script — Configuring Suppliers
+
+## Segment 1 (title)
+
+With the enterprise structure and chart of accounts in place, you can configure master data that transactions will actually reference. This lesson sets up LTV's four suppliers — the ones you'll buy from in Chapter 2, and the ones at the center of two of Chapter 3's six problems.
+
+## Segment 2 (steps)
+
+Four suppliers, all under the US Manufacturing and Distribution business unit: Meridian Bearing Supply Co. for bearings and MRO parts, Palmetto Steel and Alloy Supply for raw steel, Vantage Electrical Components for control panel electronics, and Crescent Freight Logistics for freight.
+
+## Segment 3 (code)
+
+Meridian gets the full setup: supplier type Manufacturing, one primary site under the US BU, Net 30 terms, three-way matching, an EFT payment method with a bank account on file, and the preferred-supplier flag — which is exactly what makes Meridian the default sourcing choice when the bearing purchase order gets created.
+
+## Segment 4 (steps)
+
+The other three suppliers follow the same pattern — one site, Net 30, three-way matching — without the preferred flag, giving your practice environment a realistic multi-supplier roster. Every field configured here is a field Chapter 2's purchasing, invoicing, and payment lessons will actually use.
+
+## Segment 5 (outro)
+
+Up next, lesson seven: configuring customers — the other side of LTV's transaction activity.

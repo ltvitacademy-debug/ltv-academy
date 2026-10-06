@@ -1,0 +1,21 @@
+# Script — Cash Receipts
+
+## Segment 1 (title)
+
+Harborview pays. This lesson records the cash receipt — and plants the second of Chapter 3's six problems: a receipt applied to the wrong invoice.
+
+## Segment 2 (steps)
+
+Harborview wires $55,100 on January 28th, receipt RCPT-50231, deposited to Regions Bank. The deposit itself is correct and uneventful — cash increases by exactly the amount of the big control panel order.
+
+## Segment 3 (steps)
+
+Applying the receipt means telling Receivables which open invoice it pays. Mateo Rios sees two open items on Harborview's account — the $55,100 invoice and the older $6,100 invoice — sorted by date, not amount, and applies the big receipt to the small invoice by mistake.
+
+## Segment 4 (code)
+
+The result: the $6,100 invoice shows a $49,000 credit balance, wildly overpaid. The $55,100 invoice still shows fully open and now overdue, even though the customer already paid. Total cash and total AR are unaffected — only the invoice-level detail is wrong, which is exactly why this kind of error hides from a bank reconciliation and only shows up in AR aging.
+
+## Segment 5 (outro)
+
+Up next, lesson fourteen: asset capitalization, where a new CNC lathe gets set up — in the wrong category.
