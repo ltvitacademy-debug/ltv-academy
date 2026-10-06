@@ -1,0 +1,9 @@
+Lesson 3 left us with a design decision: a warranty-claims app, built on a master-detail relationship to Asset. This lesson turns that decision into an actual data model, before a single object gets created.
+
+Start by listing every noun in the requirement: Claim, Asset, Product, Customer. Mark which object owns which — which one is the parent. Draw the links between them: is it one-to-many, or many-to-many? And check each noun against objects that already exist — Account, Contact, and Asset are all standard.
+
+Here's the warranty-claims model in shorthand. Account and Asset are both standard objects we reuse. Warranty Claim is a custom object, master-detail to Asset. Claim Line Item is a second custom object, master-detail to Claim. That's two custom objects total, not four built from scratch.
+
+The shape of each relationship has to match reality. One-to-many — one asset, many claims — is a lookup or master-detail field. Many-to-many needs a junction object sitting in between the two. Here, Claim Line Item is that junction: it links a Claim to a Product, because one claim can cover several products and one product can show up on many claims.
+
+Pick the wrong shape and you'll find out later — usually as duplicate records or data you simply can't capture. Next lesson, we take this exact model into Object Manager and build it for real.

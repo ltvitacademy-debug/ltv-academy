@@ -1,0 +1,11 @@
+Every component used so far — list views, report charts, related lists — shipped with Salesforce. This lesson covers what happens when those aren't enough: custom Lightning components, and exactly where the App Builder's job ends and a developer's begins.
+
+Open the Components panel and standard components are listed first — Chatter Feed, Dashboard, Flow, List View. But scroll down and you'll find a Custom section too. A component built by a developer drags onto the canvas exactly the same way as anything Salesforce shipped.
+
+Here's one running: Opportunity Alert. It's not a standard Salesforce feature — it's a Lightning web component a developer wrote, surfacing opportunities that have gone quiet. As the App Builder, you didn't write it. You dragged it onto this app's home page, the same as any list view.
+
+And here's that same component, automatically adapted for the Salesforce mobile layout. The App Builder canvas lets you preview both desktop and mobile without a separate build — the component itself handles its own responsive behavior.
+
+So the division of labor is clean. The Platform App Builder drags components onto the canvas and sets their exposed properties — which list, which filter, which record. The developer writes the component itself, deciding what it's capable of doing. Neither role replaces the other, and you don't need to write a component to use one well.
+
+That's components covered, standard and custom. Last lesson in this chapter: what actually changes about all of this when the exact same app runs on a phone.

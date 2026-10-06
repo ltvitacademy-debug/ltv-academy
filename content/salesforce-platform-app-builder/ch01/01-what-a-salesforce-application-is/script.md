@@ -1,0 +1,11 @@
+In Salesforce, an application isn't a separate piece of software you install. It's a curated container inside the one platform you already have — and as a Platform App Builder, assembling that container is the core of the job.
+
+Every app a user can open lives in the App Launcher — the grid icon in the top-left corner. Standard Salesforce apps like Sales and Service sit right alongside custom apps you build yourself. To a user, there's no technical difference between them.
+
+Open an app and here's what you actually get: a branded navigation bar, a specific set of tabs, and a home page. This one was built for an energy-consulting business — its tabs are Energy Audits and Accounts, not some generic CRM layout.
+
+Behind the scenes, Setup's App Manager lists every app that exists in the org — standard and custom, Classic and Lightning. This is the admin's master inventory, and it's also where you'll go to build a new one.
+
+So what actually makes up an app? Four things, bundled into one container: the tabs it surfaces, its branding — name, icon, color — the order those nav items appear in, and which user profiles are even allowed to see it.
+
+Understanding that an app is just configuration, not code, is what makes the rest of this course possible. Next up: actually building one, start to finish, in App Manager.

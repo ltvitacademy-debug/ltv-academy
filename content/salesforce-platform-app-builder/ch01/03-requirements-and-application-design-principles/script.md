@@ -1,0 +1,9 @@
+Every app so far in this course already existed when we opened App Manager. In the real job, you start earlier — with a requirement, often a vague one, that you have to turn into a design decision before you touch the wizard.
+
+Ask four questions before you build anything. Who's actually going to use this, and which profiles are they on? What task are they stuck doing today — usually in a spreadsheet or on paper? Why does it matter — what breaks if this doesn't exist? And what's the real scale — ten users, or ten thousand records a day?
+
+Once you understand the requirement, design in this order: reuse a standard object before building a custom one. Reuse a standard field before building a custom one. Configure — fields, layouts, flows — before you customize. Customize with components before anyone writes a line of Apex. At every step, ask whether this already exists in the org.
+
+Here's that order applied to a real requirement: track warranty claims per product. First, the reuse check — no standard object fits a warranty claim, so a custom object is justified. Next, the relationship — a claim belongs to one asset, so that's a master-detail. Finally, the interface — one app, two tabs: Claims and Assets.
+
+That's requirements translated into a design decision, not a guess. Next lesson, we take that warranty-claims example and actually build the data model behind it.

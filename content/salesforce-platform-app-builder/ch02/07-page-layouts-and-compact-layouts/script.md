@@ -1,0 +1,11 @@
+Chapter two is the interface. We've got a solid data model from chapter one — now let's control exactly what a user sees when they open a record, starting with the two tools that are easiest to mix up: page layouts and compact layouts.
+
+A page layout controls the full record page: the highlights panel at top, the action buttons like Edit and New Case, and which tabs — Related, Details, Chatter — even exist. This is the layout most people picture when they hear the word.
+
+A compact layout does a completely different job. In its editor, you pick up to ten fields and put them in priority order. That's it — no sections, no related lists, no buttons. This short list is what shows in the highlights panel, and on a phone.
+
+Here's where that actually shows up: hover an Account from an Opportunity's related list, and the fields in that popup — Type, Phone, Website, Account Owner — are exactly the fields chosen in the compact layout. Not the full record, just the summary.
+
+So: page layout controls the full record — every field, section, related list, and button. Compact layout controls the summary view — the highlights panel, mobile, and hover cards, capped at ten fields in priority order. Confusing these two is the single most common mistake on the Platform App Builder exam.
+
+Both of these are being steadily replaced by a more flexible tool for the main record page. Next lesson: Lightning App Builder, the drag-and-drop canvas behind every modern Lightning page.

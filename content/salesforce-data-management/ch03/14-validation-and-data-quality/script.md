@@ -1,0 +1,29 @@
+# Script — Validation and Data Quality
+
+## Segment 1 (title)
+
+Duplicate rules stop two records from looking like each other. Validation rules stop a single record from being wrong in the first place — a blank field that should never be blank, a date that doesn't make sense, a phone number with letters in it.
+
+## Segment 2 (code: validation rule anatomy)
+
+A validation rule is a formula that evaluates true or false on every save, and it's worth reading backwards from how it feels to write: true blocks the save. This one asks, is the stage Closed Won, and is Amount blank? If both are true, the user can't save until they fix it.
+
+## Segment 3 (code: functions cheat sheet)
+
+A small set of functions covers almost every rule you'll ever write. ISBLANK and ISNULL catch empty fields. ISPICKVAL checks a picklist value. REGEX checks a text pattern. AND, OR, and NOT combine conditions, and PRIORVALUE compares against the value before this edit, which is useful for catching someone changing a field that should be locked.
+
+## Segment 4 (code: phone format check)
+
+Here's a phone format check, and notice the guard at the top: NOT ISBLANK Phone. Without it, every blank phone number would also fail the REGEX test and get blocked, which quietly turns an optional field into a required one nobody asked for.
+
+## Segment 5 (steps: four dimensions)
+
+Data quality isn't one thing — it's four, and each has a different tool. Completeness is required fields and ISBLANK. Accuracy is REGEX and range checks. Consistency is picklists instead of free text. And uniqueness is the duplicate and matching rules from the last two lessons.
+
+## Segment 6 (steps: keeping rules honest)
+
+A validation rule that's too aggressive doesn't just annoy people, it teaches them to route around it — type 'n/a' just to get past a rule with no exception, which is worse than no rule at all. Narrow the condition to the one bad state you actually care about, and write the message for the person reading it, not for yourself.
+
+## Segment 7 (outro)
+
+Validation rules catch bad values. Next, standardizing data — making sure the values that do get saved look the same way across the whole org.

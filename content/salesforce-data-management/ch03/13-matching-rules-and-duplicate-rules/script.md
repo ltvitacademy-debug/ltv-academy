@@ -1,0 +1,33 @@
+# Script — Matching Rules and Duplicate Rules
+
+## Segment 1 (title)
+
+Last lesson kept these two at arm's length. Now we go inside the Matching Rule — the part that actually compares records — and build a custom one, since the three standard rules won't catch everything your org cares about.
+
+## Segment 2 (screenshot: exact matching rule detail)
+
+Every field in a matching rule is compared Exact or Fuzzy. Exact means character-for-character identical, case-insensitive. It's fast and precise, but brittle — Acme Corp and Acme Corporation are two different strings as far as an exact match is concerned, so this rule misses that pair entirely.
+
+## Segment 3 (screenshot: fuzzy matching rule detail)
+
+Fuzzy applies an algorithm tuned to the field — name matching tolerates abbreviations and word order, address matching tolerates Street versus St. This is the rule that actually catches Acme Corp against Acme Corporation. It catches more real duplicates, but it can also flag records that are genuinely different.
+
+## Segment 4 (steps: building a custom rule)
+
+Building a custom rule means picking fields, a method per field, and almost always leaving MatchBlank set to false — otherwise two records with an empty field will match each other, which is almost never what you want. Combine fields with AND, the same way the standard rules stay precise despite using fuzzy logic.
+
+## Segment 5 (screenshot: matching rules new rule button)
+
+You start a custom rule from Setup's Matching Rules page. New Rule, then choose the object — Account, Contact, or Lead — and you're into the field picker.
+
+## Segment 6 (screenshot: matching rule selection in duplicate rule)
+
+A matching rule does nothing by itself. A duplicate rule has to reference it, choosing which object to compare against and which matching rule evaluates that comparison. A single duplicate rule can reference more than one matching rule — say, comparing a new Lead against existing Leads and existing Contacts separately.
+
+## Segment 7 (steps: tuning the criteria)
+
+When duplicates slip through, the fix almost always lives in the matching criteria. Too strict, loosen an Exact field to Fuzzy. Too loose, AND in a second field or narrow the fuzzy algorithm. Wrong fields entirely, add a second comparison so one mismatched field doesn't let an obvious duplicate through.
+
+## Segment 8 (outro)
+
+Matching and duplicate rules catch problems at the moment of save. Next, validation rules — the broader tool for stopping bad data before it's ever saved at all.
