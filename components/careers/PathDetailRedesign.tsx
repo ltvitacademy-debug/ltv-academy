@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { CareerPath } from "@/lib/career-paths";
+import { getCareerPath } from "@/lib/career-paths";
 import { getCourse, lessonCount } from "@/lib/courses";
 import { COURSE_CERTIFICATIONS, certificationsForCourses } from "@/lib/course-certifications";
 
@@ -33,9 +34,15 @@ function parseSalaryTiers(salaryRange?: string) {
     .filter(Boolean)
     .slice(0, 3)
     .map((part, i) => {
-      const match = part.match(/^(\$[\d,]+K?(?:\s?[-–]\s?\$?[\d,]+K?)?\+?)/);
-      const value = match ? match[1] : part;
-      const detail = match ? part.slice(match[1].length).replace(/^\s*(as|at)\s*/i, "") : "";
+      const match = part.match(/\$[\d,]+(?:\.\d+)?[KM]?(?:\s?[-–]\s?\$?[\d,]+(?:\.\d+)?[KM]?)?\+?/);
+      const value = match ? match[0] : part;
+      const detail = match
+        ? (part.slice(0, match.index) + " " + part.slice((match.index ?? 0) + match[0].length))
+            .replace(/^\s*(as|at)\s+/i, "")
+            .replace(/\s+(as|at)\s*$/i, "")
+            .replace(/\s{2,}/g, " ")
+            .trim()
+        : "";
       return { label: labels[i] ?? "Range", value, detail, icon: icons[i] ?? icons[0] };
     });
 }
@@ -79,6 +86,17 @@ export default function PathDetailRedesign({ path }: { path: CareerPath }) {
   const exactStepIndex = path.targetJobs.findIndex((j) => j.toLowerCase() === path.title.toLowerCase());
   const currentStepIndex = exactStepIndex >= 0 ? exactStepIndex : path.targetJobs.findIndex((j) => j.toLowerCase().includes(path.title.toLowerCase()));
 
+  const stageLessonTotal = (slugs?: string[]) =>
+    (slugs ?? []).reduce((sum, s) => {
+      const c = getCourse(s);
+      return sum + (c ? lessonCount(c) : 0);
+    }, 0);
+  const programTotal = path.stages.reduce((sum, st) => sum + stageLessonTotal(st.courseSlugs), 0);
+  const programCourseCount = path.stages.reduce((sum, st) => sum + (st.courseSlugs?.length ?? 0), 0);
+  const startStage = path.stages.find((st) => st.label.startsWith("Start") && st.pathChoiceSlugs?.length === 1);
+  const startPath = startStage ? getCareerPath(startStage.pathChoiceSlugs![0]) : undefined;
+  const startTotal = startPath ? startPath.stages.reduce((sum, st) => sum + stageLessonTotal(st.courseSlugs), 0) : 0;
+
   return (
     <main>
       {/* Hero */}
@@ -100,7 +118,35 @@ export default function PathDetailRedesign({ path }: { path: CareerPath }) {
             <span className="text-gold">.</span>
           </h1>
           {path.subtitle && <p className="mt-3 max-w-xl text-lg font-medium text-gold-pale">{path.subtitle}</p>}
-          <p className="mt-5 max-w-xl text-parchment/80">{path.description}</p>
+
+          {path.longDescription ? (
+            <div className="mt-5 max-w-xl space-y-3 text-parchment/80">
+              {path.longDescription.map((para) => (
+                <p key={para}>{para}</p>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-5 max-w-xl text-parchment/80">{path.description}</p>
+          )}
+
+          {path.capstoneFlow && (
+            <ol className="mt-5 flex max-w-xl flex-wrap items-center gap-x-2 gap-y-2 text-sm">
+              {path.capstoneFlow.map((step, i) => (
+                <li key={step} className="flex items-center gap-2">
+                  <span className="rounded-[2px] border border-gold/40 bg-ink/40 px-3 py-1.5 font-medium text-gold-pale">{step}</span>
+                  {i < path.capstoneFlow!.length - 1 && <span className="text-gold">→</span>}
+                </li>
+              ))}
+            </ol>
+          )}
+
+          {path.afterFlow && (
+            <div className="mt-4 max-w-xl space-y-3 text-sm text-parchment/70">
+              {path.afterFlow.map((para) => (
+                <p key={para}>{para}</p>
+              ))}
+            </div>
+          )}
 
           <div className="mt-8 flex flex-wrap gap-4">
             <Link href={startHref} className="rounded-[2px] bg-gold px-6 py-3.5 text-sm font-semibold text-crimson-deep hover:bg-gold-pale transition-colors">
@@ -179,6 +225,224 @@ export default function PathDetailRedesign({ path }: { path: CareerPath }) {
         </section>
       )}
 
+      {path.specializations && (
+        <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <h2 className="display text-2xl sm:text-3xl">{path.specializations.heading}</h2>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-[2px] border-2 border-crimson bg-gold-pale p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">{path.specializations.primaryLabel}</p>
+              <ul className="mt-3 space-y-1">
+                {path.specializations.primary.map((item) => (
+                  <li key={item} className="display text-lg text-crimson-deep">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-[2px] border border-ink/15 p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone">{path.specializations.optionalLabel}</p>
+              <ul className="mt-3 space-y-1">
+                {path.specializations.optional.map((item) => (
+                  <li key={item} className="text-ink">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {path.positioning && (
+        <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+          <div className="rounded-[2px] border-l-4 border-crimson bg-gold-pale p-5 sm:p-6">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">{path.positioning.heading}</h2>
+            <div className="mt-3 max-w-2xl space-y-3 text-ink">
+              {path.positioning.paragraphs.map((para) => (
+                <p key={para}>{para}</p>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {path.certificationRoadmap && (
+        <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <p className="eyebrow mb-3">Certification roadmap</p>
+          <h2 className="display text-2xl sm:text-3xl">{path.certificationRoadmap.heading}</h2>
+          <ol className="mt-8 space-y-6">
+            {path.certificationRoadmap.steps.map((step, i, arr) => (
+              <li key={step.label} className="grid gap-3 sm:grid-cols-[11rem_1fr] sm:gap-6">
+                <div className="flex items-baseline gap-3">
+                  <span className="display text-2xl text-crimson">{String(i + 1).padStart(2, "0")}</span>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">{step.label}</p>
+                </div>
+                <ul className="grid gap-2 sm:grid-cols-2">
+                  {step.items.map((item) => (
+                    <li
+                      key={item}
+                      className={
+                        i === arr.length - 1
+                          ? "rounded-[2px] border-2 border-gold bg-crimson-deep px-4 py-3 text-sm font-semibold text-gold-pale"
+                          : "rounded-[2px] border border-ink/15 bg-gold-pale px-4 py-3 text-sm font-medium text-crimson-deep"
+                      }
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-6 max-w-2xl text-sm text-stone">{path.certificationRoadmap.notice}</p>
+        </section>
+      )}
+
+      {path.freeLab && (
+        <section aria-labelledby="free-lab" className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <div className="rounded-[2px] border-2 border-crimson bg-gold-pale p-6 sm:p-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">{path.freeLab.eyebrow}</p>
+            <h2 id="free-lab" className="display mt-3 text-3xl text-crimson-deep sm:text-4xl">
+              {path.freeLab.heading}
+            </h2>
+            <div className="mt-5 max-w-2xl space-y-4 text-ink">
+              {path.freeLab.intro.map((para) => (
+                <p key={para}>{para}</p>
+              ))}
+            </div>
+            <p className="mt-6 text-sm font-semibold uppercase tracking-[0.14em] text-crimson-deep">{path.freeLab.listLabel}</p>
+            <ul className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
+              {path.freeLab.items.map((item) => (
+                <li key={item} className="flex items-start gap-3 text-ink">
+                  <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-crimson" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-7 flex flex-wrap gap-3">
+              {path.freeLab.buttons.map((b) => (
+                <a
+                  key={b.url}
+                  href={b.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-parchment hover:bg-crimson-deep"
+                >
+                  {b.label} <span aria-hidden="true">↗</span>
+                  <span className="sr-only"> (opens in a new tab)</span>
+                </a>
+              ))}
+            </div>
+            <div className="mt-6 max-w-2xl space-y-2 text-sm text-stone">
+              {path.freeLab.notes.map((note) => (
+                <p key={note}>{note}</p>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {path.milestones && (
+        <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <p className="eyebrow mb-3">Program</p>
+          <h2 className="display text-2xl sm:text-3xl">Program total and milestones</h2>
+          <p className="mt-4 text-ink">
+            <span className="display text-4xl text-crimson">{programTotal}</span> lessons across {programCourseCount} courses in{" "}
+            {path.stages.length} numbered sections
+          </p>
+          {startPath && startTotal > 0 && (
+            <p className="mt-2 text-sm text-stone">
+              Plus {startTotal} lessons in the shared start, {startPath.title}, which comes first.
+            </p>
+          )}
+          <dl className="mt-5 grid gap-4 sm:grid-cols-3">
+            {path.milestones.map((m) => (
+              <div key={m.label} className="rounded-[2px] border border-ink/15 p-4">
+                <dt className="text-xs uppercase tracking-[0.14em] text-stone">{m.label}</dt>
+                <dd className="mt-2 font-semibold text-crimson">{m.value}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-3 text-sm text-stone">Approximate milestones only — not a promise of employment or of any certification result.</p>
+        </section>
+      )}
+
+      {path.labRequirement && (
+        <section aria-labelledby="lab-requirement" className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <div className="rounded-[2px] border-2 border-gold bg-crimson-deep p-6 text-gold-pale sm:p-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">{path.labRequirement.eyebrow}</p>
+            <h2 id="lab-requirement" className="display mt-3 text-3xl text-gold-pale sm:text-4xl">
+              {path.labRequirement.heading}
+            </h2>
+            <div className="mt-5 max-w-2xl space-y-4 text-gold-pale/90">
+              {path.labRequirement.intro.map((para) => (
+                <p key={para}>{para}</p>
+              ))}
+            </div>
+
+            <div className="mt-6 max-w-md rounded-[2px] border border-gold/50 p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">{path.labRequirement.optionLabel}</p>
+              <ul className="mt-3 space-y-1">
+                {path.labRequirement.optionLines.map((line, i) => (
+                  <li key={line} className={i === 0 ? "display text-xl text-gold-pale" : "text-gold-pale/90"}>
+                    {line}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <a
+              href={path.labRequirement.buttonUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-block rounded-[2px] bg-gold px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-crimson-deep hover:bg-gold-pale"
+            >
+              {path.labRequirement.buttonLabel} <span aria-hidden="true">↗</span>
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+
+            <p className="mt-5 max-w-2xl text-sm text-gold-pale/80">
+              <strong className="font-semibold text-gold">IMPORTANT:</strong> {path.labRequirement.importantNote}
+            </p>
+
+            <div className="mt-8 max-w-2xl border-t border-gold/30 pt-6">
+              <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-gold">{path.labRequirement.whenHeading}</h3>
+              <p className="mt-3 text-gold-pale/90">{path.labRequirement.whenText}</p>
+            </div>
+
+            <p className="mt-6 text-xs text-gold-pale/70">{path.labRequirement.verifiedNote}</p>
+          </div>
+        </section>
+      )}
+
+      {path.compensation && (
+        <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <p className="eyebrow mb-3">Compensation</p>
+          <h2 className="display text-2xl sm:text-3xl">{path.compensation.heading}</h2>
+          <div className="mt-4 max-w-2xl space-y-4 text-ink">
+            {path.compensation.paragraphs.map((para) => (
+              <p key={para}>{para}</p>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {path.progression && (
+        <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <p className="eyebrow mb-3">Progression</p>
+          <h2 className="display text-2xl sm:text-3xl">{path.progression.heading}</h2>
+          <p className="mt-4 max-w-3xl font-medium text-ink">{path.progression.ladder}</p>
+          <dl className="mt-5 grid gap-4 sm:grid-cols-3">
+            {path.progression.levels.map((level) => (
+              <div key={level.label} className="rounded-[2px] border border-ink/15 p-4">
+                <dt className="text-xs uppercase tracking-[0.14em] text-stone">{level.label}</dt>
+                <dd className="mt-2 font-semibold text-crimson">{level.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+
       {/* Curriculum + sidebar */}
       <div id="curriculum" className="bg-[color-mix(in_srgb,var(--color-parchment)_92%,var(--color-ink))] py-14 sm:py-20">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_20rem]">
@@ -223,6 +487,21 @@ export default function PathDetailRedesign({ path }: { path: CareerPath }) {
                               </div>
                               <p className="text-xs text-stone">{lessonCount(course)} lessons</p>
                               <p className="mt-1 text-sm text-stone line-clamp-2">{course.tagline}</p>
+                              {path.courseDetails?.[course.slug] && (
+                                <p className="mt-2 text-sm text-ink">{path.courseDetails[course.slug]}</p>
+                              )}
+                              {path.courseDetailLists?.[course.slug]?.map((list) => (
+                                <div key={list.heading} className="mt-2">
+                                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-crimson-deep">{list.heading}</p>
+                                  <ul className="mt-1 flex flex-wrap gap-1.5">
+                                    {list.items.map((item) => (
+                                      <li key={item} className="rounded-[2px] border border-ink/15 px-1.5 py-0.5 text-xs text-ink">
+                                        {item}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              ))}
                               <span className="mt-1.5 inline-block text-xs font-semibold text-crimson-deep group-hover:underline">View course →</span>
                             </div>
                           </Link>
@@ -232,12 +511,16 @@ export default function PathDetailRedesign({ path }: { path: CareerPath }) {
 
                     {stage.pathChoiceSlugs && stage.pathChoiceSlugs.length > 0 && (
                       <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                        {stage.pathChoiceSlugs.map((choiceSlug) => (
-                          <Link key={choiceSlug} href={`/careers/${choiceSlug}`} className="group rounded-[2px] border border-dashed border-ink/25 p-4 hover:border-crimson">
-                            <p className="text-xs uppercase tracking-[0.14em] text-stone">Choose one</p>
-                            <h4 className="display mt-1 text-base group-hover:text-crimson">{choiceSlug.replace(/-/g, " ")}</h4>
-                          </Link>
-                        ))}
+                        {stage.pathChoiceSlugs.map((choiceSlug) => {
+                          const choice = getCareerPath(choiceSlug);
+                          return (
+                            <Link key={choiceSlug} href={`/careers/${choiceSlug}`} className="group rounded-[2px] border border-dashed border-ink/25 p-4 hover:border-crimson">
+                              <p className="text-xs uppercase tracking-[0.14em] text-stone">Choose one</p>
+                              <h4 className="display mt-1 text-base group-hover:text-crimson">{choice?.title ?? choiceSlug.replace(/-/g, " ")}</h4>
+                              {choice?.salaryRange && <p className="mt-1 text-sm text-stone">{choice.salaryRange}</p>}
+                            </Link>
+                          );
+                        })}
                       </div>
                     )}
 

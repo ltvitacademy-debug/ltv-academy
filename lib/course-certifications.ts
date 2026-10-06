@@ -61,6 +61,64 @@ export const COURSE_CERTIFICATIONS: Record<string, CourseCertInfo> = {
 
   // Oracle
   "oracle-fusion-cloud-and-erp-foundations": { logo: "oracle" },
+  "accounting-fundamentals-for-oracle-professionals": { logo: "oracle" },
+  "oracle-fusion-enterprise-structures-and-chart-of-accounts": { logo: "oracle" },
+  "oracle-fusion-general-ledger": { logo: "oracle" },
+  "oracle-fusion-accounts-payable": { logo: "oracle" },
+  "oracle-fusion-accounts-receivable": { logo: "oracle" },
+  "oracle-fusion-cash-management": { logo: "oracle" },
+  "oracle-fusion-fixed-assets": { logo: "oracle" },
+  "oracle-fusion-expenses": { logo: "oracle" },
+  "oracle-fusion-procure-to-pay": { logo: "oracle" },
+  "oracle-fusion-order-to-cash": { logo: "oracle" },
+  "oracle-fusion-subledger-accounting": { logo: "oracle" },
+  "oracle-financial-reporting": { logo: "oracle" },
+  "sql-for-oracle-financials": { logo: "oracle" },
+  "fbdi-and-adfdi": { logo: "oracle" },
+  "oracle-fusion-security": { logo: "oracle" },
+  "oracle-fusion-implementation-lifecycle": { logo: "oracle" },
+  "troubleshooting-oracle-financials": { logo: "oracle" },
+
+  // Tableau (no official logo asset sourced yet — certification text only, no fabricated mark)
+  tableau: { certification: "Tableau Certified Data Analyst" },
+
+  // Azure data/AI/database roles
+  "azure-database-administrator": { logo: "azure", certification: "DP-300: Azure Database Administrator Associate" },
+  "azure-data-science": { logo: "azure", certification: "DP-100: Azure Data Scientist Associate" },
+  "azure-ai-and-cloud-for-ai-engineers": { logo: "azure", certification: "AI-102: Azure AI Engineer Associate" },
+
+  // AWS
+  "aws-data-engineering": { logo: "aws", certification: "AWS Certified Data Engineer – Associate" },
+  "aws-data-science": { logo: "aws", certification: "AWS Certified Machine Learning – Specialty" },
+
+  // Databricks
+  "advanced-databricks-specialization": { logo: "databricks", certification: "Databricks Certified Data Engineer Professional" },
+
+  // Microsoft Purview / Fabric governance (no standalone public exam yet — logo only)
+  "microsoft-purview": { logo: "microsoft" },
+  "microsoft-fabric-data-governance": { logo: "microsoft" },
+  "power-bi-governance": { logo: "microsoft" },
+  "cloud-data-governance-azure-and-aws": { logo: "azure" },
+  "databricks-unity-catalog-governance": { logo: "databricks" },
+  "snowflake-data-governance": { logo: "snowflake" },
+
+  // SQL Server DBA track (no standalone current DBA exam beyond DP-300 above — logo only)
+  "t-sql-for-database-administrators": { logo: "sqlserver" },
+  "sql-server-database-administration": { logo: "sqlserver" },
+  "sql-server-performance-tuning": { logo: "sqlserver" },
+  "sql-server-ha-backup-and-disaster-recovery": { logo: "sqlserver" },
+
+  // Docker (AI-engineering deployment course, same real cert as the DevOps track)
+  "docker-and-deployment-for-ai-applications": { logo: "docker", certification: "Docker Certified Associate" },
+
+  // Salesforce (course-level logos only — this path's real certification names come from
+  // its own certificationRoadmap, not invented here, to avoid duplicating/approximating them)
+  "programming-foundations-for-salesforce": { logo: "salesforce" },
+  "apex-programming": { logo: "salesforce" },
+  "lightning-web-components": { logo: "salesforce" },
+  "salesforce-apis": { logo: "salesforce" },
+  "salesforce-dx": { logo: "salesforce" },
+  "salesforce-and-crm-foundations": { logo: "salesforce" },
 };
 
 /** Collects the deduplicated set of real certifications implied by a list of course slugs. */
