@@ -1,0 +1,21 @@
+# Script — Cancelling and Reversing Invoices
+
+## Segment 1 (title)
+
+Last lesson ended on a cliffhanger: what do you actually do when an ordinary edit isn't allowed, or isn't the right tool? This closing lesson covers the two heavier operations Payables provides - cancelling an invoice entirely, and reversing specific distributions - and why they're genuinely different tools.
+
+## Segment 2 (steps)
+
+Cancelling sets the invoice and installment amounts to zero, reverses all its distributions, and reverses any purchase order matches - undoing it as if it never happened. It's all or nothing at the invoice level, and it only works on an unpaid invoice that's either unapproved, or approved with no effective payments or posting holds against it. Once cancelled, it disappears from liability reporting entirely.
+
+## Segment 3 (steps)
+
+Reversing a distribution works at a much more granular level. It creates a new offsetting distribution with a negative amount matching the one being reversed, and if that distribution was matched to a purchase order, it updates the PO's quantity billed too. This undoes one piece of an invoice's accounting without touching the rest or forcing the whole document to be re-entered.
+
+## Segment 4 (steps)
+
+So which do you reach for? Cancel the whole invoice when it shouldn't exist at all - a duplicate entry, or one entered against the wrong supplier. Reverse a specific distribution when the invoice itself is legitimate but one piece of its accounting needs correcting.
+
+## Segment 5 (outro)
+
+Both respect the same restriction from last lesson: you generally can't touch a paid invoice this way either. Once a payment exists, genuinely correcting history needs the void and reissue tools on the payment side instead, which Chapter 6 covers. That closes Chapter 4. Up next, Chapter 5: Matching and Special Invoices, starting with two-way matching.

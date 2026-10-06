@@ -1,0 +1,21 @@
+# Script — Payables Options and System Options
+
+## Segment 1 (title)
+
+Item two from last lesson's map of seven. Older Payables documentation talks about Financial Options, Payables Options, and System Options as separate screens. Fusion consolidates all of that into one business-unit-scoped page: Manage Payables System Options. Let's see what's actually on it.
+
+## Segment 2 (steps)
+
+That one page breaks into three main areas. Invoice options cover entry and matching defaults, discounts, prepayments, and approvals. Payment options cover payment-related defaults. Tax options cover how this business unit's invoices calculate transaction tax. All three live on the same page, scoped per business unit.
+
+## Segment 3 (steps)
+
+The setting you'll meet first in practice is tolerances. They define how much variance is allowed between what an invoice says and what the matched purchase order or receipt says before Payables raises a hold - quantity tolerances for quantity billed versus ordered or received, and price or amount tolerances for price variance. A 5% tolerance against a 3% variance validates clean. Against a 7% variance, it holds.
+
+## Segment 4 (steps)
+
+Discount and prepayment settings work the same way - as defaults, not manual decisions. Always take discount, exclude tax or freight from the discountable base, and a discount allocation method all live in invoice options. Prepayment defaults, like payment terms and settlement days, apply automatically whenever someone creates a prepayment invoice.
+
+## Segment 5 (outro)
+
+Remember that tolerances live in setup, not on the invoice itself - Chapter 4 and Chapter 5 both come back to this constantly. Up next, lesson five: payment terms, and how Payables actually calculates a due date.

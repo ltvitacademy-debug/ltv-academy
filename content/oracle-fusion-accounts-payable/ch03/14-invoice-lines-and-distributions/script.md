@@ -1,0 +1,21 @@
+# Script — Invoice Lines and Distributions
+
+## Segment 1 (title)
+
+Last lesson's header said who the invoice is from and how much it totals. It said nothing about what was actually purchased or which GL account absorbs the cost. That's the job of invoice lines, and the distributions generated from them.
+
+## Segment 2 (steps)
+
+An invoice can carry several lines, each with a type. Item lines are the actual goods or services billed. Freight lines are shipping charges. Miscellaneous lines are other charges like an installation fee. Tax and withholding tax lines also exist, generated automatically or entered manually.
+
+## Segment 3 (steps)
+
+Rather than manually deciding which account absorbs a shipping charge, freight and miscellaneous lines can be allocated to the item lines they relate to. Selecting allocate all lines spreads the charge proportionally across existing item lines, using the same account combinations those lines already use - so one shipping charge across five different items doesn't mean five manual coding decisions.
+
+## Segment 4 (code)
+
+A distribution is the line's actual accounting breakdown - which GL account, and how much. One line often produces one distribution, but it can produce several, say a 60/40 split across two departments. And the sum of all distributions has to tie back to the invoice total - that's enforced during validation, and a mismatch is one of the specific holds it can raise.
+
+## Segment 5 (outro)
+
+Take Vantree's invoice INV-4471: thirty-eight hundred dollars on an item line, two hundred on a freight line, allocated to the same maintenance account - two distributions summing to the full four thousand. Up next, lesson fifteen: distribution sets, which automate this coding for invoices that look the same every time.

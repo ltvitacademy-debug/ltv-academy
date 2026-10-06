@@ -1,0 +1,21 @@
+# Script — Invoice Validation
+
+## Segment 1 (title)
+
+Every lesson in Chapter 3 ended with some version of "but it still needs to pass validation." This is the lesson that finally explains what that means. Validation is the single process standing between a saved invoice and one that's allowed to move toward approval, accounting, and payment.
+
+## Segment 2 (steps)
+
+Invoice status is specifically what validation controls, and running Validate triggers real work, not a cosmetic check. It generates distributions from the lines and any distribution set. It calculates tax through Oracle Fusion Tax. It calculates withholding where applicable. It checks matching variances against tolerances. It checks that the GL period is open. It checks currency conversion data for foreign invoices. And for budgetary control organizations, it reserves funds.
+
+## Segment 3 (steps)
+
+Notice how much ground one click covers - tax, matching, currency, GL period, and funds all get checked in the same pass. That's exactly why one invoice can come back with several holds stacked at once: a price variance, a closed period, and an insufficient funds issue are all plausible on the same unlucky invoice, because validation checks all of these independently rather than stopping at the first failure.
+
+## Segment 4 (steps)
+
+So what does Validated actually certify? Distributions exist and generated correctly. Tax and withholding are calculated. Matching variances fall within tolerance. The GL period is open. Currency data is sound. No unresolved holds remain. It does not mean the invoice was approved, and it does not mean it was paid - those are separate statuses entirely.
+
+## Segment 5 (outro)
+
+Validated means the invoice itself is clean, nothing more. Up next, lesson nineteen: holds and hold releases, what happens when validation finds a problem instead.

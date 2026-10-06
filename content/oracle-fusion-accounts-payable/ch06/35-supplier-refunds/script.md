@@ -1,0 +1,29 @@
+# Lesson 35 — Supplier Refunds · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5-3 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+This whole chapter has been about money flowing out to suppliers. This lesson is the reverse: money flowing back in.
+
+## S2 · STEPS
+
+A supplier refund happens when the supplier owes the organization more than any upcoming invoice will absorb. Three common causes: an unused prepayment for work that got cancelled, a credit memo larger than any open invoice, or an outright overpayment sent by mistake.
+
+## S3 · STEPS
+
+A refund isn't processed like an outbound payment. Payables has a Record Refund action that captures the money the supplier actually sends back — usually a check or wire — and applies it against the specific credit memo or prepayment that created the credit in the first place.
+
+## S4 · CODE
+
+Here's an illustrative example. BrightPath Consulting Group had its twenty-thousand-dollar engagement cancelled after only the six-thousand-dollar prepayment had been paid. With no invoice left to apply it against, BrightPath sends a six-thousand-dollar check back.
+
+## S5 · CODE
+
+That refund gets recorded against the original prepayment, and the supplier's open credit balance returns to zero. Without recording it, that six thousand dollars would sit on the books indefinitely as an unapplied credit, making it look like money is still owed when it's already been returned.
+
+## S6 · OUTRO
+
+That closes Chapter 6 on payments. Next up, Chapter 7: Accounting, Reconciliation and Close, starting with how Payables actually creates the accounting behind every transaction we've covered.

@@ -1,0 +1,21 @@
+# Script — Invoice Approvals
+
+## Segment 1 (title)
+
+Validation certifies an invoice is internally clean. It says nothing about whether a human is willing to sign off on paying it. That's approval status, and it runs on a completely different engine - a workflow built on BPM and human workflow services, not the validation logic from the last two lessons.
+
+## Segment 2 (steps)
+
+Oracle ships predefined approval rules, extendable using Approval Management extensions of SOA Suite and Human Workflow - the same underlying technology used for other business documents, not something built only for Payables. Rules live in a rule set, administered through the BPM Worklist application, using the task FinApInvoiceApproval specifically for invoice approval configuration.
+
+## Segment 3 (steps)
+
+Not every invoice even needs approval - that's its own configuration decision. Some organizations exempt invoices fully matched to an already-approved purchase order, since the PO got its sign-off upstream. That's why approval status has a Not Required value, not just approved or rejected.
+
+## Segment 4 (steps)
+
+Rules route based on hierarchies defined in HCM - supervisory, job-level, or position-based - so the approver is derived from where someone sits in the organization, not a hardcoded name. Sequential routing asks approvers one after another; parallel routing asks several at once, useful when both a department manager and a finance reviewer need to sign off and the order doesn't matter.
+
+## Segment 5 (outro)
+
+A rejection is a distinct outcome, not a stall - it means someone with authority said no, and the invoice needs correcting and resubmitting. Brightfield's rule routes any non-PO invoice over $2,500 sequentially, manager then finance reviewer; a fully matched PO invoice skips the whole workflow instead. Up next, lesson twenty-one: invoice adjustments and corrections, for when something needs to change after the fact.
