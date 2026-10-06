@@ -1,0 +1,21 @@
+# Script — Requesting and Approving Access
+
+## Segment 1 (title)
+
+Lesson nine introduced self-request as one of three provisioning methods. This lesson covers the human workflow around it — what happens between a user clicking request, and that role actually showing up on their account.
+
+## Segment 2 (steps)
+
+When a role mapping is marked self-requestable, a matching user can request it themselves through a self-service page. That request doesn't grant access immediately — it routes to an approval workflow, to one approver or a chain of them, and only once approved does the role actually get provisioned. Who approves matters for segregation of duties: at Castellan Robotics, an Accounts Payable Specialist request routes to the AP Supervisor, not to the requester's own manager if that manager also holds payment-approval access — avoiding a self-approving arrangement.
+
+## Segment 3 (steps)
+
+Many higher-risk roles — payment approval, chart of accounts maintenance, security administration itself — are deliberately not self-requestable. For those, the request originates outside self-service entirely: a formal ticket or form, reviewed against actual job need, provisioned manually by an administrator once approved. That extra friction is intentional, a control, not an oversight.
+
+## Segment 4 (steps)
+
+Every request and approval should leave a record — who requested it, who approved it, when, and why. That's the evidence an auditor relies on to answer why someone has a given access, and it's what makes the security reports from lesson fourteen actually useful instead of raising unanswered questions. A request with no documented justification is itself a finding in many audits, even when the access turns out fine.
+
+## Segment 5 (outro)
+
+Self-requested access still clears an approval workflow with a deliberately chosen approver; higher-risk roles skip self-service for a formal, documented request instead. Up next, lesson seventeen: security troubleshooting basics.

@@ -1,0 +1,21 @@
+# Script — Data Security and Data Access Sets
+
+## Segment 1 (title)
+
+Chapter one defined data security in general terms. Chapter two is about the specific mechanics Oracle Fusion Financials uses to scope data — starting with the tool that controls access to ledgers: the data access set.
+
+## Segment 2 (steps)
+
+A data security policy pairs a condition with a set of allowed actions, attached to a role. Concretely, that condition is often a filter, like rows where the business unit matches the user's assigned business unit. When a role carrying that policy is provisioned, the filter applies automatically every time the user queries that data — they never see or write it themselves.
+
+## Segment 3 (steps)
+
+A data access set is the specific mechanism General Ledger uses to secure access to one or more ledgers. Every ledger automatically gets a data access set with full access by default, but an implementation can define narrower ones restricting a user to a single ledger or ledger set, read only versus read and write, and even specific balancing segment values within a ledger. At Castellan Robotics, a regional controller for the East Division gets a data access set scoped to just that division's balancing segment value — one ledger, selectively visible.
+
+## Segment 4 (steps)
+
+A data access set isn't provisioned alone — it's attached to a data role or assigned directly through Manage Data Access for Users, which you'll use hands-on in lesson eight. A General Ledger job role plus a specific data access set together determine exactly which ledgers and balancing segments that person can work with. Payables and Receivables mostly scope data through business unit instead, which is lesson seven — same underlying mechanism, different dimension.
+
+## Segment 5 (outro)
+
+A data access set is General Ledger's tool for scoping data security, down to a ledger, a ledger set, or a single balancing segment value. Up next, lesson seven: business unit and ledger access.
