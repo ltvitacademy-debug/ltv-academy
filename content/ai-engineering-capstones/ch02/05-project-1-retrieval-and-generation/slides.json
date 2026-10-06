@@ -1,0 +1,59 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Engineering Capstones · Chapter Two",
+    "titlePlain": "Retrieval & ",
+    "titleEmphasis": "Generation",
+    "titleSuffix": "",
+    "subtitle": "Lesson 5 · Production RAG Knowledge Assistant"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The pipeline, end to end",
+    "titlePlain": "Question in, ",
+    "titleEmphasis": "cited",
+    "titleSuffix": " answer out",
+    "steps": [
+      { "label": "EMBED THE QUESTION", "sub": "same embedding model used at ingestion time" },
+      { "label": "RETRIEVE FROM QDRANT", "sub": "the closest chunks, with their source metadata" },
+      { "label": "GENERATE WITH CLAUDE", "sub": "answer from only those chunks, with citations" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1 — retrieval with query_points",
+    "code": "query_vector = embed(question)  # same model as ingestion\n\nresults = client.query_points(\n    collection_name=\"docs\",\n    query=query_vector,\n    limit=5,\n    with_payload=True,\n)\nchunks = [p.payload for p in results.points]",
+    "caption": "query_points is Qdrant's current method — the older search() call is deprecated and being removed."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 — a citable context block",
+    "code": "context = \"\\n\\n\".join(\n    f\"[{i+1}] (source: {c['source']})\\n{c['text']}\"\n    for i, c in enumerate(chunks)\n)\nsystem_prompt = (\n    \"Answer using only the numbered context below. \"\n    \"Cite sources like [1]. Say so if the answer isn't in the context.\"\n)",
+    "caption": "The last instruction matters as much as retrieval — it gives the model permission to say \"I don't know.\""
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 3 — generation with the Messages API",
+    "code": "from anthropic import Anthropic\n\nclient_llm = Anthropic()\nresponse = client_llm.messages.create(\n    model=\"claude-opus-5-5\",\n    max_tokens=1024,\n    system=system_prompt,\n    messages=[{\"role\": \"user\", \"content\": f\"{context}\\n\\nQuestion: {question}\"}],\n)\nanswer = response.content[0].text",
+    "caption": "Anthropic() with no arguments reads the API key from ANTHROPIC_API_KEY — never hardcode a key in source."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why citations matter",
+    "titlePlain": "A citation is a ",
+    "titleEmphasis": "debugging",
+    "titleSuffix": " tool",
+    "steps": [
+      { "label": "WRONG CHUNKS CAME BACK", "sub": "that's a retrieval problem — fix chunking or top-k" },
+      { "label": "RIGHT CHUNKS, WRONG ANSWER", "sub": "that's a generation problem — fix the prompt" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 6",
+    "titlePlain": "Evaluation & ",
+    "titleEmphasis": "Tuning",
+    "titleSuffix": "",
+    "subtitle": "Measuring retrieval and answer quality with real numbers."
+  }
+]

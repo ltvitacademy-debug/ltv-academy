@@ -28,19 +28,19 @@ export const AI_ENGINEERING_CAPSTONES_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Capstone Overview",
     lessons: [
-      L(1, "program-overview-and-portfolio-strategy", "Program Overview & Portfolio Strategy"),
-      L(2, "choosing-your-project-emphasis", "Choosing Your Project Emphasis"),
+      L(1, "program-overview-and-portfolio-strategy", "Program Overview & Portfolio Strategy", { contentDir: "ch01/01-program-overview-and-portfolio-strategy" }),
+      L(2, "choosing-your-project-emphasis", "Choosing Your Project Emphasis", { contentDir: "ch01/02-choosing-your-project-emphasis" }),
     ],
   },
   {
     n: 2,
     title: "Project 1 — Production RAG Knowledge Assistant",
     lessons: [
-      L(3, "project-1-kickoff", "Project 1 Kickoff"),
-      L(4, "project-1-ingestion-and-chunking-pipeline", "Ingestion & Chunking Pipeline"),
-      L(5, "project-1-retrieval-and-generation", "Retrieval & Generation"),
-      L(6, "project-1-evaluation-and-tuning", "Evaluation & Tuning"),
-      L(7, "project-1-deployment-and-wrap-up", "Deployment & Wrap-Up"),
+      L(3, "project-1-kickoff", "Project 1 Kickoff", { contentDir: "ch02/03-project-1-kickoff" }),
+      L(4, "project-1-ingestion-and-chunking-pipeline", "Ingestion & Chunking Pipeline", { contentDir: "ch02/04-project-1-ingestion-and-chunking-pipeline" }),
+      L(5, "project-1-retrieval-and-generation", "Retrieval & Generation", { contentDir: "ch02/05-project-1-retrieval-and-generation" }),
+      L(6, "project-1-evaluation-and-tuning", "Evaluation & Tuning", { contentDir: "ch02/06-project-1-evaluation-and-tuning" }),
+      L(7, "project-1-deployment-and-wrap-up", "Deployment & Wrap-Up", { contentDir: "ch02/07-project-1-deployment-and-wrap-up" }),
     ],
   },
   {

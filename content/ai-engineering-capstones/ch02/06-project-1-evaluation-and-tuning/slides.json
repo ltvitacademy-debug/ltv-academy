@@ -1,0 +1,53 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Engineering Capstones · Chapter Two",
+    "titlePlain": "Evaluation & ",
+    "titleEmphasis": "Tuning",
+    "titleSuffix": "",
+    "subtitle": "Lesson 6 · Production RAG Knowledge Assistant"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why measure, not guess",
+    "titlePlain": "\"It felt right\" is ",
+    "titleEmphasis": "not",
+    "titleSuffix": " an evaluation",
+    "steps": [
+      { "label": "A VIBE", "sub": "\"I tried a few questions and it looked fine\"" },
+      { "label": "A MEASUREMENT", "sub": "\"recall@5 is 80%, judge score averages 4.1/5\"" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Measurement 1 — retrieval recall@k",
+    "code": "hits = 0\nfor item in eval_set:\n    results = client.query_points(\n        collection_name=\"docs\", query=embed(item[\"question\"]), limit=5\n    )\n    sources = [p.payload[\"source\"] for p in results.points]\n    hits += item[\"expected_source\"] in sources\n\nrecall_at_5 = hits / len(eval_set)",
+    "caption": "A low recall@5 means the problem is upstream of generation — no prompt wording fixes a retrieval miss."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Measurement 2 — LLM-as-judge",
+    "code": "judge_prompt = (\n    f\"Question: {item['question']}\\nExpected: {item['expected_answer']}\\n\"\n    f\"Generated: {generated}\\nScore 1-5 for correctness and grounding. Reply with only the number.\"\n)\nscore = client_llm.messages.create(\n    model=\"claude-opus-5-5\", max_tokens=5,\n    messages=[{\"role\": \"user\", \"content\": judge_prompt}],\n).content[0].text",
+    "caption": "A cheap proxy for human grading, not a replacement — spot-check a handful of judge scores by hand."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Tuning levers, when a number is low",
+    "titlePlain": "Three places to ",
+    "titleEmphasis": "pull",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "CHUNK SIZE / OVERLAP", "sub": "keep multi-part answers intact in one chunk" },
+      { "label": "TOP-K", "sub": "give the right chunk more chances to appear" },
+      { "label": "RE-RANKING", "sub": "retrieve 20, narrow to the best 5 before generating" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 7",
+    "titlePlain": "Deployment & ",
+    "titleEmphasis": "Wrap-Up",
+    "titleSuffix": "",
+    "subtitle": "Containerizing the assistant and finishing the portfolio README."
+  }
+]
