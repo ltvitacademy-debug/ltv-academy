@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { CAREER_PATHS } from "@/lib/career-paths";
+import DestinationIcon from "@/components/DestinationIcon";
 
 const FIRST_CHOICE_COUNT = CAREER_PATHS.filter((p) => !p.isDestination).length;
 const DESTINATION_COUNT = CAREER_PATHS.filter((p) => p.isDestination).length;
@@ -59,33 +60,62 @@ export default function CareerPathsPage() {
         ))}
       </ol>
 
-      <div className="mt-20">
-        <p className="eyebrow mb-4">The long road</p>
-        <h2 className="display max-w-2xl text-3xl sm:text-4xl">
-          {destinationPaths.length} <em className="text-crimson">destinations</em>, not first choices.
+      <div className="mt-20 rounded-[2px] border border-gold/40 bg-crimson-deep px-5 py-14 sm:px-10 sm:py-16">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold">The long road</p>
+        <h2 className="display mt-4 max-w-2xl text-3xl text-parchment sm:text-4xl">
+          {destinationPaths.length} <em className="text-gold-pale">destinations</em>, not first choices.
         </h2>
-        <p className="mt-4 max-w-2xl text-stone">
+        <p className="mt-4 max-w-2xl text-gold-pale/70">
           These aren't where a beginner enrolls — they're shown so students
           can see where the {firstChoicePaths.length} paths above eventually converge.
         </p>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2">
-          {destinationPaths.map((p) => (
-            <Link
-              key={p.slug}
-              href={`/careers/${p.slug}`}
-              className="group rounded-[2px] border border-ink/15 bg-crimson-deep p-7 hover:border-gold"
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">
-                Destination path
-              </p>
-              <h3 className="display mt-3 text-2xl text-gold-pale group-hover:text-gold">
-                {p.title}
-              </h3>
-              <p className="mt-3 text-sm text-gold-pale/80">{p.description}</p>
-              {p.salaryRange && <p className="mt-4 text-sm font-semibold text-gold">{p.salaryRange}</p>}
-            </Link>
-          ))}
+        <div className="mt-12 grid gap-px overflow-hidden rounded-[2px] border border-gold/25 bg-gold/25 sm:grid-cols-2">
+          {destinationPaths.map((p, i) => {
+            const isLastOdd = destinationPaths.length % 2 === 1 && i === destinationPaths.length - 1;
+            const topRole = p.targetJobs[p.targetJobs.length - 1];
+            return (
+              <Link
+                key={p.slug}
+                href={`/careers/${p.slug}`}
+                className={`group relative flex flex-col overflow-hidden bg-crimson-deep p-7 transition-colors hover:bg-[#6b1313] sm:p-8 ${isLastOdd ? "sm:col-span-2" : ""}`}
+              >
+                <span className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-gold/10 blur-3xl transition-opacity group-hover:bg-gold/20" />
+
+                <div className="relative flex items-start justify-between gap-4">
+                  <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-gold-pale shadow-[0_0_0_1.5px_var(--color-gold)]">
+                    <DestinationIcon slug={p.slug} className="h-6 w-6" />
+                  </span>
+                  <p className="pt-1 text-right text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-gold/70">
+                    Destination path
+                    <span className="mt-0.5 block text-sm tracking-normal text-gold">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                  </p>
+                </div>
+
+                <h3 className="display relative mt-5 text-2xl text-gold-pale group-hover:text-gold">
+                  {p.title}
+                </h3>
+                <p className="relative mt-3 text-sm leading-relaxed text-gold-pale/70">{p.description}</p>
+
+                <div className="relative mt-auto flex items-end justify-between gap-4 border-t border-gold/20 pt-5">
+                  <div>
+                    {p.salaryRange && (
+                      <p className="font-semibold tabular-nums text-gold">{p.salaryRange.split(" · ")[0]}</p>
+                    )}
+                    {topRole && <p className="mt-1 text-xs text-gold-pale/60">{topRole}</p>}
+                  </div>
+                  <span className="inline-flex flex-shrink-0 items-center gap-2 rounded-[2px] bg-gold px-4 py-2 text-sm font-semibold text-crimson-deep transition-colors group-hover:bg-gold-pale">
+                    View path
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
 
