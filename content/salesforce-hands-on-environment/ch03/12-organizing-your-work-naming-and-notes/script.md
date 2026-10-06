@@ -1,0 +1,25 @@
+# Script — Organizing Your Work: Naming and Notes
+
+## Segment 1 (title)
+
+You've committed to one permanent org. Now let's make sure it stays usable a year from now instead of turning into an unlabeled mess of test records.
+
+## Segment 2 (screenshot: Name field)
+
+This is the same Name field from Lesson 3's Create Playground dialog. The habit of naming things clearly starts right here, at org creation — and it should carry into everything you build inside the org afterward too, not just the org's own label.
+
+## Segment 3 (steps: naming convention)
+
+A naming convention that actually scales: prefix records or custom objects by the course they belong to, like "SF-Admin-" or "T-SQL-". Date your test data — "Test Account 2026-10" means something to you six months from now in a way "Test Account 3" never will. And periodically delete what you're genuinely done with; a permanent org still benefits from occasional cleanup.
+
+## Segment 4 (screenshot: Notes in App Launcher)
+
+For actual notes about what something is for, Salesforce has a real, built-in tool: Notes. It shows up right in the App Launcher's All Items list — a genuine object for jotting down context on a record without ever leaving the org.
+
+## Segment 5 (screenshot: Data Import Wizard field mapping)
+
+This same naming discipline matters beyond individual records too. When you import data later in this path, the Data Import Wizard's field mapping step only goes smoothly when your source file's column names are clear and consistent in the first place.
+
+## Segment 6 (outro)
+
+Your org is organized and built to last. Next: putting it to real work, using Trailhead's own modules and superbadges alongside everything LTV builds.

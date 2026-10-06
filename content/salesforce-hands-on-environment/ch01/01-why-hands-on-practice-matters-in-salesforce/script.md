@@ -1,0 +1,17 @@
+# Script — Why Hands-On Practice Matters in Salesforce
+
+## Segment 1 (title)
+
+Welcome to Hands-On Salesforce Environment. Before any other lesson in this career path makes sense, you need somewhere real to click — not a video, not a screenshot, an actual Salesforce org you control. This lesson is about why that matters so much.
+
+## Segment 2 (steps: why practice beats reading)
+
+Salesforce is a clicks-first tool. Most of an admin's real day is spent configuring things in Setup, not reading about them. The certification exam itself is scenario-based — it describes a business problem and asks what you'd click, not what a term means. And in an interview, being able to find a Setup page fast, without hunting around, is exactly the kind of muscle memory that separates someone who's practiced from someone who's only read.
+
+## Segment 3 (steps: what this chapter sets up)
+
+Here's what this chapter actually sets up. First, a free Trailhead account — takes under five minutes, no credit card required. Second, a Trailhead Playground — not a trial, not a sandbox copy, a real, full Salesforce org that's entirely yours to break and rebuild. Third, and most importantly: this becomes the org every single future lesson in this path assumes you already have ready to go.
+
+## Segment 4 (outro)
+
+Next up: creating that Trailhead account. It's the first concrete step, and it takes less time than this video did.
