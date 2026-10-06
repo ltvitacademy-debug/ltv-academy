@@ -1,0 +1,25 @@
+# Script — Flow Testing and Debugging
+
+## Segment 1 (title)
+
+Fault paths handle failure at run time. This lesson is about catching that failure before it ever reaches a real user — with Debug for a one-off run, and Flow Test for something that stays proven after you've moved on.
+
+## Segment 2 (screenshot: debug panel)
+
+Debug runs the flow's most recent saved version against sample input you provide. Here's the Setup tab — a CaseID plugged in, and two options that matter more than they look: Run automation as another user, and Run automation in rollback mode, so a debug run doesn't leave real changes behind.
+
+## Segment 3 (screenshot: debug error trace)
+
+Run automation as another user is the one that actually catches problems Debug-as-yourself never will — because you're almost always a System Administrator with no sharing restrictions. Here, debugging as Ezra Mustang surfaces a real failure: Close Tasks couldn't update any records, and the Debug Details panel shows exactly why — INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY, the real platform error, not a guess.
+
+## Segment 4 (screenshot: new flow test window)
+
+Debug proves the flow worked once, for you, today. Flow Test saves the scenario permanently — a triggering record, like this case, plus assertions about what should be true when the flow finishes.
+
+## Segment 5 (screenshot: tests passed)
+
+Once saved, that test sits in the flow's Tests list and gets re-run on demand — after every future edit, not just the day you built it. Both tests here show a green Pass, which is the whole point: proof that still holds up months later, when someone else touches this flow.
+
+## Segment 6 (outro)
+
+Debug for exploring what's happening right now, as a specific user if needed. Flow Test for locking in that it keeps happening correctly. Use both, and use "run as another user" far more than feels necessary — your own access almost never matches your users'. Next up: Flow Bulkification and Performance, for keeping a flow fast and correct across hundreds of records at once, not just one.
