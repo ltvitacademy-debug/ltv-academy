@@ -1,0 +1,25 @@
+# Script — Custom Objects
+
+## Segment 1 (title)
+
+Every object so far — Account, Contact, Lead, Opportunity, Case, Product, Task, Event — came out of the box. This lesson is about the moment none of them fit, and you build your own.
+
+## Segment 2 (steps: the custom object pattern)
+
+The pattern is always the same. Nothing standard represents the data you're tracking. You open Object Manager and create a custom object — a few clicks, no code. And once it exists, Salesforce treats it exactly like a standard object: fields, records, relationships, reports, all the same.
+
+## Segment 3 (screenshot: standard object record)
+
+Here's a standard object record — a Lead named Chantal Smith. Header with the object icon and name, action buttons along the top, Details and Related tabs below. This layout should look completely familiar by now.
+
+## Segment 4 (screenshot: custom object record)
+
+And here's a custom object record: Energy Audit, this one called Burlington evaluation. An admin built this object for a solar company that needed to track something no standard object covers. Look at the shape — same header style, same Related and Details tabs as the Lead. From the outside, you can't tell it's custom.
+
+## Segment 5 (screenshot: Create Custom Object menu)
+
+This is where it comes from: Object Manager's Create menu, with Custom Object as an option right next to Custom Object from Spreadsheet. Give it a label, and Salesforce generates the API name, the tab, and the basic object automatically.
+
+## Segment 6 (outro)
+
+Standard objects run out eventually. Custom objects are how Salesforce keeps up — and because they behave identically once built, everything else in this course applies to them too. Next up: the tool that manages all of it, Object Manager itself.
