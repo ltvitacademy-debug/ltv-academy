@@ -1,0 +1,25 @@
+# Script — Creating a Report
+
+## Segment 1 (title)
+
+Now that you understand report types, let's actually build one. This lesson is a tour of the Report Builder itself: starting a report, naming it, and learning the four panels you'll use constantly.
+
+## Segment 2 (steps: the start flow)
+
+From the Reports tab, click New Report. Choose a report type — search or browse categories — then click Start Report. The builder opens with that type shown as a chip next to the report name, which you can rename right away with the pencil icon next to it.
+
+## Segment 3 (screenshot: builder right after type selection)
+
+Here's that exact moment. "New Opportunities Report" as the default name, with "Opportunities" shown as a chip confirming the report type you picked. Click the pencil to rename it to something your team will actually recognize later.
+
+## Segment 4 (screenshot: full builder tour)
+
+The builder has four regions. The Fields pane on the left lists everything the report type exposes. The Outline and Filters tabs share a panel where you assemble groups, columns, and criteria. The preview pane on the right shows a limited number of records as you work. And Save and Run sit along the top.
+
+## Segment 5 (screenshot: footer display options)
+
+Once you run the report, the footer gives you display toggles: Row Counts, Detail Rows, Grand Total, Stacked Summaries. These control what shows beneath your data, and they matter more once you start grouping, which starts next lesson.
+
+## Segment 6 (outro)
+
+Remember: the preview pane during editing is partial on purpose, so the builder stays fast. Save and Run replaces it with your full, real results. Give the report a clear name and a folder before you save. Next up: filtering what a report actually shows.
