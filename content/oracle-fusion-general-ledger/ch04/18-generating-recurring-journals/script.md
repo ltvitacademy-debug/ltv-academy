@@ -1,0 +1,21 @@
+# Script — Generating Recurring Journals
+
+## Segment 1 (title)
+
+Defining a recurring journal, which we covered last lesson, isn't the same as it actually existing for a given period. That definition sits dormant until someone runs Generate. Let's see what that step actually does.
+
+## Segment 2 (code)
+
+Take a formula-based IT allocation, defined once. Run Generate Recurring Journals for March, and it creates a real journal batch, sourced as Recurring, dated in March — with the formula evaluated against March's actual balances and statistics. That batch shows up in Manage Journals just like anything else.
+
+## Segment 3 (steps)
+
+What happens depends on the type. Standard generates fully populated, amount and all, ready to complete immediately. Skeleton generates with the accounts in place but the amount blank, waiting for someone to type in this period's real number. Formula generates with the amount already calculated — ready to go, but the number itself can differ from last time.
+
+## Segment 4 (steps)
+
+Here's the important part: a generated batch isn't exempt from anything we covered earlier. It still has to validate — balanced, valid accounts, open period. It still routes through approval if a rule matches. It still has to be posted, manually or through an AutoPost criteria set. Automating the definition doesn't remove the controls further downstream.
+
+## Segment 5 (outro)
+
+And if a recurring entry genuinely shouldn't run for one period — a quarterly true-up that doesn't apply mid-quarter — you just don't generate it that period, or give the definition an end date. No batch, no cleanup needed. Next up, lesson nineteen: allocations and mass allocations.

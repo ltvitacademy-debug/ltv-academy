@@ -1,0 +1,25 @@
+# Script — Opening and Closing Periods
+
+## Segment 1 (title)
+
+Chapter 1 introduced the accounting calendar. Every period in it carries a status, and there are five of them, not just open and closed, each controlling exactly what's allowed to happen.
+
+## Segment 2 (steps)
+
+Never Opened blocks everything. Future Enterable allows journal entry but not posting. Open allows both. Closed blocks new entry but can still be reopened. Permanently Closed cannot be reopened under any circumstances.
+
+## Segment 3 (steps)
+
+A controller manages this from Manage Accounting Period, choosing a ledger and seeing every period's status at a glance. Changing Open to Closed is the final action of the close checklist, made only after unposted journals are cleared.
+
+## Segment 4 (code)
+
+Here's why reopening is disruptive, not just inconvenient. If an auditor finds a missing March accrual after March has closed: reopen the period, post the correction, re-run any trial balance or consolidation that used March's numbers, re-close the period, and tell everyone who already used the old numbers.
+
+## Segment 5 (steps)
+
+That's five extra steps for one missed accrual. It's exactly why catching problems before close, like lesson 34 covered, pays for itself every time.
+
+## Segment 6 (outro)
+
+Permanently Closed is a one-way door, applied once there's no remaining reason a transaction would need to post there. Up next, lesson 36: Year-End Close and Opening Balances.

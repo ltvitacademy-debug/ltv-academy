@@ -1,0 +1,25 @@
+# Lesson 18 — Business Events and Notifications · Voiceover script
+
+Segments map 1:1 to slides. Chapter 4 · Integration Patterns · Lesson 18 of 19.
+
+---
+
+## S1 · TITLE CARD
+
+Every pattern this course has covered so far has one side initiating the request — a schedule firing, or a program calling an endpoint. A business event flips that: Fusion itself announces that something happened, the instant it happens, with no one asking.
+
+## S2 · STEPS CARD
+
+A business event is a system-generated notification raised at a specific lifecycle moment — an AP invoice being created, approved, or validated, for example. A subscriber listening for that event reacts immediately, instead of repeatedly asking Fusion "has anything changed yet?" the way a scheduled, polling integration would.
+
+## S3 · STEPS CARD
+
+Turning this on isn't automatic. In Setup and Maintenance, there's an "Enable Business Events" profile option, set per module — toggling it on for Payables, for instance, is specifically what makes Fusion start raising events for invoices and payments in that module. Once that's on, Oracle Integration Cloud subscribes to the specific event through its ERP Cloud adapter, which is the practical mechanism most implementations use to actually receive it.
+
+## S4 · CODE CARD
+
+The contrast with polling is the whole point. A polling integration might call GET on invoices every fifteen minutes, filtering for anything created since the last check — repeatedly asking a question that's usually answered "nothing new." An event-driven integration skips that entirely: Fusion raises "invoice created" the moment it happens, and OIC reacts immediately, with nothing re-checked and no wasted calls in between.
+
+## S5 · OUTRO CARD
+
+A business event means Fusion speaks first, the moment something happens, instead of being repeatedly asked. That's the last individual building block of this course — next, the final lesson pulls everything together: REST fundamentals, authentication, patterns, and events, into how a consultant actually exchanges financial data with the outside world.

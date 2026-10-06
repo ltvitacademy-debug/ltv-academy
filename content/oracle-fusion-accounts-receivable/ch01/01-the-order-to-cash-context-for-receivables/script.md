@@ -1,0 +1,21 @@
+# Script — The Order-to-Cash Context for Receivables
+
+## Segment 1 (title)
+
+Welcome to Accounts Receivable, the mirror image of the Accounts Payable course. Payables tracks what a business owes. Receivables tracks what a business is owed. We'll build on everything you already know about the chart of accounts and subledger accounting, and apply it to invoices going out and cash coming in.
+
+## Segment 2 (steps)
+
+Receivables lives inside a bigger process called Order to Cash. It starts with order capture, usually in a sales or order management system. Then fulfillment, when goods ship or a service gets delivered. Then invoicing, which is Receivables creating a transaction for what's now owed. Then collection, when the customer pays and Receivables applies that payment. Receivables owns the invoicing and collection steps.
+
+## Segment 3 (steps)
+
+Transactions get into Receivables one of two ways. Someone keys them in manually, which is common for service charges or corrections. Or they arrive through AutoInvoice, a program that imports batches of lines from order management, project billing, or an outside billing system and turns them into real transactions. Either path ends with the same kind of transaction record.
+
+## Segment 4 (code)
+
+Here's a worked example. Northwind Fixtures Co, a fictional distributor, ships twelve thousand five hundred dollars of goods to Harborline Retail Group. Receivables records an invoice, and accounting creates a debit to Accounts Receivable and a credit to Revenue, both twelve thousand five hundred. Thirty days later Harborline pays, Receivables applies the receipt, and a second entry debits Cash and credits Accounts Receivable for the same amount. The invoice is closed.
+
+## Segment 5 (outro)
+
+So Receivables sits right in the middle of Order to Cash: it bills, it collects, and it hands accounting entries to General Ledger and receipt data to Cash Management and Collections. Up next, lesson two: the Receivables work areas and how a transaction actually moves through its lifecycle.

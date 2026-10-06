@@ -1,0 +1,21 @@
+# Script — Quarterly Updates and Release Management
+
+## Segment 1 (title)
+
+Oracle controls the update schedule in the SaaS model. Here's what that actually looks like: a fixed quarterly cadence that every Fusion Financials consultant is expected to know cold.
+
+## Segment 2 (code: release naming)
+
+Oracle names each release with the last two digits of the year plus a letter for the quarter — the first release of 2026 is 26A, then 26B, 26C, and 26D. Four updates land every year. There's no multi-year upgrade project like you'd see on-premises.
+
+## Segment 3 (steps: cohorts and non-prod first)
+
+Not everyone gets updated the same day. Oracle assigns customers to a cohort — A, B, or C — spreading the rollout across different months within the quarter. And within each customer's own environments, non-production gets the update first, weeks ahead of production, so the team has time to test.
+
+## Segment 4 (code: opt-in features)
+
+Not everything turns on automatically. Oracle frequently ships new functionality opt-in — available, but switched off until the customer deliberately enables it. That protects the business from an update unexpectedly changing how it runs overnight.
+
+## Segment 5 (outro)
+
+Reviewing what's changing, testing it in non-production, and deciding on opt-ins every quarter is a real, ongoing part of a consultant's job — not a one-time implementation task. That closes Chapter 2. Next up, Chapter 3: working in Oracle Fusion, starting with signing in and the home page.

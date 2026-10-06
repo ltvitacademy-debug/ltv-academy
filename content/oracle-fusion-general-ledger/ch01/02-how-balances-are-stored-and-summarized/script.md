@@ -1,0 +1,21 @@
+# Script — How Balances Are Stored and Summarized
+
+## Segment 1 (title)
+
+A trial balance line like "Cash: forty-two thousand dollars" looks simple, but it's shorthand for something very specific. Let's unpack what a balance in General Ledger actually is.
+
+## Segment 2 (steps)
+
+Every balance is tied to five things at once: the ledger, the full account combination, the accounting period, the currency, and the balance type — actual, budget, or encumbrance. Change any one of those and you get a different balance. That specificity is what lets General Ledger answer very narrow questions just as easily as a plain trial balance.
+
+## Segment 3 (steps)
+
+Actual balances come from posted journals — real transactions. Budget balances come from budget journals, for planned amounts. Encumbrance balances represent committed but unspent amounts, usually purchase order commitments, and they're central to budgetary control later in this course. All three can exist side by side for the same account and period.
+
+## Segment 4 (code)
+
+General Ledger tracks period-to-date activity and rolls it into year-to-date. For a balance sheet account like cash, year-to-date is the real running balance, carried forward period after period. For an income statement account like an expense, year-to-date resets to zero at the start of each new fiscal year, because expense is measured per year, not forever.
+
+## Segment 5 (outro)
+
+All of this gets pre-summarized into what's often called the balances cube — account, period, currency, and balance type, all pre-aggregated so reports and dashboards return instantly instead of re-scanning every journal line. That's exactly what Account Inspector and Account Monitor query later in this course. Next up, lesson three: a tour of the General Ledger work area itself.

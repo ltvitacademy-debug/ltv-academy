@@ -1,0 +1,21 @@
+# Script — How Invoices and Payments Relate
+
+## Segment 1 (title)
+
+The last three lessons walked through Payables and Receivables separately, table by table. This lesson steps back and puts both chains side by side, because the shape underneath them is genuinely the same, just wearing different names.
+
+## Segment 2 (code)
+
+Here's the full Payables chain: AP_INVOICES_ALL as the header, with two separate branches hanging off it — lines and distributions explaining what was billed and how it's accounted, and payment applications explaining how much has actually been settled. Those two branches don't depend on each other. An invoice can be fully posted to GL long before it's paid.
+
+## Segment 3 (code)
+
+Here's the Receivables chain: RA_CUSTOMER_TRX_ALL as the header, lines for what was billed, and a separate branch — payment schedules and receivable applications — tracking money matching. Same shape. Different vocabulary: receipt instead of payment, applied instead of paid.
+
+## Segment 4 (steps)
+
+Strip away the prefixes and both chains reduce to the same three ideas: a header with the total, lines that explain what it's made of, and a money-matching table that records how it's actually been settled, separate from the header. Once you understand one side deeply, the other side is mostly new vocabulary, not new structure.
+
+## Segment 5 (outro)
+
+And because money-matching lives in its own branch, you can never trust a single cached flag on the header to answer "is this paid." The real answer always requires joining into the money-matching branch and checking amounts. Up next, lesson twelve: status flags and lifecycle columns, examined directly.

@@ -1,0 +1,21 @@
+# Script — Environments: DEV, TEST and PROD
+
+## Segment 1 (title)
+
+Lesson 9 mentioned that Production and non-production are logically separate. Let's cover environments properly now — what they're for, how they're named in practice, and how configuration actually moves between them.
+
+## Segment 2 (steps: production vs. non-production)
+
+Production is where the real business runs — real invoices, real payments, real financial statements. Mistakes there have real consequences. Every customer also has at least one non-production environment, often called Test, where changes get built and tested before they ever reach Production.
+
+## Segment 3 (code: environment refresh)
+
+Over time, non-production data drifts away from what Production actually looks like. Companies periodically perform an environment refresh — copying Production's data into non-production, overwriting what was there. It's powerful, but disruptive: configuration work in progress can get wiped out if the team doesn't plan around the refresh schedule.
+
+## Segment 4 (steps: moving configuration)
+
+There's no code deployment to schedule here. Configuration is exported from one environment and imported into another through Setup and Maintenance — packaging up setup choices and replaying them elsewhere, which is also how a validated configuration finally reaches Production for go-live.
+
+## Segment 5 (outro)
+
+That closes Chapter 3 — working in Oracle Fusion. Next up, Chapter 4: implementation basics and careers, starting with the terminology you'll hear constantly on a real project.

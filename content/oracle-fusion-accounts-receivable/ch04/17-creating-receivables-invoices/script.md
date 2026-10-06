@@ -1,0 +1,17 @@
+# Script — Creating Receivables Invoices
+
+## Segment 1 (title)
+
+Everything in chapters one through three, system options, customers, transaction types and sources, activities, memo lines, exists to support one moment: entering an invoice. Let's walk through that moment directly in the Transactions Workbench.
+
+## Segment 2 (steps)
+
+An invoice has three layers. Header: transaction number, date, type, source, customer, and payment terms, much of it defaulting the moment you pick a type and source. Lines: what's being billed, description, quantity, price, and its own revenue scheduling. Distributions: the actual GL accounts behind each line, usually derived automatically by AutoAccounting, though reviewable before completion.
+
+## Segment 3 (steps)
+
+Here's the flow from blank form to completed transaction. Pick the source, which can default the type and numbering. Confirm the type, setting the sign. Select the customer and bill-to site, pulling in tax and currency defaults. Confirm payment terms. Enter the lines. Review distributions. And complete, which locks the header and makes it eligible for accounting.
+
+## Segment 4 (outro)
+
+Picture Northwind Fixtures Co's AR team entering an invoice for Harborline Retail Group, using AR Manual Entry and Standard Invoice. Selecting Harborline pulls in its bill-to site and net thirty terms automatically. The clerk enters five hundred units at twenty-five dollars each, twelve thousand five hundred total. AutoAccounting derives the revenue and receivable accounts, the clerk confirms the distributions look right, and completes it, at which point it's eligible for accounting and shows up as an open item. Up next, lesson eighteen: invoice lines, tax, and freight in more depth.

@@ -1,0 +1,21 @@
+# Script — Reversing Receipts
+
+## Segment 1 (title)
+
+A receipt gets entered and applied, and then the check bounces, or the customer's bank stops payment. Receivables can't pretend money arrived that didn't. This lesson covers how a receipt gets reversed.
+
+## Segment 2 (steps)
+
+There are two reversal methods. A standard reversal simply undoes the receipt, and the invoice returns to its prior open balance - the right choice for a clean data entry correction.
+
+## Segment 3 (steps)
+
+A debit memo reversal also undoes the original receipt, but creates a new debit memo for the reversed amount. This is the standard approach for an NSF check - the customer still owes the money, so a new transaction captures that renewed obligation.
+
+## Segment 4 (steps)
+
+Either way, the customer's total balance owed ends up the same - the money the company thought it had is gone. And Receivables keeps the full chain: original receipt, reversal, and any resulting debit memo, fully traceable.
+
+## Segment 5 (outro)
+
+That wraps up Chapter 5, Receipts. Up next, Chapter 6: Adjustments, Write-Offs and Collections, starting with lesson 30, adjustments.

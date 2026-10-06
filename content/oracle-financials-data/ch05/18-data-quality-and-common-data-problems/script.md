@@ -1,0 +1,21 @@
+# Script — Data Quality and Common Data Problems
+
+## Segment 1 (title)
+
+This course closes with the problems you'll actually run into once you start querying real Oracle Fusion data. None of these are exotic — they're the predictable issues that catch consultants who understand individual tables but haven't developed the instinct to question what a query is really telling them.
+
+## Segment 2 (steps)
+
+Because HZ_PARTIES is entered by people, the same real-world company can end up as two separate party rows — "Acme Corp" and "Acme Corporation." That's a classic trading community headache: once duplicates exist, totals for what should be one customer get split across two identities, with no obvious error anywhere.
+
+## Segment 3 (steps)
+
+A transaction validated but never accounted shows up as an event with no corresponding subledger journal header. That's not a performance issue — it's a configuration gap in the accounting rules. And summing entered amounts across transactions in different currencies produces a total that looks plausible but is quietly meaningless.
+
+## Segment 4 (steps)
+
+Trusting a convenient status flag instead of the authoritative amount is one of the most common traps in this whole model — AR's status can say open while the real remaining balance is negligible. And forgetting to filter an ALL table by business unit silently combines rows from unrelated parts of the business, with no error message to flag it.
+
+## Segment 5 (outro)
+
+Duplicate parties, stuck transactions, mixed currency columns, trusted-but-wrong flags, multi-org bleed — five recurring, avoidable problems you now have the vocabulary to investigate. That closes Oracle Financials Data. Next up: SQL for Oracle Financials, where you'll put these exact tables to work writing real queries — starting with that same challenge, finding every unpaid supplier invoice over ten thousand dollars that's more than thirty days old.

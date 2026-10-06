@@ -1,0 +1,21 @@
+# Script — Customers and the Trading Community Model
+
+## Segment 1 (title)
+
+Suppliers and customers are mirror images in this data model: both are parties with a role layered on top. We covered suppliers last lesson. This lesson covers customers, which runs through a few more tables, because Trading Community Architecture was really built with customers in mind.
+
+## Segment 2 (steps)
+
+HZ_PARTIES is the master identity table for every party — a person, organization, or group — independent of any business relationship. A row there just says this entity exists, with this name and type. No financial data, no credit terms. That's deliberate: the same table is reused for suppliers, customers, and contacts alike.
+
+## Segment 3 (steps)
+
+The moment you actually start doing business with a party as a customer, that relationship lives in HZ_CUST_ACCOUNTS — a distinct concept from the party. One party can have more than one customer account: an individual might have a personal account and a separate business account, both pointing back to the same party, each with its own terms.
+
+## Segment 4 (steps)
+
+A customer account can transact at more than one location and for more than one purpose. HZ_CUST_ACCT_SITES_ALL stores each account's addresses, scoped by business unit. HZ_CUST_SITE_USES_ALL records what a given site is used for — bill-to, ship-to, or both — and payment terms are frequently set at that site-use level, not on the account as a whole.
+
+## Segment 5 (outro)
+
+Why build it this way? Because real businesses don't fit a flat shape. The same company can be both your customer and your supplier, one entity can have several accounts, one address can serve several purposes. Separate layers for party, account, site, and site-use let all of that be represented without duplicating identity. Up next, lesson seven: sites, addresses, and contacts in more depth.

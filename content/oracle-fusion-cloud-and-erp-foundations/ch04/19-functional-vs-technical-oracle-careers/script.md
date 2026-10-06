@@ -1,0 +1,21 @@
+# Script — Functional vs. Technical Oracle Careers
+
+## Segment 1 (title)
+
+Lesson 17 mentioned functional and technical consultants in passing. Let's give that distinction its own space — it's one of the first real career decisions you'll face on this path, even though plenty of people move between the two over a career.
+
+## Segment 2 (steps: the functional consultant)
+
+A functional consultant understands business processes deeply and configures Oracle Fusion almost entirely through Setup and Maintenance, not code. That's running fit-gap sessions, structuring the Chart of Accounts, configuring approval rules, building reports, leading CRPs and UAT, and troubleshooting by tracing configuration and process.
+
+## Segment 3 (steps: the technical consultant)
+
+A technical consultant works outside pure configuration: data loads with FBDI and HDL, integrations with REST APIs and Oracle Integration Cloud, advanced reports in BI Publisher, small extensions in Visual Builder, and occasional Groovy scripting.
+
+## Segment 4 (code: where the line blurs)
+
+These roles aren't perfectly separate in practice. Plenty of functional consultants pick up enough FBDI and REST API knowledge to be dangerous with data loads, and plenty of technical consultants develop real business-process judgment. As Oracle leans further into low-code tools, that gap keeps narrowing.
+
+## Segment 5 (outro)
+
+This path's title, and everything from Chapter 1 forward, points clearly to the functional side — later courses add technical working knowledge, not a separate technical career track. Next up, the final lesson of this course: your practice environment, and when to activate it.

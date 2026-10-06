@@ -1,0 +1,21 @@
+# Script — Bank Statement Reconciliation Reports
+
+## Segment 1 (title)
+
+Reconciliation produces a lot of activity — automatic matches, manual matches, exceptions, aging items. This lesson covers the reports a Cash Manager actually pulls to see that activity clearly.
+
+## Segment 2 (steps)
+
+Three reports cover most of the workflow. The Transactions Available for Reconciliation report lists open system transactions that haven't found a statement counterpart yet — the what's still waiting view. The Bank Statement reconciliation report shows, line by line, which statement lines matched and which didn't, for a specific statement. The Cash to General Ledger Reconciliation report compares the reconciled cash balance against the GL cash account balance.
+
+## Segment 3 (steps)
+
+That last report matters most at month-end close. The key question is whether cash in the general ledger actually matches what's reconciled in Cash Management. A difference doesn't necessarily mean an error — it might just mean some reconciled transactions haven't been through Create Accounting yet — but it's a difference that has to be explained before the books can close.
+
+## Segment 4 (code)
+
+A worked example: Harborview Metals Inc's Cash Manager finds a $4,200 difference on the GL reconciliation report at month-end. The transactions-available report shows nothing missing on the system side, and the statement report shows everything reconciled. The explanation is that $4,200 in already-reconciled transactions simply hasn't run through that day's Create Accounting yet — the gap closes once it runs that evening.
+
+## Segment 5 (outro)
+
+Pull the transactions-available report first, work the statement report's exceptions, then confirm with the GL comparison. Up next, lesson fifteen: external cash transactions, the catch-all for cash activity that never existed anywhere else in Oracle.

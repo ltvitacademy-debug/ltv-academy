@@ -1,0 +1,17 @@
+# Script — Customer Profiles and Credit Limits
+
+## Segment 1 (title)
+
+Every mention of profile class so far has been a promise to come back to it. This lesson delivers: what a profile actually controls, how credit limits work, and what happens when a transaction would push a customer over theirs.
+
+## Segment 2 (steps)
+
+A profile class is a template of default values assigned to many accounts at once, so nobody configures the same ten settings by hand on every customer. It controls the credit limit, the default payment terms, the statement cycle, whether the customer gets dunning letters and which plan, and tolerance for small discrepancies. Any individual account can still override a specific value from its assigned profile.
+
+## Segment 3 (steps)
+
+Here's how credit checking actually behaves. When a new transaction would push a customer's total open balance over their credit limit, Receivables can flag it for a credit hold rather than block it outright. The transaction can still be saved, but it's held from shipping or completing until someone with authority reviews and releases it. That keeps credit control a deliberate decision, not a silent stoppage.
+
+## Segment 4 (outro)
+
+Picture Harborline Retail Group on the Standard Wholesale profile, fifty thousand dollar credit limit, net thirty terms. They've got forty-two thousand in open invoices already, and a new eleven-thousand-dollar order would push them to fifty-three thousand, over the limit. The transaction goes on credit hold. Northwind's credit analyst checks Harborline's payment history, sees it's always on time, and releases the hold manually, a one-time documented exception. Up next, lesson ten: customer bank accounts.

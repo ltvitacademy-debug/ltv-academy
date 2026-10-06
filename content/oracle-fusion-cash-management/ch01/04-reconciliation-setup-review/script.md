@@ -1,0 +1,21 @@
+# Script — Reconciliation Setup Review
+
+## Segment 1 (title)
+
+Before we move into bank statements and reconciliation, let's pull together everything chapter one covered into one setup checklist. Every item here has to exist before a single bank statement can be meaningfully reconciled.
+
+## Segment 2 (steps)
+
+Five things need to be true. The bank, branch and account hierarchy exists. The account has the Cash Management use enabled, or it can't participate in reconciliation at all. The account has a GL cash account assigned, where reconciled transactions post. Security is configured so the right people, usually the Cash Manager, can actually reconcile it. And, if the business needs one, a cash clearing account is assigned.
+
+## Segment 3 (steps)
+
+Here's the timing problem a clearing account solves. Payables issues a check today, and the ledger records a reduction in cash today — but the bank won't actually clear that check for days. If every payment posted straight to the main cash account, that balance would never match the bank's balance on any given day. Routing it through a clearing account first, then moving it to the main cash account once the statement confirms it cleared, keeps the two balances comparable.
+
+## Segment 4 (steps)
+
+One more idea to plant before chapter three: reconciliation rarely needs an exact-to-the-cent match every time. A tolerance rule defines an acceptable variance, by percentage or a flat amount, within which a small mismatch — like a rounding difference — is still allowed to reconcile automatically instead of kicking out as an exception.
+
+## Segment 5 (outro)
+
+If any item on this checklist is missing, reconciliation won't fail loudly — it will quietly produce exceptions and a cash account that never ties to the bank. Get chapter one right, and chapters two and three build cleanly on top of it. Up next, lesson five: the file formats banks actually send, starting with BAI2, MT940 and CAMT.053.

@@ -1,0 +1,17 @@
+# Script — Transaction Types
+
+## Segment 1 (title)
+
+Chapter three moves from who are we billing, to how does Receivables know what kind of transaction this is, and how to account for it. Transaction type is the first and most important piece: it tells Receivables whether something's an invoice or a credit memo, and whether it increases or decreases what's owed.
+
+## Segment 2 (steps)
+
+There's a small fixed set of transaction classes built into Receivables, invoice, credit memo, debit memo, and a few others, you can't create new ones. A transaction type is something you define, tied to exactly one class. A company usually has several types per class, standard invoice, service invoice, intercompany invoice, each with different defaults.
+
+## Segment 3 (steps)
+
+Here's what a type actually controls. Creation sign, does it increase or decrease the balance. Open receivable, does it even create an outstanding item. Natural application, for credit memos, does it expect to match a specific invoice or sit unapplied. Default accounting references for AutoAccounting. And printing options and overapplication rules.
+
+## Segment 4 (outro)
+
+Picture Northwind Fixtures Co defining a Standard Invoice type, positive sign, opens a receivable, and a separate Standard Credit Memo type, negative sign, natural application invoice, meaning it expects to match a specific invoice. A rep issuing a five hundred dollar credit for a damaged shipment picks Standard Credit Memo, and it automatically carries the negative sign and the matching behavior. Up next, lesson thirteen: transaction sources and batch sources.

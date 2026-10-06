@@ -1,0 +1,17 @@
+# Script — The Trading Community Model: Parties, Accounts and Sites
+
+## Segment 1 (title)
+
+Every invoice and receipt in Receivables is recorded against a customer. But customer isn't one flat record in Oracle Fusion — it's a layered structure called the Trading Community Model, shared across applications. Let's unpack that structure before we create an actual customer in the next lesson.
+
+## Segment 2 (steps)
+
+There are four layers. Party is who someone is, an organization or person, independent of any deal. Party site is a physical address tied to that party. Customer account is created when a party enters a selling relationship with you, and carries payment terms and credit info. Account site is a party site being used for a specific account, carrying one or more site uses, most commonly bill-to and ship-to.
+
+## Segment 3 (steps)
+
+Here's why this layering matters. One party can have more than one customer account. Two divisions of the same company might each get their own account, invoiced and aged completely separately, even though both trace back to the same underlying party. And Receivables won't complete a transaction without an account site that has a bill-to use — that's the one it absolutely needs.
+
+## Segment 4 (outro)
+
+Picture Harborline Retail Group as a party, with party sites in Columbus and Dayton. Because Harborline's east and west store divisions are tracked separately, Northwind Fixtures Co sets up two customer accounts for that same party, each with its own bill-to site. Invoices for each division post and age independently, even though it's all one underlying party. Up next, lesson seven: creating a customer, step by step.

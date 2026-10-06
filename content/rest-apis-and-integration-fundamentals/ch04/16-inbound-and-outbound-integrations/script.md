@@ -1,0 +1,25 @@
+# Lesson 16 — Inbound and Outbound Integrations · Voiceover script
+
+Segments map 1:1 to slides. Chapter 4 · Integration Patterns · Lesson 16 of 19.
+
+---
+
+## S1 · TITLE CARD
+
+Pattern — batch, real-time, or event-driven — is one dimension of an integration. Direction is a separate one, and the two mix independently: any of those patterns can run inbound or outbound.
+
+## S2 · STEPS CARD
+
+Inbound means an external system is creating or updating records inside Fusion — a vendor portal creating an AP invoice, a bank feed creating cash transactions. Outbound means the reverse: an external system is reading or extracting Fusion data — a reporting tool pulling GL balances, a tax engine pulling invoice details.
+
+## S3 · CODE CARD
+
+In REST terms specifically, the verbs line up predictably with direction, though not as an absolute rule. An external system calling POST or PATCH against Fusion is almost always inbound — it's writing data in. An external system calling GET against Fusion is almost always outbound — it's reading data out.
+
+## S4 · STEPS CARD
+
+Both directions show up constantly in real Financials implementations. A bank statement feed is a classic inbound integration into Cash Management, creating transactions that didn't exist in Fusion a moment before. A BI tool pulling AP aging and GL balances every night for a dashboard is a classic outbound integration, with nothing written back into Fusion at all. Plenty of real implementations run both directions for the same module — AP invoices coming in from a vendor portal, while AP aging data goes out to a reporting layer.
+
+## S5 · OUTRO CARD
+
+Inbound writes into Fusion, outbound reads out of it, and pattern and direction are two separate decisions that combine however a requirement actually needs. Next lesson, we look at the platform most of these integrations — in either direction — actually get built on: Oracle Integration Cloud.

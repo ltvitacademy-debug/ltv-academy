@@ -1,0 +1,21 @@
+# Script — General Ledger Setup Review
+
+## Segment 1 (title)
+
+Before we create our first journal in chapter two, let's review the setup every exercise in this course builds on: the chart of accounts and ledger behind Solara Fixtures.
+
+## Segment 2 (code)
+
+A chart of accounts isn't one field, it's several segments concatenated together. Solara Fixtures uses company, cost center, account, and intercompany. Three of those carry special qualifiers: company is the balancing segment, account is the natural account segment that classifies asset, liability, equity, revenue, or expense, and intercompany identifies transactions between legal entities.
+
+## Segment 3 (steps)
+
+Three terms that get confused constantly: a legal entity is a real registered entity that can sign contracts. A business unit is an operational grouping — sales, purchasing, receivables — that reports into a ledger. And a ledger itself holds the actual chart of accounts, calendar, currency, and accounting method. One ledger can serve several legal entities at once.
+
+## Segment 4 (steps)
+
+Data access sets control who can see what. A data access set says which ledgers a user can access, and optionally restricts them to specific balancing segment values — so a cost-center accountant might see only their own company code, while a corporate controller sees everything.
+
+## Segment 5 (outro)
+
+From chapter two on, every exercise assumes Solara Fixtures' ledger already exists with this exact setup — the chart of accounts, calendar, currency, and full access already in place. Next up, chapter two: creating your first manual journal.

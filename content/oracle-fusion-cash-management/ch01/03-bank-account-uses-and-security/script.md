@@ -1,0 +1,21 @@
+# Script — Bank Account Uses and Security
+
+## Segment 1 (title)
+
+A bank account isn't just a record sitting in Cash Management. Other modules need permission to use it, and the business needs confidence that only the right people can touch it. This lesson covers both: what an account is allowed to be used for, and the three layers of security that control access.
+
+## Segment 2 (steps)
+
+A bank account only becomes useful once it's explicitly assigned a use. Payables disbursement lets it pay suppliers. Receivables receipt lets it receive customer payments. Payroll lets it pay employees. And Cash Management lets it participate in reconciliation and positioning — every account needs that one. An account can carry more than one use, and assigning a use is what makes the account selectable elsewhere, like in Payables' pay suppliers setup.
+
+## Segment 3 (steps)
+
+Security layers on top of that in three levels. Bank account use security controls which uses are even enabled. Bank account access security grants access by business unit or function, without naming individual people. And user and role security is the finest grained layer — if an account is flagged to secure by users and roles, a user must be individually named, or hold a role that's named on that account, before they can use it.
+
+## Segment 4 (code)
+
+A fictional example: Harborview Metals Inc locks its payroll disbursement account down to two named treasury users plus the cash manager role, while leaving its general AP disbursement account open to the whole payables invoicing function. Modifying that security tab itself requires the Manage Bank Account Security privilege.
+
+## Segment 5 (outro)
+
+This isn't bureaucratic overhead — it's an internal control. The people who can select an account for payment are the people who can move money out of it. Up next, lesson four: a full setup checklist review before we move into bank statements.

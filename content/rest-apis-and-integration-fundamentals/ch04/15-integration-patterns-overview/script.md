@@ -1,0 +1,25 @@
+# Lesson 15 — Integration Patterns Overview · Voiceover script
+
+Segments map 1:1 to slides. Chapter 4 · Integration Patterns · Lesson 15 of 19.
+
+---
+
+## S1 · TITLE CARD
+
+Everything built so far in this course has been real-time REST calls, one record at a time. That's one of three broad integration patterns a Financials consultant will run into, and knowing which one fits a given requirement matters more than knowing how to build any single one of them.
+
+## S2 · STEPS CARD
+
+Batch or bulk integrations move large volumes of data on a schedule — this catalog's FBDI and ADFdi course covers that pattern in depth. Real-time REST, what this course has focused on, handles individual records as they happen: one invoice, one journal, one lookup. Event-driven integrations flip the direction of initiative entirely — Fusion announces that something happened, and a subscriber reacts, instead of anyone polling for changes.
+
+## S3 · STEPS CARD
+
+Four questions actually decide which pattern fits. How much data — ten records a day, or a hundred thousand? How fast does it need to happen — within seconds, or is overnight processing fine? Which direction is data moving — into Fusion, or out of it? And is this a one-time event, like a migration, or an ongoing, recurring feed?
+
+## S4 · CODE CARD
+
+Those questions produce real answers. Ten thousand legacy invoices loaded once at go-live is a batch job, not a REST call per invoice. One invoice created through a vendor portal right now is exactly the real-time REST pattern this course has built. And "notify finance the moment an invoice posts" is event-driven — which the rest of this chapter covers.
+
+## S5 · OUTRO CARD
+
+Batch, real-time, and event-driven — three patterns, one set of questions to pick between them. Next lesson looks at one more dimension that cuts across all three: whether data is actually moving into Fusion, or out of it.
