@@ -1,0 +1,21 @@
+# Script — Project 3 Kickoff
+
+## Segment 1 (title)
+
+Projects 1 and 2 both answer questions. Project 3 does something riskier by design: it takes actions. A tool-using agent can send a message, modify a record, or spend money -- and once a tool call executes, you often can't take it back. This project builds that agent the way it should be built in production, with a human approval checkpoint in front of anything consequential.
+
+## Segment 2 (steps: five lessons ahead)
+
+Five lessons get you there. Lesson 14 designs 2 to 3 real tools with real JSON schemas. Lesson 15 builds an actual approve/reject checkpoint before any sensitive tool executes. Lesson 16 adds input validation and an audit log for every decision. Lesson 17 deploys the agent as a real service. And Lesson 18 packages it for your portfolio.
+
+## Segment 3 (steps: scope your project)
+
+Two things make a good fit. At least one tool with a real, hard-to-reverse consequence -- sending an email, posting a message, placing an order. And a plausible, real reason a human needs to be in the loop: cost, reputational risk, irreversibility, or compliance exposure. A good starting shape is one or two low-risk tools plus one higher-risk tool that always stops for sign-off.
+
+## Segment 4 (code: deliverables checklist)
+
+By the end of Chapter 4 you should have real tool schemas, a working approve-or-reject checkpoint that actually blocks execution, an audit log with input validation, the agent running as a deployed service, and a portfolio-ready walkthrough.
+
+## Segment 5 (outro)
+
+Next up: Lesson 14, designing the actual tool set -- the two or three tools, with real schemas, that this whole project is built around.

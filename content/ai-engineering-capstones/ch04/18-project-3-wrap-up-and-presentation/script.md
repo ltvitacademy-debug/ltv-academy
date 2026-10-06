@@ -1,0 +1,21 @@
+# Script — Wrap-Up & Presentation
+
+## Segment 1 (title)
+
+Across five lessons you built a tool-using agent with a real safety architecture, not just a working demo: risk-classified tools, a pause-before-execute approval workflow, independent validation and audit logging, and a real deployment with durable state. That's a complete answer to a question every serious AI engineering role eventually asks -- how do you let a model take real actions safely.
+
+## Segment 2 (steps: demo both outcomes)
+
+Project 2's five-part structure still applies, with one change that matters specifically here: your demo needs to show the rejected path, not just the approved one. An agent that only ever gets approved doesn't prove the checkpoint works -- it proves you never tested the part that matters. Show a question that triggers the sensitive tool, reject it live, and show Claude's response. Then run it again and approve it.
+
+## Segment 3 (code: known limitations)
+
+Be specific. The reviewer interface is minimal, not production auth. Validation checks the amount but not every business rule. There's no rate limit on approval requests per conversation. And the audit log isn't yet wired to alerting on unusual patterns like repeated rejections. Specific gaps, not a vague "could be more secure."
+
+## Segment 4 (steps: three projects, one portfolio)
+
+With Project 3 wrapped, your portfolio has three distinct, real projects: a RAG knowledge assistant, an AI data analyst working with SQL and APIs, and a tool-using agent with human approval built in. That's a deliberately varied set -- retrieval, structured data, and action-taking -- covering the three shapes of AI application work most hiring managers actually see.
+
+## Segment 5 (outro)
+
+All three capstone projects are complete. Next up: Career Preparation -- turning these three projects into a resume, a portfolio presentation, and real interview answers.

@@ -1,0 +1,21 @@
+# Script — Designing the Tool Set
+
+## Segment 1 (title)
+
+The AI Agents course covered writing a detailed tool description -- what it does, when to use it, when not to, what each parameter means. That bar doesn't change here. What's new is the stakes: a poorly-described read-only tool wastes a turn if called wrong. A poorly-described action tool does something real.
+
+## Segment 2 (code: a read-only tool)
+
+Here's a worked example: a support-ticket agent. First, a read-only tool -- look_up_order -- that returns an order's status and total, makes no changes, and is safe to call freely whenever the agent needs order details.
+
+## Segment 3 (code: a high-risk action tool)
+
+Second, issue_refund -- a real action tool. Its description states it's irreversible once processed, that it should only run after look_up_order confirms the order, and that it must never refund more than the original paid total. Both are valid tool definitions Claude can call. Only one of them should ever run without a human looking at it first.
+
+## Segment 4 (steps: classify risk at design time)
+
+Alongside each tool's real definition, your application keeps its own metadata -- a risk tier and a requires-approval flag, not sent to Claude but used by your own code. Deciding this now, per tool, at design time, is what makes the approval checkpoint in the next lesson simple: it just checks a flag you already set.
+
+## Segment 5 (outro)
+
+With the tool set designed and each tool's risk tier decided, Lesson 15 builds the actual approval checkpoint that stands between a high-risk tool call and its execution.
