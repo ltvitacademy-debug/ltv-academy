@@ -1,0 +1,52 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for AI Engineering · Chapter 6",
+    "titlePlain": "Calling Multiple AI APIs ",
+    "titleEmphasis": "Concurrently",
+    "titleSuffix": "",
+    "subtitle": "Lesson 30 · Async Python for AI Workloads"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The concurrent rewrite",
+    "code": "async def call_api(client, prompt):\n    resp = await client.post(URL, json={\"prompt\": prompt})\n    return resp.json()[\"text\"]\n\nasync def main():\n    async with httpx.AsyncClient() as client:\n        coros = (call_api(client, p) for p in prompts)\n        return await asyncio.gather(*coros)",
+    "caption": "gather() runs every call concurrently — ~1s total, not ~3s."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What gather() guarantees",
+    "titlePlain": "Concurrent, but ",
+    "titleEmphasis": "ordered",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "All coroutines start together", "sub": "No waiting for one before the next" },
+      { "label": "Results come back as a list", "sub": "In the order you passed them in" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why not requests here",
+    "titlePlain": "requests still ",
+    "titleEmphasis": "blocks",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "requests.get() / .post()", "sub": "Synchronous — stalls the whole event loop" },
+      { "label": "httpx.AsyncClient / aiohttp", "sub": "Async-aware — awaitable, non-blocking" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "One failure shouldn't cancel the rest",
+    "code": "results = await asyncio.gather(\n    *(call_api(client, p) for p in prompts),\n    return_exceptions=True,\n)\nfor prompt, r in zip(prompts, results):\n    if isinstance(r, Exception):\n        print(f\"{prompt} failed: {r}\")",
+    "caption": "return_exceptions=True lets the batch finish even if some calls fail."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 7",
+    "titlePlain": "Writing Basic Unit ",
+    "titleEmphasis": "Tests",
+    "titleSuffix": "",
+    "subtitle": "Testing & Code Quality — proving code like this actually works."
+  }
+]

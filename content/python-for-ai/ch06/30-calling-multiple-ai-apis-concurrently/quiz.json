@@ -1,0 +1,60 @@
+{
+  "lesson": "calling-multiple-ai-apis-concurrently",
+  "questions": [
+    {
+      "q": "What does `asyncio.gather(*coroutines)` do?",
+      "options": [
+        "It runs the coroutines one after another and stops at the first one",
+        "It runs all the given coroutines concurrently and returns their results as a list, in the same order they were passed in",
+        "It merges multiple coroutine functions into a single function definition",
+        "It only works with exactly two coroutines at a time"
+      ],
+      "answer": 1,
+      "explain": "asyncio.gather() starts every coroutine it's given concurrently and collects all of their results into a list once all are finished, preserving the original input order regardless of finishing order."
+    },
+    {
+      "q": "Why can't `requests.get()` be used for the concurrent calls in this lesson's example?",
+      "options": [
+        "requests cannot make POST requests",
+        "requests requires a paid API key to function",
+        "requests does not support JSON responses",
+        "requests is synchronous — calling it inside an async function still blocks, which stalls the entire event loop for every other coroutine"
+      ],
+      "answer": 3,
+      "explain": "requests always blocks when it runs, with no awareness of the event loop. Using it inside async code would freeze the whole event loop during that call, defeating the purpose of going async in the first place — an async-aware client like httpx or aiohttp is required instead."
+    },
+    {
+      "q": "If you call `asyncio.gather(call_api(\"a\"), call_api(\"b\"), call_api(\"c\"))` and call_api(\"b\") happens to finish first, what order will the results list be in?",
+      "options": [
+        "[\"b\", \"a\", \"c\"] — whichever finishes first comes first",
+        "The order is random every time",
+        "[\"a\", \"b\", \"c\"] — the same order the coroutines were originally passed in",
+        "gather() raises an error if results don't finish in order"
+      ],
+      "answer": 2,
+      "explain": "gather() always returns results in the order the coroutines were passed in, regardless of which one actually completes first — this makes it safe to zip results back up with their original inputs."
+    },
+    {
+      "q": "By default, what happens if one coroutine passed to `asyncio.gather()` raises an exception?",
+      "options": [
+        "gather() cancels the other coroutines and raises the exception",
+        "gather() silently ignores the failed coroutine and continues with the rest",
+        "gather() retries the failed coroutine automatically up to three times",
+        "Nothing — exceptions inside coroutines are always suppressed"
+      ],
+      "answer": 0,
+      "explain": "By default, the first exception from any coroutine passed to gather() propagates out and cancels the other pending coroutines. return_exceptions=True is required to change that behavior."
+    },
+    {
+      "q": "What does passing `return_exceptions=True` to `asyncio.gather()` change?",
+      "options": [
+        "It prevents any exceptions from ever occurring",
+        "Failed coroutines return their exception as a value in the results list instead of cancelling the rest of the batch",
+        "It makes every coroutine run twice in case of failure",
+        "It converts all coroutines into synchronous functions"
+      ],
+      "answer": 1,
+      "explain": "With return_exceptions=True, a coroutine that raises doesn't cancel its siblings — its exception object is placed into the results list in its normal position, so the rest of the batch can still complete and you can check each result's type afterward."
+    }
+  ]
+}

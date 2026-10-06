@@ -1,0 +1,60 @@
+{
+  "lesson": "asyncio-fundamentals",
+  "questions": [
+    {
+      "q": "What does `asyncio.run(main())` do?",
+      "options": [
+        "It runs main() in a separate operating system process",
+        "It schedules main() to run every second indefinitely",
+        "It converts main() into a regular, non-async function",
+        "It creates an event loop, runs the given coroutine to completion, and then closes the loop"
+      ],
+      "answer": 3,
+      "explain": "asyncio.run() is the standard entry point for an async program: it sets up the event loop, drives the given coroutine to completion, and tears the loop down afterward. It's meant to be called once, at the top level."
+    },
+    {
+      "q": "In plain terms, what does the event loop do?",
+      "options": [
+        "It runs every coroutine in a separate CPU core simultaneously",
+        "It's a single-threaded scheduler that sets aside a coroutine when it awaits something slow, runs other ready coroutines, and resumes the first one once its wait is over",
+        "It repeatedly restarts the whole program until it succeeds",
+        "It compiles Python code into machine code for faster execution"
+      ],
+      "answer": 1,
+      "explain": "The event loop is single-threaded. Its job is to overlap waiting time: when a coroutine awaits something slow, the loop switches to another coroutine that's ready to make progress, rather than blocking the whole program."
+    },
+    {
+      "q": "Why does the two-`await`-in-a-row example (`await asyncio.sleep(1)` twice) still take about 2 seconds, not 1?",
+      "options": [
+        "Each await fully waits for its own coroutine to finish before the next line runs — await alone doesn't create concurrency",
+        "asyncio.sleep() is broken and always takes twice as long",
+        "Python requires a minimum 2-second delay for any async function",
+        "The event loop only allows one asyncio.sleep() call per program"
+      ],
+      "answer": 0,
+      "explain": "await just means \"run this and pause here until it's done.\" Chaining two awaits back to back is still sequential — concurrency requires starting both operations before awaiting either, which is what create_task() is for."
+    },
+    {
+      "q": "What does `asyncio.create_task()` do that a plain `await` does not?",
+      "options": [
+        "It deletes the coroutine without running it",
+        "It pauses the entire program until the task is manually resumed",
+        "It schedules the coroutine to start running immediately in the background, returning a Task you can await later — enabling true concurrency",
+        "It only works with synchronous functions, not coroutines"
+      ],
+      "answer": 2,
+      "explain": "create_task() kicks a coroutine off running right away, without blocking. Multiple create_task() calls can all be in flight before you await any of them, which is what lets their waits overlap."
+    },
+    {
+      "q": "In the lesson's final example, why does `await t1` followed by `await t2` take roughly 1 second total instead of 2, when each task sleeps for 1 second?",
+      "options": [
+        "Because await automatically halves all wait times",
+        "Because asyncio.sleep() ignores its argument the second time it's called",
+        "Because t2 doesn't actually run at all",
+        "Because both tasks were already started concurrently with create_task() before either was awaited, so their 1-second waits overlap"
+      ],
+      "answer": 3,
+      "explain": "Both t1 and t2 were already running in the background by the time the awaits happen (thanks to create_task()), so their waits overlap — the two awaits are just collecting results from work that's already mostly or fully done."
+    }
+  ]
+}
