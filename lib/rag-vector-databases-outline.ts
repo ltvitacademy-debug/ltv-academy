@@ -49,11 +49,11 @@ export const RAG_VECTOR_DATABASES_CHAPTERS: ChapterMeta[] = [
     title: "Vector Databases",
     lessons: [
       L(10, "vector-database-concepts", "Vector Database Concepts", { contentDir: "ch03/10-vector-database-concepts" }),
-      L(11, "popular-vector-databases-overview", "Popular Vector Databases, Overview"),
-      L(12, "indexing-strategies", "Indexing Strategies: HNSW & IVF"),
-      L(13, "metadata-filtering", "Metadata Filtering"),
-      L(14, "hybrid-search", "Hybrid Search: Vector + Keyword"),
-      L(15, "scaling-a-vector-database", "Scaling a Vector Database"),
+      L(11, "popular-vector-databases-overview", "Popular Vector Databases, Overview", { contentDir: "ch03/11-popular-vector-databases-overview" }),
+      L(12, "indexing-strategies", "Indexing Strategies: HNSW & IVF", { contentDir: "ch03/12-indexing-strategies" }),
+      L(13, "metadata-filtering", "Metadata Filtering", { contentDir: "ch03/13-metadata-filtering" }),
+      L(14, "hybrid-search", "Hybrid Search: Vector + Keyword", { contentDir: "ch03/14-hybrid-search" }),
+      L(15, "scaling-a-vector-database", "Scaling a Vector Database", { contentDir: "ch03/15-scaling-a-vector-database" }),
     ],
   },
   {

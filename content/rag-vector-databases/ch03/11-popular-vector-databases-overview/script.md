@@ -1,0 +1,21 @@
+# Script — Popular Vector Databases, Overview
+
+## Segment 1 (title)
+
+Pinecone, Qdrant, Weaviate, Chroma, Milvus — every name you hear in a RAG tutorial sorts into one of two categories: fully managed cloud, or open-source, self-hosted or embedded. The category tells you what you're signing up to operate, not which one has better search quality.
+
+## Segment 2 (steps: the two categories)
+
+Fully managed means you never run a server at all — Pinecone is managed-only, there's no self-hosted version to install. Open-source and self-hosted means you run the database yourself, typically in Docker or Kubernetes, like Qdrant, Weaviate, or Milvus at large scale. Embedded means it runs right inside your own application process with no separate server — that's Chroma's default mode, and it's the fastest thing to prototype with locally. Several of the open-source ones also now offer a managed cloud version of that same engine.
+
+## Segment 3 (screenshot: Qdrant Cloud's real console)
+
+Here's what "fully managed" actually looks like in practice — Qdrant Cloud's own cluster overview page. One node, its resources, and tabs for metrics, logs, and backups, all running on infrastructure you didn't have to provision or patch yourself. A managed Pinecone or Weaviate Cloud console hands you this exact same kind of screen, just styled differently.
+
+## Segment 4 (steps: a quick honest read on each)
+
+Pinecone: the fastest path from zero to a working index, nothing to run yourself. Qdrant: open-source, written in Rust, known for fast and flexible metadata filtering. Weaviate: open-source, ships built-in hybrid search and optional embedding modules. Chroma: embedded by default, the quickest local prototyping loop of any of them, with a cloud option now too for production.
+
+## Segment 5 (outro)
+
+None of this is a permanent ranking — every one of these ships new features constantly, and the right pick depends on your scale and ops budget. Next lesson: how these databases actually make nearest-neighbor search fast at scale, with HNSW and IVF indexing.
