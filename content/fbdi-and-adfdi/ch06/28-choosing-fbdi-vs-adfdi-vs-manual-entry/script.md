@@ -1,0 +1,21 @@
+# Script — Choosing FBDI vs. ADFdi vs. Manual Entry
+
+## Segment 1 (title)
+
+This course opened with four doors into Oracle Fusion and a promise that the right one depends on the job, not preference. Twenty-seven lessons later, you've built, broken, and fixed loads through two of those doors in real detail. This final lesson pulls it all into one framework.
+
+## Segment 2 (steps)
+
+Three questions, fully earned now. How many rows — a handful means manual entry or ADFdi, hundreds to tens of thousands means FBDI. How often — a one-time conversion or large scheduled batch means FBDI, interactive as-needed entry means ADFdi, continuous unattended feeds mean neither, that's REST API territory ahead. Who's doing the work, and how much review they want before it's final — immediate Excel validation means ADFdi, a technical load reviewed later through reports means FBDI.
+
+## Segment 3 (steps)
+
+Applied across five modules: FBDI for payroll journal feeds, ADFdi for a controller's ad-hoc entries. FBDI for a nightly supplier-portal invoice file, ADFdi for a handful that arrived by email. Receivables is almost always FBDI, since volume rarely originates from a person typing directly into Fusion. Fixed Assets uses FBDI for a legacy conversion, with Payables invoices feeding mass additions automatically either way. Bank statements are always FBDI — a recurring feed from the bank, never a manual or ADFdi candidate.
+
+## Segment 4 (steps)
+
+Every module in the last three chapters turned out to be the same handful of ideas, reapplied: data stages before it's real, a product-specific process applies business rules a format check never could, a rejected row with a reason is solvable, fix and resubmit only what failed, and purge only once nothing needs that evidence anymore.
+
+## Segment 5 (outro)
+
+This course completes the Data Loading and Integrations stage of the Oracle Fusion Financials Consultant path. Next up: REST APIs and Integration Fundamentals, which picks up exactly where lesson one's fourth door was left unopened — system-to-system integrations with no file, no spreadsheet, and no person clicking submit at all.

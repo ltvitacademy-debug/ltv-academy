@@ -1,0 +1,21 @@
+# Script — Downloading and Reading FBDI Templates
+
+## Segment 1 (title)
+
+Chapter one described FBDI as a pipeline. Now we open that pipeline up and look closely at its first physical artifact: the template itself. Every FBDI load starts with the same kind of file, and you need to recognize its layout on sight.
+
+## Segment 2 (steps)
+
+Oracle publishes a full set of these templates — one Excel workbook per import: Supplier Import, Journal Import, Payables Invoice Import, AutoInvoice Import, Mass Additions Import, and dozens more. Within Fusion itself, the scheduled process screen for an import job typically links back to the exact template you need.
+
+## Segment 3 (steps)
+
+Nearly every template follows the same structure. An Instructions tab explaining the template and holding the macro button you'll use to generate CSV files later. One or more data tabs, each matching a specific interface table — invoice headers and invoice lines, for example, live on two separate tabs because they're two separate tables. And column headers in row one that are literal interface-table column names, not just labels — which is why you never insert, delete, or reorder columns.
+
+## Segment 4 (steps)
+
+Because the columns map one-to-one to the interface table, reading a template is really reading the shape of a database table before you've touched the database. A column named SUPPLIER_NUM on the spreadsheet lands, unchanged, in a column named SUPPLIER_NUM in the interface table. That mapping is exactly what lets you trace a rejected row back to the rule it broke, later in this course.
+
+## Segment 5 (outro)
+
+There isn't one single Payables template — there's a Payables Invoice Import template, a Supplier Import template, and so on, each tied to a specific import process. Match the template name to the process you intend to run. Up next, lesson six: the rules for filling in a template correctly.

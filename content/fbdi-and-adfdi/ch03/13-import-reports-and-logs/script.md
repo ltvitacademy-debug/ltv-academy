@@ -1,0 +1,21 @@
+# Script — Import Reports and Logs
+
+## Segment 1 (title)
+
+A status of "Succeeded" tells you the job finished. It doesn't tell you what actually happened to your data. For that you need the process's own output: its log file, and for most import processes, a dedicated report.
+
+## Segment 2 (steps)
+
+Every process produces a log file — a technical, often verbose record of what it did internally, step by step. Most import processes also produce a report, formatted for a human reviewing the business outcome: rows read, rows succeeded, rows rejected, often broken down by reason. For day-to-day review, start with the report.
+
+## Segment 3 (steps)
+
+A typical execution report shows a total row count, a success count, a rejection count, and — this matters most — a listing of which specific rows were rejected and why. "980 succeeded, 20 rejected" without that detail is far less useful than a report showing exactly which 20 rows failed and the reason for each one.
+
+## Segment 4 (steps)
+
+From Scheduled Processes, a completed run exposes its report and log directly from its row. Use the process name, submission time, and the filters from last lesson to make sure you're opening the output for the run you actually care about, not an old one.
+
+## Segment 5 (outro)
+
+Even a report showing zero rejections deserves a sanity check — the log file can reveal that rows were dropped earlier in the pipeline, before the import process ever saw them, which wouldn't show up as a "rejection" at all. A clean report isn't proof everything you intended to load actually arrived. Up next, lesson fourteen: querying interface tables directly to see raw staged data yourself.

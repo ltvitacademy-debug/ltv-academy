@@ -1,0 +1,21 @@
+# Script — Generating CSV and ZIP Files
+
+## Segment 1 (title)
+
+Data entered into Excel doesn't move through the pipeline as an Excel file. It moves as CSV, packaged inside a ZIP archive. This lesson covers the mechanical step that turns a completed template into the file UCM actually expects.
+
+## Segment 2 (steps)
+
+Excel workbooks carry formatting, formulas, and structure the interface table doesn't care about. CSV strips all of that away — one line per row, fields separated by commas, just the data. It's a format every system involved can read without ambiguity, which is exactly why Oracle's import tooling expects it.
+
+## Segment 3 (code)
+
+Every template's Instructions tab has a macro-driven button, usually labeled "Generate CSV File." Clicking it reads every populated data tab and writes one CSV per tab, in the exact column order already built into the template. You never hand-build these files, and a manual Excel "Save As CSV" can't reliably guarantee the same result for multi-tab templates.
+
+## Segment 4 (steps)
+
+A template with two data tabs — invoice headers and invoice lines — generates two separate CSV files, because they map to two separate interface tables. Those files then get bundled into a single ZIP archive, because the next step expects one ZIP containing every CSV that belongs to that load, not a pile of loose files.
+
+## Segment 5 (outro)
+
+Because this is a macro, Excel's security settings have to allow it — a file downloaded from the internet often opens in Protected View with macros disabled. Enabling macros and exiting Protected View is the single most common blocker first-time users hit, and it has nothing to do with the data itself. Up next, lesson eight: the common template mistakes that cause rows to be rejected even after a clean upload.

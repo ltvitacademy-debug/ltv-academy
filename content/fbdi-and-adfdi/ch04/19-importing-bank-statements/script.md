@@ -1,0 +1,21 @@
+# Script — Importing Bank Statements
+
+## Segment 1 (title)
+
+Chapter four closes with the one Financials load in this course where the file usually doesn't start life as an Oracle template at all — it starts as a file your bank sends you. Bank statement import gets that external file into Cash Management so it can be reconciled.
+
+## Segment 2 (steps)
+
+Every other load in this course starts with an Oracle-published Excel template you fill in yourself. Bank statements are different — banks produce their own statement files in standardized banking formats. The most common is BAI2, a format from the Bank Administration Institute that banks already produce for account holders, independent of Oracle entirely. The file is already structured; your job is getting it in correctly, not building it from scratch.
+
+## Segment 3 (steps)
+
+Once loaded, bank statement data stages into Cash Management's statement interface, commonly CE_STATEMENT_HEADERS_INT, with corresponding line-level staging for individual transactions. Just like every other module, staging alone doesn't change anything in Oracle Fusion's reconciliation records yet — a separate loading process creates the real, usable statement.
+
+## Segment 4 (steps)
+
+A loaded bank statement becomes the external source of truth that reconciliation compares against your own recorded deposits, payments, fees, and interest. Without a correctly loaded statement, there's nothing to reconcile against, no matter how clean your internal records are.
+
+## Segment 5 (outro)
+
+That's also why statement imports typically run on a predictable, recurring cadence — daily or per statement cycle — rather than as a one-time conversion, because ongoing cash reconciliation depends on it happening regularly. Up next, Chapter five: what happens when any of these imports doesn't go as planned.

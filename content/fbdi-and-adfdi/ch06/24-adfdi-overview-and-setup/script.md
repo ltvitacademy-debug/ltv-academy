@@ -1,0 +1,21 @@
+# Script — ADFdi Overview and Setup
+
+## Segment 1 (title)
+
+Chapters one through five covered FBDI from every angle. Chapter six turns to the other tool in this course's title: ADF Desktop Integration, or ADFdi. This lesson introduces what it is, how it's installed, and how its whole approach differs from everything so far.
+
+## Segment 2 (steps)
+
+ADFdi extends Oracle's application framework into Excel, letting a live Fusion page talk directly to a spreadsheet. A user opens a "Create in Spreadsheet" action from a work area and gets a connected Excel workbook — it can download existing data, accept new or edited rows, and upload them back with the same validation the web page would apply, without ever leaving Excel.
+
+## Segment 3 (steps)
+
+Recall FBDI's pipeline: template, CSV, ZIP, UCM, two separate scheduled processes, interface tables as staging. ADFdi skips nearly all of that. No ZIP, no UCM upload, no separate load-then-import step. The spreadsheet talks to the application directly, and validation happens close to the moment of upload, not hours later in a report.
+
+## Segment 4 (steps)
+
+ADFdi depends on an Excel add-in installed on the user's machine first. Under Tools in the navigator, Download Desktop Integration provides the installer, commonly an MSI file for the current user. Running it adds the ADFdi ribbon and the connectivity Excel needs.
+
+## Segment 5 (outro)
+
+A few prerequisites commonly need to be true: a supported Excel version, macros enabled, and the add-in trusted rather than blocked by security settings. Skip one of these and you won't get a clear error — you'll get a missing ribbon or a silent upload, exactly the problem covered in lesson twenty-seven. Up next, lesson twenty-five: uploading journals with ADFdi, hands-on.

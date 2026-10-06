@@ -1,0 +1,21 @@
+# Script — Importing Payables Invoices
+
+## Segment 1 (title)
+
+Payables Invoice Import is one of the highest-volume FBDI loads most environments run, because it's the natural landing spot for invoices arriving from a supplier portal, a scanning tool, or a legacy system being retired.
+
+## Segment 2 (steps)
+
+An invoice has two levels: a header — supplier, invoice number, date, amount — and one or more lines, each with its own amount and account distribution. The template reflects this directly: header rows stage into AP_INVOICES_INTERFACE, line rows into AP_INVOICE_LINES_INTERFACE. One tab, one interface table, just like lesson five described.
+
+## Segment 3 (steps)
+
+A header row needs a supplier identifier, a unique invoice number for that supplier, a date, and an amount. A line row needs an amount and usually account distribution. The supplier identifier is a coded reference back to supplier records — an invoice can't import against a supplier that doesn't exist, which is why supplier conversions come before invoice conversions at go-live.
+
+## Segment 4 (steps)
+
+Import Payables Invoices validates that the supplier exists and is active, that line amounts sum correctly to the header total, and that account distributions are valid combinations. Rejected rows land in AP_INTERFACE_REJECTIONS, recording exactly which row failed and why — the same query technique from lesson fourteen applies directly here.
+
+## Segment 5 (outro)
+
+Picture a header invoice amount of five thousand dollars, but its lines sum to only forty-nine fifty — a fifty dollar gap, maybe a missing line. Every field format is fine, the file stages without complaint, and the rejection only surfaces when the import checks that lines sum to the header total. Up next, lesson seventeen: importing receivables transactions with AutoInvoice.

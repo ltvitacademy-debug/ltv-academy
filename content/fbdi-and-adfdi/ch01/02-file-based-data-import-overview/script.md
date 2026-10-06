@@ -1,0 +1,21 @@
+# Script — File-Based Data Import Overview
+
+## Segment 1 (title)
+
+File-Based Data Import, or FBDI, is Oracle's standard tool for loading large volumes of data using spreadsheet templates. Remember one thing above everything else: FBDI never writes straight into the real application tables. It always lands first in a staging area, and only moves forward after a second process checks it.
+
+## Segment 2 (steps)
+
+Every FBDI load is built from the same three pieces. A template: a pre-built Excel workbook whose columns match an interface table. Interface tables: plain staging tables where a row sits, parked, affecting nothing, until it's checked. And import processes: scheduled jobs that validate each staged row and, for every row that passes, create the real record. Rows that fail stay behind as rejections you can inspect.
+
+## Segment 3 (steps)
+
+Why not just let people paste rows into the web page? Fusion's transaction pages are built for one record at a time with real-time validation on every keystroke. That's right for a single invoice. It falls apart at forty thousand rows — nobody is opening a form that many times. FBDI lets that same volume pass through the same rules, in bulk, through files instead of a form.
+
+## Segment 4 (steps)
+
+FBDI fits large one-time loads, like converting a legacy supplier list at go-live, and large recurring batches, like a monthly file of thousands of transactions from another system. It's the wrong tool for five journal lines this afternoon, and the wrong tool for a live, continuous, second-by-second feed — that's a job for a REST API integration instead.
+
+## Segment 5 (outro)
+
+Three building blocks, two stages, and a clear sense of when it's the right call. Up next, lesson three: we walk the entire FBDI process end to end, from downloading a template to a completed import.
