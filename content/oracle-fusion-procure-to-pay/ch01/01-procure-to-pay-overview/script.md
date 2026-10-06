@@ -1,0 +1,21 @@
+# Script — Procure-to-Pay Overview
+
+## Segment 1 (title)
+
+Welcome to Oracle Fusion Procure-to-Pay. You already know General Ledger, Payables, Receivables, and the other Financials modules on their own. This course is different — it follows one purchasing transaction through all of them, in order, so you can see how the pieces actually connect.
+
+## Segment 2 (steps)
+
+Procure-to-pay has five stages. A requisition starts it: someone inside the company asks for goods or services. A purchase order turns that request into a binding agreement with a supplier. A receipt confirms the goods arrived or the service was done. An invoice gets matched and validated. And finally, payment goes out and the accounting posts to the ledger.
+
+## Segment 3 (steps)
+
+Each of those five stages usually belongs to a different person using a different work area. A requester never opens Payables. An AP processor rarely opens a requisition. That's exactly why problems are hard to trace — and exactly why this course follows the whole chain instead of one module at a time.
+
+## Segment 4 (steps)
+
+To keep it concrete, every lesson in this course follows one fictional company, LTV Manufacturing Corporation, and one fictional transaction: the plant's maintenance team needs replacement pump bearings from a supplier called Meridian Bearing Supply Co. You'll meet the requester, the buyer, the receiving clerk, and the AP processor by name.
+
+## Segment 5 (outro)
+
+Everything here — the company, the people, the transaction — is invented for teaching purposes. Oracle Fusion Cloud is login-gated software with no public screenshots, so this course uses diagrams and clear description instead. Up next, lesson two: the roles and work areas involved in procurement.

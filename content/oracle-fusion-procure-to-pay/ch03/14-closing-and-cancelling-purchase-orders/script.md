@@ -1,0 +1,21 @@
+# Script — Closing and Cancelling Purchase Orders
+
+## Segment 1 (title)
+
+Not every purchase order ends the same way. Let's cover how a purchase order reaches the end of its life, and the real difference between closing it and cancelling it.
+
+## Segment 2 (steps)
+
+After approval, a purchase order is Open. From there, it can become Closed for Receiving once no more receiving is expected, Closed for Invoicing once no more invoicing is expected, Closed once no fulfillment activity of any kind remains, and finally, Finally Closed - fully done and eligible for archiving.
+
+## Segment 3 (steps)
+
+Cancelled is a different outcome entirely. Closing assumes the order was fulfilled as intended. Cancelling means it won't be fulfilled at all - maybe the need went away, or the supplier can't deliver. Cancelling something that already has a receipt or invoice against it is restricted, since reversing real financial activity isn't simple.
+
+## Segment 4 (steps)
+
+In this course's clean path, Meridian ships all fifty bearings, LTV receives and invoices the full quantity, and the purchase order progresses naturally - Closed for Receiving, then Closed for Invoicing, then Finally Closed. Nothing here needs to be cancelled.
+
+## Segment 5 (outro)
+
+Cancellation becomes relevant in chapter six, when this course works through exception scenarios where things don't play out so cleanly. Up next, chapter four: receiving the bearings at LTV's dock.

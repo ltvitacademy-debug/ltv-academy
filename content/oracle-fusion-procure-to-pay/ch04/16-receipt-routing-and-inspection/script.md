@@ -1,0 +1,21 @@
+# Script — Receipt Routing and Inspection
+
+## Segment 1 (title)
+
+Priya's receipt exists, but the bearings haven't actually made it into usable inventory yet. Let's cover receipt routing - the path a shipment takes before it's put away, and why these bearings get inspected first.
+
+## Segment 2 (steps)
+
+There are three routing methods. Direct delivery receives and puts away in one step, no inspection. Standard receipt separates receiving from put-away, with room for a light review in between. Inspection required adds a formal accept-or-reject step before anything gets put away at all.
+
+## Segment 3 (steps)
+
+LTV routes this bearing for inspection, not direct delivery, because a defective bearing in a production motor can cause real downtime or equipment damage. That's configured per item or per order, not globally - a low-risk office supply might stay on direct delivery.
+
+## Segment 4 (steps)
+
+After Priya's receipt, the quantity sits in an inspection queue. An inspector checks it against the purchase order's specification and records a disposition - accept, reject, or a split if only part of it passes. In this case, all fifty bearings pass cleanly and are accepted in full.
+
+## Segment 5 (outro)
+
+Routing can even be overridden at the point of receipt for a suspicious shipment, though that's an exception, not the normal flow here. Up next, lesson seventeen: what happens on the rare occasions a shipment doesn't pass - returns and corrections.
