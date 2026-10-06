@@ -1,0 +1,36 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "APIs & JSON for AI Applications · Chapter 4, Lesson 18",
+    "titlePlain": "Error Handling ",
+    "titleEmphasis": "& Retries",
+    "titleSuffix": "",
+    "subtitle": "Putting Lesson 14's knowledge inside the client itself"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Giving errors real names",
+    "code": "class RateLimitError(Exception):\n    pass\n\nclass APIError(Exception):\n    def __init__(self, status_code, message):\n        super().__init__(message)\n        self.status_code = status_code",
+    "caption": "Callers catch RateLimitError by name instead of checking raw status codes."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The retry loop, inside send_message",
+    "code": "for attempt in range(3):\n    resp = self.session.post(url, json=body)\n    if resp.status_code == 429 or resp.status_code >= 500:\n        if attempt < 2:\n            time.sleep(2 ** attempt)\n            continue\n        raise RateLimitError(\"Retries exhausted\")\n    resp.raise_for_status()\n    return resp.json()",
+    "caption": "429 and 5xx retry with backoff; everything else fails immediately."
+  },
+  {
+    "type": "code",
+    "eyebrow": "What the caller gets",
+    "code": "try:\n    reply = client.send_message(\"claude-sonnet-5\", messages)\nexcept RateLimitError:\n    print(\"Still rate-limited after retries.\")",
+    "caption": "No raw status codes, no retry logic duplicated across the codebase."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 19",
+    "titlePlain": "Rate Limiting ",
+    "titleEmphasis": "& Backoff",
+    "titleSuffix": "",
+    "subtitle": "Not triggering those 429s in the first place"
+  }
+]

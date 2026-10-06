@@ -1,0 +1,60 @@
+{
+  "lesson": "error-handling-and-retries",
+  "questions": [
+    {
+      "q": "Why define a custom exception like RateLimitError instead of making callers check resp.status_code themselves?",
+      "options": [
+        "Custom exceptions run faster than status code checks",
+        "It gives callers a clean, named error to catch instead of inspecting raw HTTP codes everywhere",
+        "requests cannot return status codes",
+        "It's required by the Messages API"
+      ],
+      "answer": 1,
+      "explain": "A custom exception centralizes the meaning of 'this failed in a retryable way' into one clearly named type callers can catch."
+    },
+    {
+      "q": "In the retry loop example, which status codes trigger a retry with backoff?",
+      "options": [
+        "400 and 401 only",
+        "404 only",
+        "429 and any 5xx status",
+        "Every status code, including 200"
+      ],
+      "answer": 2,
+      "explain": "429 (rate limit) and 5xx (server-side) are the transient failures worth retrying, matching Lesson 14's guidance."
+    },
+    {
+      "q": "What happens in the example loop when a non-retryable error (like a 400) comes back?",
+      "options": [
+        "resp.raise_for_status() raises immediately — no retry happens",
+        "It's silently ignored and None is returned",
+        "It retries exactly like a 429 would",
+        "The program exits without an exception"
+      ],
+      "answer": 0,
+      "explain": "Only 429/5xx trigger the retry branch; anything else falls through to raise_for_status(), which raises right away."
+    },
+    {
+      "q": "Why does this lesson put the retry logic inside the client class's send_message method, rather than in each calling script?",
+      "options": [
+        "Python classes execute retries automatically with no code needed",
+        "So every caller gets consistent resilience without duplicating (and potentially mis-copying) the same loop everywhere",
+        "Because retry logic cannot exist outside a class",
+        "It has no real benefit, it's just a style preference"
+      ],
+      "answer": 1,
+      "explain": "Centralizing retry logic on the class means one correct implementation benefits every caller, instead of twenty copy-pasted (and possibly buggy) versions."
+    },
+    {
+      "q": "What does raise RateLimitError(\"Retries exhausted\") communicate that returning None would not?",
+      "options": [
+        "Nothing — they're functionally identical",
+        "It explicitly signals failure, forcing the caller to handle it instead of silently treating a failure as a valid empty result",
+        "It automatically retries one more time",
+        "It converts the error into a successful response"
+      ],
+      "answer": 1,
+      "explain": "Raising an exception makes a failure impossible to silently ignore; returning None could be mistaken for a legitimate (if empty) result."
+    }
+  ]
+}

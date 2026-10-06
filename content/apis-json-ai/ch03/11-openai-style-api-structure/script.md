@@ -1,0 +1,47 @@
+# Lesson 11 — OpenAI-Style API Structure · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Every chapter so far has been pointed at this moment. AI provider APIs are
+just REST APIs — the ones you already know how to read — speaking a very
+specific dialect of JSON. Today we look at the real shape of that dialect.
+
+## S2 · CODE CARD (Anthropic Messages API request)
+
+Here's a real request to Anthropic's Messages API. A model name, a max
+tokens limit, and a messages array — each message has a role and content.
+If that looks familiar, it's because it's the exact request-response
+pattern from chapter one, just with AI-specific fields.
+
+## S3 · CODE CARD (Anthropic Messages API response)
+
+And the real response. Notice content is an array of blocks, not a plain
+string — hang onto that, because lesson thirteen will show you exactly why
+that matters once tool calls get involved. Stop reason tells you why the
+model stopped talking, and usage tells you, and your bill, what that call
+actually cost.
+
+## S4 · CODE CARD (OpenAI-style Chat Completions response)
+
+Now here's why this course says "OpenAI-style." A huge number of other
+providers, and even open-source tools like vLLM and Ollama, mimic this
+exact response shape. The reply text lives at choices zero, message,
+content — wrapped in a choices array, because technically you can ask for
+more than one candidate answer back.
+
+## S5 · STEPS CARD (field-name comparison)
+
+So here's the cheat sheet. Reply text: content zero text on Anthropic,
+choices zero message content on OpenAI-style. Why it stopped: stop reason
+versus finish reason. Cost: input and output tokens versus prompt and
+completion tokens. Different vocabulary, same underlying idea.
+
+## S6 · OUTRO CARD
+
+Model in, messages in, JSON out — that's the whole shape, however a
+provider chooses to spell its field names. Next lesson, we open that
+response up and watch it arrive one word at a time: streaming.

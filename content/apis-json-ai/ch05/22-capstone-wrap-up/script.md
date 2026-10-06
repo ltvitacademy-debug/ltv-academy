@@ -1,0 +1,40 @@
+# Lesson 22 — Capstone: Wrap-Up & Portfolio Presentation · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+You've got a real, working AI API client. This last lesson is about
+presenting it well, recapping how we got here, and pointing you toward
+what's next.
+
+## S2 · STEPS CARD (one-minute interview answer)
+
+Practice this out loud: what it does, in one sentence. The one hardest
+decision you made — deciding which errors to retry and which to fail
+immediately is a genuinely good answer. And how you proved it works: mocked
+tests that simulate a rate limit and confirm the client actually recovers.
+Three parts, under a minute, and it's a far stronger answer than "I built
+an API wrapper."
+
+## S3 · STEPS CARD (full course recap)
+
+Here's the whole course in one page. Chapters one and two gave you REST
+and JSON fundamentals. Chapter three showed you the real shapes AI
+provider APIs actually use. Chapter four turned that into a real client
+class. And this capstone combined all of it into one real project.
+
+## S4 · CODE CARD (README shape)
+
+So before you call it finished, write the README. What it does, in two
+sentences. What it handles, as a bullet list. And the exact command
+someone else would run to execute your tests themselves.
+
+## S5 · OUTRO CARD
+
+This is the third course in the AI Engineer path. Next up: AI/ML
+Foundations — where you stop just calling AI models through an API, and
+start understanding how the models themselves actually work. Congratulations
+on finishing this course.
