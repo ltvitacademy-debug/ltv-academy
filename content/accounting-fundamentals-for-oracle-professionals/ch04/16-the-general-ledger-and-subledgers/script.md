@@ -1,0 +1,21 @@
+# Script — The General Ledger and Subledgers
+
+## Segment 1 (title)
+
+This is arguably the single most important lesson in the entire course for a future Oracle Fusion consultant. The general ledger and subledger relationship is the literal architecture of Oracle Fusion Financials.
+
+## Segment 2 (steps)
+
+The general ledger is the master record of every account and its balance - where the big picture financial statements get built. Historically, every transaction was recorded directly into it. As businesses grew, posting millions of individual invoices directly into the main ledger became unworkable - it buried the big picture in overwhelming detail.
+
+## Segment 3 (steps)
+
+A subledger is a detailed, specialized ledger tracking one category of transactions in depth, then periodically summarizing into the GL. Accounts payable tracks every supplier invoice. Accounts receivable tracks every customer invoice. Fixed assets tracks every individual asset and its depreciation schedule.
+
+## Segment 4 (code)
+
+Picture the flow: twelve hundred supplier invoices in accounts payable become one summarized journal entry in the general ledger. Thirty-four hundred customer invoices in receivables become one summarized entry. The detail isn't lost - a well-designed system lets you drill down from a GL balance back to the individual transactions.
+
+## Segment 5 (outro)
+
+Oracle Fusion Financials is built around exactly this pattern. Payables, Receivables, and Fixed Assets are subledgers. General Ledger is the summary level. Subledger Accounting is the engine in between, turning transaction detail into correctly formed GL entries. Up next, lesson seventeen: the trial balance.

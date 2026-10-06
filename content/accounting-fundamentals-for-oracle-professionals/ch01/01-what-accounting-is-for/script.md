@@ -1,0 +1,21 @@
+# Script — What Accounting Is For
+
+## Segment 1 (title)
+
+Welcome to Accounting Fundamentals for Oracle Professionals, the first course in the Oracle Fusion Financials Consultant path. No accounting background is assumed. We start with the most basic question: what is accounting actually for?
+
+## Segment 2 (steps)
+
+Picture a business with no accounting system at all. It buys inventory, pays employees, sells products, borrows money — dozens of events a day. Without a structured way to record those events, nobody can answer basic questions, like whether the business made money this month. Accounting is the discipline that gives a business a reliable memory of what happened.
+
+## Segment 3 (steps)
+
+That memory isn't just for the business owner. Owners and investors read it to judge profitability. Lenders read it to judge whether they'll get repaid. Managers use it to decide things like opening a new location. Tax authorities require it for compliance. Because so many different people rely on the same numbers for different decisions, those numbers need shared, trustworthy rules.
+
+## Segment 4 (steps)
+
+It helps to separate two words people use interchangeably. Bookkeeping is the mechanical, day to day recording of transactions. Accounting is the broader discipline: it includes bookkeeping, but also classifying transactions correctly and summarizing everything into financial statements that tell a coherent story.
+
+## Segment 5 (outro)
+
+Here's why this matters for you specifically. Oracle Fusion Financials is a large, configurable machine for doing exactly this job: capturing transactions, applying accounting rules, and producing financial statements. If you don't understand what those statements are for, you'll configure screens without knowing why they matter. Up next, lesson two: the accounting equation.

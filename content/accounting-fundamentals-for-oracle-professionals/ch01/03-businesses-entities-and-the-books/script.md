@@ -1,0 +1,21 @@
+# Script — Businesses, Entities and the Books
+
+## Segment 1 (title)
+
+Before we get into debits and credits, there's one more foundational idea: the entity, and why every entity keeps its own separate books. This maps almost directly onto something you'll meet constantly in Oracle Fusion: the ledger.
+
+## Segment 2 (steps)
+
+Accounting assumes a business is a distinct unit, separate from its owners and from any other business. That's the economic entity assumption. A company's books only record that company's transactions — not the owner's personal expenses, not a sister company's payroll. Good accounting software, including Oracle Fusion, strictly separates entities so one never contaminates another.
+
+## Segment 3 (steps)
+
+How a business is legally organized affects some details, though the core mechanics stay the same. A sole proprietorship has one owner. A partnership splits profit and equity among several owners. A corporation is legally separate from its shareholders entirely. A single real company can even be several legal entities that later get consolidated for overall reporting.
+
+## Segment 4 (steps)
+
+In Oracle Fusion, a ledger represents one accounting book for one entity. Every ledger is defined by three things that have to stay consistent: a chart of accounts to classify transactions, a currency, and a calendar of fiscal periods. A company operating in the US and in Germany would typically need two separate ledgers, one per currency and calendar.
+
+## Segment 5 (outro)
+
+That's the entity concept, implemented directly as software architecture — which is why understanding it now makes the Oracle Fusion configuration make sense later. That closes out chapter one. Up next, chapter two and lesson four: debits and credits explained.

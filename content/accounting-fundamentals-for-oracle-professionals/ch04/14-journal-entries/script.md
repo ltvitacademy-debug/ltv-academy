@@ -1,0 +1,21 @@
+# Script — Journal Entries
+
+## Segment 1 (title)
+
+You've already been writing journal entries informally since chapter two. This lesson formalizes the format and extends it to entries with more than two lines.
+
+## Segment 2 (steps)
+
+A properly formatted journal entry has a date, debit lines listed first, credit lines listed second and indented further, and a memo explaining what it represents. That memo matters enormously later, when someone - possibly you, months from now - needs to understand why it was recorded.
+
+## Segment 3 (steps)
+
+A simple entry has exactly one debit and one credit line - every example so far has been simple. A compound entry has more lines total, several debits, several credits, or both, but the rule never changes: total debits must still equal total credits across the entire entry.
+
+## Segment 4 (code)
+
+Picture a fictional bakery, Millbrook Bread Co., paying two thousand cash and taking a six thousand dollar loan to buy an eight thousand dollar oven. Debit equipment eight thousand. Credit cash two thousand. Credit notes payable six thousand. Three lines, but debits and credits both total eight thousand.
+
+## Segment 5 (outro)
+
+Every transaction inside Oracle Fusion Financials ultimately becomes a journal entry with this exact anatomy. The Subledger Accounting engine you'll study later is, at its core, a rules engine that turns subledger transactions into entries shaped exactly like these. Up next, lesson fifteen: adjusting and reversing entries.
