@@ -1,0 +1,25 @@
+# Script — Schema Design Basics
+
+## Segment 1 (title)
+
+Every piece from Chapter 1 through Lesson 19 is now on the table: objects, fields, five relationship types, Record Types. This lesson doesn't add a new building block — it's about the judgment calls you make combining them into an actual schema.
+
+## Segment 2 (steps: four principles)
+
+Four habits separate a maintainable schema from a fragile one. Start from the business process, not the object palette — understand how work actually happens before modeling it. Reuse standard objects before building custom ones. Watch the relationship type you pick, not just the fact that two objects connect. And keep naming consistent, because renaming later touches every formula and report that references the old name.
+
+## Segment 3 (screenshot: dense object)
+
+Schema Builder makes one warning sign visible fast: an object with relationship lines fanning out to a dozen others. Sometimes that's a genuinely central concept — User legitimately connects to a lot. But on an object that isn't naturally central to the business, that density is worth a second look — it can mean unrelated concerns got bolted onto one object instead of being modeled properly.
+
+## Segment 4 (steps: reuse checklist)
+
+Before creating a custom object, three questions: does a standard object already represent this concept? Could a Record Type narrow it to fit? Could a few custom fields close the gap instead of a whole new object?
+
+## Segment 5 (code: naming convention example)
+
+A field called Close Date on one object and Closed On on another — same meaning, different name — costs real time in every report and formula that touches both. Pick a convention early: consistent suffixes, consistent pluralization, consistent abbreviations.
+
+## Segment 6 (outro)
+
+Next up: Schema Builder itself — the visual tool that makes all of this, objects, fields, relationships, actually visible on one canvas.

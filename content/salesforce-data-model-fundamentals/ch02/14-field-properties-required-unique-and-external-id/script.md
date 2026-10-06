@@ -1,0 +1,25 @@
+# Script — Field Properties: Required, Unique, and External ID
+
+## Segment 1 (title)
+
+A field's data type decides what kind of value it holds. A separate set of checkboxes decides how that value behaves: whether it can be blank, whether it can repeat, and whether the outside world can use it to find a record.
+
+## Segment 2 (screenshot: new button)
+
+These properties live on the same New Custom Field flow every other field type uses — Required blocks a blank save everywhere, the UI, the API, an import, a Flow. Unique rejects a save if the value already exists on another record, with a choice of case-sensitive or case-insensitive matching.
+
+## Segment 3 (screenshot: external ID column)
+
+External ID is the one built for integrations specifically — it marks a field as holding a value that originates outside Salesforce, like a legacy system's customer number. Checking it indexes the field and makes it usable as the matching key for an upsert.
+
+## Segment 4 (steps: three properties)
+
+Three properties, three jobs: Required blocks blanks, Unique blocks repeats, External ID makes a field the bridge an outside integration matches on.
+
+## Segment 5 (code: upsert example)
+
+That's the shape of an upsert call — give it the object, the External ID field to match on, and a batch of records. Salesforce updates anything that matches and inserts everything else.
+
+## Segment 6 (outro)
+
+Next up: standard versus custom fields — what you can and can't change once a field already exists on the object.
