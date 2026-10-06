@@ -1,0 +1,39 @@
+# Lesson 24 — Lineage From Azure Data Factory and Synapse · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2-3 minutes total.
+
+## S1 · TITLE
+
+Lesson 23 covered lineage in general. Now the two sources that generate most of it in practice: Azure Data Factory, and Azure Synapse.
+
+## S2 · STEPS — Connecting the pipeline
+
+Nothing reports automatically until you connect it. In Purview's management center, you link up to ten Data Factory accounts at a time, each one authenticated through its managed identity holding the Data Curator role on Purview's root collection. Synapse workspaces connect the same way, and multiple workspaces can feed one Purview account.
+
+## S3 · SCREENSHOT — The connection list
+
+Two Data Factory accounts, both Connected. Disconnected means the factory's actually linked to a different Purview account; Unknown just means the current user can't see its status.
+
+## S4 · STEPS — Only three activities report
+
+Once connected, Purview captures lineage from exactly three activity types: Copy Data, Data Flow, and Execute SSIS Package. Synapse reports the same way minus SSIS, since Synapse doesn't run SSIS packages. And here's the catch — if a source or sink isn't in Purview's supported subset, lineage gets dropped silently. No error. Worth remembering before you trust an empty lineage graph.
+
+## S5 · SCREENSHOT — The 1:1 pattern
+
+The pattern you'll see constantly: one source, one process, one sink. A Customer SQL table, through a Copy activity, into a Customer1.csv file. Wildcard copies render the same way, but Purview captures file-level lineage for every individual file matched, not one generic blob.
+
+## S6 · SCREENSHOT — The n:1 pattern
+
+Data Flow activities that merge sources show up differently — several inputs converging on one process, into one sink. Customer.csv and Sales.parquet both feeding a Data Flow that produces one companydata output. Purview shows which sources and sinks were involved, but not the join or transformation logic inside the data flow itself.
+
+## S7 · SCREENSHOT — Confirming a run actually reported
+
+Lineage ingestion is asynchronous, so a pipeline can succeed without you knowing whether its lineage landed. Synapse's monitoring view has a dedicated Lineage status icon next to each activity run — select it, or check the run's output JSON, to confirm.
+
+## S8 · SCREENSHOT — What it looks like once it lands
+
+And here's that lineage, landed: IngestData, an Azure Synapse Copy Activity, moving SumTotal from CustomerOrders into CustomerOrders.csv — with that one column selected and highlighted on both sides. Same Lineage tab mechanics as any other asset.
+
+## S9 · OUTRO
+
+Next lesson: lineage from Fabric and Power BI — where it picks up once your data reaches the reporting layer.
