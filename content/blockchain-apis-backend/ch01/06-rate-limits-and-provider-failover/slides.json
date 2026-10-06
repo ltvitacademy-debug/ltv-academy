@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Blockchain APIs & Backend Development · Chapter One",
+    "titlePlain": "Rate Limits & Provider ",
+    "titleEmphasis": "Failover",
+    "titleSuffix": "",
+    "subtitle": "Lesson 6 · Talking to the Chain"
+  },
+  {
+    "type": "screenshot",
+    "file": "alchemy-pricing.jpg",
+    "eyebrow": "Real, published limits",
+    "caption": "Alchemy's actual tiers — 25 req/s free, 300+ on Pay as You Go.",
+    "annotations": [
+      {"shape": "box", "x": 0.105, "y": 0.715, "w": 0.16, "h": 0.04, "label": "The free-tier ceiling", "labelPos": "bottom"}
+    ]
+  },
+  {
+    "type": "screenshot",
+    "file": "infura-pricing.jpg",
+    "eyebrow": "Credits, not just requests",
+    "caption": "Infura's model: a daily credit budget plus a per-second cap.",
+    "annotations": [
+      {"shape": "box", "x": 0.055, "y": 0.685, "w": 0.145, "h": 0.04, "label": "500 credits/sec, free", "labelPos": "bottom"}
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Don't hammer a 429",
+    "code": "async function callWithBackoff(fn, maxRetries = 5) {\n  for (let attempt = 0; attempt < maxRetries; attempt++) {\n    try {\n      return await fn();\n    } catch (err) {\n      if (err.code !== 429 && !/rate limit/i.test(err.message)) throw err;\n      const delay = 2 ** attempt * 250; // 250ms, 500ms, 1s, 2s, 4s...\n      await new Promise((r) => setTimeout(r, delay));\n    }\n  }\n  throw new Error(\"Exceeded retries after repeated rate limiting\");\n}",
+    "caption": "Exponential backoff: wait a little, then a lot more."
+  },
+  {
+    "type": "screenshot",
+    "file": "alchemy-status-page.jpg",
+    "eyebrow": "Rate limits aren't the only risk",
+    "caption": "A real, live status page — providers have incidents too."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Configuring failover",
+    "code": "// ethers v6 -- FallbackProvider\nconst provider = new ethers.FallbackProvider([\n  { provider: new ethers.JsonRpcProvider(ALCHEMY_URL), priority: 1, weight: 1 },\n  { provider: new ethers.JsonRpcProvider(INFURA_URL), priority: 2, weight: 1 },\n]);\n\n// viem -- fallback transport\nconst client = createPublicClient({\n  chain: mainnet,\n  transport: fallback([http(ALCHEMY_URL), http(INFURA_URL)], { rank: true }),\n});",
+    "caption": "Slow, erroring, or rate-limited? The next endpoint takes over."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 2",
+    "titlePlain": "Event Listening ",
+    "titleEmphasis": "Fundamentals",
+    "titleSuffix": "",
+    "subtitle": "From reading and sending to reacting in real time."
+  }
+]

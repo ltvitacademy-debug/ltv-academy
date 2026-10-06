@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Blockchain APIs & Backend Development · Chapter Two",
+    "titlePlain": "Building a Simple Event ",
+    "titleEmphasis": "Listener Service",
+    "titleSuffix": "",
+    "subtitle": "Lesson 10 · Listening for On-Chain Events"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Four real jobs, not one",
+    "code": "1. Connect   -> a resilient provider (Lesson 6: failover, retries)\n2. Catch up  -> backfill events missed since the service last ran\n3. Listen    -> react to new events as they happen (Lessons 7-8)\n4. Confirm   -> don't treat an event as final too early (Lesson 9)",
+    "caption": "A bare contract.on() call is only step 3."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Connect + remember where you left off",
+    "code": "const provider = new ethers.FallbackProvider([\n  { provider: new ethers.JsonRpcProvider(ALCHEMY_URL), priority: 1 },\n  { provider: new ethers.JsonRpcProvider(INFURA_URL), priority: 2 },\n]);\nconst token = new ethers.Contract(TOKEN_ADDRESS, abi, provider);\n\nfunction loadLastBlock(currentBlock) {\n  if (!fs.existsSync(PROGRESS_FILE)) return currentBlock - 1000;\n  return JSON.parse(fs.readFileSync(PROGRESS_FILE, \"utf8\")).lastBlock;\n}",
+    "caption": "last-block.json: the simplest honest version of a checkpoint."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Confirm before acting",
+    "code": "async function handleTransfer(from, to, value, event) {\n  const receipt = await event.getTransactionReceipt();\n  const current = await provider.getBlockNumber();\n  if (current - receipt.blockNumber < CONFIRMATIONS) return; // too early\n\n  console.log(`Transfer ${from} -> ${to}: ${value}`);\n  saveLastBlock(receipt.blockNumber);\n}",
+    "caption": "Skip anything a reorg could still erase, rather than act on it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Catch up, then listen",
+    "code": "const missed = await token.queryFilter(\"Transfer\", lastBlock + 1, currentBlock);\nfor (const event of missed) {\n  await handleTransfer(...event.args, event);\n}\n\ntoken.on(\"Transfer\", handleTransfer); // everything from here on\nconsole.log(`Caught up on ${missed.length} missed events`);",
+    "caption": "Same handler for backfilled history and live events."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 3",
+    "titlePlain": "Why You Can't Just ",
+    "titleEmphasis": "Query the Chain",
+    "titleSuffix": "",
+    "subtitle": "When a JSON checkpoint file isn't enough anymore."
+  }
+]

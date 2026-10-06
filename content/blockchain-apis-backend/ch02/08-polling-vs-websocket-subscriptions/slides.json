@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Blockchain APIs & Backend Development · Chapter Two",
+    "titlePlain": "Polling vs. WebSocket ",
+    "titleEmphasis": "Subscriptions",
+    "titleSuffix": "",
+    "subtitle": "Lesson 8 · Listening for On-Chain Events"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Two ways to find out \"anything new?\"",
+    "code": "POLLING                          WEBSOCKET SUBSCRIPTION\n--------                          -----------------------\nYour code asks, on a timer:       You open one persistent connection:\n  \"anything new since block N?\"     eth_subscribe(\"logs\", filter)\nProvider answers each time        Provider PUSHES new logs to you\n  (eth_getLogs under the hood)      the instant they're mined\nWorks over plain HTTP              Needs a wss:// endpoint\nLatency = your poll interval       Latency = real network speed",
+    "caption": "Both land in the same callback -- the discovery method differs."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Choosing explicitly (ethers.js)",
+    "code": "// Polling -- plain HTTPS provider\nconst httpProvider = new ethers.JsonRpcProvider(HTTPS_URL);\nhttpProvider.pollingInterval = 4000; // ms, default is 4000\ncontract.on(\"Transfer\", handler);\n\n// Subscription -- WebSocket provider\nconst wsProvider = new ethers.WebSocketProvider(WSS_URL);\nconst wsContract = new ethers.Contract(ADDRESS, abi, wsProvider);\nwsContract.on(\"Transfer\", handler); // pushed, no interval",
+    "caption": "The provider type decides the mechanism, not the .on() call."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Choosing explicitly (viem)",
+    "code": "// Polling\nconst pollingClient = createPublicClient({ chain: mainnet, transport: http(HTTPS_URL) });\npollingClient.watchContractEvent({ ...,  pollingInterval: 1_000 });\n\n// Subscription\nconst wsClient = createPublicClient({ chain: mainnet, transport: webSocket(WSS_URL) });\nwsClient.watchContractEvent({ ... }); // pushed automatically",
+    "caption": "Same watchContractEvent call -- the transport decides the rest."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The cost of \"instant\"",
+    "code": "wsProvider.websocket.on(\"close\", () => {\n  console.warn(\"WebSocket closed -- reconnecting...\");\n  // re-create the provider, re-attach listeners\n});",
+    "caption": "Polling just retries next interval. A dropped socket stays dropped."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 9",
+    "titlePlain": "Handling Chain ",
+    "titleEmphasis": "Reorgs",
+    "titleSuffix": "",
+    "subtitle": "What happens when the block you saw stops being canonical."
+  }
+]
