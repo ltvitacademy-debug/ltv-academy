@@ -1,0 +1,21 @@
+# Script — Multitenancy and How Salesforce Runs
+
+## Segment 1 (title)
+
+This lesson is about multitenancy — the core architectural idea behind how Salesforce actually runs, and something every admin, developer, and architect needs to understand from day one.
+
+## Segment 2 (steps: apartment building)
+
+Picture an apartment building. Every tenant has their own locked unit, but they all share the same plumbing, the same elevators, the same roof. That's multitenancy — one shared application and database infrastructure serving many separate customers, with every tenant's data completely walled off from every other tenant's.
+
+## Segment 3 (code: why it's built this way)
+
+Every customer runs the exact same application code on the exact same shared servers. Every row of data is tagged with an organization ID, and every query is automatically scoped to just your org. That's why Salesforce can push an upgrade to every customer at once, three times a year — nobody schedules an IT project to install it.
+
+## Segment 4 (steps: instances/pods)
+
+Your org physically lives on a specific server cluster called an instance, or "pod" — something like NA123. Each instance hosts many different companies at once, and Salesforce publishes real-time status for every instance on trust.salesforce.com, which you'll use properly in Lesson 15.
+
+## Segment 5 (outro)
+
+Next lesson, you'll look at what your org actually comes with — organizations, editions, and the different types of licenses that determine what your company can and can't do in Salesforce.

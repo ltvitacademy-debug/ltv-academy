@@ -1,0 +1,21 @@
+# Script — Release Cycles: Three Releases a Year
+
+## Segment 1 (title)
+
+This lesson is about Salesforce's release cycle — how the entire multitenant platform stays on the same version for every customer, three times a year.
+
+## Segment 2 (steps: spring/summer/winter)
+
+Salesforce ships three major releases a year, named for the season they launch in: Spring around February, Summer around June, and Winter around October, numbered for the following year. Every release bundles hundreds of new features and fixes, all documented in official Release Notes.
+
+## Segment 3 (steps: how it reaches your org)
+
+A release doesn't hit every org at the same instant. Weeks early, Sandbox orgs get the new release first, so admins and developers can test it against their own customizations. Then Production orgs upgrade automatically during a scheduled maintenance window tied to their instance — you don't request it and you can't skip it.
+
+## Segment 4 (code: not everything turns on)
+
+Here's the part that trips up new admins: not every new feature is suddenly live. Some features are enabled automatically, usually small UI or performance changes. Others are opt-in — they exist, but an admin has to deliberately turn them on, specifically to protect existing automation from surprise changes. And some ship as beta or pilot, still subject to change.
+
+## Segment 5 (outro)
+
+Next lesson, you'll learn about trust.salesforce.com — the site that publishes real-time status, security information, and availability history for the entire platform, down to your specific instance.
