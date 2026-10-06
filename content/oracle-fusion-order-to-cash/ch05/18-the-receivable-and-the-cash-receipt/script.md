@@ -1,0 +1,21 @@
+# Script — The Receivable and the Cash Receipt
+
+## Segment 1 (title)
+
+SO-48217's invoice exists now, corrected and reduced by the credit memo, leaving Harborview owing fifty-two thousand, three hundred forty-five dollars, due in thirty days. Until that arrives, LTV Manufacturing is holding a receivable - a promise of cash, not cash itself.
+
+## Segment 2 (steps)
+
+From the moment the invoice posts, the books reflect that Harborview owes this amount - but that's a claim, not money in the bank. Inventory already left, revenue gets recognized next lesson, and the actual cash is still thirty days away. That gap is exactly why Order-to-Cash has a whole chapter after billing.
+
+## Segment 3 (steps)
+
+Every open invoice has an age - how long it's been outstanding relative to its due date. Receivables tracks this in aging buckets: current, one to thirty days past due, and so on. Our invoice is current until its due date passes. If Harborview were late, it would move into a bucket and likely trigger collections.
+
+## Segment 4 (steps)
+
+You already know what a cash receipt is from Accounts Receivable and Cash Management: money actually arriving, with an amount, a date, a method, and eventually an application to specific invoices. We're not re-teaching receipt classes here. What matters is the link - this receivable only closes when a receipt for fifty-two thousand, three hundred forty-five dollars arrives and gets applied to this specific invoice.
+
+## Segment 5 (outro)
+
+Up next, lesson nineteen: Harborview's payment actually arrives, and how it gets applied.
