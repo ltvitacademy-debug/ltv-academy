@@ -1,0 +1,17 @@
+# Script — The Customer Lifecycle: Marketing, Sales, Service
+
+## Segment 1 (title)
+
+Every customer relationship moves through the same three broad stages: marketing finds and warms up interest, sales turns that interest into a signed deal, and service keeps the customer successful afterward. Three teams, one continuous relationship.
+
+## Segment 2 (steps: from stranger to customer)
+
+Marketing generates a lead — someone who's shown interest but isn't qualified yet. Sales works that lead into an opportunity, tracked with a dollar value and expected close date, until it's won or lost. Service handles what comes after the signature, tracked as cases — specific questions or problems, from open to resolved.
+
+## Segment 3 (steps: where it breaks down)
+
+The hard part isn't any one stage on its own — it's the handoffs. A rep calling someone who isn't sales-ready wastes everyone's time. A service team with no purchase history makes customers repeat their own story. That's exactly the problem a shared system is built to prevent.
+
+## Segment 4 (outro)
+
+Next lesson: the actual records behind this lifecycle — accounts, contacts, leads, and opportunities — and how they connect to each other.

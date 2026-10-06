@@ -1,0 +1,17 @@
+# Script — CRM Data: Accounts, Contacts, Leads and Opportunities
+
+## Segment 1 (title)
+
+Nearly every CRM organizes customer data around four core record types: account, the company you're selling to; contact, a specific person at that account; lead, someone who's shown interest but isn't qualified yet; and opportunity, a specific potential deal.
+
+## Segment 2 (steps: four core records)
+
+An account holds company-level information. A contact is a real person linked to that account — one account can have many contacts, the whole buying committee. A lead is a single, unqualified record that exists before anyone's decided this is worth pursuing. An opportunity is a specific deal, with a value, close date, and stage.
+
+## Segment 3 (steps: converting a lead)
+
+The distinction that trips up almost everyone: before a lead is qualified, you have one messy record. Once it's converted, the CRM splits that into three clean, connected ones — an account, a contact, and usually an opportunity. That conversion is the real boundary between someone might be interested and we are now actively selling to them.
+
+## Segment 4 (outro)
+
+Next lesson: how all this data turns into the numbers leadership actually watches to measure whether CRM is working.

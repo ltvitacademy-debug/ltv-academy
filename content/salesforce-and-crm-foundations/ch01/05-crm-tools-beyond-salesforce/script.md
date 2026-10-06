@@ -1,0 +1,17 @@
+# Script — CRM Tools Beyond Salesforce
+
+## Segment 1 (title)
+
+Everything in this chapter so far describes CRM as a category of software, not one specific product. Salesforce is the market leader and the platform this course teaches, but it's worth knowing the landscape it sits in.
+
+## Segment 2 (steps: other major platforms)
+
+HubSpot grew a CRM out of its marketing roots, known for an easy learning curve. Microsoft Dynamics 365 fits organizations already standardized on Microsoft. Zoho CRM is a low-cost suite popular with small businesses. SAP builds CRM into its larger enterprise suite, and Pipedrive stays lightweight and sales-pipeline-focused.
+
+## Segment 3 (steps: why this course teaches Salesforce)
+
+Every one of these platforms has some version of accounts, contacts, and a pipeline of deals — the concepts transfer directly. What differs is scale and ecosystem. Salesforce has the largest market share, the deepest customization ecosystem, and the highest employer demand for CRM-specific job titles.
+
+## Segment 4 (outro)
+
+That's Chapter 1. Next: Chapter 2, the Salesforce ecosystem — its history, its clouds, the platform underneath, AppExchange, and the roles people build careers around.
