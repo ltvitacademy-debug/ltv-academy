@@ -1,0 +1,25 @@
+# Script — Assignments
+
+## Segment 1 (title)
+
+The Assignment element sets the value of a variable. That's the whole job — it changes what something holds in memory, for the rest of the flow's run. It doesn't save anything to Salesforce by itself.
+
+## Segment 2 (screenshot: record collection example)
+
+Here's a real one, Set New Opportunity Values, with five rows. Every row has the same three parts: a Variable to change, an Operator that controls how, and a Value to use. The first four rows use Equals to set the new opportunity's Account, Amount, Description, and Stage. The fifth row is different — it uses the Add operator to append that finished record onto a collection. That's exactly how a flow builds up a collection of records, one at a time, before handing the whole thing to a Create Records element.
+
+## Segment 3 (screenshot: literal string example)
+
+Not every Assignment needs five rows, though. Here's one with just a single row — setting an error message variable to a literal piece of text, ready for a fault path to show the user.
+
+## Segment 4 (steps: variable operator value)
+
+Variable, Operator, Value — that's every row, every time. Equals replaces the current value outright. Add appends onto a collection. A handful of other operators exist too, but those two cover the large majority of what you'll actually write.
+
+## Segment 5 (screenshot: assignment plus update records)
+
+And here's the pattern that Assignment almost always shows up in. A Decision element branches on what the user picked, and two separate Assignment elements — one per branch — set the shipping address fields on the same record variable. Notice both branches merge into the same Update Account element at the end. Assignment decided what the value should be; Update Records is what actually makes it stick.
+
+## Segment 6 (outro)
+
+Set the value with Assignment, save it with Update Records or Create Records — that two-step split is one of the most common patterns you'll build in Flow Builder. Next up: the Transform element — reshaping a whole collection at once, without writing a loop at all.
