@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-a-typed-node-script",
+  "questions": [
+    {
+      "q": "In config.ts, what happens if RPC_URL is missing from the environment when envSchema.parse(process.env) runs?",
+      "options": [
+        "It fails immediately, right there, with a clear validation error — not three function calls later inside a provider constructor",
+        "It silently defaults to localhost",
+        "It compiles but crashes only when the script is deployed to production",
+        "zod automatically prompts the user to type a value"
+      ],
+      "answer": 0,
+      "explain": "zod's .parse() throws immediately if the schema doesn't match, which is the whole point of validating config at startup rather than trusting process.env directly."
+    },
+    {
+      "q": "In chain.ts's getChainSnapshot function, why is the address validated with isAddress BEFORE the network calls run?",
+      "options": [
+        "So a malformed address never costs an RPC round-trip — it fails fast and cheaply instead of wasting a network call on bad input",
+        "Because isAddress must run after every network call, not before",
+        "Because ethers requires addresses to be validated exactly once per session",
+        "It has no real benefit, it's purely stylistic"
+      ],
+      "answer": 0,
+      "explain": "Checking the address's validity before calling the network avoids an unnecessary RPC round-trip (and the resulting confusing error) for input that was never going to work."
+    },
+    {
+      "q": "Why does getChainSnapshot use Promise.all for the blockNumber and balance reads instead of awaiting them one after another?",
+      "options": [
+        "Because Promise.all is required syntax for any async function",
+        "Because the two reads don't depend on each other's result, so running them concurrently is strictly faster than awaiting them sequentially",
+        "Because ethers does not allow sequential awaits",
+        "Because Promise.all automatically retries failed calls"
+      ],
+      "answer": 1,
+      "explain": "getBlockNumber and getBalance are independent reads; Promise.all lets both RPC calls happen concurrently rather than waiting for one to finish before starting the other."
+    },
+    {
+      "q": "Why doesn't index.ts need a try/catch block wrapped around its call to getChainSnapshot?",
+      "options": [
+        "Because getChainSnapshot already converts every possible failure into a Result<T>, so index.ts only needs to check result.ok instead of catching a thrown exception",
+        "Because TypeScript doesn't support try/catch inside async functions",
+        "Because network calls can never fail once an address passes isAddress",
+        "Because main() automatically wraps every line in its own try/catch"
+      ],
+      "answer": 0,
+      "explain": "chain.ts's Result<T> pattern (from Lesson 28) means failures are returned as data (`{ ok: false, error }`), not thrown — so the caller just checks `result.ok` rather than needing its own try/catch."
+    },
+    {
+      "q": "Which earlier lesson's exact pattern does index.ts's `process.argv[2]` + `main().catch(...)` structure come from?",
+      "options": [
+        "Lesson 36's Express error-handling middleware",
+        "Lesson 35's fs/promises caching",
+        "Lesson 33's script entry-point, process.argv, and exit-code pattern",
+        "Lesson 31's REPL"
+      ],
+      "answer": 2,
+      "explain": "The lesson explicitly ties index.ts's structure back to Lesson 33's main()/process.argv/process.exit pattern for building a real, tool-friendly script."
+    }
+  ]
+}

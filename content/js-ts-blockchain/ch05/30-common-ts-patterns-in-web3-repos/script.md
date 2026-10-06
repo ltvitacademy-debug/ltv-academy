@@ -1,0 +1,25 @@
+# Script — Common TS Patterns in Web3 Repos
+
+## Segment 1 (title)
+
+Four patterns show up again and again in real, working web3 repositories — once you recognize them, reading someone else's codebase gets a lot faster.
+
+## Segment 2 (code: schema-validated env vars)
+
+process.env.RPC_URL is typed string-or-undefined, always. Trusting it directly means a missing variable turns into undefined deep inside a provider constructor. Real repos validate once at startup with a schema library like zod — parse process-dot-env against a schema, and it throws immediately with a clear message if anything's missing, instead of crashing mid-transaction three function calls later.
+
+## Segment 3 (code: satisfies for config objects)
+
+A plain type annotation widens literal values; "as const" locks them but skips checking against an interface entirely. The satisfies operator, from TypeScript four-point-nine, does both at once: it checks a config object against a type — so a typo'd key fails to compile — while keeping every value's exact literal type afterward.
+
+## Segment 4 (code: generic retry wrapper)
+
+Public RPC endpoints time out and rate-limit. A generic retry function, typed with a type parameter T, wraps any async call with exponential backoff and returns whatever type that call returns — call it wrapping a function returning bigint, and you get a fully typed bigint back, with the retry logic written exactly once.
+
+## Segment 5 (steps: four patterns together)
+
+Four recurring patterns: schema-validated environment variables catch bad config at startup instead of mid-transaction. satisfies checks a config object against a type without losing its literal shape. A generic retry wrapper adds resilience to any async call without duplicating logic. And a union type for chain IDs makes an unsupported or typo'd chain fail to compile at the call site.
+
+## Segment 6 (outro)
+
+Chapter 5 is done. Next: Node.js itself — what it actually is, npm, and building a real script that runs outside the browser.

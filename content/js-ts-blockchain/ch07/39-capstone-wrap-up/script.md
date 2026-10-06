@@ -1,0 +1,21 @@
+# Script — Capstone: Wrap-Up & Portfolio Presentation
+
+## Segment 1 (title)
+
+chain-reader works. Now: writing it up, talking about it out loud, and where this whole course leads next.
+
+## Segment 2 (steps: the README)
+
+A working script with no README is invisible on a GitHub profile. A real README needs a one-line description, usage instructions, and — the part most student projects skip — a "design decisions" section explaining why you validated config at startup, why chain.ts returns a Result instead of throwing, why addresses get checked before any network call. That section is the difference between "I followed a tutorial" and "I can explain why I built it this way."
+
+## Segment 3 (steps: talking about it in an interview)
+
+Three questions almost always come up. "Walk me through how this works" — config validates first, chain.ts never throws, index.ts is the thin entry point. "What would you change for production?" — retry with backoff, structured logging, a fallback RPC provider. "What was the hardest part?" — a real, specific answer, even a small one, reads as more credible than claiming nothing was hard.
+
+## Segment 4 (steps: course recap)
+
+Chapters one through three built the JavaScript language itself. Chapter four added TypeScript fundamentals. Chapter five applied TypeScript specifically to blockchain data and real libraries. Chapter six was Node.js itself — npm, config, the file system, a real server. And this capstone proved every one of those pieces works together in one real, running tool.
+
+## Segment 5 (outro)
+
+This course closes the first stop on the Blockchain Engineer path. Next up: Blockchain Development — where Ethereum, smart contracts, and Solidity itself begin.
