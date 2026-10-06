@@ -1,0 +1,25 @@
+# Script — Compact Layouts
+
+## Segment 1 (title)
+
+Open any record in Lightning Experience and the first thing you see, above Details and Related, is a tight strip of three or four key fields — the highlights panel. That's not driven by the page layout at all. It's a separate, much shorter configuration: the compact layout.
+
+## Segment 2 (screenshot: default highlights panel)
+
+Every object ships with a default compact layout. On Case, out of the box, that's Priority, Status, and Case Number — enough to orient a user at a glance before they scroll into the full record.
+
+## Segment 3 (screenshot: Compact Layout Edit)
+
+Editing one is simple: a label and name, then Available Fields on the left, Selected Fields on the right, an Add button, and Top, Up, Down, Bottom controls to set the order. Same dual-listbox pattern you've now seen for navigation items and app profiles.
+
+## Segment 4 (screenshot: custom highlights panel)
+
+Swap in a custom compact layout and the panel changes immediately — same record, different fields up top. Priority drops out, Case Origin and Case Reason come in, because the admin decided those matter more for this team.
+
+## Segment 5 (steps: why it stays small)
+
+A compact layout answers "what is this record, at a glance" — not "show me everything." There's no hard limit, but a panel crowded with eight or ten fields defeats the purpose: a user scanning a list of cases needs to recognize the important ones instantly.
+
+## Segment 6 (outro)
+
+Next up: Record Types and Business Processes, which is how one object can offer genuinely different picklist values and page layouts to different kinds of records.

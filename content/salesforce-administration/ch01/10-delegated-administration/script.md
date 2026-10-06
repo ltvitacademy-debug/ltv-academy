@@ -1,0 +1,29 @@
+# Script — Delegated Administration
+
+## Segment 1 (title)
+
+Not every admin task needs a full System Administrator. Delegated administration is Salesforce's built-in way to hand over a narrow slice of admin work — resetting passwords, creating users in one team — without widening access any further than that.
+
+## Segment 2 (screenshot: Security Controls menu)
+
+It lives in Setup's Security Controls section, right alongside Sharing Settings and Session Settings. That placement is the first clue: this is a security boundary, not a convenience feature.
+
+## Segment 3 (screenshot: New Delegated Group)
+
+Everything here is organized around a Delegated Group — a named container holding who the delegated administrators are and what they can touch. Name it, decide whether to enable it for login access, and save.
+
+## Segment 4 (screenshot: Delegated Group Detail)
+
+Saving opens five related lists: Delegated Administrators, User Administration, Assignable Profiles, Assignable Permission Sets, Custom Object Administration. Every one of them starts empty — a new group can do nothing until you deliberately add to each.
+
+## Segment 5 (screenshot: Assignable Profiles)
+
+Assignable Profiles is the guardrail that matters most. User Administration lets a delegated admin create users, but creating a user means assigning a profile — without a limit, they could assign System Administrator and undo the whole point. This list is the explicit, and only, set of profiles they're allowed to hand out.
+
+## Segment 6 (steps: scope, not trust)
+
+Add up the three related lists that actually matter day to day — User Administration, Assignable Profiles, Custom Object Administration — and you get a group that can do real work inside a fence, never outside it.
+
+## Segment 7 (outro)
+
+Next up: back to the org-wide view, starting Chapter 2 with Organization Settings and Company Information.

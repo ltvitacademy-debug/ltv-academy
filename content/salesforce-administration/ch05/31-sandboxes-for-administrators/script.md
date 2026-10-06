@@ -1,0 +1,29 @@
+# Script — Sandboxes for Administrators
+
+## Segment 1 (title)
+
+Every setting and screen so far has described what admins configure. This chapter turns to how admins actually do that work safely — starting with sandboxes, a full copy of your org's configuration you can build and break in without touching production.
+
+## Segment 2 (screenshot: Create Sandbox — Developer/Developer Pro)
+
+The lightest sandboxes are Developer and Developer Pro: metadata only, no production records, created in minutes. Creating one asks for an Apex Class to run after copy, and a Sandbox Access setting — typically a public group, so only the people who need it can log in.
+
+## Segment 3 (screenshot: Create Sandbox — Partial/Full Copy)
+
+Partial Copy and Full sandboxes are heavier and slower, but they can include real data. Creating one of these asks you to pick a Sandbox Template — a saved definition of which objects and how many records to include — plus whether all active users or just a specific group gets access.
+
+## Segment 4 (screenshot: Sandboxes list — status)
+
+Once you click Create, the Sandboxes list shows you what's happening: Status, Location, and Release Type while the copy is still processing. A Release Type of "Preview" means that sandbox is sitting on the next Salesforce release before production gets it — useful for catching upgrade issues early.
+
+## Segment 5 (steps: four sandbox types)
+
+Four types to choose from: Developer, metadata only, 200 megabytes, one per license, for day-to-day work. Developer Pro, same no-data limit but a full gigabyte of storage for bigger projects. Partial Copy, metadata plus a sampled data set through a template, for realistic QA. And Full, metadata plus all of production's data, for staging and final user acceptance testing.
+
+## Segment 6 (steps: why admins use them)
+
+The reason admins live in sandboxes: build new fields, flows, and page layouts somewhere mistakes are free; test with realistic data so edge cases surface before go-live; train new users without touching real customer records; and once everything's validated, move it to production with Change Sets — which is exactly next.
+
+## Segment 7 (outro)
+
+Next up: Change Sets Overview — how the configuration you just built safely in a sandbox actually makes it into your live org.
