@@ -1,0 +1,25 @@
+# Script — Mapping Sets
+
+## Segment 1 (title)
+
+Last lesson introduced mapping sets as one way an account rule derives a value. This lesson goes deep on them specifically, because they're one of the most reused tools in the whole Subledger Accounting toolkit.
+
+## Segment 2 (steps)
+
+A mapping set is a lookup table: a list of input values on one side, an output value for each on the other. Build it once as its own object, then reference it from an account rule wherever that translation is needed. Think of it like a spreadsheet with two columns - inputs on the left, outputs on the right.
+
+## Segment 3 (steps)
+
+Why not just write a separate account rule condition for every value? It gets unwieldy fast once you have dozens or hundreds of possible inputs, like expense categories or item categories. A mapping set keeps all those translations in one maintainable table, and functional users can often update the values without touching the rule itself.
+
+## Segment 4 (steps)
+
+A mapping set isn't limited to one input column either. It can take more than one input together - say, expense category and operating company - and produce a single output from that combination. That handles cases where the right answer depends on more than one fact about the transaction at once.
+
+## Segment 5 (code)
+
+Picture expense categories Travel, Meals, Office Supplies, and Software. The mapping set says: Travel maps to account 6410, Meals to 6420, Office Supplies to 6430, Software to 6440. An expense line with category Meals looks up the table and gets 6420. Add a fifth category next year? Just add a row.
+
+## Segment 6 (outro)
+
+So remember: a mapping set is a reusable lookup table that translates one or more inputs into one output, keeping your account rules clean instead of a tangle of conditions. Up next, lesson eight: description rules, which build the readable text on each journal line.

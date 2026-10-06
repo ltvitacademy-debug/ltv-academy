@@ -1,0 +1,25 @@
+# Script — Transferring to General Ledger
+
+## Segment 1 (title)
+
+A Final subledger journal entry exists, but it hasn't reached the General Ledger yet. This lesson covers the process that moves it there: Transfer Journal Entries to GL, and the posting decision that follows.
+
+## Segment 2 (steps)
+
+You might expect Final mode to automatically push entries into GL the instant they're created. Oracle deliberately keeps this separate. That gives a controller a clean checkpoint - final accounting can accumulate and be spot-checked, then transferred to GL as a deliberate, scheduled action, rather than hitting GL continuously all day.
+
+## Segment 3 (steps)
+
+Transfer Journal Entries to GL looks at Final entries not yet transferred, for a ledger, optionally filtered by application, date range, or batch, and moves them into GL as journal batches - the same kind you already know from General Ledger. It picks up both this run's entries and any eligible leftovers from previous runs.
+
+## Segment 4 (code)
+
+There's a Post in General Ledger option. Selected, the program moves the journal in and posts it in the same run, updating balances immediately. Not selected, the journal arrives as an unposted batch, and someone posts it separately later - one more checkpoint before balances actually change.
+
+## Segment 5 (steps)
+
+Only Final entries are eligible for transfer - Draft entries can never be transferred, no matter what. And an entry has to be new, not already transferred in a prior run, to get picked up. That's exactly why knowing Draft versus Final, from lesson eighteen, matters so directly here.
+
+## Segment 6 (outro)
+
+So remember: transfer is a deliberate, separate step from creation, with its own posting decision, and only Final, not-yet-transferred entries qualify. Up next, lesson twenty: journal import from subledgers, the mechanics of how this data actually lands inside GL's own structures.

@@ -1,0 +1,25 @@
+# Script — Rebuilding Accounting After Rule Changes
+
+## Segment 1 (title)
+
+Lesson twenty-five ended with fixing a rule and re-accounting the one transaction that triggered the investigation. This lesson asks the harder question that left open: what about every other transaction the same flawed rule already touched, before anyone noticed?
+
+## Segment 2 (steps)
+
+An easy-to-miss fact: updating an account rule only changes how future Create Accounting runs behave. It does nothing, by itself, to transactions already accounted under the old, flawed version - whether those ended up Draft, Final, or already transferred and posted in GL.
+
+## Segment 3 (steps)
+
+If affected transactions are still Draft, it's the simplest case: re-run Create Accounting in Draft, and the corrected rule applies, cleanly replacing the old result. If they're already Final but not transferred, Final entries still can't be deleted or silently altered - this calls for reversal and re-entry, applied to every affected transaction, not just the one first noticed.
+
+## Segment 4 (steps)
+
+If transactions are already transferred and posted in GL, correcting them touches the General Ledger too, not just the subledger - meaning it now also follows whatever period-close and adjustment procedures your General Ledger course taught, on top of the subledger-level reversal.
+
+## Segment 5 (code)
+
+Before correcting anything, determine the full scope: exactly which transactions were affected, across what date range, in what status. The Account Analysis Report and Journal Entries Report from lesson twenty-one are the tools for finding that full population, not just the one transaction someone noticed.
+
+## Segment 6 (outro)
+
+So remember: fixing a rule only changes the future. Already-accounted transactions need to be found and corrected with the status-appropriate technique - Draft re-run, Final reversal, or a GL-aware correction if already posted. Up next, the final lesson: design patterns for a manufacturing company.
