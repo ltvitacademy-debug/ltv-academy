@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Blockchain Engineering Capstones · Chapter Three",
+    "titlePlain": "Marketplace Contract ",
+    "titleEmphasis": "Design",
+    "titleSuffix": "",
+    "subtitle": "Lesson 9 · Project 2 — An NFT Marketplace"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Simplified teaching example -- not audited",
+    "titlePlain": "Three functions, one ",
+    "titleEmphasis": "contract",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "listItem", "sub": "seller approves, then lists at a price -- NFT stays put" },
+      { "label": "buyItem", "sub": "pay royalty + seller, transfer NFT, all one transaction" },
+      { "label": "cancelListing", "sub": "seller pulls the listing any time before it sells" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "State and events",
+    "code": "struct Listing { address seller; uint256 price; }\n\n// nftContract => tokenId => active listing\nmapping(address => mapping(uint256 => Listing)) public listings;\n\nevent Listed(address nft, uint256 id, address seller, uint256 price);\nevent Sale(address nft, uint256 id, address buyer, uint256 price);\nevent Cancelled(address nft, uint256 id);",
+    "caption": "The marketplace itself never needs to know a token's metadata -- only its ownership."
+  },
+  {
+    "type": "code",
+    "eyebrow": "listItem -- approval, not escrow",
+    "code": "function listItem(address nft, uint256 tokenId, uint256 price) external {\n    require(price > 0, \"price must be > 0\");\n    require(IERC721(nft).ownerOf(tokenId) == msg.sender, \"not owner\");\n    require(\n        IERC721(nft).isApprovedForAll(msg.sender, address(this)) ||\n        IERC721(nft).getApproved(tokenId) == address(this),\n        \"marketplace not approved\"\n    );\n    listings[nft][tokenId] = Listing(msg.sender, price);\n    emit Listed(nft, tokenId, msg.sender, price);\n}",
+    "caption": "The NFT stays in the seller's wallet -- only an approval is granted."
+  },
+  {
+    "type": "code",
+    "eyebrow": "buyItem -- effects before interactions",
+    "code": "function buyItem(address nft, uint256 tokenId) external payable nonReentrant {\n    Listing memory listing = listings[nft][tokenId];\n    require(listing.price > 0, \"not listed\");\n    require(msg.value == listing.price, \"wrong price\");\n\n    delete listings[nft][tokenId];           // state cleared FIRST\n\n    (address receiver, uint256 royalty) =\n        _royaltyFor(nft, tokenId, listing.price);\n    IERC721(nft).safeTransferFrom(listing.seller, msg.sender, tokenId);\n    if (royalty > 0) _pay(receiver, royalty);\n    _pay(listing.seller, listing.price - royalty);\n}",
+    "caption": "Deleting the listing before any external call blocks reentrancy on this path."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The royalty lookup -- real ERC-2981",
+    "code": "function _royaltyFor(address nft, uint256 id, uint256 price)\n    private view returns (address, uint256)\n{\n    if (!IERC2981(nft).supportsInterface(type(IERC2981).interfaceId)) {\n        return (address(0), 0);   // collection has no royalty standard\n    }\n    return IERC2981(nft).royaltyInfo(id, price);\n}",
+    "caption": "royaltyInfo() is defined by the NFT collection, not the marketplace."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 10",
+    "titlePlain": "Indexing Listings & ",
+    "titleEmphasis": "Sales",
+    "titleSuffix": "",
+    "subtitle": "Turning Listed, Sale, and Cancelled events into queryable data."
+  }
+]

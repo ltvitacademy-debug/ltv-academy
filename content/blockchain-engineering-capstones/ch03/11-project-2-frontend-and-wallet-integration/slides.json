@@ -1,0 +1,55 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Blockchain Engineering Capstones · Chapter Three",
+    "titlePlain": "Frontend & Wallet ",
+    "titleEmphasis": "Integration",
+    "titleSuffix": "",
+    "subtitle": "Lesson 11 · Project 2 — An NFT Marketplace"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What the UI actually does",
+    "titlePlain": "Connect, list, ",
+    "titleEmphasis": "buy",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Connect", "sub": "BrowserProvider wraps window.ethereum, getSigner() signs" },
+      { "label": "Approve", "sub": "nft.approve(marketplace, tokenId) -- required before listing" },
+      { "label": "List", "sub": "marketplace.listItem(nft, tokenId, price)" },
+      { "label": "Buy", "sub": "marketplace.buyItem(nft, tokenId, { value: price })" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Connecting the wallet -- ethers v6",
+    "code": "const provider = new BrowserProvider(window.ethereum);\nconst signer = await provider.getSigner();\nconst address = await signer.getAddress();\nsetAddress(address);",
+    "caption": "BrowserProvider wraps whatever wallet the browser injects as window.ethereum."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Listing -- two transactions, in order",
+    "code": "const nft = new Contract(nftAddress, erc721Abi, signer);\nconst approveTx = await nft.approve(marketplaceAddress, tokenId);\nawait approveTx.wait();\n\nconst marketplace = new Contract(marketplaceAddress, marketplaceAbi, signer);\nconst listTx = await marketplace.listItem(nftAddress, tokenId, parseEther(price));\nawait listTx.wait();",
+    "caption": "The marketplace won't accept a listing until the approval has confirmed."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Buying -- value must match the listing exactly",
+    "code": "const marketplace = new Contract(marketplaceAddress, marketplaceAbi, signer);\nconst tx = await marketplace.buyItem(nftAddress, tokenId, {\n  value: listing.price,   // from the indexer -- never hand-typed\n});\nconst receipt = await tx.wait();",
+    "caption": "A one-wei mismatch reverts: require(msg.value == listing.price, ...)."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Reading listings -- from the indexer, not the chain",
+    "code": "const res = await fetch(subgraphUrl, {\n  method: \"POST\",\n  body: JSON.stringify({ query: ACTIVE_LISTINGS_QUERY }),\n});\nconst { data } = await res.json();\nsetListings(data.listings);",
+    "caption": "The contract stays the source of truth -- buyItem re-checks on-chain regardless."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 12",
+    "titlePlain": "Wrap-Up & ",
+    "titleEmphasis": "Presentation",
+    "titleSuffix": "",
+    "subtitle": "Documenting the project and preparing to talk about it."
+  }
+]

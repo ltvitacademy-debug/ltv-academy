@@ -1,0 +1,55 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Blockchain Engineering Capstones · Chapter Three",
+    "titlePlain": "Indexing Listings & ",
+    "titleEmphasis": "Sales",
+    "titleSuffix": "",
+    "subtitle": "Lesson 10 · Project 2 — An NFT Marketplace"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "From an event to a query",
+    "titlePlain": "What an indexer ",
+    "titleEmphasis": "does",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Emit", "sub": "contract fires Listed, Sale, or Cancelled" },
+      { "label": "Catch", "sub": "indexer watches the contract for matching events" },
+      { "label": "Handle", "sub": "handler writes an entity -- a Listing or a Sale" },
+      { "label": "Query", "sub": "frontend asks the index, never the raw chain, for 'active listings'" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "schema.graphql -- what gets stored",
+    "code": "type Listing @entity {\n  id: ID!                 # nftContract-tokenId\n  nftContract: Bytes!\n  tokenId: BigInt!\n  seller: Bytes!\n  price: BigInt!\n  active: Boolean!\n}\n\ntype Sale @entity {\n  id: ID!                 # txHash-logIndex\n  buyer: Bytes!\n  price: BigInt!\n}",
+    "caption": "Two entities: the current state of a listing, and a permanent sale record."
+  },
+  {
+    "type": "code",
+    "eyebrow": "mapping.ts -- the handler that runs on Listed",
+    "code": "export function handleListed(event: Listed): void {\n  let id = event.params.nft.toHex() + \"-\" +\n           event.params.tokenId.toString();\n  let listing = new Listing(id);\n  listing.seller = event.params.seller;\n  listing.price = event.params.price;\n  listing.active = true;\n  listing.save();\n}",
+    "caption": "AssemblyScript, run by The Graph every time a Listed event matches."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Querying the index from the frontend",
+    "code": "{\n  listings(where: { active: true },\n           orderBy: price, orderDirection: asc) {\n    id\n    nftContract\n    tokenId\n    seller\n    price\n  }\n}",
+    "caption": "A GraphQL query the contract itself has no equivalent function for."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Alternative: a custom listener",
+    "code": "const marketplace = new Contract(address, abi, provider);\n\nmarketplace.on(\"Listed\", async (nft, tokenId, seller, price) => {\n  await db.listings.upsert({ nft, tokenId: tokenId.toString(),\n    seller, price: price.toString(), active: true });\n});",
+    "caption": "Same job, your own database -- more control, more infrastructure to run."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 11",
+    "titlePlain": "Frontend & Wallet ",
+    "titleEmphasis": "Integration",
+    "titleSuffix": "",
+    "subtitle": "Connecting a wallet, then listing and buying from React."
+  }
+]

@@ -48,11 +48,11 @@ export const BLOCKCHAIN_ENGINEERING_CAPSTONES_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Project 2 — An NFT Marketplace",
     lessons: [
-      L(8, "project-2-kickoff", "Project 2 Kickoff"),
-      L(9, "project-2-marketplace-contract-design", "Marketplace Contract Design"),
-      L(10, "project-2-indexing-listings-and-sales", "Indexing Listings & Sales"),
-      L(11, "project-2-frontend-and-wallet-integration", "Frontend & Wallet Integration"),
-      L(12, "project-2-wrap-up-and-presentation", "Wrap-Up & Presentation"),
+      L(8, "project-2-kickoff", "Project 2 Kickoff", { contentDir: "ch03/08-project-2-kickoff" }),
+      L(9, "project-2-marketplace-contract-design", "Marketplace Contract Design", { contentDir: "ch03/09-project-2-marketplace-contract-design" }),
+      L(10, "project-2-indexing-listings-and-sales", "Indexing Listings & Sales", { contentDir: "ch03/10-project-2-indexing-listings-and-sales" }),
+      L(11, "project-2-frontend-and-wallet-integration", "Frontend & Wallet Integration", { contentDir: "ch03/11-project-2-frontend-and-wallet-integration" }),
+      L(12, "project-2-wrap-up-and-presentation", "Wrap-Up & Presentation", { contentDir: "ch03/12-project-2-wrap-up-and-presentation" }),
     ],
   },
   {

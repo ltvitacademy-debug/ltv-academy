@@ -1,0 +1,60 @@
+{
+  "lesson": "project-2-marketplace-contract-design",
+  "questions": [
+    {
+      "q": "In this marketplace's listItem function, what must be true before a listing is recorded?",
+      "options": [
+        "The caller must own the token and the marketplace must already be approved to transfer it",
+        "The NFT must already be inside the marketplace contract",
+        "The buyer must already be known at listing time",
+        "The token must have been minted in the last 24 hours"
+      ],
+      "answer": 0,
+      "explain": "listItem checks IERC721(nft).ownerOf(tokenId) == msg.sender and that the marketplace has either a blanket setApprovalForAll or a per-token getApproved -- both before recording anything."
+    },
+    {
+      "q": "Why does buyItem delete the listing before making any external call (NFT transfer or ETH payment)?",
+      "options": [
+        "It doesn't matter when it happens",
+        "To save gas on the transaction",
+        "This is checks-effects-interactions: clearing state before external calls prevents a reentrant call from seeing a still-active listing",
+        "Solidity requires all deletes to happen first syntactically"
+      ],
+      "answer": 2,
+      "explain": "If the listing were deleted after the external calls, a malicious reentrant call during the NFT transfer or a payment could re-enter buyItem while the listing still looked active, enabling double-spends of the same listing."
+    },
+    {
+      "q": "How does buyItem determine whether a royalty is owed on a sale?",
+      "options": [
+        "It always deducts a fixed 10% regardless of the collection",
+        "It calls supportsInterface for the ERC-2981 interface ID on the NFT contract, and only calls royaltyInfo if that returns true",
+        "It asks the buyer to self-report the royalty amount",
+        "It reads a royalty percentage from the marketplace's own storage, set at deployment"
+      ],
+      "answer": 1,
+      "explain": "The marketplace checks IERC2981(nft).supportsInterface(type(IERC2981).interfaceId) first, since not every ERC-721 collection implements royalties, and only then calls royaltyInfo to get the receiver and amount."
+    },
+    {
+      "q": "Why does this contract pay out ETH using a low-level .call{value: amount}(\"\") instead of the older .transfer()?",
+      "options": [
+        ".call is required by the Solidity compiler for all payments",
+        ".transfer() forwards a fixed 2300 gas stipend that can break payments to some contract wallets (like royalty splitters); .call with an explicit success check is the current recommended pattern",
+        ".transfer() sends more gas than .call, which is wasteful",
+        "There is no difference between the two"
+      ],
+      "answer": 1,
+      "explain": "transfer()'s fixed 2300 gas stipend is not always enough for a receiving contract's own logic (e.g. a royalty splitter that does more work on receipt), so call plus a manual success check is the safer, current pattern."
+    },
+    {
+      "q": "What pattern does this marketplace use for handling the NFT between listing and sale, and why?",
+      "options": [
+        "Escrow -- the NFT moves into the marketplace contract the instant it's listed",
+        "Lazy minting -- the NFT doesn't exist until it's bought",
+        "Approval -- the seller keeps the NFT and only grants the marketplace permission to transfer it later, matching how modern marketplaces like OpenSea's Seaport work",
+        "The NFT is destroyed and a new copy is created for the buyer"
+      ],
+      "answer": 2,
+      "explain": "This capstone deliberately uses the approval pattern rather than escrow, so sellers keep full control of their NFT until the moment a sale actually executes."
+    }
+  ]
+}
