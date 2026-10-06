@@ -54,6 +54,16 @@ import { AZURE_AI_CLOUD_CHAPTERS } from "./azure-ai-cloud-outline";
 import { DOCKER_AI_DEPLOYMENT_CHAPTERS } from "./docker-ai-deployment-outline";
 import { AI_SECURITY_EVAL_MONITORING_CHAPTERS } from "./ai-security-eval-monitoring-outline";
 import { AI_ENGINEERING_CAPSTONES_CHAPTERS } from "./ai-engineering-capstones-outline";
+import { DEEP_LEARNING_AND_PYTORCH_CHAPTERS } from "./deep-learning-and-pytorch-outline";
+import { ADVANCED_LLM_TRAINING_AND_ML_SYSTEMS_CHAPTERS } from "./advanced-llm-training-and-ml-systems-outline";
+import { REINFORCEMENT_LEARNING_AND_RL_FOR_LLMS_CHAPTERS } from "./reinforcement-learning-and-rl-for-llms-outline";
+import { AI_SAFETY_ALIGNMENT_AND_INTERPRETABILITY_CHAPTERS } from "./ai-safety-alignment-and-interpretability-outline";
+import { AI_RESEARCH_ENGINEERING_CHAPTERS } from "./ai-research-engineering-outline";
+import { LTV_AI_RESEARCH_LAB_CHAPTERS } from "./ltv-ai-research-lab-outline";
+import { GPU_COMPUTING_CHAPTERS } from "./gpu-computing-outline";
+import { DISTRIBUTED_TRAINING_INFRASTRUCTURE_CHAPTERS } from "./distributed-training-infrastructure-outline";
+import { ML_INFRASTRUCTURE_AND_PLATFORM_ENGINEERING_CHAPTERS } from "./ml-infrastructure-and-platform-engineering-outline";
+import { INFERENCE_AND_MODEL_SERVING_CHAPTERS } from "./inference-and-model-serving-outline";
 import { JS_TS_BLOCKCHAIN_CHAPTERS } from "./js-ts-blockchain-outline";
 import { BLOCKCHAIN_APIS_BACKEND_CHAPTERS } from "./blockchain-apis-backend-outline";
 import { DEFI_TOKEN_ENGINEERING_CHAPTERS } from "./defi-token-engineering-outline";
@@ -677,6 +687,96 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: AI_ENGINEERING_CAPSTONES_CHAPTERS,
     contentBase: "ai-engineering-capstones",
+  },
+  {
+    slug: "deep-learning-and-pytorch",
+    title: "Deep Learning & PyTorch",
+    tagline:
+      "Real PyTorch fluency from tensors and autograd through CNNs and attention, ending in a from-scratch Transformer you train yourself — the foundation for the AI/ML Research Engineer & Alignment Engineer destination.",
+    status: "available",
+    chapters: DEEP_LEARNING_AND_PYTORCH_CHAPTERS,
+    contentBase: "deep-learning-and-pytorch",
+  },
+  {
+    slug: "advanced-llm-training-and-ml-systems",
+    title: "Advanced LLM Training & ML Systems",
+    tagline:
+      "How production-scale language models are actually pretrained, fine-tuned and evaluated — data pipelines, scaling laws, parallelism strategies, and the systems work underneath it all.",
+    status: "available",
+    chapters: ADVANCED_LLM_TRAINING_AND_ML_SYSTEMS_CHAPTERS,
+    contentBase: "advanced-llm-training-and-ml-systems",
+  },
+  {
+    slug: "reinforcement-learning-and-rl-for-llms",
+    title: "Reinforcement Learning & RL for LLMs",
+    tagline:
+      "Classic RL through to RLHF, RLAIF, and RL for reasoning — the algorithms behind how modern language models are aligned and taught to reason, built up from Q-learning to PPO.",
+    status: "available",
+    chapters: REINFORCEMENT_LEARNING_AND_RL_FOR_LLMS_CHAPTERS,
+    contentBase: "reinforcement-learning-and-rl-for-llms",
+  },
+  {
+    slug: "ai-safety-alignment-and-interpretability",
+    title: "AI Safety, Alignment & Interpretability",
+    tagline:
+      "Why alignment is hard, the evaluation and scalable-oversight techniques used today, and mechanistic interpretability — circuits, features, and activation patching — the toolset of an alignment research engineer.",
+    status: "available",
+    chapters: AI_SAFETY_ALIGNMENT_AND_INTERPRETABILITY_CHAPTERS,
+    contentBase: "ai-safety-alignment-and-interpretability",
+  },
+  {
+    slug: "ai-research-engineering",
+    title: "AI Research Engineering",
+    tagline:
+      "The craft of research engineering itself — reading and reproducing papers, research codebases, experiment infrastructure at scale, and collaborating on research, distinct from any one research subfield.",
+    status: "available",
+    chapters: AI_RESEARCH_ENGINEERING_CHAPTERS,
+    contentBase: "ai-research-engineering",
+  },
+  {
+    slug: "ltv-ai-research-lab",
+    title: "LTV AI Research Lab",
+    tagline:
+      "A taught capstone with three research projects built around SQL and data systems instead of generic RL tasks — RL for query optimization, reward modeling for data quality, and RLHF for a database assistant — plus an interpretability case study on your own trained model.",
+    status: "available",
+    chapters: LTV_AI_RESEARCH_LAB_CHAPTERS,
+    contentBase: "ltv-ai-research-lab",
+  },
+  {
+    slug: "gpu-computing",
+    title: "GPU Computing",
+    tagline:
+      "How GPUs actually work, CUDA programming basics, and operating them in PyTorch and in a cluster — the hardware layer underneath every other course in the AI Infrastructure / ML Systems Engineer destination.",
+    status: "available",
+    chapters: GPU_COMPUTING_CHAPTERS,
+    contentBase: "gpu-computing",
+  },
+  {
+    slug: "distributed-training-infrastructure",
+    title: "Distributed Training Infrastructure",
+    tagline:
+      "The infrastructure view of distributed training — networking, job scheduling, fault tolerance and storage at scale — the systems that run what Advanced LLM Training & ML Systems covers from the algorithms side.",
+    status: "available",
+    chapters: DISTRIBUTED_TRAINING_INFRASTRUCTURE_CHAPTERS,
+    contentBase: "distributed-training-infrastructure",
+  },
+  {
+    slug: "ml-infrastructure-and-platform-engineering",
+    title: "ML Infrastructure & Platform Engineering",
+    tagline:
+      "The platform layer a company builds once it has more than one model in production — feature stores, experiment tracking, ML pipelines, deployment infrastructure and on-call reliability.",
+    status: "available",
+    chapters: ML_INFRASTRUCTURE_AND_PLATFORM_ENGINEERING_CHAPTERS,
+    contentBase: "ml-infrastructure-and-platform-engineering",
+  },
+  {
+    slug: "inference-and-model-serving",
+    title: "Inference & Model Serving",
+    tagline:
+      "Getting a trained model to actually answer requests fast and cheaply at scale — serving frameworks, quantization, KV cache tricks, and autoscaling — closing the destination with a deployed, benchmarked serving stack.",
+    status: "available",
+    chapters: INFERENCE_AND_MODEL_SERVING_CHAPTERS,
+    contentBase: "inference-and-model-serving",
   },
   {
     slug: "js-ts-blockchain",

@@ -940,6 +940,58 @@ export const CAREER_PATHS: CareerPath[] = [
       "AI Application Developer → AI Engineer → Senior AI Engineer → Staff/Lead AI Engineer → Principal AI Engineer → AI Architect. Same rule as Principal Data Engineer: no need to invent a second curriculum just so the card looks impressive — the ladder from here is years of production experience, system ownership, architecture, mentoring and scale, not more coursework.",
   },
   {
+    slug: "ai-ml-research-and-alignment-engineer",
+    title: "AI/ML Research Engineer & Alignment Engineer",
+    targetJobs: ["AI Research Engineer", "ML Research Engineer", "AI Alignment Research Engineer", "Reinforcement Learning Research Engineer", "AI Research Scientist"],
+    description:
+      "This is not a starting point. AI/ML Research Engineering is an advanced destination built on the full AI Engineer path, taking those skills into one of the most technically demanding and fastest-growing areas of AI: frontier model training, reinforcement learning, and alignment. Instead of repeating the foundation, you build real PyTorch fluency and a from-scratch Transformer, then go through how production-scale LLMs are actually pretrained and fine-tuned, the RL algorithms behind modern alignment (RLHF, RLAIF, RL for reasoning), and the evaluation and interpretability techniques used to understand and govern these models. It closes with a taught research lab — three projects deliberately built around SQL and data systems instead of generic RL tasks, since that's this catalog's own strength.",
+    salaryRange:
+      "$150K–$220K+ as an AI/ML Research Engineer · $220K–$350K+ at Senior level · $350K+ potential at Staff/Principal Research Engineer or AI Research Scientist at the most selective AI labs — compensation varies enormously by employer and is not a guarantee",
+    isDestination: true,
+    stages: [
+      { label: "Foundation", note: "The full AI Engineer path — no prior course assumed", pathChoiceSlugs: ["ai-engineer"] },
+      { label: "Deep Learning & PyTorch", note: "Real PyTorch fluency, ending in a from-scratch Transformer", courseSlugs: ["deep-learning-and-pytorch"] },
+      { label: "Advanced LLM Training & ML Systems", courseSlugs: ["advanced-llm-training-and-ml-systems"] },
+      { label: "Reinforcement Learning & RL for LLMs", courseSlugs: ["reinforcement-learning-and-rl-for-llms"] },
+      { label: "AI Safety, Alignment & Interpretability", courseSlugs: ["ai-safety-alignment-and-interpretability"] },
+      { label: "AI Research Engineering", note: "The craft of research engineering itself, not a research subfield", courseSlugs: ["ai-research-engineering"] },
+      {
+        label: "Research Lab Capstone",
+        note: "Three SQL/data-systems-flavored research projects, taught end to end",
+        courseSlugs: ["ltv-ai-research-lab"],
+        capstone: true,
+      },
+    ],
+    destinationNote:
+      "From here, students can specialize as an AI/ML Research Engineer (model training, deep learning, transformers, experimentation), an AI Alignment Research Engineer (alignment, interpretability, evaluations, scalable oversight), a Reinforcement Learning Research Engineer (RL environments, PPO, reward modeling, RLHF/RLAIF, agentic RL), or toward AI Research Scientist — the most research-intensive of the four, with the caveat that Research Scientist roles typically carry substantially stronger academic/research expectations than the others.",
+  },
+  {
+    slug: "ai-infrastructure-ml-systems-engineer",
+    title: "AI Infrastructure / ML Systems Engineer",
+    targetJobs: ["ML Infrastructure Engineer", "AI Infrastructure Engineer", "ML Systems Engineer", "ML Platform Engineer", "Principal ML Systems Engineer"],
+    description:
+      "This destination gives an experienced Data Engineer or DevOps Engineer a route into frontier AI without pretending they need to become an ML researcher first. It runs through the full DevOps Engineer path, then distributed systems concepts, real PyTorch fluency, GPU computing, the infrastructure that actually runs distributed training, the platform layer a company builds once it has more than one model in production, and finally inference and model serving — the systems that run frontier AI workloads, not the research itself.",
+    salaryRange:
+      "$140K–$200K+ as an ML Infrastructure / Platform Engineer · $200K–$300K+ at Senior/Staff level · $300K+ potential at Principal ML Systems Engineer at the most selective AI labs and infrastructure teams — compensation varies enormously by employer and is not a guarantee",
+    isDestination: true,
+    stages: [
+      { label: "Foundation", note: "The full DevOps Engineer path — Linux, Docker, Kubernetes, Terraform and cloud fundamentals", pathChoiceSlugs: ["devops-engineer"] },
+      { label: "Distributed Systems Concepts", courseSlugs: ["distributed-systems-concepts"] },
+      { label: "Deep Learning & PyTorch", note: "Shared with the AI/ML Research Engineer & Alignment Engineer destination — understand what you're about to run", courseSlugs: ["deep-learning-and-pytorch"] },
+      { label: "GPU Computing", courseSlugs: ["gpu-computing"] },
+      { label: "Distributed Training Infrastructure", courseSlugs: ["distributed-training-infrastructure"] },
+      { label: "ML Infrastructure & Platform Engineering", courseSlugs: ["ml-infrastructure-and-platform-engineering"] },
+      {
+        label: "Inference & Model Serving",
+        note: "Closes with a deployed, benchmarked serving stack",
+        courseSlugs: ["inference-and-model-serving"],
+        capstone: true,
+      },
+    ],
+    destinationNote:
+      "Data Engineer / DevOps Engineer → ML Infrastructure Engineer → Senior ML Infrastructure Engineer → Staff/Principal ML Systems Engineer. Notice how little of this is brand-new: Linux, Docker, Kubernetes and Terraform already exist in the DevOps Engineer path — this destination adds the GPU, distributed-training, platform and serving layers on top of that trunk, not a parallel curriculum.",
+  },
+  {
     slug: "salesforce-architect",
     title: "Salesforce Architect",
     targetJobs: [
