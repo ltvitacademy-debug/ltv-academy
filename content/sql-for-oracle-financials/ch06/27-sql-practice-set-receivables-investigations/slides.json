@@ -1,0 +1,36 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "SQL for Oracle Financials · Chapter Six",
+    "titlePlain": "Practice Set: Receivables ",
+    "titleEmphasis": "Investigations",
+    "titleSuffix": "",
+    "subtitle": "Lesson 27 · Practice Sets"
+  },
+  {
+    "type": "code",
+    "eyebrow": "\"Which customers owe us the most, past due?\"",
+    "code": "SELECT c.account_number, SUM(ps.amount_due_remaining) AS total_past_due\nFROM hz_cust_accounts c\nINNER JOIN ar_payment_schedules_all ps ON ps.customer_id = c.cust_account_id\nWHERE ps.amount_due_remaining > 0\n  AND ps.due_date < TRUNC(SYSDATE)\nGROUP BY c.account_number\nORDER BY total_past_due DESC\nFETCH FIRST 5 ROWS ONLY;",
+    "caption": "due_date < TRUNC(SYSDATE) is what makes this \"past due\" rather than just \"outstanding.\""
+  },
+  {
+    "type": "code",
+    "eyebrow": "\"Which customers have unapplied cash?\"",
+    "code": "SELECT c.account_number, r.receipt_number,\n       r.amount - NVL(SUM(ra.amount_applied), 0) AS unapplied_amount\nFROM hz_cust_accounts c\nINNER JOIN ar_cash_receipts_all r ON r.customer_id = c.cust_account_id\nLEFT OUTER JOIN ar_receivable_applications_all ra ON ra.cash_receipt_id = r.cash_receipt_id\nGROUP BY c.account_number, r.receipt_number, r.amount\nHAVING r.amount - NVL(SUM(ra.amount_applied), 0) <> 0;",
+    "caption": "Lesson 21's reconciliation pattern, with the customer account joined in for context."
+  },
+  {
+    "type": "code",
+    "eyebrow": "\"Which customers have never paid at all?\"",
+    "code": "SELECT c.account_number\nFROM hz_cust_accounts c\nWHERE EXISTS (\n    SELECT 1 FROM ra_customer_trx_all t\n    WHERE t.bill_to_customer_id = c.cust_account_id\n)\nAND NOT EXISTS (\n    SELECT 1 FROM ar_cash_receipts_all r\n    WHERE r.customer_id = c.cust_account_id\n);",
+    "caption": "EXISTS and NOT EXISTS combined — \"has a transaction\" AND \"has never paid.\""
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 28",
+    "titlePlain": "Practice Set: Ledger and Close ",
+    "titleEmphasis": "Investigations",
+    "titleSuffix": "",
+    "subtitle": "The General Ledger side of the practice sets."
+  }
+]

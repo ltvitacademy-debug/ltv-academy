@@ -1,0 +1,60 @@
+{
+  "lesson": "reading-and-tuning-slow-queries",
+  "questions": [
+    {
+      "q": "What does `EXPLAIN PLAN FOR <query>` actually do?",
+      "options": [
+        "It runs the query and returns its results immediately",
+        "It asks Oracle to work out how it would execute the query, without actually running it, storing the plan for review",
+        "It deletes the query's execution history",
+        "It automatically rewrites the query to be faster"
+      ],
+      "answer": 1,
+      "explain": "EXPLAIN PLAN FOR generates and stores an execution plan without actually executing the query itself."
+    },
+    {
+      "q": "What is a 'sargable' predicate?",
+      "options": [
+        "Any WHERE condition that uses the equals sign",
+        "A condition that always returns zero rows",
+        "A predicate that only works in HAVING, never WHERE",
+        "A WHERE condition the database can use an index to satisfy directly, without wrapping the column in a function"
+      ],
+      "answer": 3,
+      "explain": "Sargable conditions let the database leverage an index directly on the stored column values, rather than needing to compute something on every row first."
+    },
+    {
+      "q": "Why does `WHERE TRUNC(invoice_date) = DATE '2026-06-15'` typically perform worse than a range condition on the same column?",
+      "options": [
+        "Wrapping invoice_date in TRUNC forces Oracle to compute that function for every row, since an index on invoice_date stores the original values, not the TRUNC-ed result",
+        "TRUNC is not valid Oracle syntax",
+        "DATE literals are always slower than TO_DATE",
+        "There is no performance difference between the two forms"
+      ],
+      "answer": 0,
+      "explain": "An index on invoice_date can't be used to satisfy a condition on TRUNC(invoice_date), since the function changes what's being compared — this typically forces a full scan."
+    },
+    {
+      "q": "Which rewritten condition is sargable and returns the same rows as `WHERE TRUNC(invoice_date) = DATE '2026-06-15'`?",
+      "options": [
+        "WHERE invoice_date = '2026-06-15'",
+        "WHERE TRUNC(invoice_date) >= '2026-06-15'",
+        "WHERE invoice_date >= DATE '2026-06-15' AND invoice_date < DATE '2026-06-16'",
+        "WHERE invoice_date LIKE '2026-06-15%'"
+      ],
+      "answer": 2,
+      "explain": "A plain range on the unmodified invoice_date column captures the same calendar day without wrapping the column in a function, keeping it index-friendly."
+    },
+    {
+      "q": "According to this lesson's checklist, what is one common pattern that can hurt query performance?",
+      "options": [
+        "Using INNER JOIN instead of LEFT OUTER JOIN",
+        "Wrapping an indexed column in a function within WHERE, defeating the index",
+        "Using table aliases",
+        "Using ORDER BY at the end of a query"
+      ],
+      "answer": 1,
+      "explain": "Wrapping an indexed column in a function (like TRUNC) is explicitly called out as a pattern that defeats index usage and hurts performance."
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+# Lesson 16 — Subqueries · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Welcome to Chapter 4. A subquery is a query inside another query — it runs
+first, and its result feeds into the outer query, wherever you could
+otherwise use an expression or a list of values.
+
+## S2 · CODE CARD (scalar subquery)
+
+Where invoice amount is greater than — and then, in parentheses, select
+average of invoice amount from the same table. The inner query returns a
+single number, the overall average, and the outer query uses it exactly
+like a literal. That's a scalar subquery: exactly one row, one column, or
+Oracle errors out.
+
+## S3 · CODE CARD (multi-row subquery with IN)
+
+Now the inner query can return many rows. Vendor name, where vendor ID is
+IN — a whole list of vendor IDs with at least one invoice over ten
+thousand. IN checks the outer row against that entire list. No JOIN, no
+GROUP BY needed just to answer "which suppliers have a large invoice."
+
+## S4 · CODE CARD (correlated subquery)
+
+And here's the one that actually depends on the outer row: i-1 dot vendor
+ID, used inside the inner query. For every single outer row, the inner
+query recomputes the average for that specific supplier, then compares.
+This finds invoices priced above average for their OWN supplier — not the
+whole company's average. Two aliases, same table, just like a self-join.
+
+## S5 · OUTRO CARD
+
+Scalar for one value, IN for a list, correlated when the inner query needs
+the outer row. Next lesson: Common Table Expressions, a cleaner way to
+write a lot of what subqueries do.

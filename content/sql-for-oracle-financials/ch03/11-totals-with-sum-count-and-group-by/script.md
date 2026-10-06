@@ -1,0 +1,46 @@
+# Lesson 11 — Totals with SUM, COUNT and GROUP BY · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Welcome to Chapter 3. Every query so far has returned individual rows.
+Now you start collapsing many rows into one number — starting with SUM and
+COUNT.
+
+## S2 · CODE CARD (SUM and COUNT, no GROUP BY)
+
+Sum of invoice amount, as total invoiced, from invoices. No GROUP BY means
+exactly one row back — the grand total across the whole table. COUNT star
+works the same way, but counts rows instead of adding up a column — how
+many invoices aren't fully paid, for instance.
+
+## S3 · CODE CARD (GROUP BY)
+
+Finance almost never wants one number for the whole company — it wants one
+per supplier. Vendor ID, sum of invoice amount, count star, from invoices,
+group by vendor ID. Split into groups by vendor ID, aggregate within each
+group separately, combine into one row per group.
+
+## S4 · CODE CARD (the rule everyone trips on)
+
+Here's the error you'll hit at some point: select vendor ID, invoice
+number, sum of invoice amount, group by vendor ID — that fails. Once rows
+are grouped by vendor, invoice number varies within the group, so there's
+no single value to show. Every column has to be aggregated, or in the
+GROUP BY itself.
+
+## S5 · CODE CARD (collapsing lesson 7's multi-row join)
+
+Remember lesson seven, where joining invoices to payments could return
+multiple rows per invoice? Group by invoice number, sum the payment
+amount, and you're back to one row per invoice — every check applied to it,
+added together.
+
+## S6 · OUTRO CARD
+
+Split, aggregate, combine — that's GROUP BY. Next lesson: HAVING, for
+filtering on the aggregated totals themselves, not the raw rows underneath
+them.

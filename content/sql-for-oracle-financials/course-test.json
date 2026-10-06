@@ -1,0 +1,203 @@
+{
+  "lesson": "sql-for-oracle-financials",
+  "questions": [
+    {
+      "q": "Which single SQL statement does this course focus on almost exclusively?",
+      "options": [
+        "DELETE",
+        "UPDATE",
+        "SELECT",
+        "INSERT"
+      ],
+      "answer": 2,
+      "explain": "This course is about reading and investigating financial data, which is what SELECT is for. Statements that change data belong to data-loading work."
+    },
+    {
+      "q": "Why does `WHERE vendor_site_id = NULL` silently return zero rows, even on rows that actually have a NULL there?",
+      "options": [
+        "It raises a syntax error instead",
+        "Oracle automatically converts it to IS NULL behind the scenes",
+        "vendor_site_id can never actually be NULL",
+        "NULL is never equal to anything, including another NULL, so the `=` comparison is never true"
+      ],
+      "answer": 3,
+      "explain": "NULL fails every equality comparison, including against itself, so `= NULL` never matches \u2014 the correct test is IS NULL."
+    },
+    {
+      "q": "When does `FETCH FIRST n ROWS ONLY` take effect relative to `ORDER BY` in the same query?",
+      "options": [
+        "Before ORDER BY runs",
+        "At the exact same time, with no defined order",
+        "FETCH FIRST cannot be combined with ORDER BY",
+        "After ORDER BY has already sorted the result"
+      ],
+      "answer": 3,
+      "explain": "FETCH FIRST applies after the sort, which is why it reliably returns the correct top N rows."
+    },
+    {
+      "q": "What does `ip.amount AS amount_on_this_check` return in the three-table join?",
+      "options": [
+        "The total invoice amount, regardless of how many checks paid it",
+        "The portion of the invoice amount paid by this specific check",
+        "The remaining unpaid balance on the invoice",
+        "The supplier's total outstanding balance across all invoices"
+      ],
+      "answer": 1,
+      "explain": "AP_INVOICE_PAYMENTS_ALL.AMOUNT records the amount applied to the invoice by that specific check \u2014 not the full invoice total."
+    },
+    {
+      "q": "Which column is used to join POZ_SUPPLIERS to AP_INVOICES_ALL?",
+      "options": [
+        "SUPPLIER_ID",
+        "INVOICE_ID",
+        "VENDOR_ID",
+        "ACCOUNT_ID"
+      ],
+      "answer": 2,
+      "explain": "Both tables carry a VENDOR_ID column \u2014 a naming leftover from when Oracle E-Business Suite called suppliers 'vendors'."
+    },
+    {
+      "q": "Why does this course recommend LEFT OUTER JOIN over the legacy (+) syntax going forward?",
+      "options": [
+        "Because (+) is no longer supported by any version of Oracle",
+        "Because LEFT OUTER JOIN is harder to read",
+        "Because (+) is easier to misplace, silently changing which side is kept, while LEFT OUTER JOIN is clearer and ANSI-standard",
+        "There is no real reason \u2014 both are equally recommended"
+      ],
+      "answer": 2,
+      "explain": "LEFT OUTER JOIN is the clearer, ANSI-standard approach; (+) still works in Oracle but is more error-prone to write correctly."
+    },
+    {
+      "q": "When you `GROUP BY vendor_id, invoice_month`, what determines whether two rows belong to the same group?",
+      "options": [
+        "Only vendor_id needs to match",
+        "Both vendor_id AND invoice_month must match \u2014 it's the combination that defines a group",
+        "Only invoice_month needs to match",
+        "Rows are never grouped together if there are two GROUP BY columns"
+      ],
+      "answer": 1,
+      "explain": "With multiple GROUP BY columns, Oracle creates one group per distinct combination of all listed columns."
+    },
+    {
+      "q": "What does `COUNT(*)` count?",
+      "options": [
+        "The sum of a numeric column",
+        "The number of distinct values in a column",
+        "The number of NULL values only",
+        "The number of rows"
+      ],
+      "answer": 3,
+      "explain": "COUNT(*) counts rows, regardless of what values any particular column holds."
+    },
+    {
+      "q": "In `SUM(amount) OVER (PARTITION BY vendor_id ORDER BY check_date)`, what does PARTITION BY do?",
+      "options": [
+        "It deletes rows for other suppliers",
+        "It sorts the entire result set by vendor_id",
+        "It has no effect unless combined with HAVING",
+        "It restarts the running calculation for each distinct vendor_id, similar in spirit to GROUP BY but without collapsing rows"
+      ],
+      "answer": 3,
+      "explain": "PARTITION BY divides rows into groups for the window calculation, restarting the running total at each new group, while all rows remain in the output."
+    },
+    {
+      "q": "What does Oracle call the set-difference operator that other databases like SQL Server call EXCEPT?",
+      "options": [
+        "SUBTRACT",
+        "DIFF",
+        "MINUS",
+        "REMOVE"
+      ],
+      "answer": 2,
+      "explain": "Oracle has traditionally called this operator MINUS; EXCEPT was added as a newer alias only in Oracle 21c."
+    },
+    {
+      "q": "What does the correlated subquery `WHERE i1.invoice_amount > (SELECT AVG(i2.invoice_amount) FROM ap_invoices_all i2 WHERE i2.vendor_id = i1.vendor_id)` find?",
+      "options": [
+        "Invoices priced above average for their own specific supplier",
+        "Invoices priced above the overall average across all suppliers",
+        "Every invoice in the table, regardless of amount",
+        "Only the single most expensive invoice in the entire table"
+      ],
+      "answer": 0,
+      "explain": "Because the inner AVG is filtered to i1's own vendor_id, the comparison is against that specific supplier's average, not the company-wide average."
+    },
+    {
+      "q": "Why doesn't NOT EXISTS have the same NULL problem as NOT IN?",
+      "options": [
+        "NOT EXISTS ignores NULL values automatically by converting them to empty strings",
+        "NOT EXISTS only tests whether a matching row exists via its WHERE condition, so a stray NULL elsewhere in the subquery's result doesn't corrupt the comparison",
+        "NOT EXISTS cannot be used with any subquery that references NULL-able columns",
+        "They behave identically and both have the same NULL risk"
+      ],
+      "answer": 1,
+      "explain": "NOT EXISTS is a presence test based on the join condition inside the subquery, not a value-list comparison, so NULLs elsewhere don't break it."
+    },
+    {
+      "q": "In the overpayment check, why does HAVING use `SUM(ip.amount) > i.invoice_amount` instead of `<> 0`?",
+      "options": [
+        "There is no difference \u2014 both produce identical results",
+        "Because only the overpayment direction (paid more than invoiced) is being flagged here, which is operationally more urgent than underpayment",
+        "Because `<> 0` is invalid syntax in a HAVING clause",
+        "Because `>` always runs faster than `<>`"
+      ],
+      "answer": 1,
+      "explain": "The check specifically targets one direction of discrepancy \u2014 paying more than was invoiced \u2014 rather than any mismatch in either direction."
+    },
+    {
+      "q": "How does a 'trace' query differ from a 'list' query?",
+      "options": [
+        "A trace query never uses JOINs",
+        "A list query can only return one row",
+        "A trace query starts from one specific, known record and walks backward through joins, rather than starting from a condition and returning all matches",
+        "There is no real difference between the two"
+      ],
+      "answer": 2,
+      "explain": "A trace/audit-trail query begins with a known record (like a specific check number) and follows the joins back to its origin, while a list query filters by a condition to return all matching rows."
+    },
+    {
+      "q": "Why does the final query filter on `ps.amount_remaining > 10000` rather than `i.invoice_amount > 10000`?",
+      "options": [
+        "There is no difference between the two columns",
+        "Because invoice_amount does not exist on AP_INVOICES_ALL",
+        "Because amount_remaining is always identical to invoice_amount",
+        "Because a partially-paid invoice could have started above $10,000 but have less remaining outstanding now, and \"over $10,000\" should mean the outstanding balance"
+      ],
+      "answer": 3,
+      "explain": "The business question is about outstanding exposure, which AMOUNT_REMAINING reflects after partial payments \u2014 INVOICE_AMOUNT reflects only the original total."
+    },
+    {
+      "q": "What is a 'sargable' predicate?",
+      "options": [
+        "Any WHERE condition that uses the equals sign",
+        "A condition that always returns zero rows",
+        "A predicate that only works in HAVING, never WHERE",
+        "A WHERE condition the database can use an index to satisfy directly, without wrapping the column in a function"
+      ],
+      "answer": 3,
+      "explain": "Sargable conditions let the database leverage an index directly on the stored column values, rather than needing to compute something on every row first."
+    },
+    {
+      "q": "What does GL_PERIODS.CLOSING_STATUS indicate?",
+      "options": [
+        "Whether an accounting period is open, closed, or permanently closed",
+        "The total dollar amount posted in a period",
+        "The supplier associated with a period",
+        "The exchange rate used for a period"
+      ],
+      "answer": 0,
+      "explain": "CLOSING_STATUS tracks a period's state (e.g., open, closed, permanently closed), which is essential to check before processing transactions into it."
+    },
+    {
+      "q": "What reconciliation pattern does Investigation 2 (unapplied cash by customer) reuse from Lesson 21?",
+      "options": [
+        "LEFT OUTER JOIN plus an NVL-guarded difference, filtered with HAVING <> 0",
+        "CASE-based aging buckets",
+        "ROW_NUMBER() partitioned by customer",
+        "The MINUS set operator"
+      ],
+      "answer": 0,
+      "explain": "Investigation 2 directly reapplies Lesson 21's reconciliation pattern: outer join, NVL-guard the aggregate, then HAVING the difference not equal to zero."
+    }
+  ]
+}

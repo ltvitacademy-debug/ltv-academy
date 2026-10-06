@@ -1,0 +1,42 @@
+# Lesson 30 — Turning Queries into Reusable Reports · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Last lesson of the course. Every query you've written has lived in a
+single script, run once. Once a query proves itself — Finance keeps
+asking for it every week — it's worth saving as something reusable.
+
+## S2 · CODE CARD (CREATE OR REPLACE VIEW)
+
+Create or replace view, V-W underscore unpaid invoices over threshold, as
+— and then lesson twenty-three's entire unpaid-invoices query, word for
+word. A view is a named, stored query that behaves like a table every
+time it's queried. OR REPLACE means running this again just updates the
+definition instead of erroring out.
+
+## S3 · CODE CARD (querying the view)
+
+And once it exists, anyone can just select star from it, order by days
+overdue descending. No idea of the three-table join or three-condition
+filter underneath — the complexity is captured once, in the view, and
+reused forever after.
+
+## S4 · STEPS CARD (the hardcoded-threshold caution)
+
+One real caution: ten thousand and thirty are baked into that view's
+definition. If Finance wants fifteen thousand instead, you have to edit
+and re-create it — a view isn't automatically parameterized. For
+thresholds that change often, a documented script or a parameterized BI
+report is often the better fit.
+
+## S5 · OUTRO CARD
+
+You can now read and write real Oracle Financials SQL — the dialect, the
+data model, and the method for turning any new question into a trusted
+query. This completes the Reporting and Data stage of the path. Next up:
+FBDI and ADFdi, which flips the direction — getting data safely into
+Oracle Fusion at scale, opening the Data Loading and Integrations stage.

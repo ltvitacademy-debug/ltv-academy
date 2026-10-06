@@ -1,0 +1,36 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "SQL for Oracle Financials · Chapter Six",
+    "titlePlain": "Practice Set: Ledger and Close ",
+    "titleEmphasis": "Investigations",
+    "titleSuffix": "",
+    "subtitle": "Lesson 28 · Practice Sets"
+  },
+  {
+    "type": "code",
+    "eyebrow": "\"Is every journal actually balanced?\"",
+    "code": "SELECT h.je_header_id, h.name,\n       SUM(l.entered_dr) AS total_debits,\n       SUM(l.entered_cr) AS total_credits\nFROM gl_je_headers h\nINNER JOIN gl_je_lines l ON l.je_header_id = h.je_header_id\nWHERE h.period_name = 'JUN-26'\nGROUP BY h.je_header_id, h.name\nHAVING SUM(l.entered_dr) <> SUM(l.entered_cr);",
+    "caption": "Zero rows is the healthy outcome here — unlike most exception checks in this course."
+  },
+  {
+    "type": "code",
+    "eyebrow": "\"Is this period still open?\"",
+    "code": "SELECT period_name, closing_status\nFROM gl_periods\nWHERE period_name = 'JUN-26';",
+    "caption": "The simplest query in the course — and one of the most important guardrails before processing anything."
+  },
+  {
+    "type": "code",
+    "eyebrow": "\"Which accounts swung the most, period over period?\"",
+    "code": "WITH current_period AS (\n  SELECT code_combination_id, period_net_dr-period_net_cr net_activity\n  FROM gl_balances WHERE period_name='JUN-26' AND actual_flag='A'\n), prior_period AS (\n  SELECT code_combination_id, period_net_dr-period_net_cr net_activity\n  FROM gl_balances WHERE period_name='MAY-26' AND actual_flag='A'\n)\nSELECT c.code_combination_id, c.net_activity, p.net_activity,\n       ABS(c.net_activity - NVL(p.net_activity,0)) AS swing\nFROM current_period c\nLEFT OUTER JOIN prior_period p ON p.code_combination_id=c.code_combination_id\nORDER BY swing DESC FETCH FIRST 5 ROWS ONLY;",
+    "caption": "ABS() treats a big swing up and a big swing down as equally worth investigating."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 29",
+    "titlePlain": "Reading and Tuning ",
+    "titleEmphasis": "Slow Queries",
+    "titleSuffix": "",
+    "subtitle": "What happens when a query runs too slow to actually use."
+  }
+]

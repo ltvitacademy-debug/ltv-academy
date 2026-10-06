@@ -1,0 +1,47 @@
+# Lesson 6 — Joining Suppliers and Invoices · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+Welcome to Chapter 2. Every invoice belongs to exactly one supplier — and
+to put a supplier's name on an invoice report, you need your first real
+Oracle Financials join.
+
+## S2 · STEPS CARD (VENDOR_ID naming history)
+
+Here's a quirk worth knowing: the supplier master table is called P-O-Z
+underscore Suppliers, but its key column is VENDOR_ID, not supplier ID.
+That's a genuine naming leftover — Oracle E-Business Suite originally
+called suppliers vendors, and when Fusion renamed the table, the column
+name VENDOR_ID stuck around for compatibility. You'll see it everywhere in
+the Payables schema.
+
+## S3 · CODE CARD (INNER JOIN)
+
+Select supplier name, invoice number, invoice amount. From P-O-Z suppliers,
+aliased s. Inner join A-P invoices all, aliased i. On s dot vendor id
+equals i dot vendor id. No AS before either alias — that rule from lesson
+two applies to every join you'll ever write in Oracle.
+
+## S4 · STEPS CARD (what INNER JOIN keeps)
+
+INNER JOIN returns only rows that match on both sides. A supplier with zero
+invoices this year never shows up in this result at all — there's no
+invoice row to pair it with.
+
+## S5 · CODE CARD (WHERE after the join)
+
+And WHERE still works exactly like it did on a single table — it just has
+columns from both tables available now. Where invoice amount is over ten
+thousand, order by invoice amount descending. This is the first real
+building block of the unpaid-invoices challenge: getting the supplier's
+name onto the result at all.
+
+## S6 · OUTRO CARD
+
+Supplier joined to invoice, the Oracle way — bare aliases, ON for the
+match, INNER JOIN for matches only. Next lesson: joining invoices to the
+payments that actually settle them.

@@ -1,0 +1,60 @@
+{
+  "lesson": "identifying-exceptions",
+  "questions": [
+    {
+      "q": "What distinguishes a data-quality exception from a reconciliation exception?",
+      "options": [
+        "There is no real difference between the two",
+        "Reconciliation exceptions can only be found with UNION ALL",
+        "Data-quality exceptions only apply to Receivables, never Payables",
+        "A data-quality exception looks wrong on its own, with no second table needed to detect it; a reconciliation exception is a mismatch between two numbers that should agree"
+      ],
+      "answer": 3,
+      "explain": "A negative invoice amount is wrong by itself; an invoice-vs-paid mismatch requires comparing two sources to detect."
+    },
+    {
+      "q": "Why would `WHERE invoice_amount <= 0` be a useful data-quality check on AP_INVOICES_ALL?",
+      "options": [
+        "Because a normal invoice amount should be positive, so zero or negative values (outside intentional credit memos) often signal a data entry error",
+        "Because all invoices should have a negative amount",
+        "Because Oracle automatically rejects any invoice with a negative amount",
+        "Because invoice_amount is never populated for real invoices"
+      ],
+      "answer": 0,
+      "explain": "Normal invoices should have positive amounts; unexpected zero/negative values are a common sign of bad data entry or incomplete imports."
+    },
+    {
+      "q": "In the overpayment check, why does HAVING use `SUM(ip.amount) > i.invoice_amount` instead of `<> 0`?",
+      "options": [
+        "There is no difference — both produce identical results",
+        "Because only the overpayment direction (paid more than invoiced) is being flagged here, which is operationally more urgent than underpayment",
+        "Because `<> 0` is invalid syntax in a HAVING clause",
+        "Because `>` always runs faster than `<>`"
+      ],
+      "answer": 1,
+      "explain": "The check specifically targets one direction of discrepancy — paying more than was invoiced — rather than any mismatch in either direction."
+    },
+    {
+      "q": "What does combining multiple exception checks with UNION ALL, each labeled with its own 'exception_type' column, accomplish?",
+      "options": [
+        "It removes duplicate exceptions automatically",
+        "It converts all exceptions into reconciliation checks",
+        "It merges several independent exception-detection queries into a single labeled report",
+        "It is required syntax — exception checks cannot run separately"
+      ],
+      "answer": 2,
+      "explain": "UNION ALL lets you stack several independently-defined checks into one combined result, with a label column identifying which rule flagged each row."
+    },
+    {
+      "q": "Why is UNION ALL preferred over UNION when combining several distinct exception checks like this?",
+      "options": [
+        "Because each check targets a different condition, so duplicate rows across checks are unlikely or irrelevant, and UNION ALL avoids the unnecessary deduplication cost",
+        "Because UNION cannot be used with a literal label column like 'Overpaid'",
+        "Because UNION ALL automatically adds the exception_type column",
+        "There is no reason — UNION would produce an error here"
+      ],
+      "answer": 0,
+      "explain": "Since each check's condition is independent and a given invoice is unlikely to appear identically in two checks, UNION ALL's lack of deduplication is appropriate and faster."
+    }
+  ]
+}

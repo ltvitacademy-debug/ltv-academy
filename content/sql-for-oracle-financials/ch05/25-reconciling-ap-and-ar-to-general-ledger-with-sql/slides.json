@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "SQL for Oracle Financials · Chapter Five",
+    "titlePlain": "Reconciling AP and AR to the General ",
+    "titleEmphasis": "Ledger",
+    "titleSuffix": "",
+    "subtitle": "Lesson 25 · Investigating Financial Data"
+  },
+  {
+    "type": "code",
+    "eyebrow": "AP distributions vs. GL balances",
+    "code": "WITH ap_by_period AS (\n  SELECT TO_CHAR(accounting_date,'YYYY-MM') period_name,\n         dist_code_combination_id cc_id, SUM(amount) ap_total\n  FROM ap_invoice_distributions_all GROUP BY 1, 2\n), gl_by_period AS (\n  SELECT period_name, code_combination_id cc_id,\n         period_net_dr - period_net_cr AS gl_total\n  FROM gl_balances WHERE actual_flag = 'A'\n)\nSELECT a.*, g.gl_total, a.ap_total - NVL(g.gl_total,0) AS difference\nFROM ap_by_period a\nLEFT OUTER JOIN gl_by_period g ON g.period_name=a.period_name AND g.cc_id=a.cc_id\nWHERE a.ap_total - NVL(g.gl_total, 0) <> 0;",
+    "caption": "ACTUAL_FLAG = 'A' restricts GL_BALANCES to actual balances, not budget/encumbrance."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The same reconciliation, on AR",
+    "code": "WITH ar_by_period AS (\n    SELECT TO_CHAR(t.trx_date,'YYYY-MM') period_name,\n           tl.code_combination_id, SUM(tl.extended_amount) ar_total\n    FROM ra_customer_trx_lines_all tl\n    INNER JOIN ra_customer_trx_all t ON t.customer_trx_id = tl.customer_trx_id\n    GROUP BY 1, 2\n)\nSELECT a.*, g.period_net_dr - g.period_net_cr AS gl_total\nFROM ar_by_period a\nLEFT OUTER JOIN gl_balances g\n    ON g.period_name=a.period_name AND g.code_combination_id=a.code_combination_id\n    AND g.actual_flag='A';",
+    "caption": "Same shape as AP — subledger detail totaled by period and account, compared to GL_BALANCES."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Chapter 5, tied together",
+    "titlePlain": "From reconciling to ",
+    "titleEmphasis": "tracing",
+    "titleSuffix": " to close",
+    "steps": [
+      { "label": "21-22", "sub": "reconciling two numbers, flagging bad data" },
+      { "label": "23-24", "sub": "the unpaid-invoices challenge, tracing a payment" },
+      { "label": "25", "sub": "tying both subledgers to the General Ledger" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Chapter 5 complete · Up next · Chapter 6",
+    "titlePlain": "Practice ",
+    "titleEmphasis": "Sets",
+    "titleSuffix": "",
+    "subtitle": "Rehearsing everything, across AP, AR, and the Ledger."
+  }
+]

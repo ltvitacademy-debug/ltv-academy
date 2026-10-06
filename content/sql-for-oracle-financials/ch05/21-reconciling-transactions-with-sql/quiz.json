@@ -1,0 +1,60 @@
+{
+  "lesson": "reconciling-transactions-with-sql",
+  "questions": [
+    {
+      "q": "In SQL terms, what does 'reconciliation' generally mean?",
+      "options": [
+        "Deleting all unmatched records",
+        "Converting text columns into numeric columns",
+        "Confirming that two numbers which should agree actually do, and identifying where they diverge",
+        "Running EXPLAIN PLAN on a query"
+      ],
+      "answer": 2,
+      "explain": "Reconciliation compares two sides of the same economic event (e.g., invoice amount and amount paid) to confirm they agree, flagging exceptions when they don't."
+    },
+    {
+      "q": "Why does the invoice-vs-paid reconciliation query use LEFT OUTER JOIN rather than INNER JOIN?",
+      "options": [
+        "LEFT OUTER JOIN is always faster",
+        "INNER JOIN cannot be used with GROUP BY",
+        "There's no real reason — INNER JOIN would work identically",
+        "So invoices with zero payments still appear in the result, rather than disappearing entirely"
+      ],
+      "answer": 3,
+      "explain": "An unpaid invoice has no matching row in ap_invoice_payments_all; INNER JOIN would drop it, but the reconciliation needs it to appear with total_paid = 0."
+    },
+    {
+      "q": "Why is NVL needed around SUM(ip.amount) before subtracting it from invoice_amount?",
+      "options": [
+        "Without it, an unpaid invoice's SUM could be NULL, and invoice_amount minus NULL would itself be NULL, breaking the HAVING comparison",
+        "NVL makes the query run faster",
+        "NVL is required syntax for every SUM in Oracle",
+        "NVL converts the amount into a different currency"
+      ],
+      "answer": 0,
+      "explain": "SUM over a LEFT JOIN with no matching rows returns NULL, and NULL arithmetic propagates NULL — NVL substitutes 0 to keep the subtraction meaningful."
+    },
+    {
+      "q": "Why does the reconciliation query filter with `HAVING difference <> 0` rather than returning every invoice?",
+      "options": [
+        "To intentionally hide problem invoices from the report",
+        "Because a reconciliation report should surface only the exceptions — fully paid invoices (difference = 0) aren't useful to show",
+        "HAVING <> 0 is required syntax with no real effect",
+        "Because WHERE cannot be used with aggregated differences"
+      ],
+      "answer": 1,
+      "explain": "The point of a reconciliation report is to find discrepancies, so filtering out zero-difference (fully reconciled) rows focuses the report on real exceptions."
+    },
+    {
+      "q": "What does a nonzero `unapplied_amount` on a cash receipt indicate?",
+      "options": [
+        "The receipt was recorded in the wrong currency",
+        "The customer has not yet paid at all",
+        "The receipt amount was entered twice",
+        "Money was received but has not yet been matched to any invoice"
+      ],
+      "answer": 3,
+      "explain": "Unapplied cash means a receipt exists but some or all of its amount hasn't been applied to a specific transaction yet, leaving the customer's AR balance inaccurate."
+    }
+  ]
+}

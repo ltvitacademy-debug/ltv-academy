@@ -1,0 +1,38 @@
+# Lesson 28 — SQL Practice Set: Ledger and Close Investigations · Voiceover script
+
+Segments map 1:1 to slides. Target: ~2.5 minutes total.
+
+---
+
+## S1 · TITLE CARD
+
+The final three investigations in the practice set — on the General
+Ledger side, the kind of checks that run during an actual month-end close.
+
+## S2 · CODE CARD (balanced journal check)
+
+"Is every journal in this period actually balanced?" Sum debits, sum
+credits, group by journal, having them not equal. If this ever returns a
+row, something has gone seriously wrong — a real accounting journal always
+balances by definition. Unlike most of this course, zero rows here is the
+healthy, expected outcome.
+
+## S3 · CODE CARD (is the period open?)
+
+"Is this accounting period actually still open?" One table, one row —
+the simplest query in the entire course. But never assume a period is
+open before processing anything into it. Closing status: O for open, C
+for closed, P for permanently closed.
+
+## S4 · CODE CARD (biggest period-over-period swings)
+
+"Which accounts moved the most, period over period?" Two CTEs, one per
+period, left outer joined and compared, ABS of the difference as the
+swing. ABS treats a big swing up and a big swing down as equally worth a
+controller's attention — fetch the top five.
+
+## S5 · OUTRO CARD
+
+Balance checks, period status, period-over-period swings — the close
+toolkit. Next lesson: what happens when one of these queries runs too
+slow to actually use.

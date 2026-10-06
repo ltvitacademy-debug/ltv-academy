@@ -1,0 +1,47 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "SQL for Oracle Financials · Chapter Four",
+    "titlePlain": "Common Table ",
+    "titleEmphasis": "Expressions",
+    "titleSuffix": "",
+    "subtitle": "Lesson 17 · Subqueries and CTEs"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Naming a subquery, WITH",
+    "code": "WITH overdue_invoices AS (\n    SELECT i.invoice_num, i.vendor_id, ps.amount_remaining\n    FROM ap_invoices_all i\n    INNER JOIN ap_payment_schedules_all ps ON ps.invoice_id = i.invoice_id\n    WHERE ps.amount_remaining > 0\n)\nSELECT vendor_id, SUM(amount_remaining) AS total_overdue\nFROM overdue_invoices\nGROUP BY vendor_id;",
+    "caption": "overdue_invoices exists only for this query — but reads like any other table."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Solving Lesson 13's repeated CASE",
+    "code": "WITH bucketed AS (\n    SELECT amount_remaining,\n        CASE WHEN TRUNC(SYSDATE)-due_date<=0 THEN 'Current' ... END AS aging_bucket\n    FROM ap_payment_schedules_all\n    WHERE amount_remaining > 0\n)\nSELECT aging_bucket, SUM(amount_remaining) AS total_outstanding\nFROM bucketed\nGROUP BY aging_bucket;",
+    "caption": "CASE computed once, inside the CTE — the outer query just groups by its alias."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Chaining multiple CTEs",
+    "code": "WITH supplier_totals AS (\n    SELECT vendor_id, SUM(invoice_amount) AS total_invoiced\n    FROM ap_invoices_all GROUP BY vendor_id\n),\nbig_suppliers AS (\n    SELECT vendor_id, total_invoiced FROM supplier_totals\n    WHERE total_invoiced > 100000\n)\nSELECT s.vendor_name, b.total_invoiced\nFROM big_suppliers b\nINNER JOIN poz_suppliers s ON s.vendor_id = b.vendor_id;",
+    "caption": "Each CTE can build on the ones defined before it, separated by a comma."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why CTEs read better",
+    "titlePlain": "Top to bottom, not ",
+    "titleEmphasis": "inside",
+    "titleSuffix": " out",
+    "steps": [
+      { "label": "NESTED SUBQUERY", "sub": "read from the inside out to understand it" },
+      { "label": "CHAINED CTEs", "sub": "each one named, read top to bottom" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 18",
+    "titlePlain": "Finding Missing Records with ",
+    "titleEmphasis": "NOT EXISTS",
+    "titleSuffix": "",
+    "subtitle": "What's supposed to be there, but isn't."
+  }
+]
