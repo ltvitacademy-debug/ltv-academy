@@ -1,0 +1,25 @@
+# Script — Custom Indexers vs. Managed Services
+
+## Segment 1 (title)
+
+Listen, write, query is the fix for not being able to query the chain directly — The Graph is one well-built implementation of that pattern, not the only one. The honest alternative is building it yourself.
+
+## Segment 2 (steps: what managed buys you)
+
+Subgraph Studio hands you indexing infrastructure with no servers to run, a GraphQL layer generated from your schema, a public directory in Graph Explorer, and decentralized redundancy you'd otherwise have to build yourself.
+
+## Segment 3 (steps: what it costs)
+
+Handlers must stay pure and deterministic, no calling third-party APIs mid-handler. Complex joins or custom aggregations often don't fit GraphQL's generated shape. And production volume runs through gateway billing you don't fully control.
+
+## Segment 4 (code: rolling your own)
+
+A custom indexer is Chapter 2's event listener extended: your own database schema, your own API layer, and you operate and scale all of it. Same pattern, no guardrails, no conveniences.
+
+## Segment 5 (steps: making the call)
+
+A subgraph is the default for straightforward, especially public, indexing needs. Reach for a custom indexer when handler logic needs non-deterministic inputs or the queries genuinely don't fit GraphQL. Plenty of projects run both at once.
+
+## Segment 6 (outro)
+
+That closes out indexing. Chapter 4 turns to a different off-chain problem entirely: getting real-world data onto the chain in the first place, starting with why that's hard at all.
