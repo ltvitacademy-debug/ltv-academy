@@ -1,0 +1,9 @@
+Before we touch Azure AI Foundry specifically, let's settle why cloud AI platforms exist at all, and when they actually beat the alternatives.
+
+There are really three paths to get a model into production. Self-host it on GPUs you manage. Use a cloud AI platform and call an API. Or buy a fully managed SaaS product built on top of a model, with no infrastructure decisions at all.
+
+A cloud AI platform like Azure AI Foundry gives you four things at once: elastic compute you never provision yourself, a catalog of models from multiple providers behind one contract, governance — content filters, role-based access, logging — built in rather than bolted on, and a single consolidated bill instead of a depreciating GPU cluster.
+
+Here's what that looks like in code. Self-hosted, you load the model file yourself and manage the serving process. On a cloud AI platform, you create a client pointed at an endpoint and call complete. Same prompt, same reply shape — the hard infrastructure problem now belongs to Microsoft, not to you.
+
+That tradeoff — control versus speed — is the lens for this whole chapter. Next, we open the portal where that tradeoff actually plays out: Azure AI Foundry.
