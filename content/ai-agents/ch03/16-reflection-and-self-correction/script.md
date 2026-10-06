@@ -1,0 +1,21 @@
+# Script — Reflection & Self-Correction
+
+## Segment 1 (title)
+
+Every pattern so far gets from a goal to a first answer. Reflection adds one more step after that: have the agent, or a second pass, critique its own output and revise it, catching mistakes the earlier stages missed before the result goes anywhere further.
+
+## Segment 2 (code: the evaluator-optimizer workflow)
+
+Anthropic's own name for this is the evaluator-optimizer workflow: one call generates a response, a second evaluates it and gives feedback, looping between the two until the evaluator is satisfied. Generation and evaluation are deliberately different roles, even when the same model plays both.
+
+## Segment 3 (code: a real mistake, caught)
+
+A contract summary draft says cancellation is free anytime. The evaluator re-reads the actual clause and finds a 30-day notice requirement and an early-termination fee the draft dropped entirely. Not satisfied — specific feedback — a revised draft that actually includes both conditions.
+
+## Segment 4 (code: where reflection fits)
+
+Reflection isn't a replacement for ReAct, planning, or orchestrator/worker — it's a layer that can wrap around any of them. A planning agent can reflect on its plan before executing; an orchestrator can reflect on a worker's result before synthesizing.
+
+## Segment 5 (outro)
+
+It earns its cost specifically where a wrong-but-confident answer is worse than the extra round trip — summaries, generated code, anything acted on without independent re-checking. Next up: what an agent actually has to remember to keep any of this coherent across many steps.

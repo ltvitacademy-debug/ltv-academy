@@ -1,0 +1,21 @@
+# Script — When Agents Are Overkill
+
+## Segment 1 (title)
+
+Four lessons built up what agents can do. This one is the deliberate counterweight: every one of those capabilities has a real cost in latency, token spend, and new ways to fail.
+
+## Segment 2 (steps: the real costs)
+
+Every extra loop iteration is a full model round trip, so a three-step agent is at minimum three times slower than one good prompt. More iterations means more tokens billed. And an agent can call the wrong tool or loop without making progress in ways a single prompt simply can't.
+
+## Segment 3 (code: a simple test)
+
+Ask one question: does this need information discovered through more than one step, where later steps depend on earlier results? If no, a single prompt is enough. If the sequence never varies, that's a fixed workflow, not an agent. Only a sequence that has to change based on what's discovered needs a real loop.
+
+## Segment 4 (code: three cases that look like agents but aren't)
+
+Summarizing a document in front of you needs one pass, not a tool. Emailing the same report to the same three people every week never varies — that's a workflow. Classifying a support ticket into one of five categories is a single transformation a direct prompt already handles reliably.
+
+## Segment 5 (outro)
+
+None of those three benefit from a loop — they'd just get slower and more expensive for the same answer. Anthropic's own guidance is blunt: find the simplest solution first. Chapter 2 starts from the cases that actually do need tools.

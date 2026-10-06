@@ -1,0 +1,21 @@
+# Script — Tool Calling in Practice
+
+## Segment 1 (title)
+
+In practice, Claude's response often has a text block and a tool_use block together — narrating what it's about to do, then doing it. That narration is useful for a human watching, but your code should never parse it for control flow.
+
+## Segment 2 (code: a real mixed response)
+
+Asked about weather and time in San Francisco, Claude might say "I'll check the current weather and time" and then issue the tool_use block in the same response. The structured block and the stop_reason are what tell your code what happened — not the wording Claude chose.
+
+## Segment 3 (code: tool_choice, four settings)
+
+Four real settings control whether a tool gets called. Auto lets Claude decide, and it's the default. Any forces some tool call without picking which one. Tool forces one specific tool. None blocks tool use entirely. Forcing with any or tool suppresses narration text, because it pre-fills the turn.
+
+## Segment 4 (code: a full annotated exchange)
+
+Turn one sends the user message and tools; Claude replies with a tool_use block and stop_reason tool_use. Turn two sends the full history, including that same tool_use block as an assistant message, plus the new tool_result — and Claude replies with stop_reason end_turn and the final answer.
+
+## Segment 5 (outro)
+
+The model needs its own earlier action back in context to make sense of the result that follows it — that's why the assistant's tool_use block has to round-trip back in, not just the result. Next up: what happens when that tool call fails.
