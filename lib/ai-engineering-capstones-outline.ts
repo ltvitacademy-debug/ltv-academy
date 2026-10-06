@@ -70,11 +70,11 @@ export const AI_ENGINEERING_CAPSTONES_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Career Preparation",
     lessons: [
-      L(19, "building-your-ai-engineering-resume", "Building Your AI Engineering Resume"),
-      L(20, "portfolio-presentation-strategy", "Portfolio Presentation Strategy"),
-      L(21, "common-ai-engineer-interview-questions", "Common AI Engineer Interview Questions"),
-      L(22, "system-design-questions-for-ai-roles", "System Design Questions for AI Roles"),
-      L(23, "salary-negotiation-and-next-steps", "Salary Negotiation & Next Steps"),
+      L(19, "building-your-ai-engineering-resume", "Building Your AI Engineering Resume", { contentDir: "ch05/19-building-your-ai-engineering-resume" }),
+      L(20, "portfolio-presentation-strategy", "Portfolio Presentation Strategy", { contentDir: "ch05/20-portfolio-presentation-strategy" }),
+      L(21, "common-ai-engineer-interview-questions", "Common AI Engineer Interview Questions", { contentDir: "ch05/21-common-ai-engineer-interview-questions" }),
+      L(22, "system-design-questions-for-ai-roles", "System Design Questions for AI Roles", { contentDir: "ch05/22-system-design-questions-for-ai-roles" }),
+      L(23, "salary-negotiation-and-next-steps", "Salary Negotiation & Next Steps", { contentDir: "ch05/23-salary-negotiation-and-next-steps" }),
     ],
   },
 ];
