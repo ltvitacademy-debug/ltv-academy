@@ -1,0 +1,21 @@
+# Script — Financial Report Studio Basics
+
+## Segment 1 (title)
+
+You've toured the Financial Reporting Center and run a seeded statement. Now let's open the hood: what is a Financial Reporting Studio report actually made of?
+
+## Segment 2 (steps)
+
+It doesn't query the General Ledger's transactional tables directly. It queries a GL balances cube, a pre-summarized, multidimensional structure built from posted balances, organized by ledger, period, account, and cost center. That's why a report can pull a balance instantly instead of scanning every journal line, but it also means a report is only as current as the cube's last refresh.
+
+## Segment 3 (steps)
+
+Like a spreadsheet, the report grid has two axes. Rows typically represent what you're reporting on: individual accounts, ranges, or summary lines like Total Revenue. Columns typically represent the point of view being compared: periods side by side, or Actual versus Budget.
+
+## Segment 4 (steps)
+
+Each row or column references members, specific values from the cube. That could be a single account, a range, or a parent node in a hierarchy that automatically rolls up its children. Rows can also be formulas, like Gross Margin equals Total Revenue minus Cost of Goods Sold, computed from other rows rather than pulled straight from the cube.
+
+## Segment 5 (outro)
+
+So a finished report is really just three ingredients: a point of view, row definitions, and column definitions, formatted into a grid. Up next, lesson nine: using these building blocks to construct a simple financial report from scratch.

@@ -1,0 +1,21 @@
+# Script — Refreshing and Distributing Reports
+
+## Segment 1 (title)
+
+Chapter 5 closes by tying everything together: once a worksheet or Report Package exists, how does it stay current, and how does it reach the people who need it, without becoming another manual monthly task?
+
+## Segment 2 (steps)
+
+Refresh becomes a team habit, not just an individual one. A controller builds the variance workbook once, early in the period, then the whole team refreshes the same file repeatedly as subledgers close, Payables first, then Receivables, then the final GL close, instead of everyone rebuilding their own version from scratch.
+
+## Segment 3 (steps)
+
+Smart View moves data both directions. Importing pulls metadata or data from Fusion into a worksheet, the core of every ad hoc analysis. Exporting uploads a locally built query or workbook back up to the Financial Reporting Center, which explicitly lists Smart View reports as a content type, so it can be shared through the same catalog mechanism OTBI uses.
+
+## Segment 4 (steps)
+
+Distributing a finished workbook to people without Smart View themselves usually means a static Excel snapshot, fine once but goes stale fast, or publishing it to the Financial Reporting Center for a live version, or for Report Packages, publishing through the sign-off workflow so the approved version reaches its audience with a documented trail.
+
+## Segment 5 (outro)
+
+Smart View's distribution model assumes a human is actively building or refreshing, that's the point of interactive analysis, deliberately different from BI Publisher's unattended scheduling. That closes Chapter 5. Up next, Chapter 6: the specific financial and operational reports a working consultant must know cold.

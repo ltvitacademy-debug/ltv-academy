@@ -1,0 +1,21 @@
+# Script — Running Seeded Financial Reports
+
+## Segment 1 (title)
+
+Oracle Fusion ships with predefined financial reports already built in Financial Reporting Studio format. This lesson is about actually running one: picking a point of view, and reading what comes back.
+
+## Segment 2 (steps)
+
+Every report design stays fixed, but it needs a point of view each time it runs. That's typically ledger, which company's data; period, which accounting period; scenario, usually Actual but sometimes Budget or Forecast; and currency. Change the point of view, rerun the same design, and you get the equivalent statement for a different ledger or period.
+
+## Segment 3 (steps)
+
+Once you run it, you usually choose to view it online, with drill into underlying balances where enabled, or export it to PDF or Excel for sharing and archiving. Most close processes do both: review online first, then export the final reviewed version.
+
+## Segment 4 (code)
+
+If the numbers look wrong, don't assume the report is broken. Check the point of view first, a report run against the wrong period looks wrong but is actually correct for what it was given. Then check data security, the user's access might be scoping things narrower than expected. Only after that, look at the report design itself.
+
+## Segment 5 (outro)
+
+Run with the right point of view, verified data access, and you've got a trustworthy seeded report. Up next, lesson seven: Account Groups, a lighter-weight way to monitor specific key accounts.

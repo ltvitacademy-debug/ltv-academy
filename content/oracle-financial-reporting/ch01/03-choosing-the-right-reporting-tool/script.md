@@ -1,0 +1,21 @@
+# Script — Choosing the Right Reporting Tool
+
+## Segment 1 (title)
+
+You know the four tools exist and where their output lives. Now let's turn that into a decision you can make on the job, fast, when someone just asks you for "a report."
+
+## Segment 2 (steps)
+
+Ask four questions. Does the output need an exact, consistent layout every time, like a statutory statement? That's Financial Reporting Studio or BI Publisher. Is this a quick, one-time question where layout doesn't matter? That's OTBI. Does it need to run unattended on a schedule? BI Publisher again. Does the requester want to work the numbers themselves in a spreadsheet, or get a formal signed-off package? That's Smart View, either way.
+
+## Segment 3 (code)
+
+Here's how real requests map. "Show me unpaid invoices over ten thousand dollars, more than thirty days old" is OTBI: quick and ad hoc. "Generate 1099 forms and email them automatically every January" is BI Publisher: precise layout, scheduled. "I want to pull GL balances into Excel and build my own variance analysis" is Smart View.
+
+## Segment 4 (steps)
+
+Don't default to "just export to Excel" as a reflex. Smart View is Excel, so that's a legitimate answer sometimes. But rebuilding a recurring, scheduled, formatted report by hand every month, when BI Publisher could run it unattended, wastes time and invites manual error.
+
+## Segment 5 (outro)
+
+Real requests often need more than one tool. "A live dashboard the team checks daily, plus a PDF emailed to the controller every Friday" is an OTBI dashboard and a scheduled BI Publisher report, not one tool doing both jobs. Up next, lesson four: reporting security and data access.
