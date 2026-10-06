@@ -1,0 +1,25 @@
+# Script — Data Leakage
+
+## Segment 1 (title)
+
+Data leakage happens when information that wouldn't legitimately be available at real prediction time ends up influencing training or evaluation. The last three lessons each flagged one version of this. Today we name the general problem all of them were protecting against.
+
+## Segment 2 (steps)
+
+Here's what makes it uniquely dangerous: most mistakes make a model perform worse, which is obvious. Leakage does the opposite — it makes a model look better than it actually is, sometimes dramatically. Ninety-eight percent test accuracy in development, then barely better than guessing in production, because the real world doesn't hand it the information it was secretly relying on. Suspiciously good performance is the single biggest warning sign.
+
+## Segment 3 (code)
+
+Here's an invisible example: predicting loan default, using a feature called days-to-payoff. That field often only gets set after a default has already happened. It looks like an ordinary column. It's actually the outcome in disguise.
+
+## Segment 4 (steps)
+
+Leakage tends to take four shapes. Target leakage, a feature derived from the label. Train-test contamination, fitting a preprocessing step on the full dataset instead of train only. Temporal leakage, using future data to predict the past. And group leakage, the same entity's rows split across both train and test.
+
+## Segment 5 (steps)
+
+One question catches almost all of it: for every feature, would you genuinely have this information at the moment you'd actually need to make the prediction? If the honest answer is no, it's leaking, no matter how clean the code looks.
+
+## Segment 6 (outro)
+
+That closes out chapter three — you now have the full toolkit for turning raw data into something a model can honestly learn from. Chapter four goes deeper into one specific model family: neural networks and deep learning.

@@ -1,0 +1,25 @@
+# Script — Neural Networks, Intuition
+
+## Segment 1 (title)
+
+Despite the biological name, a neural network is simpler under the hood than it sounds. Today we build it up from the smallest piece.
+
+## Segment 2 (code)
+
+A single neuron takes several inputs, multiplies each by its own weight, adds a bias, sums it all up, and passes that through a simple nonlinear function called an activation. That's it. The intelligence isn't in any one neuron — it's in the combination of many of them, and what their weights settle into.
+
+## Segment 3 (steps)
+
+Neurons stack into layers. An input layer, just the feature values. One or more hidden layers of neurons. And an output layer that produces the final prediction. Every neuron typically connects to every neuron in the next layer, each connection carrying its own weight.
+
+## Segment 4 (code)
+
+Here's the part that actually matters: without that nonlinear step, stacking layers wouldn't add any power. A weighted sum of a weighted sum is still just one big weighted sum — a hundred purely linear layers collapse to the same thing as one linear regression. The nonlinear activation is what lets each layer genuinely bend the function instead of just scaling it.
+
+## Segment 5 (steps)
+
+So a forward pass just pushes an input through every layer to produce a prediction — the same thing as inference. And training means searching for the values of every weight, across the whole network, that make this one giant flexible function match the data.
+
+## Segment 6 (outro)
+
+Next, we look at exactly how all those weights actually get adjusted: loss functions and gradient descent.

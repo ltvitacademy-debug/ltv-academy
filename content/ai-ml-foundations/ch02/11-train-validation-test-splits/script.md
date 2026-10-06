@@ -1,0 +1,25 @@
+# Script — Train/Validation/Test Splits
+
+## Segment 1 (title)
+
+An overfit model can ace the data it trained on and fail on anything new, which means you need data the model never trains on, held back purely to check its work. Today: exactly how to organize that.
+
+## Segment 2 (code)
+
+Serious ML work usually splits into three pieces. Train is what the model learns from. Validation is what you check against repeatedly while developing — comparing models, tuning settings. Test is touched exactly once, at the very end, for a final honest number. Reuse the test set for decisions, even once, and it quietly stops being honest.
+
+## Segment 3 (screenshot)
+
+This is a real scikit-learn figure for GroupKFold, a cross-validation method. With a small dataset, carving out one fixed validation slice wastes data the model could train on. Instead, you rotate: each of these four rounds holds out a different slice as the test fold while training on the rest.
+
+## Segment 4 (steps)
+
+Across the four rounds, every sample gets a turn in the held-out portion exactly once, and you average the score across all four. That's more robust than any single split, because it isn't sensitive to exactly which rows happened to land in one particular validation slice.
+
+## Segment 5 (steps)
+
+Whatever strategy you use, one rule can't be broken: the held-out data never influences training or decisions — not feature choices, not tuning, not even when to stop. Break that, even subtly, and your final number stops being honest.
+
+## Segment 6 (outro)
+
+Next, chapter three turns to the data itself, starting with cleaning it for ML.

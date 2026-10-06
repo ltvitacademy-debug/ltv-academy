@@ -1,0 +1,25 @@
+# Script — Loss Functions & Gradient Descent, Intuition
+
+## Segment 1 (title)
+
+A model can't improve without a way to measure how wrong it currently is. A loss function does that: it takes a prediction and the true label and returns one number — higher means worse.
+
+## Segment 2 (screenshot)
+
+This is a real scikit-learn figure comparing six loss functions as a prediction moves from clearly wrong to clearly right. Every curve agrees wrong costs more than right, but they disagree on the details. Zero-one loss just counts right or wrong with no partial credit — useless for training, because it gives no slope to follow. Log loss rises more gently and never quite reaches zero, which keeps the model honestly uncertain instead of overconfident.
+
+## Segment 3 (code)
+
+Once you have a loss number, gradient descent is how you reduce it: compute the gradient, the slope of the loss with respect to each parameter, and nudge every parameter a small step in the direction that decreases the loss. Repeat.
+
+## Segment 4 (steps)
+
+Picture standing on a hilly landscape in thick fog, where elevation is the loss. You can't see the whole landscape, but you can feel which way is downhill from exactly where you're standing. Measure your elevation, feel the slope, take a step, and repeat.
+
+## Segment 5 (steps)
+
+The learning rate controls how big that step is, and it's one of the most important settings you'll tune. Too small and training crawls, or gets stuck. Too large and the steps overshoot, sometimes never settling at all.
+
+## Segment 6 (outro)
+
+Next, we look at how you organize your data so you can tell, honestly, whether any of this training actually worked: train, validation, and test splits.
