@@ -887,7 +887,7 @@ export const CAREER_PATHS: CareerPath[] = [
     targetJobs: ["Data Analyst", "BI Developer", "BI Engineer", "Analytics Engineer", "Senior Analytics Engineer", "Data Architect"],
     description:
       "The longest path in the catalog, and not a beginner's first choice — this is for a Data Analyst or BI Developer who wants to see the whole road ahead. It expands reporting into modeling, modeling into engineering, and engineering into cloud architecture and governance, converging everything else in the catalog into a single Data Architect destination.",
-    salaryRange: "Realistic only after years of the progression below — Data Architect and Solutions Architect roles currently post $180K–$250K+",
+    salaryRange: "$250K–$500K+ total compensation at Principal/Enterprise level — realistic only after years of the progression below",
     isDestination: true,
     stages: [
       { label: "Start", courseSlugs: ["t-sql-development", "power-bi", "tableau"] },
@@ -895,15 +895,15 @@ export const CAREER_PATHS: CareerPath[] = [
       { label: "Converge", courseSlugs: ["azure-databricks-and-delta-lake", "data-engineering-career-and-capstone"] },
     ],
     destinationNote:
-      "It starts with Power BI. But $200K was never about the best bar chart in America — it's reporting → modeling → engineering → cloud → architecture, in that order.",
+      "It starts with Power BI. But $250K+ was never about the best bar chart in America — it's reporting → modeling → engineering → cloud → architecture, in that order.",
   },
   {
     slug: "principal-data-engineer",
     title: "Principal Data Engineer",
     targetJobs: ["Senior Data Engineer", "Lead Data Engineer", "Staff Data Engineer", "Principal Data Engineer", "Data / Principal Architect"],
     description:
-      "This isn't a starting point — it's shown to students as where the other paths lead, not something to enroll in directly. Pick a specialty (Fabric, Databricks, or Snowflake), add the senior-engineering layer nearly every $200K+ posting asks for — Git, dbt, Airflow, Kafka, and infrastructure as code — and the leadership layer most students expect to be missing (system design, architecture trade-offs, requirements gathering) is already built into Data Engineering Career & Capstone's first chapter.",
-    salaryRange: "$200K–$290K+ base at Principal Data Engineer, per current postings — genuinely real, but typically requiring 5–10+ years of production experience and technical ownership",
+      "This isn't a starting point — it's shown to students as where the other paths lead, not something to enroll in directly. Pick a specialty (Fabric, Databricks, or Snowflake), add the senior-engineering layer nearly every $250K+ posting asks for — Git, dbt, Airflow, Kafka, and infrastructure as code — and the leadership layer most students expect to be missing (system design, architecture trade-offs, requirements gathering) is already built into Data Engineering Career & Capstone's first chapter.",
+    salaryRange: "$300K–$600K+ total compensation at elite tech companies — genuinely real, but typically requiring 5–10+ years of production experience and technical ownership",
     isDestination: true,
     stages: [
       { label: "Foundation", courseSlugs: ["t-sql-development"] },
@@ -931,7 +931,7 @@ export const CAREER_PATHS: CareerPath[] = [
     targetJobs: ["Senior AI Engineer", "Staff AI Engineer", "Lead AI Engineer", "Principal AI Engineer", "AI Architect"],
     description:
       "This isn't a starting point — it's shown to students as where the AI Engineer path leads, not something to enroll in directly. Complete the full AI Engineer path and its three capstones, and the senior-engineering and technical-leadership layers that separate a Senior AI Engineer from a Principal AI Engineer or AI Architect — system design at scale, production ownership, mentoring, and architecture trade-offs — come from real production experience. This destination names that ladder rather than promising it's taught in full here.",
-    salaryRange: "$130K–$180K+ at Senior/Staff AI Engineer · $200K–$300K+ potential at Principal AI Engineer / AI Architect — typically requiring years of production AI/ML experience, not a promise on graduation",
+    salaryRange: "$350K–$700K+ total compensation at top AI & tech companies — typically requiring years of production AI/ML experience, not a promise on graduation",
     isDestination: true,
     stages: [
       { label: "Foundation", note: "The full AI Engineer path — no prior course assumed", pathChoiceSlugs: ["ai-engineer"] },
@@ -946,7 +946,7 @@ export const CAREER_PATHS: CareerPath[] = [
     description:
       "This is not a starting point. AI/ML Research Engineering is an advanced destination built on the full AI Engineer path, taking those skills into one of the most technically demanding and fastest-growing areas of AI: frontier model training, reinforcement learning, and alignment. Instead of repeating the foundation, you build real PyTorch fluency and a from-scratch Transformer, then go through how production-scale LLMs are actually pretrained and fine-tuned, the RL algorithms behind modern alignment (RLHF, RLAIF, RL for reasoning), and the evaluation and interpretability techniques used to understand and govern these models. It closes with a taught research lab — three projects deliberately built around SQL and data systems instead of generic RL tasks, since that's this catalog's own strength.",
     salaryRange:
-      "$150K–$220K+ as an AI/ML Research Engineer · $220K–$350K+ at Senior level · $350K+ potential at Staff/Principal Research Engineer or AI Research Scientist at the most selective AI labs — compensation varies enormously by employer and is not a guarantee",
+      "$380K–$700K+ total compensation at frontier AI labs — compensation varies enormously by employer and is not a guarantee",
     isDestination: true,
     stages: [
       { label: "Foundation", note: "The full AI Engineer path — no prior course assumed", pathChoiceSlugs: ["ai-engineer"] },
@@ -972,7 +972,7 @@ export const CAREER_PATHS: CareerPath[] = [
     description:
       "This destination gives an experienced Data Engineer or DevOps Engineer a route into frontier AI without pretending they need to become an ML researcher first. It runs through the full DevOps Engineer path, then distributed systems concepts, real PyTorch fluency, GPU computing, the infrastructure that actually runs distributed training, the platform layer a company builds once it has more than one model in production, and finally inference and model serving — the systems that run frontier AI workloads, not the research itself.",
     salaryRange:
-      "$140K–$200K+ as an ML Infrastructure / Platform Engineer · $200K–$300K+ at Senior/Staff level · $300K+ potential at Principal ML Systems Engineer at the most selective AI labs and infrastructure teams — compensation varies enormously by employer and is not a guarantee",
+      "$350K–$700K+ total compensation at frontier AI & hyperscale companies — compensation varies enormously by employer and is not a guarantee",
     isDestination: true,
     stages: [
       { label: "Foundation", note: "The full DevOps Engineer path — Linux, Docker, Kubernetes, Terraform and cloud fundamentals", pathChoiceSlugs: ["devops-engineer"] },
@@ -1018,7 +1018,7 @@ export const CAREER_PATHS: CareerPath[] = [
       "The Technical Architect ladder closes with advanced architecture case studies and a capstone requiring students to design and defend a secure, scalable, integrated enterprise Salesforce solution. The Data & Analytics ladder closes with a three-project analytics portfolio capstone.",
     ],
     salaryRange:
-      "$65K–$95K at entry (Salesforce Data Analyst) or about $75K (Salesforce Administrator) · $110K–$200K+ through the analytics ladder (CRM Analytics Developer → Salesforce Analytics Engineer) · up to $350K at Salesforce Technical Architect — from entry-level to the top of either ladder",
+      "$250K–$500K+ total compensation at senior enterprise/consulting levels — at the top of either ladder, not an entry-level salary",
     certification:
       "Salesforce certification journey, Administrator through CTA, or Administrator through Tableau Data Analyst / Analytics Architect — see the roadmap below; LTV Academy does not issue Salesforce certifications",
     showLessonTotals: true,
@@ -1391,7 +1391,7 @@ export const CAREER_PATHS: CareerPath[] = [
     afterFlow: [
       "From there, students can specialize as a Quantitative Researcher, Quantitative Developer, Quant ML Researcher, or Low-Latency / High-Frequency Trading Engineer.",
     ],
-    salaryRange: "$250K–$500K+ total compensation early at highly selective firms · $500K–$1M+ experienced and senior · $750K–$1.5M+ senior Quant Researchers at elite firms",
+    salaryRange: "$500K–$1M+ total compensation at elite quant firms — exceptional senior researchers can exceed $1M",
     compensation: {
       heading: "Compensation potential",
       paragraphs: [

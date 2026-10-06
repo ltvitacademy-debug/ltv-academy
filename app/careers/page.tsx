@@ -36,7 +36,7 @@ function PathCard({
         dark
           ? "border-gold/25 bg-crimson-deep hover:border-gold"
           : "border-ink/15 bg-crimson-deep hover:border-gold"
-      } ${spanFull ? "sm:col-span-2 sm:flex-row sm:min-h-[240px] lg:col-span-3" : ""}`}
+      } ${spanFull ? "sm:col-span-2 sm:flex-row sm:min-h-[240px]" : ""}`}
     >
       <div className={`relative overflow-hidden bg-ink ${spanFull ? "aspect-[16/10] sm:aspect-auto sm:w-80 sm:flex-shrink-0" : "aspect-[16/10]"}`}>
         {hasPhoto ? (
@@ -64,9 +64,7 @@ function PathCard({
 
       <div className="flex flex-1 flex-col p-5 sm:p-6">
         <h3 className="display text-xl text-gold-pale group-hover:text-gold">{path.title}</h3>
-        <p className={`mt-2 text-sm leading-relaxed text-gold-pale/70 ${spanFull ? "sm:line-clamp-2" : "line-clamp-3"}`}>
-          {path.description}
-        </p>
+        <p className="mt-2 text-sm leading-relaxed text-gold-pale/70">{path.description}</p>
 
         <div className="mt-auto flex items-end justify-between gap-3 border-t border-gold/20 pt-4 mt-4">
           <div className="min-w-0">
@@ -94,7 +92,7 @@ export default function CareerPathsPage() {
   return (
     <main>
 
-      <div id="paths" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+      <div id="paths" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
         <p className="eyebrow mb-4">Destination paths</p>
         <h2 className="display max-w-2xl text-3xl sm:text-4xl">
           Choose your <em className="text-crimson">path</em>.
@@ -106,7 +104,7 @@ export default function CareerPathsPage() {
           and start entirely on their own.
         </p>
 
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2">
           {firstChoicePaths.map((p, i) => (
             <PathCard key={p.slug} path={p} index={i} dark={false} />
           ))}
@@ -124,9 +122,9 @@ export default function CareerPathsPage() {
             above eventually converge.
           </p>
 
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-12 grid gap-6 sm:grid-cols-2">
             {destinationPaths.map((p, i) => (
-              <PathCard key={p.slug} path={p} index={i} dark spanFull={destinationPaths.length % 3 === 1 && i === destinationPaths.length - 1} />
+              <PathCard key={p.slug} path={p} index={i} dark spanFull={destinationPaths.length % 2 === 1 && i === destinationPaths.length - 1} />
             ))}
           </div>
         </div>
