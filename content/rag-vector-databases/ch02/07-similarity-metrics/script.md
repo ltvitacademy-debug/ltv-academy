@@ -1,0 +1,21 @@
+# Script — Similarity Metrics: Cosine, Dot Product & Euclidean
+
+## Segment 1 (title)
+
+Comparing two embedding vectors means picking a metric. The three you'll actually see in practice are cosine similarity, dot product, and Euclidean distance — and they don't always agree on which pair of vectors is "more similar."
+
+## Segment 2 (steps: the three metrics)
+
+Cosine similarity measures the angle between two vectors, ignoring their length entirely — it ranges from minus one to one. Dot product multiplies matching components and sums them, but unlike cosine, it's also affected by each vector's length. Euclidean distance measures straight-line distance between the two points, where lower means more similar, not higher.
+
+## Segment 3 (code: worked example, dot product and magnitudes)
+
+Take two small vectors, A equals one two three, B equals two four five. The dot product is one times two plus two times four plus three times five — two plus eight plus fifteen — twenty-five. The magnitude of A is the square root of fourteen, about 3.742. The magnitude of B is the square root of forty-five, about 6.708.
+
+## Segment 4 (code: worked example, the cosine result)
+
+Cosine similarity is that dot product divided by both magnitudes multiplied together: twenty-five divided by about twenty-five point one, which comes out to about 0.996 — almost exactly one. These two vectors point in nearly the same direction, even though B's raw numbers are noticeably bigger. The raw dot product of twenty-five meant nothing by itself; dividing by both magnitudes is what makes the result bounded and comparable.
+
+## Segment 5 (outro)
+
+Many vector databases default to dot product anyway, because once every vector is normalized to length one, dot product and cosine similarity agree — and dot product is cheaper to compute. Next lesson: dimensionality trade-offs, what you actually give up or gain by choosing a bigger or smaller embedding size.

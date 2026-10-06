@@ -1,0 +1,21 @@
+# Script — What an Embedding Actually Is
+
+## Segment 1 (title)
+
+An embedding is a dense numeric vector produced by a neural network trained to represent the meaning of text as a point in high-dimensional space. Pieces of text with similar meaning end up at nearby points; different meanings end up far apart.
+
+## Segment 2 (code: the worked example)
+
+Picture a toy 4-number embedding. "A dog barking in the yard" and "a puppy barking outside" produce nearly identical vectors, even sharing almost no exact words, because they mean nearly the same thing. "Quarterly revenue report" lands in a completely different part of the space. That's the whole point — embeddings capture meaning, not shared vocabulary.
+
+## Segment 3 (steps: real dimensionality)
+
+Real embedding models don't output four numbers — common sizes are 384, 768, 1024, 1536, or 3072 dimensions. No single dimension means one human concept like "dog-ness" — meaning is distributed across the whole vector, learned automatically during training.
+
+## Segment 4 (steps: why models can't mix)
+
+An embedding space is entirely defined by how its specific model was trained. Two different models place concepts at completely different coordinates, even if their vectors happen to be the same length. Comparing vectors from two different models produces a meaningless similarity score.
+
+## Segment 5 (outro)
+
+Every chunk in a vector database has to be embedded with the exact same model used to embed queries against it. Next lesson: a tour of the actual embedding models you'd choose between in practice.
