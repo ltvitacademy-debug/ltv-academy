@@ -947,6 +947,30 @@ export const CAREER_PATHS: CareerPath[] = [
       "This isn't a starting point — it's shown to students as where the AI Engineer path leads, not something to enroll in directly. Complete the full AI Engineer path and its three capstones, and the senior-engineering and technical-leadership layers that separate a Senior AI Engineer from a Principal AI Engineer or AI Architect — system design at scale, production ownership, mentoring, and architecture trade-offs — come from real production experience. This destination names that ladder rather than promising it's taught in full here.",
     salaryRange: "$350K–$700K+ total compensation at top AI & tech companies — typically requiring years of production AI/ML experience, not a promise on graduation",
     isDestination: true,
+    positioning: {
+      heading: "Read this first: what this destination is — and is not",
+      paragraphs: [
+        "A student does not graduate from the AI Engineer path and immediately become a Principal AI Engineer or AI Architect.",
+        "This page names the real ladder from AI Engineer to Principal/Staff and shows what separates each level — it is not a second curriculum, because the skills that actually matter at this stage (system design at scale, production ownership, mentoring, architecture trade-offs) come from years of real production experience, not more coursework.",
+        "If what you actually want is deeper technical specialization rather than a leadership ladder, see the AI/ML Research & Alignment Engineer destination below — it's the one real next step already built on this same AI Engineer foundation.",
+      ],
+    },
+    progression: {
+      heading: "What changes at each level",
+      ladder: "Senior AI Engineer → Staff / Lead AI Engineer → Principal AI Engineer → AI Architect",
+      levels: [
+        { label: "Senior / Staff AI Engineer", value: "$130K–$180K+" },
+        { label: "Principal AI Engineer / AI Architect", value: "$200K+ potential" },
+        { label: "Principal / Staff at top AI & tech companies", value: "$350K–$700K+ total compensation" },
+      ],
+    },
+    specializations: {
+      heading: "From here: lead, or specialize deeper",
+      primaryLabel: "This destination — technical leadership",
+      primary: ["System design at scale", "Production ownership", "Mentoring & architecture trade-offs", "Principal AI Engineer / AI Architect"],
+      optionalLabel: "Or go deeper technically instead",
+      optional: ["AI/ML Research & Alignment Engineer"],
+    },
     stages: [
       { label: "Foundation", note: "The full AI Engineer path — no prior course assumed", pathChoiceSlugs: ["ai-engineer"] },
     ],
