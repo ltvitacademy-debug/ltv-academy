@@ -186,6 +186,8 @@ import { GOV_AI_AND_MACHINE_LEARNING_GOVERNANCE_CHAPTERS } from "./ai-and-machin
 import { GOV_DATA_GOVERNANCE_PROGRAM_MANAGEMENT_CHAPTERS } from "./data-governance-program-management-outline";
 import { GOV_DATA_GOVERNANCE_ARCHITECTURE_CHAPTERS } from "./data-governance-architecture-outline";
 import { GOV_DATA_GOVERNANCE_CAREER_AND_CAPSTONE_CHAPTERS } from "./data-governance-career-and-capstone-outline";
+import { POWER_AUTOMATE_CHAPTERS } from "./power-automate-outline";
+import { POWER_AUTOMATE_AI_AGENTS_CHAPTERS } from "./power-automate-ai-agents-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -1875,6 +1877,24 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: GOV_DATA_GOVERNANCE_CAREER_AND_CAPSTONE_CHAPTERS,
     contentBase: "data-governance-career-and-capstone",
+  },
+  {
+    slug: "power-automate",
+    title: "Microsoft Power Automate",
+    tagline:
+      "Business process and enterprise automation — triggers, approvals, Dataverse, REST APIs, custom connectors, DLP and ALM. Build real flows end to end.",
+    status: "available",
+    chapters: POWER_AUTOMATE_CHAPTERS,
+    contentBase: "power-automate",
+  },
+  {
+    slug: "power-automate-ai-agents",
+    title: "AI & Agentic Automation with Power Automate",
+    tagline:
+      "Power Automate as the orchestration layer for AI — AI Builder, Azure AI, Copilot Studio agents, and human-in-the-loop enterprise automation.",
+    status: "available",
+    chapters: POWER_AUTOMATE_AI_AGENTS_CHAPTERS,
+    contentBase: "power-automate-ai-agents",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,

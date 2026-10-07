@@ -85,6 +85,11 @@ export const CAREER_PATHS: CareerPath[] = [
           "microsoft-bi-capstone",
         ],
       },
+      {
+        label: "Advanced",
+        note: "Automate the business processes around what you just built — report distribution, approvals, notifications and refresh-related workflows",
+        courseSlugs: ["power-automate"],
+      },
     ],
     destinationNote:
       "This program doesn't lead to a single destination — it leads to a first job. Once you're working, the rest of this catalog becomes optional next steps, not required ones: Analytics Engineer, Azure/Fabric Data Engineer, Snowflake Data Engineer, Azure Database Engineer, and Salesforce Data Analyst all build on exactly what you just learned here. Get job-ready first. Then decide how far you want to go.",
@@ -102,7 +107,11 @@ export const CAREER_PATHS: CareerPath[] = [
         label: "Job Ready",
         courseSlugs: ["t-sql-development", "power-bi", "python-for-power-bi", "tableau", "advanced-excel-for-data-analysts"],
       },
-      { label: "Advanced", note: "Data Factory, selected sections", courseSlugs: ["data-factory", "git-github-cicd-for-data"] },
+      {
+        label: "Advanced",
+        note: "Data Factory, selected sections, plus the business-process automation that shows up in nearly every analyst role",
+        courseSlugs: ["data-factory", "git-github-cicd-for-data", "power-automate"],
+      },
     ],
     destinationNote:
       "The pure dashboard-developer route gets harder past this point. Branch into Analytics Engineer → Senior/Staff/Principal Analytics Engineer → Data Architect to keep climbing toward $200K+.",
@@ -551,6 +560,11 @@ export const CAREER_PATHS: CareerPath[] = [
           "ai-security-evaluation-and-monitoring",
           "ai-engineering-capstones",
         ],
+      },
+      {
+        label: "Advanced",
+        note: "Power Automate as an orchestration layer for AI — AI Builder, Copilot Studio agents and human-in-the-loop enterprise automation, not a Power Platform developer track",
+        courseSlugs: ["power-automate-ai-agents"],
       },
     ],
     destinationNote:
