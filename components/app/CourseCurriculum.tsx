@@ -82,32 +82,49 @@ export default function CourseCurriculum({
   return (
     <div>
       {ready && totalPlayable > 0 && (
-        <div className="mb-10 grid gap-4 border-2 border-ink/15 bg-white/40 p-6 sm:grid-cols-[1fr_auto] sm:items-center">
-          <div>
-            <p className="eyebrow mb-2">Course progress</p>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-ink/10">
-              <div
-                className="h-full rounded-full bg-crimson transition-[width]"
-                style={{ width: `${percent}%` }}
-              />
+        <div className="ledger-texture relative mb-12 overflow-hidden border-2 border-crimson-deep/25 bg-white/50 shadow-[0_8px_30px_-12px_rgba(30,26,22,0.35)]">
+          <div className="h-1.5 w-full bg-gradient-to-r from-gold via-gold-pale to-gold" />
+          <div className="grid gap-8 p-7 sm:grid-cols-[1fr_auto] sm:items-center sm:p-9">
+            <div>
+              <p className="eyebrow mb-3">Course progress</p>
+              <div className="flex items-end gap-4">
+                <span className="display text-6xl leading-none text-crimson-deep">
+                  {percent}
+                  <span className="text-3xl text-crimson">%</span>
+                </span>
+                <span className="pb-1 text-sm text-stone">
+                  {doneCount} of {totalPlayable}
+                  <br />
+                  lessons completed
+                </span>
+              </div>
+              <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-ink/10 shadow-inner">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-crimson to-crimson-deep shadow-[0_0_10px_rgba(142,28,28,0.5)] transition-[width] duration-500"
+                  style={{ width: `${percent}%` }}
+                />
+              </div>
             </div>
-            <p className="mt-2 text-sm text-stone">
-              <span className="font-semibold text-ink">{percent}%</span> — {doneCount} of{" "}
-              {totalPlayable} lessons completed
-            </p>
+
+            {nextLesson && (
+              <div className="border-t border-ink/15 pt-6 sm:border-l sm:border-t-0 sm:pl-8 sm:pt-0">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">
+                  {doneCount === 0 ? "Start here" : "Continue learning"}
+                </p>
+                <p className="display mt-1 max-w-[16rem] text-lg">{nextLesson.title}</p>
+                <Link
+                  href={`/app/courses/${courseSlug}/${nextLesson.slug}`}
+                  className="mt-4 inline-block rounded-[2px] bg-crimson px-7 py-3 text-center text-sm font-semibold text-parchment shadow-[0_4px_14px_-4px_rgba(142,28,28,0.6)] transition-colors hover:bg-crimson-deep"
+                >
+                  {doneCount === 0 ? "Start the course →" : "Continue learning →"}
+                </Link>
+              </div>
+            )}
           </div>
-          {nextLesson && (
-            <Link
-              href={`/app/courses/${courseSlug}/${nextLesson.slug}`}
-              className="whitespace-nowrap rounded-[2px] bg-crimson px-6 py-3 text-center text-sm font-semibold text-parchment hover:bg-crimson-deep"
-            >
-              {doneCount === 0 ? "Start the course →" : "Continue learning →"}
-            </Link>
-          )}
         </div>
       )}
 
-      <div className="mb-5 flex items-center justify-between">
+      <div className="mb-5 flex items-center justify-between border-b-2 border-ink/10 pb-3">
         <p className="eyebrow">Course content</p>
         <button
           type="button"
@@ -118,7 +135,7 @@ export default function CourseCurriculum({
         </button>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         {chapters.map((ch) => {
           const chPlayable = ch.lessons.filter((l) => l.playable);
           const chDone = chPlayable.filter((l) => done.has(l.slug)).length;
@@ -127,61 +144,79 @@ export default function CourseCurriculum({
           const isOpen = expanded.has(ch.n);
 
           return (
-            <div key={ch.n} className="border-2 border-ink/15 bg-white/30">
+            <div
+              key={ch.n}
+              className={`border-2 bg-white/40 transition-shadow ${
+                isOpen
+                  ? "border-crimson-deep/30 shadow-[0_10px_28px_-14px_rgba(30,26,22,0.4)]"
+                  : "border-ink/15 shadow-[0_2px_8px_-4px_rgba(30,26,22,0.15)] hover:border-ink/30"
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => toggleChapter(ch.n)}
-                className="flex w-full items-center gap-4 p-4 text-left sm:p-5"
+                className={`flex w-full items-center gap-5 p-5 text-left transition-colors sm:p-6 ${
+                  isOpen ? "bg-gold/[0.06]" : ""
+                }`}
               >
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[4px] bg-crimson-deep text-parchment">
-                  <ChapterIcon title={ch.title} className="h-5 w-5" />
+                <span className="display w-10 shrink-0 text-center text-4xl leading-none text-crimson sm:text-5xl">
+                  {String(ch.n).padStart(2, "0")}
+                </span>
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[5px] bg-gradient-to-br from-crimson to-crimson-deep shadow-[0_4px_12px_-4px_rgba(94,15,15,0.6)] ring-1 ring-gold/40 sm:h-16 sm:w-16">
+                  <ChapterIcon title={ch.title} className="h-7 w-7 text-gold-pale sm:h-8 sm:w-8" />
                 </span>
                 <span className="flex-1">
-                  <span className="flex items-baseline gap-3">
-                    <span className="text-xs text-stone">{String(ch.n).padStart(2, "0")}</span>
-                    <span className="display text-lg sm:text-xl">{ch.title}</span>
+                  <span className="display block text-xl sm:text-2xl">{ch.title}</span>
+                  <span className="mt-0.5 block text-xs uppercase tracking-[0.1em] text-stone sm:hidden">
+                    {ch.lessons.length} lessons
                   </span>
                 </span>
-                <span className="hidden shrink-0 text-right text-sm text-stone sm:block">
-                  {ready ? (
-                    <>
-                      {ch.lessons.length} lessons · {chDone} completed
-                    </>
-                  ) : (
-                    <>{ch.lessons.length} lessons</>
+                <span className="hidden shrink-0 text-right sm:block">
+                  <span className="block text-sm text-stone">
+                    {ready ? (
+                      <>
+                        {ch.lessons.length} lessons · {chDone} completed
+                      </>
+                    ) : (
+                      <>{ch.lessons.length} lessons</>
+                    )}
+                  </span>
+                  {ready && chPlayable.length > 0 && (
+                    <span className="mt-2 flex items-center justify-end gap-2">
+                      <span className="h-1.5 w-28 overflow-hidden rounded-full bg-ink/10">
+                        <span
+                          className="block h-full rounded-full bg-gradient-to-r from-gold to-gold-pale"
+                          style={{ width: `${chPercent}%` }}
+                        />
+                      </span>
+                      <span className="w-9 text-xs font-semibold text-crimson-deep">
+                        {chPercent}%
+                      </span>
+                    </span>
                   )}
                 </span>
                 <span
-                  className={`shrink-0 text-crimson transition-transform ${isOpen ? "rotate-180" : ""}`}
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-ink/15 text-crimson transition-transform ${
+                    isOpen ? "rotate-180 border-gold bg-gold/15" : ""
+                  }`}
                   aria-hidden="true"
                 >
                   ▾
                 </span>
               </button>
 
-              {ready && chPlayable.length > 0 && (
-                <div className="px-4 pb-1 sm:px-5">
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-ink/10">
-                    <div
-                      className="h-full rounded-full bg-gold"
-                      style={{ width: `${chPercent}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-
               {isOpen && (
-                <ul className="divide-y divide-ink/10 border-t border-ink/10 px-4 sm:px-5">
+                <ul className="divide-y divide-ink/10 border-t-2 border-gold/30 bg-white/30 px-5 sm:px-6">
                   {ch.lessons.map((l) => {
                     const isDone = done.has(l.slug);
                     if (!l.playable) {
                       return (
-                        <li key={l.slug} className="flex items-baseline gap-4 py-3 opacity-60">
+                        <li key={l.slug} className="flex items-baseline gap-4 py-3.5 opacity-60">
                           <span className="w-8 shrink-0 text-right text-sm text-stone">
                             {l.n}
                           </span>
                           <span className="flex-1 text-sm">{l.title}</span>
-                          <span className="text-xs uppercase tracking-[0.14em] text-stone">
+                          <span className="rounded-full border border-ink/15 px-2.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.1em] text-stone">
                             In production
                           </span>
                         </li>
@@ -191,7 +226,7 @@ export default function CourseCurriculum({
                       <li key={l.slug}>
                         <Link
                           href={`/app/courses/${courseSlug}/${l.slug}`}
-                          className="group flex items-center gap-4 py-3 hover:bg-white/50"
+                          className="group flex items-center gap-4 py-3.5 hover:bg-white/60"
                         >
                           <span className="w-8 shrink-0 text-right text-sm text-stone">
                             {l.n}
@@ -205,8 +240,10 @@ export default function CourseCurriculum({
                             </span>
                           )}
                           <span
-                            className={`shrink-0 text-xs font-semibold uppercase tracking-[0.1em] ${
-                              ready && isDone ? "text-gold" : "text-stone"
+                            className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.1em] ${
+                              ready && isDone
+                                ? "border-gold bg-gold/15 text-crimson-deep"
+                                : "border-ink/15 text-stone"
                             }`}
                           >
                             {ready && isDone ? "✓ Completed" : "Not started"}
