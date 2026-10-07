@@ -443,6 +443,22 @@ export default function PathDetailRedesign({ path }: { path: CareerPath }) {
         </section>
       )}
 
+      {path.competencies && (
+        <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <p className="eyebrow mb-3">Required competencies</p>
+          <h2 className="display text-2xl sm:text-3xl">{path.competencies.heading}</h2>
+          {path.competencies.intro && <p className="mt-4 max-w-3xl text-ink">{path.competencies.intro}</p>}
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            {path.competencies.items.map((item) => (
+              <div key={item.label} className="rounded-[2px] border border-ink/15 bg-white/40 p-5">
+                <h3 className="display text-lg text-crimson-deep">{item.label}</h3>
+                <p className="mt-1.5 text-sm text-stone">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Curriculum + sidebar */}
       <div id="curriculum" className="bg-[color-mix(in_srgb,var(--color-parchment)_92%,var(--color-ink))] py-14 sm:py-20">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_20rem]">
@@ -615,6 +631,78 @@ export default function PathDetailRedesign({ path }: { path: CareerPath }) {
           </aside>
         </div>
       </div>
+
+      {path.principalProjects && (
+        <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+          <p className="eyebrow mb-3">Prove it</p>
+          <h2 className="display text-2xl sm:text-3xl">{path.principalProjects.heading}</h2>
+          {path.principalProjects.intro && <p className="mt-4 max-w-3xl text-ink">{path.principalProjects.intro}</p>}
+          <div className="mt-8 space-y-6">
+            {path.principalProjects.projects.map((proj, i) => (
+              <div key={proj.title} className="rounded-[2px] border-2 border-ink/15 p-6 sm:p-7">
+                <div className="flex items-baseline gap-3">
+                  <span className="display text-2xl text-crimson">{String(i + 1).padStart(2, "0")}</span>
+                  <h3 className="display text-xl">{proj.title}</h3>
+                </div>
+                <p className="mt-3 max-w-2xl text-ink">{proj.description}</p>
+                {proj.deliverables && (
+                  <ol className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-2 text-sm">
+                    {proj.deliverables.map((d, di) => (
+                      <li key={d} className="flex items-center gap-2">
+                        <span className="rounded-[2px] border border-ink/15 bg-parchment px-3 py-1.5 font-medium text-ink">{d}</span>
+                        {di < proj.deliverables!.length - 1 && <span className="text-gold">→</span>}
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {path.experienceVsEducation && (
+        <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <div className="rounded-[2px] border-2 border-ink/15 bg-white/40 p-6 sm:p-8">
+            <p className="eyebrow mb-3">Honest about the ladder</p>
+            <h2 className="display text-2xl sm:text-3xl">{path.experienceVsEducation.heading}</h2>
+            {path.experienceVsEducation.intro && (
+              <p className="mt-4 max-w-3xl text-ink">{path.experienceVsEducation.intro}</p>
+            )}
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-[2px] border-2 border-crimson bg-gold-pale p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">
+                  {path.experienceVsEducation.taughtLabel}
+                </p>
+                <ul className="mt-3 space-y-1.5">
+                  {path.experienceVsEducation.taught.map((item) => (
+                    <li key={item} className="flex items-start gap-2 text-ink">
+                      <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-crimson" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-[2px] border border-ink/15 p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone">
+                  {path.experienceVsEducation.experienceLabel}
+                </p>
+                <ul className="mt-3 space-y-1.5">
+                  {path.experienceVsEducation.experience.map((item) => (
+                    <li key={item} className="flex items-start gap-2 text-ink">
+                      <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-stone" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            {path.experienceVsEducation.closing && (
+              <p className="mt-6 max-w-3xl text-sm italic text-stone">{path.experienceVsEducation.closing}</p>
+            )}
+          </div>
+        </section>
+      )}
 
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         <div className="rounded-[2px] bg-gold-pale p-6">

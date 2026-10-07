@@ -45,6 +45,30 @@ export type CareerPath = {
   };
   milestones?: { label: string; value: string }[];
   specializations?: { heading: string; primaryLabel: string; primary: string[]; optionalLabel: string; optional: string[] };
+  // What a destination path is actually building toward — capabilities, not
+  // courses. For destination pages where "here's the ladder + here's the
+  // curriculum" isn't enough on its own.
+  competencies?: { heading: string; intro?: string; items: { label: string; description: string }[] };
+  // Portfolio-scale projects a student at this level should be able to build.
+  // `deliverables`, when present, renders as an arrow-joined sequence (e.g.
+  // the stages of an architecture capstone), same device as capstoneFlow.
+  principalProjects?: {
+    heading: string;
+    intro?: string;
+    projects: { title: string; description: string; deliverables?: string[] }[];
+  };
+  // Draws an explicit line between what a course can teach and what only
+  // real-world experience develops — keeps a destination's salary ladder
+  // honest instead of implying "take this course, get this title."
+  experienceVsEducation?: {
+    heading: string;
+    intro?: string;
+    taughtLabel: string;
+    taught: string[];
+    experienceLabel: string;
+    experience: string[];
+    closing?: string;
+  };
   // A prominent third-party requirement block shown before the course sections
   labRequirement?: {
     eyebrow: string;
@@ -970,6 +994,82 @@ export const CAREER_PATHS: CareerPath[] = [
       primary: ["System design at scale", "Production ownership", "Mentoring & architecture trade-offs", "Principal AI Engineer / AI Architect"],
       optionalLabel: "Or go deeper technically instead",
       optional: ["AI/ML Research & Alignment Engineer"],
+    },
+    competencies: {
+      heading: "Principal-Level Competencies",
+      intro:
+        "Not another list of courses — the actual capabilities this ladder is building toward. What you should be able to design and own by the time you're operating at this level.",
+      items: [
+        { label: "AI System Architecture", description: "Design an end-to-end production AI platform, not just a single model." },
+        { label: "LLM & Agent Architecture", description: "RAG, tool use, agent orchestration, memory, evaluation and guardrails." },
+        { label: "Production AI Engineering", description: "Deployment, versioning, testing, monitoring, observability and rollback." },
+        { label: "Scale & Performance", description: "Design for thousands to millions of requests while controlling latency and cost." },
+        { label: "AI Security", description: "Prompt injection, data leakage, access control, secrets, and model/API security." },
+        { label: "AI Governance & Responsible AI", description: "Model risk, lineage, evaluation, auditing and enterprise controls." },
+        { label: "Cloud Architecture", description: "Make and defend architecture decisions across Azure and AWS, with real tradeoffs." },
+        { label: "Data Architecture for AI", description: "Vector databases, lakehouses, feature and data pipelines, structured and unstructured data." },
+        { label: "Technical Leadership", description: "Architecture reviews, design documents, engineering standards and mentoring." },
+        { label: "Business & Cost Decisions", description: "Build vs. buy, model selection, GPU/API cost, ROI and capacity planning." },
+      ],
+    },
+    principalProjects: {
+      heading: "You Should Be Able to Build This",
+      intro:
+        "Three projects scoped at what a Principal or Staff AI Engineer is actually expected to own — not a bigger version of the AI Engineer capstones.",
+      projects: [
+        {
+          title: "Enterprise AI Knowledge Platform",
+          description:
+            "RAG plus vector search, permissions, evaluation, monitoring, and real enterprise data sources — not a demo chatbot.",
+        },
+        {
+          title: "Production Multi-Agent System",
+          description:
+            "Multiple specialized agents, tool and API use, orchestration, human approval, observability and failure handling.",
+        },
+        {
+          title: "Enterprise AI Architecture Capstone",
+          description:
+            "A fictional 5,000-employee company with real business requirements. Produce the full chain a Principal AI Engineer actually owns, end to end.",
+          deliverables: [
+            "Requirements",
+            "Architecture diagram",
+            "Data architecture",
+            "Model selection",
+            "Security",
+            "Governance",
+            "Deployment",
+            "Monitoring",
+            "Disaster recovery",
+            "Cost estimate",
+            "Technical presentation",
+          ],
+        },
+      ],
+    },
+    experienceVsEducation: {
+      heading: "What LTV Can Teach vs. What Experience Must Teach",
+      intro: "The honest version of the ladder above — not \"take a course, become a Principal Engineer.\"",
+      taughtLabel: "LTV can train you to",
+      taught: [
+        "Design production AI architectures",
+        "Evaluate and choose the right technologies",
+        "Build real production systems, not demos",
+        "Troubleshoot systems under realistic failure modes",
+        "Document technical decisions clearly",
+        "Defend architecture choices with tradeoffs",
+      ],
+      experienceLabel: "Real-world experience develops",
+      experience: [
+        "Organizational influence",
+        "Judgment under production pressure",
+        "Mentoring other engineers",
+        "Owning failures and incidents",
+        "Cross-team leadership",
+        "A track record of delivering systems at scale",
+      ],
+      closing:
+        "The goal isn't to promise a Principal title after completing a course. It's to teach the technical competencies you'll need as you progress toward one.",
     },
     stages: [
       { label: "Foundation", note: "The full AI Engineer path — no prior course assumed", pathChoiceSlugs: ["ai-engineer"] },
