@@ -175,4 +175,32 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
       L(60, "capstone-performance-monitoring-and-presenting", "Capstone: Performance, Monitoring & Presenting Your Project", { contentDir: "ch15/60-capstone-performance-monitoring-and-presenting" }),
     ],
   },
+  {
+    n: 16,
+    title: "Cortex AI & Agents on Snowflake",
+    lessons: [
+      L(61, "cortex-ai-llm-functions-overview", "Snowflake Cortex AI: LLM Functions Overview", { contentDir: "ch16/61-cortex-ai-llm-functions-overview" }),
+      L(62, "cortex-analyst-natural-language-to-sql", "Cortex Analyst: Natural Language to SQL", { contentDir: "ch16/62-cortex-analyst-natural-language-to-sql" }),
+      L(63, "cortex-search-hybrid-semantic-search", "Cortex Search: Hybrid Semantic Search for RAG", { contentDir: "ch16/63-cortex-search-hybrid-semantic-search" }),
+      L(64, "cortex-agents-multi-step-orchestration", "Cortex Agents: Multi-Step Agentic Orchestration", { contentDir: "ch16/64-cortex-agents-multi-step-orchestration" }),
+      L(65, "agent-memory-and-context-threads", "Agent Memory & Context: Threads in Cortex Agents", { contentDir: "ch16/65-agent-memory-and-context-threads" }),
+      L(66, "the-snowflake-managed-mcp-server", "The Snowflake-Managed MCP Server", { contentDir: "ch16/66-the-snowflake-managed-mcp-server" }),
+      L(67, "connecting-agents-across-platforms-via-mcp", "Connecting Agents Across Platforms via MCP", { contentDir: "ch16/67-connecting-agents-across-platforms-via-mcp" }),
+      L(68, "fine-tuning-models-in-snowflake", "Fine-Tuning Models in Snowflake with Cortex", { contentDir: "ch16/68-fine-tuning-models-in-snowflake" }),
+    ],
+  },
+  {
+    n: 17,
+    title: "AI Governance, Evaluation & Security",
+    lessons: [
+      L(69, "ai-observability-and-evaluations-in-cortex", "AI Observability and Evaluations in Cortex", { contentDir: "ch17/69-ai-observability-and-evaluations-in-cortex" }),
+      L(70, "horizon-catalog-governance-for-enterprise-ai", "Horizon Catalog: Governance for Enterprise AI", { contentDir: "ch17/70-horizon-catalog-governance-for-enterprise-ai" }),
+      L(71, "ai-readiness-score-and-horizon-context", "AI Readiness Score and Horizon Context", { contentDir: "ch17/71-ai-readiness-score-and-horizon-context" }),
+      L(72, "ai-guardrails-prompt-injection-and-jailbreak-prevention", "AI Guardrails: Prompt Injection & Jailbreak Prevention", { contentDir: "ch17/72-ai-guardrails-prompt-injection-and-jailbreak-prevention" }),
+      L(73, "agent-identity-and-auditability", "Agent Identity and Auditability", { contentDir: "ch17/73-agent-identity-and-auditability" }),
+      L(74, "human-in-the-loop-approval-patterns-for-cortex-agents", "Human-in-the-Loop: Approval Patterns for Cortex Agents", { contentDir: "ch17/74-human-in-the-loop-approval-patterns-for-cortex-agents" }),
+      L(75, "governing-agent-access-rbac-masking-row-access", "Governing Agent Access: RBAC, Masking & Row Access Policies for AI", { contentDir: "ch17/75-governing-agent-access-rbac-masking-row-access" }),
+      L(76, "lab-building-and-governing-a-cortex-agent", "Lab: Building and Governing a Cortex Search + Analyst Agent", { contentDir: "ch17/76-lab-building-and-governing-a-cortex-agent" }),
+    ],
+  },
 ];

@@ -1,0 +1,43 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Snowflake · Chapter 17, Lesson 75",
+    "titlePlain": "Governing Agent Access: RBAC, Masking & ",
+    "titleEmphasis": "Row Access Policies",
+    "titleSuffix": "",
+    "subtitle": "Chapter 9's tools, with one new condition: who's actually asking"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Masking that reacts to an agent",
+    "code": "CREATE OR REPLACE MASKING POLICY email_agent_mask AS (val STRING) RETURNS STRING ->\n  CASE\n    WHEN SYS_CONTEXT('SNOWFLAKE$CURRENT', 'IS_AGENT_ACTIVATED')::BOOLEAN = TRUE THEN '********'\n    WHEN CURRENT_ROLE() IN ('ANALYST') THEN val\n    ELSE '********'\n  END;",
+    "caption": "Same role, different outcome — a human ANALYST sees the value, an agent running as ANALYST doesn't."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Row access policy, agent-aware",
+    "code": "CREATE OR REPLACE ROW ACCESS POLICY rap_agent AS (dept VARCHAR) RETURNS BOOLEAN ->\n  CASE\n    WHEN SYS_CONTEXT('SNOWFLAKE$CURRENT', 'IS_AGENT_ACTIVATED')::BOOLEAN = TRUE THEN FALSE\n    WHEN CURRENT_ROLE() = 'ANALYST' THEN TRUE\n    ELSE FALSE\n  END;",
+    "caption": "A total lockout for agents on this table, regardless of which role is driving."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Defense in depth",
+    "titlePlain": "Four ",
+    "titleEmphasis": "independent",
+    "titleSuffix": " layers",
+    "steps": [
+      { "label": "RBAC", "sub": "Baseline privileges — the starting ceiling" },
+      { "label": "Restricted Session Scope", "sub": "Narrows the ceiling further, agent-active only" },
+      { "label": "Dynamic Data Masking", "sub": "Hides column values from agent-driven queries" },
+      { "label": "Row Access Policy", "sub": "Hides rows from agent-driven queries" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Last lesson",
+    "titlePlain": "Lab: Building and Governing a Cortex Search + ",
+    "titleEmphasis": "Analyst Agent",
+    "titleSuffix": "",
+    "subtitle": "Putting all 8 lessons of this chapter together, end to end"
+  }
+]

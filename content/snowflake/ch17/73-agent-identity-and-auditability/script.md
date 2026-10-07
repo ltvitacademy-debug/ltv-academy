@@ -1,0 +1,21 @@
+# Script — Agent Identity and Auditability
+
+## Segment 1 (title)
+
+Chapter 9 taught you roles and GRANT — who's allowed to do what. That answers whether a role can read a table, but not whether it was actually a person who ran the query, or an agent acting on their behalf, and whether that access was appropriate for the task it was doing. Agent Identity closes that gap: it lets Snowflake recognize when an AI agent is active in a session, so you can govern agent-driven access separately from ordinary human or service access.
+
+## Segment 2 (steps: delegated vs autonomous)
+
+Agent Identity covers two patterns. A delegated agent acts on a user's behalf — a Cortex Agent running under the session of the person who invoked it — set up with IS_AGENTIC = TRUE on a custom or external OAuth integration; Snowflake-native agents like Cortex Agents need no extra setup, Snowflake already knows they're agents. An autonomous agent operates under its own identity, not a human's, configured as a SERVICE_AGENT user with workload identity federation or key-pair authentication, for something like a scheduled pipeline step with no human present at invocation.
+
+## Segment 3 (code: query history)
+
+Agent activity shows up right in the audit tables you already check for any query. QUERY_HISTORY gets an agent_type column identifying CORTEX_AGENT, CORTEX_LITE_AGENT, or EXTERNAL_AGENT. ACCESS_HISTORY gets a parallel agents_info column — ordered agent details for object access, from the nearest agent to the top-level agent — so a multi-step chain, agent calling agent calling tool, stays traceable end to end instead of collapsing into one anonymous line.
+
+## Segment 4 (code: IS_AGENT_ACTIVATED)
+
+That same agent context is queryable inside a policy, through IS_AGENT_ACTIVATED — one boolean that lets a masking or row access policy you already know how to write from Chapter 9 behave differently the moment an agent, not a human, is the one asking, even for a role that would otherwise see everything.
+
+## Segment 5 (outro)
+
+Next lesson: human-in-the-loop approval patterns — how you gate a Cortex Agent's consequential, state-modifying actions behind an actual approval step.
