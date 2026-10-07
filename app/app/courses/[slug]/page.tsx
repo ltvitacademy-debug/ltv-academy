@@ -23,6 +23,15 @@ export function generateStaticParams() {
   return COURSES.map((c) => ({ slug: c.slug }));
 }
 
+// Pilot: reuse an existing /careers/<slug>.jpg (the same photo already used
+// on that career path's card and detail-page hero) as this course's hero
+// image, keyed by course slug. No new images — this only points at an
+// asset that already exists. Scoped to t-sql-development for review before
+// rolling out to the rest of the catalog.
+const COURSE_HERO_IMAGE: Record<string, string> = {
+  "t-sql-development": "microsoft-data-bi-developer",
+};
+
 export default async function CoursePage({
   params,
 }: {
@@ -57,6 +66,7 @@ export default async function CoursePage({
 
   const chapterCount = course.chapters?.length ?? 0;
   const totalLessons = lessonCount(course);
+  const heroImageSlug = COURSE_HERO_IMAGE[course.slug];
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
@@ -64,25 +74,46 @@ export default async function CoursePage({
         <CoursePathBreadcrumb />
       </Suspense>
 
-      <div className="relative border-l-4 border-gold pl-5 sm:pl-7">
-        <p className="eyebrow mb-4">Course curriculum</p>
-        <h1 className="display text-4xl sm:text-5xl">
-          {course.title}
-          <span className="text-crimson">.</span>
-        </h1>
-        <p className="mt-4 max-w-2xl text-stone">{course.tagline}</p>
-
-        <div className="mt-6 flex flex-wrap gap-3">
-          <StatChip icon={<PlayIcon className="h-4 w-4" />} label={`${totalLessons} lessons`} />
-          <StatChip icon={<LayersIcon className="h-4 w-4" />} label={`${chapterCount} chapters`} />
-          {hasFinalTest && (
-            <StatChip
-              icon={<ShieldCheckIcon className="h-4 w-4" />}
-              label="Final assessment"
-              gold
-            />
-          )}
+      {heroImageSlug ? (
+        <div className="relative -mx-4 min-h-[300px] overflow-hidden border-2 border-crimson-deep/30 bg-crimson-deep shadow-[0_14px_40px_-18px_rgba(30,26,22,0.5)] sm:mx-0 sm:min-h-[340px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`/careers/${heroImageSlug}.jpg`}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-crimson-deep via-crimson-deep/80 to-crimson-deep/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-crimson-deep/90 via-crimson-deep/35 to-transparent" />
+          <div className="relative flex min-h-[300px] flex-col justify-end p-6 sm:min-h-[340px] sm:p-10">
+            <p className="eyebrow mb-3">Course curriculum</p>
+            <h1 className="display text-4xl text-parchment sm:text-5xl">
+              {course.title}
+              <span className="text-gold">.</span>
+            </h1>
+            <p className="mt-3 max-w-xl text-parchment/80">{course.tagline}</p>
+          </div>
         </div>
+      ) : (
+        <div className="relative border-l-4 border-gold pl-5 sm:pl-7">
+          <p className="eyebrow mb-4">Course curriculum</p>
+          <h1 className="display text-4xl sm:text-5xl">
+            {course.title}
+            <span className="text-crimson">.</span>
+          </h1>
+          <p className="mt-4 max-w-2xl text-stone">{course.tagline}</p>
+        </div>
+      )}
+
+      <div className="mt-6 flex flex-wrap gap-3">
+        <StatChip icon={<PlayIcon className="h-4 w-4" />} label={`${totalLessons} lessons`} />
+        <StatChip icon={<LayersIcon className="h-4 w-4" />} label={`${chapterCount} chapters`} />
+        {hasFinalTest && (
+          <StatChip
+            icon={<ShieldCheckIcon className="h-4 w-4" />}
+            label="Final assessment"
+            gold
+          />
+        )}
       </div>
 
       <div className="mt-10">
