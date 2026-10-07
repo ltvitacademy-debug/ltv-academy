@@ -1,0 +1,60 @@
+{
+  "lesson": "avoiding-leakage-in-time-aware-features",
+  "questions": [
+    {
+      "q": "What is leakage, specifically in the context of time series and financial features?",
+      "options": [
+        "Using information in a feature that would not actually have been available at the time a prediction using it was supposedly made",
+        "Any feature that uses more than one column of data",
+        "A bug that causes a Python script to crash",
+        "Using too few historical observations to train a model"
+      ],
+      "answer": 0,
+      "explain": "Leakage means a feature's computed value depends on information -- often from the future relative to the prediction point -- that the model would not actually have had access to at that time."
+    },
+    {
+      "q": "In the rolling-window example, why did the 'leaky' feature (ma5, a 5-day rolling mean) show a much higher correlation with today's return (R^2 = 0.2033) than the correct, shifted version (R^2 = 0.0001)?",
+      "options": [
+        "Because ma5 without a shift includes today's own return as one of the five values averaged into it, so part of the correlation is circular rather than predictive",
+        "Because the shifted version used a different random seed",
+        "Because 5-day averages are mathematically invalid",
+        "Because the correct version used more historical data than the leaky version"
+      ],
+      "answer": 0,
+      "explain": "A rolling(5).mean() computed without shifting ends on the current row, so it includes today's own return. Correlating that against today's return partly measures the feature against itself. Shifting by one day removes this, revealing the true (near-zero) relationship."
+    },
+    {
+      "q": "Why does shuffling rows before a train/test split count as leakage for time series data, rather than just a neutral convenience?",
+      "options": [
+        "Shuffling lets future rows end up in the training set used to predict past rows, and overlapping rolling-window features mean adjacent test/train rows can share raw inputs even when the feature itself has no look-ahead bug",
+        "Shuffling always produces lower accuracy than a chronological split",
+        "Shuffling is only a problem when the dataset has fewer than 100 rows",
+        "Shuffling removes all information from the dataset entirely"
+      ],
+      "answer": 0,
+      "explain": "A shuffled split can place training rows chronologically after test rows (reversing the real prediction problem) and, because of overlapping rolling windows, test rows end up near training rows that share much of the same raw return data -- both of which are forms of leakage."
+    },
+    {
+      "q": "How does the point-in-time correctness problem for fundamentals (Lesson 30) connect to the general leakage framework in this lesson?",
+      "options": [
+        "It doesn't connect -- fundamentals and leakage are unrelated topics",
+        "Joining fundamentals on their period-end date instead of their actual report date has the same signature as an off-by-one rolling window: the feature silently knows something before it was actually knowable",
+        "Fundamentals can never leak information because they update quarterly",
+        "Point-in-time correctness only matters for technical indicators, not fundamentals"
+      ],
+      "answer": 1,
+      "explain": "Both bugs share the same root cause: the feature's value depends on data that would not have been available at that point in time -- an off-by-one rolling window and a quarter-end-keyed fundamental join are two specific instances of the same general leakage problem."
+    },
+    {
+      "q": "According to this lesson, what should an unusually high in-sample correlation or R^2 make you do?",
+      "options": [
+        "Immediately deploy the model to production",
+        "Be suspicious and check for leakage, since leakage's defining symptom is an artificially inflated result that collapses once the feature is built honestly",
+        "Assume the feature is definitely capturing a real market inefficiency",
+        "Ignore it, since in-sample performance never matters"
+      ],
+      "answer": 1,
+      "explain": "Leakage fails silently in a way that makes results look better than they should -- the lesson's own example showed a leaky R^2 of 0.20 collapse to 0.0001 once the look-ahead bug was fixed, which is why an unusually strong in-sample result is a reason for suspicion, not celebration."
+    }
+  ]
+}
