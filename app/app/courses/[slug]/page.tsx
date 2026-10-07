@@ -10,6 +10,7 @@ import {
 } from "@/lib/courses";
 import { buildFinalTest } from "@/lib/finalTest";
 import { getCourseHeroImage } from "@/lib/courseHeroImage";
+import { getCareerPath } from "@/lib/career-paths";
 import CourseCurriculum from "@/components/app/CourseCurriculum";
 import CoursePathBreadcrumb from "@/components/app/CoursePathBreadcrumb";
 import {
@@ -59,6 +60,7 @@ export default async function CoursePage({
   const chapterCount = course.chapters?.length ?? 0;
   const totalLessons = lessonCount(course);
   const heroImageSlug = getCourseHeroImage(course.slug);
+  const heroCareerPath = heroImageSlug ? getCareerPath(heroImageSlug) : undefined;
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
@@ -107,6 +109,19 @@ export default async function CoursePage({
           />
         )}
       </div>
+
+      {heroCareerPath && (
+        <p className="mt-4 text-sm text-stone">
+          Part of the{" "}
+          <Link
+            href={`/careers/${heroCareerPath.slug}`}
+            className="font-semibold text-crimson-deep underline underline-offset-4 hover:text-crimson"
+          >
+            {heroCareerPath.title}
+          </Link>{" "}
+          career path →
+        </p>
+      )}
 
       <div className="mt-10">
         <CourseCurriculum
