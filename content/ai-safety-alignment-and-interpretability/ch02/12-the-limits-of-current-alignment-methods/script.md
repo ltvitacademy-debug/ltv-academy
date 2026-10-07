@@ -1,0 +1,21 @@
+# Script — The Limits of Current Alignment Methods
+
+## Segment 1 (title)
+
+This chapter covered four techniques — RLHF, Constitutional AI, red-teaming, and refusal training. All four are real and already deployed. This lesson doesn't add a new one; it names what they all have in common.
+
+## Segment 2 (steps)
+
+RLHF shapes behavior against human preference labels. Constitutional AI shapes it against an AI judge grounded in a document humans wrote. Red-teaming finds failures using human-set goals about what counts as one. Refusal training shapes one slice of behavior with the same machinery as everything else. Four mechanisms, one shared property: all of them primarily shape observed behavior, with no built-in guarantee the change runs any deeper.
+
+## Segment 3 (steps)
+
+Trace the standard behind each one back to its source, and it's human judgment every time — sometimes direct, like a human rater, sometimes through a tool, like a reward model or an AI judge trained on a human-written constitution. None of the four derive their standard from anywhere else, no matter how automated the day-to-day judging looks.
+
+## Segment 4 (steps)
+
+That's fine as long as the humans doing the judging can actually evaluate what they're judging. But as models get pushed toward harder, less verifiable tasks — the scalability ceiling from lesson seven — that judgment gets less reliable exactly where it matters most. That's not a flaw in any one method; it's a property of relying on human-derived judgment as the alignment target at all.
+
+## Segment 5 (outro)
+
+Two things follow. First, you need reliable ways to measure where models actually stand on hard, less verifiable tasks — that's evaluations, next chapter. Second, you need tools that extend training signal to tasks past what a human judge can directly assess — scalable oversight, the chapter after that. Nothing here was wasted; these four methods just aren't, on their own, the whole answer.

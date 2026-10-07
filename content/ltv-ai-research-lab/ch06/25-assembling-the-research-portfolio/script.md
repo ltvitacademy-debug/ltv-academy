@@ -1,0 +1,21 @@
+# Script — Assembling the Research Portfolio
+
+## Segment 1 (title)
+
+You've finished three projects and one interpretability case study, each with its own write-up sitting in its own chapter. This lesson pulls all four into a single portfolio artifact — the thing you'd actually hand a hiring manager, instead of four separate notebooks they'd have to go hunting through on their own.
+
+## Segment 2 (steps)
+
+The four pieces are the Project 1 write-up on the RL agent versus the query optimizer, the Project 2 write-up on the reward model versus human preference, the Project 3 write-up on SQL Pete before and after RLHF, and the interpretability finding from Chapter 5's circuit result. Nothing new gets created here — the work from this point on is entirely assembly.
+
+## Segment 3 (code)
+
+A hiring manager gives your repo a few minutes, not an afternoon. Lay it out so the top level tells the whole story first: one root README with three or four sentences per project and the headline number, then a folder per project with the full write-up and notebook sitting underneath it. Nobody should ever have to open a notebook just to learn what you actually found.
+
+## Segment 4 (steps)
+
+What they're actually scanning for is a clear problem statement in one sentence, evidence of a real result — even a negative one reads as credible when it's reported honestly — and code that actually runs when they clone it. A repo that errors out on line one undoes everything the write-up claimed, no matter how good the writing is.
+
+## Segment 5 (outro)
+
+Four write-ups, one consistent layout, one single page at the top that tells the whole story before anyone digs further. Up next, lesson 26: presenting this exact same material out loud, to a real technical audience, in about ten minutes.

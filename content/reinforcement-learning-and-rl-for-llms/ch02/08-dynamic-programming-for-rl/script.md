@@ -1,0 +1,21 @@
+# Script — Dynamic Programming for RL
+
+## Segment 1 (title)
+
+This is lesson eight, opening Chapter Two, Classic RL Algorithms. Chapter One gave you the Bellman equation as a recursive definition. Dynamic programming is the first real algorithm that turns that recursion into something you can actually compute — as long as you know the environment's model exactly.
+
+## Segment 2 (steps)
+
+Policy iteration alternates two steps. Evaluation sweeps through every state, applying the Bellman equation for the current policy over and over, until the value estimates converge. Improvement then checks, in every state, whether acting greedily with respect to that value function beats what the current policy was doing. Alternate those two steps, and you're guaranteed to land on the optimal policy.
+
+## Segment 3 (code)
+
+Value iteration is the faster shortcut. Instead of running evaluation all the way to convergence inside every loop, it takes just one sweep, using the Bellman optimality equation directly — which already has the max over actions baked in. Repeat that single sweep until it converges, then read off the greedy policy once at the end.
+
+## Segment 4 (steps)
+
+Here's the catch. Dynamic programming needs the full model — the exact transition probabilities and reward function — and it sweeps over every single state on every pass. Most real environments don't hand you that model, and the number of states explodes as a problem grows. That's the curse of dimensionality.
+
+## Segment 5 (outro)
+
+Policy iteration and value iteration both work the Bellman equation, but both need a model you usually don't have. Next up, lesson nine: Monte Carlo methods, the first approach that learns value functions purely from sampled experience.

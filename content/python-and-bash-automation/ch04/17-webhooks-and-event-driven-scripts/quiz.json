@@ -1,0 +1,60 @@
+{
+  "lesson": "webhooks-and-event-driven-scripts",
+  "questions": [
+    {
+      "q": "How does a webhook differ from the REST API calls covered earlier in this chapter?",
+      "options": [
+        "A webhook always uses GET instead of POST",
+        "A webhook is an inbound request the provider sends to you when an event happens, instead of your script asking for data",
+        "A webhook requires no authentication at all, ever",
+        "A webhook is just a renamed term for a regular API call"
+      ],
+      "answer": 1,
+      "explain": "A webhook reverses the usual direction: instead of your script polling an API for changes, the provider pushes an HTTP POST to your server the moment an event occurs."
+    },
+    {
+      "q": "Why must Northbridge's webhook receiver verify a signature before trusting the payload?",
+      "options": [
+        "Signature verification is only needed for GET requests",
+        "Because the receiving URL must be reachable from the internet, anyone could POST a fake event to it without a way to prove the request's origin",
+        "Flask requires a signature header or it won't start the server",
+        "Verification makes the server respond faster"
+      ],
+      "answer": 1,
+      "explain": "A webhook URL is necessarily public so the provider can reach it, which means anyone could send a forged request; verifying the HMAC signature is the only way to confirm it genuinely came from the carrier."
+    },
+    {
+      "q": "Why is the HMAC computed over request.data (the raw request bytes) rather than the parsed JSON object?",
+      "options": [
+        "Raw bytes are required because Flask cannot parse JSON",
+        "Re-serializing parsed JSON can produce different bytes than what the carrier actually signed, breaking the comparison",
+        "It makes the hash shorter",
+        "hashlib only works on raw bytes, never on dictionaries, by any method"
+      ],
+      "answer": 1,
+      "explain": "The carrier signs the exact bytes it sent. Parsing that JSON and re-serializing it can change whitespace or key order, producing different bytes and a mismatched hash even for a legitimate request."
+    },
+    {
+      "q": "Why does the example use hmac.compare_digest(signature, expected) instead of signature == expected?",
+      "options": [
+        "compare_digest() is simply a faster string comparison with no security benefit",
+        "A plain == comparison exits early on a mismatch, leaking timing information an attacker could use to guess the correct signature a byte at a time; compare_digest() runs in constant time",
+        "== cannot compare two strings in Python",
+        "compare_digest() automatically decodes the request body"
+      ],
+      "answer": 1,
+      "explain": "compare_digest() performs a constant-time comparison specifically to prevent timing attacks, where an attacker measures how long a comparison takes to narrow down the correct signature character by character."
+    },
+    {
+      "q": "In the handler, what should happen before handle_shipment_event(event) is ever called?",
+      "options": [
+        "Nothing — it's safe to call it as soon as request.get_json() returns",
+        "The signature must be verified with compare_digest() and confirmed valid first",
+        "The server should be restarted",
+        "The event type must be printed to the console"
+      ],
+      "answer": 1,
+      "explain": "Acting on the event's contents should only happen after the signature check has confirmed the request genuinely came from the carrier — verify first, then parse and act."
+    }
+  ]
+}

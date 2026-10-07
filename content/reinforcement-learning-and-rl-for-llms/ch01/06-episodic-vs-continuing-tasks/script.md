@@ -1,0 +1,21 @@
+# Script — Episodic vs. Continuing Tasks
+
+## Segment 1 (title)
+
+This is lesson six, still Chapter One, RL Foundations, and the last foundational piece before we get to on-policy versus off-policy learning. So far we've written the return as an infinite sum. Plenty of real tasks don't actually run forever.
+
+## Segment 2 (steps)
+
+An episodic task is guaranteed to end — it reaches a terminal state after finitely many steps, like checkmate in chess or reaching the exit of a maze. Then the environment resets and a new episode starts. A continuing task has no terminal state at all — a thermostat regulating temperature, or a trading agent, just keeps running indefinitely.
+
+## Segment 3 (code)
+
+That difference changes the math. For an episodic task, the return is a finite sum up to the terminal step, so it's well-defined even without discounting. For a continuing task, the return is a genuinely infinite sum, and for it to converge to a finite number, you need gamma strictly less than one. For continuing tasks, discounting isn't just convenient — it's required.
+
+## Segment 4 (code)
+
+Gymnasium's modern API reflects this with two separate flags from step. Terminated means the episode ended because of the task's own dynamics — a real ending. Truncated means it was cut off for an external reason, usually a time limit, even though the task itself could have kept going. That distinction matters because a truncated next state still has real future value, unlike a truly terminated one.
+
+## Segment 5 (outro)
+
+Episodic tasks end and reset; continuing tasks never do, and need gamma less than one to stay well-defined. Next up, lesson seven: on-policy versus off-policy learning, the last distinction before we start building algorithms in Chapter Two.

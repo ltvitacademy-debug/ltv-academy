@@ -1,0 +1,60 @@
+{
+  "lesson": "checkpointing-and-resuming-training",
+  "questions": [
+    {
+      "q": "Why is saving only `model.state_dict()` usually not enough to resume training cleanly?",
+      "options": [
+        "model.state_dict() cannot be saved with torch.save at all",
+        "It omits optimizer and scheduler state, like Adam's running averages and the scheduler's decay position, which restart from scratch otherwise",
+        "It only works for models with no convolutional layers",
+        "model.state_dict() already includes the optimizer state automatically"
+      ],
+      "answer": 1,
+      "explain": "Weights alone are enough for inference, but the optimizer's per-parameter running statistics and the scheduler's position in its decay curve are also needed to truly resume training where it left off."
+    },
+    {
+      "q": "What does `map_location=device` do when calling `torch.load`?",
+      "options": [
+        "It changes the model's architecture to match the device",
+        "It remaps which device the loaded tensors are placed on, e.g. loading a GPU-saved checkpoint onto a CPU or a different GPU",
+        "It deletes the optimizer state before loading",
+        "It forces weights_only=True"
+      ],
+      "answer": 1,
+      "explain": "map_location tells torch.load which device to place the restored tensors on, letting a checkpoint saved on one device (e.g. a GPU) be loaded cleanly on another (e.g. CPU, or a different GPU index)."
+    },
+    {
+      "q": "Why does this lesson's checkpoint-loading code pass `weights_only=False` to `torch.load`?",
+      "options": [
+        "Because the checkpoint file is corrupted",
+        "Because the checkpoint dictionary contains more than tensors — optimizer and scheduler state and other metadata — and the safer default rejects that",
+        "Because weights_only=False speeds up loading",
+        "Because model.state_dict() requires it even for inference-only loading"
+      ],
+      "answer": 1,
+      "explain": "torch.load's weights_only=True default is a safety measure that only allows loading plain tensors. A checkpoint that also bundles optimizer/scheduler state dicts needs weights_only=False to load, and should only be used on files you trust."
+    },
+    {
+      "q": "In the resumable training loop pattern shown in this lesson, what determines `start_epoch`?",
+      "options": [
+        "It is always hardcoded to 0",
+        "The saved checkpoint's `epoch` value plus one",
+        "A random value chosen at runtime",
+        "The current learning rate"
+      ],
+      "answer": 1,
+      "explain": "The checkpoint stores the last completed epoch number; resuming sets start_epoch to that stored value plus one so training continues with the next epoch."
+    },
+    {
+      "q": "What is a common checkpointing pattern mentioned in this lesson for managing saved files during a long run?",
+      "options": [
+        "Save a checkpoint only once, at the very end of training",
+        "Keep both a 'latest' checkpoint (to resume from) and a separate 'best' checkpoint (saved whenever validation loss improves)",
+        "Never save the optimizer state, only the model weights",
+        "Delete all checkpoints as soon as training finishes"
+      ],
+      "answer": 1,
+      "explain": "A common pattern saves a 'latest' checkpoint every epoch (or every N steps) to resume from after an interruption, plus a separate 'best' checkpoint whenever validation performance improves."
+    }
+  ]
+}

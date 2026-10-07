@@ -1,0 +1,49 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Deep Learning & PyTorch · Chapter 8",
+    "titlePlain": "Silent Bugs in Training ",
+    "titleEmphasis": "Code",
+    "titleSuffix": "",
+    "subtitle": "Lesson 53 · Debugging & Experiment Tracking"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Bug 1: accumulating the tensor, not the value",
+    "code": "running_loss = 0.0\nfor x, y in train_loader:\n    optimizer.zero_grad()\n    loss = loss_fn(model(x), y)\n    loss.backward()\n    optimizer.step()\n    running_loss += loss.item()\n    # running_loss += loss  <- keeps the graph alive",
+    "caption": "No crash -- just memory quietly growing all epoch."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Bug 2: forgetting model.eval()",
+    "code": "model.eval()\nwith torch.no_grad():\n    val_loss = loss_fn(model(x_val), y_val)\nmodel.train()\n\n# without eval(): dropout and batchnorm\n# still behave like training mode",
+    "caption": "No crash -- just a validation number that lies to you."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Bug 3: forgetting optimizer.zero_grad()",
+    "code": "for x, y in train_loader:\n    optimizer.zero_grad()  # skip this...\n    loss = loss_fn(model(x), y)\n    loss.backward()  # ...and grads keep summing\n    optimizer.step()",
+    "caption": "backward() adds to .grad -- it never replaces it."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Four bugs, zero error messages",
+    "titlePlain": "The five-second ",
+    "titleEmphasis": "checklist",
+    "titleSuffix": "",
+    "steps": [
+      { "label": ".item() on loss", "sub": "not the raw tensor" },
+      { "label": "eval() / train()", "sub": "paired around every validation pass" },
+      { "label": "zero_grad()", "sub": "called every single step" },
+      { "label": "no_grad()", "sub": "wrapping inference / validation" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 54",
+    "titlePlain": "Experiment Tracking ",
+    "titleEmphasis": "Tools",
+    "titleSuffix": "",
+    "subtitle": "Logging runs so you can actually compare them later."
+  }
+]

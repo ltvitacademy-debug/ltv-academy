@@ -62,6 +62,9 @@ set explicitly; left alone, a row with no large values would have its
 small bars stretch to fill the cell, making it look falsely dramatic
 next to a row that actually has a tall spike.
 
+![Six sales reps' sparklines stacked in a column — Ito, Varkey, Blythe, Mensa-Annan, Valdez, Tsoflias — each one's bars sitting at the same horizontal position for the same month and reaching a comparable height for the same value.](/courses/ssrs/ch05/25-sparklines/sparkline-align-data.gif)
+*Aligned — the same month lands in the same column in every row, so the set reads as one picture.*
+
 ## Converting to a full chart
 
 Because a sparkline is just a chart with the extra elements hidden, you

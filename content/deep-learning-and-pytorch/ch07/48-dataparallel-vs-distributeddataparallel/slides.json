@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Deep Learning & PyTorch · Chapter 7",
+    "titlePlain": "DataParallel vs. ",
+    "titleEmphasis": "DistributedDataParallel",
+    "titleSuffix": "",
+    "subtitle": "Lesson 48 · Scaling Up: Mixed Precision & Multi-GPU Basics"
+  },
+  {
+    "type": "code",
+    "eyebrow": "DataParallel -- one line, real limits",
+    "code": "model = torch.nn.DataParallel(model)\noutput = model(inputs)\n# batch auto-split across GPUs\n\n# single Python process\n# scatter + gather every step\n# GIL-bound, imbalanced memory",
+    "caption": "Simple to add, but PyTorch's own docs advise against it now."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "DDP's different approach",
+    "titlePlain": "One process ",
+    "titleEmphasis": "per GPU",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Independent processes", "sub": "each GPU runs its own forward/backward" },
+      { "label": "All-reduce", "sub": "gradients averaged across processes after backward" },
+      { "label": "Identical update", "sub": "every model copy applies the same step" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Setting up DDP",
+    "code": "import torch.distributed as dist\nfrom torch.nn.parallel import (\n    DistributedDataParallel as DDP\n)\n\ndist.init_process_group(backend=\"nccl\")\nmodel = model.to(local_rank)\nmodel = DDP(model, device_ids=[local_rank])",
+    "caption": "Each process gets its own full model copy."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Each process needs its own data shard",
+    "code": "from torch.utils.data.distributed import (\n    DistributedSampler\n)\n\nsampler = DistributedSampler(dataset)\nloader = DataLoader(dataset,\n                     sampler=sampler,\n                     batch_size=32)\n\n# launch with: torchrun --nproc_per_node=4 train.py",
+    "caption": "DistributedSampler splits the dataset by rank, non-overlapping."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 49",
+    "titlePlain": "torch.compile & Graph ",
+    "titleEmphasis": "Optimization",
+    "titleSuffix": "",
+    "subtitle": "Speeding up a single GPU's training step."
+  }
+]

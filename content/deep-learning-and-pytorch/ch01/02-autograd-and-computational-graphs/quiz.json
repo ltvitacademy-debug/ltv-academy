@@ -1,0 +1,60 @@
+{
+  "lesson": "autograd-and-computational-graphs",
+  "questions": [
+    {
+      "q": "What does setting requires_grad=True on a tensor actually do?",
+      "options": [
+        "It converts the tensor to a NumPy array",
+        "It turns on tracking so PyTorch records the operations used to produce derived tensors, building a computational graph",
+        "It moves the tensor to the GPU",
+        "It forces the tensor to use float16 precision"
+      ],
+      "answer": 1,
+      "explain": "requires_grad=True opts a tensor into autograd tracking: every operation applied to it (or tensors derived from it) is recorded via grad_fn, forming the computational graph that .backward() later walks."
+    },
+    {
+      "q": "Why does .backward() typically need to be called on a scalar tensor (like a loss)?",
+      "options": [
+        "Because non-scalar tensors cannot have a grad_fn",
+        "Because without a scalar, PyTorch needs an explicit gradient argument to know how to weight each output element during the chain rule",
+        "Because scalars compute faster on GPU",
+        "Because .backward() only exists on torch.float64 tensors"
+      ],
+      "answer": 1,
+      "explain": "Calling .backward() with no arguments implicitly uses a gradient of 1.0, which only makes sense for a scalar. For non-scalar outputs you must supply a gradient tensor matching its shape, so training loops reduce the loss to a single number first."
+    },
+    {
+      "q": "A training loop omits optimizer.zero_grad(). What happens across iterations?",
+      "options": [
+        "Nothing; .grad is automatically reset before every backward() call",
+        "The model raises a RuntimeError immediately",
+        "Gradients from previous iterations accumulate into .grad instead of being replaced, corrupting the update direction",
+        "Only the first layer's gradients are affected"
+      ],
+      "answer": 2,
+      "explain": "Gradients accumulate by design (useful for some advanced patterns), so without zeroing them each iteration, stale gradients from earlier batches silently add to the current ones."
+    },
+    {
+      "q": "When should you wrap code in torch.no_grad()?",
+      "options": [
+        "Whenever you want faster, lower-memory execution for code that doesn't need gradients, such as evaluation or inference",
+        "Only when running on a GPU",
+        "Whenever you want to permanently delete a tensor's gradient history",
+        "Before calling .backward() on the loss"
+      ],
+      "answer": 0,
+      "explain": "torch.no_grad() is a context manager that disables graph construction for the code inside it, which is appropriate for evaluation/inference and manual parameter updates where gradient tracking would waste memory or cause errors."
+    },
+    {
+      "q": "What is the difference between tensor.detach() and torch.no_grad()?",
+      "options": [
+        "They are identical in every way",
+        "detach() moves a tensor to CPU; no_grad() moves it to GPU",
+        "detach() returns a new tensor sharing the same data but disconnected from the graph; no_grad() is a context manager that prevents graph-building for a block of code",
+        "detach() deletes the tensor; no_grad() only pauses tracking temporarily"
+      ],
+      "answer": 2,
+      "explain": "detach() gives you one tensor with gradient history removed, useful for pulling a value out of the graph. no_grad() instead scopes an entire block of code so nothing inside it builds graph history in the first place."
+    }
+  ]
+}

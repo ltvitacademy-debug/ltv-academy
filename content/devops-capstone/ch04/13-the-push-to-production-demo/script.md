@@ -1,0 +1,33 @@
+# Script — The Push-to-Production Demo
+
+## Segment 1 (title)
+
+Every piece of Phase 3 has been covered separately — CI, automatic dev deploys, tag-based promotion, the production approval gate. This lesson is demo day. One real change, walked start to finish through everything you've built, so the whole pipeline clicks as one system instead of four separate lessons.
+
+## Segment 2 (steps)
+
+Remember feature slash CHK-108, retry payment pro timeout, from Chapter 1's branching lesson? This is that change, finally shipping. The fix touches exactly one file, and opening the PR against main triggers only checkout's workflow — product-catalog's path filter doesn't match, so it never runs.
+
+## Segment 3 (steps)
+
+CI runs immediately: lint, pytest, the image build, Trivy, and gitleaks, all green. A teammate reviews the diff and approves it. Both of main's branch protection rules are now satisfied — one approval, green CI — so the PR squash-merges into main as one clean commit.
+
+## Segment 4 (steps)
+
+That merge to main triggers the dev deploy job automatically. It logs into Azure over OIDC, sets the AKS context to the dev cluster, and runs helm upgrade install for checkout, tagged with this exact merge commit's SHA. Within minutes, the retry logic is live in dev — nobody ran a deploy command by hand.
+
+## Segment 5 (code)
+
+Once the fix looks good in dev, a maintainer makes a deliberate decision: cut a tag, v1.5.0, and push it. That triggers the promotion workflow. Staging deploys immediately and automatically. The production job is next in line, but it's gated on the production environment, so it pauses — GitHub shows a pending deployment, waiting on a required reviewer.
+
+## Segment 6 (steps)
+
+A reviewer checks staging, confirms the retry logic behaves correctly under a simulated timeout, and approves the pending deployment. The production job resumes: OIDC login again, but this time the AKS context switches to the isolated production cluster, and the same helm upgrade install pattern runs against northbridge-prod. Version one point five point oh is now live at the real storefront domain, traceable the entire way back to one commit.
+
+## Segment 7 (steps)
+
+None of this works without the earlier phases. Phase 1 built the containers this pipeline scans. Phase 2 built the clusters this pipeline deploys to and the identity it authenticates with. Phase 3 is the automation that connects a commit to a running service, with a human in the loop exactly once — the production approval.
+
+## Segment 8 (outro)
+
+This pipeline is solid, but it isn't the whole story. Phase 4 covers the monitoring that would have caught the flash-sale checkout latency spike, and the full story of the PaymentPro secrets near-miss only foreshadowed back in Lesson 10 — both incidents happened on top of the exact pipeline you just watched.

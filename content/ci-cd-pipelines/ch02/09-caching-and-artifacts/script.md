@@ -1,0 +1,23 @@
+## Segment 1 (title)
+
+Every run of storefront's workflow starts from a completely empty runner — npm ci downloads the exact same dependencies from scratch, every single time. And once the build finishes, its output disappears right along with the runner unless something saves it first. Two separate mechanisms solve these two separate problems.
+
+## Segment 2 (code: cache action)
+
+Actions/cache saves a directory between runs, keyed by a string you control — here, a hash of package-lock.json. The cache stays valid for exactly as long as dependencies don't change. The moment someone bumps a package version, the lockfile's hash changes, the key no longer matches, and npm ci rebuilds the cache from a clean download. Restore-keys is the fallback, restoring the most recent cache with a matching prefix instead of starting from nothing at all.
+
+## Segment 3 (screenshot: cache entry list)
+
+Every cache storefront's workflows have ever created shows up under Actions, Caches — listed with its branch, its size, and exactly when it was last used. Anyone with write access to the repository can clear one out by hand if it's grown stale or started eating into the storage limit.
+
+## Segment 4 (code: upload-artifact)
+
+A cache speeds up the next run. An artifact keeps what this run actually produced. After running tests with coverage enabled, upload-artifact saves that coverage report, named and given a retention period, so it outlives the disposable runner it was originally built on.
+
+## Segment 5 (screenshot: artifact section)
+
+Once uploaded, the artifact shows up right on the run's summary page, downloadable as a zip by anyone with access. A later job in the same run can pull it back down too — exactly how storefront passes a built Docker image from one job to the next without rebuilding it from scratch.
+
+## Segment 6 (outro)
+
+Next lesson: scaling one workflow across many jobs at once, with reusable workflows and matrix builds.

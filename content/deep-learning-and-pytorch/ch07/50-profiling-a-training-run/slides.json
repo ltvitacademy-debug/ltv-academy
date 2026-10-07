@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Deep Learning & PyTorch · Chapter 7",
+    "titlePlain": "Profiling a Training ",
+    "titleEmphasis": "Run",
+    "titleSuffix": "",
+    "subtitle": "Lesson 50 · Scaling Up: Mixed Precision & Multi-GPU Basics"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Wrap the loop, step every iteration",
+    "code": "from torch.profiler import profile, ProfilerActivity\n\nwith profile(\n    activities=[ProfilerActivity.CPU,\n                ProfilerActivity.CUDA],\n    record_shapes=True,\n) as prof:\n    for step, (x, y) in enumerate(loader):\n        loss = loss_fn(model(x), y)\n        loss.backward()\n        optimizer.step()\n        optimizer.zero_grad()\n        prof.step()",
+    "caption": "prof.step() marks each iteration's boundary."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The summary table",
+    "code": "print(prof.key_averages().table(\n    sort_by=\"cuda_time_total\",\n    row_limit=10,\n))\n\n# CPU time: Python + kernel launches\n# CUDA time: actual GPU execution",
+    "caption": "Sort by cuda_time_total to find your real bottleneck."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Reading the result",
+    "titlePlain": "Compute-bound or ",
+    "titleEmphasis": "starved",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "GPU rows dominate", "sub": "compute-bound -- AMP and compile help here" },
+      { "label": "CPU time dominates", "sub": "GPU sits idle between steps" },
+      { "label": "Usual culprit", "sub": "too few DataLoader workers, slow preprocessing" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Exporting a timeline trace",
+    "code": "from torch.profiler import tensorboard_trace_handler\n\nwith profile(\n    activities=[ProfilerActivity.CPU,\n                ProfilerActivity.CUDA],\n    on_trace_ready=tensorboard_trace_handler(\n        \"./log/profiler\"),\n) as prof:\n    ...\n    prof.step()",
+    "caption": "A timeline view shows exactly where GPU idle gaps appear."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 8",
+    "titlePlain": "Debugging & Experiment ",
+    "titleEmphasis": "Tracking",
+    "titleSuffix": "",
+    "subtitle": "Reading what a training run is actually telling you."
+  }
+]

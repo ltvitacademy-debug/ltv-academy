@@ -1,0 +1,60 @@
+{
+  "lesson": "implementing-the-training-loop-for-a-tiny-gpt",
+  "questions": [
+    {
+      "q": "Given a chunk of token ids of length T+1, how are the training inputs and targets built?",
+      "options": [
+        "inputs = chunk[:, 1:], targets = chunk[:, :-1]",
+        "inputs = chunk[:, :-1], targets = chunk[:, 1:] — the same sequence shifted by one position",
+        "Two completely separate sequences must be loaded for inputs and targets",
+        "inputs and targets are identical copies of chunk"
+      ],
+      "answer": 1,
+      "explain": "Next-token prediction uses one sequence for both: inputs drop the last token, targets drop the first, so targets[t] is always the token that actually follows inputs[t]."
+    },
+    {
+      "q": "Why does the training step call logits.reshape(-1, vocab_size) and targets.reshape(-1) before computing the loss?",
+      "options": [
+        "To reduce memory usage by discarding most of the logits",
+        "Because F.cross_entropy expects a 2D input of shape (N, C) and a 1D target of shape (N,), so batch and sequence dimensions must be flattened together",
+        "Because PyTorch cannot process 3D tensors",
+        "To convert the logits into probabilities before the loss"
+      ],
+      "answer": 1,
+      "explain": "cross_entropy's standard signature compares (N, C) class scores against (N,) target class indices, so the batch and time dimensions of a (B, T, vocab_size) tensor are flattened into one N dimension."
+    },
+    {
+      "q": "What does torch.nn.utils.clip_grad_norm_ do, and when is it called?",
+      "options": [
+        "It zeroes out all gradients; called before the forward pass",
+        "It rescales the gradient vector so its total norm doesn't exceed max_norm; called after backward() and before optimizer.step()",
+        "It clips the loss value itself to a maximum before backward()",
+        "It removes dropout layers during training"
+      ],
+      "answer": 1,
+      "explain": "Gradient clipping caps the overall size of the gradient update (without changing its direction) after backward() computes gradients and before step() applies them, preventing a rare large gradient from destabilizing training."
+    },
+    {
+      "q": "Why is AdamW typically preferred over plain SGD for training a transformer like TinyGPT?",
+      "options": [
+        "AdamW is required by PyTorch for any model with attention layers",
+        "AdamW combines Adam's per-parameter adaptive learning rates with weight decay decoupled from the gradient update, which regularizes weights without distorting Adam's adaptive behavior",
+        "AdamW trains strictly faster in wall-clock time on any hardware",
+        "AdamW eliminates the need for gradient clipping"
+      ],
+      "answer": 1,
+      "explain": "AdamW is Adam with weight decay applied directly to the weights rather than folded into the gradient, which is why it has become the standard default optimizer for transformer training."
+    },
+    {
+      "q": "Why should model.train() be called before a training step if the model uses dropout?",
+      "options": [
+        "It has no real effect; it's just a convention",
+        "It disables gradient tracking to speed up training",
+        "It activates dropout (and similar mode-dependent layers) so the model trains with its intended regularization, as opposed to eval mode where dropout is disabled",
+        "It resets the model's weights to their initial values"
+      ],
+      "answer": 2,
+      "explain": "model.train() and model.eval() toggle layers like dropout and batch norm between their training and inference behavior; dropout should be active during training and disabled during evaluation or generation."
+    }
+  ]
+}

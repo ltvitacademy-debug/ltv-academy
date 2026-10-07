@@ -1,0 +1,21 @@
+# Script — Research Engineer vs. Product Engineer
+
+## Segment 1 (title)
+
+The last lesson drew a line between research engineer and research scientist. This lesson draws the other line new hires ask about: research engineer versus a product-focused software engineer. If you're coming from backend or full-stack work, this is the lesson that reframes which habits transfer and which ones mislead you.
+
+## Segment 2 (steps)
+
+A product engineer's "done" means the feature works for every user, every time, under load, indefinitely, with edge cases handled and monitoring in place. A research engineer's "done" often means the run produced a trustworthy number once. That's not sloppiness — it's a correct response to a different cost structure, since nobody but the researcher depends on that exact script holding up tomorrow, and a bug nobody ever exercises simply doesn't matter.
+
+## Segment 3 (steps)
+
+Product engineering defends against edge cases and unlikely inputs, because a bug there is loud and felt by someone else later, often far from when the code was written. Research engineering spends that effort on experiment hygiene instead — correct seeding, apples-to-apples comparisons, catching a silent NaN before it gets averaged into a number that looks fine but is wrong. A product bug usually throws an error or trips an alarm. A research bug is often silent: the code runs to completion and the number it hands back is simply incorrect.
+
+## Segment 4 (code)
+
+Same function, two philosophies. The defensive version checks every input and raises on anything unexpected, which is exactly right for code strangers will call. The research version trusts the inputs it already knows and gets the number today, which is exactly right when the researcher controls every input themselves. Neither is better in the abstract — each is correct for the risk it's written against, and confusing the two leads either to wasted effort or to untrustworthy results.
+
+## Segment 5 (outro)
+
+The exception is shared infrastructure — the training framework, the data loader, anything many experiments depend on — which still gets production-grade rigor even on a research team, because corrupting it would quietly invalidate every experiment built on top of it. Up next, lesson three: a day in the life of a research engineer.

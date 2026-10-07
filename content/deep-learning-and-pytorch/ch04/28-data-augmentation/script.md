@@ -1,0 +1,21 @@
+# Script — Data Augmentation
+
+## Segment 1 (title)
+
+Collecting more labeled images is expensive. Data augmentation is the cheap alternative: generate realistic variations of the images you already have — flipped, cropped, recolored — so the model sees more diversity without a single new label. Let's close out the chapter with it.
+
+## Segment 2 (code)
+
+A model that's only seen a cat facing left may stumble on one facing right, even though nothing about catness changed. transforms.v2, torchvision's current transforms API, chains together flips, shifted crops, and color jitter, then converts and normalizes the result — it's a close cousin of the regularization techniques from chapter three, making it harder for the model to overfit to incidental details.
+
+## Segment 3 (steps)
+
+Not every transform is safe for every task. A horizontal flip is harmless for cat versus dog, but it would wreck a task where left and right actually matter, like reading digits, where a flipped six looks like a nine. The rule of thumb: it's safe only if a human would still assign the exact same label to the flipped or cropped version.
+
+## Segment 4 (code)
+
+Augmentation only ever applies to the training set. Validation and test data need to reflect the real, unmodified distribution you'll see in production — randomly augmenting them would just make your evaluation metrics noisy and unrepresentative of real performance.
+
+## Segment 5 (outro)
+
+That wraps up chapter four — convolutions, pooling, a full training pipeline, transfer learning, and augmentation. Up next, lesson twenty-nine opens chapter five: sequence data and RNNs.

@@ -1,0 +1,25 @@
+# Script — The Plan and Apply Workflow
+
+## Segment 1 (title)
+
+Every lesson in this chapter has shown you pieces of HCL — blocks, arguments, references, functions. This lesson puts them all into motion with the four commands you'll run on nearly every Terraform configuration you ever write: init, plan, apply, and destroy.
+
+## Segment 2 (code)
+
+Init downloads the providers your configuration declares in required_providers and sets up the local working directory. You run it once per configuration directory, and again any time you change a provider version or add a backend. Nothing in Azure or AWS is touched yet — this step only prepares your local machine.
+
+## Segment 3 (code)
+
+Plan compares your configuration against the real infrastructure Terraform currently knows about and shows exactly what would change, without changing anything. A plus means create, a tilde means update in place, a minus means destroy. Reading this output before running apply is the single habit that prevents most "wait, why did it destroy that" surprises.
+
+## Segment 4 (code)
+
+Apply runs that same comparison, shows you the identical plan output, and then asks for confirmation before actually creating, updating, or destroying anything. Only typing "yes" calls the real Azure API. In CI/CD pipelines, apply is typically run with auto-approve instead, appropriate once a human has already reviewed the plan elsewhere in the pipeline.
+
+## Segment 5 (code)
+
+Destroy tears down every resource the configuration currently manages, in reverse dependency order — the storage account goes first, then the resource group it lived in, the exact reverse of the creation order. You'll reach for this most often to tear down a temporary dev or test environment, rarely for production.
+
+## Segment 6 (outro)
+
+You now have enough HCL and enough of the core workflow to build and tear down real infrastructure end to end. The one thing left unexplained is how Terraform remembers what it already created between runs — that's state, starting next in Chapter 3, Lesson 12: What State Is.

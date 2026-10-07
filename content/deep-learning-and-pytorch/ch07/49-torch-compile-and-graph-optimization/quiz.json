@@ -1,0 +1,60 @@
+{
+  "lesson": "torch-compile-and-graph-optimization",
+  "questions": [
+    {
+      "q": "What is the key difference between PyTorch's eager mode and torch.compile?",
+      "options": [
+        "Eager mode only works on CPU; torch.compile only works on GPU",
+        "Eager mode executes each operation immediately as Python calls it; torch.compile traces operations into a graph that can be optimized and fused",
+        "torch.compile requires rewriting the model in a different language",
+        "There is no functional difference — torch.compile is purely cosmetic"
+      ],
+      "answer": 1,
+      "explain": "Eager mode runs one op at a time with no visibility into what comes next. torch.compile traces the model's operations into a graph, which its backend (TorchInductor) can then optimize and fuse."
+    },
+    {
+      "q": "Why is the very first call to a torch.compile-wrapped model noticeably slower than a normal eager forward pass?",
+      "options": [
+        "PyTorch loads the entire dataset into memory on the first call",
+        "PyTorch traces and compiles the graph on that first call; later calls reuse the compiled artifact",
+        "The GPU driver must be reinstalled on first use",
+        "torch.compile always runs twice as slow as eager mode, permanently"
+      ],
+      "answer": 1,
+      "explain": "Compilation happens lazily on first invocation. That one-time tracing and compiling cost is paid up front; subsequent calls reuse the already-compiled graph and run fast."
+    },
+    {
+      "q": "Which torch.compile mode spends the most time compiling in exchange for searching for the fastest possible kernels?",
+      "options": [
+        "\"default\"",
+        "\"reduce-overhead\"",
+        "\"max-autotune\"",
+        "\"eager\""
+      ],
+      "answer": 2,
+      "explain": "\"max-autotune\" trades a much longer compile time for the fastest kernels it can find, generally worthwhile only for long-running training jobs where that cost gets amortized."
+    },
+    {
+      "q": "What backend does torch.compile use by default to generate optimized kernels?",
+      "options": [
+        "TorchScript",
+        "ONNX Runtime",
+        "TorchInductor",
+        "cuDNN alone, with no additional compiler"
+      ],
+      "answer": 2,
+      "explain": "TorchInductor is torch.compile's default backend compiler — it takes the traced graph and generates optimized, often-fused kernels from it."
+    },
+    {
+      "q": "What is a \"graph break,\" and when is it most likely to occur?",
+      "options": [
+        "A hardware failure that halts training entirely",
+        "A point where torch.compile falls back to eager execution for a portion of the model, often due to Python control flow that depends on tensor values rather than shapes",
+        "An error thrown when a model has too many layers to compile",
+        "The moment torch.compile finishes compiling and switches to fast mode"
+      ],
+      "answer": 1,
+      "explain": "A graph break happens when torch.compile can't trace through a section of code cleanly — commonly data-dependent control flow — so it falls back to eager mode for that part. The model still runs correctly, just without the speedup there."
+    }
+  ]
+}

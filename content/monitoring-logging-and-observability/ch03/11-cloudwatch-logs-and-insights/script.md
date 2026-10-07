@@ -1,0 +1,21 @@
+# Script — CloudWatch Logs & Insights
+
+## Segment 1 (title)
+
+Alarms tell you a metric crossed a line. They don't tell you which specific checkout request failed or what exception it threw — for that you need CloudWatch Logs, AWS's log storage service, and its purpose-built query language, Logs Insights, which is the subject of this entire lesson.
+
+## Segment 2 (steps)
+
+CloudWatch Logs organizes everything into log groups, typically one per application or service, and log streams within each group, one per source instance or task. If checkout runs as an ECS service with six running tasks, that's one log group and at least six log streams, with the awslogs driver shipping container stdout and stderr straight in — no application code required to get logs flowing. Each log group also carries its own retention setting and metric filters.
+
+## Segment 3 (code)
+
+Logs Insights is its own query language — not SQL, not KQL, its own syntax. This query finds checkout's slowest requests in the last hour: fields picks which columns to show, filter narrows to the checkout log stream and to requests over two seconds, sort orders results slowest first, and limit caps the result at twenty rows.
+
+## Segment 4 (code)
+
+Swap filter-and-sort for stats to aggregate instead of list individual rows — this groups rows into five-minute buckets and computes an average duration and request count per bucket, functionally the exact same shape as the KQL summarize-by-bin pattern from Chapter 2, just AWS's own syntax for the same underlying idea.
+
+## Segment 5 (outro)
+
+A CloudWatch alarm says when something went wrong. A Logs Insights query against that same window, down to the message field on the specific slow requests, says which requests and why. Next up, lesson twelve: X-Ray and distributed tracing, for following one request across every service it touched.

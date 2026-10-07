@@ -1,0 +1,21 @@
+# Script — LoRA, in Depth
+
+## Segment 1 (title)
+
+PEFT freezes most of the model and trains a small number of added parameters instead. This lesson goes inside the most widely used method for doing that: LoRA, Low-Rank Adaptation, from Hu and colleagues' 2021 paper.
+
+## Segment 2 (code)
+
+The bet is that the useful update to a weight matrix doesn't need full rank — it can be approximated by two much smaller matrices, A and B, whose inner dimension r is the rank. For r equals sixteen on a 4096 by 4096 matrix, that's about 131,000 trainable parameters instead of nearly 17 million. The original weight never changes; only A and B get gradients.
+
+## Segment 3 (steps)
+
+Two numbers control this. Rank sets the adapter's capacity — higher r means more expressive power, at the cost of more trainable parameters, typically somewhere from 8 to 64. Alpha scales how strongly the adapter's output affects the result relative to the frozen weights, and a common starting point is setting alpha to roughly twice the rank. Target modules decide which weight matrices get an adapter at all — usually the query and value projections first.
+
+## Segment 4 (code)
+
+After training, you can either keep the adapter separate — cheap to store, and many task-specific adapters can share one frozen base model — or merge it directly into the base weights with merge_and_unload, producing a single standalone checkpoint with no runtime overhead.
+
+## Segment 5 (outro)
+
+LoRA gets close to full fine-tuning quality for moderate shifts, with dramatically lower memory, though it can underperform full fine-tuning when the task demands absorbing a very large amount of new information. Up next: shrinking the frozen base weights too, with 4-bit quantization — QLoRA.

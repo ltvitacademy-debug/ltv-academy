@@ -38,12 +38,23 @@ You configure these two ways:
 1. **On a group, row, or column** — switch the Grouping pane to
    **Advanced** mode, select the group, and set **Visibility** →
    **Hidden** and **ToggleItem** on its Tablix Member properties.
+
+   ![Row Groups panel header's dropdown menu open, with Advanced Mode checked, exposing the (Static) and (Details) tablix member rows beneath it.](/courses/ssrs/ch06/26-drilldown-reports/grouping-pane-advanced-mode.png)
+   *Advanced mode turns the Grouping pane's plain group list into selectable tablix members.*
+
+   With the group selected — **(Details)** here — its own **Tablix
+   Member** properties appear in the Properties pane, and that's where
+   you set **Hidden** and **ToggleItem** directly:
+
+   ![Tablix Member properties pane with the Details row group selected, the Visibility section expanded showing Hidden set to False, and the ToggleItem dropdown open listing the report's text boxes.](/courses/ssrs/ch06/26-drilldown-reports/expand-collapse-config-hidden-toggle-item-with-numbers.png)
+   *Hidden and ToggleItem live right in the Visibility section of that group's properties.*
+
 2. **On a standalone report item** (a whole table, chart, or rectangle)
    — right-click it, choose **Properties**, and set the same two
    options on the **Visibility** tab.
 
-![Tablix Properties dialog's Visibility tab: Hide selected, with the toggle checkbox and a Textbox1 toggle target chosen from a list of textboxes.](/courses/ssrs/ch06/26-drilldown-reports/expand-collapse-report-table.png)
-*The Visibility tab: Hide selected, toggled by a chosen text box.*
+   ![Tablix Properties dialog's Visibility tab: Hide selected, with the toggle checkbox and a Textbox1 toggle target chosen from a list of textboxes.](/courses/ssrs/ch06/26-drilldown-reports/expand-collapse-report-table.png)
+   *The Visibility tab: Hide selected, toggled by a chosen text box.*
 
 ## The containing-scope rule
 

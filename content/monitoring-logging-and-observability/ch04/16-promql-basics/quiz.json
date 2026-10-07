@@ -1,0 +1,60 @@
+{
+  "lesson": "promql-basics",
+  "questions": [
+    {
+      "q": "What does the query `checkout_requests_total{status=\"failed\"}[5m]` return?",
+      "options": [
+        "An instant vector with just the latest value",
+        "A range vector — every sample over the last 5 minutes for series matching that label",
+        "A single number representing the 5-minute average",
+        "An error, because range vectors can't use label matchers"
+      ],
+      "answer": 1,
+      "explain": "Square-bracket duration syntax like [5m] turns the selector into a range vector: every sample over that window for series matching the metric name and label filter, not just the latest value."
+    },
+    {
+      "q": "Why do you apply rate() to a counter instead of graphing it directly?",
+      "options": [
+        "Prometheus doesn't allow graphing counters directly at all",
+        "A counter's raw value only ever climbs, so rate() converts it into a meaningful per-second rate of change",
+        "rate() is required to make a metric scrapeable",
+        "Gauges require rate() but counters don't"
+      ],
+      "answer": 1,
+      "explain": "A counter only increases, so its absolute value isn't informative on its own. rate() calculates the per-second average rate of increase over a time window, which is what you actually want to see or alert on."
+    },
+    {
+      "q": "What's the difference between rate() and irate()?",
+      "options": [
+        "They are identical; irate() is just a deprecated alias",
+        "irate() only works on gauges, rate() only works on counters",
+        "rate() averages over the whole window; irate() uses only the last two data points, making it more responsive but noisier",
+        "irate() can only be used inside histogram_quantile()"
+      ],
+      "answer": 2,
+      "explain": "rate() smooths over the entire range vector, which is better for alert thresholds. irate() reacts to only the last two samples, making it more responsive to spikes on a live dashboard but noisier for alerting."
+    },
+    {
+      "q": "What does `histogram_quantile(0.95, rate(checkout_duration_seconds_bucket[5m]))` calculate?",
+      "options": [
+        "The total number of checkout requests in the last 5 minutes",
+        "The duration under which 95% of checkout requests completed, over the last 5 minutes",
+        "The average checkout duration across all time",
+        "Whether exactly 95% of requests succeeded"
+      ],
+      "answer": 1,
+      "explain": "histogram_quantile() estimates a percentile from a histogram metric's bucket counts. Here it's asking: what duration did 95% of checkout requests finish under, based on the last 5 minutes of bucketed observations?"
+    },
+    {
+      "q": "What does `sum(rate(checkout_requests_total{status=\"failed\"}[5m])) by (status)` do that a plain `rate(...)` query doesn't?",
+      "options": [
+        "It filters out all successful requests permanently from the TSDB",
+        "It adds up every matching time series (e.g. across pods) while keeping them grouped by the status label",
+        "It converts the counter into a gauge",
+        "It changes the scrape interval for that metric"
+      ],
+      "answer": 1,
+      "explain": "sum by (status) aggregates across other labels (like per-pod instance labels) but preserves the status grouping, turning a noisy per-pod view into one clean line per status."
+    }
+  ]
+}

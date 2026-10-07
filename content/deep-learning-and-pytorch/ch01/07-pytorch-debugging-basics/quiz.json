@@ -1,0 +1,60 @@
+{
+  "lesson": "pytorch-debugging-basics",
+  "questions": [
+    {
+      "q": "A matmul raises 'mat1 and mat2 shapes cannot be multiplied (32x10 and 20x5)'. What does this tell you?",
+      "options": [
+        "The GPU ran out of memory",
+        "The two tensors' inner dimensions (10 and 20) don't match, which matrix multiplication requires; the fix is upstream, in how one of the tensors was built",
+        "The tensors are on different devices",
+        "The batch size is too large for the model"
+      ],
+      "answer": 1,
+      "explain": "Matrix multiplication (m, n) @ (n, p) requires the shared inner dimension to match. Here 10 != 20, so PyTorch refuses the operation and reports exactly which shapes it tried to combine."
+    },
+    {
+      "q": "Why is a NaN loss often harder to debug than a shape-mismatch error?",
+      "options": [
+        "NaN losses never occur in practice",
+        "PyTorch silently ignores NaN losses",
+        "The code doesn't crash immediately at the cause; the stack trace, if any, points to a later symptom rather than the actual source of the divergence",
+        "NaN losses only happen on CPU, never GPU"
+      ],
+      "answer": 2,
+      "explain": "Unlike a shape mismatch, which raises immediately at the offending line, a NaN loss is a symptom that can propagate silently for several steps before something downstream finally errors, obscuring the real cause (e.g. too-high learning rate, log(0), division by zero)."
+    },
+    {
+      "q": "What is a practical way to catch a NaN loss as soon as it appears, rather than discovering it much later?",
+      "options": [
+        "Wait for training to finish and check the final loss value",
+        "Check with torch.isnan(loss) immediately after computing the loss each step, and raise or log as soon as it's detected",
+        "Switch the model to model.eval() mode",
+        "Reduce the batch size to 1"
+      ],
+      "answer": 1,
+      "explain": "Checking torch.isnan(loss) right after it's computed converts a confusing eventual crash into an immediate, localized signal pointing at the exact step where training diverged."
+    },
+    {
+      "q": "Why are print(tensor.shape) and assert statements described as high-value debugging tools in PyTorch?",
+      "options": [
+        "They are required by PyTorch's API to run any model",
+        "They are cheap, immediate ways to confirm your assumptions about shapes, dtypes, and devices, catching problems right where they occur instead of letting them propagate deeper",
+        "They automatically fix shape mismatches",
+        "They replace the need for a loss function"
+      ],
+      "answer": 1,
+      "explain": "Printing shapes and asserting expectations let you verify what you believe to be true about a tensor at the exact point it matters, surfacing a wrong assumption immediately rather than several layers downstream."
+    },
+    {
+      "q": "According to the pre-flight debugging checklist, what should you check if a model trained with dropout performs oddly at inference time?",
+      "options": [
+        "Whether the learning rate was too low",
+        "Whether the model is in the correct mode — model.train() vs. model.eval() — since dropout and batch norm behave differently in each",
+        "Whether the dataset was shuffled",
+        "Whether num_workers was set correctly"
+      ],
+      "answer": 1,
+      "explain": "Layers like dropout and batch norm change behavior between training and evaluation mode. Odd inference behavior after training often traces back to forgetting to switch the model into eval mode."
+    }
+  ]
+}

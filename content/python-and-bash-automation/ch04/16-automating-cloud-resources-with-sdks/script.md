@@ -1,0 +1,21 @@
+# Script — Automating Cloud Resources With SDKs
+
+## Segment 1 (title)
+
+Northbridge Retail's cloud bill keeps creeping up, and a lot of it is waste — EBS volumes left behind after an instance was terminated, old snapshots nobody deletes. You could clean this up with raw REST calls, but AWS ships an official SDK that does the hard parts for you. This lesson uses boto3 to find and remove exactly that kind of waste.
+
+## Segment 2 (steps)
+
+Everything you'd otherwise hand-roll with requests, boto3 already does. Authentication is resolved automatically from environment variables, a credentials file, or an IAM role, so there's no manual request signing. Throttled calls retry with backoff on their own. And instead of writing a custom next-token loop for every single list operation, every one of them gets the same paginator helper.
+
+## Segment 3 (code)
+
+An EBS volume sitting in the available state is attached to nothing and still billing Northbridge for storage no instance is using. describe_volumes with a status filter finds exactly those, and that filter runs on AWS's side, not by downloading every volume in the account and checking its status in Python one by one.
+
+## Segment 4 (code)
+
+Snapshots don't come back in one call the way volumes often do, so this loops over a paginator instead of a single response, letting boto3 handle every page behind the scenes. Anything older than the thirty-day cutoff gets tagged pending-deletion rather than deleted immediately — giving Northbridge's infrastructure team a chance to review the list before anything actually disappears.
+
+## Segment 5 (outro)
+
+An SDK like boto3 hands you authentication, retries, and pagination so you're not rebuilding them against raw endpoints. List with a filter or paginator, tag what looks unused, and delete only after review. Next up, lesson seventeen: reacting to events pushed to you instead of always pulling data yourself.

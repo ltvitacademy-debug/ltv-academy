@@ -1,0 +1,60 @@
+{
+  "lesson": "implementing-ppo-from-scratch",
+  "questions": [
+    {
+      "q": "Why do many PPO implementations share early layers between the actor and critic networks?",
+      "options": [
+        "Because the actor and critic must always have the exact same output shape",
+        "Because both are usually processing the same underlying state representation, so a shared trunk with separate output heads is efficient",
+        "Because sharing layers is required to compute the clipped objective",
+        "Because PyTorch does not support two separate networks"
+      ],
+      "answer": 1,
+      "explain": "Since the actor and critic both take the state as input, sharing early feature-extraction layers and splitting into separate actor and critic heads is a common, efficient design."
+    },
+    {
+      "q": "In the rollout collection step, why are log_probs and values detached before being stored?",
+      "options": [
+        "They don't need to be detached; gradients should flow through them later",
+        "Because they are collected under the current policy purely as data to be reused later, not to backpropagate through the original forward pass that generated them",
+        "Because the environment requires detached tensors",
+        "Because the critic network does not use gradients at all"
+      ],
+      "answer": 1,
+      "explain": "The stored log_probs and values represent the data-collecting policy's outputs; gradients for training happen later during the update step, on freshly recomputed values, not through the original rollout computation graph."
+    },
+    {
+      "q": "Why does the training loop run multiple epochs over the same collected rollout before discarding it?",
+      "options": [
+        "Because the environment requires repeated episodes",
+        "Because PPO's clipping mechanism makes it safe to extract several gradient updates from one on-policy batch before it becomes too stale",
+        "Because a single epoch would cause a runtime error",
+        "Because multiple epochs reduce the size of the replay buffer"
+      ],
+      "answer": 1,
+      "explain": "The clipped objective bounds how much the policy can drift during repeated updates on the same data, which is what makes reusing one rollout for multiple epochs both safe and sample-efficient."
+    },
+    {
+      "q": "Where does the Generalized Advantage Estimation computation fit into the four-step PPO loop?",
+      "options": [
+        "It happens after the clipped updates are applied",
+        "It happens between collecting the rollout and running the clipped minibatch updates, producing the advantages and returns the updates need",
+        "It replaces the rollout collection step entirely",
+        "It is only used once, before any training begins"
+      ],
+      "answer": 1,
+      "explain": "GAE is computed on the freshly collected rollout's rewards and values, producing advantages and returns that are then consumed by the clipped objective during the multiple update epochs."
+    },
+    {
+      "q": "What happens to a rollout after the multiple epochs of updates finish?",
+      "options": [
+        "It is kept and appended to for the rest of training",
+        "It is discarded, since it was collected on-policy under the pre-update model, and a fresh rollout is collected with the updated model",
+        "It is converted into a Q-table",
+        "It is used to retrain the replay buffer from DQN"
+      ],
+      "answer": 1,
+      "explain": "Because PPO is an on-policy algorithm, data collected under an older policy becomes stale after updates; the loop discards it and gathers new experience with the newly updated model."
+    }
+  ]
+}

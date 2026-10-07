@@ -1,0 +1,60 @@
+{
+  "lesson": "profiling-a-training-run",
+  "questions": [
+    {
+      "q": "What does torch.profiler.profile actually record during a training loop?",
+      "options": [
+        "Only the final loss value at the end of training",
+        "CPU and/or CUDA activity for each operation that runs inside the profiled block",
+        "The contents of every tensor in the model",
+        "Only GPU memory usage, nothing related to timing"
+      ],
+      "answer": 1,
+      "explain": "With activities set to ProfilerActivity.CPU and/or ProfilerActivity.CUDA, the profiler records timing information for every operation that executes inside the `with profile(...)` block."
+    },
+    {
+      "q": "What is the purpose of calling prof.step() at the end of each training iteration?",
+      "options": [
+        "It triggers the optimizer's step() call automatically",
+        "It marks a step boundary for the profiler, which more advanced scheduling features rely on",
+        "It saves a model checkpoint",
+        "It is required for torch.autocast to work correctly"
+      ],
+      "answer": 1,
+      "explain": "prof.step() tells the profiler that one iteration has completed, which is what enables features like scheduled warmup/active/skip windows to behave correctly."
+    },
+    {
+      "q": "In a profiler report, what does a row with very high cuda_time_total but low cpu_time most likely indicate?",
+      "options": [
+        "A bug in the profiler itself",
+        "The operation is compute-bound on the GPU, which is where tools like mixed precision and torch.compile help most",
+        "The GPU is idle and waiting for data",
+        "The operation never actually ran"
+      ],
+      "answer": 1,
+      "explain": "High CUDA time means the GPU is genuinely busy executing that operation — a compute-bound workload, which is exactly the scenario where mixed precision or torch.compile deliver real speedups."
+    },
+    {
+      "q": "A profile shows low GPU utilization with large idle gaps between training steps, while CPU time dominates. What does this pattern usually point to?",
+      "options": [
+        "The model's matrix multiplications are too slow",
+        "A data-loading bottleneck — e.g. too few DataLoader workers or slow per-sample preprocessing starving the GPU",
+        "torch.compile has not been applied yet",
+        "The GPU driver is outdated"
+      ],
+      "answer": 1,
+      "explain": "When the GPU repeatedly finishes a step and then sits idle waiting for the next batch, the bottleneck is typically in data loading or preprocessing, not in the model's compute — and no amount of mixed precision or compilation fixes that."
+    },
+    {
+      "q": "What does tensorboard_trace_handler let you do with profiler output?",
+      "options": [
+        "Automatically fix detected bottlenecks without any code changes",
+        "Export a timeline trace that can be opened in TensorBoard, showing which operation ran on which stream and where gaps occur",
+        "Convert the model to ONNX format",
+        "Disable CUDA profiling entirely"
+      ],
+      "answer": 1,
+      "explain": "Passing on_trace_ready=tensorboard_trace_handler(...) writes a trace file viewable in TensorBoard, giving a timeline view rather than just the aggregated key_averages() table."
+    }
+  ]
+}

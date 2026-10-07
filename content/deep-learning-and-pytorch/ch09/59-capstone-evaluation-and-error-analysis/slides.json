@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Deep Learning & PyTorch · Chapter 9",
+    "titlePlain": "Evaluation & ",
+    "titleEmphasis": "Error Analysis",
+    "titleSuffix": "",
+    "subtitle": "Lesson 59 · Capstone: Train and Evaluate a Small Transformer"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three ways to judge the model",
+    "titlePlain": "Quantitative, ",
+    "titleEmphasis": "qualitative",
+    "titleSuffix": ", honest",
+    "steps": [
+      { "label": "Perplexity", "sub": "Held-out loss, exp() of it" },
+      { "label": "Generated Samples", "sub": "Greedy, top-k, top-p" },
+      { "label": "Loss-Gap Reading", "sub": "Overfitting vs. healthy, Ch.8" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Held-out loss -> perplexity",
+    "code": "@torch.no_grad()\ndef evaluate(model, loader, device):\n    model.eval()\n    total_loss, total_tokens = 0.0, 0\n    for x, y in loader:\n        x, y = x.to(device), y.to(device)\n        logits = model(x)\n        loss = F.cross_entropy(\n            logits.view(-1, logits.size(-1)),\n            y.view(-1), reduction=\"sum\")\n        total_loss += loss.item()\n        total_tokens += y.numel()\n    model.train()\n    return total_loss / total_tokens",
+    "caption": "Perplexity = exp(average loss) -- lower means less confused."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Read the text, not just the number",
+    "code": "@torch.no_grad()\ndef generate(model, idx, max_new_tokens, top_k=None):\n    model.eval()\n    for _ in range(max_new_tokens):\n        logits = model(idx[:, -model.block_size:])[:, -1, :]\n        if top_k is not None:\n            v, _ = torch.topk(logits, top_k)\n            logits[logits < v[:, [-1]]] = float(\"-inf\")\n        probs = F.softmax(logits, dim=-1)\n        next_id = torch.multinomial(probs, 1)\n        idx = torch.cat([idx, next_id], dim=1)\n    return idx",
+    "caption": "Greedy loops and repeats; top-k and top-p read more natural."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The train/validation gap",
+    "titlePlain": "What the ",
+    "titleEmphasis": "gap",
+    "titleSuffix": " is telling you",
+    "steps": [
+      { "label": "Healthy", "sub": "Both fall together, val slightly above" },
+      { "label": "Overfitting", "sub": "Val flattens or rises, train keeps falling" },
+      { "label": "Underfitting", "sub": "Both stuck flat -- check lr/config" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 60",
+    "titlePlain": "Write-Up & ",
+    "titleEmphasis": "Next Steps",
+    "titleSuffix": "",
+    "subtitle": "Documenting the project and where to go from here."
+  }
+]

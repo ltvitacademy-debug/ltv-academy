@@ -1,0 +1,25 @@
+# Script — Robust Bash Scripts
+
+## Segment 1 (title)
+
+Northbridge Retail's deployment script used to "work" — until a release directory didn't exist, a copy step silently failed, and the old version kept running while the team thought the new one was live. Nobody saw an error, because bash doesn't treat most failures as fatal by default. This lesson fixes that.
+
+## Segment 2 (code)
+
+Start every serious script with `set -euo pipefail`. The `-e` flag exits the script immediately on any non-zero exit code. `-u` turns a reference to an unset variable into an error instead of silently substituting an empty string. And `pipefail` makes a pipeline fail if any stage of it fails, not just the last one. This one line is what would have stopped Northbridge's broken deploy in its tracks.
+
+## Segment 3 (code)
+
+Always quote your variables. An unquoted variable gets word-split and glob-expanded by bash, so a filename with a space in it turns into multiple arguments instead of one. Quoting it, like `"$RELEASE_NOTE"`, keeps it as a single value no matter what's inside it. Quote every expansion unless you have a specific reason not to.
+
+## Segment 4 (steps)
+
+To recap those three flags: `-e` exits on any failure, `-u` catches unset variables before they cause silent bugs, and `pipefail` makes sure a failing command in the middle of a pipe doesn't get masked by a successful one at the end.
+
+## Segment 5 (code)
+
+`trap` registers a function that runs automatically when the script exits, whether that's a normal exit or a crash under `set -e`. Northbridge uses this to release a deploy lock file no matter how the script ends. Without it, a failed deploy would leave the lock behind forever, blocking every deploy after it.
+
+## Segment 6 (outro)
+
+Shebang, `set -euo pipefail`, quoted variables, meaningful exit codes, and a `trap` for cleanup — that's a script that fails loudly instead of failing silently. Next up, Lesson 2: turning these same patterns into reusable functions and a shared library.

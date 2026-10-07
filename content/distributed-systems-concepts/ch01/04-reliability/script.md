@@ -1,0 +1,21 @@
+# Script — Reliability
+
+## Segment 1 (title)
+
+Lesson two previewed a distinction between availability and reliability. This lesson draws it out fully — they get used interchangeably, but they answer two different questions.
+
+## Segment 2 (steps)
+
+Availability asks whether a system is usable right now, a snapshot. Reliability asks whether it keeps working correctly over a stretch of time, including through failures. They can disagree: a server that crashes and restarts every four minutes is up most instants you'd check it, so it looks highly available. But a user mid-checkout gets dropped every few minutes, which is a bad track record — available in the moment, not reliable over time.
+
+## Segment 3 (steps)
+
+Reliability depends on fault tolerance, a system producing correct results even when some components fail, and the main mechanism behind that is replication — keeping synchronized copies of data on different machines, so if one fails, another already has the same correct state. But that redundancy has to be complete. Three database replicas don't help if every write still passes through one unreplicated coordinator — that coordinator is a single point of failure for everything behind it.
+
+## Segment 4 (steps)
+
+When something does fail anyway, graceful degradation is the fallback: lose some functionality, not all of it. If a store's recommendation engine goes down, people should still be able to search, add to cart, and check out. Losing the "customers also bought" sidebar is a far better outcome than the whole site going down.
+
+## Segment 5 (outro)
+
+Availability is a snapshot; reliability is a track record, built on fault tolerance, replication, and degradation that fails gracefully. Up next, lesson five: latency and throughput.

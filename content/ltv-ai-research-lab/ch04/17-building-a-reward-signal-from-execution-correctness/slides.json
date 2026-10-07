@@ -1,0 +1,53 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "LTV AI Research Lab · Chapter 4",
+    "titlePlain": "Building a Reward Signal From ",
+    "titleEmphasis": "Execution Correctness",
+    "titleSuffix": "",
+    "subtitle": "Lesson 17 · Project 3 — RLHF for a Database Assistant"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "No human rater needed",
+    "titlePlain": "Run the query, ",
+    "titleEmphasis": "compare the rows",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Execute against a sandbox", "sub": "Northwind or AdventureWorks2012" },
+      { "label": "Compare result sets", "sub": "order-insensitive row comparison" },
+      { "label": "Programmatic reward", "sub": "no human or learned reward model" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Safety rule, first — non-negotiable",
+    "code": "DISALLOWED = (\"UPDATE\",\n  \"DELETE\", \"DROP\", \"INSERT\",\n  \"ALTER\", \"TRUNCATE\")\n\ndef is_safe_select(sql):\n  s = sql.strip().upper()\n  if not s.startswith(\"SELECT\"):\n    return False\n  return not any(k in s\n    for k in DISALLOWED)",
+    "caption": "Destructive statements are rejected before execution, always."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The reward schedule",
+    "code": "if not is_safe_select(sql):\n  return -1.0\ntry:\n  got = run(sql)\nexcept SqlSyntaxError:\n  return -0.3\nif got_set == gold_set:\n  return 1.0\nif got_set & gold_set:\n  return 0.3\nreturn -0.3",
+    "caption": "+1.0 exact match · +0.3 partial · -0.3 wrong/syntax · -1.0 unsafe."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why reject before executing",
+    "titlePlain": "Make the bad outcome ",
+    "titleEmphasis": "unreachable",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "A reward-optimizer finds loopholes", "sub": "penalties alone aren't enough" },
+      { "label": "Structural safety, not just scoring", "sub": "non-SELECT never reaches the database" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 18",
+    "titlePlain": "Running RLHF on the ",
+    "titleEmphasis": "Database Assistant",
+    "titleSuffix": "",
+    "subtitle": "Plugging this reward into TRL's PPOTrainer."
+  }
+]

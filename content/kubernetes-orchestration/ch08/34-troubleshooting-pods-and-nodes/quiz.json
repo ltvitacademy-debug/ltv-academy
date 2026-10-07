@@ -1,0 +1,60 @@
+{
+  "lesson": "troubleshooting-pods-and-nodes",
+  "questions": [
+    {
+      "q": "A checkout Pod has been stuck in `Pending` for ten minutes. What is the correct next step to find out why?",
+      "options": [
+        "kubectl logs the Pod — Pending Pods always have useful logs",
+        "kubectl describe pod the Pod and read the Events section",
+        "Delete the Pod immediately and let the Deployment recreate it",
+        "Restart the entire cluster"
+      ],
+      "answer": 1,
+      "explain": "A Pending Pod hasn't been scheduled yet, so it has no container logs. kubectl describe pod's Events section shows exactly what the scheduler tried and why it couldn't place the Pod (e.g. insufficient resources, an unsatisfied nodeSelector or taint)."
+    },
+    {
+      "q": "A Pod shows `CrashLoopBackOff`. What does that specific status mean, as opposed to `ImagePullBackOff`?",
+      "options": [
+        "The image cannot be downloaded from the registry",
+        "The container successfully starts but then exits, and Kubernetes keeps restarting it with increasing delay between attempts",
+        "The node the Pod is on is out of memory",
+        "The Pod has not been scheduled to any node yet"
+      ],
+      "answer": 1,
+      "explain": "CrashLoopBackOff means the container does start — the image pulled fine — but it exits (crashes or completes) repeatedly, so Kubernetes keeps retrying with exponential backoff. ImagePullBackOff is specifically about the image never successfully pulling in the first place."
+    },
+    {
+      "q": "A container just restarted after being OOMKilled. Which command shows the logs from the failed attempt, not the fresh restart?",
+      "options": [
+        "kubectl logs <pod>",
+        "kubectl logs <pod> --previous",
+        "kubectl describe pod <pod> --logs",
+        "kubectl top pod <pod>"
+      ],
+      "answer": 1,
+      "explain": "kubectl logs without a flag shows the current (restarted) container's logs, which won't contain the crash. --previous retrieves the logs from the prior, terminated instance of the container — where the actual failure was logged."
+    },
+    {
+      "q": "Before patching and rebooting node-03 for maintenance, what is the correct sequence to avoid disrupting running workloads?",
+      "options": [
+        "kubectl delete node node-03, then recreate it after maintenance",
+        "kubectl cordon node-03 to stop new scheduling, then kubectl drain node-03 --ignore-daemonsets to evict existing Pods elsewhere, then patch/reboot, then kubectl uncordon node-03",
+        "Just reboot the node directly — Kubernetes handles everything automatically with no preparation needed",
+        "kubectl taint node-03 maintenance=true, which immediately removes all Pods with no further action needed"
+      ],
+      "answer": 1,
+      "explain": "Cordon prevents new Pods from landing on the node being serviced; drain safely evicts the Pods already there so they reschedule elsewhere; only then is the node safe to take offline. Uncordon returns it to the scheduling pool once maintenance is done."
+    },
+    {
+      "q": "Why does `kubectl drain` require the `--ignore-daemonsets` flag to succeed on a node running DaemonSet Pods?",
+      "options": [
+        "Because DaemonSet Pods cannot be evicted from a node at all; the flag tells drain to skip them rather than fail",
+        "Because DaemonSets always run with root privileges",
+        "Because --ignore-daemonsets deletes the DaemonSet resource entirely",
+        "Because drain cannot run on any node that has a DaemonSet in the cluster"
+      ],
+      "answer": 0,
+      "explain": "DaemonSet Pods are designed to run one copy per node as a matter of their controller's logic, so a normal drain can't meaningfully evict and reschedule them elsewhere. --ignore-daemonsets tells drain to proceed and leave those specific Pods alone rather than error out."
+    }
+  ]
+}

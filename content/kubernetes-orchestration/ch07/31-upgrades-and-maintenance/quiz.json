@@ -1,0 +1,60 @@
+{
+  "lesson": "upgrades-and-maintenance",
+  "questions": [
+    {
+      "q": "On both AKS and EKS, in what order does a cluster upgrade happen?",
+      "options": [
+        "Node pools/groups upgrade first, then the control plane",
+        "The control plane upgrades first, and can run one version ahead of the nodes for a while before they're upgraded",
+        "Everything upgrades simultaneously in a single atomic step",
+        "Only the control plane is ever upgraded; nodes are always replaced with new VMs instead"
+      ],
+      "answer": 1,
+      "explain": "Both platforms upgrade the control plane first, independently of the nodes, enabling a staged rollout rather than an all-at-once cutover."
+    },
+    {
+      "q": "What does draining a node actually do before it's upgraded or removed?",
+      "options": [
+        "Immediately deletes all Pods on the node with no rescheduling",
+        "Cordons the node as unschedulable, then gracefully evicts its Pods so they can reschedule onto other nodes before the node is removed",
+        "Only stops new Pods from being created, but leaves running ones in place indefinitely",
+        "Reboots the node without affecting its Pods"
+      ],
+      "answer": 1,
+      "explain": "A drain marks a node unschedulable and evicts Pods gracefully, giving them a chance to reschedule elsewhere before the node is actually removed — avoiding all Pods on that node dying at once."
+    },
+    {
+      "q": "What does a PodDisruptionBudget with minAvailable: 2 do during a cluster upgrade?",
+      "options": [
+        "It prevents the upgrade from ever running",
+        "It prevents the upgrade process from draining a node if doing so would drop that workload's running replica count below 2",
+        "It guarantees exactly 2 replicas will always exist, even outside of upgrades",
+        "It forces all upgrades to happen within 2 minutes"
+      ],
+      "answer": 1,
+      "explain": "PodDisruptionBudget caps how many replicas can be unavailable during a voluntary disruption like a drain — the upgrade process respects it, pausing rather than violating the budget."
+    },
+    {
+      "q": "Why would Northbridge configure an AKS maintenance window for Saturday mornings rather than letting upgrades apply at any time?",
+      "options": [
+        "AKS requires maintenance windows to be configured before any cluster can run",
+        "It restricts when automatic upgrades are applied to a low-traffic period, reducing the chance an upgrade-related disruption affects customers",
+        "Maintenance windows only affect billing, not upgrade timing",
+        "Saturday mornings are the only time az aks upgrade can be run manually"
+      ],
+      "answer": 1,
+      "explain": "A planned maintenance window restricts automatic upgrades to a chosen time range, letting a team pick a low-traffic period rather than risk disruption during peak hours."
+    },
+    {
+      "q": "What risk does skipping node draining (e.g. just deleting nodes outright) introduce during an upgrade?",
+      "options": [
+        "No risk — Kubernetes always reschedules Pods instantly with zero downtime regardless",
+        "Every Pod on that node is terminated at once with no guarantee enough capacity exists elsewhere to absorb them immediately",
+        "It only affects StatefulSets, never Deployments",
+        "It makes the upgrade run faster with no other consequence"
+      ],
+      "answer": 1,
+      "explain": "Without draining, Pods on a removed node are simply lost at once rather than gracefully evicted and rescheduled, risking a capacity crunch or a visible outage."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "automatic-mixed-precision-training",
+  "questions": [
+    {
+      "q": "What does torch.autocast do during a training step?",
+      "options": [
+        "Converts every tensor in the model permanently to float16",
+        "Runs eligible ops like matmuls and convolutions in reduced precision while keeping sensitive ops like softmax and loss reductions in FP32",
+        "Replaces the optimizer with a faster low-precision version",
+        "Only affects tensors created on the CPU"
+      ],
+      "answer": 1,
+      "explain": "autocast is a context manager that selectively casts operations: numerically safe, compute-heavy ops run in reduced precision, while sensitive reductions stay in FP32 for stability."
+    },
+    {
+      "q": "Why is a GradScaler typically used with FP16 autocast but not with BF16 autocast?",
+      "options": [
+        "GradScaler only works with FP16 tensors by API restriction",
+        "FP16's narrow range makes small gradients prone to underflowing to zero; BF16's FP32-like range mostly avoids that",
+        "BF16 does not support backward() at all",
+        "GradScaler is deprecated and should never be used"
+      ],
+      "answer": 1,
+      "explain": "FP16 gradients can underflow to zero before reaching the optimizer, so GradScaler scales the loss up before backward and down before the step. BF16 keeps FP32's exponent range, so this is rarely needed."
+    },
+    {
+      "q": "In the standard AMP + GradScaler training step, what is the correct order of calls?",
+      "options": [
+        "optimizer.step() -> scaler.scale(loss).backward() -> scaler.update()",
+        "scaler.scale(loss).backward() -> scaler.step(optimizer) -> scaler.update()",
+        "scaler.update() -> loss.backward() -> optimizer.step()",
+        "loss.backward() -> scaler.update() -> scaler.step(optimizer)"
+      ],
+      "answer": 1,
+      "explain": "The scaled loss is backpropagated first, then scaler.step() unscales gradients and calls the optimizer (skipping the step if it finds inf/nan), then scaler.update() adjusts the scale factor for the next iteration."
+    },
+    {
+      "q": "What is the main practical difference between torch.cuda.amp.autocast() and the newer torch.autocast(device_type=...)?",
+      "options": [
+        "The newer API is device-agnostic (CUDA, CPU, etc.) via a device_type argument, while the legacy API is CUDA-only",
+        "The newer API no longer supports float16",
+        "The legacy API runs faster on all hardware",
+        "They behave identically with no difference at all"
+      ],
+      "answer": 0,
+      "explain": "torch.cuda.amp.autocast() is the older, CUDA-specific form. torch.autocast(device_type=\"cuda\", dtype=...) is the unified, device-agnostic API that PyTorch now recommends, though the legacy form still works."
+    },
+    {
+      "q": "If scaler.step(optimizer) detects an inf or nan in the gradients for that iteration, what happens?",
+      "options": [
+        "Training crashes immediately with a RuntimeError",
+        "The optimizer step is skipped for that iteration and the scale factor is adjusted",
+        "The model weights are reset to their initial values",
+        "Nothing — inf and nan gradients are applied normally"
+      ],
+      "answer": 1,
+      "explain": "GradScaler monitors for inf/nan gradients (a sign the current scale factor is too aggressive). When found, it skips that optimizer step and reduces the scale factor rather than corrupting the weights."
+    }
+  ]
+}

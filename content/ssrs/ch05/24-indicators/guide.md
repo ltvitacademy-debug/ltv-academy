@@ -47,6 +47,16 @@ numeric) range of the data. By default, ranges are even percentage
 slices of the detected min/max — a five-icon set gets five 20%-wide
 bands — but every range is fully editable.
 
+![The built-in Shape indicator icon set — colored circles, a triangle, and a diamond, the exact style used in the traffic-light table above.](/courses/ssrs/ch05/24-indicators/indicator-shape-icons.gif)
+*The Shape set — the same red/yellow/green circles driving the table above come from here.*
+
+Here's the same underlying mechanism with a different icon set —
+**Directional** arrows instead of Shape circles — bound to a real
+report:
+
+![The same sales-by-territory table as before, but with blue up/down/flat arrow icons in the Indicator column instead of colored circles.](/courses/ssrs/ch05/24-indicators/indicator-blue-arrows.gif)
+*Swap the icon set and the story the column tells changes — trend, not status.*
+
 ## Indicators vs. gauges vs. sparklines — pick the right one
 
 - Need to show **one value**, simply, at small size? Use an

@@ -1,0 +1,21 @@
+# Script — Early Stopping & Validation Strategy
+
+## Segment 1 (title)
+
+Training longer isn't always better — past a certain point, a model starts fitting noise in the training set instead of learning anything new. Early stopping is the fix: stop once validation performance stops improving, and keep the best version you saw along the way.
+
+## Segment 2 (steps)
+
+Three splits do three different jobs. The training set is what the weights actually update on. The validation set checks generalization after every epoch and drives decisions like when to stop. The test set gets touched exactly once, at the very end, for a final number you can trust — because the moment you tune anything based on it, it stops being unbiased.
+
+## Segment 3 (code)
+
+PyTorch has no built-in early-stopping class, so this is a pattern you build into the loop yourself. Each epoch, validation loss either improves — reset the patience counter and save a new best checkpoint — or it doesn't, and the counter ticks up. Once that counter hits patience, training stops.
+
+## Segment 4 (steps)
+
+Patience set too low stops training on ordinary validation noise before the model has really converged. Set too high, it wastes compute riding out a plateau that was never going anywhere. Something in the five-to-fifteen-epoch range is a reasonable starting point for most small to medium runs.
+
+## Segment 5 (outro)
+
+Without this pattern, validation loss often bottoms out and creeps back up while training loss keeps falling — so the checkpoint you deploy is rarely the last epoch. Up next, lesson twenty-two: hyperparameter search basics, for choosing patience, learning rate, and batch size more systematically.

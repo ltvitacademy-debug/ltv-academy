@@ -1,0 +1,60 @@
+{
+  "lesson": "the-transformer-block",
+  "questions": [
+    {
+      "q": "In the order a decoder-style transformer block actually runs, what comes immediately after the first LayerNorm?",
+      "options": [
+        "The feed-forward sublayer",
+        "A residual add straight to the output",
+        "Causal self-attention",
+        "A second LayerNorm"
+      ],
+      "answer": 2,
+      "explain": "The block is LayerNorm, then causal self-attention, then a residual add, then LayerNorm again, then feed-forward, then a residual add."
+    },
+    {
+      "q": "In `x = x + attn(norm1(x))`, what makes this call self-attention rather than cross-attention?",
+      "options": [
+        "The `attn_mask` argument is set to `None`",
+        "The same normalized tensor is passed as query, key, and value",
+        "`nn.MultiheadAttention` is only capable of self-attention",
+        "The residual add happens after the call"
+      ],
+      "answer": 1,
+      "explain": "Self-attention means Q, K, and V all come from the same source tensor. Here `h = norm1(x)` is passed as all three arguments to `self.attn(h, h, h, ...)`."
+    },
+    {
+      "q": "A `TransformerBlock` receives input of shape (B, T, d_model). What shape does it return?",
+      "options": [
+        "(B, T, d_model) — unchanged",
+        "(B, T, d_ff)",
+        "(B, T * num_heads, d_model)",
+        "(B, d_model) — pooled over the sequence"
+      ],
+      "answer": 0,
+      "explain": "Neither sublayer nor the residual adds change the shape. Output is always (B, T, d_model), which is exactly what lets you stack blocks."
+    },
+    {
+      "q": "Why does the block's `forward` method accept an `attn_mask` parameter instead of building the causal mask itself?",
+      "options": [
+        "PyTorch requires every module to take a mask argument",
+        "The mask depends on the full sequence length and is built once by the model that owns the block, then passed to every block",
+        "Attention masks are only used during evaluation, never training",
+        "It's a bug — the mask should be built inside the block"
+      ],
+      "answer": 1,
+      "explain": "The mask depends on T and is the same for every block in the stack, so it's built once (in Lesson 40's TinyGPT) and passed into each block's forward call."
+    },
+    {
+      "q": "Why is `need_weights=False` passed to `self.attn(...)` in the block's forward pass?",
+      "options": [
+        "It disables attention entirely for faster debugging",
+        "It's required for causal masking to work",
+        "It skips computing and returning the full attention-weight matrix, which isn't needed for training or inference",
+        "It reduces the number of attention heads used"
+      ],
+      "answer": 2,
+      "explain": "`nn.MultiheadAttention` can return attention weights for inspection, but computing and returning them has a cost. Setting `need_weights=False` skips that when you only need the output."
+    }
+  ]
+}

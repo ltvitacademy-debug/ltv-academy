@@ -1,0 +1,60 @@
+{
+  "lesson": "provisioning-the-kubernetes-cluster",
+  "questions": [
+    {
+      "q": "Why does Northbridge run northbridge-aks-dev and northbridge-aks-prod as two separate clusters instead of one?",
+      "options": [
+        "AKS does not support multiple namespaces on one cluster",
+        "Terraform cannot create two clusters from the same module",
+        "Isolating prod means a noisy or misbehaving dev workload can never starve prod of node capacity",
+        "Azure requires a separate cluster per region"
+      ],
+      "answer": 2,
+      "explain": "northbridge-aks-dev hosts both dev and staging namespaces to save cost; northbridge-aks-prod is fully isolated so production workloads never compete with dev/staging for the same nodes."
+    },
+    {
+      "q": "What VM size and autoscaling range do Northbridge's AKS node pools use?",
+      "options": [
+        "Standard_D4s_v5, autoscaling 2 to 5 nodes",
+        "Standard_B2s, a fixed 3 nodes",
+        "Standard_D4s_v5, autoscaling 10 to 20 nodes",
+        "Standard_F8s, no autoscaling"
+      ],
+      "answer": 0,
+      "explain": "Both the system and user node pools in the azurerm_kubernetes_cluster resource use Standard_D4s_v5 with autoscaling bounded between 2 and 5 nodes."
+    },
+    {
+      "q": "Why does Northbridge split workloads across a system node pool and a separate user node pool?",
+      "options": [
+        "User pools are cheaper per vCPU than system pools",
+        "So application traffic spikes (e.g. a flash sale hitting checkout) scale the user pool without risking the nodes cluster infrastructure like CoreDNS depends on",
+        "System pools cannot run on Standard_D4s_v5 VMs",
+        "Kubernetes requires at least two node pools to schedule any pod"
+      ],
+      "answer": 1,
+      "explain": "The system pool runs cluster components like CoreDNS and the ingress controller; the user pool runs product-catalog and checkout, so scaling under load never touches the nodes the cluster itself relies on."
+    },
+    {
+      "q": "How does northbridgeacr.azurecr.io let AKS pull images without a stored imagePullSecret?",
+      "options": [
+        "The registry is public and requires no authentication at all",
+        "Each pod manifest embeds a base64-encoded password",
+        "An azurerm_role_assignment grants the cluster's kubelet identity the AcrPull role, scoped to the registry",
+        "ACR automatically trusts any AKS cluster in the same Azure tenant"
+      ],
+      "answer": 2,
+      "explain": "The kubelet identity (the node's managed identity) is granted the built-in AcrPull role on the ACR resource via a Terraform role assignment, so nodes authenticate without any stored credential."
+    },
+    {
+      "q": "Which components typically run in the system node pool rather than the user node pool?",
+      "options": [
+        "The checkout and product-catalog application pods",
+        "CoreDNS, metrics-server, and the ingress controller's control-plane pods",
+        "The PaymentPro payment processor",
+        "The Terraform state blob"
+      ],
+      "answer": 1,
+      "explain": "The system node pool hosts cluster infrastructure components; application workloads like checkout and product-catalog run on the user node pool instead."
+    }
+  ]
+}

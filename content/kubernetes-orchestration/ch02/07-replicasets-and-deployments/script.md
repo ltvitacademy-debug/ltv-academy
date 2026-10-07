@@ -1,0 +1,21 @@
+# Script — ReplicaSets & Deployments
+
+## Segment 1 (title)
+
+Last lesson ended with a warning: a bare Pod has nothing watching over it. This lesson introduces the two objects that fix that, and explains why you'll write Deployment YAML constantly, and ReplicaSet YAML almost never.
+
+## Segment 2 (steps)
+
+A ReplicaSet's entire job is simple: watch for Pods matching a label selector, and keep exactly that many running, creating or deleting Pods as needed. But here's the gap — change the image in a ReplicaSet's template, and nothing happens to Pods already running. A ReplicaSet counts and replaces failed Pods; it has no concept of rolling out a new version.
+
+## Segment 3 (code)
+
+That's exactly what Deployment closes. A Deployment doesn't manage Pods directly — it manages ReplicaSets. Change the image and reapply, and the Deployment creates a brand new ReplicaSet with the new template, scales it up, and scales the old one down. Checking get rs on a healthy Deployment shows the current ReplicaSet at full strength and old ones kept around at zero for rollback history.
+
+## Segment 4 (steps)
+
+You can scale a Deployment two ways. kubectl scale is quick but imperative — it leaves no record. Editing replicas in the YAML and reapplying is what Northbridge's platform team actually does day to day, because it's reviewable and reproducible, the same reasoning from the declarative model lesson.
+
+## Segment 5 (outro)
+
+You create Deployments, and they create and own ReplicaSets automatically underneath you — that's the interface you actually use. Next up, lesson eight: exactly what happens during that ReplicaSet swap, and how to roll it back.

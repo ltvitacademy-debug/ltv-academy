@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced LLM Training & ML Systems · Chapter 2",
+    "titlePlain": "Deduplication ",
+    "titleEmphasis": "at Scale",
+    "titleSuffix": "",
+    "subtitle": "Lesson 10 · Tokenization & Data Pipelines at Scale"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Not just an efficiency problem",
+    "titlePlain": "Why duplicates ",
+    "titleEmphasis": "hurt quality",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Memorization", "sub": "duplicated text gets reproduced verbatim more often" },
+      { "label": "Contamination risk", "sub": "repeated near-benchmark content inflates eval scores" },
+      { "label": "Wasted compute", "sub": "GPU time re-learning the same content repeatedly" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Exact deduplication: cheap, but misses near-duplicates",
+    "code": "import hashlib\n\nseen_hashes = set()\n\ndef is_exact_duplicate(text: str) -> bool:\n    normalized = \" \".join(text.split()).lower()\n    h = hashlib.sha256(normalized.encode(\"utf-8\")).hexdigest()\n    if h in seen_hashes:\n        return True\n    seen_hashes.add(h)\n    return False",
+    "caption": "Catches byte-for-byte duplicates, but not a reformatted or lightly-edited copy."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Near-dedup at scale: MinHash + LSH",
+    "code": "from datasketch import MinHash, MinHashLSH\n\ndef minhash_for(text, num_perm=128):\n    mh = MinHash(num_perm=num_perm)\n    for shingle in to_shingles(text):\n        mh.update(shingle.encode(\"utf-8\"))\n    return mh\n\nlsh = MinHashLSH(threshold=0.8, num_perm=128)\nfor doc_id, text in enumerate(corpus):\n    mh = minhash_for(text)\n    if not lsh.query(mh):\n        lsh.insert(str(doc_id), mh)",
+    "caption": "LSH buckets documents so only likely-similar pairs are ever compared -- avoiding O(n^2)."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 11",
+    "titlePlain": "Quality Filtering & ",
+    "titleEmphasis": "Toxicity Filtering",
+    "titleSuffix": "",
+    "subtitle": "The next cleaning pass after duplicates are gone."
+  }
+]

@@ -1,0 +1,21 @@
+# Script — Threat Modeling Basics
+
+## Segment 1 (title)
+
+Shifting security left means asking what could go wrong before any code exists. Threat modeling is the structured way to ask that. This lesson uses Northbridge Retail's new checkout service as the example — it accepts payment details, which makes it exactly the kind of system worth threat modeling before it's built.
+
+## Segment 2 (steps)
+
+A threat model answers four questions in order. What are we building — that's a diagram of the system. What can go wrong — a list of threats against that diagram. What are we going to do about it — prioritized mitigations. And did we do a good enough job — a review, repeated as the system changes. You can't threat model a system you haven't diagrammed.
+
+## Segment 3 (steps)
+
+Draw the checkout flow as boxes and arrows: browser, checkout service, payment API, database. Anywhere the level of trust changes, draw a dashed line — that's a trust boundary, between the public internet and Northbridge's network, or between checkout and the payment processor, or between a regular session and an admin tool. Every arrow crossing one of those lines is where an attacker looks first.
+
+## Segment 4 (steps)
+
+STRIDE gives six categories to check at each boundary: spoofing, tampering, repudiation, information disclosure, denial of service, and elevation of privilege. Applied to checkout: could someone spoof the payment processor's responses, tamper with request data in transit, or find a bug that lets a regular customer reach an admin-only endpoint? Each finding gets a mitigation, prioritized by how exposed it is — a flaw in the public payment flow outranks one in an internal dashboard.
+
+## Segment 5 (outro)
+
+Threat modeling is cheapest at design time, before architecture is locked in — the same shift-left argument from lesson one, applied to one specific practice. Next up, lesson three: the OWASP Top 10 for DevOps teams.

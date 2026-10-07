@@ -1,0 +1,21 @@
+# Script — JSON in Python
+
+## Segment 1 (title)
+
+Northbridge Retail's warehouse exports its nightly inventory feed as JSON, and the shipping carrier's API hands back JSON too. Before you automate anything around either one, you need to be fluent in moving data between JSON and Python. That's exactly what the built in json module does.
+
+## Segment 2 (code)
+
+The module boils down to four functions. Load and loads read JSON in — load from an open file, loads from a string you already have in memory. Dump and dumps write Python data back out the same way — dump to a file, dumps to a string. Once you know which direction you're moving data, picking the right function is automatic.
+
+## Segment 3 (code)
+
+Once it's parsed, a JSON object becomes a Python dict and a JSON array becomes a list, nested exactly as deep as the original data. Walking into a carrier's tracking response means chaining square bracket lookups: destination, then city, or events, then the last item, then its code. The structure on screen and the structure in your Python variable look identical, which makes nested JSON much less intimidating once you've seen it done a few times.
+
+## Segment 4 (steps)
+
+Real feeds are messy, and not every record has every field. Looking up a missing key directly raises a KeyError and can crash an entire overnight batch over one bad record. Calling get with a default instead returns something sensible — like "unknown" — and lets the rest of the batch keep running. That one habit is the difference between a script that logs a warning on a bad record and a script that needs a 2am page to restart it.
+
+## Segment 5 (outro)
+
+JSON objects and arrays map onto dicts and lists, four functions move data in every direction, and get with a default keeps one malformed record from taking down a whole job. Next up, lesson eleven: YAML, the format Northbridge actually prefers for its own configuration files.

@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "DevOps Capstone · Chapter 4",
+    "titlePlain": "Deploying to Kubernetes ",
+    "titleEmphasis": "Automatically",
+    "titleSuffix": "",
+    "subtitle": "Lesson 11 · Phase 3: Pipeline & Deployment"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Runs the moment CI passes on main",
+    "titlePlain": "The ",
+    "titleEmphasis": "deploy-dev",
+    "titleSuffix": " job",
+    "steps": [
+      { "label": "Azure login via OIDC", "sub": "no stored client secret, ever" },
+      { "label": "Set AKS context", "sub": "northbridge-aks-dev, rg-northbridge-dev" },
+      { "label": "helm upgrade --install", "sub": "idempotent — same command every deploy" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "OIDC auth, then deploy",
+    "code": "deploy-dev:\n  needs: build-test-scan\n  if: github.ref == 'refs/heads/main'\n  permissions:\n    id-token: write\n  steps:\n    - uses: azure/login@v2\n      with:\n        client-id: ${{ secrets.AZURE_CLIENT_ID }}\n        tenant-id: ${{ secrets.AZURE_TENANT_ID }}\n\n    - uses: azure/aks-set-context@v4\n      with:\n        resource-group: rg-northbridge-dev\n        cluster-name: northbridge-aks-dev\n\n    - run: |\n        helm upgrade --install product-catalog ./charts/product-catalog \\\n          --namespace northbridge-dev \\\n          --values ./charts/product-catalog/values-dev.yaml \\\n          --set image.tag=${{ github.sha }}",
+    "caption": "No password, no client secret — a federated OIDC token stands in for both"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "One chart, three environment overlays",
+    "titlePlain": "Helm chart ",
+    "titleEmphasis": "layout",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "values-dev / staging / prod.yaml", "sub": "per-environment replica counts and HPA bounds" },
+      { "label": "checkout: min 3 / max 15 replicas", "sub": "sized for flash-sale spikes" },
+      { "label": "No secrets in values files", "sub": "External Secrets Operator syncs from Key Vault at runtime" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 12",
+    "titlePlain": "Environment Promotion ",
+    "titleEmphasis": "& Approvals",
+    "titleSuffix": "",
+    "subtitle": "Dev deploys on every merge. Staging and prod take a deliberate decision."
+  }
+]

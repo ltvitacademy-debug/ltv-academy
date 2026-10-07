@@ -1,0 +1,25 @@
+# Script — Audit Logging & Evidence
+
+## Segment 1 (title)
+
+Last lesson ended with a question: once a compliance control runs, where does the proof that it ran actually live? This lesson answers that with audit logging — the record of who did what, when, that every compliance framework and every incident investigation depends on.
+
+## Segment 2 (steps)
+
+An audit log is narrower than a debug log. It records which identity performed which operation, on which resource, and when. For Northbridge Retail, that means every role grant, firewall change, or secret read has a durable record naming who was responsible — not just that something changed.
+
+## Segment 3 (screenshot)
+
+Azure captures this automatically through the Activity Log. Every resource exposes an Activity log item right next to Overview, with nothing to configure to start getting entries.
+
+## Segment 4 (screenshot)
+
+Opening it shows a filterable timeline — each row names the operation, the resource it touched, its status, and the identity behind it. That's the raw material both an incident investigation and a compliance review start from.
+
+## Segment 5 (steps)
+
+Azure keeps Activity Log entries for ninety days by default, which is nowhere near long enough for most compliance obligations. Northbridge Retail's platform team configures a diagnostic setting that forwards these logs to a workspace with retention that actually matches PCI-DSS, and locks them down so nobody can quietly edit history after the fact.
+
+## Segment 6 (outro)
+
+PCI-DSS Requirement 10 specifically demands tracking access to cardholder data — this is how Northbridge Retail proves it, day after day, not just on audit day. Next up, lesson twenty-seven: the vulnerability management process.

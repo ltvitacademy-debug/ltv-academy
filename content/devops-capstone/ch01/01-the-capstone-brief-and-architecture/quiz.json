@@ -1,0 +1,60 @@
+{
+  "lesson": "the-capstone-brief-and-architecture",
+  "questions": [
+    {
+      "q": "What is Northbridge Retail's checkout service built with, and why does its load differ from product-catalog's?",
+      "options": [
+        "Node.js and Express; its load is steady because product browsing never spikes",
+        "Python and FastAPI; its load is spiky because of flash sales driving order submission",
+        "Go and gRPC; its load is steady because it only runs nightly batch jobs",
+        "Java and Spring; its load is spiky because of scheduled Postgres backups"
+      ],
+      "answer": 1,
+      "explain": "Checkout is a Python 3.12 + FastAPI service. Because flash sales drive bursts of order submissions, its traffic is much higher and spikier than product-catalog's steady read traffic."
+    },
+    {
+      "q": "Which external dependencies does the checkout service call when processing an order?",
+      "options": [
+        "Only the Postgres database",
+        "PaymentPro for payment and an existing legacy inventory service to check stock",
+        "A second copy of product-catalog running in the same namespace",
+        "Azure Key Vault directly for every request"
+      ],
+      "answer": 1,
+      "explain": "Checkout calls out to PaymentPro (OAuth2 client-credentials) for payment and to an already-running legacy inventory service to confirm stock, then hands the order to a shipping carrier via webhook."
+    },
+    {
+      "q": "In the end-to-end architecture, what happens immediately after a PR is squash-merged to main?",
+      "options": [
+        "Nothing — a human must manually trigger the dev deploy",
+        "The change auto-deploys straight to production",
+        "An image is built and pushed to the shared registry, then automatically deployed to the northbridge-dev namespace",
+        "The change is automatically promoted to staging without a tag"
+      ],
+      "answer": 2,
+      "explain": "Merging to main triggers CI to push an image (tagged with the git SHA) to the shared ACR and then helm upgrade --install into the northbridge-dev namespace — automatically, with no tag or approval required."
+    },
+    {
+      "q": "What triggers promotion to the staging namespace, and what gates promotion from staging to production?",
+      "options": [
+        "A tag push triggers staging; prod requires a manual approval gate (GitHub Environments, 1 required reviewer)",
+        "Staging and prod are both fully automatic with no gates",
+        "A merge to main triggers staging; a tag push triggers prod with no approval needed",
+        "Both staging and prod require a manual approval gate"
+      ],
+      "answer": 0,
+      "explain": "A maintainer cutting a semver tag (e.g. v1.4.0) auto-deploys to staging. Moving from staging to prod requires a manual approval gate enforced via a GitHub Environments protection rule with one required reviewer."
+    },
+    {
+      "q": "How are monitoring and security positioned relative to the four capstone phases?",
+      "options": [
+        "They are the subject of Phase 1 only, before any infrastructure exists",
+        "They are skipped entirely in this capstone to keep scope manageable",
+        "They are layered across every environment and pipeline stage, not a separate add-on phase at the end",
+        "They only apply to the production namespace, not dev or staging"
+      ],
+      "answer": 2,
+      "explain": "Prometheus/Grafana/Alertmanager monitor all three namespaces, and Trivy, gitleaks, Checkov, Key Vault, and GitHub OIDC protect every stage of the pipeline — they run underneath the whole system, not as a final bolt-on."
+    }
+  ]
+}

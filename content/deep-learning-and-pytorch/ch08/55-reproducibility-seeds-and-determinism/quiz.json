@@ -1,0 +1,60 @@
+{
+  "lesson": "reproducibility-seeds-and-determinism",
+  "questions": [
+    {
+      "q": "Why is calling only torch.manual_seed(42) often insufficient for full reproducibility?",
+      "options": [
+        "torch.manual_seed only works on CPU tensors",
+        "Python's random module and NumPy maintain their own independent random states that are not seeded by torch.manual_seed",
+        "torch.manual_seed must be called once per epoch, not once at the start",
+        "torch.manual_seed is deprecated and no longer functions"
+      ],
+      "answer": 1,
+      "explain": "random, NumPy, and PyTorch each have separate RNG state. If your data pipeline uses random or numpy for shuffling or augmentation, those need to be seeded independently of torch.manual_seed."
+    },
+    {
+      "q": "What does torch.use_deterministic_algorithms(True) do, and what does it cost?",
+      "options": [
+        "It speeds up training by skipping unnecessary gradient computations, at no cost",
+        "It forces PyTorch to only use operations with deterministic implementations (erroring on ones without), at the cost of potentially slower execution than non-deterministic alternatives",
+        "It disables all randomness in the dataset, with no performance impact",
+        "It only affects model saving and loading, not training speed"
+      ],
+      "answer": 1,
+      "explain": "Some GPU operations have faster implementations that sacrifice determinism. Forcing deterministic algorithms avoids that run-to-run variation but can mean falling back to slower, deterministic kernels."
+    },
+    {
+      "q": "A DataLoader uses num_workers=4 and a dataset whose __getitem__ applies random augmentation. The main process is seeded correctly, but results still aren't reproducible. What is the likely cause?",
+      "options": [
+        "num_workers must always be 0 for any reproducibility",
+        "Each worker process has its own random state that is not automatically seeded by the main process's seed; a worker_init_fn is needed",
+        "DataLoader does not support reproducibility under any configuration",
+        "The dataset's __getitem__ method cannot use randomness at all"
+      ],
+      "answer": 1,
+      "explain": "Worker processes spawned by DataLoader get independent random states. Without a worker_init_fn to seed each one explicitly, their augmentation randomness varies between runs even if the main process is seeded."
+    },
+    {
+      "q": "What does 'reproducible' realistically mean in practice, according to this lesson?",
+      "options": [
+        "Bit-for-bit identical results are guaranteed across any GPU model or CUDA version",
+        "The same seeded run on the same machine with the same software versions produces the same result every time — not a universal guarantee across different hardware",
+        "Reproducibility is impossible to achieve in deep learning",
+        "Reproducibility only applies to CPU-only training"
+      ],
+      "answer": 1,
+      "explain": "Exact bit-for-bit reproducibility is not guaranteed across different GPU models, CUDA versions, or PyTorch versions, since hardware can implement operations slightly differently. On the same machine and software stack, though, a seeded run reliably reproduces."
+    },
+    {
+      "q": "Besides torch.manual_seed and torch.cuda.manual_seed_all, which cuDNN-related settings are commonly used together to reduce GPU-side run-to-run variation?",
+      "options": [
+        "torch.backends.cudnn.deterministic = True and torch.backends.cudnn.benchmark = False",
+        "torch.backends.cudnn.deterministic = False and torch.backends.cudnn.benchmark = True",
+        "torch.cuda.empty_cache() called every step",
+        "torch.set_grad_enabled(False) for the entire training loop"
+      ],
+      "answer": 0,
+      "explain": "Setting cudnn.deterministic to True and cudnn.benchmark to False, alongside torch.use_deterministic_algorithms(True), reduces the chance that cuDNN picks a faster but non-deterministic algorithm for an operation."
+    }
+  ]
+}

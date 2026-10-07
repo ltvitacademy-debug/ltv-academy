@@ -1,0 +1,21 @@
+# Script — Log Analytics & KQL
+
+## Segment 1 (title)
+
+Log Analytics is where Azure Monitor Logs actually live, and KQL — Kusto Query Language — is how you get anything useful out of them. If metrics told you latency spiked, Log Analytics is where you find out why, by querying the raw request and exception data that led up to it.
+
+## Segment 2 (screenshot)
+
+Every query runs against a workspace — the container holding tables like AppRequests, AppExceptions, and AzureActivity, depending on what's connected. Before you write anything, you confirm the scope at the top of the screen: which workspace, and optionally which specific resource within it, you're actually querying. Get the scope wrong and your query simply won't see the data you expect.
+
+## Segment 3 (code)
+
+KQL reads left to right, piping rows through a chain of operators that each narrow or reshape the data. This query filters AppRequests down to the checkout endpoint in the last hour, summarizes average duration and request count into five-minute buckets, and renders it as a time chart — four lines, each one building on the last. Drop the summarize line and add a filter on Success equals false, and you've got the specific failing requests instead of an aggregate.
+
+## Segment 4 (screenshot)
+
+You don't have to render a chart inside the query itself — the results pane lets you flip any tabular output into a chart after the fact, without touching the query, which is handy for a quick look before deciding whether a query is worth pinning to a dashboard permanently.
+
+## Segment 5 (outro)
+
+Once a metric spike shows up in Metrics Explorer, the next move is almost always a KQL query against the request and exception tables for that exact window. Metrics tell you when; KQL tells you what. Next up, lesson eight: Application Insights, which builds this exact workflow right into the portal.

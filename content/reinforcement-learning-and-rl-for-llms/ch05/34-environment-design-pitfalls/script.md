@@ -1,0 +1,21 @@
+# Script — Environment Design Pitfalls
+
+## Segment 1 (title)
+
+Lesson 34, closing out Chapter 5. You've seen the Gymnasium API, built a custom environment, vectorized it, shaped a reward, and watched one go wrong. This lesson pulls it together into a practical checklist.
+
+## Segment 2 (steps)
+
+Three issues account for most "my agent won't learn" problems. Sparse rewards, often chosen by accident rather than deliberately. Non-stationarity, where the environment itself changes underneath a policy that assumes it's fixed. And partial observability, where the current observation simply doesn't contain what the task needs to act optimally.
+
+## Segment 3 (steps)
+
+Non-stationary and partially observable are different problems with different symptoms. Non-stationary means other agents are learning too, or the dynamics drift over time independent of your agent's actions — standard RL theory assumes a fixed process, and that assumption breaks. Partial observability means the task implicitly needs memory the current frame doesn't have — no amount of extra training fixes that, you need an architectural change like stacking recent observations or adding recurrence.
+
+## Segment 4 (steps)
+
+Before spending compute on a new environment, walk through four questions. Is there a safe way to give partial credit before the terminal reward? Can you find a reward-hacking exploit yourself before training does? Does anything drift for reasons outside the agent's control? And does the observation actually contain everything needed, or does the task need memory?
+
+## Segment 5 (outro)
+
+Catching one of these in review is far cheaper than discovering it after a training run converges to something confusing. That closes Chapter 5. Chapter 6, Reward Modeling, starts next lesson with why LLMs need a learned reward model in the first place.

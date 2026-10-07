@@ -1,0 +1,25 @@
+# Script — Designing for Failure
+
+## Segment 1 (title)
+
+Lesson ten covered the mechanics of detecting and containing failure once it happens. This lesson is about the philosophy that should shape a system before failure happens at all: treating failure as the normal condition of a distributed system, not a rare exception.
+
+## Segment 2 (steps)
+
+A single machine fails rarely enough that most software can assume it works. A system made of hundreds or thousands of components doesn't get that luxury — across enough nodes, something is failing somewhere, essentially all the time. Designing for failure means starting from that assumption instead of bolting it on afterward. The question changes from "what if this fails" to "this will fail — what happens then."
+
+## Segment 3 (steps)
+
+Redundancy only protects you if it's actually independent. A backup database replica that shares the same power circuit, the same network switch, or the same region as the primary isn't real redundancy — it'll fail at the same moment as whatever it was supposed to protect against. Real redundancy means finding the dependency the two copies secretly share, and removing it.
+
+## Segment 4 (steps)
+
+The bulkhead pattern is named after a ship's watertight compartments. Give each dependency its own separate pool of threads or connections instead of a shared one, and when one dependency fails and fills up its own pool, only requests that need it are affected — everything else keeps flowing. Without that isolation, one struggling dependency can exhaust a shared pool and take the whole system down with it.
+
+## Segment 5 (steps)
+
+If failure's going to happen anyway, make it happen on your schedule. Chaos engineering means deliberately injecting failure — killing an instance, adding latency, cutting off a dependency — to verify your redundancy and bulkheads actually work. Netflix popularized this with Chaos Monkey, which randomly kills live instances to force systems to tolerate that by default.
+
+## Segment 6 (outro)
+
+Assume failure is constant, remove hidden shared dependencies, isolate failures with bulkheads, and verify it all with deliberate chaos testing. Next, lesson fourteen: backpressure and rate limiting, the mechanisms that keep an overloaded system from collapsing in the first place.

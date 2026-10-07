@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Infrastructure as Code with Terraform · Chapter 5",
+    "titlePlain": "Networking & Virtual Machines on ",
+    "titleEmphasis": "Azure",
+    "titleSuffix": "",
+    "subtitle": "Lesson 22 · Deploying on Azure"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Virtual network and subnet",
+    "code": "resource \"azurerm_virtual_network\" \"main\" {\n  name                = \"vnet-northbridge-prod\"\n  address_space       = [\"10.20.0.0/16\"]\n  location            = azurerm_resource_group.main.location\n  resource_group_name = azurerm_resource_group.main.name\n}\n\nresource \"azurerm_subnet\" \"order_processing\" {\n  name                 = \"snet-order-processing\"\n  resource_group_name  = azurerm_resource_group.main.name\n  virtual_network_name = azurerm_virtual_network.main.name\n  address_prefixes     = [\"10.20.1.0/24\"]\n}",
+    "caption": "A /16 VNet, carved into a /24 subnet for the order-processing tier."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Network security group and association",
+    "code": "resource \"azurerm_network_security_group\" \"order_processing\" {\n  name                = \"nsg-order-processing\"\n  location            = azurerm_resource_group.main.location\n  resource_group_name = azurerm_resource_group.main.name\n\n  security_rule {\n    name                       = \"allow-ssh-from-bastion\"\n    priority                   = 100\n    direction                  = \"Inbound\"\n    access                     = \"Allow\"\n    protocol                   = \"Tcp\"\n    source_port_range          = \"*\"\n    destination_port_range     = \"22\"\n    source_address_prefix      = \"10.20.100.0/24\"\n    destination_address_prefix = \"*\"\n  }\n}\n\nresource \"azurerm_subnet_network_security_group_association\" \"order_processing\" {\n  subnet_id                 = azurerm_subnet.order_processing.id\n  network_security_group_id = azurerm_network_security_group.order_processing.id\n}",
+    "caption": "Only SSH from the bastion subnet is allowed in -- everything else is denied by default."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Network interface and the Linux VM",
+    "code": "resource \"azurerm_network_interface\" \"order_processing\" {\n  name                = \"nic-order-processing-01\"\n  location            = azurerm_resource_group.main.location\n  resource_group_name = azurerm_resource_group.main.name\n\n  ip_configuration {\n    name                          = \"internal\"\n    subnet_id                     = azurerm_subnet.order_processing.id\n    private_ip_address_allocation = \"Dynamic\"\n  }\n}\n\nresource \"azurerm_linux_virtual_machine\" \"order_processing\" {\n  name                   = \"vm-order-processing-01\"\n  resource_group_name    = azurerm_resource_group.main.name\n  location               = azurerm_resource_group.main.location\n  size                   = \"Standard_D2s_v5\"\n  admin_username         = \"azureuser\"\n  network_interface_ids  = [azurerm_network_interface.order_processing.id]\n\n  admin_ssh_key {\n    username   = \"azureuser\"\n    public_key = file(\"~/.ssh/id_rsa.pub\")\n  }\n\n  os_disk {\n    caching              = \"ReadWrite\"\n    storage_account_type = \"Standard_LRS\"\n  }\n\n  source_image_reference {\n    publisher = \"Canonical\"\n    offer     = \"0001-com-ubuntu-server-jammy\"\n    sku       = \"22_04-lts-gen2\"\n    version   = \"latest\"\n  }\n}",
+    "caption": "network_interface_ids is the link between the VM and everything built before it."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "One dependency graph, six resources",
+    "titlePlain": "The build ",
+    "titleEmphasis": "order",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "VNet → subnet", "sub": "address space, then a carved-out range for this VM tier" },
+      { "label": "NSG → association", "sub": "firewall rules, then attaching them to the subnet" },
+      { "label": "NIC → VM", "sub": "a network interface in the subnet, then the VM that uses it" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 23",
+    "titlePlain": "App Services, Storage & Key Vault on ",
+    "titleEmphasis": "Azure",
+    "titleSuffix": "",
+    "subtitle": "Provisioning Northbridge's storefront API and its secrets."
+  }
+]

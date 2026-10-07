@@ -1,0 +1,60 @@
+{
+  "lesson": "lora-in-depth",
+  "questions": [
+    {
+      "q": "What is LoRA's core bet about the weight update needed to adapt a pretrained model?",
+      "options": [
+        "That the update must be full rank to be useful",
+        "That the useful update can be well-approximated by the product of two much smaller, low-rank matrices instead of a full-rank matrix",
+        "That no weight update is needed at all for fine-tuning",
+        "That only bias terms need to be updated"
+      ],
+      "answer": 1,
+      "explain": "LoRA assumes the task-adaptation update to a weight matrix can be approximated by a low-rank decomposition (B @ A), requiring far fewer trainable parameters than the full matrix."
+    },
+    {
+      "q": "During a LoRA-adapted forward pass, what happens to the original frozen weight matrix `W`?",
+      "options": [
+        "W is deleted and replaced entirely by B @ A",
+        "W is used unchanged in the forward computation, summed with the scaled low-rank update; only A and B receive gradients",
+        "W is updated using the same gradients as A and B",
+        "W is converted to 4-bit precision automatically"
+      ],
+      "answer": 1,
+      "explain": "The frozen weight W is still used in the forward pass (h = x@W^T + (alpha/r)*x@A^T@B^T), but it never receives gradients -- only the added low-rank matrices A and B are trained."
+    },
+    {
+      "q": "What does increasing the rank `r` in a LoRA configuration do?",
+      "options": [
+        "It decreases the adapter's capacity and reduces parameter count",
+        "It increases the adapter's representational capacity, at the cost of more trainable parameters (though still small relative to the full model)",
+        "It has no effect on the model at all",
+        "It automatically merges the adapter into the base model"
+      ],
+      "answer": 1,
+      "explain": "Rank r is the bottleneck dimension of the LoRA matrices; a higher r gives the adapter more capacity to represent complex updates but increases the (still comparatively tiny) number of trainable parameters."
+    },
+    {
+      "q": "Which modules does LoRA's original paper find capture most of the useful adaptation signal, making them the most common default `target_modules`?",
+      "options": [
+        "The embedding layer only",
+        "The query and value attention projections (q_proj, v_proj)",
+        "The final classification head only",
+        "The tokenizer's special tokens"
+      ],
+      "answer": 1,
+      "explain": "The original LoRA paper found that applying low-rank adapters to the query and value projections in attention captured most of the useful adaptation at a good parameter-efficiency trade-off, making them the common default target."
+    },
+    {
+      "q": "What does `merge_and_unload()` do after LoRA training?",
+      "options": [
+        "It discards the trained adapter without saving anything",
+        "It computes W_new = W + (alpha/r) * B @ A for each adapted matrix, producing a standalone model with no PEFT wrapper and no runtime adapter overhead",
+        "It converts the adapter to a different rank",
+        "It retrains the base model from scratch using the adapter as initialization"
+      ],
+      "answer": 1,
+      "explain": "merge_and_unload() folds the low-rank update directly into the base weights, producing a single regular model checkpoint rather than keeping the base model and adapter as separate pieces."
+    }
+  ]
+}

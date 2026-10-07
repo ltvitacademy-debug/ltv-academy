@@ -1,0 +1,21 @@
+# Script — Security Incident Response
+
+## Segment 1 (title)
+
+Every control, scan, and audit log in this course reduces risk — none of it reduces risk to zero. This lesson covers what happens when something still gets through: a confirmed incident, structured using NIST Special Publication 800-61, the standard framework for incident response.
+
+## Segment 2 (steps)
+
+The lifecycle has four phases. Preparation is everything done before an incident: monitoring, a response plan, a team that's rehearsed it. Detection and Analysis is recognizing something's actually wrong and how severe it is. Containment, Eradication, and Recovery stops the spread, removes the root cause, and restores normal operation. Post-Incident Activity is the retrospective afterward.
+
+## Segment 3 (steps)
+
+This isn't a one-way path. Post-Incident Activity's entire purpose is feeding back into Preparation — a lesson from one incident becomes a new monitoring rule or runbook step before the next one happens. Skip that phase because the fire's already out, and you throw away the part that makes the next incident cheaper to handle.
+
+## Segment 4 (steps)
+
+Picture an alert firing on unusual read volume against Northbridge Retail's payments database, from an identity that normally only writes. Detection confirms it's anomalous and classifies it high-severity immediately because it touches payment data. The team disables the credentials, finds a leaked API key was the entry point, rotates it, and restores service with a freshly scoped identity.
+
+## Segment 5 (outro)
+
+The retrospective documents how the key leaked and produces a new secrets-scanning rule and a tuned alert — both feeding straight back into preparation for next time. That closes chapter six. Next up, the capstone: securing a pipeline end to end.

@@ -1,0 +1,60 @@
+{
+  "lesson": "dataparallel-vs-distributeddataparallel",
+  "questions": [
+    {
+      "q": "How does nn.DataParallel execute a forward pass across multiple GPUs?",
+      "options": [
+        "It launches a separate OS process per GPU with its own model copy",
+        "Within a single Python process, it splits the batch across GPUs, runs forward in separate threads, then gathers outputs back to one GPU",
+        "It requires torchrun to launch multiple independent scripts",
+        "It trains each GPU on a completely different model architecture"
+      ],
+      "answer": 1,
+      "explain": "DataParallel operates within one process: it scatters the batch across GPUs, runs the forward pass per-GPU in threads, and gathers the results back onto one GPU to compute the loss — all GIL-bound."
+    },
+    {
+      "q": "What mechanism does DistributedDataParallel use to keep every process's model in sync after backward()?",
+      "options": [
+        "A central parameter server that broadcasts updated weights to each process",
+        "An all-reduce operation that averages gradients across all processes so every copy applies an identical update",
+        "Each process randomly selects whether to apply its own gradients",
+        "DDP does not keep processes in sync; each trains an independent model"
+      ],
+      "answer": 1,
+      "explain": "After each process computes gradients independently on its own data shard, DDP performs an all-reduce to average gradients across all processes, ensuring every model replica applies the same update."
+    },
+    {
+      "q": "Why does DDP need a DistributedSampler instead of a plain shuffling DataLoader?",
+      "options": [
+        "DistributedSampler makes training run on the CPU instead of the GPU",
+        "It ensures each process (rank) receives a distinct, non-overlapping shard of the dataset instead of every process seeing the same data",
+        "It is required only for debugging purposes and has no effect on correctness",
+        "It replaces the need for init_process_group entirely"
+      ],
+      "answer": 1,
+      "explain": "Since each DDP process runs its own independent training loop, DistributedSampler partitions the dataset by rank and world_size so no two processes redundantly process the same samples."
+    },
+    {
+      "q": "According to PyTorch's own guidance, which approach is generally recommended for multi-GPU training today, and why?",
+      "options": [
+        "DataParallel, because it requires the least code",
+        "DistributedDataParallel, because it avoids GIL contention and the scatter/gather overhead that limits DataParallel's scaling",
+        "Neither — multi-GPU training should always use a third-party library instead",
+        "DataParallel, because it synchronizes gradients more precisely than DDP"
+      ],
+      "answer": 1,
+      "explain": "PyTorch's documentation recommends DDP over DataParallel even on a single multi-GPU machine, since DDP's multi-process design avoids the single-process GIL bottleneck and repeated scatter/gather overhead."
+    },
+    {
+      "q": "What is torchrun's role in a DDP training setup?",
+      "options": [
+        "It compiles the model graph for faster execution",
+        "It launches one process per GPU and sets environment variables like RANK, LOCAL_RANK, and WORLD_SIZE that init_process_group reads",
+        "It automatically converts the model to mixed precision",
+        "It replaces the need for a DistributedSampler"
+      ],
+      "answer": 1,
+      "explain": "torchrun is the launcher for distributed training: it starts the specified number of processes (e.g., one per GPU) and populates the rank/world-size environment variables that dist.init_process_group() relies on."
+    }
+  ]
+}

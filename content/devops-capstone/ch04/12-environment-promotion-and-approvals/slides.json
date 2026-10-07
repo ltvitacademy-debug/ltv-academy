@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "DevOps Capstone · Chapter 4",
+    "titlePlain": "Environment Promotion ",
+    "titleEmphasis": "& Approvals",
+    "titleSuffix": "",
+    "subtitle": "Lesson 12 · Phase 3: Pipeline & Deployment"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Dev deploys constantly. Staging and prod don't.",
+    "titlePlain": "Promotion is ",
+    "titleEmphasis": "tag-based",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "git tag v1.5.0 && git push", "sub": "a maintainer's deliberate decision to ship" },
+      { "label": "Staging deploys automatically", "sub": "northbridge-staging, on the shared northbridge-aks-dev cluster" },
+      { "label": "Prod waits", "sub": "nothing moves until a reviewer approves" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "One line is the whole gate",
+    "code": "deploy-prod:\n  needs: deploy-staging\n  environment: production   # 1 required reviewer\n  steps:\n    - uses: azure/login@v2\n      with:\n        client-id: ${{ secrets.AZURE_CLIENT_ID }}\n\n    - uses: azure/aks-set-context@v4\n      with:\n        resource-group: rg-northbridge-prod\n        cluster-name: northbridge-aks-prod\n\n    - run: |\n        helm upgrade --install checkout ./charts/checkout \\\n          --namespace northbridge-prod \\\n          --values ./charts/checkout/values-prod.yaml \\\n          --set image.tag=${{ github.sha }}",
+    "caption": "The job pauses at \"environment: production\" until GitHub records an approval"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "When a promotion goes wrong",
+    "titlePlain": "Two ways to ",
+    "titleEmphasis": "roll back",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "helm rollback checkout 4", "sub": "reverts the whole release to its previous revision, fastest option" },
+      { "label": "Redeploy a known-good SHA", "sub": "helm upgrade --set image.tag=<prior sha>, more deliberate" },
+      { "label": "Both rely on", "sub": "SHA-tagged images and Helm's revision history" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 13",
+    "titlePlain": "The Push-to-Production ",
+    "titleEmphasis": "Demo",
+    "titleSuffix": "",
+    "subtitle": "Watch one real commit travel the whole pipeline, start to finish."
+  }
+]

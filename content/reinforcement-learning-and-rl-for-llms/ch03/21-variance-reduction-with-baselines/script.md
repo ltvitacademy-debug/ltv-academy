@@ -1,0 +1,21 @@
+# Script — Variance Reduction With Baselines
+
+## Segment 1 (title)
+
+The last lesson used the TD error as a lower-variance stand-in for the raw return, without fully justifying why that's allowed. This lesson makes the theory precise: baseline subtraction.
+
+## Segment 2 (code)
+
+Take the policy gradient and subtract any function of state alone, b of s, from the return term. It looks like that should change the gradient. It doesn't — for any b of s that doesn't depend on the action, the extra term contributes exactly zero in expectation.
+
+## Segment 3 (code)
+
+Here's why. Since b of s factors out of the expectation over actions, and the probability-weighted gradient of log-probability simplifies to the gradient of the probability itself, the whole expression becomes b of s times the gradient of the sum of all action probabilities. That sum is always exactly 1, no matter what theta is — so its gradient is zero, and the whole baseline term vanishes.
+
+## Segment 4 (steps)
+
+Any baseline is unbiased, but the best one is b of s equals V of s, which gives exactly the advantage function: Q minus V, how much better an action is than the state's average. That's a lower-variance signal because it strips out whatever part of the return every action would have gotten anyway. And it's exactly what last lesson's TD error was estimating all along.
+
+## Segment 5 (outro)
+
+That closes Chapter 3: a correct gradient, with the variance under control. Chapter 4 starts next lesson with a different question — now that we have a good gradient, how big a step is it actually safe to take with it? Lesson 22: trust region methods.

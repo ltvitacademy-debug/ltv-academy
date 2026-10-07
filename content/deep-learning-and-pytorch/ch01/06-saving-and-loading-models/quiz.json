@@ -1,0 +1,60 @@
+{
+  "lesson": "saving-and-loading-models",
+  "questions": [
+    {
+      "q": "What does model.state_dict() return?",
+      "options": [
+        "An ordered dictionary mapping each layer's name to its learned tensor values, with no class or architecture code",
+        "A compiled binary of the model ready to run without PyTorch",
+        "A list of all the input/output shapes used during training",
+        "The optimizer's hyperparameters only"
+      ],
+      "answer": 0,
+      "explain": "state_dict() returns an OrderedDict of parameter/buffer names to tensors — just the learned numbers, which is why it's portable and the recommended thing to save."
+    },
+    {
+      "q": "Why is saving model.state_dict() preferred over torch.save(model, ...) (saving the whole object)?",
+      "options": [
+        "state_dict() files are always smaller",
+        "The whole-model approach pickles a reference to the class definition, so loading later requires that exact class to be importable in the same way; state_dict only needs the numbers plus an already-constructed model instance",
+        "state_dict() is the only method that works on GPU-trained models",
+        "There is no real difference; both are equally recommended"
+      ],
+      "answer": 1,
+      "explain": "Saving the whole model object ties the checkpoint to your current class definition and import structure, making it fragile to refactors. state_dict avoids this by storing only tensor values, loaded into a model you construct yourself."
+    },
+    {
+      "q": "After loading a trained model's weights for inference, what should you call before running predictions, and why?",
+      "options": [
+        "model.train(), to make sure gradients are enabled",
+        "model.eval(), because layers like dropout and batch norm behave differently in training vs. inference, and skipping this silently changes predictions",
+        "model.reset(), to clear the loaded weights",
+        "Nothing extra is needed; loading already sets the correct mode"
+      ],
+      "answer": 1,
+      "explain": "model.eval() switches layers such as Dropout and BatchNorm into their inference behavior. Forgetting it doesn't raise an error — it just produces worse or inconsistent predictions, making it an easy silent bug."
+    },
+    {
+      "q": "Why would you include the optimizer's state_dict in a training checkpoint, not just the model's?",
+      "options": [
+        "The optimizer's state_dict is required for torch.save to work at all",
+        "Optimizers like Adam track per-parameter running statistics (e.g. momentum); without restoring that state, resuming training restarts those statistics from zero, which can disrupt training",
+        "It makes the checkpoint file smaller",
+        "It is not useful; only the model's state_dict ever matters"
+      ],
+      "answer": 1,
+      "explain": "Stateful optimizers accumulate per-parameter statistics over training. Omitting the optimizer state from a checkpoint means those statistics reset to zero on resume, which can cause a visible disruption in training dynamics."
+    },
+    {
+      "q": "What is required in your code before calling model.load_state_dict(torch.load(\"weights.pt\"))?",
+      "options": [
+        "Nothing; load_state_dict reconstructs the model architecture automatically",
+        "An already-constructed instance of the same model class whose parameter names and shapes match the saved state_dict",
+        "The optimizer must be constructed and trained first",
+        "The GPU must be available"
+      ],
+      "answer": 1,
+      "explain": "load_state_dict only copies tensor values into an existing model's parameters by matching names/shapes — it does not build the architecture, so you must construct the model class yourself first."
+    }
+  ]
+}

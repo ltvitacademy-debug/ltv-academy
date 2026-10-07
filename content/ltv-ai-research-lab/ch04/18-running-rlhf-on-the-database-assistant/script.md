@@ -1,0 +1,25 @@
+# Script — Running RLHF on the Database Assistant
+
+## Segment 1 (title)
+
+With an SFT checkpoint from Lesson 16 and an execution-correctness reward from Lesson 17 in hand, this lesson runs the actual RLHF stage, using Hugging Face TRL's PPOTrainer to push SQL Pete toward queries that execute correctly against Northwind and AdventureWorks2012.
+
+## Segment 2 (steps)
+
+It's worth being precise about the name. The reward here isn't produced by a human rater — it's computed programmatically by executing SQL and comparing result sets. That makes this RLAIF-style: reinforcement learning from automated feedback standing in for a human rater. It's a deliberate simplification for a small lab's budget, not a claim that execution match is equivalent to real human preference.
+
+## Segment 3 (code)
+
+PPOTrainer is set up with a PPOConfig and a policy loaded with a value head, initialized from the sql-pete-sft checkpoint produced in Lesson 16 — RLHF refines an already-reasonable policy, it doesn't start the task from scratch.
+
+## Segment 4 (code)
+
+Each training step generates SQL completions for a batch of natural-language questions, scores every completion with Lesson 17's execution reward function against the sandboxed database, and calls ppo_trainer.step to update the policy toward the higher-reward completions and away from the ones that scored negative.
+
+## Segment 5 (steps)
+
+PPO is the standard choice here because it bounds how far each update can move the policy, keeping training stable and guarding against degenerate outputs that technically maximize a narrow reward but lose general coherence — a real risk when the reward is as narrow as whether a result set matched.
+
+## Segment 6 (outro)
+
+This loop runs for many steps over the training set, producing a final RLHF checkpoint that should, on paper, generate SQL with a higher execution-correctness rate than the SFT-only model it started from. Up next, Lesson 19: evaluating that checkpoint against the SFT-only one, and a specific regression to watch for.

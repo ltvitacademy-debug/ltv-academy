@@ -1,0 +1,19 @@
+## Segment 1 (title)
+
+storefront's workflow is about to need things it can't hardcode into ci.yml — a Docker Hub password to push images, a database connection string for integration tests, a Kubernetes cluster token for deployment. None of that belongs in plain text in a YAML file the whole team can read. This lesson covers exactly where Northbridge Retail actually puts it.
+
+## Segment 2 (screenshot: Settings tab)
+
+GitHub Actions gives you two places to store configuration outside the workflow file itself: secrets, which are encrypted and write-only once saved, and variables, which are plain text but still kept out of the YAML. Both live in the same place — the repository's Settings tab, never the workflow file itself, and never a commit anyone can read.
+
+## Segment 3 (screenshot: secrets and variables page)
+
+Inside Settings, under Secrets and variables, Actions shows two separate tabs. Secrets are encrypted the moment they're saved — nobody, not even a repository admin, can view the value again through the UI afterward, and they're never passed to a workflow triggered by a fork's pull request. Variables sit right next to them, for anything that genuinely isn't sensitive.
+
+## Segment 4 (code: using them)
+
+Once DOCKERHUB_TOKEN is saved as a secret and AWS_REGION as a variable, storefront's workflow reaches them through two expressions — secrets dot name, and vars dot name — both resolved fresh at run time, never written into the file itself. Every single run also gets a free, automatically generated secret, GITHUB_TOKEN, scoped to just that one run.
+
+## Segment 5 (outro)
+
+GitHub automatically masks a secret's exact value anywhere it shows up in a log, replacing it with asterisks — but that's a safety net, not a guarantee, since a step that transforms a secret before printing it can still leak it. Next lesson: making storefront's runs faster with caching, and actually keeping what a build produces as a downloadable artifact.

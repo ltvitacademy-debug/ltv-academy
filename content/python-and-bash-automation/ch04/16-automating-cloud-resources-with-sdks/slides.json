@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python & Bash Automation · Chapter 4",
+    "titlePlain": "Automating Cloud Resources With ",
+    "titleEmphasis": "SDKs",
+    "titleSuffix": "",
+    "subtitle": "Lesson 16 · APIs & Cloud Automation"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why boto3 beats raw REST calls",
+    "titlePlain": "Let the ",
+    "titleEmphasis": "SDK",
+    "titleSuffix": " do the hard parts",
+    "steps": [
+      { "label": "Authentication handled", "sub": "env vars, credentials file, or IAM role -- no manual signing" },
+      { "label": "Retries built in", "sub": "throttled calls back off and retry automatically" },
+      { "label": "Pagination has a helper", "sub": "a paginator replaces a hand-rolled next-token loop" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Finding unattached EBS volumes",
+    "code": "import boto3\n\nec2 = boto3.client(\"ec2\", region_name=\"us-east-1\")\n\nresponse = ec2.describe_volumes(\n    Filters=[{\"Name\": \"status\", \"Values\": [\"available\"]}]\n)\n\nfor volume in response[\"Volumes\"]:\n    print(volume[\"VolumeId\"], volume[\"Size\"], volume[\"CreateTime\"])",
+    "caption": "Filters push the search server-side instead of downloading everything."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Paginating + tagging stale snapshots",
+    "code": "from datetime import datetime, timedelta, timezone\n\ncutoff = datetime.now(timezone.utc) - timedelta(days=30)\npaginator = ec2.get_paginator(\"describe_snapshots\")\n\nfor page in paginator.paginate(OwnerIds=[\"self\"]):\n    for snap in page[\"Snapshots\"]:\n        if snap[\"StartTime\"] < cutoff:\n            ec2.create_tags(\n                Resources=[snap[\"SnapshotId\"]],\n                Tags=[{\"Key\": \"northbridge:status\", \"Value\": \"pending-deletion\"}],\n            )",
+    "caption": "Tag first for review -- delete only after a human confirms it's safe."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 17",
+    "titlePlain": "Webhooks & ",
+    "titleEmphasis": "Event-Driven Scripts",
+    "titleSuffix": "",
+    "subtitle": "Reacting to events pushed to you instead of pulling data yourself."
+  }
+]

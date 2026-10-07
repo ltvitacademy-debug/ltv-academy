@@ -1,0 +1,21 @@
+# Script — Regularization: Weight Decay & Dropout
+
+## Segment 1 (title)
+
+A network with enough capacity can memorize its training set perfectly and still fail on new data. Regularization trades a little training accuracy for a model that actually generalizes, and the two tools you'll reach for most are weight decay and dropout.
+
+## Segment 2 (code)
+
+Weight decay penalizes large weights unless the data gives the optimizer a strong reason to keep them. It's just an argument to the optimizer. With plain Adam, that penalty gets tangled up with Adam's adaptive learning rates in a way that doesn't quite work as intended — AdamW fixes that by decoupling the two, which is why it's the default most people reach for now.
+
+## Segment 3 (code)
+
+Dropout randomly zeroes out a fraction of a layer's activations on every forward pass during training, so the network can't lean too hard on any one unit. A probability of point five is a common default for fully connected layers, often lower for convolutional ones.
+
+## Segment 4 (steps)
+
+Dropout only does this during training. In train mode it's live; in eval mode it turns off completely and every activation passes through. Forgetting to call model.eval() before validation is one of the most common silent bugs in a training script — your validation numbers quietly get noisier and look worse than the model really is.
+
+## Segment 5 (outro)
+
+Weight decay and dropout both fight overfitting, from different angles. Up next, lesson seventeen: batch normalization and layer normalization — two more layers whose behavior depends on training versus eval mode.

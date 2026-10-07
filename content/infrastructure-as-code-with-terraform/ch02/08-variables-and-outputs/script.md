@@ -1,0 +1,25 @@
+# Script — Variables & Outputs
+
+## Segment 1 (title)
+
+The resource blocks in the last lesson hardcoded values like "rg-northbridge-prod" directly into the file. That's fine for a one-off example, but it falls apart the moment Northbridge Retail needs the same configuration to also stand up a dev or staging environment. This lesson covers variable and output blocks, which fix exactly that.
+
+## Segment 2 (code)
+
+A variable block declares one input your configuration accepts. Environment has no default, so Terraform requires it to be supplied every run. VM size has a default, so it's optional — omit it and Terraform falls back to that value. Once declared, you reference either one anywhere in your configuration as var-dot-environment or var-dot-vm_size.
+
+## Segment 3 (code)
+
+You can pass a variable on the command line with a flag, but for anything beyond a quick test, Northbridge's team keeps values in a dot-tfvars file instead — typically one file per environment, like dev, staging, and prod — and passes the right one explicitly with the var-file flag.
+
+## Segment 4 (code)
+
+An output block exposes a value after apply finishes, which is useful for anything another team, script, or configuration needs to consume. Outputs commonly expose things only known after creation, like a storage account's endpoint URL, since that value simply doesn't exist in your files until Terraform actually provisions the resource.
+
+## Segment 5 (code)
+
+After apply, Terraform prints every output automatically. You can also ask for all of them, or just one, at any later point — and asking for a single named output is exactly what a deploy script or another configuration would do to pull a value out programmatically, without a person reading it off the screen.
+
+## Segment 6 (outro)
+
+Variables go in, outputs come out. Next up, Lesson 9: data sources, for reading infrastructure your configuration doesn't manage but still needs to know about.

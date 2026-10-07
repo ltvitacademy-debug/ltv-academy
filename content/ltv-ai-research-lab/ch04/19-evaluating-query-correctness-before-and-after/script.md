@@ -1,0 +1,25 @@
+# Script — Evaluating Query Correctness, Before & After
+
+## Segment 1 (title)
+
+Training a model and claiming it improved are two different things. This lesson evaluates SQL Pete on a held-out set of questions, comparing the SFT-only checkpoint from Lesson 16 against the RLHF checkpoint from Lesson 18, and checks for a specific regression RLHF can introduce.
+
+## Segment 2 (code)
+
+Execution accuracy is measured only on a held-out split, questions never touched during SFT or RLHF, because scoring on training questions would just measure memorization rather than generalization. For each question, the generated query is scored against the gold query using the same execution reward from Lesson 17, counting only the exact matches as correct.
+
+## Segment 3 (code)
+
+The comparison itself is simple: run that accuracy function once on the SFT-only checkpoint and once on the RLHF checkpoint, on the identical held-out set, and compare the two numbers directly. If RLHF worked as intended, its accuracy should be meaningfully higher.
+
+## Segment 4 (steps)
+
+But raw accuracy isn't the whole story. The reward only checks whether the result set matches — it never checks whether every table or column name the model used actually exists in the schema. That opens a specific regression: RLHF can push the model toward hallucinating a plausible-sounding column or table name that doesn't exist in Northwind or AdventureWorks2012, if that pattern happened to correlate with reward during training.
+
+## Segment 5 (code)
+
+Catching it means validating every generated query's table and column references against the real schema metadata, separately from execution, and computing a hallucination rate across the held-out set for each checkpoint, so you can see whether RLHF made this specific failure more common.
+
+## Segment 6 (outro)
+
+Whatever this evaluation turns up — a clean accuracy win, a hallucination regression, or both — becomes the result and limitation of Project 3's write-up. Up next, Lesson 20: writing up Project 3 for the portfolio.

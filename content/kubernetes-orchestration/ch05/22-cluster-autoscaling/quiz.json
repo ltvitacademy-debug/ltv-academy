@@ -1,0 +1,60 @@
+{
+  "lesson": "cluster-autoscaling",
+  "questions": [
+    {
+      "q": "The HPA scales checkout from 3 to 25 replicas, but there's no node with enough free capacity for the new Pods. What happens to those Pods?",
+      "options": [
+        "They are automatically deleted by the scheduler",
+        "They sit in Pending status, with a FailedScheduling event citing insufficient CPU/memory",
+        "They are forcibly placed on an overloaded node anyway",
+        "The HPA automatically reduces its own target replica count"
+      ],
+      "answer": 1,
+      "explain": "When no node has enough free capacity, new Pods remain Pending, and kubectl describe shows a FailedScheduling event citing insufficient resources — exactly the signal the Cluster Autoscaler watches for."
+    },
+    {
+      "q": "What is the fundamental difference between what the HPA scales and what the Cluster Autoscaler scales?",
+      "options": [
+        "Both scale the same thing — replica count — but on different schedules",
+        "The HPA scales Pod replica count on a Deployment; the Cluster Autoscaler scales node count on a cloud-provider node group",
+        "The HPA scales nodes; the Cluster Autoscaler scales Pods",
+        "The Cluster Autoscaler only works on bare-metal clusters, never in the cloud"
+      ],
+      "answer": 1,
+      "explain": "HPA adjusts the number of Pod replicas for a workload. Cluster Autoscaler adjusts the number of nodes in a node group (ASG, VM Scale Set, node pool) to provide capacity for those Pods."
+    },
+    {
+      "q": "Why is Cluster Autoscaler scale-down generally more conservative than scale-up?",
+      "options": [
+        "Scale-down requires manual approval in every case",
+        "Removing a node safely requires confirming its Pods can be relocated elsewhere, and certain Pods (local storage, bare Pods, eviction-blocked) can prevent removal entirely",
+        "Scale-down is actually faster and less careful than scale-up",
+        "Cluster Autoscaler never performs scale-down automatically"
+      ],
+      "answer": 1,
+      "explain": "Scale-down involves safety checks: a node is only removed if its workloads can be relocated, and certain Pod types (using local storage, lacking a controller, or annotated against eviction) block the node from being removed."
+    },
+    {
+      "q": "Which of the following is a correct example of how Cluster Autoscaler integrates with a cloud provider?",
+      "options": [
+        "It directly edits the Kubernetes binary on each node",
+        "On AWS it drives an Auto Scaling Group; on Azure a VM Scale Set; on GKE a managed node pool",
+        "It only works by physically racking new servers",
+        "It bypasses the cloud provider entirely and creates nodes from nothing"
+      ],
+      "answer": 1,
+      "explain": "Cluster Autoscaler is cloud-provider-specific and drives that provider's node-group construct — an AWS ASG, Azure VM Scale Set, or GKE managed node pool — to add or remove actual nodes."
+    },
+    {
+      "q": "How do the HPA and Cluster Autoscaler typically cooperate during a traffic spike, without directly knowing about each other?",
+      "options": [
+        "The Cluster Autoscaler must be manually triggered after the HPA scales up",
+        "The HPA reacts first to a rising metric and requests more replicas; if existing nodes lack room, those Pods go Pending, which the Cluster Autoscaler then reacts to by adding node capacity",
+        "They operate on a shared, synchronized schedule set by the cluster administrator",
+        "The HPA calls the Cluster Autoscaler's API directly to request new nodes"
+      ],
+      "answer": 1,
+      "explain": "The two controllers act independently on different signals — the HPA on metrics, the Cluster Autoscaler on Pending Pods — but their effects naturally chain together: HPA creates demand, Cluster Autoscaler supplies the capacity if needed."
+    }
+  ]
+}

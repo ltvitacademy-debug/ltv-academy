@@ -1,0 +1,53 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Deep Learning & PyTorch · Chapter 7",
+    "titlePlain": "Gradient ",
+    "titleEmphasis": "Accumulation",
+    "titleSuffix": "",
+    "subtitle": "Lesson 47 · Scaling Up: Mixed Precision & Multi-GPU Basics"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Simulating a batch your GPU can't fit",
+    "titlePlain": "Trade memory for ",
+    "titleEmphasis": "time",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Micro-batch", "sub": "forward + backward on a small chunk" },
+      { "label": "Accumulate", "sub": ".grad sums across several micro-batches" },
+      { "label": "Step once", "sub": "optimizer.step() only every N micro-batches" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The accumulation loop",
+    "code": "accum_steps = 4\noptimizer.zero_grad()\n\nfor i, (x, y) in enumerate(train_loader):\n    loss = loss_fn(model(x), y) / accum_steps\n    loss.backward()\n\n    if (i + 1) % accum_steps == 0:\n        optimizer.step()\n        optimizer.zero_grad()",
+    "caption": "4 micro-batches of 16 behave like one batch of 64."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The bug: forgetting to divide",
+    "code": "# WRONG -- gradient ends up 4x too large\nloss = loss_fn(model(x), y)\nloss.backward()\n\n# RIGHT -- matches a real large-batch average\nloss = loss_fn(model(x), y) / accum_steps\nloss.backward()",
+    "caption": "Skipping the divide silently multiplies your learning rate."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What accumulation doesn't fix",
+    "titlePlain": "BatchNorm stays ",
+    "titleEmphasis": "per micro-batch",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Gradients", "sub": "accumulate correctly across micro-batches" },
+      { "label": "BatchNorm stats", "sub": "computed from whichever micro-batch just ran -- not pooled" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 48",
+    "titlePlain": "DataParallel vs. ",
+    "titleEmphasis": "DistributedDataParallel",
+    "titleSuffix": "",
+    "subtitle": "Spreading training across more than one GPU."
+  }
+]

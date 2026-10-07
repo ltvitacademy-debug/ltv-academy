@@ -1,0 +1,21 @@
+# Script — Capstone Kickoff & Paper Selection
+
+## Segment 1 (title)
+
+Welcome to the capstone: one project spanning the rest of this course, where you reproduce a real published result and then extend it. Every skill from the previous eight chapters gets used for real here, on a result you choose yourself. This lesson is entirely about making that choice well.
+
+## Segment 2 (steps)
+
+Apply three filters before you write any code, in order. First, released code and checkpoints — you want the authors' actual training code, not a reimplementation from prose, so check the paper's GitHub link and cross-reference it on paperswithcode.com. Second, a modest compute requirement — hours to a couple of days on one GPU, not the multi-week, multi-hundred-GPU runs some papers openly warn about. Third, one clear headline number, not a sprawling table across a dozen datasets, so you have a crisp definition of done.
+
+## Segment 3 (steps)
+
+Three real results fit all three filters, which is exactly why they're well known and well documented. A small ResNet trained on CIFAR-10 reproduces a clean, specific test error number in just a few GPU-hours, with dozens of reference implementations to check your run against. DQN trained on a single cheap Atari game like Pong reproduces a slice of a famous result without needing the full fifty-seven-game suite. And nanoGPT reproducing a small GPT's validation loss gives you a genuine transformer-scale result that still fits comfortably on one GPU.
+
+## Segment 4 (code)
+
+Before writing any training code, write a short proposal: the paper, the exact number you're targeting, the compute you actually have, and a rough week-by-week timeline split between reproduction and extension. Set up your repo around that proposal, with Hydra configs ready to go and a script that runs the official code's own baseline command first, before you change a single line of it.
+
+## Segment 5 (outro)
+
+Pick your paper, write your proposal, and get the official code running. Up next, lesson forty-three: reproducing the core result.

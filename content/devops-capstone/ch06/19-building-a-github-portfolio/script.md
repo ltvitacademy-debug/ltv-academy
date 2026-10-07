@@ -1,0 +1,21 @@
+# Script — Building a GitHub Portfolio
+
+## Segment 1 (title)
+
+Your resume gets you noticed, but your GitHub profile is where a hiring manager decides whether to believe it. For a DevOps role, reviewers usually go straight to your pinned repos before the phone screen even happens, looking for exactly the kind of work you just finished.
+
+## Segment 2 (steps)
+
+They aren't counting lines of code or commit streaks. They're looking for a README that explains the architecture in under two minutes, real commit history built from feature branches and reviewed pull requests instead of one giant drop, and a clean repo with no committed secrets, no state files, and a sensible .gitignore from the very first commit.
+
+## Segment 3 (steps)
+
+Pin the storefront monorepo itself, not an individual service folder, so the top-level layout tells a reviewer in one glance that you understand how a real platform is organized. Add a design decisions section to the README explaining why you chose remote state with locking, or why checkout gets a wider autoscaling range — that section answers the "walk me through a decision" question before anyone even asks it out loud.
+
+## Segment 4 (code)
+
+Before making anything public, scrub it thoroughly. Rename realistic resource and account names to generic placeholders, confirm no state or variable files with real values ever landed in git history, and run gitleaks against the full history, not just the current tree, since a secret removed in a later commit still lives in history unless you actually rewrite it. If any of it reflects real employer work, get written permission first, every time.
+
+## Segment 5 (outro)
+
+Next up, lesson twenty: the DevOps interview landscape, so you know what to expect once that portfolio gets someone's attention and the conversation actually starts.

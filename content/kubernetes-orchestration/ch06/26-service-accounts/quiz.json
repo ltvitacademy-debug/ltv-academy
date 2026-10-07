@@ -1,0 +1,60 @@
+{
+  "lesson": "service-accounts",
+  "questions": [
+    {
+      "q": "What ServiceAccount does a Pod get if its spec doesn't specify one?",
+      "options": [
+        "No ServiceAccount at all — it runs with no identity",
+        "The default ServiceAccount of its namespace, assigned automatically",
+        "The ServiceAccount of whichever user ran kubectl apply",
+        "A new random ServiceAccount is created for it"
+      ],
+      "answer": 1,
+      "explain": "Any Pod that doesn't set serviceAccountName is automatically assigned the default ServiceAccount of its namespace, which typically has no RBAC permissions bound to it."
+    },
+    {
+      "q": "In a RoleBinding, how do you bind a Role to a ServiceAccount rather than a human user?",
+      "options": [
+        "It's not possible — Roles can only bind to Users",
+        "Set the subjects entry's kind to ServiceAccount, with its name and namespace",
+        "Add the ServiceAccount's token directly into the Role's rules",
+        "ServiceAccounts automatically inherit every Role in their namespace"
+      ],
+      "answer": 1,
+      "explain": "A RoleBinding's subjects list can name a User, Group, or ServiceAccount — for a ServiceAccount, kind is set to ServiceAccount with its name and namespace."
+    },
+    {
+      "q": "How does a Pod actually use a ServiceAccount's permissions at runtime?",
+      "options": [
+        "The permissions are copied into the Pod's environment variables as plain text",
+        "Kubernetes mounts the ServiceAccount's token into the container; the app presents that token to the API server, which checks it against the bound RBAC rules",
+        "The Pod's image must be rebuilt with the permissions baked in",
+        "Permissions apply only to kubectl commands run from outside the Pod"
+      ],
+      "answer": 1,
+      "explain": "The ServiceAccount's token is mounted into the container's filesystem; the application uses it to authenticate API calls, which the API server authorizes against that ServiceAccount's RBAC bindings."
+    },
+    {
+      "q": "Why would Northbridge set automountServiceAccountToken: false on its checkout Pods?",
+      "options": [
+        "To make checkout Pods start faster",
+        "Checkout Pods serve HTTP traffic and never call the Kubernetes API, so mounting an unused token only adds something an attacker could steal if the Pod were compromised",
+        "It is required for every Pod in a Deployment",
+        "To grant checkout Pods more RBAC permissions"
+      ],
+      "answer": 1,
+      "explain": "Disabling automatic token mounting for Pods that never call the API shrinks the blast radius if that Pod is ever compromised — there is simply no token to steal."
+    },
+    {
+      "q": "Why create a dedicated ServiceAccount for catalog-sync instead of leaving it on the namespace's default ServiceAccount?",
+      "options": [
+        "Dedicated ServiceAccounts run containers with more CPU",
+        "It lets catalog-sync's specific API permissions (e.g. read ConfigMaps) be scoped and audited separately from everything else sharing default",
+        "The default ServiceAccount cannot be used by any Pod",
+        "It changes which namespace the Pod runs in"
+      ],
+      "answer": 1,
+      "explain": "A dedicated ServiceAccount keeps a Pod's specific permissions isolated and auditable, rather than mixing them in with every other Pod relying on the shared default identity."
+    }
+  ]
+}

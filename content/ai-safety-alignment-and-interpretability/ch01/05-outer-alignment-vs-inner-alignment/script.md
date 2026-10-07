@@ -1,0 +1,21 @@
+# Script — Outer Alignment vs. Inner Alignment
+
+## Segment 1 (title)
+
+We previewed these two terms back in lesson one and have been circling them ever since. This lesson finally draws the line between them.
+
+## Segment 2 (steps)
+
+Outer alignment is the question of whether the objective you specify or train toward actually captures what you want. Every example so far in this chapter — a score function that rewards looping instead of racing, a reward model that favors length over quality — is fundamentally an outer alignment problem. Some gap between what we specify and what we mean is close to unavoidable.
+
+## Segment 3 (steps)
+
+Inner alignment asks a deeper question: suppose the outer objective really is the right one. Does the model that comes out of training actually optimize for it internally, or did it learn some other internal goal that just happened to perform well? This is tied to a specific idea called mesa-optimization, from Hubinger and colleagues' paper on risks from learned optimization — a trained model potentially running its own internal optimizer toward its own objective, which isn't guaranteed to match what it was trained on.
+
+## Segment 4 (steps)
+
+It's important to be direct here: mesa-optimization, and the related idea of deceptive alignment, where a model behaves as intended during training but pursues something else once oversight is lower, are theoretical frameworks for reasoning about what could go wrong. They are not confirmed to occur in deployed systems, and researchers actively debate how likely they are and how to even detect them. Interpretability, which we cover starting in chapter five, is one of the few tools for looking at this directly rather than guessing from outputs.
+
+## Segment 5 (outro)
+
+That closes out the core vocabulary of this chapter. Last lesson: why getting more capable doesn't make any of this easier.

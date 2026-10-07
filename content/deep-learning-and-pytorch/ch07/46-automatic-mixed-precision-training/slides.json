@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Deep Learning & PyTorch · Chapter 7",
+    "titlePlain": "Automatic Mixed Precision ",
+    "titleEmphasis": "Training",
+    "titleSuffix": "",
+    "subtitle": "Lesson 46 · Scaling Up: Mixed Precision & Multi-GPU Basics"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Wrap the forward pass, not the model",
+    "code": "with torch.autocast(device_type=\"cuda\",\n                    dtype=torch.float16):\n    output = model(inputs)\n    loss = loss_fn(output, targets)\n\nloss.backward()\n\n# matmuls/convs run in FP16\n# softmax, loss stay in FP32",
+    "caption": "autocast triages which ops are safe in reduced precision."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why FP16 needs help",
+    "titlePlain": "The ",
+    "titleEmphasis": "underflow",
+    "titleSuffix": " problem",
+    "steps": [
+      { "label": "Small gradients", "sub": "fall below FP16's representable range" },
+      { "label": "Round to zero", "sub": "that weight silently stops learning" },
+      { "label": "GradScaler fixes it", "sub": "scales the loss up before backward, down before step()" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The full FP16 training step",
+    "code": "scaler = torch.amp.GradScaler(\"cuda\")\n\nfor x, y in train_loader:\n    optimizer.zero_grad()\n    with torch.autocast(\"cuda\", dtype=torch.float16):\n        out = model(x)\n        loss = loss_fn(out, y)\n    scaler.scale(loss).backward()\n    scaler.step(optimizer)\n    scaler.update()",
+    "caption": "scale -> backward -> step -> update, every iteration."
+  },
+  {
+    "type": "code",
+    "eyebrow": "BF16: usually no scaler at all",
+    "code": "for x, y in train_loader:\n    optimizer.zero_grad()\n    with torch.autocast(\"cuda\",\n                        dtype=torch.bfloat16):\n        out = model(x)\n        loss = loss_fn(out, y)\n    loss.backward()\n    optimizer.step()",
+    "caption": "BF16's wider range rarely underflows -- no GradScaler needed."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 47",
+    "titlePlain": "Gradient ",
+    "titleEmphasis": "Accumulation",
+    "titleSuffix": "",
+    "subtitle": "Simulating a bigger batch size than your GPU memory allows."
+  }
+]

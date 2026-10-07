@@ -1,0 +1,25 @@
+# Script — Functions & Reusable Libraries
+
+## Segment 1 (title)
+
+Northbridge Retail has five ops scripts that all need the same two things: timestamped logging and retrying a flaky network call. For a while each script had its own copy-pasted version, and fixing one left the other four still broken. This lesson covers the real fix: functions, and a shared library file.
+
+## Segment 2 (code)
+
+A bash function takes arguments the same way a script does, as `$1`, `$2`, and so on. Here, `log` takes a level as its first argument, then `shift` drops that off the list so `$*` captures everything else as the message, however long it is.
+
+## Segment 3 (code)
+
+Variables inside a function are global by default unless you mark them `local`. Without `local`, setting `region` inside `greet_region` would silently overwrite a variable of the same name back in the caller. Declaring it `local` scopes it to the function only, and the caller's value is left untouched.
+
+## Segment 4 (steps)
+
+A function reports back in one of two ways. For a simple yes or no, let its exit code be the answer — the status of its last command is the result, no `return` needed. For an actual value like a string, `echo` it and capture that output with command substitution, because `return` in bash can only send back a number from zero to two fifty five.
+
+## Segment 5 (code)
+
+Northbridge puts `log` and `retry` in one file, `lib/common.sh`, and every script sources it using a path resolved relative to its own location. Fix a bug in either function once, in that one file, and all five scripts that source it are fixed at the same time.
+
+## Segment 6 (outro)
+
+Functions let you name and reuse logic, `local` keeps their variables from leaking, and a shared sourced library means one fix reaches every script. Next up, Lesson 3: parsing real log and CSV data with grep, sed, and awk.

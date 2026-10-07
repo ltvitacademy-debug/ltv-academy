@@ -1,0 +1,21 @@
+# Script — Webhooks & Event-Driven Scripts
+
+## Segment 1 (title)
+
+Every API you've called so far, you called — your script decided when to ask. A webhook flips that around: the shipping carrier calls you, the instant a shipment's status changes, by sending an HTTP POST to a URL Northbridge registered with them. This lesson builds a minimal receiver for that callback, and shows you how to verify it actually came from the carrier.
+
+## Segment 2 (code)
+
+A webhook is just an inbound request — the carrier posts a JSON body describing what happened, with no polling loop on your end. Flask is the simplest way to stand up a receiver for it: define a route, read the JSON body, and respond. But a receiver this simple trusts anyone who can reach the URL, and that URL has to be public for the carrier to reach it at all.
+
+## Segment 3 (code)
+
+The fix is a signature. The carrier hashes the raw request body with a secret only it and Northbridge know, and sends that hash in a header. Your receiver recomputes the same hash locally and compares the two using compare_digest rather than a plain equality check, since a plain comparison can leak timing information an attacker could use to guess the signature byte by byte.
+
+## Segment 4 (steps)
+
+That public URL is exactly why verification isn't optional — anyone who finds it can send a fake delivered event, and without a signature check your code would act on it as if it were real. The signature proves the request actually came from the carrier, and comparing it safely matters just as much as checking it at all.
+
+## Segment 5 (outro)
+
+Verify the signature first, parse the event second, act third, and respond quickly so the carrier doesn't retry unnecessarily. That closes out the APIs and cloud automation chapter — Chapter 5 puts all of it, REST calls, authentication, SDKs, and webhooks, to work on real automation tasks.

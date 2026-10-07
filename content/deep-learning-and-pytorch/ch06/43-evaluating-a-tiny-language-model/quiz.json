@@ -1,0 +1,60 @@
+{
+  "lesson": "evaluating-a-tiny-language-model",
+  "questions": [
+    {
+      "q": "Why must perplexity be computed on a held-out validation split rather than the training data?",
+      "options": [
+        "Validation data trains faster than training data",
+        "Measuring on training data would mostly reflect memorization rather than how well the model generalizes to text it never directly learned from",
+        "PyTorch's cross_entropy function requires two separate datasets to run",
+        "There is no actual difference between the two splits"
+      ],
+      "answer": 1,
+      "explain": "A model can drive training loss down by memorizing training data without learning anything that transfers; a held-out validation split is the only way to measure genuine generalization."
+    },
+    {
+      "q": "How is perplexity related to cross-entropy loss?",
+      "options": [
+        "Perplexity equals the cross-entropy loss squared",
+        "Perplexity is exp(average cross-entropy loss per token) — exponentiating the loss gives a more intuitive 'effective number of choices' reading",
+        "Perplexity and cross-entropy loss are unrelated metrics",
+        "Perplexity is the cross-entropy loss divided by the vocabulary size"
+      ],
+      "answer": 1,
+      "explain": "Perplexity is defined as exp(loss), converting the raw cross-entropy value into a number interpretable as roughly how many tokens the model is effectively choosing among at each step."
+    },
+    {
+      "q": "In the evaluation loop, why use reduction=\"sum\" and divide by the total token count, instead of averaging the loss per batch and then averaging those batch averages?",
+      "options": [
+        "reduction=\"sum\" runs faster on GPU",
+        "Summing total loss and total tokens across all batches before dividing weights every token equally, avoiding mis-weighting batches that happen to have fewer tokens",
+        "The default reduction mode causes a runtime error with validation data",
+        "It has no effect on the computed perplexity value"
+      ],
+      "answer": 1,
+      "explain": "Averaging per-batch averages and then averaging those would implicitly give batches with fewer tokens disproportionate influence; summing total loss and total tokens first, then dividing once, weights every token in the dataset equally."
+    },
+    {
+      "q": "Why are model.eval() and torch.no_grad() both used during perplexity evaluation?",
+      "options": [
+        "model.eval() deletes the model's weights; torch.no_grad() reloads them",
+        "model.eval() disables dropout so evaluation reflects real learned behavior, and torch.no_grad() skips gradient tracking since no backward pass is needed, saving memory and time",
+        "Both are required only when using a GPU",
+        "They have no effect in PyTorch and are included only by convention"
+      ],
+      "answer": 1,
+      "explain": "model.eval() turns off training-only behaviors like dropout, and torch.no_grad() tells autograd not to build a computation graph, which is unnecessary overhead when you're only computing a metric, not updating weights."
+    },
+    {
+      "q": "Why can't perplexity alone guarantee that a model's free-running text generations are good?",
+      "options": [
+        "Perplexity is always exactly 1 regardless of model quality",
+        "Perplexity is measured with teacher forcing — real previous tokens are always fed in — whereas real generation feeds the model's own previous outputs back in, where small errors can compound into repetition or incoherence",
+        "Perplexity can only be computed on images, not text",
+        "Perplexity measures training speed, not prediction quality"
+      ],
+      "answer": 1,
+      "explain": "Teacher-forced evaluation always supplies the correct previous token, which differs from autoregressive generation where the model's own (possibly imperfect) output feeds back in — so a good perplexity score doesn't guarantee good free-running generations, and reading actual samples is still necessary."
+    }
+  ]
+}

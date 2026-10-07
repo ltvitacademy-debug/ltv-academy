@@ -1,0 +1,25 @@
+# Script — Azure Repos, Boards & Artifacts
+
+## Segment 1 (title)
+
+This chapter has stayed inside Pipelines since Lesson 11. This closing lesson looks at the three services around it — Repos, where storefront-api's source actually lives, Boards, where Northbridge Retail tracks the work that pipeline ships, and Artifacts, where build output gets shared beyond a single run.
+
+## Segment 2 (screenshot)
+
+Azure Repos is standard Git — storefront-api clones, branches, and merges exactly like any GitHub repo. What Repos adds on top is branch policies: rules on main requiring a pull request before merging, a minimum number of reviewers, and a passing pipeline run before the merge button unlocks — the thing that makes last chapter's pr trigger actually enforce something, instead of just running for show.
+
+## Segment 3 (screenshot)
+
+Boards holds work items — user stories, bugs, tasks — organized into backlogs, sprints, and kanban boards like this one, with items moving through New, Active, and Resolved.
+
+## Segment 4 (code)
+
+The real power shows up when a commit or pull request references a work item ID directly. Azure DevOps automatically links the two, so anyone looking at that work item can see exactly which commit, pull request, and eventually which pipeline run shipped the fix — no separate spreadsheet, no manually updating a ticket's status by hand.
+
+## Segment 5 (screenshot)
+
+It's easy to confuse two different things both called artifact. A pipeline artifact, like this run's one published artifact, is build output passed between stages within one pipeline run. An Azure Artifacts feed is a longer-lived package registry — npm, NuGet, Maven, universal packages — that any pipeline or any developer's machine can pull a published package from.
+
+## Segment 6 (outro)
+
+That's the whole loop, Boards to production — a developer opens a PR linked to a work item, CI runs, a branch policy blocks the merge until it's green, and the pipeline from the last three lessons takes over. Next chapter, we harden what ships, starting with automated testing in pipelines.

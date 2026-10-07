@@ -1,0 +1,60 @@
+{
+  "lesson": "sequence-packing",
+  "questions": [
+    {
+      "q": "What is the main problem with naively padding every short document up to the model's full context length?",
+      "options": [
+        "It makes the tokenizer vocabulary too large",
+        "Padding tokens carry no training signal but still cost full attention compute, wasting a large fraction of GPU time",
+        "It causes the model to memorize padding tokens as real words",
+        "It increases the vocabulary size automatically"
+      ],
+      "answer": 1,
+      "explain": "A short document padded to a much longer fixed sequence length can be mostly padding tokens, which produce no useful gradient yet still cost the same attention compute as real content."
+    },
+    {
+      "q": "What does sequence packing do instead of padding?",
+      "options": [
+        "It deletes short documents entirely from the training set",
+        "It concatenates multiple documents end-to-end, separated by an EOS token, then chunks the result into fixed-length sequences",
+        "It converts short documents into images",
+        "It duplicates short documents until they reach the target length"
+      ],
+      "answer": 1,
+      "explain": "Packing concatenates many documents into one long token stream and splits that stream into fixed-length blocks, so nearly every position in a training sequence carries real content instead of padding."
+    },
+    {
+      "q": "Which Hugging Face `trl` feature implements the same concatenate-and-chunk packing pattern described in this lesson?",
+      "options": [
+        "AutoModelForCausalLM",
+        "ConstantLengthDataset / packing=True on SFTTrainer",
+        "BpeTrainer",
+        "MinHashLSH"
+      ],
+      "answer": 1,
+      "explain": "trl's ConstantLengthDataset and the packing=True option on SFTTrainer implement the concatenate-and-chunk packing pattern for fine-tuning data."
+    },
+    {
+      "q": "What is the 'cross-document attention problem' that packing introduces?",
+      "options": [
+        "Tokens from two unrelated documents in the same packed sequence can attend to each other under standard causal attention, which is semantically meaningless",
+        "Packed sequences cannot use any attention mechanism at all",
+        "Packing always removes the EOS token, making documents indistinguishable",
+        "The vocabulary size doubles whenever packing is used"
+      ],
+      "answer": 0,
+      "explain": "Because packed sequences concatenate unrelated documents, a token near the start of one document can, under standard causal attention, attend across the boundary into a prior unrelated document -- a semantically meaningless signal."
+    },
+    {
+      "q": "How does a document-aware, block-diagonal attention mask address the cross-document attention problem?",
+      "options": [
+        "It removes the need for tokenization entirely",
+        "It restricts each token's attention to only tokens from the same original document within the packed sequence",
+        "It increases the context length automatically",
+        "It forces every document to be padded instead of packed"
+      ],
+      "answer": 1,
+      "explain": "A block-diagonal mask only allows a token to attend to other tokens that came from the same source document, fully preventing cross-document attention leakage within a packed sequence."
+    }
+  ]
+}

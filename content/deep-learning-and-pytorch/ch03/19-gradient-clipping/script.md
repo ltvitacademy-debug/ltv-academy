@@ -1,0 +1,21 @@
+# Script — Gradient Clipping
+
+## Segment 1 (title)
+
+Every so often a single batch produces a gradient that's enormous — large enough to blow a weight update way off course, sometimes turning the loss into NaN in one step. Gradient clipping is the safety rail that keeps that one bad batch from wrecking an otherwise healthy run.
+
+## Segment 2 (code)
+
+The common approach computes the combined norm of all gradients and, if it's over max_norm, rescales every gradient down proportionally so the new norm equals max_norm. That rescaling preserves direction — only the magnitude shrinks. It happens right after backward populates the gradients and right before the optimizer consumes them.
+
+## Segment 3 (code)
+
+A cruder alternative clips each gradient element to a fixed range independently, which can actually change the gradient's direction since different components get clamped by different amounts. Norm-based clipping is the more common default today; value clipping shows up more in older recurrent-network training code.
+
+## Segment 4 (steps)
+
+Gradients explode because the chain rule multiplies terms across every layer — if those terms run even slightly above one, the product can grow exponentially with depth. One unusual batch is enough to trigger a spike large enough to send weights to extreme values in a single update, and clipping catches it before the optimizer step does the damage.
+
+## Segment 5 (outro)
+
+If you see occasional spikes in your loss curve with no obvious cause, clipping with a max_norm around one to five is cheap to try. Up next, lesson twenty: checkpointing and resuming training, so a crash doesn't cost you the whole run.

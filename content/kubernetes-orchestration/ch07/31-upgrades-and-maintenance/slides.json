@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Kubernetes Orchestration · Chapter 7",
+    "titlePlain": "Upgrades & ",
+    "titleEmphasis": "Maintenance",
+    "titleSuffix": "",
+    "subtitle": "Lesson 31 · Managed Kubernetes: AKS & EKS"
+  },
+  {
+    "type": "code",
+    "eyebrow": "AKS: control plane, then node pools, Saturday mornings only",
+    "code": "az aks upgrade \\\n  --resource-group northbridge-rg \\\n  --name northbridge-aks \\\n  --kubernetes-version 1.29.2\n\naz aks maintenanceconfiguration add \\\n  --cluster-name northbridge-aks --name default \\\n  --weekday Saturday --start-hour 3",
+    "caption": "Nodes are replaced one at a time by default — cordoned, drained, then upgraded."
+  },
+  {
+    "type": "code",
+    "eyebrow": "EKS: the same two steps",
+    "code": "aws eks update-cluster-version \\\n  --name northbridge-eks --kubernetes-version 1.29\n\naws eks update-nodegroup-version \\\n  --cluster-name northbridge-eks \\\n  --nodegroup-name standard-workers",
+    "caption": "Control plane upgrades first and can run one version ahead of the nodes — a staged rollout, not an all-at-once cutover."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The step that keeps Pods from dying all at once",
+    "titlePlain": "Why ",
+    "titleEmphasis": "draining",
+    "titleSuffix": " a node matters",
+    "steps": [
+      { "label": "Cordon", "sub": "mark the node unschedulable" },
+      { "label": "Evict gracefully", "sub": "Pods reschedule elsewhere first" },
+      { "label": "Then remove", "sub": "only after Pods are safely off" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "A guardrail the upgrade itself has to respect",
+    "code": "apiVersion: policy/v1\nkind: PodDisruptionBudget\nmetadata:\n  name: checkout-pdb\n  namespace: checkout\nspec:\n  minAvailable: 2\n  selector:\n    matchLabels: { app: checkout }",
+    "caption": "The rollout won't drain a node if it would drop checkout below 2 running replicas."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 8",
+    "titlePlain": "Helm ",
+    "titleEmphasis": "Basics",
+    "titleSuffix": "",
+    "subtitle": "Packaging everything built so far into something repeatable."
+  }
+]

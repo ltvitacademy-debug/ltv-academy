@@ -1,0 +1,60 @@
+{
+  "lesson": "building-a-decoder-only-transformer",
+  "questions": [
+    {
+      "q": "Besides a stack of TransformerBlocks, which four pieces does a decoder-only transformer add?",
+      "options": [
+        "Token embedding, positional embedding, a final LayerNorm, and a linear head to vocab logits",
+        "Two extra attention heads, a dropout layer, a softmax, and a second embedding table",
+        "A convolutional layer, batch normalization, a pooling layer, and a classifier head",
+        "An encoder stack, cross-attention, a decoder stack, and a final softmax"
+      ],
+      "answer": 0,
+      "explain": "TinyGPT wraps the block stack with token embedding, positional embedding, one final LayerNorm, and a Linear(d_model, vocab_size) head producing logits."
+    },
+    {
+      "q": "Given `mask = torch.triu(torch.ones(T, T), diagonal=1).bool()`, what does `mask[i, j] == True` mean?",
+      "options": [
+        "Position j is in the past relative to position i, and should be attended to",
+        "Position j is strictly in the future relative to position i (j > i), and attention should be blocked there",
+        "Position i and j are the same token",
+        "The mask entry is always False for every i, j"
+      ],
+      "answer": 1,
+      "explain": "torch.triu with diagonal=1 keeps the strict upper triangle, so mask[i, j] is True exactly when j > i — a future position — which attn_mask then blocks."
+    },
+    {
+      "q": "Why does `TinyGPT.forward` store its transformer blocks in `nn.ModuleList` rather than a plain Python list?",
+      "options": [
+        "A plain list would raise a syntax error in Python",
+        "nn.ModuleList is required to compute the causal mask",
+        "nn.ModuleList correctly registers each block's parameters so PyTorch tracks and trains them",
+        "There is no difference; it's purely a style choice"
+      ],
+      "answer": 2,
+      "explain": "nn.ModuleList makes PyTorch aware of the submodules so their parameters show up in .parameters() and get updated during training. A plain Python list would hide them from the optimizer."
+    },
+    {
+      "q": "For input `idx` of shape (B, T), what is the shape of `TinyGPT.forward(idx)`'s return value?",
+      "options": [
+        "(B, d_model)",
+        "(B, T, d_model)",
+        "(B, T, vocab_size)",
+        "(T, vocab_size)"
+      ],
+      "answer": 2,
+      "explain": "The final nn.Linear(d_model, vocab_size) head projects every position's d_model vector to a vocab_size score vector, giving a final shape of (B, T, vocab_size)."
+    },
+    {
+      "q": "What does passing `is_causal=True` to `F.scaled_dot_product_attention` accomplish, compared to building a mask with `torch.triu` and passing `attn_mask`?",
+      "options": [
+        "It disables attention masking entirely",
+        "It produces equivalent causal masking behavior without needing to materialize an explicit mask tensor",
+        "It only works for positional embeddings, not attention",
+        "It changes the model from decoder-only to encoder-decoder"
+      ],
+      "answer": 1,
+      "explain": "is_causal=True handles causal masking internally, achieving the same effect as an explicit torch.triu-built boolean mask, typically more conveniently and efficiently."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+# Script — Module Inputs & Outputs
+
+## Segment 1 (title)
+
+Last lesson's module referenced variables it never declared, which would fail terraform init the moment anyone tried to run it. A module's variable blocks and output blocks are its entire public interface — variables are how the caller passes values in, and outputs are how the caller gets values back out. This lesson finishes that storage account module Northbridge Retail needs, then feeds its output into a second resource that depends on it.
+
+## Segment 2 (code: variable blocks are a module's inputs)
+
+Every var reference inside a module needs a matching variable block declared somewhere in that same module, usually collected into its own variables dot tf file. Give a variable a default value, and any caller can skip supplying it entirely. Leave it without one, and Terraform refuses to plan at all until every single caller supplies a real value for it.
+
+## Segment 3 (code: output blocks are a module's outputs)
+
+An output block exposes exactly one value back to whatever called the module. Nothing else inside it — not the resource itself, not any local value computed along the way — is reachable from outside. If a module doesn't declare something as an output, the caller simply cannot see it, no matter how useful that value might be.
+
+## Segment 4 (code: consuming a module's output)
+
+Northbridge Retail's Function App needs the storage account the module just created, so instead of hardcoding a name anywhere, it reads module dot storage underscore dev dot storage account name — exactly the way you'd read any ordinary resource attribute. Terraform automatically creates the storage account first, since it can see the Function App depends on that module's output before it can be set.
+
+## Segment 5 (outro)
+
+That's the whole module interface, start to finish: variables in, outputs out, nothing else visible from either side. Next lesson pulls in a module you didn't write at all — a published module straight from the public Terraform Registry.

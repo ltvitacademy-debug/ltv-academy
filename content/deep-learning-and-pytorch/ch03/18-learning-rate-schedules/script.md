@@ -1,0 +1,21 @@
+# Script — Learning Rate Schedules
+
+## Segment 1 (title)
+
+A fixed learning rate is rarely the best choice for an entire run. Early on, a larger rate helps the model make fast progress; later, it needs to shrink so the model can settle into a good minimum instead of bouncing around it. A scheduler automates that shrinking.
+
+## Segment 2 (code)
+
+StepLR is the simplest shape: every step_size epochs, it multiplies the learning rate by gamma. Here it's cut to a tenth of its value every thirty epochs. The call to scheduler.step() happens once per epoch, after that epoch's training is done.
+
+## Segment 3 (code)
+
+CosineAnnealingLR decays smoothly instead of in sudden steps, following a cosine curve down toward zero over T_max epochs. It's the shape a lot of modern training recipes default to, because the gradual decay tends to land in a better minimum than a sharp drop.
+
+## Segment 4 (code)
+
+ReduceLROnPlateau is different — it doesn't care what epoch you're on, it watches your validation metric. If that metric stops improving for `patience` epochs, it multiplies the learning rate by `factor`. Notice its step call takes the validation loss as an argument, unlike the other two.
+
+## Segment 5 (outro)
+
+Whichever shape you pick, scheduler.step() belongs once per epoch, not per batch — mixing that up quietly throws off the whole decay. Up next, lesson nineteen: gradient clipping, for keeping one bad batch from wrecking the whole run.

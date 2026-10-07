@@ -1,0 +1,25 @@
+# Script — Build Pipelines in YAML
+
+## Segment 1 (title)
+
+With the lay of the land from last lesson, it's time to write a real pipeline. We're building azure-pipelines.yml for storefront-api from the ground up — the same CI job Chapter 2 built in GitHub Actions, now in Azure Pipelines' own syntax.
+
+## Segment 2 (code)
+
+Every pipeline starts with what runs it and what it runs on. Trigger controls CI — what starts a run automatically on a push to main. The pr block controls validation builds on pull requests targeting main. And pool picks the agent — ubuntu-latest here is a Microsoft-hosted machine, pre-loaded with common tooling and torn down the moment the job finishes.
+
+## Segment 3 (code)
+
+The actual work happens inside jobs, and each job is a list of steps. Two kinds show up here. A task, like UseNode, is a pre-built, versioned building block from Azure Pipelines' task catalog — install a runtime, publish a file, deploy somewhere. A script step just runs a raw shell command directly. Reach for a task when one exists for what you need, and fall back to script for anything more custom.
+
+## Segment 4 (code)
+
+storefront-api ships as a container, so the CI job finishes with a build and push step using the Docker task. containerRegistry points at a service connection — a stored, authenticated link to Northbridge Retail's container registry, which we'll cover fully in Lesson 14. Tagging the image with the built-in build ID variable gives every build a unique, traceable tag instead of silently overwriting latest.
+
+## Segment 5 (screenshot)
+
+Every run produces a summary like this one — which stages ran, how long each job took, how many commits and work items are linked, and how many artifacts got published. This run only has the CI job so far; next lesson adds the Deploy stage you see here, turning this into a real multi-stage pipeline.
+
+## Segment 6 (outro)
+
+Next lesson, we turn this single CI job into a real multi-stage release pipeline, with staging and production stages of its own.

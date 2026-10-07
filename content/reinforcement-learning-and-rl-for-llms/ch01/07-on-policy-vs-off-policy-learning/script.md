@@ -1,0 +1,21 @@
+# Script — On-Policy vs. Off-Policy Learning
+
+## Segment 1 (title)
+
+This is lesson seven, the last lesson of Chapter One. You've got MDPs, value functions, the Bellman equation, exploration, and episode structure. This lesson adds the final piece before Chapter Two: on-policy versus off-policy learning.
+
+## Segment 2 (steps)
+
+Many algorithms actually involve two policies. The behavior policy is what's actually used to collect experience, usually something exploratory. The target policy is the one being learned about and evaluated. When those two are the same, the method is on-policy. When they're allowed to differ, it's off-policy.
+
+## Segment 3 (code)
+
+SARSA is the canonical on-policy example. Its update plugs in the next action the agent actually took, chosen by its own exploratory behavior policy. It's learning the value of the exact policy it's following, exploration included.
+
+## Segment 4 (code)
+
+Q-learning looks almost identical, but swaps that actual next action for the max over all possible next actions. It's learning about the greedy target policy while behaving according to a different, exploratory policy — that's what makes it off-policy, and it's exactly why off-policy methods can reuse old experience through something like a replay buffer, instead of needing fresh data collected under the current policy every time.
+
+## Segment 5 (outro)
+
+On-policy learns what you're actually doing; off-policy learns about a different target while you explore. That closes out Chapter One. Next up, lesson eight: dynamic programming for RL, where Chapter Two starts turning the Bellman equation into an actual algorithm.

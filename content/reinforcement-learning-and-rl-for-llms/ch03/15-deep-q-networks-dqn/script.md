@@ -1,0 +1,21 @@
+# Script — Deep Q-Networks (DQN)
+
+## Segment 1 (title)
+
+Welcome to Chapter 3, Deep RL. Chapter 2 left off with function approximation — swapping a Q-table for a parameterized function. This lesson makes that concrete with the algorithm that kicked off the deep RL era: the Deep Q-Network.
+
+## Segment 2 (steps)
+
+Tabular Q-learning needs a table row for every state-action pair, and that's impossible once states are high-dimensional, like Atari pixels, or continuous. DQN replaces the table with a neural network, Q of s, a, theta, that outputs one Q-value per action. Because the network shares weights across states, it generalizes to states it's never exactly seen.
+
+## Segment 3 (code)
+
+The network trains on a loss that looks just like the Q-learning update: the squared difference between the predicted Q-value and a TD target built from the reward plus the discounted max Q-value of the next state. In code, that's gathering the Q-value for the action taken, computing the target with no gradient, and running mean squared error between them.
+
+## Segment 4 (steps)
+
+But training a network directly on an agent's raw experience stream is unstable. The data is sequential and correlated, not shuffled and independent, and the regression target itself shifts every time theta updates. Those two problems are exactly what the next lesson fixes.
+
+## Segment 5 (outro)
+
+DQN's big idea is simple: a network standing in for a table, trained with gradient descent. Making that idea actually work is the real engineering — up next, lesson 16, experience replay and target networks.

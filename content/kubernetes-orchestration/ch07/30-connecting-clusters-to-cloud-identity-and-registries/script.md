@@ -1,0 +1,25 @@
+# Script — Connecting Clusters to Cloud Identity & Registries
+
+## Segment 1 (title)
+
+A catalog-sync Pod on AKS needs to read Azure Blob Storage. A fulfillment Pod on EKS needs to read an S3 bucket. A ServiceAccount gives a Pod a Kubernetes identity, but that means nothing to Azure or AWS on its own — and stashing a storage key as a Secret is a long-lived credential sitting there waiting to leak.
+
+## Segment 2 (steps)
+
+That stored-key approach has to be rotated manually, and if it leaks, it's valid until someone notices. Both clouds solve this the same way instead: federate the Kubernetes identity directly into a cloud identity, with no stored key at all.
+
+## Segment 3 (code)
+
+On AKS, Workload Identity federates a ServiceAccount with an Azure AD application. Enable the OIDC issuer on the cluster, create a federated credential tying the ServiceAccount's namespace and name to that identity, and the Pod's Azure SDK calls pick up a token automatically — the application code never touches a secret.
+
+## Segment 4 (code)
+
+EKS's equivalent is IAM Roles for Service Accounts. One eksctl command creates the IAM role, trusts it to the cluster's OIDC provider, and annotates the ServiceAccount — a Pod using it gets temporary AWS credentials scoped to exactly the attached policy.
+
+## Segment 5 (steps)
+
+The same idea covers pulling container images. On AKS, attaching ACR to the node pool's managed identity grants pull access without any imagePullSecrets. On EKS, the worker nodes' own IAM role typically already has ECR pull permissions by default.
+
+## Segment 6 (outro)
+
+Either way, there's nothing durable for an attacker to steal and nothing for Northbridge to remember to rotate. Up next, lesson thirty-one: upgrading and maintaining these clusters without taking checkout down.

@@ -1,0 +1,125 @@
+{
+  "course": "kafka-event-streaming",
+  "questions": [
+    {
+      "q": "What is Kafka fundamentally designed to do?",
+      "options": ["Replace relational databases entirely", "Act as a distributed, durable log/streaming platform for publishing and subscribing to ordered streams of records", "Serve exclusively as a caching layer", "Function only as a batch ETL scheduler"],
+      "answer": 1,
+      "explain": "Kafka's core abstraction is the append-only, replicated log. Producers publish records to it and consumers subscribe to read from it, which makes it a durable backbone for streaming data rather than a database replacement or simple cache."
+    },
+    {
+      "q": "Within a Kafka topic, what does a partition provide?",
+      "options": ["A partition is a synonym for a topic", "A partition is where consumer group offsets are always reset to zero", "A partition stores schema definitions only", "A partition is the unit of parallelism and ordering — records within a single partition are strictly ordered, and a topic is split into partitions to spread throughput across brokers"],
+      "answer": 3,
+      "explain": "Kafka only guarantees ordering within a single partition, not across an entire topic. Splitting a topic into multiple partitions is what allows multiple brokers (and multiple consumers) to handle the topic's traffic in parallel."
+    },
+    {
+      "q": "What does an \"offset\" represent in Kafka?",
+      "options": ["The unique, sequential position of a record within a partition, which a consumer uses to track how far it has read", "The number of brokers in the cluster", "The compression ratio of a message", "The replication factor of a topic"],
+      "answer": 0,
+      "explain": "Every record within a partition gets an incrementing offset. Consumers track (and commit) the offset they've read up to, which is how they know where to resume after a restart or rebalance."
+    },
+    {
+      "q": "What is the difference between a Kafka broker and a Kafka cluster?",
+      "options": ["They are the same thing", "A cluster is a single broker with extra memory", "A broker is one server process that stores partitions and serves client requests; a cluster is the group of brokers working together to host all topics for the deployment", "A broker only exists in cloud deployments, never self-hosted"],
+      "answer": 2,
+      "explain": "A broker is a single Kafka server handling storage and requests for the partitions assigned to it. A cluster is the collection of those brokers coordinating together, which is what lets Kafka scale and tolerate individual broker failures."
+    },
+    {
+      "q": "When a Kafka producer sends a record, what determines which partition it lands in, absent an explicit partition override?",
+      "options": ["Always partition 0, regardless of key", "A hash of the record's key (if a key is provided), or round-robin distribution across partitions if no key is set", "The consumer group's name", "The size of the message in bytes"],
+      "answer": 1,
+      "explain": "Kafka's default partitioner hashes the record key to consistently route records with the same key to the same partition (preserving order for that key); keyless records get spread round-robin instead."
+    },
+    {
+      "q": "What is a Kafka consumer group used for?",
+      "options": ["A group of brokers that share the same topic", "A backup mechanism for producers", "A naming convention with no functional effect", "A set of consumers that coordinate to divide up the partitions of a topic between them, so each partition is only read by one consumer in the group at a time"],
+      "answer": 3,
+      "explain": "Consumer groups are Kafka's built-in load-balancing mechanism for consumption: partitions get assigned across the group's members, letting multiple consumer instances process a topic in parallel without duplicating work within the group."
+    },
+    {
+      "q": "What does \"exactly-once\" delivery semantics mean in Kafka, in practice?",
+      "options": ["Each record is delivered and processed exactly one time with no duplicates and no loss, achieved through idempotent producers and transactional/committed offset handling", "Every message is guaranteed to arrive exactly once with zero configuration, even across network failures", "Messages are dropped if delivery fails twice", "It is the only delivery mode Kafka supports; at-most-once and at-least-once don't exist"],
+      "answer": 0,
+      "explain": "Exactly-once isn't automatic — it requires specific features (idempotent producers, transactions, and offsets committed atomically with processing) working together. Kafka also supports at-most-once and at-least-once, which are simpler but allow loss or duplication respectively."
+    },
+    {
+      "q": "Why would a Kafka pipeline use a schema-based serialization format like Avro instead of raw JSON?",
+      "options": ["JSON cannot be used with Kafka at all", "Avro requires no schema whatsoever, unlike JSON", "Avro provides compact binary encoding plus schema enforcement and evolution rules, catching incompatible producer/consumer schema changes and reducing message size versus verbose JSON", "Avro is only usable with Kafka Streams, never with plain consumers"],
+      "answer": 2,
+      "explain": "Avro's schema (typically tracked in a Schema Registry) lets producers and consumers agree on a contract and evolve it safely over time, while its binary encoding is far more compact on the wire than repeating field names in every JSON record."
+    },
+    {
+      "q": "How does Kafka achieve fault tolerance for a partition's data?",
+      "options": ["By storing data only in memory with no disk persistence", "By replicating each partition across multiple brokers, with one broker acting as leader (handling reads/writes) and the others as followers that replicate the leader's log", "By requiring every producer to write to every broker directly", "By using a single broker with a RAID array as the only protection"],
+      "answer": 1,
+      "explain": "Kafka's replication model assigns a leader and one or more followers per partition. Followers continuously copy the leader's log, so if the leader broker fails, a follower with an up-to-date copy can be elected the new leader with no data loss."
+    },
+    {
+      "q": "What replaced ZooKeeper as Kafka's metadata management system in modern (KRaft-mode) clusters?",
+      "options": ["etcd", "A relational database", "Nothing; ZooKeeper is still mandatory in every Kafka deployment", "An internal Kafka Raft-based (KRaft) consensus protocol built directly into the brokers/controllers"],
+      "answer": 3,
+      "explain": "KRaft removed Kafka's historical dependency on a separate ZooKeeper ensemble by moving metadata management into a Raft-based quorum of Kafka controller nodes themselves, simplifying operations and improving scalability of metadata."
+    },
+    {
+      "q": "What is Kafka's \"retention\" setting used for?",
+      "options": ["How long (or how much data) a topic keeps its records available before they become eligible for deletion, independent of whether any consumer has read them", "How long a consumer group can stay idle before it is deleted", "The number of partitions a topic can have", "The replication factor of a topic"],
+      "answer": 0,
+      "explain": "Retention is time- or size-based, not consumption-based. Kafka doesn't track whether every consumer has read a record before expiring it — records simply age out (or get compacted) according to the topic's retention configuration."
+    },
+    {
+      "q": "What is the purpose of Kafka Connect?",
+      "options": ["A replacement for the Kafka broker itself", "A GUI for browsing topic names only", "A framework for reliably streaming data between Kafka and external systems (databases, files, cloud storage) using pre-built, configuration-driven source and sink connectors instead of custom producer/consumer code", "A tool exclusively for deleting old topics"],
+      "answer": 2,
+      "explain": "Kafka Connect standardizes moving data in and out of Kafka: instead of hand-writing a producer or consumer for every integration, you configure an existing connector (e.g. JDBC, S3, Debezium) declaratively."
+    },
+    {
+      "q": "What is the difference between a Kafka source connector and a sink connector?",
+      "options": ["They are interchangeable terms for the same thing", "A source connector pulls data from an external system into Kafka topics; a sink connector pushes data from Kafka topics out to an external system", "Source connectors only work with files, sink connectors only with databases", "A sink connector deletes data from Kafka after reading it"],
+      "answer": 1,
+      "explain": "The direction of data flow is what distinguishes them: a source connector ingests external data into Kafka, and a sink connector exports data already in Kafka out to some other destination system."
+    },
+    {
+      "q": "What does Kafka Streams (or ksqlDB, which is built on top of it) let you do that a plain consumer does not, out of the box?",
+      "options": ["Read from a topic without ever deserializing the messages", "Store data permanently outside of Kafka instead of inside it", "Bypass consumer groups entirely", "Express continuous, stateful stream processing (joins, aggregations, windowing) directly against Kafka topics as a first-class programming/SQL model, without standing up a separate processing cluster"],
+      "answer": 3,
+      "explain": "A plain consumer just reads records; you'd have to build joins, aggregations, and windowed state management yourself. Kafka Streams (and ksqlDB's SQL layer on top of it) gives you those stream-processing primitives as a library, running inside your own application rather than a separate cluster like Spark."
+    },
+    {
+      "q": "What does it mean that Azure Event Hubs offers a \"Kafka-compatible\" endpoint?",
+      "options": ["Existing Kafka producer/consumer client applications can often connect to Event Hubs with minimal changes, because Event Hubs exposes an endpoint that speaks the Kafka protocol", "Event Hubs is literally a fork of the Apache Kafka codebase", "Kafka clients cannot connect to Event Hubs under any circumstances", "Event Hubs only supports a deprecated, outdated version of the Kafka protocol and nothing newer"],
+      "answer": 0,
+      "explain": "Event Hubs implements the Kafka wire protocol alongside its native AMQP endpoint, so many existing Kafka client applications can point at an Event Hubs namespace by changing connection settings, without a full rewrite."
+    },
+    {
+      "q": "What's a key operational tradeoff of choosing a fully managed Kafka service (like Confluent Cloud) over self-hosting Kafka on your own infrastructure?",
+      "options": ["Managed services always provide unlimited free throughput", "Self-hosted Kafka requires no operational work at all", "You give up some low-level control over broker configuration and topic placement in exchange for the provider handling scaling, patching, and cluster operations", "Managed Kafka cannot use consumer groups"],
+      "answer": 2,
+      "explain": "Managed Kafka offerings abstract away broker provisioning, upgrades, and much of the day-to-day cluster operations, but typically restrict some of the low-level tuning knobs available to someone running and patching brokers themselves."
+    },
+    {
+      "q": "Which of these is a key metric to monitor on a Kafka cluster to catch consumers falling behind?",
+      "options": ["The producer's CPU temperature", "Consumer lag — the gap between the latest offset produced to a partition and the offset a consumer group has committed", "The number of topics ever created historically", "The color scheme of the monitoring dashboard"],
+      "answer": 1,
+      "explain": "Consumer lag directly measures how far behind a consumer group is relative to incoming data. Rising lag is usually the first warning sign of a slow consumer, an undersized consumer group, or a downstream bottleneck."
+    },
+    {
+      "q": "In a real-world Kafka-to-warehouse pipeline (e.g. Kafka feeding Snowflake or Databricks), what's a common role Kafka plays?",
+      "options": ["Acting as the final storage location so no warehouse is needed at all", "Replacing Snowflake's SQL engine entirely", "Guaranteeing that the warehouse never needs to be monitored", "Acting as the durable, ordered buffer between event producers and downstream systems, decoupling how fast data is generated from how fast it's consumed and loaded"],
+      "answer": 3,
+      "explain": "Kafka's log retains events reliably even if downstream consumers (like a Snowflake or Databricks ingestion job) are temporarily slow or offline, which decouples producer throughput from consumer throughput rather than requiring both to move in lockstep."
+    },
+    {
+      "q": "In a streaming pipeline, what's a common pattern for handling records that repeatedly fail processing (\"poison pill\" messages)?",
+      "options": ["Route them to a dead-letter topic after a bounded number of retries, so a single bad record doesn't block the rest of the partition indefinitely", "Silently drop them with no record kept anywhere", "Automatically shut the entire cluster down until a human intervenes", "Retry them forever with no limit, blocking all other messages in the partition"],
+      "answer": 0,
+      "explain": "Because a partition's records are processed in order, a message that keeps failing can stall everything behind it. Sending it to a dead-letter topic after a bounded number of retries lets processing continue while preserving the bad record for later inspection."
+    },
+    {
+      "q": "What is a basic Kafka security control used to restrict which clients can produce or consume on which topics?",
+      "options": ["Kafka has no security model whatsoever", "Relying solely on network firewalls with no application-level authorization", "Authentication (e.g. SASL or SSL) combined with ACLs (Access Control Lists) that authorize specific principals for specific operations on specific resources", "Renaming topics periodically so unauthorized clients can't guess them"],
+      "answer": 2,
+      "explain": "Kafka layers authentication (proving who a client is, via SASL or mutual TLS) with authorization (ACLs that say which authenticated principal may read or write which topic), giving fine-grained control beyond just network-level access."
+    }
+  ]
+}

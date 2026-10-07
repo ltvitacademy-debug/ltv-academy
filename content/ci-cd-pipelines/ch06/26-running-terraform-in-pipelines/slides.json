@@ -1,0 +1,49 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "CI/CD Pipelines · Chapter 6",
+    "titlePlain": "Running ",
+    "titleEmphasis": "Terraform",
+    "titleSuffix": " in Pipelines",
+    "subtitle": "Lesson 26 · Pipelines for Infrastructure & Kubernetes"
+  },
+  {
+    "type": "code",
+    "eyebrow": "State has to live somewhere safe first",
+    "code": "terraform {\n  backend \"s3\" {\n    bucket         = \"northbridge-retail-tfstate\"\n    key            = \"platform/eks-cluster/terraform.tfstate\"\n    region         = \"us-east-1\"\n    dynamodb_table = \"northbridge-retail-tf-locks\"\n    encrypt        = true\n  }\n}",
+    "caption": "S3 holds the state file; DynamoDB locks it so two runs can't race."
+  },
+  {
+    "type": "code",
+    "eyebrow": "On every pull request",
+    "code": "jobs:\n  plan:\n    steps:\n      - uses: actions/checkout@v4\n      - uses: hashicorp/setup-terraform@v3\n      - uses: aws-actions/configure-aws-credentials@v4\n        with:\n          role-to-assume: arn:aws:iam::111122223333:role/northbridge-tf-ci\n      - run: terraform fmt -check\n      - run: terraform validate\n      - run: terraform plan -out=tfplan",
+    "caption": "fmt, validate, plan — read-only, posted as a PR comment for review."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Apply is a separate, gated job",
+    "code": "jobs:\n  apply:\n    needs: plan\n    if: github.ref == 'refs/heads/main'\n    environment: production   # requires manual approval\n    steps:\n      - run: terraform init\n      - run: terraform apply -auto-approve tfplan",
+    "caption": "No access keys anywhere — OIDC hands the job a short-lived AWS role."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The full gate, in order",
+    "titlePlain": "Plan is read-only, ",
+    "titleEmphasis": "apply is gated",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "fmt + validate + plan", "sub": "runs on every PR, changes nothing" },
+      { "label": "Plan posted for review", "sub": "a human reads exactly what would change" },
+      { "label": "Merge to main", "sub": "triggers the apply job" },
+      { "label": "Manual approval required", "sub": "GitHub environment protection gates apply" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 27",
+    "titlePlain": "Deploying to ",
+    "titleEmphasis": "Kubernetes",
+    "titleSuffix": " From CI/CD",
+    "subtitle": "From provisioning the cluster to shipping the app onto it"
+  }
+]

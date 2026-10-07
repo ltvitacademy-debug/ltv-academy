@@ -1,0 +1,21 @@
+# Script — VPC & EC2 on AWS
+
+## Segment 1 (title)
+
+With the aws provider configured and initialized in the last lesson, Northbridge can finally start provisioning real networking and compute. This lesson builds the AWS half of its order-processing fleet, piece by piece: a VPC to contain it, a subnet to place it in, a gateway so it can reach the internet, a security group to guard it, and the EC2 instances that actually run it.
+
+## Segment 2 (code)
+
+Every resource in this chapter lives inside a VPC — an isolated network space Northbridge fully controls. The subnet's vpc_id references the VPC block the same way you learned resources reference each other back in Chapter 2, so Terraform infers the VPC has to exist first. Setting map public ip on launch means instances in this subnet get a public IP automatically.
+
+## Segment 3 (code)
+
+A VPC with no internet gateway is sealed off entirely. Attaching one and routing traffic to it is what actually makes a subnet public. The route table's rule says anything not destined for the VPC itself goes out through the gateway, and associating that table with the subnet is the step that makes it stick.
+
+## Segment 4 (steps)
+
+A security group controls exactly what traffic reaches the fleet — nothing is open by default. This one allows inbound HTTPS from anywhere and unrestricted outbound traffic, a reasonable starting point tightened later as Northbridge's security posture matures. Then aws_instance provisions the EC2 fleet itself, referencing the subnet and security group you just defined, so Terraform builds the whole dependency graph from those references alone.
+
+## Segment 5 (outro)
+
+Northbridge's order-processing fleet now has a real network and real compute to run on, all defined in code instead of clicked together by hand. Up next, Lesson 27: S3 storage for product images, IAM least-privilege access, and a Lambda function for order confirmations.

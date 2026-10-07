@@ -1,0 +1,25 @@
+# Script — The Transformer Block
+
+## Segment 1 (title)
+
+You've built attention, multi-head attention, and positional encoding separately. This lesson assembles them into the actual reusable unit a transformer is stacked out of: the transformer block. Once you can write this one module, building a model with twelve layers or ninety-six is just a loop.
+
+## Segment 2 (steps)
+
+A decoder-style block is six steps. LayerNorm, then causal self-attention, then a residual add — that's the attention half. LayerNorm again, then a feed-forward sublayer, then another residual add — that's the feed-forward half. And no matter what happens inside, the shape going in, batch by sequence length by model dimension, matches the shape coming out.
+
+## Segment 3 (code)
+
+Written as code, pre-norm ordering is just two lines: x equals x plus attention of norm one of x, then x equals x plus feed-forward of norm two of x. Normalizing happens before each sublayer runs, which keeps the residual path completely clean. Lesson thirty-nine covers exactly why that ordering won out over the original paper's approach.
+
+## Segment 4 (code)
+
+As an actual module, the block builds four pieces in its constructor: a first layer norm, PyTorch's built-in multi-head attention, a second layer norm, and a small feed-forward sequential. Using the real nn dot multi-head attention means you don't have to hand-roll the query, key, and value projections or the head split yourself — that's already handled.
+
+## Segment 5 (code)
+
+The forward pass normalizes x, then passes that same normalized tensor as query, key, and value — which is exactly what makes it self-attention instead of cross-attention — adds the result back onto x, and repeats the pattern for the feed-forward sublayer.
+
+## Segment 6 (outro)
+
+Because the block's output shape always matches its input shape, you can run x through any number of identical blocks in a simple loop — that's the entire trick behind stacking twelve, forty, or ninety-six layers. Up next, Lesson 38: a closer look at that feed-forward sublayer.

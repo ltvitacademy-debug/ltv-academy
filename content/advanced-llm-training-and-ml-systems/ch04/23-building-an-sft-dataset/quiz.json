@@ -1,0 +1,60 @@
+{
+  "lesson": "building-an-sft-dataset",
+  "questions": [
+    {
+      "q": "What is \"distillation\" in the context of building an SFT dataset?",
+      "options": [
+        "Removing noisy tokens from the tokenizer vocabulary",
+        "Using a stronger existing model to generate training responses to a set of instructions, which scales more cheaply than pure human authorship",
+        "Compressing a trained model's weights to 4-bit precision",
+        "A technique for packing multiple conversations into one sequence"
+      ],
+      "answer": 1,
+      "explain": "Distillation for SFT data means generating responses with an existing capable model rather than having humans write every response, making large-scale dataset creation far cheaper."
+    },
+    {
+      "q": "In the standard prompt-masking implementation, what value are label positions for prompt tokens typically set to, and why?",
+      "options": [
+        "0, because zero means 'low priority' to the loss function",
+        "-100, a sentinel value that PyTorch's CrossEntropyLoss (and Hugging Face trainer internals) treats as 'ignore this position'",
+        "1, to give prompt tokens full weight equal to response tokens",
+        "The vocabulary size, to force an error if accidentally used"
+      ],
+      "answer": 1,
+      "explain": "By convention, prompt-token label positions are set to -100, a sentinel that CrossEntropyLoss is configured to ignore, excluding those positions from the loss calculation."
+    },
+    {
+      "q": "In a multi-turn conversation, which assistant turns should be unmasked (contribute to the loss)?",
+      "options": [
+        "Only the final assistant turn",
+        "Every assistant turn across the whole conversation, not just the last one",
+        "Only the first assistant turn",
+        "No assistant turns should ever be masked out"
+      ],
+      "answer": 1,
+      "explain": "The masking principle applies to every assistant turn in a multi-turn conversation. Unmasking only the last turn would silently discard most of the training signal from earlier turns."
+    },
+    {
+      "q": "Why is packing multiple conversations into one training sequence riskier for SFT than it is for pretraining?",
+      "options": [
+        "Packing is not supported at all by TRL's SFTTrainer",
+        "Without attention masking or position-id resets to prevent cross-conversation attention, the model risks learning to treat one conversation's end as a cue to start an unrelated new one",
+        "Packing always produces worse tokenization for instruction data",
+        "Packing only works with human-written data, never distilled data"
+      ],
+      "answer": 1,
+      "explain": "Unlike pretraining documents where boundaries mostly don't matter, packed SFT conversations risk cross-conversation bleed-through unless attention is explicitly blocked between the packed examples."
+    },
+    {
+      "q": "What does TRL's `SFTTrainer` handle internally when given a dataset in the standard conversational `messages` format?",
+      "options": [
+        "Nothing -- the user must manually apply the chat template and build label masks before passing data in",
+        "Chat-template application and prompt masking, which is why it's the practical default over hand-rolling that logic",
+        "Only the learning-rate schedule, with no data formatting support",
+        "Converting the model from fp32 to fp16 automatically"
+      ],
+      "answer": 1,
+      "explain": "SFTTrainer applies the tokenizer's chat template and handles prompt masking internally for conversational-format datasets, which is why it's preferred over manually implementing that logic."
+    }
+  ]
+}

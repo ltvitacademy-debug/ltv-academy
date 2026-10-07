@@ -1,0 +1,25 @@
+# Script — Text Processing Pipelines
+
+## Segment 1 (title)
+
+Northbridge Retail's nginx access log grows by tens of thousands of lines a day, and nobody reads it top to bottom. When error rates climb, the ops team pipes it through a chain of small command-line tools until only the answer is left. This lesson covers the tools that make that possible.
+
+## Segment 2 (code)
+
+`grep -E` filters lines matching a pattern, with extended regex so you can use alternation and character classes without backslash-escaping everything. You can match all five-hundred errors, all requests to one endpoint, or add `-c` to just count matching lines instead of printing them.
+
+## Segment 3 (code)
+
+`awk` splits every line into whitespace-separated fields you can reference as dollar-one, dollar-two, and so on. In Northbridge's log layout the status code is field nine and the response time is field eleven, so you can print just those columns, or filter — only show requests slower than one second.
+
+## Segment 4 (steps)
+
+Turning raw values into counts always follows the same pattern: `sort` first, because `uniq -c` only collapses duplicates that are already next to each other. `uniq -c` then prefixes each unique value with how many times it appeared. A second `sort`, with `-rn`, re-sorts those counts biggest first, so the most common value lands at the top.
+
+## Segment 5 (code)
+
+Chain all of that together and you get Northbridge's actual top-five-error-codes report: filter to four-hundred and five-hundred level lines, pull out the status column, sort, count with `uniq -c`, sort those counts descending, and keep only the top five. Five small tools, one pipeline, no custom program.
+
+## Segment 6 (outro)
+
+Grep filters, awk and cut pull out fields, sed rewrites text, and sort piped into uniq -c turns values into frequency counts. Next up, Lesson 4: scheduling these scripts to run on their own with cron and systemd timers.

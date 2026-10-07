@@ -1,0 +1,49 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "CI/CD Pipelines · Chapter 6",
+    "titlePlain": "Deploying to ",
+    "titleEmphasis": "Kubernetes",
+    "titleSuffix": " From CI/CD",
+    "subtitle": "Lesson 27 · Pipelines for Infrastructure & Kubernetes"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Every container deploy pipeline",
+    "titlePlain": "Build, push, update, ",
+    "titleEmphasis": "roll out",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Build", "sub": "source code becomes a container image" },
+      { "label": "Push", "sub": "upload the image to a registry" },
+      { "label": "Update", "sub": "point the manifest at the new tag" },
+      { "label": "Roll out", "sub": "apply it, then confirm it worked" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Build and push, tagged by commit",
+    "code": "- uses: docker/build-push-action@v6\n  with:\n    context: .\n    push: true\n    tags: ghcr.io/northbridge-retail/cart-service:${{ github.sha }}",
+    "caption": "Never latest — the commit SHA makes every deployed image traceable."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Point the cluster at the new image",
+    "code": "- run: |\n    kubectl set image deployment/cart-service \\\n      cart-service=ghcr.io/northbridge-retail/cart-service:${{ github.sha }} \\\n      -n production\n\n- run: kubectl rollout status deployment/cart-service -n production --timeout=120s",
+    "caption": "rollout status blocks until every new pod is healthy, or fails the build."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Or, for templated services",
+    "code": "- run: |\n    helm upgrade cart-service ./charts/cart-service \\\n      --install \\\n      --namespace production \\\n      --set image.tag=${{ github.sha }} \\\n      --wait --timeout 120s",
+    "caption": "--install makes it upgrade-or-install; --wait blocks the same way."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 28",
+    "titlePlain": "GitOps With ",
+    "titleEmphasis": "Argo CD or Flux",
+    "titleSuffix": "",
+    "subtitle": "When the cluster pulls changes instead of CI pushing them"
+  }
+]

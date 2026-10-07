@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "DevOps Capstone · Chapter 4",
+    "titlePlain": "Building the ",
+    "titleEmphasis": "CI Pipeline",
+    "titleSuffix": "",
+    "subtitle": "Lesson 10 · Phase 3: Pipeline & Deployment"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Monorepo, two independent workflows",
+    "titlePlain": "Scoped by ",
+    "titleEmphasis": "path filters",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "product-catalog-ci.yml", "sub": "triggers only on services/product-catalog/**" },
+      { "label": "checkout-ci.yml", "sub": "triggers only on services/checkout/**" },
+      { "label": "Why it matters", "sub": "a checkout PR never rebuilds product-catalog" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The CI stage, every push",
+    "code": "jobs:\n  build-test-scan:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm ci && npm run lint && npm test\n\n      - name: Build image\n        run: docker build -t $ACR/product-catalog:${{ github.sha }} .\n\n      - name: Scan image with Trivy\n        uses: aquasecurity/trivy-action@0.28.0\n        with:\n          severity: CRITICAL\n          exit-code: \"1\"\n\n      - name: Scan for leaked secrets\n        uses: gitleaks/gitleaks-action@v2\n\n      - run: docker push $ACR/product-catalog:${{ github.sha }}",
+    "caption": "Lint/test → build → Trivy → gitleaks → push — any stage failing stops the pipeline"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Four gates before an image is trusted",
+    "titlePlain": "Scan, then ",
+    "titleEmphasis": "tag by SHA",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Trivy", "sub": "blocks on CRITICAL vulnerabilities with a fix available" },
+      { "label": "gitleaks", "sub": "catches committed secrets — pre-commit hook and CI, two chances" },
+      { "label": "Tagged by git SHA", "sub": "never \"latest\" — every image traces to one commit" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 11",
+    "titlePlain": "Deploying to ",
+    "titleEmphasis": "Kubernetes",
+    "titleSuffix": " Automatically",
+    "subtitle": "A scanned, SHA-tagged image is only half the pipeline."
+  }
+]

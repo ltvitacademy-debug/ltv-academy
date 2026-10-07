@@ -1,0 +1,25 @@
+# Script — Instrumenting Applications
+
+## Segment 1 (title)
+
+Prometheus can't scrape metrics that don't exist. Before any dashboard or alert is possible, someone adds a few lines to the application itself, using a client library. This lesson covers the four metric types that library gives you, and how Northbridge actually wires one into a real checkout endpoint.
+
+## Segment 2 (screenshot)
+
+Start with the counter: a cumulative value that only ever increases, like total requests served or total errors. Graphed raw, it's just a staircase climbing upward forever — not very useful by itself, which is exactly why you almost always wrap it in rate, coming up in the next lesson.
+
+## Segment 3 (screenshot)
+
+A gauge is the opposite — it goes up and down, like memory usage or, for Northbridge, the number of active checkout sessions right now at any given moment. Unlike a counter, you graph a gauge's raw value directly. The shape of the line itself is the information you're after.
+
+## Segment 4 (code)
+
+Here's Northbridge instrumenting a real checkout endpoint in Python with the official prometheus_client library: a counter tracking total requests by status, and a histogram timing how long each request takes to complete. Prometheus scrapes this endpoint on its normal schedule, and both metrics are queryable immediately — no restart of Prometheus required at all.
+
+## Segment 5 (steps)
+
+Four types total: counters that only climb, gauges that swing up and down, histograms that bucket observations for percentile math, and summaries, which calculate percentiles client-side but can't be aggregated across instances the way histograms can. Keep label cardinality bounded, too — a status label is fine, a user ID label will overwhelm the database.
+
+## Segment 6 (outro)
+
+Get the instrumentation right and PromQL does the rest. Next up, lesson sixteen — turning these raw counters and histograms into real answers you can graph, aggregate, and alert on.

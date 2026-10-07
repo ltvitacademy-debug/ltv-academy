@@ -1,0 +1,21 @@
+# Script — Continuous Integration, Delivery & Deployment
+
+## Segment 1 (title)
+
+CI slash CD gets said as one word, but it names up to three distinct practices that build on each other, and the D means two completely different things depending on who's talking. This lesson pins each one down precisely, using Northbridge Retail's cart service as the running example.
+
+## Segment 2 (code)
+
+Continuous Integration means developers merge frequently — multiple times a day, not once a week — and every merge automatically triggers a build and test run. The strict part people skip: main has to stay releasable at all times. If the cart service's tests go red, fixing that build is the whole team's top priority before any new feature, because every other branch now has a broken foundation.
+
+## Segment 3 (steps)
+
+Continuous Delivery goes one step further: every change that passes CI produces a build that's always ready to release — fully tested and packaged — but a human still decides when to actually deploy it, maybe avoiding a release right before Black Friday for business reasons, not because the code isn't ready. Continuous Deployment removes that last click entirely. Every passing change deploys to production automatically, with no human gate at all.
+
+## Segment 4 (steps)
+
+Most real companies, including a retailer like Northbridge, mix the two: continuous deployment to staging for fast, low-risk feedback, and continuous delivery — a human-approved gate — for production. The ladder is CI first, then always-releasable adds up to delivery, then removing the human click entirely gets you deployment, which demands the most confidence in your test suite.
+
+## Segment 5 (outro)
+
+A quick way to tell them apart: CI alone doesn't guarantee a release-ready build, Delivery does but keeps a human in the loop, and Deployment removes that human step entirely. Up next, lesson four: DORA metrics — how to actually measure whether any of this is working.

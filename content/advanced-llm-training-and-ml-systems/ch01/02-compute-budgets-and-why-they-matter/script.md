@@ -1,0 +1,21 @@
+# Script — Compute Budgets & Why They Matter
+
+## Segment 1 (title)
+
+Before a single GPU boots up, every large training run starts with a fixed compute budget that has to be split between model size, dataset size, and training time. This lesson gives you the arithmetic and the intuition behind spending that budget well.
+
+## Segment 2 (code)
+
+A common rule of thumb says total training compute is roughly six times the number of parameters times the number of training tokens. The factor of six comes from the forward and backward pass costs per token, and it's accurate enough to plan a real run, even though it's an approximation.
+
+## Segment 3 (steps)
+
+Given a fixed budget, DeepMind's Chinchilla scaling-law work found that many earlier large models were over-parameterized relative to how much data they were trained on. The compute-optimal move is to scale model size and token count together, not just make the model bigger. In practice, shipped models are often trained well past that ratio on purpose, because inference cost matters once a model is actually serving traffic -- a smaller model trained on more tokens can match a larger one's quality while being cheaper to run for years afterward.
+
+## Segment 4 (code)
+
+A FLOPs number is abstract until you convert it into GPU-hours, and that conversion depends on model FLOPs utilization, or MFU — the fraction of a GPU's peak throughput you actually realize once you account for communication and memory bottlenecks. Well-tuned large runs often land around thirty five to fifty percent MFU; a poorly tuned one can quietly double your real cost for the same FLOPs.
+
+## Segment 5 (outro)
+
+Every later decision in this course, from vocabulary size to sequence length to data mixture, ultimately trades off against this same budget. Next up, lesson three: an overview of the data pipeline that has to supply all those tokens.

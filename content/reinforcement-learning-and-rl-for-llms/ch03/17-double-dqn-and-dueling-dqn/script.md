@@ -1,0 +1,21 @@
+# Script — Double DQN & Dueling DQN
+
+## Segment 1 (title)
+
+With replay and a target network, DQN trains stably, but it still has two separate weaknesses. This lesson covers two independent fixes: Double DQN and Dueling DQN.
+
+## Segment 2 (code)
+
+Vanilla DQN's target takes a max over the target network's own noisy Q-value estimates, and that max is statistically biased toward whichever action happens to be overestimated. Double DQN fixes this without adding any new network: the online network picks the best next action, and the target network only evaluates how good that specific action is. Decoupling selection from evaluation breaks the correlation that caused the bias.
+
+## Segment 3 (steps)
+
+The intuition is that every Q-value estimate carries some noise, some high, some low, and taking a max naturally gravitates toward the noise that happens to be high. Using two different networks, with two different sets of noise, for selecting versus evaluating makes that much less likely to happen.
+
+## Segment 4 (code)
+
+Dueling DQN changes the architecture instead of the target. It splits the final layers into a value stream, one number for how good the state is overall, and an advantage stream, one number per action for how much better that action is than average. Recombining them, minus the mean advantage for stability, lets the network learn state value and action advantage separately instead of entangled in one Q-head.
+
+## Segment 5 (outro)
+
+Double DQN and Dueling DQN are independent and commonly combined. That closes out the value-based side of this chapter — up next, lesson 18, policy gradient methods, where we stop deriving a policy from Q-values and start learning it directly.

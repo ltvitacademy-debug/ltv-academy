@@ -1,0 +1,60 @@
+{
+  "lesson": "configuring-networking-identity-and-secrets",
+  "questions": [
+    {
+      "q": "Which hostname routes to the isolated northbridge-aks-prod cluster?",
+      "options": [
+        "dev.shop.northbridgeretail.com",
+        "staging.shop.northbridgeretail.com",
+        "shop.northbridgeretail.com",
+        "northbridge-prod.internal"
+      ],
+      "answer": 2,
+      "explain": "shop.northbridgeretail.com routes to the northbridge-prod namespace on the isolated northbridge-aks-prod cluster, while dev and staging hostnames both route to namespaces on the shared northbridge-aks-dev cluster."
+    },
+    {
+      "q": "What does cert-manager do in Northbridge's ingress setup?",
+      "options": [
+        "Manually stores a certificate uploaded by an engineer",
+        "Automates TLS certificate issuance and renewal from an issuer like Let's Encrypt, based on an Ingress annotation",
+        "Replaces the NGINX Ingress Controller entirely",
+        "Generates the Azure AD federated identity credentials"
+      ],
+      "answer": 1,
+      "explain": "cert-manager watches the cluster-issuer annotation on an Ingress resource and automatically requests and renews a certificate, populating the TLS secret without manual steps."
+    },
+    {
+      "q": "How does the checkout pod authenticate to Azure Key Vault without a stored secret?",
+      "options": [
+        "It reads a client secret baked into the container image",
+        "Azure AD Workload Identity federation lets its Kubernetes service account exchange its own token for an Azure AD token, trust scoped by a federated identity credential",
+        "It uses the cluster's root kubeconfig credentials",
+        "Key Vault is configured to allow anonymous access from the dev VNet"
+      ],
+      "answer": 1,
+      "explain": "A federated identity credential trusts tokens from the specific service account, namespace, and AKS OIDC issuer, letting the pod obtain an Azure AD token with nothing stored."
+    },
+    {
+      "q": "What role does External Secrets Operator play for Northbridge's workloads?",
+      "options": [
+        "It issues TLS certificates in place of cert-manager",
+        "It syncs secrets from Key Vault into native Kubernetes Secret objects on a refresh interval, so pods mount Secrets normally",
+        "It replaces Terraform for provisioning Key Vault",
+        "It stores secrets directly inside Helm values.yaml files for versioning"
+      ],
+      "answer": 1,
+      "explain": "External Secrets Operator reads from Key Vault and writes native Kubernetes Secrets, so application pods keep mounting Secret volumes while the source of truth stays in Key Vault, not Git."
+    },
+    {
+      "q": "Why doesn't the azure/login step in Northbridge's GitHub Actions workflow include a client-secret field?",
+      "options": [
+        "Azure login never requires any credential, even in production",
+        "The federated identity credential trusts GitHub's OIDC token issuer, scoped to the repo and branch, so no stored Azure client secret exists to leak",
+        "The client secret is instead stored as a GitHub Secret and referenced separately",
+        "GitHub Actions bypasses authentication for internal repos"
+      ],
+      "answer": 1,
+      "explain": "A federated identity credential trusts tokens issued by https://token.actions.githubusercontent.com for a specific repo/ref, letting azure/login exchange that OIDC token for an Azure AD token with no stored client secret."
+    }
+  ]
+}

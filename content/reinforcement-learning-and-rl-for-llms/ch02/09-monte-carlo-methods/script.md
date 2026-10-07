@@ -1,0 +1,21 @@
+# Script — Monte Carlo Methods
+
+## Segment 1 (title)
+
+This is lesson nine, Chapter Two, Classic RL Algorithms. Dynamic programming needed a known model of the environment. Monte Carlo methods drop that requirement completely — they learn value functions purely from actual, completed episodes.
+
+## Segment 2 (code)
+
+The idea is almost embarrassingly direct. Run the policy for a full episode, record the actual return from every state you visited, and estimate the value of a state as the average of those real observed returns across many episodes. No transition probabilities, no reward function — just sampling and averaging, and by the law of large numbers, it converges to the true value.
+
+## Segment 3 (steps)
+
+A state can get visited more than once in the same episode, which raises a choice. First-visit Monte Carlo only uses the return following the first visit to a state per episode. Every-visit Monte Carlo uses the return after every single visit. Both converge to the right answer eventually; first-visit is the more commonly taught default.
+
+## Segment 4 (steps)
+
+To actually improve the policy, not just evaluate it, Monte Carlo control alternates generating episodes to estimate Q of state and action, then improving by acting greedily or epsilon-greedily with respect to that Q. Because computing a return needs the episode to actually finish, this only works for episodic tasks. And because a purely greedy policy might never try some actions, you either force exploring starts or just use an epsilon-greedy policy throughout — the same fix we saw back in lesson five.
+
+## Segment 5 (outro)
+
+Monte Carlo trades the model requirement for needing full episodes before it can update anything. Next up, lesson ten: temporal-difference learning, which keeps the no-model property but updates after every single step.

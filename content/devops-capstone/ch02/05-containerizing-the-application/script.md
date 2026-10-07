@@ -1,0 +1,21 @@
+# Script — Containerizing the Application
+
+## Segment 1 (title)
+
+You've seen what both services do. Now you'll package them as container images that are safe to run in production from the very first build — multi-stage, non-root, and tagged in a way the rest of this course's pipeline can rely on, straight from the Dockerfiles that actually ship in the repo.
+
+## Segment 2 (code)
+
+product-catalog's Dockerfile has two stages. The build stage installs dependencies with npm and copies in the source. The runtime stage starts fresh from the same slim Node base image, copies over only what's needed, and switches to a non-root user called app before the process ever starts. No build cache, no dev dependencies, no root process in the final image — just the app and what it needs to run on port 8080.
+
+## Segment 3 (code)
+
+checkout's Dockerfile follows the exact same pattern in Python. A build stage installs packages with pip into an isolated prefix; the runtime stage copies only the installed packages and the application code into a fresh python slim image, then drops down to that same non-root app user before uvicorn starts on port 8080. Same shape, same habits, different language.
+
+## Segment 4 (steps)
+
+Two more habits tie it together. Every image gets tagged by git SHA — northbridgeacr.azurecr.io, service name, then the commit hash, never latest — so any running image is traceable back to the exact commit that built it. And a .dockerignore keeps things like .env, .git, and node_modules out of the build context entirely, so secrets and bloat never end up baked into a layer in the first place.
+
+## Segment 5 (outro)
+
+Slim base images, multi-stage builds, and non-root users all add up to less for the Trivy scan to flag once you wire up CI in Chapter 4 — good container hygiene now pays off directly later. Next lesson, you'll bring both images up together locally with Docker Compose.

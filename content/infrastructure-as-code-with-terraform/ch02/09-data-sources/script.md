@@ -1,0 +1,21 @@
+# Script — Data Sources
+
+## Segment 1 (title)
+
+Every resource block you've written so far describes something Terraform should create and manage. But Northbridge Retail's Azure subscription already has things in it that this configuration shouldn't manage, yet still needs to read. This lesson covers the data block, which reads information about existing infrastructure without taking it over.
+
+## Segment 2 (steps)
+
+A resource block tells Terraform to create something and manage its entire lifecycle, updating or destroying it as the config changes. A data block says something very different: go look this up and hand me its attributes. Terraform never creates, modifies, or destroys anything described by a data block — someone or something else owns it.
+
+## Segment 3 (code)
+
+Say Northbridge's networking team already created a shared resource group that every application team deploys into, and your configuration needs to deploy a storage account there without owning the resource group itself. This data block reads its name and location, and the storage account references those looked-up values with the same type-dot-name-dot-attribute pattern from Lesson 7, just prefixed with "data" to mark it as a read, not a creation.
+
+## Segment 4 (code)
+
+Data sources are especially useful for finding the latest version of something you don't control, like an Amazon Machine Image a vendor publishes. Without one, you'd hardcode a specific AMI ID that goes stale the moment a newer patched image ships. The data block instead looks up whichever AMI currently matches the filter, every single time you run plan.
+
+## Segment 5 (outro)
+
+Reach for a data source whenever you don't own the resource, or the right value could change outside your control, instead of hardcoding something that could silently drift out of date. Next up, Lesson 10: the expressions and functions HCL gives you for logic beyond plain values.

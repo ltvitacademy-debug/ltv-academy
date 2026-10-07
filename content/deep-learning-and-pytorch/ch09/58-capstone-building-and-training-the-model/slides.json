@@ -1,0 +1,49 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Deep Learning & PyTorch · Chapter 9",
+    "titlePlain": "Building & ",
+    "titleEmphasis": "Training",
+    "titleSuffix": " the Model",
+    "subtitle": "Lesson 58 · Capstone: Train and Evaluate a Small Transformer"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Nothing new -- just assembled",
+    "titlePlain": "Four pieces, ",
+    "titleEmphasis": "one pipeline",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Dataset", "sub": "Token blocks, Ch.1 pattern" },
+      { "label": "Model", "sub": "Decoder-only transformer, Ch.6" },
+      { "label": "Training Loop", "sub": "AdamW + clipping, Ch.2-3" },
+      { "label": "AMP + Accum", "sub": "Optional speed, Ch.7" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Next-character training examples",
+    "code": "class TokenBlockDataset(Dataset):\n    def __init__(self, ids, block_size):\n        self.ids = ids\n        self.block_size = block_size\n\n    def __len__(self):\n        return len(self.ids) - self.block_size\n\n    def __getitem__(self, i):\n        chunk = self.ids[i:i+self.block_size+1]\n        return chunk[:-1], chunk[1:]",
+    "caption": "Target is the input shifted one position to the right."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Model sized to this capstone's budget",
+    "code": "model = TinyGPT(\n    vocab_size=vocab_size,\n    block_size=128,\n    n_layer=4,\n    n_head=4,\n    n_embd=128,\n    dropout=0.1,\n).to(device)\n\noptimizer = torch.optim.AdamW(\n    model.parameters(), lr=3e-4, weight_decay=0.1)\nscheduler = torch.optim.lr_scheduler.CosineAnnealingLR(\n    optimizer, T_max=max_steps)",
+    "caption": "The Chapter 6 architecture, the Chapter 2-3 optimizer habits."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The training step",
+    "code": "logits = model(x)\nloss = F.cross_entropy(\n    logits.view(-1, vocab_size), y.view(-1))\n\noptimizer.zero_grad()\nloss.backward()\ntorch.nn.utils.clip_grad_norm_(\n    model.parameters(), max_norm=1.0)\noptimizer.step()\nscheduler.step()",
+    "caption": "Clip gradients before stepping -- a tiny model can still spike."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 59",
+    "titlePlain": "Evaluation & ",
+    "titleEmphasis": "Error Analysis",
+    "titleSuffix": "",
+    "subtitle": "Perplexity, generated samples, and reading the loss curve."
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "lesson": "distributed-systems-case-study",
+  "questions": [
+    {
+      "q": "In the case study, why is inventory count treated as eventually consistent (AP) rather than strongly consistent?",
+      "options": [
+        "Because inventory data is never important to the business",
+        "Because a few seconds of staleness is an acceptable trade-off, and refusing to show the page at all to guarantee perfect freshness would hurt the business more",
+        "Because strongly consistent data cannot be stored in any database",
+        "Because the CAP theorem forbids inventory systems from choosing consistency"
+      ],
+      "answer": 1,
+      "explain": "The case study deliberately favors availability for inventory count: showing slightly stale stock is less costly to the business than refusing to serve the page, and an occasional oversell can be resolved afterward."
+    },
+    {
+      "q": "Why does the case study treat payment state differently from inventory, choosing strong consistency (CP)?",
+      "options": [
+        "Because payment data is stored on a different continent",
+        "Because the system would rather briefly refuse to confirm a charge than risk two conflicting records of whether a customer was charged",
+        "Because payment processors never experience network partitions",
+        "Because CP and AP are interchangeable terms with no real difference"
+      ],
+      "answer": 1,
+      "explain": "For payment state, correctness matters more than always answering immediately, so the system favors consistency — refusing to confirm rather than risk an incorrect or duplicated charge record."
+    },
+    {
+      "q": "Why does checkout publish an \"order placed\" message to a queue instead of calling the fulfillment system directly?",
+      "options": [
+        "So that checkout can succeed and return to the customer immediately even if fulfillment is temporarily unavailable, with the message waiting in the queue until fulfillment is ready",
+        "Because direct calls between services are technically impossible",
+        "Because queues guarantee strong consistency automatically",
+        "Because fulfillment never needs to process the order at all"
+      ],
+      "answer": 0,
+      "explain": "Using a queue decouples checkout from fulfillment's availability — the customer's checkout doesn't fail just because fulfillment happens to be down at that moment; the message simply waits."
+    },
+    {
+      "q": "Why is an idempotency key attached to the retried payment charge request?",
+      "options": [
+        "To make the charge process faster",
+        "So that if the original attempt actually succeeded and only its response was lost, the retry safely returns the original result instead of charging the customer a second time",
+        "To permanently disable retries",
+        "Because idempotency keys are required by every network protocol"
+      ],
+      "answer": 1,
+      "explain": "The timeout on the payment call means the checkout service can't tell if the first charge succeeded or not. An idempotency key lets a retry safely deduplicate against a charge that may have already gone through."
+    },
+    {
+      "q": "What is the main lesson of reading a system design the way this case study does?",
+      "options": [
+        "Every system must make the exact same CAP trade-off for all of its data",
+        "Different pieces of the same system can reasonably make different consistency/availability trade-offs, and recognizing where and why is the actual skill",
+        "Message queues should never be used in checkout systems",
+        "Idempotency keys are only relevant to Salesforce governor limits"
+      ],
+      "answer": 1,
+      "explain": "The case study shows that a single system applies multiple distinct patterns and trade-offs (per-data CAP choices, queue decoupling, idempotent retries) rather than one blanket decision, and identifying those choices is the durable skill being taught."
+    }
+  ]
+}

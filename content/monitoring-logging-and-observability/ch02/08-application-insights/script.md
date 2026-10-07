@@ -1,0 +1,21 @@
+# Script — Application Insights
+
+## Segment 1 (title)
+
+Application Insights is Azure Monitor's application performance monitoring layer — the piece that understands your application's own structure, not just the virtual machines and containers it happens to run on. It's the natural next step after Metrics Explorer and Log Analytics.
+
+## Segment 2 (screenshot)
+
+The Application Map draws every component your app talks to as a graph, colored by health. If Northbridge's checkout service calls a payment gateway that starts failing during a flash sale, that node turns red on the map before a human even notices — often the fastest way to localize which component broke, before anyone queries a single log line.
+
+## Segment 3 (screenshot)
+
+Clicking into a node and choosing "go to details" takes you from "this component is unhealthy" to the end-to-end transaction details for one specific request: every hop it made and how long each hop took. This is Azure's version of a distributed trace, and you'll see the exact same idea again under OpenTelemetry later in this course, just with AWS's and the open-source stack's own tooling.
+
+## Segment 4 (steps)
+
+All of this comes from auto-instrumentation — once Application Insights is attached, via an SDK or a zero-code extension on many Azure services, it automatically captures every incoming request, every outgoing dependency call, and every unhandled exception, with no custom logging statements required. And when you need to watch something unfold live, like a canary deployment rolling out, Live Metrics streams telemetry with about one second of latency, filterable on the fly.
+
+## Segment 5 (outro)
+
+Application Insights gets you from "something's unhealthy" to "here's the exact request and the exact hop that failed," without writing a single line of custom telemetry code. Next up, lesson nine: Alerts and Action Groups — turning that red node into an actual page to the on-call engineer.

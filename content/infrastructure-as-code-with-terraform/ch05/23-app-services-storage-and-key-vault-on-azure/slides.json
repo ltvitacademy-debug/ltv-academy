@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Infrastructure as Code with Terraform · Chapter 5",
+    "titlePlain": "App Services, Storage & Key Vault on ",
+    "titleEmphasis": "Azure",
+    "titleSuffix": "",
+    "subtitle": "Lesson 23 · Deploying on Azure"
+  },
+  {
+    "type": "code",
+    "eyebrow": "App Service plan and the storefront web app",
+    "code": "resource \"azurerm_service_plan\" \"storefront\" {\n  name                = \"asp-northbridge-storefront\"\n  resource_group_name = azurerm_resource_group.main.name\n  location            = azurerm_resource_group.main.location\n  os_type             = \"Linux\"\n  sku_name            = \"P1v3\"\n}\n\nresource \"azurerm_linux_web_app\" \"storefront\" {\n  name                = \"app-northbridge-storefront\"\n  resource_group_name = azurerm_resource_group.main.name\n  location            = azurerm_resource_group.main.location\n  service_plan_id     = azurerm_service_plan.storefront.id\n\n  site_config {\n    application_stack {\n      node_version = \"20-lts\"\n    }\n  }\n}",
+    "caption": "No VM, no OS to patch -- Azure manages the runtime."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Storage account and container for product images",
+    "code": "resource \"azurerm_storage_account\" \"product_images\" {\n  name                     = \"northbridgeprodimg\"\n  resource_group_name      = azurerm_resource_group.main.name\n  location                 = azurerm_resource_group.main.location\n  account_tier             = \"Standard\"\n  account_replication_type = \"GRS\"\n}\n\nresource \"azurerm_storage_container\" \"product_images\" {\n  name                  = \"product-images\"\n  storage_account_name  = azurerm_storage_account.product_images.name\n  container_access_type = \"blob\"\n}",
+    "caption": "GRS geo-replicates product photos to a paired region."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Key Vault, the secret, and the access policy",
+    "code": "resource \"azurerm_key_vault\" \"main\" {\n  name                = \"kv-northbridge-prod\"\n  resource_group_name = azurerm_resource_group.main.name\n  location            = azurerm_resource_group.main.location\n  tenant_id           = data.azurerm_client_config.current.tenant_id\n  sku_name            = \"standard\"\n}\n\nresource \"azurerm_key_vault_secret\" \"db_connection_string\" {\n  name         = \"storefront-db-connection-string\"\n  value        = var.db_connection_string\n  key_vault_id = azurerm_key_vault.main.id\n}\n\nresource \"azurerm_key_vault_access_policy\" \"storefront_app\" {\n  key_vault_id       = azurerm_key_vault.main.id\n  tenant_id          = data.azurerm_client_config.current.tenant_id\n  object_id          = azurerm_linux_web_app.storefront.identity[0].principal_id\n  secret_permissions = [\"Get\"]\n}",
+    "caption": "var.db_connection_string keeps the real secret out of the .tf file entirely."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Least privilege, by design",
+    "titlePlain": "Who can read the ",
+    "titleEmphasis": "secret",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "The secret lives in Key Vault", "sub": "not hardcoded, not committed to version control" },
+      { "label": "The web app gets a managed identity", "sub": "an Azure identity Terraform can grant access to" },
+      { "label": "One access policy, one permission", "sub": "Get only -- the storefront app can read the secret, nothing more" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 24",
+    "titlePlain": "AKS With ",
+    "titleEmphasis": "Terraform",
+    "titleSuffix": "",
+    "subtitle": "Provisioning Northbridge's containerized checkout service."
+  }
+]

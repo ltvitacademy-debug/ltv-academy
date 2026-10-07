@@ -1,0 +1,21 @@
+# Script — Volumes & PersistentVolumes
+
+## Segment 1 (title)
+
+A container's filesystem disappears the moment it's replaced — fine for stateless checkout Pods, but a real problem for Northbridge's product-catalog database. Kubernetes splits durable storage into two ideas: volumes tied to a Pod's life, and PersistentVolumes that outlive the Pod entirely.
+
+## Segment 2 (steps)
+
+emptyDir is the simplest volume — scratch storage created with the Pod and deleted with it, useful for sharing a directory between containers but with no real durability. A PersistentVolume represents actual cluster storage, provisioned ahead of time. A PersistentVolumeClaim is a request that gets bound to one.
+
+## Segment 3 (code)
+
+A PersistentVolume is a cluster-level resource — independent of any namespace, pointing at something real, like an AWS EBS volume with a specific ID and capacity.
+
+## Segment 4 (code)
+
+Pods never mount a PV directly. A PersistentVolumeClaim requests storage matching certain criteria, Kubernetes binds it to a satisfying PV, and the Pod mounts the claim. That indirection means the Pod spec never needs to know whether the real storage is EBS, Azure Disk, or NFS.
+
+## Segment 5 (outro)
+
+Access modes control how many nodes can mount a volume at once, and the reclaim policy decides whether data is retained or deleted when a claim goes away — both worth getting right before trusting a database to it. Next lesson: StorageClasses, which skip pre-creating every PV by hand.

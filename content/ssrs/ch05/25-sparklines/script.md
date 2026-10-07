@@ -10,12 +10,16 @@ A sparkline is a small, simple chart — no legend, no axis lines, no tick marks
 
 ## Segment 3 (screenshot: data-bars-example)
 
-A close cousin is the data bar, which nests the same way but renders as a bar instead of a line — think of it as a single-cell bar chart rather than a trend line. Data bars usually represent one data point per row, but as this stacked example shows, one bar can still illustrate more than one value — three priority levels of task count, say, stacked into a single colored bar. Both sparklines and data bars are technically chart variants with the supporting elements removed, and both come with the same restriction: you can't add either one to a table's detail row, because they display aggregated data — they need a group total cell to live in, not a raw per-record row. And if several sparklines sit in the same column, they only mean something if they're aligned — same time period lining up horizontally, same value reaching the same height vertically — otherwise a row with small values would stretch to fill the cell and look falsely dramatic.
+A close cousin is the data bar, which nests the same way but renders as a bar instead of a line — think of it as a single-cell bar chart rather than a trend line. Data bars usually represent one data point per row, but as this stacked example shows, one bar can still illustrate more than one value — three priority levels of task count, say, stacked into a single colored bar. Both sparklines and data bars are technically chart variants with the supporting elements removed, and both come with the same restriction: you can't add either one to a table's detail row, because they display aggregated data — they need a group total cell to live in, not a raw per-record row.
 
-## Segment 4 (steps: convert to full chart)
+## Segment 4 (screenshot: sparkline-align-data)
+
+One more thing has to be true before any of this is useful: sparklines in the same column have to be aligned. Look at this illustration — six sales reps, and every row lines up so the same calendar month sits at the same horizontal position, and a value of fifty reaches the same height no matter which row it's in. Reporting Services calls those horizontal and vertical alignment, and it usually needs you to set both explicitly — leave a row unaligned, and one with only small values stretches to fill the cell, looking falsely dramatic next to a row that has an actual spike.
+
+## Segment 5 (steps: convert to full chart)
 
 Here's the part that ties this whole chapter together: a sparkline isn't a separate feature from a full chart — it's the exact same chart with elements hidden. Right-click one and choose Convert to Full Chart, and the axis lines, labels, tick marks, and legend all come back instantly. There's no equivalent one-click path in the other direction — shrinking a full chart back down to a sparkline means deleting those elements yourself.
 
-## Segment 5 (outro)
+## Segment 6 (outro)
 
 That closes out Chapter 5 on charts and visual elements. Next, Chapter 6 turns to drilldowns and navigation — starting with drilldown reports.

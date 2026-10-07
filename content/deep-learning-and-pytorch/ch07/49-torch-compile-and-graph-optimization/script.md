@@ -1,0 +1,25 @@
+# Script — torch.compile & Graph Optimization
+
+## Segment 1 (title)
+
+Everything so far has run in PyTorch's default eager mode: each operation executes immediately, one Python call at a time, which is easy to debug but leaves speed on the table. torch.compile captures your model's operations as a graph it can optimize, without you rewriting anything.
+
+## Segment 2 (steps)
+
+In eager mode, PyTorch has no visibility into what comes next, so it can't fuse operations together. torch.compile traces your model into a graph instead, hands that graph to TorchInductor, its default compiler backend, and gets back optimized, often-fused kernels in return.
+
+## Segment 3 (code)
+
+Wrapping a model is one line — torch.compile on the model — and the training loop itself doesn't change at all. You call compiled_model exactly like you called model; the optimization happens entirely underneath that call, with no changes needed to your optimizer, loss function, or data pipeline.
+
+## Segment 4 (code)
+
+The first time it actually runs, PyTorch has to trace and compile the graph, which takes noticeably longer than a normal forward pass. Every call after that reuses the compiled artifact and runs fast. So it only pays off once you have enough iterations to amortize that one-time cost.
+
+## Segment 5 (steps)
+
+You can also pick a mode. Default is balanced and the right starting point. Reduce-overhead helps small models where Python and CUDA launch overhead dominate. Max-autotune spends much longer compiling in exchange for the fastest kernels it can find, worth it mainly for a long training job.
+
+## Segment 6 (outro)
+
+Next up: profiling a training run, to actually measure where your time is going instead of guessing — including whether torch.compile delivered the speedup you expected.

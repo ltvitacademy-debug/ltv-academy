@@ -1,0 +1,60 @@
+{
+  "lesson": "training-a-reward-model",
+  "questions": [
+    {
+      "q": "What architectural change turns a pretrained transformer into a reward model?",
+      "options": [
+        "Doubling the number of attention heads",
+        "Replacing the vocabulary-sized softmax output head with a single scalar regression unit",
+        "Removing the embedding layer entirely",
+        "Adding a second tokenizer"
+      ],
+      "answer": 1,
+      "explain": "A reward model keeps the pretrained transformer body but swaps the final layer for one that outputs a single scalar score per input sequence, instead of a probability distribution over the vocabulary."
+    },
+    {
+      "q": "In Hugging Face Transformers, how is this scalar-output architecture typically obtained?",
+      "options": [
+        "AutoModelForCausalLM with temperature=0",
+        "AutoModelForSequenceClassification with num_labels=1",
+        "AutoModelForQuestionAnswering with num_labels=2",
+        "AutoModelForMaskedLM with vocab_size=1"
+      ],
+      "answer": 1,
+      "explain": "AutoModelForSequenceClassification with num_labels=1 repurposes a classification head as a scalar regression head, which is exactly what a reward model needs."
+    },
+    {
+      "q": "What two fields does TRL's RewardTrainer expect in each training example?",
+      "options": [
+        "observation and action",
+        "chosen and rejected",
+        "prompt and reward",
+        "input_ids and attention_mask only, with no text fields"
+      ],
+      "answer": 1,
+      "explain": "Each example provides a chosen (preferred) sequence and a rejected sequence; RewardTrainer scores both and computes the Bradley-Terry loss on the difference."
+    },
+    {
+      "q": "What loss does RewardTrainer compute internally for each chosen/rejected pair?",
+      "options": [
+        "Mean squared error between the two raw text strings",
+        "The Bradley-Terry negative log-likelihood loss: −log σ(r(chosen) − r(rejected))",
+        "Cross-entropy over the vocabulary for the next token",
+        "A KL divergence between two policies"
+      ],
+      "answer": 1,
+      "explain": "RewardTrainer tokenizes and scores both sequences, then minimizes the Bradley-Terry loss derived in lesson 37, pushing the chosen response's score above the rejected response's score."
+    },
+    {
+      "q": "Once trained, how is the reward model used during the reinforcement learning stage of RLHF?",
+      "options": [
+        "It replaces the tokenizer for the policy model",
+        "It is frozen and used to score the policy's generated responses, supplying the reward signal that an RL algorithm like PPO optimizes against",
+        "It generates the training prompts for the policy",
+        "It is discarded immediately after training completes"
+      ],
+      "answer": 1,
+      "explain": "The trained reward model stands in for a human reviewer: it scores the policy's outputs, and that score (often combined with a KL penalty) becomes the reward signal for RL training."
+    }
+  ]
+}

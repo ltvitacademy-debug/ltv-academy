@@ -1,0 +1,60 @@
+{
+  "lesson": "residual-connections-and-layer-norm-placement",
+  "questions": [
+    {
+      "q": "Why do residual connections (`x = x + sublayer(x)`) help when training very deep stacks of transformer blocks?",
+      "options": [
+        "They reduce the total number of parameters in the model",
+        "They give the gradient a direct identity path backward through every block, alongside the path through the sublayer's weights",
+        "They remove the need for an activation function in the feed-forward sublayer",
+        "They make the model's output shape smaller"
+      ],
+      "answer": 1,
+      "explain": "The '+' creates an identity shortcut that gradients can always flow through during backpropagation, preventing vanishing gradients across many stacked blocks — conceptually similar to an LSTM's additive cell-state path."
+    },
+    {
+      "q": "Over which dimension does `nn.LayerNorm(d_model)` compute its mean and variance?",
+      "options": [
+        "Across the batch dimension, for each position",
+        "Across the sequence length dimension, for each feature",
+        "Across the d_model feature dimension, independently for each token",
+        "Across both batch and sequence simultaneously"
+      ],
+      "answer": 2,
+      "explain": "LayerNorm normalizes each token independently, computing mean and variance over that token's own d_model features — not across the batch or the sequence."
+    },
+    {
+      "q": "What is the key structural difference between post-norm (`norm(x + sublayer(x))`) and pre-norm (`x + sublayer(norm(x))`)?",
+      "options": [
+        "Post-norm uses more parameters than pre-norm",
+        "Pre-norm removes the residual connection entirely",
+        "In pre-norm, the residual (identity) path is never touched by normalization; in post-norm, it is normalized at every block",
+        "They are mathematically identical and differ only in variable names"
+      ],
+      "answer": 2,
+      "explain": "Pre-norm normalizes only the branch feeding into the sublayer, leaving `x` on the residual side completely clean. Post-norm normalizes the sum, which means the identity path gets rescaled every block."
+    },
+    {
+      "q": "What is the main practical advantage of pre-norm over post-norm for modern large language models?",
+      "options": [
+        "Pre-norm always achieves better final accuracy at every model size",
+        "Pre-norm requires fewer training examples",
+        "Pre-norm gives much more stable gradients, making it far easier to train deep stacks without careful learning-rate warmup",
+        "Pre-norm eliminates the need for a feed-forward sublayer"
+      ],
+      "answer": 2,
+      "explain": "Keeping the residual path free of normalization gives pre-norm models dramatically more stable gradients, which is why GPT-2 and most modern LLMs use it despite post-norm sometimes edging it out at small scale."
+    },
+    {
+      "q": "Which placement does this course's `TransformerBlock` (Lesson 37) and `TinyGPT` (Lesson 40) use?",
+      "options": [
+        "Post-norm, matching the original 2017 paper exactly",
+        "Pre-norm, normalizing inside each branch before the sublayer runs",
+        "No normalization at all",
+        "A mix: post-norm for attention, pre-norm for the feed-forward sublayer"
+      ],
+      "answer": 1,
+      "explain": "Both are written as `x = x + attn(norm1(x))` and `x = x + ffn(norm2(x))` — normalization happens before each sublayer, which is the pre-norm ordering."
+    }
+  ]
+}

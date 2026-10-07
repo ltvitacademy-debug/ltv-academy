@@ -1,0 +1,60 @@
+{
+  "lesson": "deploying-to-kubernetes-automatically",
+  "questions": [
+    {
+      "q": "What triggers the `deploy-dev` job, and what must already have happened?",
+      "options": [
+        "It runs on a schedule every hour regardless of CI status",
+        "It runs on main only after the build-test-scan job has succeeded",
+        "It runs on every pull request, including from forks",
+        "A maintainer must manually click a button in the GitHub UI every time"
+      ],
+      "answer": 1,
+      "explain": "The job is gated with `needs: build-test-scan` and `if: github.ref == 'refs/heads/main'`, so it only runs after CI passes on a merge to main."
+    },
+    {
+      "q": "How does the GitHub Actions workflow authenticate to Azure to deploy?",
+      "options": [
+        "A long-lived client secret stored in GitHub Secrets",
+        "A personal access token belonging to a maintainer",
+        "An OIDC federated credential — GitHub issues a short-lived token that Azure AD exchanges for Azure access, with no stored secret",
+        "A shared password checked into the Helm chart"
+      ],
+      "answer": 2,
+      "explain": "`azure/login@v2` here uses OIDC: GitHub issues a short-lived token, and Azure AD trusts it via a federated identity credential set up in Phase 2 — no client secret is stored anywhere."
+    },
+    {
+      "q": "Why is `helm upgrade --install` used instead of a plain `helm install`?",
+      "options": [
+        "It is idempotent — it creates the release on the first run and upgrades it on every run after, so the same command always works",
+        "It is required because Helm charts cannot be installed more than once",
+        "It skips running any Kubernetes admission controllers",
+        "It only works with the `northbridge-staging` namespace"
+      ],
+      "answer": 0,
+      "explain": "`helm upgrade --install` handles both the first deploy (install) and every subsequent deploy (upgrade) with one command, which is why the same CD step works unchanged on deploy #1 or deploy #400."
+    },
+    {
+      "q": "Why does `checkout`'s `values-dev.yaml` set a different autoscaling range (min 3 / max 15) than `product-catalog`'s (min 2 / max 8)?",
+      "options": [
+        "It's an arbitrary difference with no operational reason",
+        "checkout handles much higher, spikier load from flash sales and needs more headroom to scale",
+        "product-catalog is written in Python, which scales differently",
+        "Helm requires every service in a monorepo to use a different range"
+      ],
+      "answer": 1,
+      "explain": "checkout's load is far spikier because of flash sales, so its HorizontalPodAutoscaler is sized with a higher floor and ceiling than product-catalog's steadier read traffic."
+    },
+    {
+      "q": "Why don't `values-dev.yaml`, `values-staging.yaml`, or `values-prod.yaml` ever contain the PaymentPro API key or database password directly?",
+      "options": [
+        "Because Helm does not technically support string values",
+        "Because the External Secrets Operator syncs those secrets from Key Vault into Kubernetes Secrets at runtime, and the values files only reference a Secret's name",
+        "Because those secrets are hardcoded into the container image instead",
+        "Because product-catalog and checkout don't actually need any secrets"
+      ],
+      "answer": 1,
+      "explain": "The External Secrets Operator, running in the cluster, pulls secrets from Key Vault into native Kubernetes Secrets that pods mount at runtime — Helm values files never hold the secret contents themselves."
+    }
+  ]
+}

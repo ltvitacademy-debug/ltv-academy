@@ -1,0 +1,25 @@
+# Script — Saving & Loading Models
+
+## Segment 1 (title)
+
+Training can take hours or days. If your script crashes or you just want to reuse a trained model later, you need to save it to disk and load it back. This lesson covers the recommended way to do that, and how to resume training exactly where you left off.
+
+## Segment 2 (code)
+
+Every model exposes a state_dict, an ordered dictionary mapping each layer's name to its learned tensor values. You'll recognize this naming scheme from lesson eight, once we get there — each entry is named after the layer it belongs to. It contains only numbers, no class definitions — which is exactly why it's the recommended thing to save.
+
+## Segment 3 (code)
+
+torch dot save writes it to disk, torch dot load reads it back, and load_state_dict copies those saved tensors into a model you've already constructed. The architecture, the class definition itself, has to already exist in your code — only the numbers get restored.
+
+## Segment 4 (steps)
+
+Here's a bug that catches almost everyone once: after loading a model, call model dot eval. Layers like dropout and batch norm behave differently during training versus inference, and forgetting eval mode doesn't throw an error — it just quietly gives you worse or inconsistent predictions.
+
+## Segment 5 (code)
+
+To resume an interrupted training run, save more than just the weights — bundle the optimizer's state and the epoch number into a checkpoint dictionary. A checkpoint is really just a plain dictionary, so you can add whatever other fields are useful to you, like the loss at that point. Skip the optimizer state and momentum restarts from zero, which can visibly disrupt training for a while.
+
+## Segment 6 (outro)
+
+Save state_dict, not the whole model object — it's portable and doesn't depend on your class definition staying exactly the same. Up next, lesson seven: the debugging habits that catch most PyTorch mistakes before they waste your time.

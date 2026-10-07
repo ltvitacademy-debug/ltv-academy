@@ -1,0 +1,25 @@
+# Script — Scheduling & Running Scripts
+
+## Segment 1 (title)
+
+Northbridge Retail's nightly backup needs to run at 2 AM without anyone remembering to kick it off. This lesson covers the two ways to schedule that, plus how to launch a long job that outlives your SSH session, and the one habit that keeps a scheduled failure from vanishing into silence.
+
+## Segment 2 (code)
+
+A cron line is five fields: minute, hour, day of month, month, day of week, with a star meaning "any value." Zero two star star star means every night at two AM. Slash fifteen in the minute field means every fifteen minutes, and a specific weekday number restricts a job to just that day.
+
+## Segment 3 (code)
+
+Cron normally emails job output, but almost no server actually has that mail delivery set up, so a failing job fails completely silently by default. Appending the output redirect, append-log then two-greater-than-ampersand-one, sends both normal output and error output into one log file instead of letting either disappear.
+
+## Segment 4 (code)
+
+systemd timers are the modern alternative: a service file defines what to run, a timer file defines when. The timer's Persistent setting means if the server was off at the scheduled time, the job still runs once it's back up — something a plain crontab line can't do on its own.
+
+## Segment 5 (steps)
+
+Kick off a long job interactively over SSH and closing that session normally kills it. nohup makes the process ignore that signal so it survives you logging out, and disown detaches it from the shell's job table. Redirect its output too, for the same reason as cron — once the terminal is gone, so is anywhere for that output to go.
+
+## Segment 6 (outro)
+
+Cron is simple, systemd timers add logging and catch-up for missed runs, and nohup plus disown keeps a one-off long job alive after you disconnect — always with output redirected either way. That's Chapter 1 complete. Chapter 2 moves from bash into Python for automation.

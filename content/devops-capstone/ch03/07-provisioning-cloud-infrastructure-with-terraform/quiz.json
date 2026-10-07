@@ -1,0 +1,60 @@
+{
+  "lesson": "provisioning-cloud-infrastructure-with-terraform",
+  "questions": [
+    {
+      "q": "Where does Northbridge's azurerm backend store Terraform state?",
+      "options": [
+        "In a local .tfstate file committed to the storefront repo",
+        "As a blob in the sttfstatenorthbridge storage account, in the rg-tfstate resource group",
+        "In the Azure Database for PostgreSQL Flexible Server",
+        "In Azure Key Vault alongside the other secrets"
+      ],
+      "answer": 1,
+      "explain": "The backend.tf block points at resource group rg-tfstate and storage account sttfstatenorthbridge, container tfstate, with state stored as a blob there."
+    },
+    {
+      "q": "How are dev and prod Terraform state kept separate within the same storage account?",
+      "options": [
+        "They use different Azure subscriptions entirely",
+        "They use different blob keys (dev.terraform.tfstate vs. prod.terraform.tfstate)",
+        "Dev state is deleted after every apply",
+        "Prod state is stored in a different container only"
+      ],
+      "answer": 1,
+      "explain": "Both environments share the same resource group, storage account, and container; only the state blob's key differs, keeping their state files isolated."
+    },
+    {
+      "q": "Two engineers run terraform apply against the dev resource group within minutes of each other. What actually happens?",
+      "options": [
+        "Both applies succeed and the state file silently merges their changes",
+        "The second apply fails to acquire the state lock and reports who is holding it",
+        "Terraform deletes the dev resource group to avoid ambiguity",
+        "The first apply is automatically cancelled in favor of the second"
+      ],
+      "answer": 1,
+      "explain": "The azurerm backend uses an Azure Storage blob lease as a distributed lock. The second apply can't acquire the lease and fails immediately, naming the lock holder."
+    },
+    {
+      "q": "What Azure Storage mechanism does the azurerm backend use to implement state locking?",
+      "options": [
+        "A blob lease",
+        "A SQL transaction",
+        "A DNS TXT record",
+        "A role assignment"
+      ],
+      "answer": 0,
+      "explain": "The azurerm backend acquires a blob lease on the state file during plan/apply operations, which functions as a distributed lock."
+    },
+    {
+      "q": "Without remote state locking, what would have likely happened in the two-engineer collision scenario?",
+      "options": [
+        "Nothing different — Terraform always serializes applies automatically",
+        "Both applies would read the same stale state, compute conflicting diffs, and one would silently overwrite the other's state",
+        "Azure would reject the second apply at the API level regardless of Terraform",
+        "The Postgres Flexible Server would fail to provision"
+      ],
+      "answer": 1,
+      "explain": "Without a lock, concurrent applies operate on stale local copies of state and one engineer's changes can silently overwrite the other's record of reality, causing drift that's much harder to diagnose than a locked blob."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-build-it",
+  "questions": [
+    {
+      "q": "Where should checkout's real database password actually be created, according to this build?",
+      "options": [
+        "Hardcoded directly in the Deployment manifest and committed to Git",
+        "In values-prod.yaml alongside the other chart values",
+        "Created out of band with `kubectl create secret generic`, outside of Git, and referenced from the Deployment via secretKeyRef",
+        "In the ConfigMap, since ConfigMaps and Secrets are interchangeable"
+      ],
+      "answer": 2,
+      "explain": "Raw credentials should never be committed to a Git repository. The Secret is created directly against the cluster with kubectl, and the Deployment references it by name via secretKeyRef — the value itself never appears in version control."
+    },
+    {
+      "q": "In the HorizontalPodAutoscaler manifest, what does `scaleTargetRef` do?",
+      "options": [
+        "Sets the minimum and maximum replica bounds directly",
+        "Specifies which Deployment (by kind and name) the HPA monitors and scales",
+        "Defines the CPU utilization target percentage",
+        "Points to the Ingress resource the HPA should route traffic through"
+      ],
+      "answer": 1,
+      "explain": "scaleTargetRef identifies the specific workload resource — here, checkout's Deployment by name — that this particular HPA is responsible for scaling. It's why product-catalog, with its own separate Deployment, is unaffected by checkout's HPA."
+    },
+    {
+      "q": "Why does this build give checkout an HPA but not necessarily product-catalog, based on the scenario described?",
+      "options": [
+        "HPAs can only be attached to one Deployment per Kubernetes cluster, so a choice had to be made",
+        "product-catalog is described as read-heavy with steadier load, while checkout has higher and spikier load — exactly the pattern autoscaling addresses",
+        "product-catalog does not support HorizontalPodAutoscalers for technical reasons",
+        "Checkout's HPA is purely optional and has no bearing on real traffic conditions"
+      ],
+      "answer": 1,
+      "explain": "The capstone scope ties infrastructure decisions to the actual traffic characteristics described for each service — checkout's cart/order submission spikes are the clear candidate for autoscaling."
+    },
+    {
+      "q": "Before running `helm install` for real against the cluster, what should be run first to catch mistakes early?",
+      "options": [
+        "kubectl apply --dry-run=server, which is the only validation Helm supports",
+        "helm lint and helm template, to check structure/syntax and preview the exact rendered YAML with no cluster interaction",
+        "Nothing — helm install always validates everything automatically before making any changes",
+        "helm uninstall, to clear any prior state unconditionally"
+      ],
+      "answer": 1,
+      "explain": "helm lint checks the chart's structure and syntax, and helm template renders the actual manifests Helm would apply — both run without touching the cluster, making them the cheapest way to catch errors before an install or upgrade."
+    },
+    {
+      "q": "A Pod for checkout is not reaching `Running` after `helm install`. What is the correct troubleshooting sequence, per this lesson and the earlier troubleshooting lesson?",
+      "options": [
+        "Immediately helm uninstall and give up on the chart",
+        "kubectl describe pod to check the Events section, then kubectl logs (with --previous if it already restarted) to see what the container reported",
+        "Re-run helm install repeatedly until it happens to succeed",
+        "Edit the live Pod directly with kubectl edit to force it into a Running state"
+      ],
+      "answer": 1,
+      "explain": "This follows directly from lesson 34's playbook: describe the Pod first to see what the scheduler/kubelet attempted, then check logs (or --previous logs if the container restarted) to see what the application itself reported."
+    }
+  ]
+}

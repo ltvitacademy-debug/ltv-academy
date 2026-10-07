@@ -1,0 +1,25 @@
+# Script — Configuring Networking, Identity & Secrets
+
+## Segment 1 (title)
+
+The clusters exist and can pull images, but nothing is reachable from outside yet, and no pod has a safe way to get a database password or the PaymentPro API key. This lesson closes Phase 2 by wiring up ingress and TLS, federating pod identity with Azure AD, and setting up the same kind of trust for GitHub Actions.
+
+## Segment 2 (steps)
+
+NGINX Ingress Controller and cert-manager run in each cluster and route three hostnames: dev and staging both live on the shared dev cluster, while shop.northbridgeretail.com routes to the isolated prod cluster. cert-manager watches each Ingress's issuer annotation and requests and renews the certificate automatically — nothing is uploaded by hand.
+
+## Segment 3 (code)
+
+Checkout needs the PaymentPro key and its database password, but none of that belongs in a Helm values file. Azure AD Workload Identity federation lets the checkout service account trade its own Kubernetes token for an Azure AD token directly, with the trust scoped to that exact service account, namespace, and cluster. No client secret is stored anywhere to do it.
+
+## Segment 4 (steps)
+
+Each environment gets its own Key Vault holding the PaymentPro key, database credentials, and TLS certificate material, with access scoped so checkout's identity can't read product-catalog's secrets. External Secrets Operator syncs those Key Vault secrets into native Kubernetes secrets on a refresh interval, so pods just mount a secret volume like normal.
+
+## Segment 5 (code)
+
+CI gets the same treatment. A federated identity credential trusts GitHub's own OIDC token issuer, scoped to the storefront repo and the main branch. The azure login action in the workflow exchanges that short-lived GitHub token for an Azure token — there's no client-secret field in the step, because there's no secret left to leak.
+
+## Segment 6 (outro)
+
+Phase 2 infrastructure is done: networking, the clusters, and now identity and secrets, all with nothing sensitive sitting in Git. Phase 3 starts shipping code through all of it, beginning with the CI pipeline.

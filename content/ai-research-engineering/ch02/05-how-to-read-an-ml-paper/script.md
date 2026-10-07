@@ -1,0 +1,21 @@
+# Script — How to Read an ML Paper
+
+## Segment 1 (title)
+
+Reading a paper well is its own skill, separate from understanding machine learning in general. Experienced researchers don't read top to bottom like a textbook — they read out of order, on purpose, and decide how deep to go before committing real time. This lesson covers the order that actually works.
+
+## Segment 2 (steps)
+
+Start with a skimming pass: title, abstract, section headings, and conclusion, then every figure and table before the surrounding text. Figures usually compress the real contribution into one image — a strong one tells you more in fifteen seconds than a paragraph does in two minutes. Five to ten minutes should tell you whether this paper is worth more of your time, and most papers you encounter should stop right here.
+
+## Segment 3 (steps)
+
+If a paper clears that bar, the deep pass starts with the method, read closely enough to explain it without the paper in front of you. Go to limitations next, before the full results, so you don't anchor on the headline number and only notice the caveats later, if at all. Related work, the appendix, and any released code come last — and code often reveals hyperparameters and preprocessing details the prose left out entirely.
+
+## Segment 4 (steps)
+
+For every strong claim, find the specific number meant to support it, and check whether the evidence actually matches how strongly it's worded. A big claim backed by one unreplicated number, with no error bars and no multiple seeds, is a very different kind of claim than one backed by consistent results across several benchmarks with variance reported.
+
+## Segment 5 (outro)
+
+That claim-versus-evidence habit is exactly what the next lesson builds on: finding the single load-bearing claim a paper's entire narrative depends on, and learning how to stress-test it directly.

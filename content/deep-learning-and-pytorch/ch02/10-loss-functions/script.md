@@ -1,0 +1,25 @@
+# Script — Loss Functions
+
+## Segment 1 (title)
+
+A loss function is the single number training is trying to minimize. Backward computes gradients with respect to exactly that number, so picking the right loss for your task is one of the most consequential decisions you'll make. This lesson covers the two you'll reach for constantly.
+
+## Segment 2 (code)
+
+MSELoss computes the mean of the squared difference between predictions and targets. It's the standard choice whenever your target is a continuous number, and squaring the error penalizes big mistakes disproportionately more than small ones.
+
+## Segment 3 (code)
+
+CrossEntropyLoss is the standard loss for multi-class classification. It expects raw logits shaped batch by number of classes, and labels that are integer class indices, not one-hot vectors.
+
+## Segment 4 (steps)
+
+Here's the mistake that catches almost everyone once: don't apply softmax to your output before handing it to CrossEntropyLoss. It already combines log-softmax and negative log likelihood internally in one numerically stable step — double-applying softmax yourself produces incorrect gradients. Your final layer should just be a plain linear layer.
+
+## Segment 5 (code)
+
+The reduction argument controls how per-element losses combine. Mean, the default, divides by the count so the loss scale doesn't shift with batch size. Sum adds everything up, and none returns the per-element loss unreduced, for when you want to weight things yourself.
+
+## Segment 6 (outro)
+
+MSE for regression, cross-entropy for classification, and always raw logits into both CrossEntropyLoss and its binary sibling, BCEWithLogitsLoss. Up next, lesson eleven: optimizers, which turn these gradients into actual parameter updates.

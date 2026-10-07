@@ -1,0 +1,41 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced LLM Training & ML Systems · Chapter 2",
+    "titlePlain": "Sequence ",
+    "titleEmphasis": "Packing",
+    "titleSuffix": "",
+    "subtitle": "Lesson 12 · Tokenization & Data Pipelines at Scale"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The cost of naive padding",
+    "code": "def naive_pad(token_ids, seq_len, pad_id):\n    if len(token_ids) >= seq_len:\n        return token_ids[:seq_len]\n    return token_ids + [pad_id] * (seq_len - len(token_ids))\n\n# A 300-token document padded to a 4096-token sequence: ~93% padding\npadded = naive_pad(list(range(300)), seq_len=4096, pad_id=0)",
+    "caption": "Padding tokens still cost full attention compute while carrying zero signal."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Packing: concatenate, then chunk",
+    "code": "def pack_sequences(tokenized_docs, seq_len, eos_id):\n    buffer = []\n    for doc in tokenized_docs:\n        buffer.extend(doc + [eos_id])\n        while len(buffer) >= seq_len:\n            yield buffer[:seq_len]\n            buffer = buffer[seq_len:]\n\npacked = list(pack_sequences(tokenized_docs, seq_len=4096, eos_id=2))",
+    "caption": "The same pattern behind trl's ConstantLengthDataset and SFTTrainer(packing=True)."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "A packed sequence can span two unrelated documents",
+    "titlePlain": "The cross-document ",
+    "titleEmphasis": "attention problem",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Accept the noise", "sub": "EOS signals a break; many pipelines accept the mild effect" },
+      { "label": "Document-aware masking", "sub": "block-diagonal mask restricts attention to the same document" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 13",
+    "titlePlain": "Data Mixtures & ",
+    "titleEmphasis": "Domain Weighting",
+    "titleSuffix": "",
+    "subtitle": "Deciding how much of each source ends up in these sequences."
+  }
+]

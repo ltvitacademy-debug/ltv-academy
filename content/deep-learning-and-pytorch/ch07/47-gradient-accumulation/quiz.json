@@ -1,0 +1,60 @@
+{
+  "lesson": "gradient-accumulation",
+  "questions": [
+    {
+      "q": "What problem does gradient accumulation primarily solve?",
+      "options": [
+        "Slow data loading from disk",
+        "Simulating a larger effective batch size when GPU memory can't fit it directly",
+        "Numerical overflow in FP16 training",
+        "Reducing the number of epochs needed to converge"
+      ],
+      "answer": 1,
+      "explain": "Gradient accumulation spreads one 'effective' large batch across several smaller forward/backward passes, letting you train as if you had a bigger batch without needing the memory to hold it all at once."
+    },
+    {
+      "q": "Why does gradient accumulation work mechanically — what PyTorch behavior makes it possible?",
+      "options": [
+        "optimizer.step() automatically averages gradients across calls",
+        "backward() adds new gradients into .grad rather than replacing them, so gradients from successive micro-batches sum together",
+        "DataLoader automatically batches multiple iterations together",
+        "loss.backward() can only be called once per epoch"
+      ],
+      "answer": 1,
+      "explain": "Each call to backward() accumulates into .grad by addition. As long as you don't call zero_grad() between micro-batches, several backward() calls build up a combined gradient before one optimizer.step()."
+    },
+    {
+      "q": "In an accumulation loop with accum_steps = 4, what happens if you forget to divide the loss by accum_steps before calling backward()?",
+      "options": [
+        "Nothing changes — PyTorch divides automatically",
+        "Training raises a RuntimeError",
+        "The accumulated gradient ends up about 4x larger than intended, acting like a 4x larger learning rate",
+        "The model's forward pass produces incorrect outputs"
+      ],
+      "answer": 2,
+      "explain": "backward() accumulates sums, not averages. Without dividing by accum_steps first, the summed gradient is accum_steps times too large, silently behaving as if the learning rate were multiplied by accum_steps."
+    },
+    {
+      "q": "In the standard gradient accumulation loop, where should optimizer.step() and optimizer.zero_grad() be called?",
+      "options": [
+        "After every single micro-batch, same as normal training",
+        "Only once, after the very last micro-batch of the entire training run",
+        "Only every accum_steps micro-batches, inside a conditional check on the iteration count",
+        "Before the forward pass on each micro-batch"
+      ],
+      "answer": 2,
+      "explain": "Gradients from backward() keep accumulating across micro-batches. optimizer.step() and zero_grad() should only run once an effective batch's worth of micro-batches have accumulated, typically guarded by (i + 1) % accum_steps == 0."
+    },
+    {
+      "q": "Why is a model using gradient accumulation with BatchNorm layers not perfectly numerically identical to the same model trained with one real large batch?",
+      "options": [
+        "Gradient accumulation disables BatchNorm entirely",
+        "BatchNorm's running statistics are computed per micro-batch as it passes through, not pooled retroactively across all accumulated micro-batches",
+        "BatchNorm requires FP16 and breaks under gradient accumulation",
+        "Accumulated gradients are not compatible with BatchNorm's backward pass"
+      ],
+      "answer": 1,
+      "explain": "BatchNorm computes its batch statistics from whatever micro-batch is currently passing through the layer. Accumulation correctly sums gradients, but it does not retroactively combine BatchNorm statistics the way one real large batch would."
+    }
+  ]
+}

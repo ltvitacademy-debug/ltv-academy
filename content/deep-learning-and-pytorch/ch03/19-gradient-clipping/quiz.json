@@ -1,0 +1,60 @@
+{
+  "lesson": "gradient-clipping",
+  "questions": [
+    {
+      "q": "Why can gradients 'explode' in deep or recurrent networks?",
+      "options": [
+        "Because PyTorch caps the number of parameters allowed",
+        "Because the chain rule multiplies many terms together, and if those terms run slightly above 1, the product can grow exponentially with depth",
+        "Because the dataset was shuffled incorrectly",
+        "Because dropout was left enabled during evaluation"
+      ],
+      "answer": 1,
+      "explain": "Gradients are products of many chain-rule terms. If those terms are consistently somewhat larger than 1, the product compounds and can grow exponentially with network depth or sequence length."
+    },
+    {
+      "q": "In the training step `loss.backward(); torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0); optimizer.step()`, where does clipping happen relative to the other calls?",
+      "options": [
+        "Before loss.backward(), so gradients are never computed in full",
+        "After backward() has populated gradients, and before optimizer.step() consumes them",
+        "After optimizer.step(), to undo an already-applied update",
+        "Inside the loss function itself"
+      ],
+      "answer": 1,
+      "explain": "Clipping needs populated .grad values to act on, so it runs after loss.backward() and before optimizer.step() uses those gradients to update the weights."
+    },
+    {
+      "q": "What does `torch.nn.utils.clip_grad_norm_` do to the gradients when the combined norm exceeds `max_norm`?",
+      "options": [
+        "It sets every gradient to zero",
+        "It rescales every gradient proportionally so the new combined norm equals max_norm, preserving direction",
+        "It randomly drops some gradients",
+        "It increases the learning rate to compensate"
+      ],
+      "answer": 1,
+      "explain": "clip_grad_norm_ rescales all gradients by the same proportional factor so the resulting combined norm equals max_norm — the gradient's direction is unchanged, only its magnitude shrinks."
+    },
+    {
+      "q": "How does `clip_grad_value_` differ from `clip_grad_norm_`?",
+      "options": [
+        "clip_grad_value_ clamps each gradient element independently to a fixed range, which can change the gradient's direction; clip_grad_norm_ rescales proportionally and preserves direction",
+        "They are two names for the exact same function",
+        "clip_grad_value_ only works with the Adam optimizer",
+        "clip_grad_value_ clips the learning rate instead of the gradient"
+      ],
+      "answer": 0,
+      "explain": "clip_grad_value_ clamps each gradient component to [-clip_value, clip_value] independently, which can distort the gradient's direction, unlike the proportional, direction-preserving rescaling of clip_grad_norm_."
+    },
+    {
+      "q": "You notice occasional sharp spikes in your training loss that don't correspond to anything unusual in the data. What is a reasonable, low-risk thing to try first, based on this lesson?",
+      "options": [
+        "Immediately redesign the entire model architecture",
+        "Add gradient clipping with a max_norm around 1.0-5.0",
+        "Delete the validation set",
+        "Switch every layer to nn.Dropout"
+      ],
+      "answer": 1,
+      "explain": "Occasional unexplained loss spikes are a classic symptom of exploding gradients, and gradient clipping with a modest max_norm is a cheap, low-risk mitigation to try before more invasive changes."
+    }
+  ]
+}

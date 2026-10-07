@@ -1,0 +1,60 @@
+{
+  "lesson": "connecting-clusters-to-cloud-identity-and-registries",
+  "questions": [
+    {
+      "q": "Why is storing a cloud storage key as a Kubernetes Secret considered risky compared to Workload Identity or IRSA?",
+      "options": [
+        "Secrets cannot be mounted into Pods at all",
+        "It's a long-lived credential that must be rotated manually and remains valid until someone notices a leak and revokes it",
+        "Secrets are visible in plain text to every user in the cluster by default",
+        "Kubernetes does not support Secrets larger than 1KB"
+      ],
+      "answer": 1,
+      "explain": "A stored key is durable and must be manually rotated; if it leaks, it stays valid until someone catches it. Federated identity avoids storing any such key."
+    },
+    {
+      "q": "What does Azure Workload Identity actually federate?",
+      "options": [
+        "A Kubernetes Namespace with an Azure resource group",
+        "A Kubernetes ServiceAccount with an Azure AD (Entra ID) application, using the ServiceAccount's own token as proof of identity",
+        "An entire AKS cluster with a single Azure subscription",
+        "A Kubernetes Secret with an Azure Key Vault secret"
+      ],
+      "answer": 1,
+      "explain": "Workload Identity ties a specific ServiceAccount (namespace + name) to an Azure AD application via a federated credential, with the ServiceAccount's token itself used to prove identity — no client secret stored."
+    },
+    {
+      "q": "What does `eksctl create iamserviceaccount --attach-policy-arn ... --approve` accomplish in one command?",
+      "options": [
+        "It only creates a Kubernetes ServiceAccount object with no AWS-side configuration",
+        "It creates the IAM role, trusts it to the cluster's OIDC provider, and annotates the ServiceAccount so Pods using it get scoped temporary AWS credentials",
+        "It grants the ServiceAccount full AdministratorAccess regardless of the policy specified",
+        "It creates an EC2 instance profile instead of an IAM role"
+      ],
+      "answer": 1,
+      "explain": "This single eksctl command handles IAM role creation, OIDC trust configuration, and ServiceAccount annotation together — this is IRSA (IAM Roles for Service Accounts)."
+    },
+    {
+      "q": "How does `az aks update --attach-acr` let node pools pull private container images without imagePullSecrets?",
+      "options": [
+        "It disables image pull authentication entirely for the cluster",
+        "It grants the AKS node pool's managed identity pull access directly to Azure Container Registry",
+        "It copies the registry's admin password into every Pod spec",
+        "It requires every Pod to mount a Secret regardless"
+      ],
+      "answer": 1,
+      "explain": "Attaching ACR to the node pool's managed identity lets nodes authenticate to the registry directly, removing the need for per-Pod imagePullSecrets."
+    },
+    {
+      "q": "What is the common thread between AKS Workload Identity and EKS IRSA?",
+      "options": [
+        "Both require storing a long-lived API key in a Kubernetes Secret",
+        "Both let a Kubernetes ServiceAccount obtain short-lived, automatically issued cloud credentials via an OIDC trust relationship, with no durable secret stored",
+        "Both only work for pulling container images, not for accessing other cloud resources",
+        "Both are exclusive to EKS and were later ported to AKS"
+      ],
+      "answer": 1,
+      "explain": "Despite different names and cloud-specific mechanics, both features federate a Kubernetes ServiceAccount's identity into the cloud provider via OIDC, issuing short-lived credentials instead of relying on a stored key."
+    }
+  ]
+}

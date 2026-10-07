@@ -1,0 +1,60 @@
+{
+  "lesson": "custom-layers-and-modules",
+  "questions": [
+    {
+      "q": "What is the basic recipe for writing a custom nn.Module layer with its own learnable parameters?",
+      "options": [
+        "Define parameters globally outside any class, then reference them in a standalone function",
+        "Create nn.Parameter instances in __init__ (assigned as attributes) and implement the computation in forward()",
+        "Subclass torch.Tensor directly and override its arithmetic operators",
+        "Use nn.Sequential exclusively; custom logic is not supported"
+      ],
+      "answer": 1,
+      "explain": "This is the same core pattern from Lesson 8: assign nn.Parameter instances as attributes inside __init__ (so nn.Module's auto-discovery picks them up), then use them in forward() to define the layer's computation."
+    },
+    {
+      "q": "What does register_buffer do, and how does it differ from nn.Parameter?",
+      "options": [
+        "It is identical to nn.Parameter in every respect",
+        "It registers a tensor that moves with the model via .to(device) and is saved in state_dict(), but is never included in .parameters() and never updated by the optimizer",
+        "It permanently deletes a tensor from memory",
+        "It only works for tensors already on the GPU"
+      ],
+      "answer": 1,
+      "explain": "register_buffer tracks a tensor for device-moving and serialization purposes, like a parameter, but explicitly excludes it from .parameters() and gradient-based updates -- appropriate for non-learnable state like a running average."
+    },
+    {
+      "q": "What goes wrong if you store a list of submodules as a plain Python list attribute (self.blocks = [Block(), Block()]) instead of nn.ModuleList?",
+      "options": [
+        "Nothing; plain lists and nn.ModuleList behave identically",
+        "nn.Module's attribute-scanning never discovers those submodules, so their parameters are silently excluded from .parameters(), they don't move with .to(device), and they're missing from state_dict() -- with no error raised",
+        "The code immediately raises a TypeError at model construction",
+        "The submodules train twice as fast"
+      ],
+      "answer": 1,
+      "explain": "A plain Python list is invisible to nn.Module's parameter/submodule discovery mechanism. This is a dangerous silent bug: the model runs without error, but those layers never receive gradient updates, never move devices, and are absent from checkpoints."
+    },
+    {
+      "q": "Why would you build a small reusable 'block' module (e.g. MLPBlock combining Linear + ReLU) rather than always using nn.Sequential directly?",
+      "options": [
+        "nn.Sequential cannot contain more than two layers",
+        "A custom block lets you package and reuse a multi-layer pattern as one named unit, and compose more complex logic (branching, loops, variable depth) that a straight-line nn.Sequential stack can't express",
+        "Blocks run faster than nn.Sequential on every hardware configuration",
+        "nn.Sequential does not support activation functions"
+      ],
+      "answer": 1,
+      "explain": "nn.Sequential is limited to a straight-line chain of layers. A custom nn.Module block can be reused across a model (e.g. inside a loop building variable depth) and can express logic nn.Sequential alone cannot, such as branching or custom forward control flow."
+    },
+    {
+      "q": "What three things does assigning an nn.Parameter as a module attribute get you automatically, 'for free'?",
+      "options": [
+        "Faster CPU execution, smaller file size, and automatic batch size tuning",
+        "Discovery by .parameters()/.named_parameters(), gradient tracking through autograd, and inclusion in state_dict() for saving/loading",
+        "Automatic conversion to float16, automatic GPU placement, and automatic normalization",
+        "A guaranteed reduction in loss during training"
+      ],
+      "answer": 1,
+      "explain": "Because nn.Module scans its attributes for nn.Parameter instances, assigning one gets it automatically included in .parameters() (and therefore optimizers), tracked by autograd via requires_grad=True, and saved/restored through state_dict()."
+    }
+  ]
+}

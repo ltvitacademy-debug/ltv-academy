@@ -1,0 +1,60 @@
+{
+  "lesson": "environment-promotion-and-approvals",
+  "questions": [
+    {
+      "q": "What actually triggers a staging deployment in this pipeline?",
+      "options": [
+        "Any merge to the main branch",
+        "A maintainer pushing a semver tag, such as v1.5.0",
+        "A scheduled nightly job",
+        "Opening a pull request against main"
+      ],
+      "answer": 1,
+      "explain": "Promotion is tag-based: the `promote-release.yml` workflow triggers on `push: tags: [\"v*.*.*\"]`, not on branch pushes or PRs."
+    },
+    {
+      "q": "Which cluster does the `northbridge-staging` namespace actually run on?",
+      "options": [
+        "Its own dedicated cluster, northbridge-aks-staging",
+        "northbridge-aks-prod, isolated from dev traffic",
+        "northbridge-aks-dev, the same cluster that hosts northbridge-dev",
+        "It does not run in Kubernetes at all"
+      ],
+      "answer": 2,
+      "explain": "Both `northbridge-dev` and `northbridge-staging` namespaces live on `northbridge-aks-dev` to save cost; only `northbridge-prod` is isolated on its own cluster, `northbridge-aks-prod`."
+    },
+    {
+      "q": "What mechanism blocks the `deploy-prod` job until a human approves?",
+      "options": [
+        "A `sleep` step that waits a fixed number of hours",
+        "A GitHub Environment named \"production\" configured with a protection rule requiring 1 reviewer",
+        "A Slack bot that polls for a thumbs-up reaction",
+        "Azure Key Vault refusing to release secrets without manual unlock"
+      ],
+      "answer": 1,
+      "explain": "Setting `environment: production` on the job ties it to a GitHub Environment whose protection rule requires a reviewer's approval before the job is allowed to proceed."
+    },
+    {
+      "q": "What is the fastest way to undo a bad production promotion, assuming the previous Helm release was healthy?",
+      "options": [
+        "Delete the entire namespace and recreate it from scratch",
+        "`helm rollback <release> <revision>` to revert to the previous release revision",
+        "Manually edit the running pods with `kubectl edit`",
+        "Wait for the next scheduled deploy to overwrite it"
+      ],
+      "answer": 1,
+      "explain": "`helm rollback` reverts a release to a prior revision in one command and is the fastest path back, since Helm already tracks each revision's state."
+    },
+    {
+      "q": "Why is redeploying a specific prior image SHA sometimes preferred over `helm rollback`?",
+      "options": [
+        "It is required because `helm rollback` does not exist",
+        "It lets you be explicit about exactly which commit's image you're returning to, or combine it with a changed value",
+        "It deploys faster because it skips the Azure login step",
+        "It is the only option that works in the northbridge-prod namespace"
+      ],
+      "answer": 1,
+      "explain": "Explicitly setting `--set image.tag=<sha>` is more deliberate than a blanket rollback — useful when you want precision about which commit you're returning to, or need to pair it with a values change."
+    }
+  ]
+}

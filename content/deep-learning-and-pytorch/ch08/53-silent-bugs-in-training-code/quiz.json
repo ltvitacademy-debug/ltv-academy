@@ -1,0 +1,60 @@
+{
+  "lesson": "silent-bugs-in-training-code",
+  "questions": [
+    {
+      "q": "What goes wrong if you write `running_loss += loss` instead of `running_loss += loss.item()` inside a training loop?",
+      "options": [
+        "PyTorch raises a TypeError immediately",
+        "The loss value is rounded incorrectly",
+        "The entire computation graph for that step stays alive, since loss is still a tensor attached to it, causing memory use to grow across the epoch",
+        "Training becomes faster because less is detached"
+      ],
+      "answer": 2,
+      "explain": "loss is a tensor tied to its full computation graph. Accumulating the tensor itself (rather than its detached scalar value via .item()) keeps that graph alive for every batch, silently growing memory usage with no error."
+    },
+    {
+      "q": "Why does forgetting model.eval() before validation produce misleading results rather than an error?",
+      "options": [
+        "PyTorch automatically detects validation mode without needing eval()",
+        "Layers like Dropout and BatchNorm keep behaving as they do during training (randomly dropping units, using batch statistics) instead of their evaluation-mode behavior, silently skewing the computed loss",
+        "model.eval() only affects the optimizer, not the model's layers",
+        "Validation always requires a separate model instance"
+      ],
+      "answer": 1,
+      "explain": "Without model.eval(), Dropout keeps randomly zeroing activations and BatchNorm keeps using current-batch statistics instead of running averages — both still numerically valid operations, just not the ones you want for a clean validation measurement, so nothing crashes."
+    },
+    {
+      "q": "What is the consequence of omitting optimizer.zero_grad() between training steps?",
+      "options": [
+        "Training stops immediately with a gradient error",
+        "Each new backward() call adds to the existing .grad values rather than replacing them, so gradients accumulate across steps and the optimizer takes increasingly incorrect steps",
+        "The model's weights are reset to their initial values",
+        "Nothing changes; zero_grad() is purely optional cleanup with no effect on correctness"
+      ],
+      "answer": 1,
+      "explain": "backward() adds to .grad instead of overwriting it. Without zero_grad(), gradients from all previous steps keep piling up, silently corrupting every subsequent optimizer update with no error thrown."
+    },
+    {
+      "q": "If model.eval() is already set correctly, what does additionally wrapping inference in torch.no_grad() save you?",
+      "options": [
+        "It makes the forward pass compute different, more accurate outputs",
+        "It avoids building an autograd graph for operations whose gradients will never be used, saving memory and time",
+        "It is required for Dropout to switch off",
+        "It replaces the need for model.eval() entirely"
+      ],
+      "answer": 1,
+      "explain": "model.eval() only changes layer behavior (Dropout/BatchNorm). Without torch.no_grad(), PyTorch still tracks operations for a backward pass that will never happen during inference, wasting memory and compute — torch.no_grad() skips that tracking."
+    },
+    {
+      "q": "What is the common thread among all four bugs described in this lesson?",
+      "options": [
+        "They all cause PyTorch to raise a clear, descriptive exception",
+        "They all only occur when using a GPU, never on CPU",
+        "None of them crash the program; they silently produce numerically wrong or wasteful results that look plausible",
+        "They are all fixed automatically by using torch.compile"
+      ],
+      "answer": 2,
+      "explain": "The defining danger of these bugs is that none of them throw an error. Training appears to run fine while quietly leaking memory, miscomputing validation loss, or corrupting gradient accumulation — which is exactly why a deliberate checklist is needed to catch them."
+    }
+  ]
+}

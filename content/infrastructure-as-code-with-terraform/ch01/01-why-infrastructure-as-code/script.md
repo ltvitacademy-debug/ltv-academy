@@ -1,0 +1,21 @@
+# Script — Why Infrastructure as Code
+
+## Segment 1 (title)
+
+Welcome to Infrastructure as Code with Terraform. Across this course you'll build out real infrastructure for Northbridge Retail, a mid-size e-commerce retailer modernizing its Azure and AWS footprint. Before writing a line of Terraform, let's talk about why this matters at all.
+
+## Segment 2 (steps)
+
+Northbridge's platform team started by clicking a few virtual machines into existence in the Azure Portal. That worked, until they needed a second environment and nobody had written down the exact settings they'd chosen the first time. Staging drifted from production, and when a VM got deleted by accident, the only record of its configuration lived in one engineer's memory — who had since left.
+
+## Segment 3 (code)
+
+Infrastructure as Code means describing what you want in a text file instead of clicking buttons. This resource group definition gets committed to Git, reviewed in a pull request like any other code change, and run by a tool that makes real infrastructure match it. The file becomes the single source of truth.
+
+## Segment 4 (steps)
+
+That file gives you three things clicking never could: it's repeatable, producing identical infrastructure in every environment; reviewable, since a diff shows exactly what's about to change; and recoverable, because rerunning the file rebuilds anything that gets lost.
+
+## Segment 5 (outro)
+
+Terraform is the tool this course teaches to do all of that, across both Azure and AWS. Next up, Lesson 2: the difference between declarative tools like Terraform and imperative scripts.

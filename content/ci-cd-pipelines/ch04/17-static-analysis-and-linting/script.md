@@ -1,0 +1,25 @@
+# Script — Static Analysis & Linting
+
+## Segment 1 (title)
+
+Tests catch broken behavior. Static analysis and linting catch something different — code that runs fine today but is sloppy, inconsistent, or quietly dangerous. Northbridge Retail adds both to the storefront-api pipeline to catch what a test suite was never designed to see in the first place.
+
+## Segment 2 (steps)
+
+Both tools read source code without running it, but they look for different things. Linting checks style and consistency, like unused imports or inconsistent naming, so a twenty-engineer codebase doesn't read like twenty different styles stitched together. Static analysis goes further, looking for patterns that are likely bugs or security problems even though the code compiles and runs fine — GitHub's own engine for this is CodeQL.
+
+## Segment 3 (code)
+
+Here's the real lint step for storefront-api: ruff check src, running against the source tree. That's the whole step — ruff exits non-zero the moment it finds a violation, failing the job the same way a failing test does, but as its own separately-named check.
+
+## Segment 4 (screenshot)
+
+CodeQL scans every pull request and attaches its findings as a named check, sitting right alongside the test and lint checks — a third gate, not a replacement for either one.
+
+## Segment 5 (screenshot)
+
+A high-severity finding can fail that check outright, the same way a broken test does. The merge box shows exactly how many new alerts the pull request introduced and how severe they are, so nobody has to go digging for what broke.
+
+## Segment 6 (outro)
+
+A perfect test suite can still ship a SQL injection bug nobody wrote a test for, because nobody ever exercised that specific code path. Catching that on the same pull request, instead of in production, is the whole point. Next: turning numbers like coverage into an actual pass or fail.

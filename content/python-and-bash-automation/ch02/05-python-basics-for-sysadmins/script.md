@@ -1,0 +1,25 @@
+# Script — Python Basics for Sysadmins
+
+## Segment 1 (title)
+
+Welcome to Python for Automation. You've written Bash scripts that chain commands together — now you'll see why sysadmins reach for Python once a task needs real logic: structured data, real decisions, and functions you can reuse, not just piped text. Every example in this chapter runs on servers at Northbridge Retail, a mid-size e-commerce retailer modernizing its infrastructure.
+
+## Segment 2 (code)
+
+Python's core types work the way you'd expect: strings hold hostnames, numbers hold a disk usage percentage, and booleans hold a yes-or-no answer like "is this critical." An f-string lets you drop those variables straight into a readable message, which is most of what an ops script actually prints.
+
+## Segment 3 (code)
+
+Real infrastructure is a collection, not one value, so you'll reach for lists and dictionaries constantly. A list holds an ordered set of servers. A dictionary maps each hostname to its own data, so you can look any server up by name with `disk_usage.get(server)` instead of searching a list.
+
+## Segment 4 (code)
+
+A for loop walks every server in that dictionary, and an if statement decides whether to raise an alert. Once a check like that gets reused, wrap it in a function — `is_over_threshold` takes a percentage and a limit, returns True or False, and every script that needs the same logic now calls one line.
+
+## Segment 5 (steps)
+
+That's the progression for this lesson: variables and types give you single values, lists and dictionaries give you structured collections, if, for, and while give you decisions and repetition, and functions package all of it into something reusable so you're never copy-pasting the same check twice. Keep that order in mind — later lessons build directly on it.
+
+## Segment 6 (outro)
+
+Next up, you'll point these same skills at the filesystem — using Python's os and pathlib modules to find, read, and archive Northbridge Retail's log files across directories.

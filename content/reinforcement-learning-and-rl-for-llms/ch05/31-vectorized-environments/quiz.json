@@ -1,0 +1,60 @@
+{
+  "lesson": "vectorized-environments",
+  "questions": [
+    {
+      "q": "Why is running N vectorized environment copies usually faster than running one at a time, even with the same total hardware?",
+      "options": [
+        "It reduces the size of the neural network needed",
+        "A single environment leaves hardware mostly idle waiting on environment stepping, so batching N copies turns N sequential calls into one call and yields N transitions per step",
+        "Vectorization automatically reduces the discount factor",
+        "It eliminates the need for a reward function"
+      ],
+      "answer": 1,
+      "explain": "Collecting experience is usually the bottleneck, not the gradient update. Batching N sub-environments together increases data-collection throughput."
+    },
+    {
+      "q": "What does gym.make_vec(\"CartPole-v1\", num_envs=8, vectorization_mode=\"sync\") return?",
+      "options": [
+        "8 independent environments with no shared interface",
+        "A single environment with an 8x larger action space",
+        "A vectorized environment wrapper where reset() and step() operate on batches of 8 across a leading dimension",
+        "A pretrained policy for CartPole"
+      ],
+      "answer": 2,
+      "explain": "make_vec wraps num_envs copies of the named environment, batching observations, rewards, and termination signals along a leading dimension."
+    },
+    {
+      "q": "What is the key difference between SyncVectorEnv and AsyncVectorEnv?",
+      "options": [
+        "SyncVectorEnv only supports Discrete action spaces",
+        "SyncVectorEnv steps sub-environments sequentially in one process; AsyncVectorEnv runs each sub-environment in its own subprocess for true parallelism",
+        "AsyncVectorEnv cannot be created with gym.make_vec",
+        "SyncVectorEnv requires a GPU"
+      ],
+      "answer": 1,
+      "explain": "Sync vectorization steps environments one after another in-process (low overhead, good for cheap environments); async vectorization uses subprocesses, which pays off when each environment step is itself expensive."
+    },
+    {
+      "q": "What is autoreset in the context of vectorized environments?",
+      "options": [
+        "The vectorized wrapper automatically resetting a sub-environment that just finished, typically reflected on the next step() call",
+        "A setting that disables the terminated flag",
+        "A feature that restarts training if loss diverges",
+        "The default seed used when none is provided"
+      ],
+      "answer": 0,
+      "explain": "Because sub-environments finish at different times, the vectorized wrapper automatically resets a finished one, which means a later observation batch can mix a fresh episode's first observation with another sub-environment's mid-episode observation."
+    },
+    {
+      "q": "Why should training code check terminations/truncations per index rather than assuming every row in a vectorized batch is mid-episode?",
+      "options": [
+        "Because indices are randomly shuffled every step",
+        "Because autoreset means some sub-environments may have just started a new episode while others are mid-episode, so return bookkeeping must be tracked per sub-environment",
+        "Because the action_space differs per index",
+        "Because rewards are shared across all sub-environments"
+      ],
+      "answer": 1,
+      "explain": "Sub-environments finish and autoreset independently, so correctly crediting returns to the right episode requires per-index tracking of terminations and truncations."
+    }
+  ]
+}

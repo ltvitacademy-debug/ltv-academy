@@ -1,0 +1,25 @@
+# Script — Grafana Dashboards
+
+## Segment 1 (title)
+
+Prometheus's own expression browser is built for testing one query at a time, not staring at all shift. Grafana is the visualization layer most teams put in front of it — same PromQL you already know, multi-panel dashboards, with history, sharing, and alerting all built in.
+
+## Segment 2 (screenshot)
+
+Before building anything, Grafana needs a data source pointing at your Prometheus server's URL. That's it — a name and an address, and every panel on every dashboard can query it from there using the exact same PromQL from the last lesson, completely unchanged.
+
+## Segment 3 (screenshot)
+
+A dashboard is just a grid of panels, and each one wraps a PromQL query with a chosen visualization. Here's a real one monitoring Prometheus itself — request rate up top, latency right next to it, resource panels stacked below. Northbridge's checkout dashboard follows this exact same layout.
+
+## Segment 4 (code)
+
+Four panels cover it for Northbridge: request rate split by status, p95 latency from the histogram built back in lesson fifteen, error rate as a ratio of failed to total requests, and a count of active pods. Request rate and latency sit at the top — the first two numbers anyone checks the moment an incident starts.
+
+## Segment 5 (steps)
+
+Why not just use the expression browser? It's stateless — close the tab, the query's gone for good. A Grafana dashboard persists, shares by a single URL across the whole on-call rotation, and supports variables, so one dashboard template can serve any service, not just checkout alone.
+
+## Segment 6 (outro)
+
+When checkout latency spikes during the flash sale in chapter six, this is the exact dashboard someone pulls up first, not a blank query box. Next up, lesson nineteen: Alertmanager, and routing those alerts to the right people.

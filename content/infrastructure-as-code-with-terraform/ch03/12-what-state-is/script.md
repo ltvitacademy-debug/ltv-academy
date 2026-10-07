@@ -1,0 +1,21 @@
+# Script — What State Is
+
+## Segment 1 (title)
+
+The previous lesson ended with terraform apply creating real infrastructure for Northbridge Retail — a resource group, a storage account. The moment that command finishes, Terraform quietly does something you haven't looked at yet: it writes a file to disk. That file, terraform dot tfstate, is how Terraform remembers what it built, and this lesson is about exactly what's inside it and why Terraform can't function without it.
+
+## Segment 2 (steps)
+
+Terraform needs state for three reasons. First, your configuration only has local names and desired attribute values — nothing that maps azurerm_resource_group.northbridge to the real resource ID Azure assigned when it was created. Second, state is what lets Terraform detect drift, noticing when someone changes a resource by hand in the Portal instead of through Terraform. Third, it's the record Terraform checks to know exactly which real resource to destroy when you delete a block from your configuration.
+
+## Segment 3 (code)
+
+Here's a trimmed terraform.tfstate entry for that resource group. Notice the id attribute: a full Azure resource ID, sitting right alongside the name and location you actually wrote in your configuration. That id is the piece your dot tf files never contained on their own — Terraform had to go create the resource and record what Azure handed back.
+
+## Segment 4 (code)
+
+Every time you run terraform plan, Terraform refreshes this file against the real provider API, then compares what it finds against both your configuration and the last known state. Any difference between what state says should be there and what the API actually returns gets reported as drift. Without a state file, there's nothing to refresh and nothing to compare — Terraform has no idea what it's supposed to be managing.
+
+## Segment 5 (outro)
+
+Right now, that file is sitting on your local disk — which becomes its own problem the moment a second engineer at Northbridge needs to run apply against the same infrastructure. Up next, lesson 13: remote state and backends, where that file moves somewhere shared.

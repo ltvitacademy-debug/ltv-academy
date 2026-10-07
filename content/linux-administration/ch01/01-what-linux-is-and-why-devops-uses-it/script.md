@@ -1,0 +1,21 @@
+# Script — What Linux Is & Why DevOps Uses It
+
+## Segment 1 (title)
+
+Welcome to Linux Administration, and to Linux Foundations, the chapter everything else in this course builds on. If you're coming from Windows Server or just a laptop, this lesson resets your mental model of what "Linux" even means.
+
+## Segment 2 (steps)
+
+Linux isn't one operating system — it's a kernel, the core program that talks to hardware and schedules processes, first released by Linus Torvalds in 1991 and still maintained by him today with thousands of outside contributors. Most of the command-line tools you'll actually type, like ls and grep, come from a separate project called GNU. A distribution, like Ubuntu or Red Hat, is what you get when someone packages that kernel together with GNU's tools and a package manager into something installable, often with a support contract attached.
+
+## Segment 3 (code)
+
+Two commands tell you exactly what you're on. uname -a prints the kernel version and CPU architecture. Cat-ing /etc/os-release, a plain text file nearly every distribution maintains, tells you the distribution name and version. Run both before you assume anything about a server you've just logged into.
+
+## Segment 4 (steps)
+
+Here's why DevOps defaults to Linux. Most cloud virtual machines on AWS, Azure, and Google Cloud run it, because it's free to license at scale, unlike per-core commercial operating system licensing. Docker containers exist because of two Linux kernel features, namespaces and cgroups — a container borrows the host's kernel rather than carrying its own. And tools like Ansible and Terraform are built assuming a Linux shell on the other end of the connection, with configuration stored as plain text rather than buried in a GUI.
+
+## Segment 5 (outro)
+
+You'll meet Northbridge Retail throughout this course — a retailer moving its servers onto Linux, starting with picking a distribution. That's exactly where lesson two picks up.

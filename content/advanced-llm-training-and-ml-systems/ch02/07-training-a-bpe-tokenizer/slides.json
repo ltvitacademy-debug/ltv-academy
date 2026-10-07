@@ -1,0 +1,43 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced LLM Training & ML Systems · Chapter 2",
+    "titlePlain": "Training a ",
+    "titleEmphasis": "BPE Tokenizer",
+    "titleSuffix": "",
+    "subtitle": "Lesson 7 · Tokenization & Data Pipelines at Scale"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Building a vocabulary bottom-up",
+    "titlePlain": "The BPE ",
+    "titleEmphasis": "algorithm",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "1. Start from base units", "sub": "every input split into raw bytes" },
+      { "label": "2. Count adjacent pairs", "sub": "across the whole training corpus" },
+      { "label": "3. Merge the most frequent pair", "sub": "add it as a new vocabulary entry" },
+      { "label": "4. Repeat to target size", "sub": "common words end up as single tokens" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Training with Hugging Face tokenizers",
+    "code": "from tokenizers import Tokenizer, models, pre_tokenizers, trainers, decoders\n\ntokenizer = Tokenizer(models.BPE(unk_token=\"<unk>\"))\ntokenizer.pre_tokenizer = pre_tokenizers.ByteLevel(add_prefix_space=False)\ntokenizer.decoder = decoders.ByteLevel()\n\ntrainer = trainers.BpeTrainer(\n    vocab_size=32_000,\n    min_frequency=2,\n    special_tokens=[\"<unk>\", \"<s>\", \"</s>\", \"<pad>\"],\n)\ntokenizer.train_from_iterator(corpus_iterator(my_dataset), trainer=trainer)\ntokenizer.save(\"my-bpe-tokenizer.json\")",
+    "caption": "BpeTrainer drives the merge-learning loop to a target vocabulary size."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Loading it into a transformers pipeline",
+    "code": "from tokenizers import Tokenizer\nfrom transformers import PreTrainedTokenizerFast\n\nraw_tokenizer = Tokenizer.from_file(\"my-bpe-tokenizer.json\")\nfast_tokenizer = PreTrainedTokenizerFast(\n    tokenizer_object=raw_tokenizer,\n    unk_token=\"<unk>\", pad_token=\"<pad>\",\n    bos_token=\"<s>\", eos_token=\"</s>\",\n)\nids = fast_tokenizer(\"Transformers merge frequent subwords.\")[\"input_ids\"]",
+    "caption": "PreTrainedTokenizerFast gives the same encode/decode interface as any Hub tokenizer."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 8",
+    "titlePlain": "Vocabulary Size ",
+    "titleEmphasis": "Trade-offs",
+    "titleSuffix": "",
+    "subtitle": "What that vocab_size=32,000 choice actually costs and buys you."
+  }
+]

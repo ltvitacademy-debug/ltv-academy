@@ -1,0 +1,43 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Reinforcement Learning & RL for LLMs · Chapter 4",
+    "titlePlain": "Implementing PPO ",
+    "titleEmphasis": "From Scratch",
+    "titleSuffix": "",
+    "subtitle": "Lesson 26 · Policy Optimization Methods"
+  },
+  {
+    "type": "code",
+    "eyebrow": "A shared actor-critic network",
+    "code": "class ActorCritic(nn.Module):\n    def __init__(self, obs_dim, n_actions):\n        super().__init__()\n        self.shared = nn.Sequential(nn.Linear(obs_dim, 128), nn.ReLU())\n        self.actor_head = nn.Linear(128, n_actions)\n        self.critic_head = nn.Linear(128, 1)\n\n    def forward(self, state):\n        f = self.shared(state)\n        return Categorical(logits=self.actor_head(f)), self.critic_head(f).squeeze(-1)",
+    "caption": "One trunk, two heads: a policy distribution and a value estimate"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The four-step loop",
+    "titlePlain": "Collect, estimate, ",
+    "titleEmphasis": "update, repeat",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "1. Collect rollout", "sub": "run the model, store states/actions/log-probs/values" },
+      { "label": "2. Compute GAE", "sub": "Lesson 25's backward recursion -> advantages, returns" },
+      { "label": "3. Multiple clipped epochs", "sub": "Lesson 24's objective, reused across minibatches" },
+      { "label": "4. Discard & repeat", "sub": "fresh rollout from the just-updated model" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The clipped update, in the loop",
+    "code": "for epoch in range(4):\n    for batch in make_minibatches(...):\n        ratio = torch.exp(new_log_probs - batch.old_log_probs)\n        unclipped = ratio * batch.advantages\n        clipped = torch.clamp(ratio, 1-eps, 1+eps) * batch.advantages\n        policy_loss = -torch.min(unclipped, clipped).mean()\n        loss = policy_loss + c1*value_loss - c2*entropy_bonus",
+    "caption": "Every formula from Lessons 23-25 lands in exactly one place here"
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 27",
+    "titlePlain": "Debugging a PPO ",
+    "titleEmphasis": "Training Run",
+    "titleSuffix": "",
+    "subtitle": "What it looks like when this loop goes wrong."
+  }
+]

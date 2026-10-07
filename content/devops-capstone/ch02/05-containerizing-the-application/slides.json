@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "DevOps Capstone · Chapter 2",
+    "titlePlain": "Containerizing the ",
+    "titleEmphasis": "Application",
+    "titleSuffix": "",
+    "subtitle": "Lesson 5 · Phase 1: Application & Containers"
+  },
+  {
+    "type": "code",
+    "eyebrow": "services/product-catalog/Dockerfile",
+    "code": "FROM node:20-slim AS build\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --omit=dev\nCOPY . .\n\nFROM node:20-slim\nWORKDIR /app\nRUN groupadd -r app && useradd -r -g app app\nCOPY --from=build --chown=app:app /app /app\nUSER app\nEXPOSE 8080\nCMD [\"node\", \"server.js\"]",
+    "caption": "Multi-stage build: dev deps stay in the build stage, runtime stage runs as non-root"
+  },
+  {
+    "type": "code",
+    "eyebrow": "services/checkout/Dockerfile",
+    "code": "FROM python:3.12-slim AS build\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir --prefix=/install -r requirements.txt\n\nFROM python:3.12-slim\nWORKDIR /app\nRUN groupadd -r app && useradd -r -g app app\nCOPY --from=build /install /usr/local\nCOPY --chown=app:app . .\nUSER app\nEXPOSE 8080\nCMD [\"uvicorn\", \"main:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8080\"]",
+    "caption": "Same pattern in Python: isolated pip install, slim runtime, non-root USER"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Every image, every build",
+    "titlePlain": "Tagging and ",
+    "titleEmphasis": "image hygiene",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Tag by git SHA", "sub": "northbridgeacr.azurecr.io/<service>:<git-sha>, never latest" },
+      { "label": ".dockerignore", "sub": "keeps .env, .git, node_modules out of the build context" },
+      { "label": "Slim + multi-stage + non-root", "sub": "smaller attack surface, less for Trivy to flag later" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 6",
+    "titlePlain": "Local Multi-Service ",
+    "titleEmphasis": "Environment",
+    "titleSuffix": "",
+    "subtitle": "Wiring both images together with Docker Compose for local development."
+  }
+]

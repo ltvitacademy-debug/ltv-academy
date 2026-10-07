@@ -1,0 +1,60 @@
+{
+  "lesson": "network-policies",
+  "questions": [
+    {
+      "q": "What is the default Pod-to-Pod networking behavior in a Kubernetes cluster with no NetworkPolicy resources?",
+      "options": [
+        "All Pod-to-Pod traffic is blocked until explicitly allowed",
+        "Every Pod can reach every other Pod, regardless of namespace — there is no network segmentation by default",
+        "Only Pods in the same namespace can reach each other",
+        "Traffic is allowed only between Pods with identical labels"
+      ],
+      "answer": 1,
+      "explain": "Kubernetes networking is open by default — isolation is opt-in via NetworkPolicy, not opt-out. Without any policies, nothing restricts Pod-to-Pod traffic."
+    },
+    {
+      "q": "Northbridge writes a correct NetworkPolicy but traffic still isn't being restricted. What is the most likely cause?",
+      "options": [
+        "NetworkPolicy objects require a paid Kubernetes license",
+        "The cluster's CNI plugin doesn't implement NetworkPolicy enforcement, so the rules are silently ignored",
+        "NetworkPolicy only works with NodePort Services",
+        "NetworkPolicy objects must be created before any Pods exist"
+      ],
+      "answer": 1,
+      "explain": "NetworkPolicy enforcement depends on the CNI plugin supporting it (e.g. Calico, Cilium, Antrea). Some simpler CNI plugins accept the objects but don't actually enforce them."
+    },
+    {
+      "q": "In a NetworkPolicy, what does a podSelector: {} with policyTypes [Ingress, Egress] and no ingress/egress rules listed accomplish?",
+      "options": [
+        "It has no effect since no rules are specified",
+        "It matches every Pod in the namespace and blocks all inbound and outbound traffic for them — a default-deny-all",
+        "It allows all traffic for every Pod in the namespace",
+        "It applies only to Pods explicitly labeled 'deny'"
+      ],
+      "answer": 1,
+      "explain": "An empty podSelector matches all Pods in the namespace. With policyTypes set but no corresponding rules, no traffic is permitted — this is the standard default-deny pattern."
+    },
+    {
+      "q": "In the allow-checkout-to-payments policy, what does the top-level podSelector (matchLabels app: payment-processing) determine, versus the podSelector nested inside the 'from' block?",
+      "options": [
+        "They do the same thing and one is redundant",
+        "The top-level podSelector picks which Pods the policy applies TO; the nested one under 'from' picks which Pods are allowed to send traffic IN",
+        "The top-level selector controls egress only; the nested one controls ingress only",
+        "The nested podSelector overrides the top-level one"
+      ],
+      "answer": 1,
+      "explain": "The policy's own podSelector scopes which Pods it governs (payment-processing). The podSelector inside an ingress rule's 'from' list specifies which source Pods are permitted to reach them (checkout)."
+    },
+    {
+      "q": "If two NetworkPolicy objects both select the same Pod — one default-deny and one narrow allow rule — how do they combine?",
+      "options": [
+        "Only the most recently created policy applies",
+        "The policies are additive; the Pod's effective rules are the union of every policy that selects it",
+        "The policies conflict and Kubernetes rejects the second one",
+        "Only the default-deny policy takes effect; allow rules are ignored"
+      ],
+      "answer": 1,
+      "explain": "NetworkPolicies are additive — when multiple policies select the same Pod, the effective allowed traffic is the union of all their rules, which is why default-deny-then-allow works as a layered pattern."
+    }
+  ]
+}

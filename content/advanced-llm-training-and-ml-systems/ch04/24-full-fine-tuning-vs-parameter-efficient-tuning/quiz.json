@@ -1,0 +1,60 @@
+{
+  "lesson": "full-fine-tuning-vs-parameter-efficient-tuning",
+  "questions": [
+    {
+      "q": "In full fine-tuning with Adam, what is typically the dominant source of GPU memory usage -- more than the model weights themselves?",
+      "options": [
+        "The tokenizer vocabulary",
+        "Optimizer state -- Adam's two running moment estimates per parameter, usually kept in fp32",
+        "The dataset stored on disk",
+        "The chat template"
+      ],
+      "answer": 1,
+      "explain": "Adam's optimizer state requires two additional per-parameter values (first and second moment), typically in fp32, which outweighs the memory used by the bf16 weights and gradients themselves."
+    },
+    {
+      "q": "What does parameter-efficient fine-tuning (PEFT) do differently from full fine-tuning?",
+      "options": [
+        "It trains on a larger dataset than full fine-tuning",
+        "It updates only a small subset or small number of newly added parameters, freezing the vast majority of the pretrained weights",
+        "It skips the forward pass entirely",
+        "It is only usable for pretraining, not fine-tuning"
+      ],
+      "answer": 1,
+      "explain": "PEFT freezes almost all of the original pretrained weights and trains only a small number of parameters (such as LoRA's added low-rank matrices), rather than updating every parameter."
+    },
+    {
+      "q": "Why does freezing most parameters produce such a large memory savings in PEFT, beyond just not updating those weights?",
+      "options": [
+        "Frozen weights are deleted from GPU memory entirely",
+        "Gradients and optimizer state only need to be stored for the small trainable subset, not for the full parameter count -- and those are the dominant costs in full fine-tuning",
+        "Frozen weights no longer need to be loaded at all during inference",
+        "PEFT eliminates the need for a forward pass"
+      ],
+      "answer": 1,
+      "explain": "Since gradients and optimizer state (the dominant memory costs) are only needed for trainable parameters, freezing most of the model dramatically shrinks those costs even though frozen weights are still loaded."
+    },
+    {
+      "q": "What does `get_peft_model` do in the Hugging Face `peft` library?",
+      "options": [
+        "It quantizes a model to 4-bit precision",
+        "It wraps a base model with a PEFT configuration (such as a LoraConfig), producing a model where only the added parameters are trainable",
+        "It converts a causal language model into a classification model",
+        "It merges two separately trained models into one"
+      ],
+      "answer": 1,
+      "explain": "get_peft_model takes a base model and a PEFT configuration (e.g., LoraConfig) and returns a wrapped model where the specified adapter parameters are trainable and the rest are frozen."
+    },
+    {
+      "q": "When might full fine-tuning still be the preferred choice over PEFT despite its higher cost?",
+      "options": [
+        "Never -- PEFT is strictly better in every situation",
+        "When a team has ample multi-GPU compute, a large high-quality dataset, and needs the best achievable quality, especially for a large shift away from the base model's original distribution",
+        "Only when fine-tuning a model with fewer than 1 million parameters",
+        "Only when no GPU is available at all"
+      ],
+      "answer": 1,
+      "explain": "Full fine-tuning retains a modest quality edge, particularly for large behavioral/domain shifts, and remains the right choice for teams with sufficient compute who prioritize maximum achievable quality."
+    }
+  ]
+}

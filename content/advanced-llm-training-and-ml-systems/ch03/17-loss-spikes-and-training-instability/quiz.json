@@ -1,0 +1,60 @@
+{
+  "lesson": "loss-spikes-and-training-instability",
+  "questions": [
+    {
+      "q": "What distinguishes a recoverable loss spike from divergence?",
+      "options": [
+        "Recoverable spikes happen only during warmup; divergence happens only after warmup",
+        "A recoverable spike's loss returns to its prior trend within some steps, while divergence is a spike that does not self-correct and keeps drifting or oscillating",
+        "There is no meaningful difference between the two",
+        "Divergence only happens when using bf16"
+      ],
+      "answer": 1,
+      "explain": "A spike that recovers on its own over subsequent steps is a routine blip; one that doesn't recover and keeps drifting or oscillating is divergence, which requires intervention."
+    },
+    {
+      "q": "Why does bf16 cause fewer overflow-driven loss spikes than fp16?",
+      "options": [
+        "bf16 uses more total bits than fp16",
+        "bf16 keeps fp32's wide exponent range (trading mantissa precision instead), so values are far less likely to overflow to inf than in fp16's narrow exponent range",
+        "bf16 is only used for inference, never training",
+        "bf16 automatically applies gradient clipping"
+      ],
+      "answer": 1,
+      "explain": "bf16 and fp32 share the same 8-bit exponent range; bf16 reduces mantissa bits instead, which avoids the narrow dynamic range that makes fp16 prone to overflow."
+    },
+    {
+      "q": "What does gradient clipping by global norm do?",
+      "options": [
+        "It deletes any batch containing a large gradient",
+        "It computes the L2 norm across all parameter gradients and rescales every gradient proportionally if that norm exceeds a threshold",
+        "It increases the learning rate when gradients are small",
+        "It converts gradients from fp16 to bf16"
+      ],
+      "answer": 1,
+      "explain": "Global-norm clipping measures the combined L2 norm of all gradients and, if it exceeds max_norm, scales every gradient down by the same factor so no single step moves the model too far."
+    },
+    {
+      "q": "A team notices a sharp loss spike clustered right where the learning-rate schedule's warmup phase ends and the rate hits its peak. What does this pattern most directly suggest?",
+      "options": [
+        "The tokenizer vocabulary is too small",
+        "The peak learning rate may be too aggressive for the model at this stage of training",
+        "The dataset has too few tokens",
+        "The GPU driver needs to be reinstalled"
+      ],
+      "answer": 1,
+      "explain": "Spikes clustered right as the learning rate reaches its peak point to the peak rate itself being too high for the model's current training dynamics."
+    },
+    {
+      "q": "What is the standard recovery procedure when monitoring shows a loss spike is not self-recovering (true divergence)?",
+      "options": [
+        "Continue training unchanged and hope it stabilizes",
+        "Roll back to the last good checkpoint and resume, often skipping the offending data shard or lowering the learning rate slightly",
+        "Immediately restart the entire run from step zero",
+        "Switch the model to fp32 permanently for the rest of training"
+      ],
+      "answer": 1,
+      "explain": "The standard response to true divergence is to restore the last good checkpoint and resume, typically adjusting for the suspected cause (skipping a bad shard, trimming LR) before continuing."
+    }
+  ]
+}

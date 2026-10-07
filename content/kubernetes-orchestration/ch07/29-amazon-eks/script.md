@@ -1,0 +1,25 @@
+# Script — Amazon EKS
+
+## Segment 1 (title)
+
+Northbridge's primary footprint is Azure, but a secondary deployment — a regional fulfillment integration — runs on AWS. Rather than run two completely different operational models, the team uses EKS, Amazon's managed-control-plane Kubernetes.
+
+## Segment 2 (screenshot)
+
+This is AWS's own architecture diagram. Like AKS, the control plane — API server, etcd, scheduler — is run and patched by AWS, replicated across multiple Availability Zones. Unlike AKS, it isn't free, it's billed hourly. Northbridge still owns whatever actually runs the Pods.
+
+## Segment 3 (code)
+
+eksctl is the AWS-maintained CLI built specifically for this. One command — eksctl create cluster, with a region, a node type, and a node count — provisions the VPC, the control plane, and a managed node group, and writes kubeconfig automatically.
+
+## Segment 4 (steps)
+
+Pods run one of two ways. A managed node group is EC2 instances AWS provisions — the EKS equivalent of an AKS node pool. A Fargate profile has no EC2 instances at all; AWS runs each matching Pod on its own serverless compute. Northbridge's fulfillment Pods, which run only a few times a day, fit Fargate well; steady traffic is usually cheaper on a node group.
+
+## Segment 5 (code)
+
+If a cluster was created another way — through the console, say — aws eks update-kubeconfig connects kubectl the same way az aks get-credentials does for AKS.
+
+## Segment 6 (outro)
+
+From here, every kubectl command from earlier in this course works identically against EKS. Up next, lesson thirty: connecting these clusters to cloud identity and container registries, so Pods can authenticate without stored credentials.

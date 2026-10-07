@@ -1,0 +1,21 @@
+# Script — Alerts & Action Groups
+
+## Segment 1 (title)
+
+Everything so far in this chapter has been about finding a problem once you go looking for it. Alerts flip that around: they watch continuously and tell you the moment something crosses a line you defined, so nobody has to be staring at a dashboard at 2 a.m. during a flash sale.
+
+## Segment 2 (screenshot)
+
+Every alert rule has a signal — a metric, log query, or activity log event — and a condition, the threshold logic applied to it. The condition tab is where you turn a vague worry, like "checkout feels slow," into a precise, testable threshold: average response time over two seconds for three straight five-minute periods, say.
+
+## Segment 3 (screenshot)
+
+The third piece is the action group — a reusable, named bundle of notifications and actions: email, SMS, push notification, voice call, webhook, Azure Function, Logic App, or automation runbook. You build it once as its own standalone resource and attach it to as many alert rules as you want, so changing your on-call escalation policy means updating one action group, not hunting down and editing every rule that uses it.
+
+## Segment 4 (steps)
+
+Severity, from Sev zero up through Sev four, doesn't change whether an alert fires — it changes how it's sorted and presented in the alert list, which is what lets an on-call engineer scan a dashboard at 2 a.m. and immediately separate "checkout is down" from "disk usage trending up, no rush." Choosing severity thoughtfully is part of what keeps alerting useful instead of noisy.
+
+## Segment 5 (outro)
+
+Signal, condition, action group, severity — that's the whole anatomy of an Azure alert rule, and the same four pieces reappear, just renamed, in every monitoring platform you'll touch. Next up, Chapter 3: the same ideas, built AWS's way, starting with CloudWatch metrics and alarms.

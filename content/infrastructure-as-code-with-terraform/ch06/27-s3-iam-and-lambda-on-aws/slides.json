@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Infrastructure as Code with Terraform · Chapter 6",
+    "titlePlain": "S3, IAM & ",
+    "titleEmphasis": "Lambda",
+    "titleSuffix": "",
+    "subtitle": "Lesson 27 · Deploying on AWS"
+  },
+  {
+    "type": "code",
+    "eyebrow": "A versioned, encrypted bucket for product images",
+    "code": "resource \"aws_s3_bucket\" \"product_images\" {\n  bucket = \"northbridge-product-images\"\n}\n\nresource \"aws_s3_bucket_versioning\" \"product_images\" {\n  bucket = aws_s3_bucket.product_images.id\n  versioning_configuration {\n    status = \"Enabled\"\n  }\n}\n\nresource \"aws_s3_bucket_server_side_encryption_configuration\" \"product_images\" {\n  bucket = aws_s3_bucket.product_images.id\n  rule {\n    apply_server_side_encryption_by_default {\n      sse_algorithm = \"AES256\"\n    }\n  }\n}",
+    "caption": "Versioning recovers overwritten photos; encryption protects objects at rest."
+  },
+  {
+    "type": "code",
+    "eyebrow": "An IAM role and a policy scoped to one job",
+    "code": "resource \"aws_iam_role\" \"order_confirmation_lambda\" {\n  name = \"northbridge-order-confirmation-lambda-role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [{\n      Action    = \"sts:AssumeRole\"\n      Effect    = \"Allow\"\n      Principal = { Service = \"lambda.amazonaws.com\" }\n    }]\n  })\n}\n\nresource \"aws_iam_policy\" \"order_confirmation_access\" {\n  policy = jsonencode({\n    Statement = [\n      { Action = [\"s3:GetObject\"], Effect = \"Allow\", Resource = \"${aws_s3_bucket.product_images.arn}/*\" },\n      { Action = [\"ses:SendEmail\"], Effect = \"Allow\", Resource = \"*\" }\n    ]\n  })\n}",
+    "caption": "Exactly two allowed actions -- read product images, send email. Nothing else."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Least privilege, connected",
+    "titlePlain": "Role, policy, ",
+    "titleEmphasis": "attachment",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "aws_iam_role", "sub": "who is allowed to assume this identity -- here, the Lambda service" },
+      { "label": "aws_iam_policy", "sub": "the exact list of allowed actions, nothing broader" },
+      { "label": "aws_iam_role_policy_attachment", "sub": "connects the two -- the role now carries the policy's permissions" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The Lambda function assumes the role",
+    "code": "resource \"aws_lambda_function\" \"order_confirmation\" {\n  function_name = \"northbridge-order-confirmation\"\n  role          = aws_iam_role.order_confirmation_lambda.arn\n  handler       = \"index.handler\"\n  runtime       = \"nodejs20.x\"\n  filename      = \"order-confirmation.zip\"\n\n  environment {\n    variables = {\n      PRODUCT_IMAGE_BUCKET = aws_s3_bucket.product_images.id\n    }\n  }\n}",
+    "caption": "role references the IAM block directly -- no access keys stored in the function."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 28",
+    "titlePlain": "EKS With ",
+    "titleEmphasis": "Terraform",
+    "titleSuffix": "",
+    "subtitle": "AWS-native containers for Northbridge's checkout service."
+  }
+]

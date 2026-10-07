@@ -1,0 +1,60 @@
+{
+  "lesson": "chat-templates-and-conversation-formatting",
+  "questions": [
+    {
+      "q": "Why is a chat template needed at all, given that a model's input is ultimately a flat sequence of tokens?",
+      "options": [
+        "Because models cannot process more than one sentence at a time",
+        "Because a structured conversation (system/user/assistant turns) has to be serialized into that flat sequence consistently, so the model (and downstream code) can reliably tell where one turn ends and the next begins",
+        "Because tokenizers cannot handle punctuation",
+        "Because chat templates are only used for display purposes, not training"
+      ],
+      "answer": 1,
+      "explain": "A model has no native notion of conversational turns -- a chat template is the consistent serialization that turns structured messages into the flat token sequence the model actually trains and runs on."
+    },
+    {
+      "q": "What makes special tokens like `<|im_start|>` and `<|im_end|>` useful for marking conversation turns?",
+      "options": [
+        "They are the most frequent tokens in the vocabulary",
+        "They are reserved specifically for structural markup and are never produced as ordinary natural-language text, so their presence reliably signals a turn boundary",
+        "They are only used during inference, never during training",
+        "They replace the need for a tokenizer entirely"
+      ],
+      "answer": 1,
+      "explain": "Special tokens are added to the vocabulary specifically for structural markup and never occur as regular content, which lets code detect turn boundaries unambiguously instead of searching for a substring that might appear in real text."
+    },
+    {
+      "q": "Why should `tokenizer.apply_chat_template` be used instead of hand-concatenating role tags into a string?",
+      "options": [
+        "Hand-concatenation is faster at runtime",
+        "apply_chat_template uses the exact template stored with the tokenizer, avoiding subtle formatting mismatches (whitespace, token spelling) that a separately maintained hand-written template could introduce",
+        "apply_chat_template is required by law for all LLM deployments",
+        "Hand-concatenated strings cannot be tokenized at all"
+      ],
+      "answer": 1,
+      "explain": "The tokenizer stores the model's exact chat template; using apply_chat_template guarantees the formatting matches exactly what the model expects, avoiding drift from a separately hand-maintained string template."
+    },
+    {
+      "q": "What does the `add_generation_prompt=True` argument do, and when should it be used?",
+      "options": [
+        "It removes the system message from the conversation",
+        "It appends the marker signaling it's the assistant's turn to generate, appropriate when building a prompt for inference -- not for an already-complete training example",
+        "It deletes all special tokens from the output",
+        "It is required for every call to apply_chat_template, including training data"
+      ],
+      "answer": 1,
+      "explain": "add_generation_prompt appends the assistant turn-start marker, which is correct when preparing an inference prompt awaiting a response, but not appropriate for a training example where the assistant's response is already filled in."
+    },
+    {
+      "q": "What is the most damaging and hardest-to-diagnose formatting mistake in supervised fine-tuning?",
+      "options": [
+        "Using too large a batch size during training",
+        "Training on one chat-template serialization and then serving the model at inference with a different one (even a small whitespace or token difference), which silently degrades quality without throwing an error",
+        "Using a GPU with too little memory",
+        "Choosing cosine decay instead of linear decay for the learning rate"
+      ],
+      "answer": 1,
+      "explain": "A training/inference formatting mismatch is especially dangerous because the input remains technically valid -- no error is thrown -- but the model is off-distribution relative to what it actually learned, degrading quality silently."
+    }
+  ]
+}

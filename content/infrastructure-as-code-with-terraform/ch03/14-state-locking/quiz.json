@@ -1,0 +1,60 @@
+{
+  "lesson": "state-locking",
+  "questions": [
+    {
+      "q": "What problem does state locking solve that remote state alone does not?",
+      "options": [
+        "It makes terraform apply run faster",
+        "It prevents two apply runs from touching the same state file at the same time",
+        "It encrypts the state file",
+        "It automatically fixes drift"
+      ],
+      "answer": 1,
+      "explain": "Remote state gives a team one shared file, but by itself does nothing to stop two people writing to it simultaneously. Locking is what prevents that collision."
+    },
+    {
+      "q": "In the s3 backend, what is the dynamodb_table setting used for?",
+      "options": [
+        "Storing the actual infrastructure resources being provisioned",
+        "Holding lock records so a second apply can detect that one is already running",
+        "Caching the Terraform provider plugins",
+        "Billing and cost tracking"
+      ],
+      "answer": 1,
+      "explain": "The DynamoDB table referenced by dynamodb_table exists purely to hold lock records, letting Terraform detect that an apply is already in progress."
+    },
+    {
+      "q": "How does the azurerm backend implement state locking?",
+      "options": [
+        "It requires a separate DynamoDB-equivalent resource to be created manually",
+        "It locks natively using a lease placed directly on the state blob -- no extra resource needed",
+        "It does not support locking at all",
+        "It locks by deleting the state file during an apply"
+      ],
+      "answer": 1,
+      "explain": "Unlike the s3 backend, the azurerm backend locks natively via a lease on the state blob itself, with no separate lock resource required."
+    },
+    {
+      "q": "What does the 'Error acquiring the state lock' message tell the engineer who sees it?",
+      "options": [
+        "That the state file has been permanently corrupted",
+        "Who currently holds the lock, which operation they're running, and when it started",
+        "That their internet connection failed",
+        "That the resource they're trying to create already exists in Azure"
+      ],
+      "answer": 1,
+      "explain": "The Lock Info output names the holder, the operation (such as apply), and the timestamp, so the blocked engineer knows exactly who to check in with."
+    },
+    {
+      "q": "Without state locking, what is the realistic risk of two engineers running terraform apply at the same moment?",
+      "options": [
+        "Nothing -- Terraform always serializes applies automatically regardless of locking",
+        "Both applies read the same starting state, make conflicting changes, and the second write can silently overwrite the first, corrupting state",
+        "The second apply crashes the Terraform CLI permanently",
+        "Azure and AWS billing doubles"
+      ],
+      "answer": 1,
+      "explain": "Without a lock, two simultaneous applies have no way to coordinate -- the second write can overwrite the first, leaving state that no longer reflects reality."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+# Script — Security in the Software Lifecycle
+
+## Segment 1 (title)
+
+You now have three building blocks: shifting left, threat modeling, and the OWASP Top 10 vocabulary. This lesson ties them together across the full Secure Software Development Lifecycle — the stage-by-stage map the rest of this course is organized around.
+
+## Segment 2 (steps)
+
+The traditional lifecycle is plan, design, develop, test, release, deploy, operate. The secure version layers a security activity onto every stage instead of appending one at the end: requirements and threat modeling up front, secure coding and automated scanning through build and test, a policy gate before release, a hardened runtime at deploy, and monitoring once it's live.
+
+## Segment 3 (steps)
+
+Map that onto Northbridge Retail's checkout service: a requirement says payment data is never logged in plaintext. The team threat models the payment flow. Every pull request runs a SAST scan, a dependency check, and a secrets scan. A policy gate blocks any deploy with a critical finding. The service runs with a workload identity scoped only to the secrets it needs.
+
+## Segment 4 (steps)
+
+Each stage catches a different kind of problem — a threat model won't catch a leaked dependency, and a dependency scan won't catch an architectural flaw. Treating any one stage as "the" security gate leaves the others uncovered, and every new pull request restarts the cycle at develop and test.
+
+## Segment 5 (outro)
+
+That closes out Chapter 1. Next up, Chapter 2: identity, IAM, and RBAC — who, or what, is allowed to do anything at all.

@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Deep Learning & PyTorch · Chapter 6",
+    "titlePlain": "Building a Decoder-Only ",
+    "titleEmphasis": "Transformer",
+    "titleSuffix": "",
+    "subtitle": "Lesson 40 · Building a Transformer From Scratch"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "On top of the transformer block",
+    "titlePlain": "Four more ",
+    "titleEmphasis": "pieces",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Token + positional embedding", "sub": "turn token IDs into vectors, add position info" },
+      { "label": "A stack of TransformerBlocks", "sub": "under a causal mask -- no peeking at the future" },
+      { "label": "Final norm + linear head", "sub": "project each position to vocab_size logits" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The causal mask",
+    "code": "mask = torch.triu(\n    torch.ones(T, T), diagonal=1\n).bool()\n\n# mask[i, j] is True where j > i\n# -- a future position\n\n# passed as attn_mask: True means\n# \"do not attend here\"",
+    "caption": "Blocks every query position from attending to anything after it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "TinyGPT -- the constructor",
+    "code": "class TinyGPT(nn.Module):\n    def __init__(self, vocab_size, d_model,\n                 num_heads, d_ff,\n                 num_layers, max_seq_len):\n        super().__init__()\n        self.tok_emb = nn.Embedding(\n            vocab_size, d_model)\n        self.pos_emb = nn.Embedding(\n            max_seq_len, d_model)\n        self.blocks = nn.ModuleList([\n            TransformerBlock(\n                d_model, num_heads, d_ff)\n            for _ in range(num_layers)])\n        self.norm_f = nn.LayerNorm(d_model)\n        self.head = nn.Linear(\n            d_model, vocab_size)",
+    "caption": "nn.ModuleList registers every block's parameters for training."
+  },
+  {
+    "type": "code",
+    "eyebrow": "TinyGPT -- the forward pass",
+    "code": "def forward(self, idx):\n    B, T = idx.shape\n    pos = torch.arange(T, device=idx.device)\n    x = self.tok_emb(idx) + self.pos_emb(pos)\n    mask = torch.triu(\n        torch.ones(T, T, device=idx.device),\n        diagonal=1).bool()\n    for block in self.blocks:\n        x = block(x, attn_mask=mask)\n    x = self.norm_f(x)\n    return self.head(x)\n    # (B, T, vocab_size)",
+    "caption": "idx (B,T) -> embeddings (B,T,d_model) -> logits (B,T,vocab_size)."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 41",
+    "titlePlain": "Implementing the Training Loop for a ",
+    "titleEmphasis": "Tiny GPT",
+    "titleSuffix": "",
+    "subtitle": "Turning this architecture into a model that actually learns."
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-building-and-training-the-model",
+  "questions": [
+    {
+      "q": "In the TokenBlockDataset, how is the target sequence `y` related to the input sequence `x`?",
+      "options": [
+        "y is a random permutation of x",
+        "y is x shifted one position to the right -- the next token at each position",
+        "y is the reverse of x",
+        "y is identical to x"
+      ],
+      "answer": 1,
+      "explain": "Each example slices a block_size+1 chunk of token IDs: the first block_size tokens are the input x, and the same chunk shifted one position is the target y, so the model learns to predict the next token at every position."
+    },
+    {
+      "q": "Why does the training loop call `logits.view(-1, vocab_size)` and `y.view(-1)` before computing cross-entropy loss?",
+      "options": [
+        "To convert the tensors to a different dtype",
+        "Because F.cross_entropy expects (N, num_classes) logits and (N,) integer targets, not the model's native (batch, block_size, vocab_size) shape",
+        "To reduce GPU memory usage",
+        "Because the model only outputs one token at a time"
+      ],
+      "answer": 1,
+      "explain": "The model outputs logits shaped (batch, block_size, vocab_size). F.cross_entropy needs them flattened to (N, vocab_size) with matching (N,) targets, so both tensors are reshaped with .view(-1, ...) before the loss call."
+    },
+    {
+      "q": "What does torch.nn.utils.clip_grad_norm_ do in this training loop, and why include it for a model this small?",
+      "options": [
+        "It removes dropout layers during evaluation",
+        "It rescales gradients so their norm doesn't exceed a threshold, guarding against loss spikes even in a small model",
+        "It increases the learning rate automatically",
+        "It is only needed when using mixed precision, never otherwise"
+      ],
+      "answer": 1,
+      "explain": "Gradient clipping caps the gradient norm before the optimizer step. Even a tiny model trained from scratch can hit sharp loss spikes early in training, and clipping keeps those spikes from derailing the run."
+    },
+    {
+      "q": "What is the purpose of gradient accumulation, as used in the optional Chapter 7 block?",
+      "options": [
+        "It permanently changes the model architecture",
+        "It simulates a larger effective batch size by summing gradients across several mini-batches before stepping the optimizer",
+        "It replaces the need for a learning-rate schedule",
+        "It converts the model to run on CPU only"
+      ],
+      "answer": 1,
+      "explain": "Gradient accumulation backpropagates over several mini-batches, scaling and summing their gradients, and only calls optimizer.step() every accum_steps batches — giving an effective batch size of batch_size times accum_steps without needing that much memory at once."
+    },
+    {
+      "q": "Why does the guide recommend checkpointing even for a training run that only takes about 20 minutes?",
+      "options": [
+        "Checkpointing is required by PyTorch and cannot be skipped",
+        "So you can resume or roll back to a saved state instead of re-running training from scratch, and so Lesson 59 has a saved model to evaluate",
+        "Checkpoints make the model train faster",
+        "Checkpointing is only useful for models larger than one billion parameters"
+      ],
+      "answer": 1,
+      "explain": "Even a short run is worth saving: a checkpoint lets you resume, roll back to your best validation loss, or avoid retraining from scratch -- and Lesson 59's evaluation step loads this exact checkpoint."
+    }
+  ]
+}

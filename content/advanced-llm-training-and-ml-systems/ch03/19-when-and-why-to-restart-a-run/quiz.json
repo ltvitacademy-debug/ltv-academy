@@ -1,0 +1,60 @@
+{
+  "lesson": "when-and-why-to-restart-a-run",
+  "questions": [
+    {
+      "q": "Why is checkpointing described as the prerequisite for any restart decision?",
+      "options": [
+        "Checkpointing is only needed to save GPU power",
+        "Without saved snapshots of model weights, optimizer state, and scheduler state, there is no earlier point to roll back to when a restart is warranted",
+        "Checkpointing automatically fixes loss spikes",
+        "Checkpointing is only relevant after training completes"
+      ],
+      "answer": 1,
+      "explain": "A restart means resuming from a saved snapshot. Without frequent checkpoints saved to durable storage, there is nothing to roll back to, making the restart decision moot."
+    },
+    {
+      "q": "What is the clearest, most unambiguous signal that a restart is warranted?",
+      "options": [
+        "MFU is slightly above its usual average",
+        "Non-recovering divergence -- loss and gradient norm spike and fail to return to their prior trend within a reasonable window",
+        "The learning rate is in its decay phase",
+        "Training has been running for more than a week"
+      ],
+      "answer": 1,
+      "explain": "Non-recovering divergence is the clearest trigger: once loss/gradient norm spike and stay up well past a reasonable recovery window, every further step wastes compute, so the run should be rolled back."
+    },
+    {
+      "q": "Besides a sharp loss spike, what is another pattern that can justify a restart?",
+      "options": [
+        "Training loss decreasing slightly faster than expected",
+        "A gradual upward drift in gradient norm over thousands of steps, or evaluation loss diverging from training loss over an extended period",
+        "MFU staying perfectly flat for the entire run",
+        "The optimizer using the Adam algorithm"
+      ],
+      "answer": 1,
+      "explain": "Softer signals like a persistent gradient-norm drift or a widening gap between evaluation and training loss can indicate a developing problem even without one dramatic spike."
+    },
+    {
+      "q": "When the root cause of an instability event looks systemic (e.g., the peak learning rate is clearly too aggressive for this phase), what's the typical resume strategy?",
+      "options": [
+        "Always restart the entire schedule from step zero",
+        "Resume from the checkpoint before the event, often with a slightly lowered learning rate going forward, rather than restarting from scratch",
+        "Switch the model architecture entirely",
+        "Ignore the issue and let training continue unchanged"
+      ],
+      "answer": 1,
+      "explain": "For a systemic cause like an overly aggressive learning rate, teams typically resume from the last good checkpoint with an adjusted (usually lowered) learning rate, reserving a full restart from step zero for rarer, corpus-wide issues."
+    },
+    {
+      "q": "Why might a team deliberately choose to \"let it ride\" rather than restart after a loss spike?",
+      "options": [
+        "Because restarting is always free and has no downside",
+        "Because a single-step spike that recovers within a reasonable window, with gradient norm back in its normal band, is often just noise from an atypical batch, and restarting for every such event wastes more compute than it saves",
+        "Because checkpoints are never reliable enough to restart from",
+        "Because loss spikes never recur once ignored"
+      ],
+      "answer": 1,
+      "explain": "A brief spike that self-corrects is usually benign noise. Restarting for every minor, self-recovering blip would waste more compute (via reload overhead and lost progress) than simply continuing."
+    }
+  ]
+}

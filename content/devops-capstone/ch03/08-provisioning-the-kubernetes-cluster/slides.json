@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "DevOps Capstone · Chapter 3",
+    "titlePlain": "Provisioning the ",
+    "titleEmphasis": "Kubernetes Cluster",
+    "titleSuffix": "",
+    "subtitle": "Lesson 8 · Phase 2: Infrastructure"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two clusters, one reason: isolation",
+    "titlePlain": "northbridge-aks-dev ",
+    "titleEmphasis": "and prod",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "northbridge-aks-dev", "sub": "hosts both northbridge-dev and northbridge-staging" },
+      { "label": "northbridge-aks-prod", "sub": "isolated, hosts northbridge-prod only" },
+      { "label": "Both in eastus", "sub": "same module, different var.environment" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "azurerm_kubernetes_cluster",
+    "code": "resource \"azurerm_kubernetes_cluster\" \"this\" {\n  name       = \"northbridge-aks-${var.environment}\"\n  location   = \"eastus\"\n\n  default_node_pool {\n    name                 = \"system\"\n    vm_size              = \"Standard_D4s_v5\"\n    auto_scaling_enabled = true\n    min_count            = 2\n    max_count            = 5\n  }\n\n  identity { type = \"SystemAssigned\" }\n}",
+    "caption": "System node pool: Standard_D4s_v5, autoscaling 2-5 nodes"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "System pool vs. user pool",
+    "titlePlain": "Infra nodes, ",
+    "titleEmphasis": "app nodes",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "System pool", "sub": "CoreDNS, metrics-server, ingress controller" },
+      { "label": "User pool", "sub": "product-catalog and checkout, same VM size, autoscales separately" },
+      { "label": "Flash-sale spikes", "sub": "scale the user pool without touching system components" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Attaching the registry — no stored pull secret",
+    "code": "resource \"azurerm_role_assignment\" \"aks_acr_pull\" {\n  scope                = var.acr_id\n  role_definition_name = \"AcrPull\"\n  principal_id          =\n    azurerm_kubernetes_cluster.this\n      .kubelet_identity[0].object_id\n}",
+    "caption": "Kubelet identity gets AcrPull on northbridgeacr.azurecr.io — zero imagePullSecrets"
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 9",
+    "titlePlain": "Networking, Identity ",
+    "titleEmphasis": "& Secrets",
+    "titleSuffix": "",
+    "subtitle": "Ingress, Workload Identity, Key Vault, and GitHub OIDC."
+  }
+]

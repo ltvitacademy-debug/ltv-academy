@@ -1,0 +1,21 @@
+# Script — Deploying to Kubernetes Automatically
+
+## Segment 1 (title)
+
+Lesson 10 ended with a scanned, SHA-tagged image sitting in the registry — built, but not running anywhere. This lesson adds the job that takes over the moment CI passes on main: log in to Azure, point at the right cluster, and deploy the new image. Nobody runs this by hand.
+
+## Segment 2 (steps)
+
+The deploy job only runs after the build-test-scan job succeeds, and only on main, never on a pull request from a fork. It logs into Azure over OIDC, sets the AKS context to northbridge-aks-dev, and then runs helm upgrade --install. That command is deliberately idempotent — the first-ever run creates the release, and every run after that just upgrades it, so the exact same line works whether this is deploy one or deploy four hundred.
+
+## Segment 3 (code)
+
+The login step is the interesting part. There's no stored client secret anywhere in GitHub. GitHub issues a short-lived OIDC token for the run, Azure AD trusts it because of a federated credential set up back in Phase 2, and exchanges it for a short-lived Azure access token. Then helm upgrade --install points at the dev values file and sets the image tag to this commit's SHA.
+
+## Segment 4 (steps)
+
+Both services share the same chart layout, with a values file per environment. Values-dev.yaml for checkout sets its autoscaler to a minimum of three replicas and a maximum of fifteen, because checkout has to survive flash-sale spikes — product-catalog's is two and eight. And none of these values files ever hold a real secret. The External Secrets Operator running in the cluster syncs the database password and the PaymentPro key from Key Vault straight into a Kubernetes Secret at runtime.
+
+## Segment 5 (outro)
+
+Dev now deploys automatically on every single merge to main. Staging and production don't work that way — they wait for a deliberate decision. That's Lesson 12: environment promotion and approvals.

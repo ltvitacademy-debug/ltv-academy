@@ -1,0 +1,21 @@
+# Script — SLIs, SLOs & Error Budgets
+
+## Segment 1 (title)
+
+"Is the service healthy" sounds like yes or no, but every production system has some failure happening right now. The real question is how much failure is acceptable — and SLIs, SLOs, and error budgets turn that into a number.
+
+## Segment 2 (steps)
+
+An SLI is the specific measured metric that reflects user experience — for Northbridge's checkout, the percent of requests completing under 2 seconds. An SLO is the internal target for that SLI over a time window, like 99.9% over 30 days. An SLA is the external, contractual version — usually looser, with real penalties, so teams get warned by their own SLO before they're ever in breach of a customer contract.
+
+## Segment 3 (code)
+
+Here's the math. A 99.9% SLO over a 30-day window of about 43,200 minutes leaves an error budget of roughly 43 minutes of allowed failure. If Northbridge already burned 30 of those minutes on this month's incident, there's only 13 minutes of budget left before breaching the objective.
+
+## Segment 4 (steps)
+
+That number changes how a team behaves. Nearly out of budget means slow down, no risky deploys until it resets. A healthy budget means there's room to ship faster and take calculated risks. Either way, it's a shared number the whole team already agreed to — not an argument about feelings.
+
+## Segment 5 (outro)
+
+Keep that error-budget math handy — you'll use it again. Next up, lesson four: the golden signals.
