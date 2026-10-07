@@ -1,0 +1,25 @@
+# Script — Iterators & Algorithms
+
+## Segment 1 (title)
+
+The last lesson showed four containers with four completely different internal layouts. Yet std::sort works on a vector, and std::accumulate works on a deque, with no container-specific code anywhere. Iterators are the abstraction that makes this possible, and the roughly one hundred algorithms in the algorithm header are all written entirely in terms of them.
+
+## Segment 2 (steps)
+
+An iterator behaves like a generalized pointer. Dereferencing it gets you the current element, and incrementing it moves to the next one. begin returns an iterator to the first element, and end deliberately returns one past the last valid element — that half-open convention is what makes an empty range as simple as begin equaling end.
+
+## Segment 3 (code)
+
+Because sort and find are written purely against iterators rather than against vector specifically, this exact code works on any container whose iterators support random access. Sort rearranges the range in place; find returns an iterator to the match, or to end if nothing matched.
+
+## Segment 4 (code)
+
+accumulate folds a whole range down to one value, most often a sum. The second argument is the starting value the fold begins from, and it has to be the right type — pass a plain zero instead of zero-point-zero here and you risk silently truncating a floating point sum to an integer.
+
+## Segment 5 (steps)
+
+Not every iterator supports every operation, and that's exactly why sort can't just run on any container. A list's iterator can only step forward and backward one element at a time — it can't jump ahead by n in constant time — so algorithms that need random access, like sort, simply aren't available on it directly; list provides its own sort method instead.
+
+## Segment 6 (outro)
+
+Iterators decouple algorithms from containers, which is why the same few lines of sort, find, and accumulate work unchanged across vector, deque, and beyond. Next up, lesson eighteen: strings, streams, and I/O — reading, writing, and formatting text the STL way.

@@ -1,0 +1,60 @@
+{
+  "lesson": "productionization-tradeoffs",
+  "questions": [
+    {
+      "q": "Why does batching requests together to raise throughput create a latency trade-off?",
+      "options": [
+        "Batching has no effect on either latency or throughput in practice",
+        "The first request in a batch has to wait for the batch to fill (or the queue delay to expire) before inference runs, delaying its response",
+        "Batching only works on CPU, never on GPU",
+        "Batching reduces throughput while improving latency"
+      ],
+      "answer": 1,
+      "explain": "Batching keeps the GPU busier per kernel launch, raising throughput, but the earliest-arriving request in the batch now waits for the batch to fill, which raises its latency."
+    },
+    {
+      "q": "What is the real cost of quantizing a model with torch.quantization.quantize_dynamic?",
+      "options": [
+        "There is no cost; quantization always improves both speed and accuracy",
+        "A potential accuracy drop, which is why the original eval harness should be re-run against the quantized artifact before shipping it",
+        "The model can no longer be loaded by any serving framework",
+        "Quantization only works on models with no linear layers"
+      ],
+      "answer": 1,
+      "explain": "Reducing numerical precision (e.g. float32 to int8) can reduce accuracy. The guide stresses re-running the eval harness and reporting the accuracy delta, not just the speedup."
+    },
+    {
+      "q": "In a Triton dynamic_batching config with max_queue_delay_microseconds set, what does that setting actually control?",
+      "options": [
+        "The maximum time Triton will wait trying to fill a preferred batch size before running inference anyway",
+        "The maximum number of models Triton can serve at once",
+        "The total GPU memory allocated to the server",
+        "How long a client's HTTP connection stays open"
+      ],
+      "answer": 0,
+      "explain": "max_queue_delay_microseconds caps how long Triton waits hoping to accumulate a preferred batch size before running inference with whatever has arrived so far."
+    },
+    {
+      "q": "According to the lesson, when is NVIDIA Triton the right serving choice over a plain FastAPI server?",
+      "options": [
+        "Always, regardless of traffic or hardware, because it is newer",
+        "Once GPU utilization and multi-model, high-throughput serving actually matter — not before, since FastAPI is faster to stand up for low QPS or early-stage needs",
+        "Only when the model was trained in TensorFlow, never PyTorch",
+        "Never — Triton cannot serve TorchScript or ONNX models"
+      ],
+      "answer": 1,
+      "explain": "The lesson frames framework choice as constraint-driven: FastAPI for low QPS or early iteration, TorchServe for PyTorch-native model management, and Triton once GPU throughput and multi-model serving genuinely matter."
+    },
+    {
+      "q": "Why does the lesson emphasize p99 latency over average latency for user-facing systems?",
+      "options": [
+        "p99 latency is always lower than average latency, making the system look better",
+        "Average latency can hide a tail of slow requests; p99 captures the latency experienced by the worst 1% of requests, which matters for user experience",
+        "p99 latency is only relevant for batch jobs, not real-time systems",
+        "p99 latency measures GPU cost, not response time"
+      ],
+      "answer": 1,
+      "explain": "An average can be dragged down by many fast requests while a meaningful tail is still slow. p99 latency surfaces that tail, which is what users on the unlucky end actually experience."
+    }
+  ]
+}

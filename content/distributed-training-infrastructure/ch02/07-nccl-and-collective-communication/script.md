@@ -1,0 +1,21 @@
+# Script — NCCL & Collective Communication
+
+## Segment 1 (title)
+
+Lesson six established that communication is expensive and has to overlap with compute. The library actually doing that communication on solara-train — every AllReduce, every AllGather — is NCCL, NVIDIA's collective communication library.
+
+## Segment 2 (steps)
+
+NCCL provides four core operations. Broadcast sends one GPU's data to every other GPU — useful for distributing initial weights. AllReduce combines data from every GPU and gives every GPU the full reduced result — the classic gradient sync. ReduceScatter also combines data from every GPU, but each one only keeps its own shard of the result, which is what FSDP uses for gradients. And AllGather is the inverse — every GPU has a shard, and ends up with the full concatenated result, which is how FSDP reconstructs full parameters before a forward pass.
+
+## Segment 3 (code)
+
+NCCL figures out the fastest hardware path automatically at startup, but you still configure it through environment variables. NCCL_SOCKET_IFNAME picks the network interface for its bootstrap traffic. NCCL_IB_HCA restricts which InfiniBand adapters it's allowed to use. And NCCL_DEBUG set to INFO turns on verbose logging so you can see exactly what it chose.
+
+## Segment 4 (code)
+
+With that logging on, a healthy job startup shows NCCL finding the InfiniBand HCAs and building its communication ring across them. If you ever see NET slash Socket in that log where you expected NET slash IB, that's a sign something's misconfigured — exactly the kind of thing lesson eleven teaches you to catch.
+
+## Segment 5 (outro)
+
+NCCL gives you Broadcast, AllReduce, ReduceScatter, and AllGather, automatically built around the fastest path it detects, whether that's NVLink inside a node or InfiniBand between them. Up next, lesson eight: going inside AllReduce and AllGather themselves, step by step.

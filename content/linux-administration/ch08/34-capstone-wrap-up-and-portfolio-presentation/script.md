@@ -1,0 +1,21 @@
+# Script — Capstone: Wrap-Up & Portfolio Presentation
+
+## Segment 1 (title)
+
+You've built and hardened app-02 for Northbridge Retail. This last lesson closes the loop two ways: a final verification checklist to run against your own work, and guidance on how to describe this exact project in a resume, a README, or an interview.
+
+## Segment 2 (code)
+
+Running through the checklist one more time, sshd confirms root login and password authentication are both off, ufw confirms the firewall is active, and systemctl confirms the internal tool is enabled as a managed service. If every one of these matches what's expected, app-02 meets the same baseline a real ops team would sign off on.
+
+## Segment 3 (steps)
+
+A strong resume bullet names the actual tools used, ufw, systemd, cron, SSH keys, instead of a vague phrase like "worked on Linux security," because a hiring manager skimming resumes recognizes specific tool names faster than general claims. It's also worth being honest about scope — this was a self-directed lab project, not production infrastructure for a real company, and saying so plainly reads as more credible, not less.
+
+## Segment 4 (steps)
+
+For the interview version of this story, situation, what you did, and result is a structure that works every time: you set up and hardened a server to a real ops baseline, you walked through sudo access, SSH keys, the firewall, a systemd service, and a cron job in that specific order, and then you verified every one of those pieces afterward in the logs and the configuration, rather than just assuming the setup worked.
+
+## Segment 5 (outro)
+
+That verification step, and being able to explain why the order mattered at each stage, is what separates someone who followed a checklist from someone who actually understands a Linux server. That closes out Linux Administration — from your very first login and the filesystem hierarchy, through permissions, shell tools, services, Bash scripting, and now a full capstone server you hardened and can talk about with real confidence. Congratulations on completing the course.

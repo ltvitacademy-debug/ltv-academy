@@ -1,0 +1,25 @@
+# Script — Linear Algebra in NumPy
+
+## Segment 1 (title)
+
+This closing lesson of chapter two is deliberately a consolidation, not a new concept. Every operation from the last five lessons, vectors, solving systems, decompositions, eigenvalues, covariance, has a direct NumPy or SciPy call. The goal here is fluency: knowing exactly which function to reach for.
+
+## Segment 2 (code)
+
+The single most common mistake is confusing the two multiplication operators. The star operator is always elementwise, multiplying matching entries together. The at sign is matrix or dot-product multiplication. Mixing these up silently produces the wrong answer without ever raising an error.
+
+## Segment 3 (code)
+
+When you actually need to solve A x equals b, use the solve function directly rather than computing the inverse and multiplying. Both give the same answer, but solve uses factorization internally and is faster and more numerically stable, since explicitly inverting a matrix amplifies rounding error.
+
+## Segment 4 (steps)
+
+For decompositions, reach for eigh when your matrix is symmetric, like a covariance matrix, since it guarantees real eigenvalues and orthonormal eigenvectors. Reach for SVD when the matrix might not even be square. And reach for Cholesky specifically when the matrix is symmetric positive definite.
+
+## Segment 5 (code)
+
+Run eigh and SVD on the same symmetric positive definite matrix and you'll notice something: the same two numbers come back, just in opposite order, ascending for eigh and descending for SVD. That's not a coincidence, for a symmetric positive definite matrix, eigenvalues and singular values are exactly the same thing.
+
+## Segment 6 (outro)
+
+Every idea from this chapter reduces to a short, specific call: at sign for multiplication, solve instead of invert, eigh for symmetric matrices, SVD for anything else. That closes chapter two on linear algebra. Up next, chapter three begins with lesson twelve: probability spaces and random variables.

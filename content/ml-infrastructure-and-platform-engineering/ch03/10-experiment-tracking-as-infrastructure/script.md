@@ -1,0 +1,25 @@
+# Script — Experiment Tracking as Infrastructure
+
+## Segment 1 (title)
+
+Every ML team starts the same way — a notebook, a training run, a number that looks good. The trouble starts on the second run, when nobody can remember which hyperparameters produced the first one. This lesson treats experiment tracking as infrastructure: a shared service the rest of the platform depends on, not a personal habit.
+
+## Segment 2 (steps)
+
+Every real tracking system logs the same four things for each run. Parameters are the inputs you chose, like learning rate or batch size. Metrics are the outputs you measure, logged as a time series so you can see a curve, not just a final number. Artifacts are the files a run produces — the model itself, a plot, a requirements file. And source and environment capture which code and which library versions produced this run, so it can actually be rebuilt later.
+
+## Segment 3 (code)
+
+MLflow's core API is built around a run. You open one with start_run, log parameters once, log metrics on every step so they become a curve, and attach artifacts as files. That with block closes the run automatically and tags it with a status, so nothing gets left half-logged.
+
+## Segment 4 (code)
+
+For common frameworks, autologging hooks the framework's own training call and captures what it already knows, so you don't even write the log lines yourself. Weights and Biases solves the identical problem with a different shape — init plays the role of start_run plus log_param, and log plays the role of log_metric. The concepts transfer directly because the underlying problem is the same.
+
+## Segment 5 (steps)
+
+Underneath one API, MLflow's Tracking Server splits into two stores on purpose. A backend store — a real database — holds queryable metadata: params, metrics, tags. An artifact store, usually object storage, holds the bulk files: model weights, plots, configs. That split lets you scale a multi-terabyte artifact store completely independently of the metadata database.
+
+## Segment 6 (outro)
+
+Once a team depends on answering "what produced this model" months later, the tracking server stops being optional and becomes infrastructure — backups, access control, uptime, every job writing to it by default. Next, lesson eleven: model registries, which turn a tracked run into a named, versioned model ready to deploy.

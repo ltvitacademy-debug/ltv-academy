@@ -1,0 +1,21 @@
+# Script — Storage Backends for ML
+
+## Segment 1 (title)
+
+Lesson 25 assumed Solara-70B's shards live somewhere the five hundred twelve GPU cluster can stream from — but somewhere is actually a real decision with real trade-offs. There are three fundamentally different kinds of storage to choose from, and picking the wrong one for a given job shows up directly as idle GPUs.
+
+## Segment 2 (steps)
+
+Object storage, S3, is cheap, durable, and effectively unlimited, but it's accessed as whole objects over HTTP with real per-request latency. Block storage, like EBS, attaches to a single instance as a raw volume — fast for that one node, but it can't be shared across sixty-four nodes at once, which rules it out as training-data storage by itself. A parallel filesystem like FSx for Lustre is different again: a POSIX filesystem many nodes mount concurrently, spreading a single file's I/O across many backing disks.
+
+## Segment 3 (steps)
+
+The numbers back this up. A single S3 prefix supports at least thirty five hundred PUT or COPY requests a second, or fifty five hundred GET or HEAD requests — and that multiplies with every additional prefix. FSx for Lustre, by contrast, moves data to and from S3 at up to hundreds of gigabytes a second in aggregate, with EFA-enabled systems reaching seven hundred gigabits per second for a single client — numbers object storage's per-request model just doesn't reach for one consumer.
+
+## Segment 4 (code)
+
+In practice Solara AI uses both, layered. S3 holds the durable source of truth for every shard ever produced. FSx for Lustre links to that bucket through a data repository association and lazily loads objects the first time a job reads them — after that, they live on FSx's high-performance SSD storage with far lower latency than S3 for every read that follows.
+
+## Segment 5 (outro)
+
+Object storage is the source of truth, block storage is fast but node-local, and a parallel filesystem bridges the two with lazy caching from S3. Next, Lesson 27: what to do when storage isn't the bottleneck, but the loader still is.

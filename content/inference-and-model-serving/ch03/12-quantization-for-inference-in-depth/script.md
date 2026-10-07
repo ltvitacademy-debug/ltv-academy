@@ -1,0 +1,25 @@
+# Script — Quantization for Inference, in Depth
+
+## Segment 1 (title)
+
+Chapter two gave you the frameworks that run a model fast. This chapter gives you the techniques that make the model itself smaller and cheaper to run, starting with the one nearly every team reaches for first: quantization.
+
+## Segment 2 (steps)
+
+Quantization converts a model's weights from sixteen-bit floating point down to a lower-precision format, usually eight-bit or four-bit integers, each with a scale factor that approximates the original value. The architecture doesn't change at all. Only how many bits it takes to store each number changes.
+
+## Segment 3 (steps)
+
+That matters because decode, as you learned in lesson four, is memory-bound — the GPU spends its time moving weights and the KV cache through memory, not doing math. Cutting a weight from sixteen bits to four roughly quarters the bytes that have to move. It also shrinks GPU memory footprint, often the harder constraint of the two.
+
+## Segment 4 (steps)
+
+There are two ways to get there. Post-training quantization quantizes an already-trained model using a small calibration set, no retraining needed. Quantization-aware training simulates the precision loss during training itself, which preserves more accuracy but costs a full training run. In production inference, PTQ dominates — it's cheap and fast.
+
+## Segment 5 (code)
+
+Here's what that looks like with bitsandbytes: pass a quantization config into from_pretrained, and the model loads directly in eight-bit. No training step, no separate conversion pipeline — just a config object at load time.
+
+## Segment 6 (outro)
+
+The real differences between quantization methods come down to how well each one handles outlier values. Next up, lesson thirteen: GPTQ, AWQ, and bitsandbytes, compared in depth.

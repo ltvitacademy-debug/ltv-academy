@@ -1,0 +1,21 @@
+# Script — torch.compile Under the Hood
+
+## Segment 1 (title)
+
+One line, model equals torch dot compile of model, can meaningfully speed up a PyTorch model without touching a single layer. It isn't magic — it's a compiler pipeline automatically doing a version of what you'd otherwise do by hand.
+
+## Segment 2 (steps)
+
+TorchDynamo traces your Python and PyTorch code as it actually executes, capturing the operations into an intermediate graph without making you rewrite the model. AOTAutograd takes that forward graph and derives the backward graph ahead of time, so both can be optimized together. TorchInductor then compiles both down to optimized, fused kernels — Triton kernels on GPU.
+
+## Segment 3 (code)
+
+Compilation happens lazily, triggered by the first real forward pass with actual input shapes — that's why the first iteration of a compiled loop is noticeably slower, and every iteration after is faster. Change the input shape and Dynamo may need to recompile, paying that cost again.
+
+## Segment 4 (code)
+
+Python control flow that depends on real tensor values, or an unsupported call, forces a graph break — Dynamo falls back to eager execution for that piece and resumes tracing after. Frequent graph breaks cap how much speedup compilation can deliver. The reduce-overhead mode layers CUDA graphs on top of the compiled kernels, and max-autotune searches more kernel variants at the cost of a much longer compile time.
+
+## Segment 5 (outro)
+
+Up next, lesson twenty-three, closes this chapter with the error every PyTorch GPU user eventually hits: common out-of-memory failures and fixes.

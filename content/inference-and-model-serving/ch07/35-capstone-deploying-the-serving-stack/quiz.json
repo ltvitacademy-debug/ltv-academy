@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-deploying-the-serving-stack",
+  "questions": [
+    {
+      "q": "In this capstone's deployment, what role does the vLLM server play?",
+      "options": [
+        "It only stores the model weights on disk",
+        "It is the OpenAI-compatible HTTP server that owns the model, the request scheduler, and the KV cache",
+        "It replaces the need for a GPU entirely",
+        "It is strictly a load balancer with no model logic"
+      ],
+      "answer": 1,
+      "explain": "vLLM exposes an OpenAI-compatible endpoint and owns the model, scheduling, and KV cache management on the GPU it runs on."
+    },
+    {
+      "q": "Why does the launch command cap `--max-model-len` at 8192 instead of using Llama 3.1's full 128K context?",
+      "options": [
+        "vLLM does not support contexts longer than 8192 tokens",
+        "Anchorline's requests don't need 128K of context, and a lower cap frees KV-cache memory for more concurrent requests",
+        "Llama 3.1 8B cannot generate more than 8192 tokens total, ever",
+        "It is a required default that cannot be changed"
+      ],
+      "answer": 1,
+      "explain": "The cap matches the actual use case (a question plus pasted logs) and frees up GPU memory that would otherwise be reserved for KV cache on requests that will never use the full window."
+    },
+    {
+      "q": "Which of the following is NOT something you need a separate flag to turn on in vLLM, because it is already the default behavior?",
+      "options": [
+        "Continuous batching",
+        "PagedAttention-based KV cache management",
+        "Setting the server's listening port",
+        "Both continuous batching and PagedAttention are on by default"
+      ],
+      "answer": 3,
+      "explain": "Continuous batching and PagedAttention are vLLM's default scheduling and KV-cache strategy — flags like --max-num-seqs tune how aggressively they run rather than switching them on."
+    },
+    {
+      "q": "What does `--enable-chunked-prefill` accomplish?",
+      "options": [
+        "It quantizes the model weights to INT4",
+        "It splits a long prompt's prefill work into chunks interleaved with other requests' decode steps, so one long prompt doesn't stall everyone else",
+        "It increases the model's context window beyond its architectural maximum",
+        "It disables the KV cache"
+      ],
+      "answer": 1,
+      "explain": "Chunked prefill interleaves prefill chunks for long prompts with decode steps for other in-flight requests, improving fairness under mixed request lengths."
+    },
+    {
+      "q": "After starting the server, what does a successful curl request to the chat completions endpoint confirm?",
+      "options": [
+        "Nothing useful — curl cannot test an inference server",
+        "That the model loaded, the scheduler is accepting requests, and KV cache allocation succeeded",
+        "That the GPU has reached 100% memory utilization",
+        "That autoscaling is correctly configured"
+      ],
+      "answer": 1,
+      "explain": "A real response with the expected choices structure is a smoke test that the three things most likely to be silently broken after a deploy — model load, scheduler, and KV cache allocation — all came up clean."
+    }
+  ]
+}

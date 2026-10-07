@@ -1,0 +1,23 @@
+## Segment 1 (title)
+
+Lesson 16 pushed catalog colon 1.4 with barely a second thought about what 1.4 meant. A real pipeline tags more deliberately -- one image, several tags, each answering a different question.
+
+## Segment 2 (screenshot)
+
+That's the real Tags tab on Docker Hub. Every tag pushed to a repository gets listed separately, with its own pull command, digest, and size -- independent of every other tag sitting on that same repository.
+
+## Segment 3 (code)
+
+docker tag doesn't copy any image data -- it just points a new name at an image ID that already exists locally. Build once, tag it three ways: 1.5, latest, and the git commit hash, a1b2c3d. Push all three, and every one of them downloads the exact same bytes.
+
+## Segment 4 (steps)
+
+Semver -- 1.5 -- is a release number bumped on purpose. latest is a convenience pointer to whatever was pushed most recently -- fine for local development, never safe to deploy by, because it silently means something different every day. A git-sha tag is the exact commit that produced the build, traceable straight back to source.
+
+## Segment 5 (code)
+
+Here's the rule: once a tag is in production, it's immutable. A bug in 1.5 gets fixed by cutting 1.5.1, never by re-pushing 1.5 itself. Pull that git-sha tag a year from now, and it returns the identical bytes it does today -- that's the whole reason production deploys pin to a git-sha, never to latest.
+
+## Segment 6 (outro)
+
+Docker Hub isn't the only registry in Northbridge's world. Next lesson covers Azure Container Registry and Amazon ECR -- the managed, cloud-native registries their pipelines actually push production images to.

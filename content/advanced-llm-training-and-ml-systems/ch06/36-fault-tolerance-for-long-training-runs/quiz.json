@@ -1,0 +1,60 @@
+{
+  "lesson": "fault-tolerance-for-long-training-runs",
+  "questions": [
+    {
+      "q": "Why is hardware and network failure considered routine, not exceptional, for a large-scale training run?",
+      "options": [
+        "Because GPUs are inherently less reliable than other computer hardware",
+        "Because running on hundreds or thousands of GPUs for days or weeks multiplies the exposure to failure, even if each individual component's failure probability is low",
+        "Because training frameworks intentionally inject failures for testing",
+        "Because only cloud providers' hardware fails, not on-premises clusters"
+      ],
+      "answer": 1,
+      "explain": "The sheer number of components in a large fleet running for an extended time multiplies the chance that some component fails before the run completes, even though no individual component is especially unreliable."
+    },
+    {
+      "q": "What makes a silent hang harder to handle than a process crash?",
+      "options": [
+        "Silent hangs are actually easier to detect than crashes",
+        "A crash is noticed immediately by the scheduler, but a hang -- such as a collective operation blocking on a degraded rank -- produces no error and no signal unless an explicit timeout is set",
+        "Silent hangs only occur on single-GPU jobs",
+        "Hangs always resolve themselves within a few seconds automatically"
+      ],
+      "answer": 1,
+      "explain": "A crash is immediately visible to the job scheduler, but a silent hang -- like a stuck all-reduce waiting on an unresponsive rank -- produces no error at all without an explicit communication timeout, making the job appear frozen with no actionable signal."
+    },
+    {
+      "q": "What does setting an explicit timeout on torch.distributed.init_process_group accomplish?",
+      "options": [
+        "It prevents any GPU from ever failing",
+        "It converts a stuck collective communication operation into a raised error instead of an indefinite hang, making the failure detectable and actionable",
+        "It automatically increases the model's batch size",
+        "It disables all checkpointing during training"
+      ],
+      "answer": 1,
+      "explain": "An explicit timeout ensures that a collective operation which would otherwise block forever instead raises an error, turning an invisible freeze into something the training stack can detect and react to."
+    },
+    {
+      "q": "In the torchrun elastic launch example, what does --max-restarts=3 control?",
+      "options": [
+        "The number of epochs the model will train for",
+        "The number of times the elastic agent will automatically restart failed workers before giving up, without the job being resubmitted by a human",
+        "The number of GPUs required per node",
+        "The learning rate warmup schedule"
+      ],
+      "answer": 1,
+      "explain": "max-restarts bounds how many automatic restart attempts the elastic agent will make for failed workers before it stops trying, allowing recovery without manual job resubmission."
+    },
+    {
+      "q": "Why are checkpoint cadence and fault tolerance described as one system rather than two independent concerns?",
+      "options": [
+        "Because checkpointing has nothing to do with how a job recovers from failure",
+        "Because a restart is only as cheap as the most recent checkpoint it can resume from -- the fault-tolerance mechanism's effectiveness depends directly on checkpoint frequency",
+        "Because fault tolerance makes checkpointing completely unnecessary",
+        "Because checkpoints are only used for final model deployment, not for resuming training"
+      ],
+      "answer": 1,
+      "explain": "When a restart happens, training resumes from the last checkpoint -- so how much progress is lost in a failure depends directly on how recently a checkpoint was saved, tying the two mechanisms together."
+    }
+  ]
+}

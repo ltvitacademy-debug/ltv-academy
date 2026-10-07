@@ -1,0 +1,21 @@
+# Script — vLLM, Overview
+
+## Segment 1 (title)
+
+vLLM is the framework most teams reach for first when they need to serve an LLM. It's open source, built specifically around continuous batching and efficient KV cache management, and it ships an OpenAI-compatible API out of the box. This lesson gives you a working mental model and the commands you'd actually run.
+
+## Segment 2 (steps)
+
+vLLM began as a research project at UC Berkeley's Sky Computing Lab and is now a widely used open-source project, with contributions from NVIDIA, AMD, Red Hat, and many others. Most popular open-weight model families — Llama, Mistral, Qwen, and more — work with vLLM with little to no custom code.
+
+## Segment 3 (steps)
+
+vLLM is best known for PagedAttention. Before it, most implementations allocated one contiguous memory block per request, sized for the maximum possible length — wasteful for requests that end up shorter. PagedAttention instead stores the KV cache in small, fixed-size, non-contiguous pages tracked by a lookup table, the same idea as virtual memory paging in operating systems. That lets vLLM pack far more concurrent requests into the same GPU memory.
+
+## Segment 4 (code)
+
+Here's how you'd actually launch it: the vllm serve command, pointed at a model name, with flags controlling the port, how much GPU memory it's allowed to claim, and the maximum context length it plans memory for. Once running, it accepts standard OpenAI-style chat completion requests.
+
+## Segment 5 (outro)
+
+vLLM pairs continuous batching with PagedAttention's efficient paged memory management, in an OpenAI-compatible server you launch with one command. Up next, lesson eight: TensorRT-LLM, NVIDIA's framework focused on compiling models for maximum raw execution speed.

@@ -1,0 +1,21 @@
+# Script — Training an Agent to Choose Execution Plans
+
+## Segment 1 (title)
+
+Environment built, reward designed — this lesson runs the actual training, using stable-baselines3's PPO with a small MLP policy, and it resolves the exact notebook entry from Lesson 1 about force order helping on wide ranges and hurting on narrow ones.
+
+## Segment 2 (code)
+
+MlpPolicy is the right choice here because the observation is just two features and the action space has only five discrete options — there's no image or sequence to process, so a small fully connected network has more than enough capacity. Training runs four copies of the environment in parallel, since every step is a real round trip to SQL Server rather than a cheap simulator step.
+
+## Segment 3 (steps)
+
+Project 3, elsewhere in this lab, also trains with PPO, but through a completely different library and modality: TRL's PPOTrainer, tuning a language model's token generation policy. PPO itself doesn't care whether the policy is a two layer MLP or a multi billion parameter transformer — it's a general policy gradient method, and these two projects are proof it scales from a tabular bandit up to RLHF on a language model without changing its core update rule.
+
+## Segment 4 (steps)
+
+The Lesson 1 notebook entry described trying force order on every episode, expecting uniformly lower reads, and instead finding it worse on narrow date ranges and better on wide ones. That's exactly what this training run resolves: the trained policy learns to pick force order on wide-range episodes, where it actually helps, and a different hint, typically hash join or no hint at all, on narrow-range episodes, where force order would have hurt.
+
+## Segment 5 (outro)
+
+This lesson trains a stable-baselines3 PPO agent with MlpPolicy, the same algorithm family as Project 3's TRL PPOTrainer but applied to a tabular two-feature observation instead of a language model's generation policy, and the trained policy resolves the Lesson 1 notebook entry by conditioning its hint choice on date range days instead of forcing one hint everywhere. Up next, Lesson 8: evaluating this trained policy against the optimizer's own choices on a held-out grid.

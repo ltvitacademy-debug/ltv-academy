@@ -1,0 +1,25 @@
+# Script — Artifact Storage Strategies
+
+## Segment 1 (title)
+
+Every lesson so far has produced something that has to live somewhere: a dataset version, a model file, a container image, a manifest. Somewhere is almost never one system, it's a deliberate split across a few kinds of storage, plus a retention policy, because none of this is free to keep forever.
+
+## Segment 2 (steps)
+
+Object storage is the default home for large, immutable blobs, datasets, model files, logs. A model registry's own backing store usually holds metadata, versions, aliases, tags, in a database, while the actual model binary it points to still sits in object storage underneath. And a container registry specializes in images, with its own layer deduplication and digest addressing.
+
+## Segment 3 (code)
+
+Here's MLflow's tracking server configured with that split made concrete. Every logged model call writes bytes to S3, while the run's parameters and tags go into a Postgres database. That's the registry-versus-object-storage split, just implemented.
+
+## Segment 4 (code)
+
+And none of this is free to keep forever. A lifecycle rule like this moves training logs older than thirty days to cheaper, slower storage, and deletes them outright after a year. Applying that same rule everywhere without thinking is how storage costs quietly grow forever.
+
+## Segment 5 (steps)
+
+Not every artifact deserves the same treatment, though. Deployed and recently superseded model versions, and the reproducibility manifest for anything that was ever in production, are worth keeping long-term, they're small and that's exactly what an audit needs. Intermediate training logs and failed experiment artifacts are safe to expire aggressively.
+
+## Segment 6 (outro)
+
+Retention and audit requirements resolve through tiering, not blanket deletion, expire the cheap, regenerable stuff fast and keep the small, audit-critical artifacts for the full window. Next, lesson thirty: exactly what a regulated environment requires you to keep, and for how long.

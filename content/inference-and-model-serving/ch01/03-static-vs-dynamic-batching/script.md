@@ -1,0 +1,25 @@
+# Script — Static vs. Dynamic Batching
+
+## Segment 1 (title)
+
+Lesson two named batching as the stage where throughput gets built. This lesson opens that stage up and compares the two basic strategies every serving framework chooses between: static batching, where the batch is fixed before it runs, and dynamic batching, where it forms itself on the fly.
+
+## Segment 2 (steps)
+
+In static batching, a fixed group of requests is collected, padded to match, and run together as one unit — and the whole batch finishes together, even if some requests inside it were done much earlier. That fits predictable, offline jobs well, but it's poor for live traffic, because one unusually long request holds the whole batch hostage.
+
+## Segment 3 (steps)
+
+Dynamic batching assembles a batch on the fly from whatever requests have recently arrived. Every dynamic batcher exposes two knobs: max batch size, the ceiling on how many requests get grouped, and max queue delay, how long the scheduler waits hoping more requests arrive. A short delay keeps latency low but runs smaller batches; a longer delay fills bigger batches and raises throughput, at the cost of making early arrivals wait for their batchmates.
+
+## Segment 4 (code)
+
+Here's that trade-off as a config file would express it: a max queue delay in microseconds, and a list of preferred batch sizes the scheduler tries to hit before it gives up and runs what it has.
+
+## Segment 5 (steps)
+
+LLMs push this further, because requests in the same batch rarely finish together — one prompt might need twenty output tokens, another two thousand. Continuous batching solves this by letting requests join and leave the batch at each decode step, so a finished request's GPU slot goes immediately to a new one. You'll go deep on it in lesson nineteen.
+
+## Segment 6 (outro)
+
+Static batching suits predictable offline work; dynamic batching suits live traffic; continuous batching takes the idea to the level of a single token. Up next, lesson four: the prefill and decode split that makes LLM batching uniquely tricky in the first place.

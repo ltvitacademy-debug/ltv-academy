@@ -1,0 +1,25 @@
+# Script — Quadratic & Linear Programming
+
+## Segment 1 (title)
+
+The last two lessons solved the minimum variance portfolio by hand, using the Lagrangian directly. That trick only works cleanly for equality constraints. The moment you add something realistic, like banning short selling, the algebra breaks down, and you need a solver built around a standard form. This lesson covers the two standard forms every solver expects.
+
+## Segment 2 (steps)
+
+A quadratic program minimizes a quadratic objective, one half x transpose Q x plus c transpose x, subject to linear inequality and equality constraints. A linear program drops the quadratic term entirely and just minimizes a linear objective subject to linear constraints. Both are convex whenever Q is positive semi definite, which means both still come with a guaranteed global optimum, just without a tidy closed form algebra trick.
+
+## Segment 3 (code)
+
+Take the minimum variance portfolio and add one inequality: weights have to stay non negative, no short selling. It's still the same convex quadratic objective and the same budget and return equality constraints, just with a lower bound added. That turns it into a genuine quadratic program, and SciPy's minimize function with those bounds and linear constraints hands it straight to a solver.
+
+## Segment 4 (steps)
+
+The reason the closed form breaks is the active set. With only equalities, you know exactly which equations to solve. With an inequality like weights greater than or equal to zero, you don't know in advance which weights will actually get pinned at exactly zero at the optimum. That unknown active set is precisely what a numerical QP solver works out for you, iteration by iteration.
+
+## Segment 5 (code)
+
+Plenty of finance problems are naturally linear instead of quadratic, like minimizing total transaction cost of a set of trades subject to a spending budget and a minimum exposure requirement. SciPy's linprog function, using the highs method, wraps a modern interior point and simplex solver, and because linear programs are convex, it reliably finds the true global optimum, not just a local one.
+
+## Segment 6 (outro)
+
+QPs and LPs are the two workhorse standard forms that let a solver take over once your algebra runs out. Up next, lesson twenty eight: numerical optimization in Python, the full toolkit, including problems that aren't convex at all.

@@ -6,16 +6,16 @@ Web-scale corpora are full of duplicate and near-duplicate content, from syndica
 
 ## Segment 2 (steps)
 
-Duplication isn't just wasted compute. A well-known study found that duplicate content measurably increases a model's tendency to memorize that text verbatim and can degrade overall quality. It's also tied to benchmark contamination -- if content resembling a benchmark's test examples appears many times in training data, scores on that benchmark become less trustworthy.
+Duplication isn't just wasted compute. A well-known study found that duplicate content measurably increases a model's tendency to memorize that text verbatim and can degrade overall quality. It's also tied to benchmark contamination -- if content resembling a benchmark's test examples appears many times in training data, scores on that benchmark become less trustworthy as a measure of real capability.
 
 ## Segment 3 (code)
 
-Exact deduplication hashes the normalized text of each document and drops anything whose hash has already been seen. It's cheap, but it only catches byte-for-byte duplicates -- it misses the same article with a different ad banner or one changed sentence.
+Exact deduplication hashes the normalized text of each document and drops anything whose hash has already been seen. It's cheap, but it only catches byte-for-byte duplicates -- it misses the same article with a different ad banner or one changed sentence, which is extremely common across syndicated news and mirrored documentation sites.
 
 ## Segment 4 (code)
 
-Near-duplicate detection needs MinHash and locality-sensitive hashing. MinHash compresses each document into a compact fingerprint that approximates its true similarity to other documents, and LSH buckets documents so only likely-similar pairs ever get compared directly, instead of every document against every other one.
+Near-duplicate detection needs MinHash and locality-sensitive hashing. MinHash compresses each document into a compact fingerprint that approximates its true similarity to other documents, and LSH buckets documents so only likely-similar pairs ever get compared directly, instead of every document against every other one. A similarity threshold, often around 0.8, decides how close two fingerprints need to be before they're treated as near-duplicates.
 
 ## Segment 5 (outro)
 
-Exact hashing handles the easy cases; MinHash and LSH handle the hard ones at web scale. Next up, lesson eleven: quality and toxicity filtering, the next cleaning pass after dedup.
+Exact hashing handles the easy cases; MinHash and LSH handle the hard ones at web scale, and together they're what makes deduplicating a billion-document corpus practical at all. Next up, lesson eleven: quality and toxicity filtering, the next cleaning pass after dedup.

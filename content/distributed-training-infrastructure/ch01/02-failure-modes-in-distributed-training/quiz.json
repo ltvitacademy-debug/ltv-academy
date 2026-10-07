@@ -1,0 +1,60 @@
+{
+  "lesson": "failure-modes-in-distributed-training",
+  "questions": [
+    {
+      "q": "What is an Xid error?",
+      "options": [
+        "A Kubernetes scheduling error code",
+        "The NVIDIA driver's log entry for a GPU-level hardware fault",
+        "An NCCL collective operation",
+        "A PyTorch optimizer warning"
+      ],
+      "answer": 1,
+      "explain": "An Xid error is logged by the NVIDIA driver when a GPU hits a hardware-level fault, such as an uncorrectable ECC error, often requiring the GPU to be drained and rebooted."
+    },
+    {
+      "q": "Why can a single straggler GPU reduce the throughput of an entire 512-GPU job, even without any crash or error message?",
+      "options": [
+        "Because collectives like AllReduce are synchronous, so every rank waits for the slowest one on every step",
+        "Because Kubernetes automatically throttles all other GPUs to match",
+        "Because PyTorch requires all GPUs to run the exact same clock speed",
+        "Because stragglers cause the job to restart automatically"
+      ],
+      "answer": 0,
+      "explain": "AllReduce and similar collectives are synchronous — all ranks must arrive before the operation completes. One slow rank sets the pace for every other rank, with no error raised since nothing actually failed."
+    },
+    {
+      "q": "What does NCCL's watchdog timeout mechanism do?",
+      "options": [
+        "Automatically restarts the entire training job every hour",
+        "Turns a collective operation that's hung indefinitely into an explicit, actionable timeout error naming the offending rank",
+        "Disables InfiniBand and falls back to Ethernet",
+        "Silently skips the hung rank and continues training"
+      ],
+      "answer": 1,
+      "explain": "Without the watchdog, a rank that never arrives at a collective would cause every other rank to hang forever. The watchdog raises a timeout error after a configurable interval, naming the rank it was waiting on."
+    },
+    {
+      "q": "Why is silent data corruption considered the most dangerous failure mode discussed in this lesson?",
+      "options": [
+        "It happens more often than any other failure",
+        "It always crashes the job immediately, which makes it easy to catch",
+        "It can corrupt training data or gradients without raising any error or crashing anything",
+        "It only affects the Kubernetes control plane, not the GPUs"
+      ],
+      "answer": 2,
+      "explain": "Silent data corruption is dangerous precisely because nothing crashes or errors — a bit flip or hardware bug can corrupt a gradient and the only hint might be a subtly off loss curve, which is why checkpointing and monitoring exist as independent safety nets."
+    },
+    {
+      "q": "Which of these is an example of a straggler, as defined in this lesson?",
+      "options": [
+        "A GPU that crashes and drops out of the job entirely",
+        "A rank that is still running and producing results, but noticeably slower than the other 511 ranks",
+        "A node that loses network connectivity completely",
+        "A checkpoint that fails to write to S3"
+      ],
+      "answer": 1,
+      "explain": "A straggler is alive and still contributing, just slow — for example due to thermal throttling or a degraded NIC link — which is what makes it hard to detect compared to an outright crash."
+    }
+  ]
+}

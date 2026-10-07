@@ -1,0 +1,60 @@
+{
+  "lesson": "silent-bugs-vs-loud-bugs",
+  "questions": [
+    {
+      "q": "Why are silent bugs considered more dangerous in research code than loud bugs?",
+      "options": [
+        "Silent bugs are always harder to write code for",
+        "Loud bugs crash and force a fix before the job can proceed, while silent bugs let the job run to completion and produce a plausible-looking but wrong result",
+        "Silent bugs only occur in production, never in research code",
+        "Loud bugs take longer to debug than silent bugs"
+      ],
+      "answer": 1,
+      "explain": "A loud bug (exception, crash) is self-correcting because the job can't proceed until it's fixed. A silent bug has no such mechanism — it can produce a wrong number that gets reported before anyone notices."
+    },
+    {
+      "q": "In the example where `preds` has shape (B,) and `targets` has shape (B, 1), what actually happens when computing `(preds - targets) ** 2`?",
+      "options": [
+        "PyTorch raises a shape-mismatch error immediately",
+        "The operation broadcasts to shape (B, B) instead of performing the intended elementwise (B,) comparison, silently producing a wrong result",
+        "PyTorch automatically squeezes the extra dimension and computes the correct result",
+        "The operation returns a scalar zero"
+      ],
+      "answer": 1,
+      "explain": "Broadcasting rules expand (B,) and (B,1) to (B,B), which is a completely different computation than the intended elementwise comparison. No error is raised, so the bug is silent."
+    },
+    {
+      "q": "What is the practical risk of forgetting to call `model.train()` after an evaluation pass that used `model.eval()`?",
+      "options": [
+        "The next training step will crash with a RuntimeError",
+        "Dropout and batch norm continue behaving as they do in eval mode for subsequent training steps, silently biasing results with no error raised",
+        "The optimizer will refuse to call .step()",
+        "Gradients will stop being computed entirely"
+      ],
+      "answer": 1,
+      "explain": "Leaving the model in eval mode means dropout is disabled and batch norm uses running statistics instead of batch statistics — a silent behavioral change with no exception raised."
+    },
+    {
+      "q": "What does omitting `optimizer.zero_grad()` between training steps cause?",
+      "options": [
+        "An immediate crash with an out-of-memory error",
+        "Gradients from previous steps silently accumulate with the current step's gradients, inflating the effective step size without any error",
+        "The loss value becomes NaN on the very next step",
+        "PyTorch automatically zeroes gradients internally, so nothing happens"
+      ],
+      "answer": 1,
+      "explain": "Without zeroing, gradients accumulate across calls to backward(), silently changing the effective update magnitude in a way that depends on how many steps were affected — no exception is raised."
+    },
+    {
+      "q": "What does `torch.autograd.set_detect_anomaly(True)` do that helps convert a silent bug into a loud one?",
+      "options": [
+        "It automatically fixes any NaN values found during training",
+        "It raises an exception at the exact operation in the backward pass that produced a NaN or Inf, instead of letting it propagate silently",
+        "It disables all gradient computation to save memory",
+        "It prevents the model from ever producing NaN values"
+      ],
+      "answer": 1,
+      "explain": "Anomaly detection mode pinpoints exactly which backward operation produced a NaN/Inf and raises there, rather than letting the corrupted value silently propagate through the rest of the computation graph."
+    }
+  ]
+}

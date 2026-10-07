@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ML Infrastructure & Platform Engineering · Chapter 5",
+    "titlePlain": "CI/CD ",
+    "titleEmphasis": "for ML",
+    "titleSuffix": "",
+    "subtitle": "Lesson 22 · Gating on model quality, not just code"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "A third stage, not just two",
+    "titlePlain": "CI, CD, and ",
+    "titleEmphasis": "continuous training",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "CI", "sub": "every code change is built and tested" },
+      { "label": "CD", "sub": "a passing build ships automatically" },
+      { "label": "CT", "sub": "retrain and re-validate on fresh data" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "GitHub Actions: test, train, validate",
+    "code": "jobs:\n  test-and-train:\n    steps:\n      - run: pytest tests/\n      - run: python train.py --output model.pkl\n      - run: python validate.py \\\n          --model model.pkl --min-auc 0.85\n  deploy-staging:\n    needs: test-and-train\n  deploy-production:\n    needs: deploy-staging\n    environment: production",
+    "caption": "Three gates: code tests, model validation, then a human-reviewed production environment."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A real validation gate",
+    "code": "def validate(model, X_test, y_test,\n             baseline_auc, min_auc=0.85):\n    preds = model.predict_proba(X_test)[:, 1]\n    auc = roc_auc_score(y_test, preds)\n    assert auc >= min_auc\n    assert auc >= baseline_auc - 0.01\n    return auc",
+    "caption": "Checks an absolute threshold AND a regression against the current production model."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two different events",
+    "titlePlain": "Code deploys and model deploys ",
+    "titleEmphasis": "aren't the same",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Code change only", "sub": "new handler, no retrain needed" },
+      { "label": "Model change only", "sub": "nightly retrain, no code touched" },
+      { "label": "Keep them separable", "sub": "easier to debug which one changed" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 23",
+    "titlePlain": "Canary & Shadow ",
+    "titleEmphasis": "Deployments",
+    "titleSuffix": "",
+    "subtitle": "Introducing a validated model to real traffic gradually."
+  }
+]

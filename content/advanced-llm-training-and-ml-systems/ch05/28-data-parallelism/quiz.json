@@ -1,0 +1,60 @@
+{
+  "lesson": "data-parallelism",
+  "questions": [
+    {
+      "q": "In data parallelism, what does each GPU replica hold and process?",
+      "options": [
+        "A different slice of the model's layers, processing the same batch",
+        "A full copy of the entire model, processing a different micro-batch of data",
+        "Only the optimizer state, with weights stored on a separate server",
+        "A compressed version of the model to save memory"
+      ],
+      "answer": 1,
+      "explain": "Data parallelism replicates the full model onto every GPU. Each replica processes its own different micro-batch of data independently."
+    },
+    {
+      "q": "What operation keeps every data-parallel replica's weights identical after each training step?",
+      "options": [
+        "A random weight swap between GPUs",
+        "An all-reduce that averages gradients across all replicas before any weight update is applied",
+        "Each replica independently decides its own learning rate",
+        "Replicas are re-initialized from scratch every step"
+      ],
+      "answer": 1,
+      "explain": "An all-reduce sums (or averages) each parameter's gradient across every replica and writes the result back to all of them, so every replica applies the identical update."
+    },
+    {
+      "q": "What memory problem does plain data parallelism fail to solve?",
+      "options": [
+        "It increases memory usage on every GPU compared to single-GPU training",
+        "Every replica still holds a full copy of the weights, gradients, and optimizer state, so a model that doesn't fit on one GPU still won't fit",
+        "It eliminates the need for an optimizer entirely",
+        "It requires storing the dataset in GPU memory permanently"
+      ],
+      "answer": 1,
+      "explain": "Data parallelism does not shard the model, gradients, or optimizer state across GPUs -- it only replicates them. A model too large for one GPU remains too large under plain DP."
+    },
+    {
+      "q": "In PyTorch's DistributedDataParallel (DDP) setup, what is the role of DistributedSampler?",
+      "options": [
+        "It compresses the dataset to reduce disk usage",
+        "It ensures each process's DataLoader sees a disjoint shard of the dataset rather than duplicated data",
+        "It automatically tunes the learning rate for multi-GPU training",
+        "It synchronizes gradients across GPUs instead of all-reduce"
+      ],
+      "answer": 1,
+      "explain": "DistributedSampler partitions the dataset so each process in the distributed job processes a different shard, avoiding redundant computation on duplicated data."
+    },
+    {
+      "q": "How does global batch size relate to the number of data-parallel replicas?",
+      "options": [
+        "Global batch size is unrelated to the number of replicas",
+        "Global batch size equals the per-GPU micro-batch size divided by the number of replicas",
+        "Global batch size equals the per-GPU micro-batch size multiplied by the number of replicas (times any gradient accumulation steps)",
+        "Global batch size is always fixed at 1 regardless of replica count"
+      ],
+      "answer": 2,
+      "explain": "Because each replica consumes its own micro-batch per step, the effective global batch size scales with the number of replicas, times any gradient accumulation steps used on top."
+    }
+  ]
+}

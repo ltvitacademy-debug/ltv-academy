@@ -1,0 +1,21 @@
+# Script — Running a Small RLHF Pipeline
+
+## Segment 1 (title)
+
+Lesson 47, closing out Chapter 7. Every piece — SFT, the reward model, PPO with a KL penalty, DPO — has been covered separately. This lesson runs a small version of the whole thing end-to-end.
+
+## Segment 2 (code)
+
+A small base model and a modest dataset make the full pipeline actually feasible to run and inspect. SFT first, then a reward model built on that same checkpoint, then PPO fine-tuning the policy against it with a KL coefficient set from the start — all three stages from this chapter, in one script.
+
+## Segment 3 (code)
+
+For comparison, the same preference data trained with DPO instead takes a fraction of the code — no reward model, no rollout loop, just a direct training run on the fixed preference pairs.
+
+## Segment 4 (steps)
+
+During the PPO run, watch reward and KL together, not reward alone — a rising reward with a flat KL is healthy, but both spiking together is the early sign of reward hacking from two lessons ago. For DPO, watch the implicit reward margin climb steadily. Either way, sanity-check the result against the SFT baseline on held-out prompts before trusting it, and watch for verbosity bias inflating the score.
+
+## Segment 5 (outro)
+
+A small run surfaces the same dynamics from this whole chapter at a scale that's easy to watch. That closes Chapter 7. Chapter 8 begins next lesson with RLAIF — replacing the human preference labels this chapter relied on with AI-generated ones.

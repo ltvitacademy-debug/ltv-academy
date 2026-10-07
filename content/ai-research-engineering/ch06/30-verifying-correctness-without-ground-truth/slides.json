@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Research Engineering · Chapter 6",
+    "titlePlain": "Verifying Correctness Without ",
+    "titleEmphasis": "Ground Truth",
+    "titleSuffix": "",
+    "subtitle": "Lesson 30 · Debugging Research Code"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "No answer key doesn't mean no way to check",
+    "titlePlain": "Four ways to verify without ",
+    "titleEmphasis": "labels",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Reduce to a known special case", "sub": "a new loss should hit a known value when inputs are trivial" },
+      { "label": "Numerically check custom gradients", "sub": "gradcheck compares finite differences to your backward pass" },
+      { "label": "Test invariances, not outputs", "sub": "shuffle-invariant model: same output, shuffled input order" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Special case + gradient check",
+    "code": "# A KL-divergence loss should be exactly 0 comparing a distribution to itself\nkl = my_custom_kl_divergence(p, p)\nassert torch.allclose(kl, torch.tensor(0.0), atol=1e-6)\n\n# Custom autograd.Function backward: check against finite differences\nfrom torch.autograd import gradcheck\nx = torch.randn(4, 4, dtype=torch.double, requires_grad=True)\nassert gradcheck(MyCustomFunction.apply, (x,), eps=1e-6, atol=1e-4)",
+    "caption": "Neither check needs to know the \"right\" output -- only a known value or an internal consistency property."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Overfit one tiny batch before trusting the full run",
+    "code": "tiny_batch = next(iter(loader))\nfor step in range(200):\n    optimizer.zero_grad()\n    loss = compute_loss(model, tiny_batch)\n    loss.backward()\n    optimizer.step()\nprint(f\"Loss after 200 steps on 1 batch: {loss.item():.6f}\")\n# Should be ~0. If not, the pipeline is broken before \"does it generalize\" matters.",
+    "caption": "This doesn't test generalization -- it tests that gradients are flowing and nothing upstream is silently broken."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Sanity Checks Every ",
+    "titleEmphasis": "Researcher",
+    "titleSuffix": " Should Run",
+    "subtitle": "The standard checklist researchers reach for at the start of every new experiment, before trusting any result."
+  }
+]

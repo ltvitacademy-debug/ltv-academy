@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker & Containers · Chapter 3",
+    "titlePlain": "Layers & ",
+    "titleEmphasis": "Caching",
+    "titleSuffix": "",
+    "subtitle": "Lesson 12 · Building Images"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Every RUN, COPY, and ADD is a layer",
+    "code": "FROM node:20-slim      # layer 1\nWORKDIR /app             # layer 2\nCOPY package.json ./     # layer 3\nRUN npm install           # layer 4\nCOPY . .                  # layer 5",
+    "caption": "Each layer is cached by its instruction plus its inputs -- nothing changed, nothing rebuilds."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A cache hit -- only the code changed",
+    "code": "$ docker build -t northbridge/catalog:1.4 .\n => CACHED [3/5] COPY package.json package-lock.json ./\n => CACHED [4/5] RUN npm install --production\n => [5/5] COPY . .",
+    "caption": "package.json didn't change, so Docker reuses the cached install step -- a 2-second build instead of 18."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A cache miss -- one change invalidates everything after",
+    "code": "$ docker build -t northbridge/catalog:1.4 .\n => [3/5] COPY package.json package-lock.json ./\n => [4/5] RUN npm install --production\n => [5/5] COPY . .",
+    "caption": "package.json changed this time -- every layer stacked after it reruns too, even the unchanged COPY . .."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why dependency files come first",
+    "titlePlain": "Ordering for ",
+    "titleEmphasis": "cache hits",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "package.json first", "sub": "changes rarely -- keeps the expensive install step cached" },
+      { "label": "npm install", "sub": "the slow step, protected as long as dependencies are unchanged" },
+      { "label": "COPY . . last", "sub": "application code changes constantly -- isolate that churn to the final layer" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 13",
+    "titlePlain": "CMD vs. ",
+    "titleEmphasis": "ENTRYPOINT",
+    "titleSuffix": "",
+    "subtitle": "Two ways to set what a container runs -- and why Northbridge sometimes combines them."
+  }
+]

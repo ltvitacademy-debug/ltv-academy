@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ML Infrastructure & Platform Engineering · Chapter 4",
+    "titlePlain": "Pipeline Scheduling ",
+    "titleEmphasis": "& Triggers",
+    "titleSuffix": "",
+    "subtitle": "Lesson 18 · How a pipeline actually gets kicked off"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Schedule-driven: Airflow's schedule param",
+    "code": "@dag(\n    schedule=\"0 2 * * *\",  # every day at 2 AM\n    start_date=datetime(2026, 1, 1),\n    catchup=False,\n)\ndef nightly_retrain():\n    ...",
+    "caption": "catchup=False stops Airflow from backfilling every missed day at deploy time."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Event-driven: Airflow Datasets",
+    "code": "training_data = Dataset(\"s3://ml-data/features/\")\n\n@dag(schedule=\"@daily\")\ndef feature_pipeline():\n    @task(outlets=[training_data])\n    def write_features(): ...\n\n@dag(schedule=[training_data])\ndef retrain_on_new_features():\n    @task\n    def train(): ...",
+    "caption": "The downstream DAG's schedule is the dataset itself — no cron, no polling."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Kubeflow Pipelines: recurring runs",
+    "code": "client = Client(host=\"https://kubeflow.example.com\")\n\nclient.create_recurring_run(\n    experiment_id=experiment_id,\n    job_name=\"nightly-fraud-retrain\",\n    pipeline_id=pipeline_id,\n    cron_expression=\"0 2 * * *\",\n    max_concurrent_run_count=1,\n)",
+    "caption": "KFP's cron-driven trigger, configured against the backend client rather than the DAG."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Pick the right trigger",
+    "titlePlain": "Schedule-driven vs. ",
+    "titleEmphasis": "event-driven",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Schedule-driven", "sub": "Fires on a timer, simple, can lag" },
+      { "label": "Event-driven", "sub": "Fires when data's ready, more responsive" },
+      { "label": "Datasets beat sensors", "sub": "No polling, just an outlet + schedule" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 19",
+    "titlePlain": "Pipeline Failure ",
+    "titleEmphasis": "Handling",
+    "titleSuffix": "",
+    "subtitle": "What happens when a triggered run doesn't finish cleanly."
+  }
+]

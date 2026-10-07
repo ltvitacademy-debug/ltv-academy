@@ -6,11 +6,11 @@ Loss falls predictably as you scale parameters, data, or compute on their own. B
 
 ## Segment 2 (steps)
 
-Earlier guidance favored scaling model size aggressively over data, which is part of why models like Gopher, at 280 billion parameters, were trained on relatively few tokens per parameter. Chinchilla, at just 70 billion parameters but 1.4 trillion tokens, used the exact same compute budget — and beat the much larger Gopher on downstream evaluations.
+Earlier guidance favored scaling model size aggressively over data, partly because those earlier fits didn't correct for learning-rate schedules mismatched to run length. That's part of why models like Gopher, at 280 billion parameters, were trained on relatively few tokens per parameter. Chinchilla, at just 70 billion parameters but 1.4 trillion tokens, used the exact same compute budget — and beat the much larger Gopher on downstream evaluations.
 
 ## Segment 3 (code)
 
-The fitted optimum from over 400 carefully controlled training runs comes out to roughly 20 tokens for every parameter. A 7-billion-parameter model's compute-optimal budget is therefore around 140 billion tokens. That's the number to anchor on when judging whether a run is under or over trained for its size.
+The fitted optimum from over 400 carefully controlled training runs, ranging from 70 million to 16 billion parameters, comes out to roughly 20 tokens for every parameter. A 7-billion-parameter model's compute-optimal budget is therefore around 140 billion tokens. That's the number to anchor on when judging whether a run is under or over trained for its size.
 
 ## Segment 4 (steps)
 

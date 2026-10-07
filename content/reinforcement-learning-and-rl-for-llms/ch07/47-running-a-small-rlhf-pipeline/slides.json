@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Reinforcement Learning & RL for LLMs · Chapter 7",
+    "titlePlain": "Running a Small ",
+    "titleEmphasis": "RLHF Pipeline",
+    "titleSuffix": "",
+    "subtitle": "Lesson 47 · RLHF"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Three stages, one script",
+    "code": "sft = SFTTrainer(model=base_model, train_dataset=demo_data,\n                  args=SFTConfig(output_dir=\"sft-small\"))\nsft.train()\n\nrm = AutoModelForSequenceClassification.from_pretrained(\"sft-small\", num_labels=1)\nreward_trainer = RewardTrainer(model=rm, train_dataset=pref_data,\n                                args=RewardConfig(output_dir=\"rm-small\"))\nreward_trainer.train()\n\nppo_trainer = PPOTrainer(\n    config=PPOConfig(model_name=\"sft-small\", init_kl_coef=0.2),\n    model=policy, ref_model=None, reward_model=rm,\n)\nppo_trainer.train()",
+    "caption": "Small base model (e.g. gpt2), a few thousand examples — feasible to run and inspect"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The shorter DPO path, same preference data",
+    "code": "dpo_trainer = DPOTrainer(\n    model=\"sft-small\",\n    args=DPOConfig(beta=0.1, output_dir=\"dpo-small\"),\n    train_dataset=pref_data,\n)\ndpo_trainer.train()",
+    "caption": "No reward model, no rollouts — compare against the PPO run above"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What to watch, not just loss",
+    "titlePlain": "Health checks ",
+    "titleEmphasis": "during the run",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Reward trend vs. KL", "sub": "rising reward + flat KL is healthy; both spiking is hacking" },
+      { "label": "DPO's implicit reward margin", "sub": "should climb steadily, not jump erratically" },
+      { "label": "Sanity-check vs. SFT baseline", "sub": "on held-out prompts, watch for verbosity bias" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 48",
+    "titlePlain": "Reinforcement Learning ",
+    "titleEmphasis": "From AI Feedback",
+    "titleSuffix": "",
+    "subtitle": "Chapter 8 · Replacing human preference labels with AI-generated ones."
+  }
+]

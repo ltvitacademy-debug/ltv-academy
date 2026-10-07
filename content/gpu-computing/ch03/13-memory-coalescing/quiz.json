@@ -1,0 +1,60 @@
+{
+  "lesson": "memory-coalescing",
+  "questions": [
+    {
+      "q": "What makes a warp's global memory access 'coalesced'?",
+      "options": [
+        "Each thread in the warp accesses a different bank of shared memory",
+        "The 32 threads access consecutive, aligned addresses that combine into a small number of wide memory transactions",
+        "The kernel uses double-precision floating point",
+        "The warp size is reduced to 16 threads"
+      ],
+      "answer": 1,
+      "explain": "Coalescing happens when a warp's threads access consecutive, aligned addresses, letting the memory controller satisfy the whole warp with few wide transactions."
+    },
+    {
+      "q": "Why does a strided access pattern like `in[i * stride]` hurt performance?",
+      "options": [
+        "It requires double the arithmetic operations",
+        "It scatters each thread's address, forcing the controller to issue many more, narrower memory transactions for the same data volume",
+        "It only works with integer data types",
+        "It disables the use of shared memory entirely"
+      ],
+      "answer": 1,
+      "explain": "A strided pattern spaces out the addresses each thread accesses, breaking coalescing and forcing more transactions to move the same number of bytes."
+    },
+    {
+      "q": "Why does structure-of-arrays (SoA) layout typically coalesce better than array-of-structures (AoS) for single-field access?",
+      "options": [
+        "SoA uses less total memory than AoS",
+        "SoA stores each field contiguously, so accessing one field per thread keeps addresses close together; AoS spaces them apart by the size of the whole struct",
+        "SoA automatically runs on Tensor Cores",
+        "AoS cannot be stored in global memory at all"
+      ],
+      "answer": 1,
+      "explain": "In AoS, reading just one field skips over the other fields of each record, spacing addresses apart. SoA keeps each field in its own array, so single-field access stays tightly packed."
+    },
+    {
+      "q": "A kernel reads the same total number of bytes whether accessed in a coalesced or scattered pattern. What changes between the two?",
+      "options": [
+        "Nothing — total bytes requested is all that determines performance",
+        "The effective bandwidth utilized can differ by an order of magnitude, even though total bytes requested is the same",
+        "The kernel's arithmetic intensity increases with scattering",
+        "Scattered access always runs faster because it uses more SMs"
+      ],
+      "answer": 1,
+      "explain": "Pattern, not just volume, determines how many transactions are needed. Scattered access can require far more transactions for the same byte count, tanking effective bandwidth."
+    },
+    {
+      "q": "What is a common warning sign of an uncoalesced memory access in kernel code?",
+      "options": [
+        "The kernel uses `threadIdx.x` directly as an index",
+        "The index into a global memory array is computed with a multiply by a stride or via an indirection like `index_array[i]`",
+        "The kernel declares a `__shared__` array",
+        "The kernel launches with more than 1024 threads per block"
+      ],
+      "answer": 1,
+      "explain": "An index built from a multiply-by-stride or an indirect lookup, instead of a plain per-thread index, is the classic fingerprint of a strided, uncoalesced access pattern."
+    }
+  ]
+}

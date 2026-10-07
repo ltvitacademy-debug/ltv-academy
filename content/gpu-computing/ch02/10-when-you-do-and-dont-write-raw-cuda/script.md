@@ -1,0 +1,21 @@
+# Script — When You Do (and Don't) Write Raw CUDA
+
+## Segment 1 (title)
+
+You can now read and write a basic CUDA kernel. Here's the honest answer to how often you'll actually do that as a PyTorch practitioner — almost never, and understanding why matters as much as the syntax.
+
+## Segment 2 (code)
+
+Every matmul or conv2d call on a CUDA tensor is already calling into cuBLAS or cuDNN, NVIDIA's own hand-tuned libraries for each GPU architecture. Writing your own matrix multiply kernel to replace that line would almost certainly be slower, not faster.
+
+## Segment 3 (steps)
+
+Teams write custom kernels when they need fusion — combining several small operations into one kernel instead of three separate launches that each round-trip through global memory. A fused kernel reads the input once and writes the result once.
+
+## Segment 4 (code)
+
+When fusion is worth it, torch.utils.cpp_extension lets you compile a CUDA file and call it from Python like a native PyTorch op — write the one kernel that matters, and let PyTorch handle everything else.
+
+## Segment 5 (outro)
+
+Raw CUDA is for fusion and genuinely novel ops, not everyday matrix math. Next up, lesson eleven: CUDA toolkit and driver versions, closing out the basics chapter with a compatibility question everyone eventually hits.

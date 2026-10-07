@@ -1,0 +1,25 @@
+# Script — Inheritance & Polymorphism
+
+## Segment 1 (title)
+
+A pricing library needs to treat a European option, an American option, and a future as interchangeable instruments that all know how to price themselves — while each actually prices completely differently under the hood. Inheritance and polymorphism are how C++ lets one function work correctly across every derived type without ever knowing which one it's holding.
+
+## Segment 2 (steps)
+
+A derived class reuses and extends a base class. The base, Instrument here, defines the common interface — in this case a single pricing method — and each derived type, Future and Option, fills that interface in with its own logic. The base class never needs to know the derived types exist.
+
+## Segment 3 (code)
+
+Instrument declares price as pure virtual, meaning it has no implementation of its own at all. That single pure virtual function makes Instrument an abstract base class — you can never create an Instrument object directly, only one of its derived types.
+
+## Segment 4 (code)
+
+Option overrides price with its own formula, and marks that override explicitly with the override keyword. That keyword isn't decoration — it tells the compiler to check that this function actually replaces a virtual function in the base, which catches a surprisingly common bug: a typo in the signature that silently creates an unrelated new function instead of overriding anything.
+
+## Segment 5 (steps)
+
+Here's the payoff. Call price through a base class pointer or reference, and C++ resolves that call at runtime to the real derived type's implementation — that's dynamic dispatch, and it's what lets you loop over a whole book of mixed instrument types and get correct behavior from every one. It only works because price was declared virtual in the base. And any base class used this way needs a virtual destructor too, or deleting through a base pointer silently skips the derived class's cleanup.
+
+## Segment 6 (outro)
+
+Inheritance shares one interface across a family of types, and virtual functions make calls through a base pointer resolve correctly at runtime. Next up, lesson thirteen: operator overloading — making your own types work naturally with plus, equals, and the stream operator.

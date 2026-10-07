@@ -1,0 +1,36 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Machine Learning for Quantitative Finance · Chapter 7",
+    "titlePlain": "Capstone: ",
+    "titleEmphasis": "Build It",
+    "titleSuffix": "",
+    "subtitle": "Lesson 27 · Capstone"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1-2 -- features and model",
+    "code": "df[\"mom_20\"] = s.rolling(20).sum()\ndf[\"vol_20\"] = s.rolling(20).std()\ndf[\"zscore_10\"] = (s - s.rolling(10).mean()) / s.rolling(10).std()\ndf[\"fwd_return_5\"] = s.shift(-5).rolling(5).sum()\n\nmodel = XGBClassifier(\n    n_estimators=200, max_depth=3,\n    learning_rate=0.05, subsample=0.8, random_state=42,\n)\n# NOT fit yet -- fitting happens inside each validation fold below",
+    "caption": "Momentum, volatility, and mean-reversion features feed a gradient-boosted classifier -- fit fresh inside each fold, never once on the full dataset first."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 3 -- purged walk-forward loop",
+    "code": "def purged_walk_forward_splits(n, n_splits=5, embargo=5, purge=5):\n    fold_size = n // (n_splits + 1)\n    for i in range(1, n_splits + 1):\n        train_end = i * fold_size\n        test_start = train_end + purge\n        test_end = test_start + fold_size - embargo\n        yield (np.arange(0, train_end), np.arange(test_start, test_end))\n\nfor train_idx, test_idx in purged_walk_forward_splits(len(feature_df)):\n    fold_model.fit(X.iloc[train_idx], y.iloc[train_idx])\n    preds = fold_model.predict_proba(X.iloc[test_idx])[:, 1]",
+    "caption": "The purge gap and embargo prevent the 5-day-forward label window from leaking information across the train/test boundary."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 4-5 -- measure, then check stability",
+    "code": "from scipy.stats import spearmanr\n\nic_per_fold = pd.Series([\n    spearmanr(r[\"preds\"], r[\"y_test\"])[0] for r in results\n])\nprint(\"Mean IC:\", ic_per_fold.mean())\nprint(\"IC std:\", ic_per_fold.std())\nprint(ic_per_fold)  # inspect fold-by-fold, not just the mean",
+    "caption": "A healthy-looking mean IC can still hide a signal that collapsed in most folds -- always inspect the fold-by-fold series before concluding anything."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Capstone wrap-up & ",
+    "titleEmphasis": "portfolio presentation",
+    "titleSuffix": "",
+    "subtitle": "The pipeline is built and validated -- next, writing it up the way a hiring quant researcher wants to see it."
+  }
+]

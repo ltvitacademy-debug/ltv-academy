@@ -1,0 +1,21 @@
+# Script — A Troubleshooting Methodology
+
+## Segment 1 (title)
+
+The last two lessons covered tools one at a time. This lesson covers the order to actually use them in, so a vague "something's broken" turns into a specific, fixable finding instead of a guessing game.
+
+## Segment 2 (steps)
+
+Work from the bottom of the stack up instead of diving straight into application logs. First, reachability — is the host even up, does ping get a reply. Second, DNS — does the name resolve to the address actually expected. Third, transport — is something actually listening on the right port. Only once those three are confirmed working does it make sense to dig into the application's own logs and behavior, which is often where the real cause actually lives even though the symptom shows up in the application.
+
+## Segment 3 (steps)
+
+A problem that "started happening for some users" is usually more specific than it first sounds. Does it fail from every location, or only some? Every browser, or one? Every account, or one account's data specifically? Isolating one variable at a time — changing or removing it and watching what the problem follows — turns a vague report into a concrete lead.
+
+## Segment 4 (steps)
+
+Once the layer-by-layer checks and the isolated variable point somewhere, form a specific, testable hypothesis — not "something's wrong with the servers," but "the load balancer's health check is marking backend-three unhealthy." A specific hypothesis has an obvious next test, and whatever the result, write it down.
+
+## Segment 5 (outro)
+
+Documenting what's already been checked prevents repeating the same test twice and gives whoever picks this up next a clear starting point. Up next, lesson twenty-two applies this exact methodology to some genuinely common failure scenarios.

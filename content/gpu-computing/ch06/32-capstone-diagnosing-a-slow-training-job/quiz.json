@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-diagnosing-a-slow-training-job",
+  "questions": [
+    {
+      "q": "In the diagnostic order this capstone recommends, what should you check first when a training job seems slower than expected?",
+      "options": [
+        "Open Nsight Compute and profile every kernel in detail",
+        "Run nvidia-smi dmon to get a cheap, broad view of GPU utilization across all GPUs",
+        "Rewrite the model architecture",
+        "Immediately reinstall the NVIDIA driver"
+      ],
+      "answer": 1,
+      "explain": "The diagnostic order goes from cheap and broad to expensive and detailed. nvidia-smi dmon costs nothing to run and can immediately rule out entire categories of problems, like a single straggler GPU."
+    },
+    {
+      "q": "In the scenario, all 4 GPUs show low, even utilization (around 35%). What does this suggest?",
+      "options": [
+        "One specific GPU is malfunctioning and needs replacement",
+        "Every GPU is likely spending significant time waiting on something upstream, rather than one GPU being a straggler",
+        "The GPUs are running at maximum efficiency",
+        "The CUDA Toolkit version is incompatible"
+      ],
+      "answer": 1,
+      "explain": "Low, fairly even utilization across all GPUs rules out one misbehaving card (a straggler) and instead points toward a shared upstream bottleneck, such as data loading or communication, affecting all GPUs similarly."
+    },
+    {
+      "q": "What does timing the gap between batches in the data loader help diagnose?",
+      "options": [
+        "Whether the GPU's tensor cores are being used",
+        "Whether a CPU-bound data loader is starving the GPU between batches",
+        "Whether NVLink is connected correctly",
+        "Whether the model has enough parameters"
+      ],
+      "answer": 1,
+      "explain": "A large gap between batches combined with low GPU utilization during that gap indicates the data loader (a CPU-side process) can't keep up, starving the GPU of work — a CPU-bound bottleneck, not a GPU-side one."
+    },
+    {
+      "q": "Why would a team check the NCCL debug log (NCCL_DEBUG=INFO) as part of this diagnosis?",
+      "options": [
+        "To check whether the all-reduce communication is still using NVLink or has silently fallen back to a slower transport",
+        "To verify the model's test accuracy",
+        "To check how much disk space is available",
+        "To confirm the Python version being used"
+      ],
+      "answer": 0,
+      "explain": "The NCCL debug log shows which transport (like NVLink) was actually used for each communication channel, which can reveal a silent regression to a slower path — for example after a driver update or a change in GPU placement."
+    },
+    {
+      "q": "Why does this diagnostic approach check data loading and communication before opening a detailed profiler like Nsight Compute?",
+      "options": [
+        "Because Nsight Compute cannot run on multi-GPU jobs",
+        "Because cheaper, broader checks can rule out entire categories of problems quickly, saving the more expensive and detailed profiling step for last",
+        "Because Nsight Compute only works on CPUs",
+        "Because profiling a kernel always takes less time than checking nvidia-smi"
+      ],
+      "answer": 1,
+      "explain": "The diagnostic discipline is to start broad and cheap, ruling out likely categories (straggler GPU, CPU-bound loader, communication regression) before reaching for the most expensive and detailed tool, which should only be needed once simpler explanations are eliminated."
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Distributed Training Infrastructure · Chapter 5",
+    "titlePlain": "Data Loader ",
+    "titleEmphasis": "Bottlenecks",
+    "titleSuffix": "",
+    "subtitle": "Lesson 27 · Storage & Data Loading at Scale"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Each shows up differently",
+    "titlePlain": "Five common ",
+    "titleEmphasis": "culprits",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Too few workers", "sub": "step time improves linearly as num_workers rises" },
+      { "label": "CPU-bound preprocessing", "sub": "node CPU pegged near 100% while GPU dips" },
+      { "label": "No pin_memory", "sub": "slow, synchronous host-to-device copy" },
+      { "label": "Storage throughput", "sub": "CPU and GPU both idle, waiting on I/O" },
+      { "label": "Batch too small", "sub": "fixed overhead dominates real work" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Evidence, not guesswork",
+    "code": "from torch.profiler import profile, ProfilerActivity, schedule\n\nwith profile(\n    activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA],\n    schedule=schedule(wait=1, warmup=1, active=3, repeat=1),\n    on_trace_ready=torch.profiler.tensorboard_trace_handler(\"./profiler_logs\"),\n) as prof:\n    for step, batch in enumerate(loader):\n        train_step(batch)\n        prof.step()",
+    "caption": "Viewed in TensorBoard, the trace splits step time into data-loading wait vs. compute vs. communication."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "More isn't always better",
+    "titlePlain": "num_workers has a ",
+    "titleEmphasis": "ceiling",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Fixed CPU cores per node", "sub": "workers compete with each other for them" },
+      { "label": "Past the ceiling", "sub": "context-switching and memory pressure make it worse" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 28",
+    "titlePlain": "Caching ",
+    "titleEmphasis": "Strategies",
+    "titleSuffix": " for Training Data",
+    "subtitle": "Fixing one of the most common root causes directly."
+  }
+]

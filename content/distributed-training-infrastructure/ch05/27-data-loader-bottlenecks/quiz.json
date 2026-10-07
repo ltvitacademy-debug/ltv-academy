@@ -1,0 +1,60 @@
+{
+  "lesson": "data-loader-bottlenecks",
+  "questions": [
+    {
+      "q": "What GPU utilization pattern is the strongest early signal of data-loading starvation rather than a compute or network bottleneck?",
+      "options": [
+        "GPU utilization is consistently at 100% the entire run",
+        "GPU utilization dips rhythmically at the start of each step and recovers once the batch arrives",
+        "GPU utilization is zero for the entire job",
+        "GPU memory usage grows without bound"
+      ],
+      "answer": 1,
+      "explain": "A recurring stall right when the next batch should load, with otherwise healthy utilization, points specifically at the data loader rather than communication or compute."
+    },
+    {
+      "q": "A node's CPU utilization is pegged near 100% while GPU utilization dips during training. What does this symptom most likely indicate?",
+      "options": [
+        "The GPU is overheating",
+        "CPU-bound preprocessing, such as tokenization or decompression, is saturating the node's CPU cores",
+        "The network fabric has failed",
+        "The checkpoint is corrupted"
+      ],
+      "answer": 1,
+      "explain": "Expensive per-sample preprocessing can max out CPU cores before any other part of the pipeline becomes the limit, which shows up as high CPU and dipping GPU utilization together."
+    },
+    {
+      "q": "What does the PyTorch Profiler's trace, viewed in TensorBoard, actually show?",
+      "options": [
+        "The model's final accuracy on a held-out test set",
+        "A breakdown of each step's time into data-loading wait, compute, and communication segments",
+        "The dollar cost of the training run",
+        "A visualization of the model's architecture only"
+      ],
+      "answer": 1,
+      "explain": "The profiler trace breaks step time into concrete segments, turning a vague sense that 'GPUs feel slow' into a specific, actionable measurement."
+    },
+    {
+      "q": "Why does increasing `num_workers` eventually make step time worse instead of better?",
+      "options": [
+        "PyTorch has a hard-coded maximum of 4 workers",
+        "Each node has a fixed number of CPU cores, so workers eventually compete for the same resources, increasing context-switching and memory pressure",
+        "More workers always reduce GPU memory capacity",
+        "Workers above a certain count are silently ignored by the DataLoader"
+      ],
+      "answer": 1,
+      "explain": "num_workers has a ceiling because workers share a fixed CPU core pool; past that ceiling, overhead from competition grows faster than throughput gains."
+    },
+    {
+      "q": "Both CPU and GPU utilization are low at the same time, with no obvious compute bottleneck. What does this combination most likely point to?",
+      "options": [
+        "A storage throughput limit — time is being spent waiting on I/O rather than CPU or GPU work",
+        "The model has finished training",
+        "pin_memory is set to True",
+        "The batch size is too large"
+      ],
+      "answer": 0,
+      "explain": "When neither CPU nor GPU is the bottleneck but the step is still slow, the likely explanation is that the pipeline is waiting on storage or network I/O, such as streaming shards directly from S3 without a warm cache."
+    }
+  ]
+}

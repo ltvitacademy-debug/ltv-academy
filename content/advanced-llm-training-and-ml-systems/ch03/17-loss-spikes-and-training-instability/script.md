@@ -6,7 +6,7 @@ A loss curve that's smoothly decreasing for days and then suddenly jumps upward 
 
 ## Segment 2 (steps)
 
-Three causes show up again and again. A single pathological batch — corrupted bytes, a degenerate repeated token — can produce an unusually large gradient. A learning rate that's too aggressive for where training currently is, often right as warmup hits its peak. And numerical overflow in low precision, especially fp16's narrow exponent range.
+Three causes show up again and again. A single pathological batch — corrupted bytes, a degenerate repeated token, or an unusually atypical document — can produce an unusually large gradient. A learning rate that's too aggressive for where training currently is, often right as warmup hits its peak. And numerical overflow in low precision, especially fp16's narrow exponent range, which requires loss scaling just to stay usable.
 
 ## Segment 3 (code)
 

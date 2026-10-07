@@ -1,0 +1,25 @@
+# Script — Costs, Slippage & Realism
+
+## Segment 1 (title)
+
+A gross backtest flatters every strategy. This lesson adds a realistic cost model to SR-5 and shows exactly how much of its edge survives.
+
+## Segment 2 (steps)
+
+Five cost components get modeled. Commission runs $0.005 per share. The half bid-ask spread is about 2 basis points, widening to 3 for the lower-volume names, XLC and XLRE. Market impact follows a square-root model, with participation capped at 5 percent of 20-day average daily volume. The short leg accrues a 25 basis point annual borrow fee, daily. Cash drag and margin interest are noted as immaterial and deliberately ignored — not every cost is worth modeling.
+
+## Segment 3 (code)
+
+trade_cost applies that model to every rebalance: a flat spread cost on the traded weight, plus impact scaling with the square root of how much of that name's volume the trade actually represents. It's applied to delta_w — only the portion of the portfolio that changed — not the whole book.
+
+## Segment 4 (steps)
+
+The effect is large. Gross, SR-5 runs a 0.76 Sharpe, a 5.2 percent CAGR, and an 8.9 percent max drawdown. Net of costs, Sharpe falls to 0.42, CAGR falls to 2.9 percent, and the drawdown deepens slightly to 10.6 percent. Costs don't just shave the return — they cut the risk-adjusted Sharpe roughly in half.
+
+## Segment 5 (steps)
+
+The reason is turnover: weekly gross turnover runs about 85 percent of notional, roughly 44 times a year annualized. That much trading multiplies small per-trade costs into a large annual drag. It also caps how much capital the strategy can run — roughly 150 million dollars of AUM before market impact erodes net Sharpe below about 0.2, with the lower-ADV names, XLC and XLRE, as the binding constraint.
+
+## Segment 6 (outro)
+
+Net returns are real but modest. Next, Lesson 12 looks at the risk behind them — volatility, drawdowns, and how SR-5 actually behaved in four real market crises.

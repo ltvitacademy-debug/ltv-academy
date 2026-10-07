@@ -1,0 +1,60 @@
+{
+  "lesson": "prompt-caching",
+  "questions": [
+    {
+      "q": "What waste does prompt caching eliminate?",
+      "options": [
+        "The need to ever load model weights more than once",
+        "Recomputing the KV cache for a shared prefix (e.g. a system prompt) from scratch on every request",
+        "The need to ever use a GPU for inference",
+        "Duplicate tokenizer vocabularies across requests"
+      ],
+      "answer": 1,
+      "explain": "Without prompt caching, a shared prefix like a system prompt or few-shot examples gets fully recomputed by prefill on every request, even though its content hasn't changed. Caching it once avoids that repeated cost."
+    },
+    {
+      "q": "How does server-side automatic prefix caching work?",
+      "options": [
+        "It requires the API caller to manually mark every cacheable section",
+        "The serving framework hashes incoming prompt prefixes and reuses existing matching PagedAttention blocks automatically",
+        "It stores entire conversation histories permanently on disk",
+        "It only works if every request is byte-for-byte identical, including the response"
+      ],
+      "answer": 1,
+      "explain": "Server-side automatic prefix caching (enabled by default in vLLM) hashes incoming prefixes and checks existing cache blocks for a match, reusing them with no API-level configuration needed."
+    },
+    {
+      "q": "What is required for a prompt's prefix to produce a cache hit?",
+      "options": [
+        "The prefix only needs to be approximately similar in meaning",
+        "The prefix must match exactly, token for token, since every token's key/value depends on all tokens before it",
+        "The prefix must be shorter than 100 tokens",
+        "The prefix must come from the same user account every time"
+      ],
+      "answer": 1,
+      "explain": "Because attention makes every token's key/value depend on all preceding tokens, even a single changed earlier token (like an inserted timestamp) invalidates the cache for everything after that point."
+    },
+    {
+      "q": "Why do production prompts designed for caching put stable content first and variable content last?",
+      "options": [
+        "Because models can only process prompts in reverse order",
+        "Because it maximizes how much of the prefix stays identical across requests, maximizing the portion of the prompt that can be served from cache",
+        "Because variable content must always come before stable content for the tokenizer to work",
+        "Because this ordering has no effect on caching whatsoever"
+      ],
+      "answer": 1,
+      "explain": "Putting stable, shared content (system instructions, fixed examples) first and variable, per-request content last keeps the largest possible portion of the prompt identical across requests, which is what gets reused from cache."
+    },
+    {
+      "q": "What security consideration does prompt caching raise in multi-tenant serving systems?",
+      "options": [
+        "Prompt caching has no security implications in any deployment",
+        "Cache reuse must be scoped so that one tenant's cached prefix content can never leak into another tenant's response",
+        "Multi-tenant systems cannot use prompt caching under any circumstances",
+        "Only single-tenant systems are vulnerable to any caching issue"
+      ],
+      "answer": 1,
+      "explain": "If cache blocks were shared across different tenants' requests whenever prefixes matched, that risks leaking one tenant's content into another's response, so production systems scope cache sharing to prevent cross-tenant matches."
+    }
+  ]
+}

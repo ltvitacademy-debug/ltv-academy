@@ -1,0 +1,60 @@
+{
+  "lesson": "the-kv-cache-conceptually",
+  "questions": [
+    {
+      "q": "Why does the KV cache exist in autoregressive decoding?",
+      "options": [
+        "To store the model's gradients between training steps",
+        "Because key and value vectors for already-generated tokens never change, so caching them avoids recomputing attention from scratch for the whole sequence at every new token",
+        "To reduce the number of parameters in the model",
+        "Because GPUs cannot perform matrix multiplication during decoding"
+      ],
+      "answer": 1,
+      "explain": "Key and value vectors for previously generated tokens are fixed once computed. Caching them turns an O(t squared) recomputation into an O(t) cache lookup plus the new token's work."
+    },
+    {
+      "q": "Which factors determine the size of the KV cache for a single sequence?",
+      "options": [
+        "Only the total number of model parameters",
+        "The number of layers, number of KV heads, head dimension, sequence length, and bytes per element (precision)",
+        "Only the batch size used during pretraining",
+        "The size of the tokenizer's vocabulary"
+      ],
+      "answer": 1,
+      "explain": "KV cache size is 2 x num_layers x num_kv_heads x head_dim x seq_len x bytes_per_element -- it scales with architecture dimensions, sequence length, and numeric precision."
+    },
+    {
+      "q": "How do grouped-query attention (GQA) and multi-query attention (MQA) reduce KV cache size?",
+      "options": [
+        "By reducing the sequence length the model can process",
+        "By reducing the number of distinct key/value heads that must be cached, since multiple (or all) query heads share the same KV head",
+        "By storing the cache in a compressed file format on disk",
+        "By eliminating the need for a KV cache entirely"
+      ],
+      "answer": 1,
+      "explain": "GQA shares one KV head across a group of query heads, and MQA shares a single KV head across all query heads, directly shrinking the num_kv_heads term that drives cache size."
+    },
+    {
+      "q": "Why is KV cache memory often the binding constraint on serving batch size, rather than raw GPU compute?",
+      "options": [
+        "Because GPUs have no compute capacity left after loading model weights",
+        "Because every concurrent sequence requires its own KV cache, and that cache grows with sequence length, so total cache memory across in-flight requests competes directly with weights for the same limited GPU memory",
+        "Because KV cache memory is stored on CPU, not GPU, and is unlimited",
+        "Because batch size is fixed by the tokenizer, independent of memory"
+      ],
+      "answer": 1,
+      "explain": "GPU memory must hold both fixed model weights and a growing KV cache per in-flight sequence. As concurrency or sequence length rises, cache memory -- not compute throughput -- is typically what limits how many requests can be served at once."
+    },
+    {
+      "q": "What does vLLM's PagedAttention technique address?",
+      "options": [
+        "It speeds up the training loop by paging gradients to disk",
+        "It manages KV cache memory in non-contiguous blocks, conceptually similar to OS virtual memory paging, to avoid wasting memory on over-allocated sequence slots",
+        "It replaces attention entirely with a convolutional operation",
+        "It compresses model weights using 4-bit quantization"
+      ],
+      "answer": 1,
+      "explain": "PagedAttention manages the KV cache in non-contiguous memory blocks rather than pre-allocating a fixed, often wasteful, contiguous buffer per sequence, improving memory utilization during serving."
+    }
+  ]
+}

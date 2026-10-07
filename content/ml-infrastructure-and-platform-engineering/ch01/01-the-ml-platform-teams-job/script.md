@@ -1,0 +1,21 @@
+# Script — The ML Platform Team's Job
+
+## Segment 1 (title)
+
+Welcome to ML Infrastructure and Platform Engineering, the third course in the AI Infrastructure track. The last two courses assumed one model, trained on one job. This course asks what happens once a company has many models, built by many teams — and what an ML platform team is actually responsible for when that happens.
+
+## Segment 2 (steps)
+
+A model moving from idea to production usually passes through three kinds of ownership. Data scientists and ML engineers decide what to predict, pick features, and train and evaluate candidate models. The ML platform team builds and operates the systems those scientists use every day — feature stores, experiment tracking, pipelines, registries, deployment, and monitoring. And infrastructure or DevOps teams own the layer underneath all of that, like Kubernetes clusters and cloud networking, which the platform team consumes rather than rebuilds.
+
+## Segment 3 (steps)
+
+The phrase you'll hear constantly is "paved road" — a supported, opinionated way to do something, instead of an unlimited number of one-off ways nobody else understands later. A working paved road is self-service, so a scientist can register a feature or deploy a model without a ticket. It gives every team the same shared building blocks instead of a bespoke version each one wrote themselves. And it bakes in guardrails like logging, versioning, and rollback automatically, instead of relying on each team to remember them.
+
+## Segment 4 (steps)
+
+Platform teams get created because of visible pain, not speculation. Before one exists, every team usually writes its own training script and its own deployment script, solving the same problem slightly differently each time. There's no shared standard for versioning, so nobody can confidently say which version of a model is serving traffic right now. And shipping a new model takes weeks of manual setup, with the timeline depending entirely on which engineer happens to do it.
+
+## Segment 5 (outro)
+
+That's the gap an ML platform team closes: shared, self-service tooling instead of duplicated, inconsistent plumbing. Up next, lesson two: deciding which pieces of that tooling to build yourself versus buy.

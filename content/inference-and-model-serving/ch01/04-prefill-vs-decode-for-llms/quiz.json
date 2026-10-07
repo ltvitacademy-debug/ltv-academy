@@ -1,0 +1,60 @@
+{
+  "lesson": "prefill-vs-decode-for-llms",
+  "questions": [
+    {
+      "q": "What happens during the prefill phase of LLM inference?",
+      "options": [
+        "Output tokens are generated one at a time",
+        "The entire input prompt is processed in a single parallel forward pass, building the key/value tensors for attention",
+        "The model's weights are loaded from disk into GPU memory",
+        "The KV cache is deleted to free memory"
+      ],
+      "answer": 1,
+      "explain": "Prefill processes every prompt token through every layer in parallel, building the key and value tensors (the KV cache) needed before generation can begin."
+    },
+    {
+      "q": "Why is prefill described as \"compute-bound\"?",
+      "options": [
+        "Because it never uses the GPU's matrix-multiplication units",
+        "Because all prompt tokens are processed together, keeping the GPU's math units busy and well-utilized",
+        "Because it only runs on CPU",
+        "Because it requires no memory access at all"
+      ],
+      "answer": 1,
+      "explain": "Processing the whole prompt in parallel keeps the GPU's compute units continuously busy, which is the definition of compute-bound."
+    },
+    {
+      "q": "Why is decode described as \"memory-bound\" rather than compute-bound?",
+      "options": [
+        "Each decode step does a small amount of compute for one token, but spends significant time reading the growing KV cache from GPU memory",
+        "Decode uses no GPU memory at all",
+        "Decode processes the entire prompt again at every step",
+        "Decode is always faster than prefill for every request"
+      ],
+      "answer": 0,
+      "explain": "Decode generates one token per step with little compute, but must repeatedly read the key/value tensors for all prior tokens out of memory, which under-utilizes the GPU's compute units."
+    },
+    {
+      "q": "What is the KV cache's role in connecting prefill and decode?",
+      "options": [
+        "It stores the raw text of the prompt for logging purposes",
+        "It stores the key/value tensors built during prefill, which decode reads and extends by one entry at every new token",
+        "It is only used during prefill and discarded before decode begins",
+        "It replaces the need for a tokenizer"
+      ],
+      "answer": 1,
+      "explain": "Prefill builds the KV cache; decode reads the entire cache so far at each step and adds one new entry per generated token, growing the cache over the course of generation."
+    },
+    {
+      "q": "Why do many LLM APIs price input (prompt) tokens differently from output (generated) tokens?",
+      "options": [
+        "Input tokens are always free",
+        "Pricing is arbitrary and has no technical basis",
+        "Prefill (input tokens) and decode (output tokens) have different cost profiles, since one is compute-bound and the other memory-bound",
+        "Output tokens require no GPU at all"
+      ],
+      "answer": 2,
+      "explain": "Because prefill and decode are bound by different resources and scale differently with load, their per-token cost to serve differs, which is reflected in differentiated pricing."
+    }
+  ]
+}

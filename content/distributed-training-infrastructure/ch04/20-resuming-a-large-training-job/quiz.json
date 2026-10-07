@@ -1,0 +1,60 @@
+{
+  "lesson": "resuming-a-large-training-job",
+  "questions": [
+    {
+      "q": "In the dcp.load example, why is the model built with build_model() before dcp.load is called, rather than loading state directly into nothing?",
+      "options": [
+        "dcp.load needs an existing model/optimizer state_dict structure to know where each loaded shard belongs",
+        "Building the model first is purely optional and has no functional purpose",
+        "PyTorch requires models to be built twice for every training run",
+        "It is required only for single-GPU training, not distributed training"
+      ],
+      "answer": 0,
+      "explain": "dcp.load fills in an existing state_dict structure with the matching shard data from the checkpoint, so the model and optimizer must already be constructed (with the right shapes) before loading."
+    },
+    {
+      "q": "What key capability does DCP's sharded, metadata-based checkpoint have that a plain torch.save checkpoint does not?",
+      "options": [
+        "It can be loaded back onto a different number of GPUs/ranks than the run that saved it, by resharding according to the metadata",
+        "It saves files that are always smaller than a torch.save checkpoint",
+        "It automatically encrypts the checkpoint at rest",
+        "It eliminates the need for an optimizer state entirely"
+      ],
+      "answer": 0,
+      "explain": "Because DCP's checkpoint includes metadata describing shard boundaries rather than being tied to a fixed device layout, it can be reshard-loaded onto a different world size — something a plain torch.save checkpoint, tied to its original layout, cannot do."
+    },
+    {
+      "q": "Why does the launch script check that a checkpoint's metadata is 'complete' before loading it, rather than just loading the most recent checkpoint prefix?",
+      "options": [
+        "Completeness checks are unnecessary busywork with no real risk otherwise",
+        "A checkpoint interrupted by the very failure being recovered from might be only partially written, so loading it directly could fail or load corrupt/inconsistent state",
+        "S3 automatically deletes incomplete checkpoints, so this check is redundant",
+        "It is required by AWS billing policy for S3 buckets"
+      ],
+      "answer": 1,
+      "explain": "If the failure that triggered the resume happened during a checkpoint write, the most recent checkpoint could be incomplete. Verifying completeness before loading avoids resuming from a corrupt or partial save."
+    },
+    {
+      "q": "Why is 'the job resumed without throwing an exception' not sufficient proof that the resume was correct?",
+      "options": [
+        "Exceptions are disabled in distributed PyTorch jobs",
+        "A clean load only proves the checkpoint files were readable — it doesn't confirm the optimizer state, learning-rate schedule position, or step count are actually consistent with where training left off, which a loss-continuity check verifies",
+        "PyTorch always throws an exception on successful resume, so no exception means failure",
+        "Exceptions only ever indicate hardware failures, never software issues"
+      ],
+      "answer": 1,
+      "explain": "Successfully reading the checkpoint files is a much weaker guarantee than training actually resuming in a consistent state. Watching whether loss tracks smoothly from the resume point catches subtler mismatches that a successful file load wouldn't."
+    },
+    {
+      "q": "A replacement PyTorchJob after a node failure launches with 60 nodes instead of the original 64. What does dcp.load do in this situation?",
+      "options": [
+        "It fails outright, because checkpoints can only be loaded onto the exact world size that saved them",
+        "It reshards the saved checkpoint state across the new 60-node world size using the checkpoint's metadata",
+        "It silently drops 4 nodes' worth of model weights, corrupting the model",
+        "It pads the checkpoint with random weights to fill the missing capacity"
+      ],
+      "answer": 1,
+      "explain": "DCP's checkpoint isn't tied to a fixed rank layout. Its metadata lets dcp.load redraw shard boundaries to fit whatever world size the new job actually launches with, including a smaller one."
+    }
+  ]
+}

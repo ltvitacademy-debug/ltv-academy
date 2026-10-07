@@ -1,0 +1,60 @@
+{
+  "lesson": "why-long-training-runs-need-fault-tolerance",
+  "questions": [
+    {
+      "q": "Why does the probability of a hardware failure during a Solara-70B training run exceed what the single-GPU failure rate would suggest?",
+      "options": [
+        "Because GPUs fail more often once they are grouped into a cluster, independent of count",
+        "Because the probability of at least one failure compounds across all 512 GPUs (and their nodes, NVLink, and InfiniBand connections) running simultaneously for weeks",
+        "Because NVIDIA's warranty terms change above 100 GPUs",
+        "Because training workloads always run hotter than inference workloads"
+      ],
+      "answer": 1,
+      "explain": "Even if each individual GPU has a low failure probability, the chance that at least one of 512 GPUs fails over weeks of continuous operation compounds across the entire fleet, making at least one failure likely rather than rare."
+    },
+    {
+      "q": "What happens to an NCCL collective operation like AllReduce if one of the participating GPUs fails mid-call?",
+      "options": [
+        "The operation silently continues using the remaining GPUs",
+        "The operation hangs, because collective operations are synchronous across every participating rank with no partial-rank fallback",
+        "Only that GPU's data is lost; the rest of the computation proceeds unaffected",
+        "PyTorch automatically restarts just that one GPU's process mid-collective"
+      ],
+      "answer": 1,
+      "explain": "Collective communication primitives require every rank to reach the call; if one rank disappears, the operation simply hangs rather than proceeding with a reduced set of ranks."
+    },
+    {
+      "q": "Without any fault-tolerance strategy, what does a single GPU failure on day 13 of a 2-week training run cost?",
+      "options": [
+        "Nothing — the job automatically resumes from the last saved state",
+        "Roughly 13 days of lost progress on one GPU only",
+        "The entire two weeks of progress across all 512 GPUs, since the only recovery is a full restart from scratch",
+        "A brief pause of a few seconds while the GPU resets"
+      ],
+      "answer": 2,
+      "explain": "Without checkpointing or another fault-tolerance mechanism, the hung collective forces a full restart, discarding all progress made since the job began — the entire 512-GPU run's worth of compute."
+    },
+    {
+      "q": "What does fault tolerance fundamentally accomplish, according to this lesson?",
+      "options": [
+        "It prevents hardware from ever failing in the first place",
+        "It makes individual failures cheap to recover from, rather than preventing failures from occurring",
+        "It eliminates the need for any monitoring of GPU health",
+        "It guarantees a training run will finish exactly on schedule"
+      ],
+      "answer": 1,
+      "explain": "Fault tolerance accepts that hardware will fail at some rate and focuses on making recovery from that failure inexpensive — through checkpointing, elastic training, and failure-aware design — rather than trying to prevent failure entirely."
+    },
+    {
+      "q": "Why does a node-level failure (e.g. a bad PSU or DIMM) tend to be worse for a training job than a single GPU-level failure?",
+      "options": [
+        "It isn't worse — node-level and GPU-level failures have identical impact",
+        "A node-level failure takes all GPUs on that node offline simultaneously (e.g. all 8 on an H100 node), rather than just one",
+        "Node-level failures only affect storage, never compute",
+        "Node-level failures are always permanent and unrecoverable, unlike GPU failures"
+      ],
+      "answer": 1,
+      "explain": "A node-level hardware fault removes the entire node — all 8 GPUs on it — from the job at once, compared to a single GPU-level fault which affects just one GPU."
+    }
+  ]
+}

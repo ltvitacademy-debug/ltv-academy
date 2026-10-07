@@ -1,0 +1,60 @@
+{
+  "lesson": "cpu-caches-and-data-layout",
+  "questions": [
+    {
+      "q": "Roughly how does L1 cache latency compare to main memory (RAM) latency?",
+      "options": [
+        "L1 is about twice as fast as RAM",
+        "They are approximately equal",
+        "L1 is roughly two orders of magnitude (about 100x) faster than a RAM access on a cache miss",
+        "RAM is faster than L1 for sequential access"
+      ],
+      "answer": 2,
+      "explain": "L1 cache access is typically around 1 nanosecond, while a main-memory access on a cache miss is typically around 100 nanoseconds or more — roughly a 100x difference."
+    },
+    {
+      "q": "What is a cache line, and why does it make sequential array access fast?",
+      "options": [
+        "A cache line is a single byte; sequential access fetches one byte at a time efficiently",
+        "A cache line is a fixed-size chunk (commonly 64 bytes) fetched together, so reading one element pulls in several neighboring elements for free",
+        "A cache line is a type of CPU register used only for floating-point math",
+        "A cache line refers to the wiring between L1 and L2 cache"
+      ],
+      "answer": 1,
+      "explain": "Memory is fetched into cache in fixed-size cache lines (typically 64 bytes). Reading one array element brings its neighboring elements into cache as well, so sequential iteration gets several elements' worth of benefit per actual memory fetch."
+    },
+    {
+      "q": "When summing only the `price` field across a million `Order` records, why does struct-of-arrays (SoA) typically outperform array-of-structs (AoS)?",
+      "options": [
+        "SoA uses less total memory than AoS for the same data",
+        "SoA fetches only price data into cache for this operation, while AoS also pulls in unused fields like quantity and symbol_id for every record",
+        "AoS cannot be iterated with a for loop",
+        "SoA automatically parallelizes the summation across threads"
+      ],
+      "answer": 1,
+      "explain": "With AoS, each cache-line fetch for a price also drags in the other fields stored alongside it in the same struct, wasting cache bandwidth on data that isn't needed. SoA stores each field contiguously, so every byte fetched while summing prices is a price actually used."
+    },
+    {
+      "q": "Why does std::vector often outperform std::list for typical quant workloads, even when std::list offers O(1) middle insertion?",
+      "options": [
+        "std::list is not part of the C++ standard library",
+        "std::vector elements are stored contiguously, which the cache rewards, while std::list's scattered, individually allocated nodes cause frequent cache misses whose constant-factor cost often outweighs the asymptotic advantage",
+        "std::vector cannot store more than a fixed number of elements",
+        "std::list requires manual memory management while std::vector does not"
+      ],
+      "answer": 1,
+      "explain": "std::vector's contiguous storage is cache-friendly for traversal, whereas std::list's scattered per-node heap allocations make nearly every traversal step a potential cache miss. In practice this constant-factor cost frequently dominates over list's theoretical O(1) insertion advantage."
+    },
+    {
+      "q": "When does array-of-structs (AoS) layout still outperform struct-of-arrays (SoA)?",
+      "options": [
+        "When you consistently access all fields of a single record together, rather than one field across many records",
+        "When you need to sum one field across millions of records",
+        "Always — AoS is strictly better than SoA in every case",
+        "Only when using std::list instead of std::vector"
+      ],
+      "answer": 0,
+      "explain": "AoS keeps all of a single record's fields near each other in memory, so operations that touch every field of one record at a time (e.g. looking up one order and printing all its details) benefit from AoS locality, whereas SoA would scatter that lookup across several separate arrays."
+    }
+  ]
+}

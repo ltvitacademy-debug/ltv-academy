@@ -1,0 +1,60 @@
+{
+  "lesson": "cuda-graphs",
+  "questions": [
+    {
+      "q": "Why does kernel launch overhead matter for a training step made of many small kernels?",
+      "options": [
+        "Each kernel launch requires reloading the CUDA driver from disk",
+        "Dispatching each kernel has a fixed CPU-side cost regardless of the kernel's actual runtime, and that cost adds up across hundreds of small launches",
+        "Small kernels always run out of registers",
+        "Launch overhead only affects memory-bound kernels"
+      ],
+      "answer": 1,
+      "explain": "The CPU has to prepare and dispatch every kernel launch, and that fixed per-launch cost becomes a significant fraction of step time when there are many small kernels."
+    },
+    {
+      "q": "What does a CUDA Graph capture?",
+      "options": [
+        "A screenshot of GPU memory usage over time",
+        "An entire sequence of kernel launches, memory operations, and their dependencies, recorded as a single replayable structure",
+        "The source code of all kernels in a Python file",
+        "A log of past nvidia-smi readings"
+      ],
+      "answer": 1,
+      "explain": "A CUDA Graph records a full sequence of operations and their dependencies, which can then be launched as one unit instead of many separate CPU dispatches."
+    },
+    {
+      "q": "After capturing a graph, why does the training loop call `static_input.copy_(data)` instead of reassigning `static_input = data`?",
+      "options": [
+        "Reassignment is faster but less readable",
+        "A captured graph replays the same kernels against the same fixed memory addresses, so new data must be copied into the existing static tensor rather than pointed to a new one",
+        "copy_() automatically moves data to pinned memory",
+        "Reassignment would delete the CUDA graph entirely"
+      ],
+      "answer": 1,
+      "explain": "CUDA Graph replay depends on the captured operations referencing the same memory addresses every time, so updating data in place via copy_() is required."
+    },
+    {
+      "q": "What kind of operation cannot be captured as-is in a CUDA Graph?",
+      "options": [
+        "A fixed sequence of matrix multiplications",
+        "An operation whose control flow or shape depends on the actual data, like a dynamic sequence length or a data-dependent branch",
+        "A convolution layer",
+        "An optimizer step"
+      ],
+      "answer": 1,
+      "explain": "Because a graph replays the exact same recorded operations every time, any control flow that must be re-decided based on the data each time can't be captured directly."
+    },
+    {
+      "q": "In which scenario does CUDA Graph capture-and-replay offer the least benefit?",
+      "options": [
+        "A model with hundreds of small elementwise and normalization kernels",
+        "A tight, fixed-shape inference loop",
+        "A model dominated by a few large kernels, where launch overhead was never a significant fraction of step time",
+        "A model already optimized with mixed precision, making launch overhead relatively larger"
+      ],
+      "answer": 2,
+      "explain": "CUDA Graphs amortize per-launch overhead. If a model's time is dominated by a few large kernels rather than many small launches, that overhead was never the bottleneck, so there's little to gain."
+    }
+  ]
+}

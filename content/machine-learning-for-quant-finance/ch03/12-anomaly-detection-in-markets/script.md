@@ -1,0 +1,21 @@
+# Script — Anomaly Detection in Markets
+
+## Segment 1 (title)
+
+Flash crashes, fat-finger trades, feed glitches, and genuine regime breaks share one property that makes them hard to model: there's no labeled training set of five hundred past flash crashes to learn from. They're rare, they don't repeat the same way twice, and the next one will likely look different anyway.
+
+## Segment 2 (steps)
+
+That rules out treating this as ordinary classification. The 2010 flash crash, a single-name mini-crash, and a bad options feed print are all anomalies, but they don't look alike as feature vectors — training on a handful of past events means hoping the next one resembles them. Unsupervised anomaly detection asks a better question instead: does this observation look like it came from the same distribution as everything else? That's answerable without ever having seen a crash before.
+
+## Segment 3 (code)
+
+Isolation Forest is a common starting point. It builds random trees that repeatedly split the feature space, and the intuition is that an outlier — a return spike, a spread blowout — tends to get isolated into its own leaf in very few splits, because it sits far from the dense bulk of normal observations. Average that isolation speed across many trees and you get an anomaly score. The contamination parameter is your prior on what fraction of the data is anomalous, and it sets the decision threshold directly.
+
+## Segment 4 (steps)
+
+Two other models offer different notions of normal. One-class SVM learns a flexible boundary enclosing the dense region of normal data, with a kernel that can take an irregular shape, at the cost of being more expensive to tune. Elliptic envelope takes the simpler route: it fits one robust Gaussian ellipse to the data and flags anything far from its center — fast and interpretable, but a poor fit if your data actually spans multiple regimes.
+
+## Segment 5 (outro)
+
+Market anomalies are rare and never repeat identically, so they get handled as unsupervised outlier detection rather than classification, whether through isolation, a flexible boundary, or a Gaussian ellipse. Next, lesson thirteen: hierarchical risk parity, where clustering structure itself gets used to build a more stable portfolio allocation.

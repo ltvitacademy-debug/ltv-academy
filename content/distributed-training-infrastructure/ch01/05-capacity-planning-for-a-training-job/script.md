@@ -1,0 +1,21 @@
+# Script — Capacity Planning for a Training Job
+
+## Segment 1 (title)
+
+Before committing five hundred twelve GPUs to a run, the platform team needs an answer to one question: how long will this actually take? This lesson walks through the real formula, using Solara-70B as the worked example.
+
+## Segment 2 (code)
+
+The standard compute estimate for training a transformer is C approximately equals six times N times D — N is the parameter count, D is the number of training tokens. That factor of six comes from the forward pass costing about two FLOPs per parameter per token, and the backward pass costing roughly twice that.
+
+## Segment 3 (code)
+
+Solara-70B has seventy billion parameters. Following Chinchilla-style compute-optimal scaling, about twenty tokens per parameter, the team plans for one point four trillion training tokens. Multiply it out and total compute comes to about five point eight eight times ten to the twenty-third FLOPs.
+
+## Segment 4 (steps)
+
+Now convert that to GPU-hours. Each H100 peaks at nine hundred eighty-nine teraflops in BF16, but no real job hits peak — real FSDP training commonly lands around thirty five to fifty percent model FLOPs utilization, and the team plans conservatively at forty percent. Multiply peak throughput by that forty percent, then by all five hundred twelve GPUs, and you get the cluster's effective throughput in FLOPs per second. Divide total compute by that number and you get roughly four hundred thirteen thousand GPU-hours total, and dividing by five hundred twelve GPUs running in parallel gives a wall-clock estimate of about thirty three point six days.
+
+## Segment 5 (outro)
+
+Three steps: estimate FLOPs with six N D, divide by realistic per-GPU throughput to get GPU-hours, divide by cluster size for wall-clock days. That thirty three day estimate assumes the network keeps up the whole time, step after step, without ever leaving the GPUs idle. That's exactly where chapter two picks up, with why bandwidth dominates at scale.

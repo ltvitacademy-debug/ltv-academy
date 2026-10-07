@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-standing-up-a-small-training-cluster",
+  "questions": [
+    {
+      "q": "What does installing the Kubeflow Training Operator actually give you?",
+      "options": [
+        "A pre-trained language model ready to fine-tune",
+        "A controller that watches for PyTorchJob objects and turns them into the right number of Pods, configured correctly",
+        "A GPU driver installer",
+        "A replacement for Kubernetes itself"
+      ],
+      "answer": 1,
+      "explain": "The Training Operator is the controller responsible for reconciling a PyTorchJob's spec into the actual master and worker Pods, with the right environment variables set."
+    },
+    {
+      "q": "In the capstone's PyTorchJob manifest, how do you run the exercise entirely on CPU instead of GPU?",
+      "options": [
+        "Set replicas to 0",
+        "Remove the nvidia.com/gpu entry from resources, and use the gloo backend in the training script",
+        "CPU-only training is not possible with PyTorchJob",
+        "Change the apiVersion to v1beta1"
+      ],
+      "answer": 1,
+      "explain": "Dropping the GPU resource request and switching the process group backend to gloo (PyTorch's CPU-compatible distributed backend) lets the same manifest and script pattern run without GPUs."
+    },
+    {
+      "q": "Why shouldn't you manually set MASTER_ADDR, RANK, and WORLD_SIZE in the capstone's training script?",
+      "options": [
+        "Those variables don't exist in PyTorch",
+        "The Kubeflow Training Operator injects them automatically into every Pod based on the replica spec",
+        "They are deprecated and no longer used by torch.distributed",
+        "Setting them manually always causes a crash"
+      ],
+      "answer": 1,
+      "explain": "The Training Operator sets these environment variables per Pod automatically; the training script just reads them via torch.distributed, the same as on solara-train."
+    },
+    {
+      "q": "How can you confirm the capstone job is genuinely running as a distributed job rather than four independent copies of the same script?",
+      "options": [
+        "Check that the Docker image size is under 1 GB",
+        "Confirm that dist.get_world_size() reports 4 and each Pod reports a distinct dist.get_rank()",
+        "Check that the job's name contains the word 'distributed'",
+        "There is no way to verify this"
+      ],
+      "answer": 1,
+      "explain": "A genuinely distributed job reports a consistent world_size across all processes, each with its own unique rank — confirming they've joined one process group, not run in isolation."
+    },
+    {
+      "q": "What role does MinIO play in this capstone if you're running entirely on a local `kind` cluster?",
+      "options": [
+        "It replaces the Kubeflow Training Operator",
+        "It provides an S3-API-compatible object storage endpoint so torch.distributed.checkpoint has somewhere to save to, without needing a real cloud account",
+        "It is a GPU emulator for machines without a GPU",
+        "It monitors GPU utilization in place of DCGM"
+      ],
+      "answer": 1,
+      "explain": "MinIO implements the S3 API locally, letting the same dcp.save()/dcp.load() checkpoint code work against a local stand-in instead of a real S3 bucket."
+    }
+  ]
+}

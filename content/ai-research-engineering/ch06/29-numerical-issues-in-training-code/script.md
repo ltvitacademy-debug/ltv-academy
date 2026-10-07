@@ -1,0 +1,21 @@
+# Script — Numerical Issues in Training Code
+
+## Segment 1 (title)
+
+NaN loss is the most famous numerical failure in deep learning, but it's actually the loud version — the run obviously breaks and everyone notices. The more dangerous numerical issues degrade a run without crashing it: gradients that silently overflow under mixed precision, or a loss that's technically finite but has lost most of its useful precision. This lesson covers catching both.
+
+## Segment 2 (steps)
+
+A NaN in the loss is a symptom, not the cause. The actual source is almost always one of a handful of operations: a log of zero or a negative number, often from a probability that underflowed first; a division by a sum that can be exactly zero, like an empty mask; or exploding gradients during backward, especially in deep or recurrent architectures without normalization.
+
+## Segment 3 (code)
+
+The fastest way to localize which operation produced a NaN is PyTorch's anomaly detection mode, which raises at the exact backward op responsible instead of letting the NaN silently flow through dozens of downstream operations. For a cheaper check that's fine to leave on every step, just assert the loss is finite before calling backward and raise with the step number if it isn't.
+
+## Segment 4 (code)
+
+Mixed-precision training introduces its own failure mode: fp16's narrow exponent range lets gradients that would be fine in fp32 silently underflow to zero or overflow to Inf. The standard fix pairs loss scaling — multiplying the loss up before backward, then unscaling before the optimizer step — with gradient clipping, and the scaler itself will skip a step entirely if it finds an Inf or NaN.
+
+## Segment 5 (outro)
+
+Next lesson tackles a different problem: what to do when there's no ground truth to check your implementation against at all — how to verify a research implementation is correct when there's no labeled answer key to compare it to.

@@ -1,0 +1,60 @@
+{
+  "lesson": "polars-and-modern-dataframe-tools",
+  "questions": [
+    {
+      "q": "What is the key difference between `pl.DataFrame` and `pl.LazyFrame`?",
+      "options": [
+        "LazyFrame can only hold numeric data, DataFrame can hold any type",
+        "DataFrame executes operations immediately; LazyFrame builds a query plan and runs nothing until .collect() is called",
+        "They are just two names for the exact same object",
+        "LazyFrame is only available when reading from Parquet files"
+      ],
+      "answer": 1,
+      "explain": "pl.DataFrame is eager, like pandas — operations run immediately. pl.LazyFrame instead builds a deferred query plan that the optimizer can rewrite, and nothing executes until .collect() is called."
+    },
+    {
+      "q": "In current Polars syntax, what is the correct (non-deprecated) method name for grouping rows, and how do you build a column expression for `price`?",
+      "options": [
+        "groupby(); col(\"price\")",
+        "group_by(); pl.col(\"price\")",
+        "GROUP_BY(); pl.column(\"price\")",
+        "aggregate_by(); pl.field(\"price\")"
+      ],
+      "answer": 1,
+      "explain": "Polars uses snake_case method names; group_by() is the current spelling (groupby() still works but is deprecated), and pl.col(\"price\") builds a reusable expression referencing the price column."
+    },
+    {
+      "q": "What does `pl.scan_parquet(\"ticks.parquet\").filter(pl.col(\"ticker\") == \"AAPL\").select([\"date\", \"price\"])` demonstrate when you call `.explain()` on it?",
+      "options": [
+        "That the entire file is read into memory before any filtering happens",
+        "That the filter and column selection get pushed down into the scan itself, so the optimizer limits what's actually read from disk",
+        "That scan_parquet is identical to read_parquet with no optimization differences",
+        "That .explain() executes the query and returns the filtered DataFrame"
+      ],
+      "answer": 1,
+      "explain": "Because scan_parquet builds a lazy plan, Polars' optimizer can push the filter and column selection down into the file scan (projection/predicate pushdown), limiting disk reads before any data is actually loaded. .explain() shows this plan without executing it."
+    },
+    {
+      "q": "According to the lesson, in which scenario does Polars tend to win clearly over pandas?",
+      "options": [
+        "Small datasets where performance isn't a bottleneck",
+        "Workflows requiring deep scikit-learn or plotting library integration",
+        "Large (multi-GB), filter/aggregate/join-heavy workloads, especially reading Parquet with pushdown",
+        "Workflows that rely heavily on MultiIndex hierarchical indexing"
+      ],
+      "answer": 2,
+      "explain": "Polars' multi-threading and query optimization pay off most on large, filter/aggregate/join-heavy datasets, and its lazy Parquet scanning with pushdown avoids reading unneeded data — exactly the scenario where it tends to outperform pandas clearly."
+    },
+    {
+      "q": "Why might a quant research pipeline use both Polars and pandas together rather than choosing just one?",
+      "options": [
+        "Because Polars cannot read Parquet files at all",
+        "Because pandas requires Polars to be installed as a dependency",
+        "Because Polars can efficiently crunch a large Parquet dataset down to a smaller aggregated result, which can then be handed to pandas (via .to_pandas()) for steps that need the broader scientific Python ecosystem",
+        "Because the two libraries use identical APIs and mixing them avoids rewriting code"
+      ],
+      "answer": 2,
+      "explain": "A common realistic pattern is to do the heavy large-scale filtering/aggregation in Polars, then convert the smaller result to pandas for integration with tools like scikit-learn or matplotlib that expect pandas or NumPy directly."
+    }
+  ]
+}

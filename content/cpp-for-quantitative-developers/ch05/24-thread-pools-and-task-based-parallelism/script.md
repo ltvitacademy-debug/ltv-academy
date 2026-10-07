@@ -1,0 +1,25 @@
+# Script — Thread Pools & Task-Based Parallelism
+
+## Segment 1 (title)
+
+Spawning a thread for two or three long jobs is fine. Spawning one per task when you have a thousand small jobs — pricing a thousand options, say — is not. This lesson is about the thread pool, the standard fix for that, plus a lighter tool, std::async, for a single ad hoc task.
+
+## Segment 2 (steps)
+
+Here's why one thread per task breaks down. Every OS thread reserves its own stack, often megabytes of memory, whether it needs it or not. Creating and tearing one down costs real, measurable time. And once you have far more threads than CPU cores, the operating system spends its time switching between them instead of making progress on any of them.
+
+## Segment 3 (code)
+
+A thread pool sidesteps all of that by creating a small, fixed number of worker threads once, up front, and keeping them alive. Each worker just loops: wait on a condition variable until there's a task in the shared queue, pull one off, run it outside the lock, and go back to waiting. Submitting new work never creates a new thread — it just pushes onto the queue and wakes a worker.
+
+## Segment 4 (code)
+
+For a single one-off task, std::async is much less code than building a pool. It hands your callable off, possibly to a new thread, and gives you back a future. Call get on that future later and it blocks until the result is ready, then returns it — useful for one task at a time, though at scale it tends to create one thread per call, the exact problem a pool exists to avoid.
+
+## Segment 5 (steps)
+
+None of this helps if the tasks are too small. If each task does one multiplication, you'll spend more time locking and unlocking the queue than computing anything. The fix is granularity: chunk the work so each task does a meaningful amount — say, pricing a batch of options rather than one at a time — and confirm the right chunk size by actually profiling, which is exactly what lesson thirty is about.
+
+## Segment 6 (outro)
+
+A fixed pool of workers amortizes thread-creation cost across however much work you submit, and async-slash-future gives you the same idea for a single task. Up next, lesson twenty-five: a conceptual overview of lock-free ideas — coordinating threads with no locks at all.

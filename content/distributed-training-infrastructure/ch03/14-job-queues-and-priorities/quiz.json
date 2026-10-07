@@ -1,0 +1,60 @@
+{
+  "lesson": "job-queues-and-priorities",
+  "questions": [
+    {
+      "q": "Why does a plain FIFO (first-in-first-out) queue break down for a shared training cluster like solara-train?",
+      "options": [
+        "FIFO queues cannot be implemented in software",
+        "Jobs vary wildly in size and urgency, so pure submission order can make a high-priority run wait days behind an already-running lower-priority job",
+        "FIFO only works with exactly two jobs at a time",
+        "Kubernetes does not support queues of any kind"
+      ],
+      "answer": 1,
+      "explain": "Submission order alone ignores urgency and size differences — a lower-priority job submitted first could block a critical run for days, which is why real schedulers layer priority and fairness on top of FIFO."
+    },
+    {
+      "q": "In a Volcano Queue spec, what is the difference between weight and capability?",
+      "options": [
+        "weight is a hard GPU cap; capability is the relative share when queues compete",
+        "weight sets the relative share of the cluster a queue gets when multiple queues compete; capability sets an absolute cap on resources a queue can ever use",
+        "They are two names for the same setting",
+        "weight only applies to CPU jobs; capability only applies to GPU jobs"
+      ],
+      "answer": 1,
+      "explain": "weight determines proportional share during contention (e.g., a weight of 2 vs 1 gets roughly double the share), while capability is an absolute ceiling that prevents one queue from consuming the entire cluster regardless of weight."
+    },
+    {
+      "q": "How does Slurm's scheduler typically decide which queued job to run next, rather than strictly first-in-first-out?",
+      "options": [
+        "It always runs the smallest job first regardless of anything else",
+        "Backfill logic picks the highest-priority job that fits the currently free nodes, where priority is influenced by QOS and wait time",
+        "It runs jobs in alphabetical order by job name",
+        "It requires manual approval for every single job"
+      ],
+      "answer": 1,
+      "explain": "Slurm jobs accumulate a priority score (influenced by QOS and other factors), and backfill scheduling picks the highest-priority job that can actually fit the nodes currently available."
+    },
+    {
+      "q": "What is the key difference between priority and preemption in a scheduling queue?",
+      "options": [
+        "They are the same mechanism with different names",
+        "Priority only affects which waiting job starts next; preemption can stop an already-running lower-priority job to reclaim its resources",
+        "Priority applies only to Slurm; preemption applies only to Kubernetes",
+        "Preemption only ever applies to debug jobs, never to anything else"
+      ],
+      "answer": 1,
+      "explain": "Priority influences queue order for jobs that haven't started yet. Preemption is a stronger action: it actively interrupts a job that is already running."
+    },
+    {
+      "q": "Why does Solara AI's policy allow debug jobs to be preempted but never preempt a production training run?",
+      "options": [
+        "Production runs are technically impossible to preempt",
+        "Killing a running multi-node training job mid-step loses any progress since the last checkpoint, which is a much bigger loss than delaying a short debug job",
+        "Debug jobs always run on different hardware so preemption is irrelevant to them",
+        "Production jobs are always submitted with QOS=debug"
+      ],
+      "answer": 1,
+      "explain": "Preempting a long-running production job discards un-checkpointed progress on potentially dozens of nodes, which is almost never worth the capacity freed up — so Solara reserves preemption for low-cost debug jobs only."
+    }
+  ]
+}

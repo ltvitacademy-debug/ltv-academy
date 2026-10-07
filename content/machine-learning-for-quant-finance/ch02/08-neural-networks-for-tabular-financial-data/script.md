@@ -1,0 +1,21 @@
+# Script — Neural Networks for Tabular Financial Data
+
+## Segment 1 (title)
+
+Deep learning dominates images, text, and audio, so it's natural to ask why this course waits until now to even mention it, and even then treats it as an option rather than a default. The honest answer: for tabular, low signal, modest sized datasets, which is most of quantitative finance, neural networks usually aren't the best tool, and understanding why matters as much as knowing how to build one.
+
+## Segment 2 (steps)
+
+Neural networks earn their reputation on problems with huge amounts of data, raw unstructured inputs like pixels or text where the network learns its own feature hierarchy, and a genuinely strong signal. Financial data typically has none of these in abundance. It's already feature engineered, the effective sample size is smaller than the row count once you account for overlapping labels, and the signal is famously faint. Gradient boosting tends to match or beat neural networks on exactly this kind of data.
+
+## Segment 3 (steps)
+
+Deep learning does become genuinely competitive when the inputs are closer to its comfort zone: large alternative data sets like satellite imagery, raw text from news or filings, or very large tick level datasets where sheer volume compensates for low per sample signal. It's also commonly used as one member of an ensemble rather than a standalone model, contributing a different error pattern than tree based models.
+
+## Segment 4 (code)
+
+Here's a simple multilayer perceptron from scikit learn's neural network module. Alpha here is an l2 weight decay penalty, functioning much like ridge's penalty for linear models, discouraging the network from growing large weights to fit noise. Early stopping reserves a slice of training data to monitor validation loss and halts before the network overfits, the neural network analog of the early stopping we used for boosting.
+
+## Segment 5 (outro)
+
+Neural networks aren't the default tool here because tabular data and faint signal play against their usual strengths, but they genuinely help on large alternative data or as one voice in an ensemble. Up next, lesson nine: combining and ensembling models, where we bring ridge, trees, boosting, and neural nets together.

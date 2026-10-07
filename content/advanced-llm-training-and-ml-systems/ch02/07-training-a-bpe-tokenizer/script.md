@@ -6,15 +6,15 @@ Chapter two goes deep on the data pipeline, starting at the very first transform
 
 ## Segment 2 (steps)
 
-BPE starts from the smallest possible units, individual bytes, and greedily merges the most frequent adjacent pair into a new symbol, repeating until the vocabulary hits a target size. Common whole words end up merged all the way into single tokens, while rare words fall back to smaller pieces, so the tokenizer can represent any input text without ever hitting a true unknown-token wall.
+BPE starts from the smallest possible units, individual bytes, and greedily merges the most frequent adjacent pair into a new symbol, repeating until the vocabulary hits a target size. Common whole words end up merged all the way into single tokens, while rare words fall back to smaller pieces, so the tokenizer can represent any input text without ever hitting a true unknown-token wall. This is the same general approach behind GPT-2, GPT-4-era, and Llama-family tokenizers, even though each trains its own vocabulary from its own corpus.
 
 ## Segment 3 (code)
 
-Hugging Face's tokenizers library automates this with a BPE model, a byte-level pre-tokenizer, and a BpeTrainer that takes a target vocabulary size, a minimum merge frequency, and a list of special tokens to reserve. You can train directly from an iterator over raw text, which works well with a streaming dataset.
+Hugging Face's tokenizers library automates this with a BPE model, a byte-level pre-tokenizer, and a BpeTrainer that takes a target vocabulary size, a minimum merge frequency, and a list of special tokens to reserve. You can train directly from an iterator over raw text, which works well with a streaming dataset, so you never have to materialize the full training corpus on disk just to build the tokenizer.
 
 ## Segment 4 (code)
 
-Once trained, you wrap the raw tokenizer in a PreTrainedTokenizerFast, which gives you the same encode and decode interface used by every tokenizer on the Hugging Face Hub, so it drops straight into a transformers training pipeline.
+Once trained, you wrap the raw tokenizer in a PreTrainedTokenizerFast, which gives you the same encode and decode interface used by every tokenizer on the Hugging Face Hub, so it drops straight into a transformers training pipeline. Special tokens like start, end, and padding markers are reserved during training so they always get a fixed, predictable token ID.
 
 ## Segment 5 (outro)
 

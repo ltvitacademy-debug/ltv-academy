@@ -1,0 +1,60 @@
+{
+  "lesson": "communication-overhead-and-its-costs",
+  "questions": [
+    {
+      "q": "What are the two components that determine communication cost in distributed training?",
+      "options": [
+        "CPU speed and disk speed",
+        "Bandwidth (data volume moved per second) and latency (fixed delay before any data arrives, regardless of size)",
+        "Learning rate and batch size",
+        "Model accuracy and loss value"
+      ],
+      "answer": 1,
+      "explain": "Communication cost splits into bandwidth, which dominates for large transfers, and latency, the fixed per-message delay that dominates when many small messages are sent."
+    },
+    {
+      "q": "In data parallelism, what does the gradient all-reduce's communication cost scale with?",
+      "options": [
+        "Batch size, not model size",
+        "Model size (the number of parameters), not batch size",
+        "The number of training epochs",
+        "The size of the validation set"
+      ],
+      "answer": 1,
+      "explain": "The all-reduce moves a gradient for every parameter in the model once per step, so its cost scales with model size. Increasing batch size alone just adds more compute per step without changing how much needs to be synced."
+    },
+    {
+      "q": "Why is tensor parallelism uniquely sensitive to interconnect speed compared to pipeline parallelism?",
+      "options": [
+        "Tensor parallelism requires no communication at all",
+        "Tensor parallelism's all-reduces happen inside every layer, many times per forward and backward pass, multiplying synchronization points by model depth, unlike pipeline parallelism's less frequent point-to-point hand-offs",
+        "Tensor parallelism only runs on CPUs",
+        "Pipeline parallelism requires more total communication than tensor parallelism"
+      ],
+      "answer": 1,
+      "explain": "Tensor parallelism synchronizes inside every layer, many times per step, which is why it needs NVLink's low latency and high bandwidth to stay efficient, unlike pipeline parallelism's comparatively infrequent neighbor-to-neighbor hand-offs."
+    },
+    {
+      "q": "In the interconnect hierarchy, which tier is typically used for communication between servers in an AI training cluster, built specifically for low-latency, high-bandwidth collective operations?",
+      "options": [
+        "Standard consumer Wi-Fi",
+        "InfiniBand",
+        "USB 3.0",
+        "Bluetooth"
+      ],
+      "answer": 1,
+      "explain": "InfiniBand is the common choice for inter-server networking in training clusters, offering much lower latency and higher bandwidth for collective communication than standard Ethernet."
+    },
+    {
+      "q": "What does torch.profiler's key_averages().table(sort_by=\"cuda_time_total\") output help determine?",
+      "options": [
+        "The exact accuracy of the trained model",
+        "A breakdown of CUDA time by operation, including NCCL collective calls, showing whether a training run is compute-bound or stalling on communication",
+        "The final loss value after training completes",
+        "The size of the dataset in gigabytes"
+      ],
+      "answer": 1,
+      "explain": "This profiler output breaks down where GPU time actually goes during a step, including communication operations like all_reduce and all_gather, letting you verify rather than assume whether communication is the bottleneck."
+    }
+  ]
+}

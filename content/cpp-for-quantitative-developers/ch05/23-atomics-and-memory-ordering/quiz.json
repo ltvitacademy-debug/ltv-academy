@@ -1,0 +1,60 @@
+{
+  "lesson": "atomics-and-memory-ordering",
+  "questions": [
+    {
+      "q": "What guarantee does std::atomic<long>::fetch_add(1) provide that a plain `x = x + 1` on a shared long does not?",
+      "options": [
+        "It guarantees the read, add, and write happen as a single indivisible step no other thread can observe half-finished",
+        "It guarantees the value will never exceed INT_MAX",
+        "It automatically logs every update for debugging",
+        "It converts the variable to a floating-point type"
+      ],
+      "answer": 0,
+      "explain": "fetch_add performs the read-modify-write atomically, so no other thread can interleave in the middle of the operation — eliminating the race from the plain, non-atomic increment."
+    },
+    {
+      "q": "What happens when compare_exchange_weak fails because another thread already changed the value?",
+      "options": [
+        "It throws a C++ exception",
+        "It returns false and writes the actual current value into the 'expected' argument, so the caller can retry",
+        "It silently writes the new value anyway",
+        "It blocks until the mutex is released"
+      ],
+      "answer": 1,
+      "explain": "On failure, compare_exchange_weak returns false and updates 'expected' with the atomic's actual current value, which is exactly what a retry loop needs to try again correctly."
+    },
+    {
+      "q": "When is std::memory_order_relaxed an appropriate choice?",
+      "options": [
+        "Whenever you want the strongest ordering guarantee available",
+        "Only when working with std::mutex instead of std::atomic",
+        "When you only need the atomicity guarantee itself and don't need to order the operation relative to other memory, such as an independent counter",
+        "Never — relaxed ordering is always a bug"
+      ],
+      "answer": 2,
+      "explain": "Relaxed ordering provides atomicity with no additional ordering constraints, which is sufficient and fastest for cases like a statistics counter where only the final total matters."
+    },
+    {
+      "q": "In the latest-price example, why does the publisher use memory_order_release on the 'ready' flag rather than relaxed?",
+      "options": [
+        "Release has no effect and is purely stylistic",
+        "Release guarantees that the earlier store to the price variable is visible to any thread that performs a matching acquire load and observes the flag as true",
+        "Release makes the store run on a separate thread automatically",
+        "Release is required syntactically whenever std::atomic<bool> is used"
+      ],
+      "answer": 1,
+      "explain": "A release store publishes all writes that happened before it in program order; a matching acquire load that observes the release's effect is guaranteed to see those earlier writes too."
+    },
+    {
+      "q": "What is the default memory ordering used when you call an atomic operation without specifying one explicitly, and why is it a reasonable default?",
+      "options": [
+        "memory_order_relaxed, because it's the fastest",
+        "memory_order_seq_cst, because it gives a single global order all threads agree on and is the easiest to reason about correctly",
+        "memory_order_acquire, because all reads need it",
+        "There is no default — an ordering argument is mandatory"
+      ],
+      "answer": 1,
+      "explain": "std::memory_order_seq_cst is the default and the strongest ordering; every thread observes atomic operations in one consistent global order, which is the safest starting point before optimizing to a weaker ordering."
+    }
+  ]
+}

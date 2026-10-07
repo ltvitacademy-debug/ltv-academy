@@ -1,0 +1,60 @@
+{
+  "lesson": "designing-a-reward-from-execution-cost",
+  "questions": [
+    {
+      "q": "Why does using raw logical reads directly as a reward (e.g. -reads) fail for this project?",
+      "options": [
+        "SQL Server never reports logical reads accurately",
+        "Reads range from roughly 50 to 50,000+ across episodes, so wide-range episodes would dominate the training signal",
+        "Logical reads cannot be captured via STATISTICS IO",
+        "PPO cannot process negative numbers"
+      ],
+      "answer": 1,
+      "explain": "The huge range in logical reads across narrow vs. wide date ranges means a raw-cost reward would be dominated by whichever episodes happened to be wide-range, drowning out the narrow-range signal."
+    },
+    {
+      "q": "What is the exact reward formula this project uses?",
+      "options": [
+        "reward = -agent_reads",
+        "reward = agent_reads / baseline_reads",
+        "reward = (baseline_reads - agent_reads) / baseline_reads",
+        "reward = baseline_reads - agent_reads"
+      ],
+      "answer": 2,
+      "explain": "The reward is the baseline's reads minus the agent's reads, divided by the baseline's reads — a scale-invariant ratio."
+    },
+    {
+      "q": "What does baseline_reads represent?",
+      "options": [
+        "The average logical reads across all past episodes",
+        "The logical reads from running the same query with action 0 (no hint), measured once per episode",
+        "A hardcoded constant representing an ideal query cost",
+        "The logical reads from the slowest hint tried that episode"
+      ],
+      "answer": 1,
+      "explain": "The baseline is the optimizer's own no-hint plan, measured fresh each episode, so the reward reflects improvement relative to what the optimizer would have done anyway."
+    },
+    {
+      "q": "What reward does the agent receive when it picks action 0 itself?",
+      "options": [
+        "Always +1.0, since it's always a safe choice",
+        "Always -1.0, since it never attempts a hint",
+        "Exactly 0.0, since agent_reads equals baseline_reads",
+        "A random value, since no hint was applied"
+      ],
+      "answer": 2,
+      "explain": "When the agent picks action 0, its reads equal the baseline reads, making the reward exactly zero — neutral, neither rewarded nor punished."
+    },
+    {
+      "q": "Why is the reward described as 'scale-invariant'?",
+      "options": [
+        "Because it ignores the database schema entirely",
+        "Because a relative improvement of the same size produces the same reward value whether the episode involved 50 reads or 50,000 reads",
+        "Because it only works for exactly five actions",
+        "Because it is always between 0 and 1"
+      ],
+      "answer": 1,
+      "explain": "Because the reward is a ratio relative to the baseline, episodes of very different absolute magnitude produce comparable rewards for comparable relative improvement."
+    }
+  ]
+}

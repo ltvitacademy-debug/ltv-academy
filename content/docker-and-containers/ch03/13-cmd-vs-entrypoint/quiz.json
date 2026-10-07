@@ -1,0 +1,60 @@
+{
+  "lesson": "cmd-vs-entrypoint",
+  "questions": [
+    {
+      "q": "What is the main difference between exec form (`CMD [\"node\", \"server.js\"]`) and shell form (`CMD node server.js`)?",
+      "options": [
+        "There is no functional difference, only stylistic preference",
+        "Exec form runs the command directly as PID 1, receiving signals like SIGTERM directly; shell form wraps it in /bin/sh -c, which becomes PID 1 instead",
+        "Shell form only works with ENTRYPOINT, never with CMD",
+        "Exec form is slower because it requires an extra process"
+      ],
+      "answer": 1,
+      "explain": "Exec form makes the specified command the container's main process (PID 1), so it receives signals like SIGTERM from docker stop directly. Shell form interposes /bin/sh -c as PID 1 instead."
+    },
+    {
+      "q": "If a Dockerfile only sets `CMD [\"node\", \"server.js\"]`, what happens when you run `docker run northbridge/catalog:1.4 node debug.js`?",
+      "options": [
+        "Docker runs both commands, server.js and debug.js, at the same time",
+        "The appended command (node debug.js) completely replaces the CMD default, so debug.js runs instead",
+        "Docker refuses to start the container because CMD was already set",
+        "node debug.js is appended as arguments to node server.js"
+      ],
+      "answer": 1,
+      "explain": "With only CMD set, any command appended to docker run entirely replaces it -- there's no appending behavior, it's a full substitution."
+    },
+    {
+      "q": "If a Dockerfile sets `ENTRYPOINT [\"node\", \"server.js\"]`, what happens when you run `docker run northbridge/catalog:1.4 --inspect`?",
+      "options": [
+        "It runs node server.js --inspect -- the argument is appended to the fixed ENTRYPOINT",
+        "It replaces the entrypoint entirely, running just --inspect as a shell command",
+        "Docker ignores --inspect since ENTRYPOINT cannot take any arguments",
+        "It fails with an error because ENTRYPOINT doesn't accept docker run arguments"
+      ],
+      "answer": 0,
+      "explain": "Unlike CMD, arguments passed to docker run are appended to ENTRYPOINT rather than replacing it, so the final command becomes node server.js --inspect."
+    },
+    {
+      "q": "In the combined pattern `ENTRYPOINT [\"node\", \"server.js\"]` plus `CMD [\"--port=3000\"]`, what does CMD contribute?",
+      "options": [
+        "A completely separate command that runs after ENTRYPOINT finishes",
+        "The default arguments passed to ENTRYPOINT, which docker run can still override by supplying its own",
+        "Nothing -- CMD is ignored whenever ENTRYPOINT is also set",
+        "The base image used for the build"
+      ],
+      "answer": 1,
+      "explain": "When both are set, CMD's value becomes the default arguments appended to ENTRYPOINT -- and docker run can override just those default arguments while the program itself (ENTRYPOINT) stays fixed."
+    },
+    {
+      "q": "Why does Northbridge standardize on exec form for CMD and ENTRYPOINT across its images?",
+      "options": [
+        "Exec form is required by Docker Hub for all published images",
+        "So that docker stop's SIGTERM reaches the application process directly, instead of going to an intermediate shell process",
+        "Exec form makes the resulting image smaller on disk",
+        "Shell form is deprecated and no longer supported by Docker"
+      ],
+      "answer": 1,
+      "explain": "Exec form makes the application itself PID 1, so it receives termination signals directly -- important for a clean shutdown, which shell form (where /bin/sh -c is PID 1) doesn't guarantee."
+    }
+  ]
+}

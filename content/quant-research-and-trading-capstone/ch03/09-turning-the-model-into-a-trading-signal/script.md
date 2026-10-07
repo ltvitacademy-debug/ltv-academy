@@ -1,0 +1,21 @@
+# Script — Turning the Model Into a Trading Signal
+
+## Segment 1 (title)
+
+The Ridge model from Lesson 8 only produces scores. This lesson turns those scores into an actual set of positions — the SR-5 signal itself.
+
+## Segment 2 (steps)
+
+Every sector gets ranked by its predicted score. The bottom tercile — the sectors predicted to bounce back hardest — goes long; the top tercile goes short. Within each leg, sectors are weighted by inverse volatility rather than equally, so calmer names get more weight than choppier ones. The two legs are sized to be dollar-neutral: one hundred percent gross exposure, split fifty percent long and fifty percent short.
+
+## Segment 3 (code)
+
+build_weights turns the ranked scores and each sector's inverse volatility into actual portfolio weights, splitting the fifty percent budget across each leg's names. No single sector is allowed to exceed forty percent of its leg's weight, so the signal can never collapse into a bet on one or two names.
+
+## Segment 4 (steps)
+
+Rebalancing is weekly. The signal is computed using Friday's closing data, but it's executed at Monday's session — a one-day lag that keeps the backtest honest and avoids trading on a price the model hasn't actually seen yet. One more layer sits on top: the VIX-regime overlay. In the low-VIX tercile, where the reversal effect is weak and not statistically significant, gross exposure is cut in half, concentrating risk in the regime where the edge is real.
+
+## Segment 5 (outro)
+
+Signal built. Next, Lesson 10 moves from Python prototype to an actual backtest engine — with a C++ core for the heavy lifting.

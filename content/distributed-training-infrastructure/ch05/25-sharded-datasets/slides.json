@@ -1,0 +1,47 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Distributed Training Infrastructure · Chapter 5",
+    "titlePlain": "Sharded ",
+    "titleEmphasis": "Datasets",
+    "titleSuffix": "",
+    "subtitle": "Lesson 25 · Storage & Data Loading at Scale"
+  },
+  {
+    "type": "code",
+    "eyebrow": "WebDataset: tar shards, streamed",
+    "code": "shard_urls = \"s3://solara-checkpoints-data/shards/shard-{000000..001023}.tar\"\n\ndataset = (\n    wds.WebDataset(shard_urls, shardshuffle=True, resampled=True)\n    .shuffle(5000)\n    .decode()\n    .to_tuple(\"input_ids.pth\", \"labels.pth\")\n    .batched(16)\n)\n\nloader = wds.WebLoader(dataset, batch_size=None, num_workers=8)",
+    "caption": "1,024 shards, read sequentially — one request streams many samples instead of one request per sample."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "512 concurrent readers need room to move",
+    "titlePlain": "Sizing shards ",
+    "titleEmphasis": "against",
+    "titleSuffix": " the cluster",
+    "steps": [
+      { "label": "Too few, too large", "sub": "workers starve waiting on one slow shard" },
+      { "label": "Too many, too small", "sub": "per-request overhead creeps back in" },
+      { "label": "Rule of thumb", "sub": "shards should significantly outnumber total workers" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "No random access needed",
+    "titlePlain": "Two-level ",
+    "titleEmphasis": "shuffling",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Shard-level shuffle", "sub": "randomizes which shard a worker reads next" },
+      { "label": "In-memory buffer", "sub": "randomizes sample order within the streaming shard" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 26",
+    "titlePlain": "Storage ",
+    "titleEmphasis": "Backends",
+    "titleSuffix": " for ML",
+    "subtitle": "Object, block, and parallel filesystems — where these shards actually live."
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "lesson": "gang-scheduling",
+  "questions": [
+    {
+      "q": "What does gang scheduling guarantee that Kubernetes' default scheduler does not?",
+      "options": [
+        "That Pods are always scheduled onto the cheapest available nodes",
+        "That a job's Pods are only placed once there is enough capacity for all of them at once — all or nothing, never a partial start",
+        "That Pods are scheduled in alphabetical order by name",
+        "That every Pod gets exactly one GPU regardless of its resource request"
+      ],
+      "answer": 1,
+      "explain": "Gang scheduling's defining guarantee is all-or-nothing placement: a job's full set of Pods is scheduled together, or none of them are scheduled at all."
+    },
+    {
+      "q": "Why is a 'partial start' (e.g. 50 of 64 Pods running) actively harmful for a distributed training job, rather than just slow?",
+      "options": [
+        "It isn't harmful — training jobs run fine with any subset of ranks present",
+        "The Master's init_process_group blocks waiting for every rank to join, so the 50 running Pods hold GPUs idle while doing no useful work, and two such jobs can even deadlock each other",
+        "Partial starts cause immediate data corruption in the model weights",
+        "Kubernetes automatically kills any Pod that starts before its peers"
+      ],
+      "answer": 1,
+      "explain": "torchrun's rendezvous on the Master blocks until every rank connects. A partial start means the Pods that did schedule hold GPUs that sit idle, and competing partially-scheduled jobs can deadlock, each holding resources the other needs."
+    },
+    {
+      "q": "In a Volcano PodGroup spec, what does minMember control?",
+      "options": [
+        "The minimum CPU request per Pod",
+        "The minimum number of Pods that must be schedulable together before Volcano will place any of them",
+        "The minimum number of nodes in the entire cluster",
+        "The minimum GPU driver version required"
+      ],
+      "answer": 1,
+      "explain": "minMember sets the threshold for gang scheduling: Volcano holds the job's Pods Pending until at least that many (here, all 64) can be scheduled simultaneously."
+    },
+    {
+      "q": "Why specifically can't a distributed training job just 'run with the ranks it has' the way a Deployment can run with fewer replicas?",
+      "options": [
+        "Because torchrun doesn't support fewer than the full specified world size at all, under any circumstance",
+        "Because NCCL's collective operations (like AllReduce) are synchronous across every participating rank — there is no partial-rank version of a collective call",
+        "Because Kubernetes forbids jobs with fewer than their requested replica count from running",
+        "Because GPUs physically cannot communicate unless all 512 are present"
+      ],
+      "answer": 1,
+      "explain": "Collective communication primitives block until every rank in the group reaches the call. There's no mechanism to proceed with a subset — which is exactly why a half-scheduled training job just hangs instead of running degraded."
+    },
+    {
+      "q": "In the PodGroup example, why is minResources set to the full 512 GPUs rather than a smaller number?",
+      "options": [
+        "It's an arbitrary default value with no real effect",
+        "It ensures Volcano won't begin placing any of the job's Pods unless the cluster can satisfy the entire 512-GPU request in one pass, matching minMember: 64",
+        "512 is the maximum GPU count Volcano supports per PodGroup",
+        "It reserves 512 GPUs permanently even when the job isn't running"
+      ],
+      "answer": 1,
+      "explain": "minResources paired with minMember expresses the full gang-scheduling requirement: the scheduler only proceeds once it can satisfy the complete resource footprint for the complete set of Pods at once."
+    }
+  ]
+}

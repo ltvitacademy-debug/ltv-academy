@@ -1,0 +1,60 @@
+{
+  "lesson": "common-out-of-memory-failures-and-fixes",
+  "questions": [
+    {
+      "q": "Which category of GPU memory usage during training typically scales with batch size and is usually what causes an out-of-memory error first?",
+      "options": [
+        "Model parameters",
+        "Optimizer state",
+        "Activations — the intermediate tensors saved during the forward pass for use in backward",
+        "The CUDA driver itself"
+      ],
+      "answer": 2,
+      "explain": "Activations scale directly with batch size and sequence length, making them the category most likely to exceed available memory first."
+    },
+    {
+      "q": "In a `torch.cuda.OutOfMemoryError` message, what is the difference between 'allocated' and 'reserved but unallocated' memory?",
+      "options": [
+        "There is no difference; they mean the same thing",
+        "Allocated memory is actively backing live tensors; reserved-but-unallocated memory is cached by PyTorch's allocator for reuse but not currently holding a tensor",
+        "Allocated memory is on the CPU; reserved memory is on the GPU",
+        "Reserved memory is memory that has been permanently lost to fragmentation"
+      ],
+      "answer": 1,
+      "explain": "PyTorch's allocator distinguishes memory currently backing tensors (allocated) from memory it has cached for future reuse but isn't using right now (reserved)."
+    },
+    {
+      "q": "Why does `torch.cuda.empty_cache()` usually fail to fix a genuine out-of-memory problem?",
+      "options": [
+        "It only works on CPU tensors",
+        "It releases cached-but-unallocated memory back to the driver, but does nothing for memory that your own tensors are actively holding",
+        "It increases the model's batch size automatically",
+        "It permanently disables the GPU"
+      ],
+      "answer": 1,
+      "explain": "empty_cache() frees memory PyTorch had cached for reuse, not memory currently in use by live tensors — so it doesn't help if the model genuinely needs more memory than available."
+    },
+    {
+      "q": "How does gradient checkpointing reduce memory usage?",
+      "options": [
+        "It stores all activations in a compressed format",
+        "It discards intermediate activations during the forward pass and recomputes them during backward, trading extra compute time for less memory",
+        "It reduces the number of layers in the model",
+        "It moves the optimizer state to CPU memory permanently"
+      ],
+      "answer": 1,
+      "explain": "Gradient checkpointing avoids storing every intermediate activation by recomputing them as needed during backpropagation, reducing peak memory at the cost of extra compute."
+    },
+    {
+      "q": "How does gradient accumulation let you reach a larger effective batch size without more memory?",
+      "options": [
+        "By running several smaller forward/backward passes and summing their gradients before a single optimizer step, instead of one large pass",
+        "By compressing the model's weights to a lower precision",
+        "By disabling the optimizer's momentum terms",
+        "By splitting the model across multiple GPUs automatically"
+      ],
+      "answer": 0,
+      "explain": "Gradient accumulation processes several smaller batches, summing their gradients, before applying one optimizer step — achieving the same effective batch size with only a fraction of the activation memory held at once."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+# Script — Model Versioning Strategies
+
+## Segment 1 (title)
+
+Registering a model gives it a version number automatically, but a number alone doesn't make it reproducible. Version seven of fraud-detector only matters if you can answer, months later, exactly what produced it. This lesson is about what has to travel with every version for that number to actually mean something.
+
+## Segment 2 (steps)
+
+Four things need to travel with every version. Code version — the exact git commit, not the main branch, because main changes. Data version — a fixed snapshot, not a live table, because that changes too. Every hyperparameter, not just the ones somebody remembered were important. And the environment — a lockfile or a container digest, because identical code with a different library version can quietly produce a different number.
+
+## Segment 3 (code)
+
+The right place to attach this is a tag on the model version itself — not a comment in a notebook, not a note in Slack. A tag is queryable. Setting dataset_version and env_digest as tags means that information survives long after anyone remembers which run produced version seven.
+
+## Segment 4 (code)
+
+That queryability is the whole point. The day a dataset snapshot turns out to have had a bug, searching model versions by that tag finds every affected version instantly — that search is essentially the entire incident response.
+
+## Segment 5 (steps)
+
+This is worth separating clearly from aliases. The version number is immutable identity — what this model actually is. An alias like champion is a mutable role — what it's doing right now. The old stage field conflated those two ideas, which is exactly what made it brittle.
+
+## Segment 6 (outro)
+
+None of this works if it's optional — a pipeline that sometimes logs the commit and sometimes doesn't is only reproducible by luck. Next, lesson thirteen follows this same chain of information one step further back, all the way to the data that started it.

@@ -1,0 +1,60 @@
+{
+  "lesson": "finding-and-fixing-a-gpu-bottleneck",
+  "questions": [
+    {
+      "q": "In `nvidia-smi dmon` output, GPU utilization repeatedly drops to 0% and spikes back up. What does this pattern usually indicate?",
+      "options": [
+        "The GPU driver has crashed",
+        "The GPU is starved, typically waiting on a CPU-side bottleneck like the data loading pipeline",
+        "The kernel is compute-bound",
+        "Memory coalescing has failed"
+      ],
+      "answer": 1,
+      "explain": "Utilization bouncing to near-zero repeatedly is the signature of a starved GPU — it's idle while waiting on something else, most often the dataloader."
+    },
+    {
+      "q": "What is a classic cause of unnecessary host-device synchronization inside a training loop?",
+      "options": [
+        "Using `DataLoader` with `pin_memory=True`",
+        "Calling `.item()` or `.cpu()` on a GPU tensor inside the hot loop, forcing the GPU to finish all queued work before the CPU can read the value",
+        "Using `torch.compile` on the model",
+        "Increasing the batch size"
+      ],
+      "answer": 1,
+      "explain": "A `.item()` or `.cpu()` call forces a synchronization point, stalling the pipeline every iteration while the GPU finishes everything queued so far."
+    },
+    {
+      "q": "After profiling a slow kernel with Nsight Compute, the 'speed of light' section shows high DRAM throughput and low compute throughput. What does this tell you?",
+      "options": [
+        "The kernel is compute-bound and needs mixed precision",
+        "The kernel is memory-bound; fixing access patterns or fusing operations is the fix most likely to help",
+        "The kernel has a syntax error",
+        "The GPU is out of memory"
+      ],
+      "answer": 1,
+      "explain": "High memory throughput paired with low compute throughput is the signature of a memory-bound kernel — the fix should target memory access, not raw compute."
+    },
+    {
+      "q": "Why would applying mixed precision (Tensor Cores) fail to speed up a kernel that Nsight Compute identifies as memory-bound?",
+      "options": [
+        "Mixed precision only works on CPUs",
+        "A memory-bound kernel is limited by memory bandwidth, not by compute throughput, so reducing compute time further doesn't address its actual bottleneck",
+        "Mixed precision always increases memory bandwidth usage",
+        "Nsight Compute cannot analyze mixed-precision kernels"
+      ],
+      "answer": 1,
+      "explain": "Mixed precision speeds up compute throughput. A memory-bound kernel's ceiling is bandwidth, not compute, so that fix doesn't target the actual limiter."
+    },
+    {
+      "q": "What is the recommended order of tools when diagnosing an unexplained slow training job?",
+      "options": [
+        "Nsight Compute on every kernel first, then nvidia-smi to confirm",
+        "nvidia-smi to confirm the GPU is the bottleneck, then Nsight Systems for the timeline, then Nsight Compute on the specific slow kernel",
+        "Only Nsight Systems is ever needed",
+        "Rewrite the model from scratch before profiling anything"
+      ],
+      "answer": 1,
+      "explain": "The practical workflow starts broad (nvidia-smi, then Nsight Systems) and narrows to Nsight Compute only once a specific kernel has been identified as worth a deep dive."
+    }
+  ]
+}

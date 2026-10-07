@@ -1,0 +1,25 @@
+# Script — On-Call for an ML Platform
+
+## Segment 1 (title)
+
+Lesson 31 gave the platform team numbers to hold itself to. This lesson is about the humans who get paged when those numbers slip — and a few things that catch new platform engineers off guard.
+
+## Segment 2 (steps)
+
+A rotation needs a primary and a secondary at minimum — the secondary backs up a missed acknowledgment. New hires shadow an experienced on-call engineer for a rotation or two before carrying the pager alone. And every handoff gets written down: open incidents, anything flaky, anything about to break — the same discipline as the audit trails from Chapter 6, a record instead of a memory.
+
+## Segment 3 (steps)
+
+A page without a runbook wastes the first ten minutes on orientation instead of mitigation. A real runbook says what the alert actually means in plain language, lists the likely causes ranked by how often each one is really it, gives safe mitigation steps — rollback, a feature killswitch, a fallback — and says exactly when this stops being a one-person problem.
+
+## Segment 4 (code)
+
+The biggest mistake is paging on a raw metric instead of on error-budget burn rate. A short latency spike that resolves on its own shouldn't wake anyone — it barely touches the budget. A spike still burning the budget twenty minutes later, fast enough to exhaust it in a day, should page immediately. Same signal, two thresholds: fast burn pages now, slow burn just opens a ticket.
+
+## Segment 5 (steps)
+
+ML platforms have a worse alert-fatigue problem than typical backend services, because model metrics are naturally noisy — prediction distributions shift a little every day on their own. Alert on burn rate, not raw wobble. Hold every paging alert to a ninety-day usefulness test. And keep page severity separate from ticket severity — not everything worth knowing is worth losing sleep over.
+
+## Segment 6 (outro)
+
+Primary and secondary, shadow rotations, runbooks for every page, thresholds set on burn rate instead of noise. Up next, lesson thirty-three: what actually happens when one of those pages turns into a real incident because a model has quietly degraded.

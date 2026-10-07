@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-build-it",
+  "questions": [
+    {
+      "q": "Why does momentum_signal convert returns to log returns before taking a rolling sum?",
+      "options": [
+        "Log returns are required by pandas for any rolling operation",
+        "It replaces a rolling product (which would need .rolling().apply(), calling Python once per window) with a rolling sum that stays fully vectorized",
+        "Log returns are always larger in magnitude, which improves accuracy",
+        "It is purely a style preference with no performance effect"
+      ],
+      "answer": 1,
+      "explain": "log1p/expm1 turns compounding (a product) into addition (a sum), so .rolling().sum() can compute it without ever calling a Python function per window."
+    },
+    {
+      "q": "Why is the rolling z-score the one function wrapped in @njit instead of staying in plain pandas?",
+      "options": [
+        "Numba is required for all numerical code",
+        "It has no clean vectorized pandas form — it needs a trailing mean and standard deviation recomputed at every point — and it was identified as the hot path",
+        "Pandas cannot compute a mean or standard deviation at all",
+        "@njit is applied to every function in the package as a default"
+      ],
+      "answer": 1,
+      "explain": "The lesson reserves Numba for the one calculation without a clean vectorized equivalent, consistent with the kickoff's plan to hand-optimize only the actual hot path."
+    },
+    {
+      "q": "In backtest_returns, what does weights.shift(lag) accomplish?",
+      "options": [
+        "It randomizes the weights to simulate noise",
+        "It applies a prior day's weights to the current day's return, preventing the backtest from trading on information not yet available (lookahead bias)",
+        "It removes rows with missing data",
+        "It converts weights from long-only to long-short"
+      ],
+      "answer": 1,
+      "explain": "Shifting the weights forward by `lag` days means today's return is multiplied by a weight decided on an earlier day, avoiding lookahead bias."
+    },
+    {
+      "q": "Why does the test suite use np.testing.assert_allclose instead of a plain == comparison?",
+      "options": [
+        "assert_allclose is faster to type",
+        "The log-sum-exp computation and the manually compounded value are mathematically equal but can differ slightly due to floating-point rounding order",
+        "== does not work on pandas Series under any circumstances",
+        "assert_allclose ignores incorrect results"
+      ],
+      "answer": 1,
+      "explain": "Two mathematically equivalent floating-point computations can differ in the last few bits because of rounding order, so allclose-style comparisons with a tolerance are the correct test."
+    },
+    {
+      "q": "What problem does driving the pipeline from a Hydra config.yaml (lookback, quantiles, lag, seed) solve?",
+      "options": [
+        "It makes the code run faster",
+        "It lets two runs with the same config produce the same logged results, which is what reproducibility means in practice",
+        "It eliminates the need for any tests",
+        "It replaces the need for a data layer entirely"
+      ],
+      "answer": 1,
+      "explain": "Centralizing every run parameter in one config file, combined with a seeded generator and logging, is what makes a run's results explainable and repeatable later."
+    }
+  ]
+}

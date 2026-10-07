@@ -1,0 +1,60 @@
+{
+  "lesson": "backups-and-cleanup-jobs",
+  "questions": [
+    {
+      "q": "Why does the backup script set `pipefail` before running `pg_dump | gzip`?",
+      "options": [
+        "pipefail makes gzip compress files more tightly",
+        "Without it, a failing pg_dump in the middle of the pipe can be masked by gzip succeeding on empty input, so the script would report success on an empty backup",
+        "pipefail is required for any script that uses a pipe, regardless of behavior",
+        "It speeds up the pg_dump command"
+      ],
+      "answer": 1,
+      "explain": "By default, a pipeline's exit status is only the last command's. pipefail makes the whole pipeline fail if any command in it fails, so a broken pg_dump doesn't get hidden behind gzip's own success."
+    },
+    {
+      "q": "Why does the lesson upload the backup to S3 instead of only keeping it in /var/backups on the server?",
+      "options": [
+        "Local backups take up no disk space, so S3 is purely optional",
+        "A backup that only exists on the server it protects is lost if that server itself is lost -- S3 keeps a copy that survives the server",
+        "S3 uploads are always faster than local disk writes",
+        "pg_dump cannot write directly to a local file"
+      ],
+      "answer": 1,
+      "explain": "If the only copy of a backup lives on the same server being backed up, losing that server means losing the backup along with it. Shipping a copy to S3 protects against that single point of failure."
+    },
+    {
+      "q": "What does the local retention-policy loop use to decide whether a backup file should be deleted?",
+      "options": [
+        "The file's name length",
+        "Whether the file's last-modified time (st_mtime) is older than the retention cutoff",
+        "Whether the file is larger than 1 GB",
+        "The number of times the file has been downloaded"
+      ],
+      "answer": 1,
+      "explain": "The script reads each backup's last-modified timestamp with .stat().st_mtime and compares it against a cutoff date; anything modified before the cutoff gets deleted with .unlink()."
+    },
+    {
+      "q": "Why does the S3 cleanup step use a paginator instead of a single list_objects_v2 call?",
+      "options": [
+        "Paginators are required for all S3 calls regardless of result size",
+        "A bucket of nightly backups accumulated over time will eventually exceed what a single list_objects_v2 call returns, the same reason lesson 16 used one for S3 cleanup",
+        "Paginators delete objects automatically without any code",
+        "list_objects_v2 cannot filter by prefix"
+      ],
+      "answer": 1,
+      "explain": "Like the earlier cloud-cleanup lesson, a growing bucket of nightly backups will eventually span more results than one list_objects_v2 call returns, so a paginator is used to walk every page safely."
+    },
+    {
+      "q": "Why should a backup script exit with a non-zero status on failure instead of printing an error and continuing?",
+      "options": [
+        "Non-zero exit codes make the script run faster",
+        "A non-zero exit code is what lets monitoring or a scheduler actually detect the failure, instead of a backup silently failing with nobody noticing",
+        "Exit codes have no effect on anything outside the script itself",
+        "It is only a stylistic preference with no functional effect"
+      ],
+      "answer": 1,
+      "explain": "A script that logs an error but still exits 0 looks successful to anything checking its exit status -- cron, monitoring, a CI pipeline. Exiting non-zero on failure is what makes the failure visible to those systems."
+    }
+  ]
+}

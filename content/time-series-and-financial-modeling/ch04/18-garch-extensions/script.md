@@ -1,0 +1,21 @@
+# Script — GARCH Extensions
+
+## Segment 1 (title)
+
+Standard GARCH has one notable blind spot: it reacts to the size of a shock but not its sign. In equity markets that's a real limitation — a large negative return tends to raise future volatility by more than a positive return of the same size. This lesson covers the two most common fixes.
+
+## Segment 2 (steps)
+
+That pattern is called the leverage effect: negative shocks raise volatility more than same-sized positive shocks. Plain GARCH one one can't represent this at all, because a squared shock looks identical whether the original shock was positive or negative. GJR-GARCH and EGARCH are the two standard fixes, and both are widely used on real equity return data.
+
+## Segment 3 (code)
+
+GJR-GARCH adds one extra term that only switches on when the previous shock was negative — an indicator variable times that squared shock, with its own coefficient gamma. A positive gamma means negative shocks get an extra kick to variance beyond what the same-sized positive shock would produce. In the arch package, you get this by adding o equals one to a standard GARCH call.
+
+## Segment 4 (code)
+
+EGARCH takes a different route: it models the log of the conditional variance instead of the variance itself. That guarantees variance stays positive without needing non-negativity constraints, and it lets the model include separate terms for the size and the sign of the standardized shock. The sign term is what captures the asymmetry here, and it's specified in the arch package the same way, with vol equals EGARCH.
+
+## Segment 5 (outro)
+
+GJR-GARCH and EGARCH both let a negative shock raise volatility more than a positive one of the same size, matching the leverage effect seen in real markets, and both usually beat plain GARCH on real equity data. Next, lesson nineteen looks at a fundamentally different approach: stochastic volatility models.

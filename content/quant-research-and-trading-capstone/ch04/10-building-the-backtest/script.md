@@ -1,0 +1,25 @@
+# Script — Building the Backtest
+
+## Segment 1 (title)
+
+The signal exists. This lesson builds the machine that runs it through eighteen years of history — architecture first, numbers in the next two lessons.
+
+## Segment 2 (steps)
+
+The research layer is pure Python — pandas and NumPy in Jupyter notebooks, easy to iterate on. But two loops run thousands of times across the full backtest: the rolling cross-sectional z-score and the purged walk-forward retraining loop. Both get pushed into sr5_fast, a C++17 performance core, and exposed back to Python through pybind11 so it's called like any other Python import.
+
+## Segment 3 (code)
+
+Here's the shape of that core: an Eigen matrix operation computing the rolling cross-sectional z-score in C++, wrapped in a single pybind11 module definition. The Python research code barely changes — it just calls sr5_fast.rolling_zscore instead of a pandas rolling-apply, and gets the same answer dramatically faster.
+
+## Segment 4 (code)
+
+The backtest loop itself stays vectorized and weekly: for every Friday rebalance date, the model's prediction and that Friday's inverse-vol weights are the only inputs, and next week's realized return compounds into the equity curve. Point-in-time alignment is the whole discipline here — nothing dated after the rebalance Friday is allowed to touch that week's decision.
+
+## Segment 5 (steps)
+
+Every run produces three things, saved to Parquet. The equity curve is the compounding path of the strategy. The holdings log records every position at every rebalance date, for auditing exactly what was held and why. And turnover tracks how much of the portfolio actually changed hands each week — a number that turns out to matter enormously once Lesson 11 adds in costs.
+
+## Segment 6 (outro)
+
+The engine runs. Next, Lesson 11 asks what happens to these results once trading actually costs something.

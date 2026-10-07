@@ -1,0 +1,60 @@
+{
+  "lesson": "caching-strategies-for-training-data",
+  "questions": [
+    {
+      "q": "Why is caching training data especially worthwhile for a multi-epoch training run?",
+      "options": [
+        "Because each epoch reads an entirely different dataset",
+        "Because the same shards are read repeatedly across epochs, so paying S3 latency once instead of every epoch is a real saving",
+        "Because caching improves model accuracy directly",
+        "Because GPUs cannot read from S3 at all"
+      ],
+      "answer": 1,
+      "explain": "Training passes over the same corpus many times across epochs, so the cost of repeatedly fetching the same bytes from S3 at full latency is avoidable after the first read."
+    },
+    {
+      "q": "How does FSx for Lustre function as a 'cluster-wide' cache?",
+      "options": [
+        "Each node keeps its own separate copy with no sharing",
+        "Once any node's read lazily loads a shard from S3 onto FSx, every node on the shared filesystem can read it from FSx at low latency",
+        "It caches only metadata, never actual training data",
+        "It requires every node to individually re-download the full dataset"
+      ],
+      "answer": 1,
+      "explain": "Because FSx for Lustre is mounted by every node, a shard pulled from S3 once benefits all 64 nodes afterward, unlike a node-local cache."
+    },
+    {
+      "q": "What distinguishes a node-local NVMe cache from the FSx for Lustre cluster-wide cache?",
+      "options": [
+        "Node-local NVMe is slower than FSx in every case",
+        "A node-local cache only benefits the one node it lives on and is lost if that node is replaced",
+        "Node-local NVMe cannot store training data at all",
+        "There is no difference between the two"
+      ],
+      "answer": 1,
+      "explain": "Local NVMe is the fastest tier available but has a narrower scope — it helps only the node it's on, unlike the shared, cluster-wide FSx cache."
+    },
+    {
+      "q": "Why does the Solara ML Platform team treat the first epoch of a run as a 'warm-up pass'?",
+      "options": [
+        "Because the model's weights are randomly initialized during epoch one",
+        "Because the cache starts empty, so epoch one pays full S3 latency while FSx fills up, making its step times unrepresentative of steady state",
+        "Because GPUs need a physical warm-up period before running at full clock speed",
+        "Because epoch one always uses a smaller batch size"
+      ],
+      "answer": 1,
+      "explain": "With a cold cache, the first epoch is slower purely due to cache population — capacity planning should use post-warm-up, steady-state step times instead."
+    },
+    {
+      "q": "What can happen if FSx for Lustre's provisioned capacity is sized smaller than the active training dataset's working set?",
+      "options": [
+        "Training automatically pauses until more capacity is added",
+        "The cache can thrash — evicting shards that get re-requested again the very next epoch",
+        "S3 becomes permanently inaccessible",
+        "Model accuracy improves due to more frequent re-reads"
+      ],
+      "answer": 1,
+      "explain": "If the cache can't hold the full working set, least-recently-used eviction can remove data that's needed again almost immediately, undermining the benefit of caching."
+    }
+  ]
+}

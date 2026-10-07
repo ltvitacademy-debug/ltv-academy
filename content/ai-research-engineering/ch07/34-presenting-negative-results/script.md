@@ -1,0 +1,21 @@
+# Script — Presenting Negative Results
+
+## Segment 1 (title)
+
+A negative result — an approach tried carefully that didn't beat the baseline — is genuinely useful information, but it's also the easiest kind of finding to present badly. Presented poorly, it reads as a shrug or an admission of failure. Presented well, it's a real contribution that rules something out and saves everyone downstream from retrying it. This lesson covers what separates those two outcomes.
+
+## Segment 2 (steps)
+
+Before reporting a negative result, rule out the mundane explanations: an undertuned learning rate, too few seeds, or a bug in the new code path — those make it a bug fix, not a finding. Be precise about the claim: "this doesn't work" is earned only after ruling out confounds, while "I couldn't get this to work" is a narrower, honest claim that should name explicitly what wasn't ruled out. And frame the result as a hypothesis ruled out, not as time lost.
+
+## Segment 3 (code)
+
+A negative result stated with real rigor looks like a positive claim: the same seed count, the same independent learning-rate sweep for both baseline and treatment, and the same reporting of means and spread, concluding that the difference is within noise — not just an unsupported "it didn't help."
+
+## Segment 4 (code)
+
+When the honest claim is narrower — "we couldn't get this to work within our compute budget" — naming explicitly what wasn't swept, like expert count beyond a small range, and what was ruled out, like learning rate and seed variance, gives a reader exactly enough information to judge how much weight the negative result deserves.
+
+## Segment 5 (outro)
+
+Next lesson turns to a different collaboration skill: research project management — how research timelines differ from typical software timelines, where open-ended uncertainty is the norm, and what's actually worth tracking week to week.

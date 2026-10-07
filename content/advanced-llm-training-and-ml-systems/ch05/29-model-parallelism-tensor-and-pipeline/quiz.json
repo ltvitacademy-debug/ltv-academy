@@ -1,0 +1,60 @@
+{
+  "lesson": "model-parallelism-tensor-and-pipeline",
+  "questions": [
+    {
+      "q": "What problem does model parallelism solve that data parallelism cannot?",
+      "options": [
+        "It speeds up data loading from disk",
+        "It allows training a model that is too large to fit on a single GPU, by splitting the model itself across devices",
+        "It removes the need for an optimizer",
+        "It eliminates the need for gradient computation"
+      ],
+      "answer": 1,
+      "explain": "Data parallelism replicates the full model on every GPU, which fails when the model itself doesn't fit on one GPU. Model parallelism splits the model's structure across devices instead."
+    },
+    {
+      "q": "In tensor parallelism, what happens when a column-parallel layer's output feeds into a row-parallel layer?",
+      "options": [
+        "Nothing -- no communication is needed between the two layers",
+        "Each GPU's partial output must be combined via an all-reduce across the tensor-parallel group before the next operation can proceed",
+        "The entire model is re-synchronized from a checkpoint",
+        "The row-parallel layer is skipped entirely"
+      ],
+      "answer": 1,
+      "explain": "Because each GPU only holds a slice of the layer's weight matrix, partial results must be combined with an all-reduce (or all-gather) to reconstruct the correct full output, and this happens inside every layer, many times per step."
+    },
+    {
+      "q": "Why does tensor parallelism require a much faster interconnect than pipeline parallelism?",
+      "options": [
+        "Tensor parallelism uses more GPU memory per device",
+        "Tensor parallelism requires communication inside every layer's forward and backward pass, many times per step, while pipeline parallelism only needs point-to-point hand-offs between neighboring stages",
+        "Tensor parallelism only works on a single GPU",
+        "Pipeline parallelism does not require any network at all"
+      ],
+      "answer": 1,
+      "explain": "Tensor parallelism's frequent in-layer all-reduces are far more communication-intensive than pipeline parallelism's neighbor-only activation hand-offs, so tensor parallelism needs fast interconnects like NVLink within a server."
+    },
+    {
+      "q": "What is the 'pipeline bubble' in pipeline parallelism, and what reduces it?",
+      "options": [
+        "A memory leak caused by too many layers; reduced by fewer stages",
+        "GPU idle time caused by stages waiting on each other sequentially; reduced by splitting the batch into smaller micro-batches fed through the pipeline in sequence",
+        "A network error that halts training; reduced by restarting the job",
+        "An artifact of mixed precision training; reduced by using fp32 only"
+      ],
+      "answer": 1,
+      "explain": "Without micro-batching, each stage waits idle for the previous stage to finish the whole batch. Micro-batching keeps more stages busy simultaneously by feeding smaller pieces of the batch through in sequence."
+    },
+    {
+      "q": "In practice, how are tensor parallelism and pipeline parallelism typically combined in large-scale training?",
+      "options": [
+        "They are never combined -- only one is used per training job",
+        "Tensor parallelism is used within a server (fast NVLink), and pipeline parallelism is used across servers (slower inter-node network)",
+        "Pipeline parallelism is used within a server, and tensor parallelism is used across servers",
+        "Both are always applied to the exact same layers simultaneously"
+      ],
+      "answer": 1,
+      "explain": "Because tensor parallelism's frequent communication needs a fast interconnect, it's used within a server where NVLink is available, while pipeline parallelism's lighter point-to-point hand-offs can tolerate the slower network between servers."
+    }
+  ]
+}

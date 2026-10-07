@@ -1,0 +1,60 @@
+{
+  "lesson": "autoscaling-inference-services",
+  "questions": [
+    {
+      "q": "Why is CPU utilization a poor autoscaling signal for GPU inference services?",
+      "options": [
+        "CPU utilization cannot be measured in Kubernetes",
+        "The CPU sits mostly idle while the GPU does the real work, so CPU% barely reflects actual load",
+        "CPU utilization is only available for batch jobs, not real-time serving",
+        "Kubernetes does not support scaling on any custom metric"
+      ],
+      "answer": 1,
+      "explain": "An inference pod's bottleneck is GPU compute, not CPU. CPU utilization can stay low even when the service is fully saturated and queuing requests."
+    },
+    {
+      "q": "What does KEDA add on top of Kubernetes' standard Horizontal Pod Autoscaler?",
+      "options": [
+        "The ability to run pods without containers",
+        "Support for external metric sources, like a Prometheus query or queue length, for event-driven scaling",
+        "A replacement for GPUs entirely",
+        "Automatic model quantization during scaling"
+      ],
+      "answer": 1,
+      "explain": "KEDA extends the standard autoscaler with external metrics such as a Prometheus query or message-queue length — exactly what signals like queue depth require."
+    },
+    {
+      "q": "Why does pure reactive autoscaling always lag behind a traffic spike for GPU inference?",
+      "options": [
+        "Reactive autoscaling checks metrics only once per day",
+        "Kubernetes pods cannot be added faster than one per hour",
+        "A new replica isn't useful until it finishes loading model weights onto the GPU, which can take seconds to minutes",
+        "GPUs cannot run more than one replica at a time"
+      ],
+      "answer": 2,
+      "explain": "Cold start — loading weights and initializing the framework — takes real time, so a replica created in response to a spike isn't actually serving traffic until that finishes."
+    },
+    {
+      "q": "Which strategy directly addresses the cold-start gap in GPU autoscaling?",
+      "options": [
+        "Setting minReplicaCount to zero so no GPU is ever idle",
+        "Keeping a warm minimum of already-loaded replicas, or scaling ahead of a known traffic pattern on a schedule",
+        "Disabling the autoscaler entirely",
+        "Only ever running one replica regardless of load"
+      ],
+      "answer": 1,
+      "explain": "Keeping warm, already-loaded replicas and scaling ahead of predictable peaks both provide ready capacity before demand actually arrives, bypassing the cold-start delay."
+    },
+    {
+      "q": "What should happen to a replica that an autoscaler decides to remove?",
+      "options": [
+        "It should be killed immediately regardless of in-flight requests",
+        "It should stop receiving new requests, finish in-flight ones, then terminate after a grace period",
+        "It should be converted into a backup database",
+        "It should be left running forever to avoid any risk"
+      ],
+      "answer": 1,
+      "explain": "A safe scale-down drains the replica — no new requests, finish existing ones — before terminating it, respecting a grace period and a sensible minimum replica floor."
+    }
+  ]
+}

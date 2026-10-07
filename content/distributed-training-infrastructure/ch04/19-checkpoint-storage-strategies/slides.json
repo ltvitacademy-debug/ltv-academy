@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Distributed Training Infrastructure · Chapter 4",
+    "titlePlain": "Checkpoint Storage ",
+    "titleEmphasis": "Strategies",
+    "titleSuffix": "",
+    "subtitle": "Lesson 19 · Fault Tolerance & Checkpointing at Scale"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "No single GPU ever holds the full 70B model",
+    "titlePlain": "Why one checkpoint ",
+    "titleEmphasis": "file",
+    "titleSuffix": " doesn't work",
+    "steps": [
+      { "label": "Gather to one rank", "sub": "that rank now needs the whole model's memory" },
+      { "label": "Single sequential write", "sub": "hundreds of GB, everyone else sits idle" },
+      { "label": "DCP: shard-local save", "sub": "no gather, no bottleneck rank" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Every rank saves only the shard it already holds",
+    "code": "import torch.distributed.checkpoint as dcp\n\nstate_dict = {\n    \"model\": model.state_dict(),\n    \"optimizer\": optimizer.state_dict(),\n    \"step\": current_step,\n}\n\ndcp.save(\n    state_dict=state_dict,\n    checkpoint_id=\"s3://solara-checkpoints/solara-70b/step-012500/\",\n)",
+    "caption": "512 GPUs write 512 small shards concurrently to S3, with metadata describing how to reassemble them later."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Balancing overhead against worst-case loss",
+    "titlePlain": "Why ~500 steps, ",
+    "titleEmphasis": "~30 min",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Every step", "sub": "overhead eats real training throughput" },
+      { "label": "Once a day", "sub": "a failure can cost most of a day's compute" },
+      { "label": "~30 min interval", "sub": "caps worst-case loss, overhead stays small" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 20",
+    "titlePlain": "Resuming a Large ",
+    "titleEmphasis": "Training Job",
+    "titleSuffix": "",
+    "subtitle": "The other half of DCP: dcp.load."
+  }
+]

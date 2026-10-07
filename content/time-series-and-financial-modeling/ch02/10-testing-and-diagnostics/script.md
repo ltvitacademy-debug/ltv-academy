@@ -1,0 +1,21 @@
+# Script — Testing & Diagnostics
+
+## Segment 1 (title)
+
+This lesson closes chapter two by pulling the toolkit together: stationarity testing, ACF and PACF, white noise and random walk theory, and cointegration testing. The point isn't new theory, it's a disciplined workflow, plus the specific pitfalls that catch people who apply these tests mechanically.
+
+## Segment 2 (steps)
+
+Here's the standard order of operations. Visualize the raw series first, looking for obvious trend or variance changes before running any test. Test for stationarity with ADF, and if it fails, difference the series and test again. Once stationary, inspect the ACF and PACF to get a sense of what order of dependence is present. And after fitting any model, test whether the residuals still show structure with Ljung-Box — if they do, the model hasn't captured everything.
+
+## Segment 3 (steps)
+
+Three things trip people up with ADF specifically. The regression argument controls whether a constant or trend term is included, and testing a trending series with the wrong specification can give a misleading result. The test also has low power against a series that's stationary but very close to a unit root — with limited data you might fail to reject non-stationarity even when the series technically mean-reverts. And a structural break, a shift in the series' mean partway through, can look exactly like a unit root if you don't visualize first and catch it.
+
+## Segment 4 (code)
+
+The Ljung-Box test complements the ACF plot by asking a joint question: are the autocorrelations up to some lag k, all together, statistically different from zero? It's especially useful on model residuals — a low p-value there means structure is still left over, and the model is misspecified.
+
+## Segment 5 (outro)
+
+Passing every one of these tests is necessary, but it's not sufficient — statistical diagnostics confirm a model's assumptions, they don't guarantee forecasting skill, so always pair them with genuine out-of-sample validation. That closes chapter two's foundations. Chapter three builds directly on top of it: AR, MA, and ARMA models, chosen using exactly the ACF and PACF signatures from this chapter and validated with exactly these residual diagnostics.

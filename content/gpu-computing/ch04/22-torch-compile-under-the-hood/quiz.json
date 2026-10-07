@@ -1,0 +1,60 @@
+{
+  "lesson": "torch-compile-under-the-hood",
+  "questions": [
+    {
+      "q": "What is TorchDynamo's role in the `torch.compile` pipeline?",
+      "options": [
+        "It traces executing Python/PyTorch code into an intermediate graph representation, without requiring the model to be rewritten",
+        "It only handles GPU memory allocation",
+        "It replaces PyTorch's autograd engine entirely",
+        "It converts the model's weights to a lower precision"
+      ],
+      "answer": 0,
+      "explain": "TorchDynamo captures the sequence of tensor operations as your code actually executes, building a graph that later stages can optimize."
+    },
+    {
+      "q": "What does AOTAutograd contribute to the compilation pipeline?",
+      "options": [
+        "It fuses kernels into Triton code",
+        "It derives the backward-pass graph ahead of time from the traced forward graph, so both can be optimized together",
+        "It profiles the GPU's memory bandwidth",
+        "It handles pinned memory allocation"
+      ],
+      "answer": 1,
+      "explain": "AOTAutograd takes the forward graph TorchDynamo captured and derives the corresponding backward graph ahead of time, rather than building it op-by-op at runtime."
+    },
+    {
+      "q": "Why is the first call to a `torch.compile`-wrapped model's forward pass noticeably slower than later calls?",
+      "options": [
+        "The GPU needs to warm up its fans",
+        "Compilation is triggered lazily by the first real forward pass with actual input shapes, and later calls reuse the cached compiled kernels",
+        "The first call always runs on CPU",
+        "torch.compile disables the GPU for one iteration"
+      ],
+      "answer": 1,
+      "explain": "Compilation happens on first invocation with real shapes, so that call pays the compile cost; subsequent calls with the same shape reuse the compiled kernels and run fast."
+    },
+    {
+      "q": "What is a 'graph break' in the context of `torch.compile`?",
+      "options": [
+        "A deliberate performance optimization that speeds up every model",
+        "A point where TorchDynamo can't continue tracing (e.g. due to value-dependent control flow) and falls back to eager execution before resuming tracing afterward",
+        "An error that always crashes the program",
+        "The moment CUDA Graphs are captured"
+      ],
+      "answer": 1,
+      "explain": "A graph break happens when Dynamo encounters something it can't trace, such as control flow dependent on tensor values; it runs that part eagerly, then resumes tracing."
+    },
+    {
+      "q": "What does `mode=\"reduce-overhead\"` add on top of the default `torch.compile` pipeline?",
+      "options": [
+        "It disables kernel fusion entirely",
+        "It layers CUDA Graph capture on top of the compiled kernels, targeting per-kernel launch overhead specifically",
+        "It converts the model to run entirely on CPU",
+        "It forces every operation into float64 precision"
+      ],
+      "answer": 1,
+      "explain": "The reduce-overhead mode combines compiled kernels with CUDA Graph capture, aimed specifically at cutting the CPU-side launch overhead from many small kernel dispatches."
+    }
+  ]
+}

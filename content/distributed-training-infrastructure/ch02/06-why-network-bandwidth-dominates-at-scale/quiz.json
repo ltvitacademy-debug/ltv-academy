@@ -1,0 +1,60 @@
+{
+  "lesson": "why-network-bandwidth-dominates-at-scale",
+  "questions": [
+    {
+      "q": "In the ring collective time formula T_comm ≈ 2 × (N-1)/N × (S/β), what happens to the per-GPU communication time as N (the number of GPUs) grows very large?",
+      "options": [
+        "It grows proportionally with N",
+        "It shrinks to zero",
+        "It stays roughly constant, since (N-1)/N approaches 1",
+        "It doubles every time N doubles"
+      ],
+      "answer": 2,
+      "explain": "As N grows large, (N-1)/N approaches 1, so the per-GPU communication time stays roughly flat regardless of cluster size — it doesn't shrink just because more GPUs were added."
+    },
+    {
+      "q": "Why does the compute-to-communication ratio get worse, not better, as a training cluster scales out to more GPUs?",
+      "options": [
+        "Because communication time increases with more GPUs while compute time stays flat",
+        "Because per-GPU compute time shrinks (each GPU does less work) while per-GPU communication time stays roughly flat",
+        "Because more GPUs always means slower networks",
+        "Because adding GPUs increases the model's parameter count"
+      ],
+      "answer": 1,
+      "explain": "Per-GPU compute time decreases as work is split across more GPUs, but per-GPU communication time stays roughly constant per the ring collective formula — so communication becomes a larger fraction of each step as the cluster grows."
+    },
+    {
+      "q": "What is 'compute-communication overlap,' and why does it help?",
+      "options": [
+        "Running two separate training jobs on the same GPUs at once",
+        "Starting the communication (e.g., AllReduce) for one part of the model while compute continues on another part, instead of doing them strictly in sequence",
+        "Doubling the InfiniBand bandwidth",
+        "Running the backward pass twice for redundancy"
+      ],
+      "answer": 1,
+      "explain": "Overlap means NCCL can begin reducing gradients for an already-computed layer while the backward pass continues computing gradients for other layers — hiding communication latency behind ongoing compute rather than waiting for it serially."
+    },
+    {
+      "q": "Roughly how much data does this lesson estimate moves collectively through solara-train's fabric on each training step for Solara-70B?",
+      "options": [
+        "About 2.8 MB",
+        "About 28 GB",
+        "About 280 GB",
+        "About 2.8 TB"
+      ],
+      "answer": 2,
+      "explain": "With 70 billion parameters and roughly 2 bytes each for both parameters and gradients in BF16 under FSDP's reduce-scatter/all-gather pattern, the collective data movement per step is on the order of 280 GB."
+    },
+    {
+      "q": "Why was network bandwidth a less pressing concern within a single 8-GPU node compared to across 512 GPUs?",
+      "options": [
+        "Because single-node training doesn't use any network at all",
+        "Because intra-node GPU-to-GPU communication uses NVLink's much higher bandwidth, while inter-node communication relies on the comparatively lower-bandwidth InfiniBand fabric that the ring formula's flat per-GPU cost applies to at scale",
+        "Because a single node has no gradients to synchronize",
+        "Because FSDP is not used within a single node"
+      ],
+      "answer": 1,
+      "explain": "Within a node, NVLink provides very high bandwidth (up to 900 GB/s per GPU), making communication nearly free by comparison. Once training spans many nodes over InfiniBand, the flatter, lower-bandwidth inter-node path becomes the dominant constraint as the formula predicts."
+    }
+  ]
+}

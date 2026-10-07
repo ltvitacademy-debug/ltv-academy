@@ -1,0 +1,60 @@
+{
+  "lesson": "handing-off-a-research-model",
+  "questions": [
+    {
+      "q": "Why isn't a raw model checkpoint (a state dict file) by itself an adequate handoff artifact?",
+      "options": [
+        "Checkpoint files are always too large to transfer reliably",
+        "It has no self-contained computation graph, documented preprocessing, or input/output contract that a production system can load and run against",
+        "PyTorch checkpoints expire after a fixed number of days",
+        "Checkpoints cannot be loaded on GPU hardware"
+      ],
+      "answer": 1,
+      "explain": "A checkpoint is just weights. Without a packaged inference artifact, pinned preprocessing, and a documented contract, the production team has to reconstruct how to run it correctly, often by guessing."
+    },
+    {
+      "q": "When should torch.jit.script be used instead of torch.jit.trace?",
+      "options": [
+        "Whenever the model is larger than a few megabytes",
+        "When the model's forward pass has real data-dependent control flow that tracing would silently bake into one fixed path",
+        "Only when exporting to ONNX instead of TorchScript",
+        "Tracing and scripting always produce identical results, so it never matters"
+      ],
+      "answer": 1,
+      "explain": "Tracing records a single execution and can silently lock in one branch of an if/loop that depends on tensor values. torch.jit.script compiles the actual Python control flow instead."
+    },
+    {
+      "q": "What problem does omitting dynamic_axes cause during an ONNX export?",
+      "options": [
+        "The export fails immediately with an error",
+        "The exported graph hardcodes the batch size from the example input used during export, so the production model may only accept that exact batch size",
+        "The model loses all its trained weights",
+        "ONNX Runtime refuses to load the file at all"
+      ],
+      "answer": 1,
+      "explain": "Without dynamic_axes marking dimensions like batch size as flexible, the exported ONNX graph bakes in the shape of whatever example tensor was passed during export."
+    },
+    {
+      "q": "What does the preprocessing contract section of a model card specify, and why does it matter?",
+      "options": [
+        "The GPU vendor the model was trained on, which has no effect on correctness",
+        "The exact input transform pipeline (resizing, normalization, etc.) the model was trained against — any deviation in production invalidates the reported metrics",
+        "The license terms for redistributing the model weights",
+        "The git branch name used during training, which production can ignore"
+      ],
+      "answer": 1,
+      "explain": "A model's reported accuracy only holds if production preprocessing exactly matches training preprocessing. The preprocessing contract makes that exact pipeline explicit instead of assumed."
+    },
+    {
+      "q": "Besides the packaged artifact itself, what else does the minimum handoff checklist call for?",
+      "options": [
+        "A guarantee that the model will never need retraining",
+        "Pinned preprocessing code, an eval score with a known input/output pair, a model card, and a named owner",
+        "A rewrite of the model in a different programming language",
+        "Removal of all code comments to keep the artifact minimal"
+      ],
+      "answer": 1,
+      "explain": "The checklist covers the artifact, pinned preprocessing, an eval score plus a parity-check example, a model card documenting assumptions, and an owner to contact when something looks wrong later."
+    }
+  ]
+}

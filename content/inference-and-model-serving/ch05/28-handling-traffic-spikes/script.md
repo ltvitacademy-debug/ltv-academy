@@ -1,0 +1,25 @@
+# Script — Handling Traffic Spikes
+
+## Segment 1 (title)
+
+This chapter has covered autoscaling, load balancing, multi-model serving, routing, and where to run inference. This closing lesson asks the question that makes all of it matter: what happens when demand suddenly blows past everything you planned for?
+
+## Segment 2 (steps)
+
+The autoscaling control loop reacts on an interval, and a new replica needs time to load model weights before it's useful. A genuine spike can easily outrun both delays — by the time enough capacity comes online, the worst of the spike may already be over, and requests have been queuing up with nowhere to go in the meantime.
+
+## Segment 3 (steps)
+
+Without a plan, an overloaded server just gets slower for everyone until it falls over. Admission control makes that choice deliberately: a bounded queue accepts requests only up to a fixed depth, then rejects new ones with a clean error instead of letting latency blow up for everyone; priority tiers protect one tenant's experience from another's burst; and per-client rate limiting caps how fast any one client can consume shared capacity.
+
+## Segment 4 (code)
+
+Here's that shape as config: a bounded queue with a three-second timeout and a clean 429 on overflow, paired with a token-bucket rate limiter capping each client to ten requests per second with a small burst allowance.
+
+## Segment 5 (steps)
+
+Rejecting excess requests is honest, but it isn't the only option. Falling back to a smaller, faster model under load, capping maximum output length, and disabling optional features all shed compute pressure deliberately — a lower-quality answer that arrives beats no answer at all.
+
+## Segment 6 (outro)
+
+Autoscaling and load balancing help, but a real spike outruns both — admission control and graceful degradation turn overload into something deliberate instead of a collapse. That closes chapter five. Up next, chapter six opens with lesson twenty-nine: the economics behind every one of these decisions, cost per token.

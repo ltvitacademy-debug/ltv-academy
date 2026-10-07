@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ML Infrastructure & Platform Engineering · Chapter 4",
+    "titlePlain": "Airflow- & ",
+    "titleEmphasis": "Kubeflow",
+    "titleSuffix": "-Style Patterns",
+    "subtitle": "Lesson 16 · Two mental models for the same pipeline"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Airflow TaskFlow API",
+    "code": "@dag(schedule=\"@daily\", catchup=False)\ndef fraud_model_training():\n\n    @task\n    def extract_data():\n        return \"s3://ml-data/snap.parquet\"\n\n    @task\n    def train_model(data_uri: str):\n        return run_training_job(data_uri)\n\n    @task\n    def register_model(model_uri, metrics):\n        mlflow.register_model(model_uri, \"fraud\")\n\n    d = extract_data()\n    m = train_model(d)",
+    "caption": "Tasks are Python functions sharing one Airflow worker environment, wired by return values."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Kubeflow Pipelines v2 (KFP SDK)",
+    "code": "@dsl.component(base_image=\"python:3.11\")\ndef train(data_uri: str, model: Output[Model]):\n    clf = fit_model(data_uri)\n    save_model(clf, model.path)\n\n@dsl.pipeline(name=\"fraud-model-training\")\ndef fraud_pipeline(data_uri: str):\n    t = train(data_uri=data_uri)\n    evaluate(model=t.outputs[\"model\"])\n\ncompiler.Compiler().compile(\n    fraud_pipeline, \"fraud_pipeline.yaml\")",
+    "caption": "Each component is its own container with typed inputs/outputs, compiled into a portable artifact."
+  },
+  {
+    "type": "screenshot",
+    "file": "kubeflow-pipelines-graph-view.png",
+    "eyebrow": "What that compiled pipeline looks like running",
+    "caption": "Each node is an independently containerized component; arrows are typed artifacts, not just scheduling order."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Same problem, different bet",
+    "titlePlain": "Shared process vs. ",
+    "titleEmphasis": "isolated container",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Airflow TaskFlow", "sub": "Python functions, one shared worker env" },
+      { "label": "Kubeflow Pipelines", "sub": "Each step its own container, own image" },
+      { "label": "Portability tradeoff", "sub": "Shared env is easy; containers are portable" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 17",
+    "titlePlain": "Building a Reproducible ",
+    "titleEmphasis": "Training Pipeline",
+    "titleSuffix": "",
+    "subtitle": "Making sure a stranger re-running your pipeline gets the same model."
+  }
+]

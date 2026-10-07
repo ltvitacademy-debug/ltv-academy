@@ -1,0 +1,19 @@
+## Segment 1 (title)
+
+Depends_on starts db before api, but doesn't wait for Postgres to actually be ready. Health checks answer "are you actually working?" Restart policies answer what happens when the answer is no.
+
+## Segment 2 (code)
+
+A HEALTHCHECK in the Dockerfile runs a command on an interval -- here, curling a health endpoint every ten seconds. Exit code zero means healthy. Fail three times in a row and Docker marks the container unhealthy.
+
+## Segment 3 (code)
+
+This is the actual fix for last lesson's gap: depends_on with condition service_healthy makes api wait until db's own health check -- Postgres's pg_isready -- reports healthy, not just until the db container has started.
+
+## Segment 4 (steps)
+
+Four restart policies. No and on-failure are the cautious ones -- never restart, or only restart on a real failure. Always restarts on exit and even after the Docker daemon itself restarts. Unless-stopped behaves the same way, except a container you stopped on purpose actually stays stopped.
+
+## Segment 5 (outro)
+
+Northbridge runs unless-stopped in production -- crashes recover automatically, deliberate maintenance stops still stick. Next up: doing DB_HOST, passwords, and API keys properly, with environment configuration and secrets.

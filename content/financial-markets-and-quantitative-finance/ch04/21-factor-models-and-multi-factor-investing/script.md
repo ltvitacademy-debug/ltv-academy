@@ -1,0 +1,21 @@
+# Script — Factor Models & Multi-Factor Investing
+
+## Segment 1 (title)
+
+CAPM compresses every source of systematic risk into one number: beta against the overall market. That's elegant, but decades of empirical research have found it doesn't fully explain real returns. Factor models are the response: instead of one systematic risk source, allow several, each with its own premium.
+
+## Segment 2 (code)
+
+CAPM's own structure is already a one-factor regression: return equals a constant plus beta times the market return plus noise — that's literally how beta gets estimated. Fama and French found that small-cap stocks and value stocks have both outperformed what market beta alone predicts, so they added two more factors: SMB, the size factor, and HML, the value factor, each with its own coefficient.
+
+## Segment 3 (code)
+
+Generalize that structure and you get the multi-factor form: expected return equals the risk-free rate, plus a sum over every factor of that asset's exposure to the factor, times the factor's own risk premium. CAPM is the one-factor special case. Over the years practitioners have added momentum, quality, and low-volatility as further factors, each one just another term in the same sum.
+
+## Segment 4 (steps)
+
+Factor models earn their place for two reasons. First, they explain returns more fully than a single beta can. Second, they give a practical shortcut for estimating the full covariance matrix mean-variance optimization needs — instead of estimating every pairwise covariance directly, you estimate each stock's exposure to a handful of shared factors, and most of the covariance structure follows from that. That same separation is exactly what performance attribution needs next.
+
+## Segment 5 (outro)
+
+A small-cap value fund with meaningful size and value exposure can show a three-factor expected return well above what CAPM alone would predict — exposure to compensated risk factors, not necessarily skill. Up next, lesson twenty-two: performance attribution, separating risk-adjusted skill from exposure to known factors.

@@ -1,0 +1,60 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Inference & Model Serving · Chapter 3",
+    "titlePlain": "Knowledge ",
+    "titleEmphasis": "Distillation",
+    "titleSuffix": "",
+    "subtitle": "Lesson 15 · Model Optimization for Inference"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "A new model, trained to imitate the old one",
+    "titlePlain": "Teacher and ",
+    "titleEmphasis": "student",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Teacher", "sub": "the large, already-trained model" },
+      { "label": "Student", "sub": "a smaller model, trained from scratch" },
+      { "label": "Soft targets", "sub": "trained on the teacher's full probability distribution" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Flattening the teacher's confidence",
+    "titlePlain": "Why ",
+    "titleEmphasis": "temperature",
+    "titleSuffix": " matters",
+    "steps": [
+      { "label": "Raw softmax is too peaked", "sub": "one token near 100%, signal hidden elsewhere" },
+      { "label": "Temperature spreads it out", "sub": "near-zero probabilities become learnable signal" },
+      { "label": "Loss = KL-divergence + cross-entropy", "sub": "teacher's pattern plus the real label" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "A different lever than this chapter's other two",
+    "titlePlain": "Distillation vs. quantization ",
+    "titleEmphasis": "and pruning",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Changes the architecture", "sub": "a genuinely smaller design, not the same one compressed" },
+      { "label": "Costs a real training run", "sub": "closer to fine-tuning than a calibration pass" },
+      { "label": "Stacks with both", "sub": "a distilled student can still be quantized and pruned" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The distillation loss, in PyTorch",
+    "code": "import torch.nn.functional as F\n\ndef distill_loss(student_logits, teacher_logits, labels, T=2.0, alpha=0.5):\n    soft_t = F.log_softmax(teacher_logits / T, dim=-1)\n    soft_s = F.log_softmax(student_logits / T, dim=-1)\n    kd_loss = F.kl_div(soft_s, soft_t, log_target=True, reduction=\"batchmean\") * T * T\n    ce_loss = F.cross_entropy(student_logits, labels)\n    return alpha * kd_loss + (1 - alpha) * ce_loss",
+    "caption": "T softens both distributions; alpha balances imitating the teacher against matching the real label."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 16",
+    "titlePlain": "Measuring the Quality/Cost ",
+    "titleEmphasis": "Trade-off",
+    "titleSuffix": "",
+    "subtitle": "Deciding which of this chapter's three levers is worth it — and when to combine them."
+  }
+]

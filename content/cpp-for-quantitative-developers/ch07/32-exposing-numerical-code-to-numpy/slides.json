@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "C++ for Quantitative Developers · Chapter 7",
+    "titlePlain": "Exposing Numerical Code ",
+    "titleEmphasis": "to NumPy",
+    "titleSuffix": "",
+    "subtitle": "Lesson 32 · Zero-copy arrays across the boundary"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why not just convert?",
+    "titlePlain": "std::vector vs. the ",
+    "titleEmphasis": "buffer protocol",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "std::vector conversion", "sub": "copies every element in, and again out" },
+      { "label": "Buffer protocol", "sub": "a raw pointer straight into NumPy's own memory" },
+      { "label": "Result", "sub": "zero copies for arrays of any size" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "A vectorized payoff function",
+    "code": "py::array_t<double> vectorizedPayoff(\n    py::array_t<double> spots,\n    double strike) {\n  auto buf = spots.request();\n  auto result =\n    py::array_t<double>(buf.shape);\n  auto resBuf = result.request();\n  const double* in =\n    static_cast<const double*>(buf.ptr);\n  double* out =\n    static_cast<double*>(resBuf.ptr);\n  for (ssize_t i=0;i<buf.shape[0];++i)\n    out[i] = std::max(in[i]-strike, 0.0);\n  return result;\n}",
+    "caption": "request() exposes the array's raw pointer and shape; the loop writes straight into a new output buffer."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What buffer_info gives you",
+    "titlePlain": "Anatomy of ",
+    "titleEmphasis": "py::buffer_info",
+    "titleSuffix": "",
+    "steps": [
+      { "label": ".ptr", "sub": "raw void* to the array's memory" },
+      { "label": ".shape / .ndim", "sub": "dimensions, checked before use" },
+      { "label": ".strides", "sub": "byte offsets between elements" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Still just NumPy to the caller",
+    "code": "import numpy as np\nimport quantlib_cpp as qc\n\nspots = np.array(\n    [95.0, 100.0, 105.0, 110.0])\npayoffs = qc.vectorized_payoff(\n    spots, strike=100.0)\nprint(payoffs)\n# array([0., 0., 5., 10.])",
+    "caption": "The caller never knows the computation happened in compiled C++ against raw memory."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 33",
+    "titlePlain": "Building & Distributing ",
+    "titleEmphasis": "Extensions",
+    "titleSuffix": "",
+    "subtitle": "Turning this source file into something a teammate can pip install."
+  }
+]

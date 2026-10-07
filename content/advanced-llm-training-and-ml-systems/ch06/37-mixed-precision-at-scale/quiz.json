@@ -1,0 +1,60 @@
+{
+  "lesson": "mixed-precision-at-scale",
+  "questions": [
+    {
+      "q": "Why is training entirely in fp32 impractical for large-scale LLM training?",
+      "options": [
+        "fp32 is not supported by any modern GPU",
+        "fp32 costs twice the memory of 16-bit formats per value and runs slower on tensor cores optimized for 16-bit matrix multiplies, which is the difference between a run that fits and finishes on time versus one that doesn't",
+        "fp32 produces incorrect results on every matrix multiplication",
+        "fp32 cannot represent negative numbers"
+      ],
+      "answer": 1,
+      "explain": "fp32's doubled memory footprint and slower tensor-core throughput compared to 16-bit formats make it prohibitively expensive at the scale of multi-billion-parameter training."
+    },
+    {
+      "q": "What specific numerical problem does fp16 have that motivates loss scaling?",
+      "options": [
+        "fp16 cannot represent any negative gradients",
+        "fp16's narrow exponent range causes small gradients to underflow to exactly zero, silently halting updates to those weights",
+        "fp16 always produces NaN values regardless of the data",
+        "fp16 requires more memory than fp32"
+      ],
+      "answer": 1,
+      "explain": "fp16 has a narrower exponent range than fp32, so small gradients common in deep networks can underflow to zero; loss scaling pushes them into fp16's representable range before backpropagation."
+    },
+    {
+      "q": "How does loss scaling work with GradScaler in fp16 training?",
+      "options": [
+        "It permanently multiplies the model's final output by a constant",
+        "The loss is scaled up before backpropagation to avoid gradient underflow, then the resulting gradients are unscaled before the optimizer step, with GradScaler dynamically adjusting the scale factor based on detected overflow",
+        "It converts all gradients to int8 before the optimizer step",
+        "It disables backpropagation entirely for small gradients"
+      ],
+      "answer": 1,
+      "explain": "GradScaler multiplies the loss before backward() to keep small gradients representable in fp16, then unscales before the optimizer step, adjusting the scale factor dynamically when it detects inf/nan from overflow."
+    },
+    {
+      "q": "Why does bf16 training not require loss scaling the way fp16 does?",
+      "options": [
+        "bf16 has more mantissa bits than fp32, giving it extra precision headroom",
+        "bf16 shares fp32's 8-bit exponent width, giving it the same dynamic range and avoiding the underflow problem that motivates loss scaling in fp16",
+        "bf16 is only used for inference, never for training, so loss scaling is irrelevant",
+        "bf16 automatically rounds all gradients up to the nearest whole number"
+      ],
+      "answer": 1,
+      "explain": "bf16 keeps fp32's full exponent range (trading away mantissa precision instead), so it doesn't suffer the underflow problem fp16 has, removing the need for loss scaling entirely."
+    },
+    {
+      "q": "How is mixed-precision behavior typically configured in FSDP and DeepSpeed?",
+      "options": [
+        "It cannot be configured -- precision is fixed to fp32 in both frameworks",
+        "FSDP uses a MixedPrecision dataclass setting param/reduce/buffer dtypes, while DeepSpeed exposes bf16 or fp16 blocks (with loss_scale) in its JSON config",
+        "Both frameworks require manually editing CUDA kernel source code",
+        "Precision is determined automatically by the GPU driver with no user input"
+      ],
+      "answer": 1,
+      "explain": "FSDP's MixedPrecision dataclass lets you set param_dtype, reduce_dtype, and buffer_dtype independently, while DeepSpeed configures precision declaratively through bf16/fp16 blocks in its JSON config file."
+    }
+  ]
+}

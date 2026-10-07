@@ -1,0 +1,60 @@
+{
+  "lesson": "layers-and-caching",
+  "questions": [
+    {
+      "q": "What does each `RUN`, `COPY`, or `ADD` instruction in a Dockerfile produce?",
+      "options": [
+        "A separate, unrelated image",
+        "Its own filesystem layer, stacked on top of the layer produced by the previous instruction",
+        "A new container, independent of the build",
+        "Nothing on disk -- those instructions only affect runtime behavior"
+      ],
+      "answer": 1,
+      "explain": "Each of these instructions creates a new layer -- a filesystem diff -- stacked on the layers before it, which is also the unit Docker's build cache operates on."
+    },
+    {
+      "q": "In the Northbridge build where only `server.js` changed (not `package.json`), why did the `RUN npm install` step show as `CACHED`?",
+      "options": [
+        "Because npm install always shows as cached regardless of changes",
+        "Because that layer's instruction and inputs (package.json, package-lock.json) hadn't changed since the last build, so Docker reused the previously built layer",
+        "Because the internet connection was down during the build",
+        "Because CACHED only means the step was skipped entirely with no output image"
+      ],
+      "answer": 1,
+      "explain": "Docker's build cache keys each layer on its instruction plus its inputs. Since package.json and package-lock.json were unchanged, Docker safely reused the existing npm install layer."
+    },
+    {
+      "q": "If `package.json` changes, what happens to the `COPY . .` layer that comes after it, even though the application code itself didn't change?",
+      "options": [
+        "It stays cached because its own inputs didn't change",
+        "It gets rebuilt anyway, because every layer after an invalidated layer is rebuilt regardless of whether its own inputs changed",
+        "Docker skips it and reuses the oldest available version",
+        "The build fails until the code is also changed"
+      ],
+      "answer": 1,
+      "explain": "Layer caching is sequential: once one layer must rebuild, every layer stacked after it rebuilds too, even if that specific layer's own inputs are unchanged."
+    },
+    {
+      "q": "Why does the Northbridge Dockerfile copy `package.json` and run `npm install` before copying the rest of the application code?",
+      "options": [
+        "Dockerfile syntax requires dependency files to be copied before any other files",
+        "Because package.json changes rarely while application code changes constantly -- ordering this way keeps the expensive install step cached through most code edits",
+        "It makes no difference to build speed, only to final image size",
+        "npm install cannot run after any other COPY instruction"
+      ],
+      "answer": 1,
+      "explain": "Placing the rarely-changing dependency install before the frequently-changing code copy maximizes cache hits, since invalidating a layer forces every later layer to rebuild."
+    },
+    {
+      "q": "If the Dockerfile instead did `COPY . .` before `RUN npm install`, what would happen on every single code edit?",
+      "options": [
+        "Nothing would change -- the build would still be fast",
+        "Every code edit would invalidate the COPY layer and force npm install to rerun from scratch every time, since it comes after",
+        "The build would fail immediately",
+        "Docker would automatically reorder the instructions for you"
+      ],
+      "answer": 1,
+      "explain": "With COPY . . first, any code change invalidates that layer -- and since npm install comes after it, that slow step would rerun on every build instead of staying cached."
+    }
+  ]
+}

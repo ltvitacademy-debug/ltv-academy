@@ -1,0 +1,25 @@
+# Script — Processes & Signals
+
+## Segment 1 (title)
+
+Every command you run becomes a process, with its own PID and its own place in the kernel's scheduler. This lesson covers seeing what's running, sending work to the background, and stopping a process politely with a signal instead of reaching straight for force.
+
+## Segment 2 (code)
+
+ps aux lists every process on the system, and on a Northbridge Retail server, grepping that list for a worker name shows its PID, CPU and memory usage, and current state in one line. Those columns — PID, percent CPU, percent memory, and STAT — are exactly what you check first when something seems to be misbehaving.
+
+## Segment 3 (steps)
+
+Running a command normally occupies your terminal in the foreground until it finishes. Appending an ampersand backgrounds it and hands your prompt back immediately, but it's still tied to that terminal session and dies if you close it — nohup detaches the job from that signal entirely, so it keeps running after you log out.
+
+## Segment 4 (code)
+
+A signal is a message asking a process to do something, and kill sends signals despite its name. SIGTERM is the default, catchable signal — a process can clean up and exit gracefully — while SIGKILL, signal 9, is the kernel terminating it immediately with no chance to clean up, which is why Northbridge's ops team always tries SIGTERM first.
+
+## Segment 5 (code)
+
+Hunting for a PID with ps and grep works, but pgrep and pkill search by process name directly. Pgrep with -a lists the matching PID and its full command line, and pkill sends a signal to every process matching that name — much faster than copying a PID by hand when a worker needs restarting.
+
+## Segment 6 (outro)
+
+Processes and signals are how Linux starts, tracks, and stops everything running on a server. Up next, chapter five, lesson nineteen: systemd and services, which is how a process keeps running long after you log out, without nohup or a background job at all.

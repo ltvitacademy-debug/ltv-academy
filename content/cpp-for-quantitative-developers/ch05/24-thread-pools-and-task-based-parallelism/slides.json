@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "C++ for Quantitative Developers · Chapter 5",
+    "titlePlain": "Thread Pools & ",
+    "titleEmphasis": "Task-Based Parallelism",
+    "titleSuffix": "",
+    "subtitle": "Lesson 24 · Concurrency Fundamentals"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Pricing a thousand options, independently",
+    "titlePlain": "Why one thread ",
+    "titleEmphasis": "per task",
+    "titleSuffix": " fails",
+    "steps": [
+      { "label": "Each thread reserves a stack", "sub": "often megabytes, per thread" },
+      { "label": "Creation/teardown costs time", "sub": "real, measurable overhead per launch" },
+      { "label": "OS over-switches contexts", "sub": "far more threads than available cores" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "A worker's loop inside the pool",
+    "code": "while (true) {\n    std::function<void()> task;\n    {\n        std::unique_lock<std::mutex> lk(m_);\n        cv_.wait(lk, [this] {\n            return stop_ || !tasks_.empty();\n        });\n        if (stop_ && tasks_.empty()) return;\n        task = std::move(tasks_.front());\n        tasks_.pop();\n    }\n    task();\n}",
+    "caption": "Workers are created once; submit() just pushes a task and wakes one of them."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A single ad hoc task with std::async",
+    "code": "std::future<double> fut = std::async(\n    std::launch::async,\n    price_option, 100.0, 105.0);\n\ndouble price = fut.get();",
+    "caption": "fut.get() blocks until the result is ready; launch::async requests a real separate thread."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The overhead has to be worth it",
+    "titlePlain": "Task ",
+    "titleEmphasis": "granularity",
+    "titleSuffix": " matters",
+    "steps": [
+      { "label": "Too fine", "sub": "queuing overhead exceeds the work itself" },
+      { "label": "Right-sized chunks", "sub": "coordination cost amortized over real work" },
+      { "label": "Confirm with profiling", "sub": "Lesson 30 shows how to measure this" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 25",
+    "titlePlain": "Lock-Free Ideas ",
+    "titleEmphasis": "Overview",
+    "titleSuffix": "",
+    "subtitle": "A conceptual look at coordinating threads without locks at all."
+  }
+]

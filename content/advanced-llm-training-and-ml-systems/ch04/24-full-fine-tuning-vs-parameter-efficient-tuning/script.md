@@ -6,11 +6,11 @@ With a formatted, properly masked dataset ready, there's one more decision befor
 
 ## Segment 2 (code)
 
-Here's why. Weights, gradients, and Adam's optimizer state all scale with parameter count, and optimizer state alone needs two running estimates per parameter, usually kept in fp32. Add it up and you're at roughly sixteen bytes per parameter — for a seven-billion-parameter model, over a hundred gigabytes before activations even enter the picture.
+Here's why. Weights, gradients, and Adam's optimizer state all scale with parameter count, and optimizer state alone needs two running estimates per parameter, usually kept in fp32 for numerical stability. Add it up and you're at roughly sixteen bytes per parameter — for a seven-billion-parameter model, over a hundred gigabytes before activations even enter the picture, more than a single high-end GPU holds.
 
 ## Segment 3 (code)
 
-Parameter-efficient fine-tuning freezes almost all of that and trains only a small number of added parameters instead. Hugging Face's peft library's most widely used method, LoRA, does exactly this — notice the trainable percentage: a tiny fraction of a percent of the full model, which is where the massive memory win comes from.
+Parameter-efficient fine-tuning freezes almost all of that and trains only a small number of added parameters instead. Hugging Face's peft library's most widely used method, LoRA, does exactly this, freezing the original weights and training a small pair of low-rank matrices alongside them — notice the trainable percentage: a tiny fraction of a percent of the full model, which is where the massive memory win comes from.
 
 ## Segment 4 (steps)
 

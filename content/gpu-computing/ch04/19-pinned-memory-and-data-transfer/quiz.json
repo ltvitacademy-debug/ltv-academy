@@ -1,0 +1,60 @@
+{
+  "lesson": "pinned-memory-and-data-transfer",
+  "questions": [
+    {
+      "q": "Why does pinned (page-locked) memory transfer to the GPU faster than ordinary pageable memory?",
+      "options": [
+        "Pinned memory uses a smaller data type automatically",
+        "Pinned memory stays at a fixed physical address, so the GPU's DMA engine can transfer it directly instead of going through an extra staging copy",
+        "Pinned memory is stored on the GPU itself",
+        "Pinned memory compresses the data before transfer"
+      ],
+      "answer": 1,
+      "explain": "Because pinned memory can't be moved or swapped by the OS, the DMA engine can read it directly, skipping the intermediate staging buffer pageable memory requires."
+    },
+    {
+      "q": "How do you make a PyTorch `DataLoader` produce batches in pinned memory?",
+      "options": [
+        "Set `num_workers=0`",
+        "Pass `pin_memory=True` to the `DataLoader` constructor",
+        "Call `.cuda()` on the dataset",
+        "Set `batch_size=1`"
+      ],
+      "answer": 1,
+      "explain": "`DataLoader(..., pin_memory=True)` allocates each produced batch tensor in page-locked memory before it reaches the training loop."
+    },
+    {
+      "q": "What happens if you call `.to(device, non_blocking=True)` on a tensor from ordinary (unpinned) memory?",
+      "options": [
+        "It raises a RuntimeError immediately",
+        "The transfer silently happens synchronously anyway, since the driver must stage unpinned memory through a pinned buffer first",
+        "It automatically pins the memory for you with no cost",
+        "It transfers at double speed"
+      ],
+      "answer": 1,
+      "explain": "`non_blocking=True` only produces an actual asynchronous transfer when the source memory is already pinned; otherwise the copy happens synchronously regardless of the flag."
+    },
+    {
+      "q": "What is the main performance benefit of combining `pin_memory=True` with `non_blocking=True`?",
+      "options": [
+        "It reduces the model's parameter count",
+        "It allows the next batch's transfer to overlap with the GPU's compute on the current batch, instead of happening in series",
+        "It eliminates the need for a GPU entirely",
+        "It automatically increases batch size"
+      ],
+      "answer": 1,
+      "explain": "Asynchronous, pinned transfers let data movement for the next batch hide behind the current batch's compute, which can keep the GPU from starving each iteration."
+    },
+    {
+      "q": "Why isn't it recommended to pin every tensor in a program indiscriminately?",
+      "options": [
+        "Pinning is a system call that locks physical pages, and over-pinning can starve the rest of the system's memory",
+        "Pinned tensors cannot be used in any GPU computation",
+        "PyTorch limits programs to one pinned tensor at a time",
+        "Pinning permanently disables `non_blocking` transfers"
+      ],
+      "answer": 0,
+      "explain": "Pinning memory has a real system cost — it locks physical pages so the OS can't reclaim them — so it's used selectively for data that benefits, like dataloader batches."
+    }
+  ]
+}

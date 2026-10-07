@@ -1,0 +1,21 @@
+# Script — Sparse Rewards in Long-Horizon Tasks
+
+## Segment 1 (title)
+
+Lesson 63, Chapter 10. Last lesson showed credit assignment getting harder as trajectories grow, and gave you an environment to generate them. This lesson confronts the problem directly: when reward only arrives once, at the end, how do you learn anything from the turns before that?
+
+## Segment 2 (code)
+
+Potential-based shaping is the one approach from Chapter 5 with a real guarantee — adding gamma times the potential of the next state minus the potential of the current state doesn't change which policy is optimal, as long as that potential function depends only on state, never on the action taken to get there. The same guarantee carries over unchanged to agent trajectories, with the potential now defined over task progress instead of a physical state vector.
+
+## Segment 3 (steps)
+
+Sparsity bites harder here than in Chapter 5's toy environments on two fronts at once: trajectories are longer, so credit gets spread thinner the way lesson 61 described, and the action space at every turn is enormous — open-ended text and a growing set of tools, not a handful of discrete moves. Near-random exploration has an even lower chance of a lucky success to learn from.
+
+## Segment 4 (steps)
+
+In practice, teams more often use looser subgoal rewards instead of a formal potential function — a small reward for calling the right tool first, for the first correctly parsed result. It's faster to set up but gives up the optimality guarantee entirely, opening a fresh reward hacking surface: farming the subgoal reward instead of genuinely progressing. Most recipes start sparse-only on an easier task distribution, then add shaping carefully and re-check with the evaluation discipline from lesson 59.
+
+## Segment 5 (outro)
+
+Potential-based shaping extends cleanly to agents with its guarantee intact; subgoal rewards are more common but trade that guarantee for convenience. Next, lesson 64 asks a related question: should these long trajectories even run against a real environment at all, versus a simulation.

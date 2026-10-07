@@ -1,0 +1,21 @@
+# Script — Checkpoint Storage Strategies
+
+## Segment 1 (title)
+
+The last lesson made the case that a five-hundred-twelve GPU run needs a way to recover from failure without losing weeks of progress. Checkpointing is that mechanism — periodically saving enough state to resume close to where training left off. For Solara-70B, that means writing to the solara-checkpoints S3 bucket roughly every five hundred steps, about every thirty minutes.
+
+## Segment 2 (steps)
+
+Solara-70B's weights are sharded across all five hundred twelve GPUs — no single GPU ever holds the full model. Gathering everything onto one rank to write a single file would mean that one rank needs memory for the entire model, and a sequential write of hundreds of gigabytes while everyone else sits idle. torch.distributed.checkpoint avoids all of that.
+
+## Segment 3 (code)
+
+Every rank saves only the shard it already holds, directly, with no gather step. Five hundred twelve GPUs write five hundred twelve small shards concurrently to the same S3 directory, along with metadata describing how those shards fit back together — which is exactly what makes resuming onto a different number of GPUs possible later.
+
+## Segment 4 (steps)
+
+Checkpointing has a real cost, so the interval matters. Checkpoint every step and the overhead eats into training throughput. Checkpoint once a day and a mid-run failure can cost most of a day's compute. Roughly five hundred steps, about thirty minutes, keeps overhead small while capping the worst-case loss from any single failure at about half an hour.
+
+## Segment 5 (outro)
+
+Checkpoints go to S3 rather than local disk specifically because a fault-tolerance mechanism can't depend on the health of the one node it's trying to protect against. Next up, lesson twenty: resuming a large training job, the other half of DCP.

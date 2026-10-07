@@ -1,0 +1,21 @@
+# Script — Sanity Checks Every Researcher Should Run
+
+## Segment 1 (title)
+
+The previous two lessons covered catching silent bugs and numerical issues. This lesson is the checklist: a short, standard sequence of checks experienced researchers run on nearly every new codebase before trusting a single number out of it. None of these alone prove correctness, but together they catch most implementation bugs in minutes, before a full run burns hours of compute on something broken.
+
+## Segment 2 (steps)
+
+Four checks worth running every time: overfit a single batch and confirm the loss reaches near zero, proving gradients flow and the pipeline is wired correctly. Confirm every trainable parameter actually receives a gradient — a detached subgraph can silently never update. Confirm garbage input makes the loss meaningfully worse than real input. And confirm the model actually beats a trivial baseline like predicting the mean.
+
+## Segment 3 (code)
+
+The overfit check loops training on one batch for a few hundred steps and should drive the loss near zero — if it plateaus well above that, something in the wiring is broken. The gradient audit walks every named parameter after backward and flags anything trainable that got no gradient, or an all-zero one, which the overfit check alone can sometimes miss if the rest of the model compensates.
+
+## Segment 4 (code)
+
+Feeding the model random noise instead of real input should make the loss clearly worse — if it barely changes, the data isn't reaching the model the way you think it is. And a sophisticated model should meaningfully beat the trivial baseline for the task, like predicting the mean for regression — scoring close to or worse than that baseline means something is wrong before architecture choices even matter.
+
+## Segment 5 (outro)
+
+That closes Chapter 6. Next lesson puts all of this debugging machinery to work on a specific, common scenario: a run that trains cleanly, crashes nothing, but just won't improve — and the systematic process for finding out why.

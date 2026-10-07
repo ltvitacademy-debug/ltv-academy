@@ -1,0 +1,21 @@
+# Script — The KV Cache, Conceptually
+
+## Segment 1 (title)
+
+The last lesson named the KV cache as the reason decode is memory-bandwidth-bound. This lesson opens that up: what's actually being cached, why it grows the way it does, and why its size is usually what limits how many requests a serving system can handle at once.
+
+## Segment 2 (steps)
+
+Every token's attention output depends on the key and value vectors of every token before it. Those vectors for already-generated tokens never change, so recomputing them from scratch at every step would be wasteful — the cost would grow with the square of the sequence length. Instead, the KV cache stores them the first time they're computed and reuses them on every later step, turning that into a simple, linear-cost lookup.
+
+## Segment 3 (steps)
+
+Cache size is driven by a small set of numbers: sequence length, which grows the cache linearly as decoding continues; the number of layers times KV heads times head dimension, which is fixed by the model's architecture; and batch size, because every concurrent request needs its own cache. That last one is why high-concurrency serving is a memory problem first.
+
+## Segment 4 (code)
+
+Putting a real number on it: a 32-layer model with 8 KV heads, head dimension 128, in bf16, at an 8,000-token sequence, needs roughly 1.1 gigabytes of KV cache for a single sequence. Grouped-query attention and multi-query attention exist specifically to shrink the KV-heads term in that formula — often a 4 to 8x reduction — which is why most current open-weight models use GQA rather than full multi-head attention.
+
+## Segment 5 (outro)
+
+GPU memory at serving time has to hold the weights and every in-flight sequence's cache at once, which is why a model's effective batch size is often set by cache memory, not raw compute. Next up: quantization for inference, a second major lever on that same memory and latency budget.

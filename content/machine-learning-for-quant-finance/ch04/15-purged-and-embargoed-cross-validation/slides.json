@@ -1,0 +1,49 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Machine Learning for Quantitative Finance · Chapter 4",
+    "titlePlain": "Purged & Embargoed ",
+    "titleEmphasis": "Cross-Validation",
+    "titleSuffix": "",
+    "subtitle": "Lesson 15 · Validation Done Right"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The leak time order alone can't fix",
+    "titlePlain": "Labels are ",
+    "titleEmphasis": "windows, not instants",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "A label like \"return over the next 5 days\"", "sub": "has a label window [t, t+5], not a single timestamp" },
+      { "label": "A training row just before the test block", "sub": "its label window can still reach INTO the test span" },
+      { "label": "Train on that row and you train on the test period", "sub": "laundered through the label itself" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two separate fixes, two separate leaks",
+    "titlePlain": "Purge ",
+    "titleEmphasis": "before",
+    "titleSuffix": ", embargo after",
+    "steps": [
+      { "label": "Train (purged zone)", "sub": "dropped if this row's label window reaches into test" },
+      { "label": "Test block", "sub": "held out, never trained on, in any fold" },
+      { "label": "Embargo buffer", "sub": "dropped automatically right after test, no label overlap needed" },
+      { "label": "Train resumes", "sub": "far enough past test that serial correlation has decayed" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "A real PurgedKFold sketch",
+    "code": "class PurgedKFold(KFold):\n    def split(self, X, y=None, groups=None):\n        n = len(X)\n        embargo = int(n * self.embargo_frac)\n        indices = np.arange(n)\n        for test_start, test_stop in self._test_ranges(n):\n            test_idx = indices[test_start:test_stop]\n            before = indices[indices < test_start]\n            after = indices[indices >= test_stop]\n            # PURGE: label must resolve before test starts\n            before = before[self.label_end[before] < test_start]\n            # EMBARGO: drop a buffer right after test\n            after = after[after >= test_stop + embargo]\n            yield np.concatenate([before, after]), test_idx",
+    "caption": "scikit-learn has no built-in class for this -- KFold and TimeSeriesSplit know nothing about label windows."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Combinatorial ",
+    "titleEmphasis": "Cross-Validation",
+    "titleSuffix": "",
+    "subtitle": "Applying purging and embargoing to every possible combination of groups, not just one split."
+  }
+]

@@ -10,12 +10,12 @@ If a model's context length is four thousand ninety six tokens and a document on
 
 ## Segment 3 (code)
 
-Packing solves this by concatenating many documents end to end, separated by an end-of-sequence token, into one long stream, then chunking that stream into fixed-length blocks. Nearly every position in every sequence now carries real content. This is the same pattern behind Hugging Face trl's ConstantLengthDataset and the packing option on SFTTrainer.
+Packing solves this by concatenating many documents end to end, separated by an end-of-sequence token, into one long stream, then chunking that stream into fixed-length blocks. Nearly every position in every sequence now carries real content, and the wasted compute from the earlier padding example essentially disappears. This is the same pattern behind Hugging Face trl's ConstantLengthDataset and the packing option on SFTTrainer.
 
 ## Segment 4 (steps)
 
-Packing introduces one subtlety: a packed sequence can contain the tail of one document and the start of an unrelated one. With standard causal attention, a token in the second document can still attend across that boundary. Many pipelines simply accept this mild noise, while others build a document-aware, block-diagonal attention mask that only allows attention within the same original document.
+Packing introduces one subtlety: a packed sequence can contain the tail of one document and the start of an unrelated one. With standard causal attention, a token in the second document can still attend across that boundary, which is semantically meaningless. Many pipelines simply accept this mild noise, while others build a document-aware, block-diagonal attention mask that only allows attention within the same original document.
 
 ## Segment 5 (outro)
 
-Getting packing right turns wasted padding into real training signal. Next up, lesson thirteen: data mixtures and domain weighting, deciding how much of each source actually ends up in these sequences.
+Getting packing right turns wasted padding into real training signal, which at pretraining scale translates directly into real GPU-hours saved. Next up, lesson thirteen: data mixtures and domain weighting, deciding how much of each source actually ends up in these sequences.

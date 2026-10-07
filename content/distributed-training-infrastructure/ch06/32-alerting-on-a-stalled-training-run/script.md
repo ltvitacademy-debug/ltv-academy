@@ -1,0 +1,21 @@
+# Script — Alerting on a Stalled Training Run
+
+## Segment 1 (title)
+
+Lesson 31 covered how to check whether a training job is healthy — status, logs, loss curves. All of it requires someone to actually go look, and on a run that takes days to weeks, nobody's watching continuously. That's the gap alerting closes: turning "a human would notice this if they looked" into "a human gets paged automatically."
+
+## Segment 2 (steps)
+
+A crashed job is easy to catch — the PyTorchJob status flips to Failed, a clear, discrete signal. A stalled job is harder: the process is alive, the pods are Running, GPUs might even show some utilization, but training has effectively stopped making progress. Nothing crashes, so nothing fires the obvious alert — catching this means watching a trend over time, not a single state.
+
+## Segment 3 (code)
+
+Two signals catch most real stalls. GPU utilization dropping to near-zero for a job still marked Running, using the DCGM metrics from Lesson 29. And more directly, a loss metric the training script exports that hasn't moved at all over an extended window. Neither signal alone is perfect — a brief GPU dip during checkpointing is normal — which is why the actual rule requires the condition to hold for a sustained window, not an instant.
+
+## Segment 4 (code)
+
+The Alertmanager rule itself requires GPU utilization under five percent for fifteen continuous minutes before it fires. And because namespace is a label on the alert, routing sends training-lm alerts to the language-modeling team and training-mm alerts to the multimodal team automatically — the same namespace split from monitoring and cost attribution, now doing a third job: getting the alert to whoever can actually act on it.
+
+## Segment 5 (outro)
+
+A stalled run is a distinct failure mode, detected by watching utilization and loss trends over a sustained window, and routed using the same namespace labels as the rest of this chapter. That's the last of the monitoring and cost lessons. Next, Lesson 33: the capstone, standing up a small training cluster that puts the whole course together.

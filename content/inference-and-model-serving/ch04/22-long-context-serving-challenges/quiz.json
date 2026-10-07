@@ -1,0 +1,60 @@
+{
+  "lesson": "long-context-serving-challenges",
+  "questions": [
+    {
+      "q": "At very long context lengths, what typically becomes the dominant constraint on GPU memory?",
+      "options": [
+        "The size of the model's weights",
+        "The KV cache, which scales linearly with sequence length for every concurrent request",
+        "The size of the tokenizer vocabulary",
+        "The number of attention heads defined in the architecture"
+      ],
+      "answer": 1,
+      "explain": "Because KV cache size scales linearly with sequence length per request, a single long-context request's cache alone can consume gigabytes — making cache size, not model weight size, the dominant memory cost at long context."
+    },
+    {
+      "q": "Why does attention compute become a bottleneck specifically at very long context?",
+      "options": [
+        "Attention compute is constant regardless of sequence length",
+        "Standard attention compute grows quadratically with sequence length, since every token's query attends every other token's key",
+        "Attention compute only matters during decode, never during prefill",
+        "Longer context always reduces the compute required for attention"
+      ],
+      "answer": 1,
+      "explain": "Standard attention cost grows quadratically with sequence length. A prompt 10x longer needs roughly 100x the attention compute for that portion of the forward pass, which starts to dominate prefill time at extreme lengths."
+    },
+    {
+      "q": "Why is chunked prefill described as essential, not just helpful, at long context?",
+      "options": [
+        "Because a very long prompt's prefill, run as one uninterrupted step, would stall every other request on the GPU for a long time",
+        "Because chunked prefill eliminates the need for a KV cache at long context",
+        "Because long prompts cannot be processed without chunked prefill under any circumstances",
+        "Because chunked prefill only applies to requests shorter than 1,000 tokens"
+      ],
+      "answer": 0,
+      "explain": "At long context, an uninterrupted prefill for a very long prompt could stall other in-flight requests for a long time, making chunking into interleaved pieces load-bearing rather than merely beneficial."
+    },
+    {
+      "q": "What does KV cache offloading do when a cache grows too large for GPU memory?",
+      "options": [
+        "It deletes the oldest tokens from the conversation permanently",
+        "It moves colder, less-recently-used portions of the cache to CPU memory or fast local storage, paging them back in when needed",
+        "It automatically reduces the model's parameter count",
+        "It refuses to process any further requests from that user"
+      ],
+      "answer": 1,
+      "explain": "KV cache offloading trades some latency for the ability to serve a request at all, by moving less-recently-used cache portions off the GPU to CPU memory or storage and paging them back in on demand."
+    },
+    {
+      "q": "Why are this chapter's techniques (GQA/MQA, PagedAttention, prompt caching, chunked prefill, cache quantization) described as compounding rather than substituting for each other at long context?",
+      "options": [
+        "Because only one of these techniques can ever be active at a time",
+        "Because each technique addresses a different part of the same cost — shrinking per-token cache size, eliminating fragmentation, avoiding recomputation, and preventing one request from starving others — and all of them are needed together as context grows",
+        "Because long context eliminates the need for any of these techniques",
+        "Because they are all identical techniques with different names"
+      ],
+      "answer": 1,
+      "explain": "Long context amplifies cost on multiple fronts simultaneously, so GQA/MQA, PagedAttention, prompt caching, chunked prefill, and cache quantization each address a distinct part of the problem and stack together rather than replacing one another."
+    }
+  ]
+}

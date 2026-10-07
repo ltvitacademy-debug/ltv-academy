@@ -1,0 +1,21 @@
+# Script — Feature Store Architecture Patterns
+
+## Segment 1 (title)
+
+Last lesson covered offline stores, online stores, and materialization as individual pieces. This lesson puts them together into the handful of architecture patterns real teams actually run, and gives you a way to decide which pattern fits a given feature's freshness requirement.
+
+## Segment 2 (steps)
+
+Pattern one is batch materialization — the default from the last lesson. A scheduled job computes values and writes them to the offline store, and materialization copies the latest values into the online store, typically every fifteen minutes to an hour. It's the simplest pattern to operate, and it's correct for most features, because most freshness requirements are measured in minutes to hours, not seconds. Use this unless a specific feature actually needs fresher data than its schedule delivers.
+
+## Segment 3 (steps)
+
+Pattern two is streaming ingestion, for features that genuinely need sub-minute freshness — a fraud model checking if a card was used twice in the last ninety seconds, for example. A stream processor, commonly reading from Kafka, writes the feature value directly into the online store, bypassing the batch schedule entirely. This costs more to operate, and it introduces a new risk: a second code path computing the feature, which can drift from the training-time logic exactly the way lesson eight describes.
+
+## Segment 4 (code)
+
+Pattern three is on-demand transformation, for features that can't be precomputed at all because they depend on something only known at request time — like the distance between a user's current GPS location and the nearest store. Feast supports this as an on-demand feature view: a function that runs at request time, combining precomputed features with data passed in on the request itself. It has no freshness problem, but the transformation has to be fast, and it has to match the training-time logic exactly.
+
+## Segment 5 (outro)
+
+A real feature store runs all three patterns side by side, chosen feature by feature based on its actual requirement, not as one architecture applied to everything. Up next, lesson eight: training-serving skew, what happens when these patterns don't stay aligned with the training-time logic.

@@ -1,0 +1,21 @@
+# Script — How Quants Get Paid
+
+## Segment 1 (title)
+
+Lessons 28 and 29 covered where quants work and what they actually do. This closing lesson of Chapter 6 covers compensation structure — described descriptively, not as a promise of any specific outcome. Pay in this field varies enormously by firm type, role, and individual performance, and no course can guarantee what any individual will earn.
+
+## Segment 2 (steps)
+
+Across almost all of the firm types from Lesson 28, total compensation is typically structured as a base salary plus an annual bonus. The base is relatively stable and predictable. The bonus is the variable component, where most of the difference between a strong year and a weak year shows up, and it's commonly tied to some combination of individual performance, desk or team performance, and overall firm or fund performance — the exact mix depends on where you work.
+
+## Segment 3 (code)
+
+Many hedge funds charge their investors under a "2 and 20" model: a two percent annual management fee on assets under management, covering operating costs regardless of performance, plus a twenty percent performance fee on profits above a benchmark or high-water mark. That structure matters for compensation because it's part of why a successful fund can pay its top people well in strong years — a fund that generates meaningful profit keeps a real share of it through that performance fee, and some of that flows through to the team. It's a structural fact about the business model, not a guarantee of what any individual receives.
+
+## Segment 4 (steps)
+
+Compensation varies a lot by firm type. Banks tend to offer the most standardized, predictable bands, with bonus pools shaped by overall bank and division performance. Hedge funds have much wider variance, since a fund's strong or weak year flows more directly to a relatively small team. And prop trading firms often tie pay closely to the P&L an individual trader or researcher personally generates, since the firm is trading its own capital rather than a diversified pool of outside money.
+
+## Segment 5 (outro)
+
+Base plus bonus almost everywhere, a "2 and 20" fee model layered on top at many hedge funds, and real variance by firm type and performance — that's structure, not a promise about any individual's paycheck. That closes Chapter 6. Up next, Lesson 31: the capstone kickoff, where this course's final project begins.

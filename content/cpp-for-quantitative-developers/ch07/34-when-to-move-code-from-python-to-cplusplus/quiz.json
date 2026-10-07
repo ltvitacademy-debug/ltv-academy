@@ -1,0 +1,60 @@
+{
+  "lesson": "when-to-move-code-from-python-to-cplusplus",
+  "questions": [
+    {
+      "q": "Why is \"Python is slow\" usually the wrong diagnosis for a slow-running Python program?",
+      "options": [
+        "Python has no interpreter overhead at all, so nothing in it can be slow",
+        "Most apparently slow Python code is actually spending its time inside already-compiled libraries like NumPy or pandas, not in the Python interpreter loop itself",
+        "Python code always runs faster than equivalent C++ code",
+        "Only code written before Python 3 can be slow"
+      ],
+      "answer": 1,
+      "explain": "A lot of 'slow Python' is really time spent inside C/Fortran-backed libraries such as NumPy or pandas. Porting a thin Python wrapper around an already-fast call does not address the real bottleneck."
+    },
+    {
+      "q": "A profiler shows 90% of a function's runtime inside a pure-Python, per-element loop. What should that tell you?",
+      "options": [
+        "Nothing — profiler output should never influence a porting decision",
+        "This is a legitimate candidate for porting to C++, since the time is genuinely spent in interpreted, element-by-element work",
+        "The function should be deleted entirely",
+        "The loop should be rewritten in a different scripting language instead of C++"
+      ],
+      "answer": 1,
+      "explain": "A hot path dominated by genuine Python-interpreted, element-by-element work is exactly the pattern worth porting to a compiled extension — profiling confirms the diagnosis before any rewrite effort is spent."
+    },
+    {
+      "q": "Why can porting a tiny function like `double tinyFunction(double x) { return x * 2.0; }` and calling it from Python millions of times in a loop actually be a bad idea?",
+      "options": [
+        "C++ cannot multiply floating-point numbers correctly",
+        "The per-call overhead of crossing the Python/C++ boundary, paid millions of times for trivial work each time, can dominate or exceed any speed gained from the computation itself",
+        "pybind11 limits every function to being called at most once",
+        "Doubles cannot be passed as function arguments in pybind11"
+      ],
+      "answer": 1,
+      "explain": "Every call across the Python/C++ boundary has overhead. Paying that overhead millions of times for one multiplication each can cost more than it saves — the fix is to vectorize so the boundary is crossed once per batch, not once per element."
+    },
+    {
+      "q": "What is the recommended way to port a per-path Monte Carlo simulation loop to C++ for the best performance gain?",
+      "options": [
+        "Port only the single innermost arithmetic operation and call it once per path from Python",
+        "Port the entire per-path computation into C++ and call it vectorized, once per batch of paths, rather than once per path",
+        "Leave the loop in Python but add more print statements for visibility",
+        "Rewrite the loop as a Python generator instead of porting anything"
+      ],
+      "answer": 1,
+      "explain": "Porting the whole loop and vectorizing the call amortizes the boundary-crossing overhead across the entire batch, instead of paying that overhead on every single call."
+    },
+    {
+      "q": "Which scenario is the best candidate to leave in Python rather than port to C++?",
+      "options": [
+        "A per-element pricing loop that profiling shows consumes 85% of total runtime on large inputs",
+        "A thin wrapper function that just calls `numpy.random.normal` and reshapes the result, run occasionally on small inputs",
+        "A Monte Carlo path simulator called millions of times with large batches",
+        "A function whose profile shows it as the single largest time consumer in the program"
+      ],
+      "answer": 1,
+      "explain": "A thin wrapper around an already C-backed NumPy call, run rarely on small inputs, has no real bottleneck to fix — porting it adds build and maintenance overhead for no measurable gain."
+    }
+  ]
+}

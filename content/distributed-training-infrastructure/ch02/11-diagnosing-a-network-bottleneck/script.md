@@ -1,0 +1,21 @@
+# Script — Diagnosing a Network Bottleneck
+
+## Segment 1 (title)
+
+Chapter two has built the theory — why bandwidth matters, how NCCL moves data, how AllReduce works, what fabric it runs over, how that fabric is wired. This lesson turns that theory into a diagnostic checklist for when a job is training slower than expected.
+
+## Segment 2 (code)
+
+Step one: benchmark the fabric directly, isolated from the training job, using NVIDIA's nccl-tests. A command like all_reduce_perf sweeps message sizes across your GPUs and exercises exactly the same collectives NCCL uses during real training — without anything else the training code is doing getting in the way.
+
+## Segment 3 (steps)
+
+Step two: read the output correctly. There are two bandwidth numbers, and they're easy to confuse. Algbw is just message size over time — it looks right, but it understates how much data actually crossed the wire. Busbw multiplies that by the same ring AllReduce factor from lesson eight, and that's the number you actually compare against the fabric's rated four hundred gigabit bandwidth.
+
+## Segment 4 (code)
+
+Step three: if busbw looks low, check InfiniBand's own counters. ibstat shows you the negotiated link speed per adapter. perfquery shows CRC errors and retransmits on a specific port. A link stuck below its rated speed, or a climbing error count, points straight at a hardware or cabling problem, not a software misconfiguration.
+
+## Segment 5 (outro)
+
+Step four: confirm it's actually network-bound by watching GPU utilization during the collective itself — if it drops near zero while the step is still slow, the GPUs are genuinely idle waiting on the network. That closes out chapter two. Up next, chapter three: kubernetes job scheduling for ML, how solara-train decides which jobs get GPUs in the first place.

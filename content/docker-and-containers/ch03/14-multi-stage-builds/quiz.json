@@ -1,0 +1,60 @@
+{
+  "lesson": "multi-stage-builds",
+  "questions": [
+    {
+      "q": "Why does a single-stage build carry \"dead weight\" into production for Northbridge's React-based catalog frontend?",
+      "options": [
+        "Because single-stage builds are slower to run, not larger",
+        "Because the final image still contains the full Node toolchain, dev dependencies, and unbuilt source, even though the running app only needs the compiled static output",
+        "Because single-stage Dockerfiles cannot use EXPOSE",
+        "Because React apps cannot be containerized with a single stage at all"
+      ],
+      "answer": 1,
+      "explain": "Everything used to build the app -- the compiler, bundler, dev dependencies, source files -- is unnecessary once the static output (dist/) exists, but a single-stage build ships it all anyway."
+    },
+    {
+      "q": "What does `FROM node:20 AS build` do in a multi-stage Dockerfile?",
+      "options": [
+        "It deletes the previous stage entirely",
+        "It names this stage \"build\" so a later stage can reference it with COPY --from=build",
+        "It tells Docker to only build this stage and skip the rest of the file",
+        "It sets the final image's tag to \"build\""
+      ],
+      "answer": 1,
+      "explain": "The AS clause gives a build stage a name, which a later COPY --from=<name> instruction can reference to pull specific files out of it."
+    },
+    {
+      "q": "What does `COPY --from=build /app/dist /usr/share/nginx/html` do?",
+      "options": [
+        "It copies the entire build stage, including node_modules and source files, into the final image",
+        "It copies only the /app/dist directory from the named build stage into the current (runtime) stage -- nothing else from that stage comes along",
+        "It runs the build stage's CMD inside the runtime stage",
+        "It merges the build stage and runtime stage into a single combined image"
+      ],
+      "answer": 1,
+      "explain": "COPY --from=<stage> pulls only the specified path out of that earlier stage. None of the build stage's other files, tools, or layers make it into the final image."
+    },
+    {
+      "q": "Why does the runtime stage in the Northbridge example use `FROM nginx:1.27-alpine` instead of continuing with `node:20`?",
+      "options": [
+        "nginx is required by Docker for any multi-stage build",
+        "The running app is just static files to serve, so a minimal web server image is sufficient and far smaller than carrying the full Node toolchain",
+        "node:20 cannot be used as a runtime stage under any circumstances",
+        "nginx automatically compiles TypeScript at runtime"
+      ],
+      "answer": 1,
+      "explain": "Once the app is built to static HTML/JS/CSS, serving it needs nothing more than a lightweight web server -- there's no reason to carry Node and its toolchain into the shipped image."
+    },
+    {
+      "q": "In the Northbridge example, the build stage still runs `npm install` and `npm run build` in full. Why doesn't that weight end up in the final image?",
+      "options": [
+        "Docker automatically deletes node_modules after every build regardless of stage",
+        "Because only the files explicitly copied out with COPY --from=build make it into the final image -- the rest of the build stage is discarded",
+        "Because npm install and npm run build don't actually create any files",
+        "Because the build stage and runtime stage share the same filesystem automatically"
+      ],
+      "answer": 1,
+      "explain": "Each stage is isolated. The build stage's layers (node_modules, source, compiler) only exist within that stage; the final image is built fresh from the runtime stage's FROM, plus whatever is explicitly copied in."
+    }
+  ]
+}

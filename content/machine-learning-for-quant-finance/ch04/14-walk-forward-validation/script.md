@@ -1,0 +1,21 @@
+# Script — Walk-Forward Validation
+
+## Segment 1 (title)
+
+Welcome to chapter four, validation done right — the chapter this whole course treats as non-negotiable. Everything you've built so far is worthless if you can't honestly measure how it would have performed on data it never saw, and in finance, honestly is a much higher bar than it sounds.
+
+## Segment 2 (steps)
+
+Ordinary k-fold cross-validation fails here. K-fold rotates which block gets held out as the test set, so for most folds the training set contains observations from after the test period in calendar time — true even with shuffling off, which just makes it worse by destroying whatever order was left. A model trained partly on the future looks better than it has any right to; it's effectively seen a preview of what happens next.
+
+## Segment 3 (code)
+
+Scikit-learn's TimeSeriesSplit fixes the ordering problem directly. Given data sorted by time, it produces successive train and test splits where every test fold comes strictly after its training fold, never before and never overlapping. By default that training set expands, growing with each split. Passing max train size instead caps it to a fixed-size rolling window that drops the oldest data as it moves forward. There's also a gap parameter inserting a buffer between training and test, which matters a lot in the next lesson.
+
+## Segment 4 (steps)
+
+An expanding window uses everything available, attractive if you don't expect the relationship to drift. A rolling window deliberately forgets old data, better if you suspect the relationship is non-stationary and stale data could hurt rather than just add noise. But here's the catch either way: TimeSeriesSplit only guarantees training comes before testing in calendar time. That's enough if each row's label depends only on information available at its own timestamp. Financial labels are rarely built that way — a label like the return over the next five days reaches past its own row's timestamp into the future.
+
+## Segment 5 (outro)
+
+Time order alone prevents one kind of leak, but financial labels built from overlapping future windows reopen a different one that time order can't close on its own. Next, lesson fifteen: purged and embargoed cross-validation, which fixes exactly that.

@@ -1,0 +1,60 @@
+{
+  "lesson": "diagnosing-a-network-bottleneck",
+  "questions": [
+    {
+      "q": "What is the purpose of running nccl-tests (e.g., all_reduce_perf) when diagnosing a slow training job?",
+      "options": [
+        "It replaces the need for NCCL in production training",
+        "It benchmarks raw collective performance in isolation from the training job, to establish what the fabric is actually capable of",
+        "It automatically fixes any InfiniBand cabling problems",
+        "It only measures GPU compute performance, not networking"
+      ],
+      "answer": 1,
+      "explain": "nccl-tests exercises the same collectives NCCL uses during training, but as a standalone benchmark — letting you isolate whether a performance problem is in the fabric itself, independent of anything the training code is doing."
+    },
+    {
+      "q": "Why does this lesson say busbw (bus bandwidth) is more trustworthy than algbw (algorithm bandwidth) when comparing against a fabric's rated hardware bandwidth?",
+      "options": [
+        "algbw is always higher than busbw, so it's more conservative",
+        "busbw accounts for the fact that a collective moves more bytes across the wire than the logical message size, via the 2(N-1)/N factor",
+        "busbw only measures CPU performance, not network performance",
+        "algbw and busbw are always identical, so it doesn't matter which is used"
+      ],
+      "answer": 1,
+      "explain": "algbw is simply message size divided by time, which understates actual wire traffic. busbw multiplies algbw by the ring AllReduce factor 2(N-1)/N to reflect the real data movement, making it the correct number to compare against rated hardware bandwidth."
+    },
+    {
+      "q": "If `ibstat` shows an InfiniBand link negotiated at a lower speed than its rated 400 Gb/s, what does this most likely indicate?",
+      "options": [
+        "The training job's batch size is too large",
+        "A likely hardware or cabling problem on that specific link",
+        "NCCL_DEBUG was not set to INFO",
+        "The GPU driver needs to be reinstalled"
+      ],
+      "answer": 1,
+      "explain": "A link stuck below its rated speed is a hardware-layer symptom (bad cable, degraded transceiver, etc.), not something addressed by training code or NCCL configuration — it's exactly the kind of problem ibstat and perfquery are meant to surface."
+    },
+    {
+      "q": "During a training step, GPU compute utilization drops to near zero during the AllGather/ReduceScatter phase, and the step is slower than expected. What does this indicate?",
+      "options": [
+        "The job is compute-bound, and more GPUs would help",
+        "The job is network-bound — the GPUs are idle waiting for data to arrive over the network",
+        "The checkpoint is corrupted",
+        "The model has too many parameters"
+      ],
+      "answer": 1,
+      "explain": "If GPU utilization drops near zero specifically during the collective communication phases while the step remains slow, that's a strong signal the GPUs are sitting idle waiting on network transfers — a network-bound bottleneck rather than a compute-bound one."
+    },
+    {
+      "q": "What is the recommended first step in this lesson's diagnostic checklist when a training job underperforms the capacity-planning estimate?",
+      "options": [
+        "Immediately reduce the model's parameter count",
+        "Benchmark the fabric directly and in isolation using nccl-tests, before suspecting the training job itself",
+        "Switch from InfiniBand to Ethernet",
+        "Restart the Kubernetes cluster"
+      ],
+      "answer": 1,
+      "explain": "The lesson's checklist starts with isolating the fabric's raw performance using nccl-tests, so you know what the hardware is actually capable of before trying to diagnose anything in the training code or job configuration itself."
+    }
+  ]
+}

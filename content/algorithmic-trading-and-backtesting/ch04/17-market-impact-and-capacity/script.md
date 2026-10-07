@@ -1,0 +1,21 @@
+# Script — Market Impact & Capacity
+
+## Segment 1 (title)
+
+Slippage, from last lesson, is a cost that happens to you. Market impact is different and more uncomfortable — it's a cost you cause, by trading large enough to move the price against yourself. Let's see how to estimate it, and what it means for how big a strategy can actually get.
+
+## Segment 2 (steps)
+
+Slippage comes from the market moving between your decision and your fill, regardless of your own size. Market impact exists because of your own size — buying consumes the available sell orders and pushes the price up as you fill. A backtest run only at a small, convenient position size will never see this cost, because a small order simply doesn't move the market.
+
+## Segment 3 (code)
+
+A standard real-world approximation is the square-root model: impact cost scales with volatility times the square root of how much of average daily volume you're trading. The shape matters more than the exact constant — trade ten times the size, and impact doesn't go up ten times, it goes up roughly three times, the square root of ten. But it does rise faster than linearly, and that's mathematically unavoidable.
+
+## Segment 4 (steps)
+
+That's where capacity comes from. Estimate your gross edge, estimate cost and impact at your target size, and find the capital level where impact erodes that edge to roughly zero. Strategies in liquid large-cap names can often scale to huge capital before impact bites; strategies in illiquid names might have a capacity ceiling in the single-digit millions. A backtest that never reports this is incomplete, not just optimistic.
+
+## Segment 5 (outro)
+
+Even if you'll never trade at institutional scale, asking "how much of my edge exists only because I tested it too small to see my own footprint" is a sharper version of this chapter's whole theme. Next, lesson 18: look-ahead bias and survivorship bias, where it's the data itself that lies.

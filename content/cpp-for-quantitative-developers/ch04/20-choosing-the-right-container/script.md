@@ -1,0 +1,25 @@
+# Script — Choosing the Right Container
+
+## Segment 1 (title)
+
+This lesson doesn't introduce new syntax — it answers the question every previous lesson in this chapter has been building toward: given a real piece of quant code, which container do you actually reach for? Picking the wrong one is one of the most common, and most consequential, performance mistakes you can make in C++.
+
+## Segment 2 (steps)
+
+Three questions settle almost every case. First, how do you access elements — by index, or by key? Second, do you need sorted order, or is raw lookup speed all that matters? Third, where do insertions and removals actually happen — only at the back, at both ends, or scattered through the middle?
+
+## Segment 3 (code)
+
+std::vector should be your mental default for "I need a sequence of things," and not just a fallback. Even when a linked structure looks like the textbook-correct answer for frequent insertions, vector's contiguous memory layout is so much friendlier to the CPU cache that it frequently wins in practice anyway.
+
+## Segment 4 (code)
+
+Four real scenarios, four different containers. An order book keyed by price with no ordering need reaches for unordered_map. A simple membership check — do we currently hold this symbol — reaches for unordered_set. And a leaderboard that always needs best-performer-first can keep std::map's sorted behavior while flipping the order, by passing std::greater as a custom comparator.
+
+## Segment 5 (steps)
+
+Here's the trap: a list chosen specifically for frequent insertion pays for that choice on every single iteration afterward, because each node sits in its own separate, scattered heap allocation with none of vector's cache-friendly sequential layout. If the real workload turns out to be mostly iteration, the theoretically better complexity class loses to vector's raw iteration speed more often than intuition suggests — so measure, don't just guess from Big-O.
+
+## Segment 6 (outro)
+
+Choosing a container comes down to access pattern, ordering need, and where mutation happens, with vector as the default until a specific requirement rules it out. That closes chapter four. Up next, chapter five, lesson twenty-one: threads and data races.

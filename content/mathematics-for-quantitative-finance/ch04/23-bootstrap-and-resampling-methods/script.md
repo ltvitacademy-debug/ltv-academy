@@ -1,0 +1,25 @@
+# Script — Bootstrap & Resampling Methods
+
+## Segment 1 (title)
+
+Every confidence interval so far has leaned on a known sampling distribution — the t-distribution, or the normal approximation from the central limit theorem. Many statistics quants actually care about, like a Sharpe ratio, don't have a clean closed-form sampling distribution. The bootstrap sidesteps that entirely by resampling directly from the data.
+
+## Segment 2 (steps)
+
+The idea has three steps, repeated thousands of times. Draw a resample of the same size as your original data, but with replacement, so some observations show up more than once and others not at all. Recompute your statistic of interest on that resample. Repeat that thousands of times, and you get an empirical distribution of the statistic, built from nothing but the one sample you actually have.
+
+## Segment 3 (code)
+
+Try it on a Sharpe ratio — mean return divided by standard deviation, a ratio of two correlated quantities whose exact sampling distribution is genuinely hard to derive by hand, especially once returns stop being normal. The bootstrap doesn't need that derivation. It just resamples the actual returns, recomputes the Sharpe ratio on each resample, and builds the distribution directly.
+
+## Segment 4 (code)
+
+Once you have that bootstrap distribution, a confidence interval falls right out of it: take the 2.5th and 97.5th percentiles directly, no normality assumption required. For a single year of daily returns, that interval often turns out wider than you'd guess from the point estimate alone — a real measure of how much sampling uncertainty a short track record actually carries.
+
+## Segment 5 (steps)
+
+The plain bootstrap assumes your observations are independent of each other, which real daily returns often aren't — volatility clusters, momentum persists. The fix is the block bootstrap: resample whole contiguous blocks of consecutive days instead of single points, which preserves that short-range dependence inside each block.
+
+## Segment 6 (outro)
+
+The bootstrap builds a confidence interval for almost any statistic directly from your data, without needing a formula for its sampling distribution. That closes chapter four, advanced statistics. Up next, chapter five opens with lesson twenty-four: unconstrained optimization and gradient methods, moving from describing uncertainty to actually solving for the best decision given it.

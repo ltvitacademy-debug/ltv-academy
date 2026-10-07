@@ -1,0 +1,21 @@
+# Script — Working With Research Scientists as an Engineer
+
+## Segment 1 (title)
+
+A research engineer's closest working relationship is often with a research scientist whose priorities and sense of what's "done" differ in specific, learnable ways from a typical engineering stakeholder. The partnership works better when the engineer understands what the scientist actually needs — and what they don't realize they're asking for until it's pointed out.
+
+## Segment 2 (steps)
+
+A scientist's "can we quickly try X" usually means the idea is conceptually simple, not that it's quick to implement rigorously. Filling in the unspecified parts of an experiment design — what has to be held fixed, what confound would make a comparison uninterpretable — is one of the highest-value things an engineer does. And confounds are worth flagging before building, not after a run finishes with an ambiguous result, without demanding full rigor before any rough version gets tried.
+
+## Segment 3 (code)
+
+The useful move is making the trade-off explicit rather than picking one extreme: a rough, one-seed version can answer "is this even promising" in an afternoon, and a rigorous, fully-seeded, properly-logged version only gets built once the rough version suggests it's worth the investment.
+
+## Segment 4 (steps)
+
+A scientist with strong engineering instincts can write a training loop, but what a dedicated engineer typically adds faster is the infrastructure that makes running ten variants of an idea, with proper tracking and reproducibility, as cheap as running one — the config systems, sweep tooling, and scheduling covered in earlier chapters. That infrastructure leverage is the actual contribution, not a lesser supporting role.
+
+## Segment 5 (outro)
+
+That closes out the project-management and collaboration threads of this chapter heading into the last lesson: giving and receiving research feedback, and how it differs from a standard code review.

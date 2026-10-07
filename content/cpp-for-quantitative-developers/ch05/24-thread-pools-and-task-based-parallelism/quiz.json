@@ -1,0 +1,60 @@
+{
+  "lesson": "thread-pools-and-task-based-parallelism",
+  "questions": [
+    {
+      "q": "Why does launching a std::thread for each of a thousand small pricing tasks scale poorly?",
+      "options": [
+        "std::thread cannot be constructed more than a hundred times per program",
+        "Each thread reserves its own stack and incurs creation/teardown overhead, and the OS must context-switch between far more threads than available cores",
+        "std::thread objects cannot run functions that return a value",
+        "Only one std::thread can exist at a time per process"
+      ],
+      "answer": 1,
+      "explain": "Per-thread stack memory, thread creation/teardown cost, and excessive context switching beyond the number of available cores all add overhead that outweighs the actual work for many small tasks."
+    },
+    {
+      "q": "In the ThreadPool example, what does calling submit() do?",
+      "options": [
+        "It creates a brand-new worker thread for that task",
+        "It pushes the task onto a shared queue and notifies a worker thread, without creating any new thread",
+        "It blocks until the task finishes running",
+        "It immediately runs the task on the calling thread"
+      ],
+      "answer": 1,
+      "explain": "submit() locks the queue, pushes the task, and calls notify_one() to wake an already-existing worker — the fixed set of worker threads is created once, in the pool's constructor, not per task."
+    },
+    {
+      "q": "What does std::future<T>::get() do if the result is not yet ready?",
+      "options": [
+        "It throws an exception immediately",
+        "It returns a default-constructed T",
+        "It blocks the calling thread until the result becomes available, then returns it",
+        "It returns a null pointer"
+      ],
+      "answer": 2,
+      "explain": "get() blocks until the asynchronous operation completes and the result is available, then returns that result (or rethrows an exception if the task threw one)."
+    },
+    {
+      "q": "Why pass std::launch::async explicitly to std::async rather than relying on the default launch policy?",
+      "options": [
+        "Because std::async does not compile without an explicit launch policy",
+        "Because without it, the implementation may defer running the task lazily on the thread that calls get(), rather than guaranteeing a separate thread",
+        "Because std::launch::async disables the returned future",
+        "Because the default policy always runs the task on the main thread only"
+      ],
+      "answer": 1,
+      "explain": "The default launch policy lets the implementation choose deferred execution, running the task only when get() or wait() is called — possibly on the calling thread, not concurrently. std::launch::async requests genuine concurrent execution."
+    },
+    {
+      "q": "Why does task granularity matter when submitting work to a thread pool?",
+      "options": [
+        "Because the pool rejects tasks below a certain size",
+        "Because if each task is too small, the overhead of queuing and dequeuing it exceeds the actual work done, wasting more time than it saves",
+        "Because granularity determines how many worker threads are created",
+        "Because only tasks returning void can be submitted"
+      ],
+      "answer": 1,
+      "explain": "A thread pool only pays off when each task's work is large enough to amortize the cost of locking the queue, waking a worker, and dispatching the task. Too-fine-grained tasks spend more time on coordination than computation."
+    }
+  ]
+}

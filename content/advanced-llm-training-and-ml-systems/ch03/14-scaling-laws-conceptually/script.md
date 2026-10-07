@@ -18,4 +18,4 @@ That's the practical payoff. You can't afford to train twenty full-scale candida
 
 ## Segment 5 (outro)
 
-Scaling laws predict loss, not every capability directly, and some abilities appear suddenly rather
+Scaling laws predict loss, not every capability directly, and some abilities appear suddenly rather than smoothly. Next up: given a fixed compute budget, how should it actually split between model size and data? That's the Chinchilla trade-off.

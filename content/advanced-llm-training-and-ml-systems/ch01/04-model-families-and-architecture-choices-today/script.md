@@ -10,7 +10,7 @@ Four components recur across current open model families. RoPE encodes token pos
 
 ## Segment 3 (code)
 
-You can read these choices straight out of a model's config file. The ratio of key-value heads to attention heads alone tells you whether a model uses standard multi-head attention, multi-query attention, or grouped-query attention in between.
+You can read these choices straight out of a model's config file. The ratio of key-value heads to attention heads alone tells you whether a model uses standard multi-head attention, multi-query attention, or grouped-query attention in between, and the activation function field usually hints at whether the MLP block uses SwiGLU-style gating.
 
 ## Segment 4 (steps)
 

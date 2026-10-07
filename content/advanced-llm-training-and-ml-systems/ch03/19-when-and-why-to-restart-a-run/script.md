@@ -6,7 +6,7 @@ The dashboard from last lesson exists to feed one recurring decision: given what
 
 ## Segment 2 (code)
 
-None of this works without frequent checkpointing — saving model weights, optimizer state, and scheduler step to durable storage every few hundred to low-thousands of steps. Checkpoint too rarely and a bad event costs more before you can roll back; checkpoint too often and you pay in I/O overhead instead.
+None of this works without frequent checkpointing — saving model weights, optimizer state, and scheduler step to durable storage every few hundred to low-thousands of steps. Checkpoint too rarely and a bad event costs more before you can roll back; checkpoint too often and you pay in I/O overhead and storage cost instead.
 
 ## Segment 3 (steps)
 

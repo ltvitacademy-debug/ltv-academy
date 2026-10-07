@@ -1,0 +1,25 @@
+# Script — Multiple Testing & False Discovery
+
+## Segment 1 (title)
+
+The last lesson fixed a significance level of five percent for a single test. But a quant backtesting thousands of candidate strategies isn't running one test — they're running thousands. This lesson is about what goes wrong when you do that without correction, and the two standard fixes.
+
+## Segment 2 (code)
+
+Run a hundred independent tests at five percent significance, with every null hypothesis actually true, and the probability that at least one comes back falsely significant isn't five percent — it's about ninety-nine point four percent. You're almost guaranteed a false positive somewhere, purely by chance, with nothing real happening anywhere in the data.
+
+## Segment 3 (steps)
+
+There are two standard corrections. Bonferroni divides your significance threshold by the number of tests, which controls the probability of even one false positive, but it's conservative and loses power as the number of tests grows. Benjamini-Hochberg instead controls the expected share of false positives among whatever you do reject as significant — less strict, more power to find real effects mixed in among the noise.
+
+## Segment 4 (code)
+
+Simulate a thousand strategies that are all, by construction, pure noise with zero true mean return. Run a t-test on each one, and the naive five percent threshold still flags around fifty of them as significant — exactly a thousand times five percent, exactly what the multiple testing problem predicts, and exactly what unreported backtesting over many strategy variations looks like in practice.
+
+## Segment 5 (code)
+
+Apply Bonferroni and Benjamini-Hochberg to those same thousand p-values, and both push the number of "significant" strategies back down toward zero, which is the correct answer here — there was no real edge anywhere in this data to find.
+
+## Segment 6 (outro)
+
+Testing many hypotheses at once inflates your false-positive rate unless you correct for it, and backtesting many strategies is exactly that problem at scale. Up next, lesson twenty-three: bootstrap and resampling methods, a different way to build confidence intervals without assuming a parametric distribution at all.

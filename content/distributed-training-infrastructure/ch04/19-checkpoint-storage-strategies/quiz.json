@@ -1,0 +1,60 @@
+{
+  "lesson": "checkpoint-storage-strategies",
+  "questions": [
+    {
+      "q": "Why can't Solara-70B's checkpoint be saved as a single file the way a small model's checkpoint can?",
+      "options": [
+        "S3 does not support files larger than a few megabytes",
+        "The model's weights are sharded across all 512 GPUs under FSDP, so gathering the full model onto one rank to write a single file would require that rank to hold the entire model's memory and create a serialization bottleneck",
+        "PyTorch does not support saving model weights to cloud storage",
+        "Single-file checkpoints are only supported for inference, not training"
+      ],
+      "answer": 1,
+      "explain": "FSDP shards the model across GPUs so no single GPU holds the full model. Gathering it all onto one rank for a single-file save would require massive memory on that rank and turn the save into a slow sequential bottleneck."
+    },
+    {
+      "q": "How does torch.distributed.checkpoint (DCP) avoid the single-rank bottleneck when saving a checkpoint?",
+      "options": [
+        "It skips saving the optimizer state entirely to reduce size",
+        "Every rank saves only the shard of state it already holds, writing all shards to the checkpoint directory concurrently, with metadata describing how to reassemble them",
+        "It compresses the entire model into a smaller file before saving",
+        "It saves the checkpoint only once per day regardless of step count"
+      ],
+      "answer": 1,
+      "explain": "DCP has each rank write its own already-held shard directly and in parallel with every other rank, avoiding any gather step and turning one huge sequential write into many small concurrent ones."
+    },
+    {
+      "q": "Why does Solara AI checkpoint roughly every 500 steps (~30 minutes) instead of every single step or once a day?",
+      "options": [
+        "500 steps is an arbitrary PyTorch default that cannot be changed",
+        "It balances the overhead of checkpointing (which costs time if done every step) against the worst-case progress lost on failure (which grows large if checkpointing is too infrequent, like once a day)",
+        "S3 only accepts writes every 30 minutes",
+        "GPUs physically require a cooldown period of 30 minutes between writes"
+      ],
+      "answer": 1,
+      "explain": "Checkpointing too frequently wastes GPU time on overhead; checkpointing too rarely means a failure can cost close to a full day of compute. A ~30-minute interval caps worst-case loss while keeping steady-state overhead small."
+    },
+    {
+      "q": "Why does Solara AI write checkpoints to the S3 bucket solara-checkpoints rather than to each node's local disk?",
+      "options": [
+        "Local disks on GPU nodes cannot be written to during training",
+        "A checkpoint on local disk is tied to that specific node's health, which defeats the purpose of a fault-tolerance mechanism meant to survive that very node failing",
+        "S3 is always faster to write to than local NVMe",
+        "AWS requires all training data to be stored in S3 by policy"
+      ],
+      "answer": 1,
+      "explain": "If a checkpoint lived only on a node's local disk, losing that node to failure could also lose the checkpoint. S3 is durable and independent of any single node, including the one that might fail."
+    },
+    {
+      "q": "What does the checkpoint metadata written by dcp.save enable that a plain collection of shard files without metadata would not?",
+      "options": [
+        "Faster model inference after training completes",
+        "The ability to later load the checkpoint back onto a different number of GPUs than the run that originally saved it",
+        "Automatic compression of the checkpoint files",
+        "Encryption of the checkpoint data at rest"
+      ],
+      "answer": 1,
+      "explain": "DCP's metadata describes how the shards map back onto the model and optimizer state, which is what allows dcp.load (covered in the next lesson) to resume training with a different GPU/world-size configuration than was used to save."
+    }
+  ]
+}

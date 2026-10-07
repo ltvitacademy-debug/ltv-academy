@@ -1,0 +1,60 @@
+{
+  "lesson": "measuring-performance-and-benchmarking",
+  "questions": [
+    {
+      "q": "Why is std::chrono::steady_clock generally preferred over std::chrono::system_clock for measuring elapsed time?",
+      "options": [
+        "steady_clock has nanosecond precision and system_clock does not",
+        "steady_clock is guaranteed monotonic and never jumps backward, while system_clock can be adjusted (e.g. by NTP synchronization)",
+        "system_clock cannot be used with duration_cast",
+        "steady_clock is the only clock available on Windows"
+      ],
+      "answer": 1,
+      "explain": "system_clock represents wall-clock time and can be adjusted by the OS or NTP, potentially jumping forward or backward. steady_clock (and high_resolution_clock, typically backed by it) is monotonic, making it reliable for measuring elapsed durations."
+    },
+    {
+      "q": "In a naive benchmark loop that computes a value but never uses it, what can an optimizing compiler legally do?",
+      "options": [
+        "Nothing — the compiler must always execute every line written",
+        "Delete the entire computation, since its result has no observable effect on the program",
+        "Automatically replace it with a call to Google Benchmark",
+        "Convert the loop into a separate thread"
+      ],
+      "answer": 1,
+      "explain": "If a computed value is never used in any way the compiler can observe, the compiler is permitted to eliminate the dead code entirely via dead-code elimination, making the benchmark measure essentially nothing."
+    },
+    {
+      "q": "What is the purpose of a 'warm-up' pass before the timed region of a benchmark?",
+      "options": [
+        "To let the CPU physically heat up for better performance",
+        "To avoid including the one-time costs of cold cache and an unlearned branch predictor in the timed measurement",
+        "To trigger garbage collection before timing begins",
+        "To verify the function compiles correctly"
+      ],
+      "answer": 1,
+      "explain": "The first call(s) to a function pay extra cost because instructions/data aren't yet in cache and the branch predictor hasn't learned the function's typical behavior. A discarded warm-up run avoids attributing that one-time cost to the timed measurement."
+    },
+    {
+      "q": "What does benchmark::DoNotOptimize(result) do in a Google Benchmark test?",
+      "options": [
+        "It disables all compiler optimizations for the entire program",
+        "It prevents the compiler from eliminating the computation of `result` as dead code",
+        "It forces the benchmark to run on multiple threads",
+        "It converts `result` into an atomic variable"
+      ],
+      "answer": 1,
+      "explain": "DoNotOptimize marks a value as used in a way the optimizer must respect, preventing the compiler from proving the computation has no effect and deleting it — directly solving the dead-code-elimination trap."
+    },
+    {
+      "q": "Why is timing a single call that takes about 50 nanoseconds unreliable with a basic std::chrono measurement?",
+      "options": [
+        "std::chrono cannot represent durations shorter than one second",
+        "The duration being measured can be comparable to or smaller than the clock's own measurement overhead and noise",
+        "Nanosecond durations always round to zero",
+        "high_resolution_clock only updates once per millisecond on all platforms"
+      ],
+      "answer": 1,
+      "explain": "When the measured operation is extremely short, the overhead and granularity of the timing mechanism itself can be a significant fraction of (or larger than) the quantity being measured, making a single measurement unreliable. Running many iterations and averaging mitigates this."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "automating-user-and-server-setup",
+  "questions": [
+    {
+      "q": "What does it mean for a setup script to be idempotent?",
+      "options": [
+        "It runs faster each time it's executed",
+        "It produces the same end state whether it's run once or many times",
+        "It only works on one server at a time",
+        "It deletes itself after running once"
+      ],
+      "answer": 1,
+      "explain": "An idempotent script checks the current state before changing anything, so rerunning it doesn't fail or duplicate work -- the end result is identical no matter how many times it runs."
+    },
+    {
+      "q": "Why does the script run `id -u \"$USERNAME\" &>/dev/null` before calling `useradd`?",
+      "options": [
+        "To print the user's password to the terminal",
+        "To check whether the user already exists, so the script doesn't fail by trying to create a duplicate account",
+        "Because useradd requires id -u to be run first by law",
+        "To measure how long the script has been running"
+      ],
+      "answer": 1,
+      "explain": "id -u exits with a non-zero status if the user doesn't exist. Checking that first lets the script skip creation on a rerun instead of failing on a duplicate-user error."
+    },
+    {
+      "q": "Why does the script check with `grep -qF` before appending a key to authorized_keys, instead of always appending?",
+      "options": [
+        "grep is required by sshd before any key can be used",
+        "To avoid appending the same public key twice if the script runs again",
+        "Appending without grep first would corrupt the file format",
+        "grep -qF encrypts the key before writing it"
+      ],
+      "answer": 1,
+      "explain": "Always appending would duplicate the key every time the script reruns. Checking with grep -qF first keeps authorized_keys clean no matter how many times setup runs."
+    },
+    {
+      "q": "Why do chmod 700 and chmod 600 run unconditionally on every execution, rather than only when the .ssh directory is first created?",
+      "options": [
+        "Because chmod can only be run once per server",
+        "Running them every time is harmless when permissions are already correct, and self-heals them if something changed the permissions since the last run",
+        "They have to run before useradd or the script crashes",
+        "chmod is only needed for the username, not the SSH directory"
+      ],
+      "answer": 1,
+      "explain": "Setting permissions unconditionally is itself idempotent -- it's a no-op when they're already right, and it quietly fixes them if anything (or anyone) changed them in between runs."
+    },
+    {
+      "q": "In the Python fleet-wide wrapper, what does checking `result.returncode` after each `subprocess.run()` call accomplish?",
+      "options": [
+        "It prevents the SSH connection from ever timing out",
+        "It identifies which specific server's setup failed, so that failure is logged and visible instead of silently skipped",
+        "It automatically retries the failed server a second time",
+        "It has no effect since subprocess.run() always succeeds"
+      ],
+      "answer": 1,
+      "explain": "A non-zero returncode means that server's run failed. Checking it per-server means one bad server gets logged and flagged, rather than the loop plowing ahead as if everything succeeded."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "checkpointing-at-scale",
+  "questions": [
+    {
+      "q": "Besides the model's parameters, what else must a checkpoint capture to resume training along the same trajectory?",
+      "options": [
+        "Nothing else -- model weights alone are sufficient",
+        "The optimizer state, scheduler state, step counter, and data loader position",
+        "Only the learning rate value as a single float",
+        "The entire source code of the training script"
+      ],
+      "answer": 1,
+      "explain": "A full checkpoint needs optimizer state (e.g., Adam's moment estimates), scheduler state, the current step, and the data loader position -- skipping these causes resumed training to deviate, often with a visible loss spike."
+    },
+    {
+      "q": "Why does gathering every shard onto a single rank before writing a checkpoint fail to scale for large sharded models?",
+      "options": [
+        "It doesn't fail to scale -- it's the recommended approach at any size",
+        "That rank must materialize the entire model and optimizer state in memory to write it, and all I/O serializes through its single disk and network connection",
+        "Single-rank writes are always faster than sharded writes",
+        "PyTorch does not allow any rank to write files to disk"
+      ],
+      "answer": 1,
+      "explain": "A single-rank gather-and-write approach requires one rank to hold the full state in memory, even though sharded training never requires that, and serializes I/O through one rank's bandwidth instead of writing in parallel."
+    },
+    {
+      "q": "What does torch.distributed.checkpoint (DCP) do differently from a naive single-file save?",
+      "options": [
+        "It saves only the model weights and discards optimizer state entirely",
+        "Each rank writes its own local shard directly to a shared path, and loading can reshard into a different parallelism layout than the one that saved it",
+        "It requires the resuming job to use the exact same number of GPUs as the original run",
+        "It compresses the entire model into a single zip file on rank 0"
+      ],
+      "answer": 1,
+      "explain": "DCP has each rank write its own shard with no cross-rank gather, and on load it redistributes shards to whatever layout the current job uses -- which can differ from the saving job's layout."
+    },
+    {
+      "q": "Why does asynchronous checkpointing matter for GPU utilization during large training runs?",
+      "options": [
+        "It eliminates the need to ever save a checkpoint",
+        "It copies state to host memory quickly and overlaps the actual disk write with continued training, instead of blocking GPUs while the save completes",
+        "It makes checkpoints permanently unavailable for loading",
+        "It only works when training on a single GPU"
+      ],
+      "answer": 1,
+      "explain": "Asynchronous checkpointing overlaps the I/O-bound write with ongoing training compute, so GPUs aren't idle waiting for a save that can take seconds to minutes."
+    },
+    {
+      "q": "What trade-off governs how frequently a long training run should checkpoint?",
+      "options": [
+        "There is no trade-off -- checkpointing as often as possible is always free",
+        "Checkpointing too rarely risks losing more compute to a failure between saves, while checkpointing too often adds I/O overhead and storage cost",
+        "Checkpoint frequency only affects the final model's accuracy, not reliability",
+        "Checkpoints should only ever be taken once, at the very end of training"
+      ],
+      "answer": 1,
+      "explain": "Checkpoint frequency balances compute lost to failures between saves against the I/O and storage overhead of frequent saves, typically tuned against the cluster's observed failure rate."
+    }
+  ]
+}

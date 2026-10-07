@@ -1,0 +1,29 @@
+# Script — SLAs & SLOs for ML Systems
+
+## Segment 1 (title)
+
+Welcome to Chapter 7, the final chapter of this course. Every earlier chapter built a piece of the platform. None of it matters if nobody can say, in a number, whether the result actually works. This lesson gives you that number.
+
+## Segment 2 (steps)
+
+Three terms get used interchangeably, and they're not the same thing. An SLI is the actual measured number — what's really happening right now. An SLO is the internal target you set for that number. And an SLA is a contractual promise, usually to someone outside your team, with a consequence attached if you miss it — and it's always set looser than the SLO you actually hold yourself to.
+
+## Segment 3 (steps)
+
+Averages lie about latency. If most requests are fast and a few hit a cold replica or a slow feature lookup, the average still looks fine while five percent of users have a terrible experience. So platform teams report latency as percentiles instead. P50 is the typical request. P95 is where cold starts and slow lookups show up. P99 is the tail — retries, fallbacks, locks.
+
+## Segment 4 (steps)
+
+ML systems need a target most services never need at all: freshness. Feature freshness asks how old the data behind an online feature is at inference time — a fraud model reading data that's quietly six hours stale will make worse decisions without throwing a single error. Model freshness asks how long since the deployed model was actually trained on representative data. Both can fail silently while every other metric looks healthy.
+
+## Segment 5 (code)
+
+Platform teams don't keep SLOs in a slide deck. They write them as versioned config, right next to the service — availability, latency percentiles, freshness, each with its own target and window — feeding straight into the deployment approval gates from Chapter 5.
+
+## Segment 6 (steps)
+
+An SLO alone is just a number on a dashboard. The error budget is what makes it useful: the gap between your SLO and one hundred percent is a spendable allowance of failure. When the budget is healthy, you ship, you canary, you take on risk. When it's nearly exhausted, deployments freeze or require manual approval — turning reliability from an argument into a rule.
+
+## Segment 7 (outro)
+
+SLI is what's happening, SLO is your target, SLA is the contract. Percentile latency, freshness, and the error budget turn all of it into an actual deployment decision. Up next, lesson thirty-two: what it's like to carry the pager for a platform governed by these targets.

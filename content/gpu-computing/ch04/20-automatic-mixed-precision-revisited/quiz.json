@@ -1,0 +1,60 @@
+{
+  "lesson": "automatic-mixed-precision-revisited",
+  "questions": [
+    {
+      "q": "What does `torch.autocast` do during the forward pass?",
+      "options": [
+        "It converts the entire model to float16 with no exceptions",
+        "It automatically runs numerically safe ops like matrix multiplies in reduced precision while keeping sensitive ops in float32",
+        "It disables GPU execution and runs on CPU instead",
+        "It permanently changes the model's saved weights to float16"
+      ],
+      "answer": 1,
+      "explain": "Autocast selects precision per operation — reduced precision for numerically safe, compute-heavy ops, and float32 for operations sensitive to precision loss."
+    },
+    {
+      "q": "Why does float16 training typically require `GradScaler`?",
+      "options": [
+        "GradScaler speeds up the forward pass",
+        "Float16's small exponent range means small gradients can underflow to exactly zero during backpropagation; scaling the loss up beforehand keeps them representable",
+        "GradScaler converts float16 to float32 automatically with no other purpose",
+        "Without it, PyTorch cannot allocate GPU memory"
+      ],
+      "answer": 1,
+      "explain": "Loss scaling pushes small gradient values away from float16's underflow range during backward, and GradScaler automates scaling up before backward and unscaling before the optimizer step."
+    },
+    {
+      "q": "Why doesn't bfloat16 generally need a GradScaler?",
+      "options": [
+        "Bfloat16 cannot be used for training at all",
+        "Bfloat16 has the same exponent range as float32, avoiding the gradient underflow problem that float16 has, at the cost of reduced mantissa precision",
+        "Bfloat16 automatically runs on Tensor Cores only",
+        "GradScaler is only compatible with CPUs"
+      ],
+      "answer": 1,
+      "explain": "Bfloat16 shares float32's wide exponent range, so small gradients don't underflow to zero the way they can in float16, removing the need for loss scaling."
+    },
+    {
+      "q": "What does `scaler.step(optimizer)` do if it detects an overflow (inf/NaN) in the gradients?",
+      "options": [
+        "It crashes the training run immediately",
+        "It skips that optimizer step entirely, avoiding corrupting the model weights, rather than applying the bad gradients",
+        "It automatically switches the model to float64",
+        "It silently applies the overflowed gradients anyway"
+      ],
+      "answer": 1,
+      "explain": "`scaler.step()` checks for overflow caused by scaling and skips the optimizer update for that iteration if detected, protecting the weights from corruption."
+    },
+    {
+      "q": "Why is mixed precision primarily a speedup for compute-bound operations rather than memory-bound ones?",
+      "options": [
+        "Mixed precision only works on CPU-bound code",
+        "The largest gains come from GEMM-heavy, compute-bound layers that run on Tensor Cores in reduced precision; memory-bound elementwise ops see a smaller relative benefit",
+        "Memory-bound operations cannot be represented in float16",
+        "Compute-bound operations are unaffected by precision changes"
+      ],
+      "answer": 1,
+      "explain": "Tensor Cores accelerate the compute-heavy matrix multiply pattern specifically, so compute-bound, GEMM-heavy ops see the largest speedup from mixed precision."
+    }
+  ]
+}

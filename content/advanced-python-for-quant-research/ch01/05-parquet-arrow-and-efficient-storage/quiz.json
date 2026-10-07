@@ -1,0 +1,60 @@
+{
+  "lesson": "parquet-arrow-and-efficient-storage",
+  "questions": [
+    {
+      "q": "Why does columnar storage (Parquet) suit quant analytical queries better than row-oriented storage (CSV)?",
+      "options": [
+        "Columnar files can only store numeric data, which is all quant workflows need",
+        "Quant queries typically read a few columns across many rows; columnar storage lets you read one contiguous block per needed column and skip the rest",
+        "CSV files cannot be opened by pandas at all",
+        "Columnar storage eliminates the need for any compression"
+      ],
+      "answer": 1,
+      "explain": "Parquet stores each column's values contiguously, so reading just 'price' and 'volume' out of a wide table means reading only those blocks, skipping everything else on disk — exactly the access pattern most analytical queries need."
+    },
+    {
+      "q": "What role does `pyarrow` play between pandas, Polars, and a Parquet file on disk?",
+      "options": [
+        "It is an unrelated plotting library with no connection to Parquet",
+        "It implements the Arrow in-memory format and the Parquet reader/writer that both pandas and Polars rely on, which is why conversions between them are often cheap",
+        "It converts Parquet files into CSV before pandas can read them",
+        "It is required only for writing Parquet, never for reading it"
+      ],
+      "answer": 1,
+      "explain": "pyarrow implements Arrow (the shared in-memory columnar format) and Parquet I/O. Because pandas (via pyarrow) and Polars both use Arrow, moving data between them or to/from a Parquet file often requires no reshaping, just reinterpretation."
+    },
+    {
+      "q": "What does passing `columns=[\"date\", \"price\"]` to `pd.read_parquet` accomplish?",
+      "options": [
+        "It renames the date and price columns after loading the full file",
+        "It skips reading the data blocks for every other column entirely, rather than reading everything and dropping columns afterward",
+        "It sorts the DataFrame by date and price",
+        "It has no effect unless filters is also specified"
+      ],
+      "answer": 1,
+      "explain": "This is column pruning: the Parquet reader only reads the requested columns' data blocks from disk, avoiding the cost of reading and then discarding unneeded columns."
+    },
+    {
+      "q": "What is predicate pushdown, as applied via the `filters` argument to `read_parquet`?",
+      "options": [
+        "Filtering the resulting DataFrame in pandas after the entire file has already been loaded",
+        "Pushing the row-level filter into the Parquet reader itself, which uses per-row-group statistics to skip chunks that can't possibly match",
+        "A way to rename columns during the read",
+        "A technique that only works with the zstd compression codec"
+      ],
+      "answer": 1,
+      "explain": "Predicate pushdown applies the filter during the read, letting the reader use file-level statistics to skip entire row groups that cannot contain matching rows — avoiding the work rather than doing it after the fact."
+    },
+    {
+      "q": "What is the main trade-off between the snappy and zstd compression codecs for Parquet?",
+      "options": [
+        "snappy is faster to compress/decompress with a modest ratio; zstd compresses more slowly but achieves noticeably smaller files",
+        "zstd is always faster and smaller in every case, with no downside",
+        "snappy only works with integer columns; zstd only works with strings",
+        "They produce identical file sizes; the choice is purely about compatibility"
+      ],
+      "answer": 0,
+      "explain": "snappy favors speed with a modest compression ratio, making it a solid default for frequently-read files, while zstd trades slower write-time compression for a noticeably smaller file, useful when storage or transfer cost matters more."
+    }
+  ]
+}

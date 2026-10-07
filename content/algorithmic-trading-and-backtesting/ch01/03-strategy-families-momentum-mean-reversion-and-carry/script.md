@@ -1,0 +1,21 @@
+# Script — Strategy Families: Momentum, Mean Reversion & Carry
+
+## Segment 1 (title)
+
+Almost every systematic strategy you'll meet is a variation on one of three families, or a blend of them. Knowing which family tells you what edge is being claimed, what market regime it needs, and how it tends to fail. Let's walk through all three.
+
+## Segment 2 (code)
+
+Momentum bets that recent relative performance keeps going — the classic version looks at the past twelve months of return, skipping the most recent month to avoid short-term reversal noise, and shifts the signal forward one bar so it never peeks ahead. It's supposed to work because of under-reaction and slow-moving institutional capital. It fails hard and fast in momentum crashes, sharp reversals right when the strategy is most fully invested in whatever just worked.
+
+## Segment 3 (code)
+
+Mean reversion is the opposite bet: that a price far from its recent average snaps back. The simplest version is a rolling z-score, faded — short when far above the mean, long when far below. It's supposed to work because of short-term liquidity imbalances and overreaction. Its failure mode is a regime shift, where what looked like a temporary dip was actually the start of a real trend, and the rule keeps adding to a losing position.
+
+## Segment 4 (steps)
+
+Carry is different again — you hold a position because it earns a yield or roll return just for being held, like FX carry or a futures roll. It's largely a compensated risk premium: you're paid for bearing a risk most people want to avoid. The failure mode is a carry crash, where that risk, usually small and steady, unwinds all at once in a risk-off shock, often across many carry trades at the same time.
+
+## Segment 5 (outro)
+
+None of these three is unconditionally better — their failure modes tend not to coincide, which is exactly why allocators blend them. Up next, lesson four goes deep on a specific, more rigorous form of mean reversion: statistical arbitrage and pairs trading.

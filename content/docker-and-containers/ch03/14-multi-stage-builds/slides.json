@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker & Containers · Chapter 3",
+    "titlePlain": "Multi-Stage ",
+    "titleEmphasis": "Builds",
+    "titleSuffix": "",
+    "subtitle": "Lesson 14 · Building Images"
+  },
+  {
+    "type": "code",
+    "eyebrow": "One stage carries dead weight into production",
+    "code": "FROM node:20\nWORKDIR /app\nCOPY . .\nRUN npm install\nRUN npm run build      # produces /app/dist\nCMD [\"npx\", \"serve\", \"dist\"]",
+    "caption": "The compiler, every dev dependency, and the unbuilt source all ship -- for an app that's just static files."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Build stage: the full Node toolchain",
+    "code": "# ---- build stage ----\nFROM node:20 AS build\nWORKDIR /app\nCOPY package.json package-lock.json ./\nRUN npm install\nCOPY . .\nRUN npm run build",
+    "caption": "FROM ... AS build names this stage -- it exists only to produce /app/dist."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Runtime stage: only what's needed",
+    "code": "# ---- runtime stage ----\nFROM nginx:1.27-alpine\nCOPY --from=build /app/dist /usr/share/nginx/html\nEXPOSE 80",
+    "caption": "A fresh, minimal image -- COPY --from=build pulls out only the compiled files, nothing else."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The result",
+    "code": "$ docker images northbridge/catalog-frontend\nREPOSITORY                     TAG   SIZE\nnorthbridge/catalog-frontend   1.0   48.2MB",
+    "caption": "Versus 900MB+ single-stage -- the build stage ran npm install and npm run build, but none of its weight ships."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 15",
+    "titlePlain": "Image Size ",
+    "titleEmphasis": "Optimization",
+    "titleSuffix": "",
+    "subtitle": "Slim bases, .dockerignore, and minimizing layers -- more ways to keep images lean."
+  }
+]

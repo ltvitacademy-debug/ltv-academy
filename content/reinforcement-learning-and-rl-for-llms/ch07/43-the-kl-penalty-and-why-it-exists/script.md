@@ -1,0 +1,21 @@
+# Script — The KL Penalty & Why It Exists
+
+## Segment 1 (title)
+
+Lesson 43. The last two lessons wired up a frozen reference model alongside the trainable policy. This lesson explains exactly what that reference model is for: the KL penalty.
+
+## Segment 2 (code)
+
+RLHF's PPO stage doesn't optimize the reward model's score directly — it optimizes that score minus a penalty for how far the policy has drifted from the frozen reference model, weighted by a constant beta. Without that second term, PPO would simply chase whatever the reward model rewards, including its own blind spots.
+
+## Segment 3 (code)
+
+Computing the full KL divergence over all possible sequences isn't tractable, so it's approximated token by token, using the difference in log-probabilities between the policy and the reference model at each generated token. It's only exact in expectation over many samples, but it's cheap enough to compute at every single generation step.
+
+## Segment 4 (steps)
+
+A fixed beta is hard to tune — too small and the policy drifts too far before the penalty bites, too large and it barely moves from the SFT model at all. Adaptive KL control instead targets a specific KL value and adjusts beta continuously: strengthen it when drift is running too high, relax it when the policy is being too conservative.
+
+## Segment 5 (outro)
+
+A per-token KL penalty, adaptively weighted, gives PPO a reward-model-independent cost for drifting too far from the SFT policy. Even with it in place, RLHF still fails in characteristic ways — next lesson covers what those failure modes look like.

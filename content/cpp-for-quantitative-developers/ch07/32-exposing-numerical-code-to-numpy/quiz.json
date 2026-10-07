@@ -1,0 +1,60 @@
+{
+  "lesson": "exposing-numerical-code-to-numpy",
+  "questions": [
+    {
+      "q": "Why is converting a NumPy array to `std::vector<double>` a poor choice for a performance-sensitive binding?",
+      "options": [
+        "std::vector cannot hold floating-point numbers",
+        "pybind11 does not support std::vector conversions at all",
+        "The conversion copies every element into the vector on the way in, and copies the result back out on the way back",
+        "NumPy arrays cannot be iterated over in C++ under any method"
+      ],
+      "answer": 2,
+      "explain": "pybind11's STL conversion support copies data both directions. For large arrays that doubles the memory traffic compared to operating on the array's existing buffer directly."
+    },
+    {
+      "q": "What does calling `.request()` on a `py::array_t<double>` return?",
+      "options": [
+        "A new Python list containing copies of the array's elements",
+        "A `py::buffer_info` object exposing the array's raw pointer, shape, ndim, and strides",
+        "A boolean indicating whether the array is writable",
+        "A string describing the array's dtype"
+      ],
+      "answer": 1,
+      "explain": "`.request()` returns a `py::buffer_info`, pybind11's description of the underlying memory — `.ptr`, `.shape`, `.ndim`, and `.strides` — without copying any data."
+    },
+    {
+      "q": "In the `vectorizedPayoff` function, why is a brand-new `py::array_t<double>` allocated for the result instead of writing the payoffs back into the input array?",
+      "options": [
+        "pybind11 requires every function to allocate at least one array",
+        "Writing into the caller's input array would silently mutate data the Python caller still expects to be unchanged",
+        "It is impossible to write into an existing array's buffer from C++",
+        "NumPy arrays are always read-only once passed into a compiled function"
+      ],
+      "answer": 1,
+      "explain": "Mutating the caller's input array as a side effect of computing an output is surprising and error-prone; allocating a separate output array keeps the function's behavior predictable, matching what a normal NumPy function would do."
+    },
+    {
+      "q": "Which header must be included to use `py::array_t` and the NumPy buffer-protocol support in pybind11?",
+      "options": [
+        "<pybind11/pybind11.h> alone is sufficient",
+        "<pybind11/numpy.h>",
+        "<numpy/arrayobject.h> only, with no pybind11 header",
+        "<pybind11/stl.h>"
+      ],
+      "answer": 1,
+      "explain": "`py::array_t` and the buffer-protocol helpers live in `<pybind11/numpy.h>`, which must be included in addition to the core `<pybind11/pybind11.h>` header."
+    },
+    {
+      "q": "A binding indexes into `buf.ptr` without first checking `buf.ndim`. What real risk does skipping that check introduce?",
+      "options": [
+        "None — pybind11 guarantees every array passed in is always one-dimensional",
+        "The function may silently misinterpret a 2-D or higher-dimensional array's memory as a flat 1-D buffer, reading or writing the wrong elements",
+        "The Python interpreter will refuse to start",
+        "NumPy will automatically reshape the array to match the function's expectations"
+      ],
+      "answer": 1,
+      "explain": "A `py::array_t<double>` can be passed with any number of dimensions unless constrained; treating multi-dimensional data as flat 1-D without checking `ndim` and `shape` leads to logically wrong results rather than a clear error."
+    }
+  ]
+}

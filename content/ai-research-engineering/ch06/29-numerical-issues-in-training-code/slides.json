@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Research Engineering · Chapter 6",
+    "titlePlain": "Numerical Issues in ",
+    "titleEmphasis": "Training",
+    "titleSuffix": " Code",
+    "subtitle": "Lesson 29 · Debugging Research Code"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "A NaN loss is a symptom, not the cause",
+    "titlePlain": "Where ",
+    "titleEmphasis": "NaNs",
+    "titleSuffix": " actually come from",
+    "steps": [
+      { "label": "log(0) or log(negative)", "sub": "a probability that underflowed to exactly 0.0 first" },
+      { "label": "Division by a sum that hits zero", "sub": "an empty mask, a batch with no positive examples" },
+      { "label": "Exploding gradients in backward", "sub": "deep or recurrent nets without normalization" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Localize the exact op, or assert cheaply every step",
+    "code": "torch.autograd.set_detect_anomaly(True)   # expensive -- debugging only\nloss.backward()   # raises at the exact op that produced the NaN\n\n# Cheap always-on alternative:\nif not torch.isfinite(loss):\n    raise RuntimeError(f\"Non-finite loss at step {step}: {loss.item()}\")",
+    "caption": "Anomaly detection names the culprit op directly, instead of letting a NaN silently flow through dozens of downstream ops."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Mixed precision needs loss scaling and clipping",
+    "code": "scaler = torch.cuda.amp.GradScaler()\nwith torch.cuda.amp.autocast():\n    loss = compute_loss(model, batch)\n\nscaler.scale(loss).backward()     # scale up -- avoid fp16 underflow\nscaler.unscale_(optimizer)\ntorch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)\nscaler.step(optimizer)            # skips the step if Inf/NaN found\nscaler.update()",
+    "caption": "fp16's narrow exponent range lets small gradients underflow to zero before the loss itself looks wrong -- loss scaling is the standard fix."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Verifying Correctness Without ",
+    "titleEmphasis": "Ground Truth",
+    "titleSuffix": "",
+    "subtitle": "What to do when there's no labeled answer key to check your implementation against."
+  }
+]

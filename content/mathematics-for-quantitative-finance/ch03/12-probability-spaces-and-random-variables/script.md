@@ -1,0 +1,25 @@
+# Script — Probability Spaces & Random Variables
+
+## Segment 1 (title)
+
+Welcome to Chapter Three, Probability Theory, the foundation for everything in quantitative finance that involves uncertainty. Chapter two gave you tools for structure. This chapter gives you tools for randomness. We start at the bottom: what probability actually is, formally.
+
+## Segment 2 (steps)
+
+A probability space has three pieces. The sample space, omega, is every possible outcome. The sigma algebra, F, is the collection of events we're allowed to ask about. And the probability measure, P, assigns each event a number following Kolmogorov's three axioms: probabilities are non-negative, the whole sample space has probability one, and disjoint events' probabilities add.
+
+## Segment 3 (code)
+
+Those axioms aren't decoration. They're the only rules a function needs to deserve the name probability. Check them on a simple probability mass function: every value is non-negative, they sum to one, and disjoint events add. Anything satisfying this counts as a probability measure. Anything that doesn't, isn't one.
+
+## Segment 4 (code)
+
+A random variable is a function from the sample space to the real numbers, and technically it must be measurable, so events like "X is at most x" have well-defined probabilities. In practice, a daily log return is just a number attached to whatever the market does. Simulate a hundred thousand normal draws, and the empirical probability of a negative return lands close to the theoretical value from its CDF.
+
+## Segment 5 (steps)
+
+Random variables come in two flavors. Discrete ones, like a default count, have a probability mass function and a step-shaped CDF. Continuous ones, like a return, have a density instead, and any single exact value carries zero probability — only ranges do. The CDF describes both cases with one formula.
+
+## Segment 6 (outro)
+
+Hold onto sample space, sigma algebra, and measure. The rest of this chapter builds on them. Up next, lesson thirteen: expectation, variance, and moments, where we start summarizing distributions with single numbers.

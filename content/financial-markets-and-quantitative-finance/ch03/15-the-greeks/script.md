@@ -1,0 +1,21 @@
+# Script — The Greeks
+
+## Segment 1 (title)
+
+Black-Scholes hands you a single number: the price. But a trader holding an option needs to know how that price will move as the market moves. The Greeks are the sensitivities of option value to each input — the partial derivatives of the formula — and they're the language every options desk actually trades in.
+
+## Segment 2 (code)
+
+Delta measures how much the option's value changes per dollar move in the underlying. Call delta is N of d1, ranging from zero to one; put delta is N of d1 minus one, ranging from negative one to zero. Gamma measures how fast delta itself changes as the stock moves. It's identical for a call and put at the same strike, and it's always positive for a long option position.
+
+## Segment 3 (code)
+
+Three more Greeks round out the set. Vega measures sensitivity to volatility, and it's positive for long options — more volatility means more value in the right to pick only the favorable outcomes. Theta measures sensitivity to time, and it's typically negative for long options — that's time decay. And Rho measures sensitivity to the risk-free rate, generally positive for calls and negative for puts.
+
+## Segment 4 (steps)
+
+Here's why this matters in practice. A dealer who sells a call is short delta exposure, so they buy delta shares of stock to bring the combined position's delta to roughly zero — that's delta-hedging. But delta is only a snapshot. As the stock actually moves, gamma shifts delta away from neutral, so the hedge drifts out of balance. A position with high gamma has to be rebalanced frequently, which is why gamma is sometimes described as measuring how often you'll need to retrade a delta hedge.
+
+## Segment 5 (outro)
+
+Delta to the stock price, gamma to delta itself, vega to volatility, theta to time, rho to the rate — five sensitivities, one formula. Up next, lesson sixteen: implied volatility and the volatility surface, what you get when you run Black-Scholes backward.

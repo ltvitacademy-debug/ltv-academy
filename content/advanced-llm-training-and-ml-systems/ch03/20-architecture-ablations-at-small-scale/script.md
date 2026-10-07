@@ -6,7 +6,7 @@ Every lesson so far has assumed the architecture, data mixture, and schedule are
 
 ## Segment 2 (steps)
 
-The usual suspects get ablated repeatedly: positional encoding, like RoPE versus ALiBi; normalization placement and type, like pre-norm versus post-norm, or LayerNorm versus RMSNorm; and attention variants like grouped-query or multi-query attention, which trade a little quality for much cheaper inference.
+The usual suspects get ablated repeatedly: positional encoding, like RoPE versus ALiBi; normalization placement and type, like pre-norm versus post-norm, or LayerNorm versus RMSNorm; feed-forward activation functions; and attention variants like grouped-query or multi-query attention, which trade a little quality for much cheaper inference.
 
 ## Segment 3 (code)
 

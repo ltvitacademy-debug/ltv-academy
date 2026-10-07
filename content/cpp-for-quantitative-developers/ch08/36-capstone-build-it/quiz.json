@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-build-it",
+  "questions": [
+    {
+      "q": "Why does `pricing_core.hpp` deliberately avoid including any pybind11 header?",
+      "options": [
+        "pybind11 headers are only valid inside a .cpp file, never a .hpp file",
+        "So the pricing core remains ordinary, independently buildable and testable C++ with no dependency on Python",
+        "Because header files cannot contain function definitions in C++",
+        "Because Black-Scholes formulas require C-style headers only"
+      ],
+      "answer": 1,
+      "explain": "Keeping the pricing core free of pybind11 headers means it compiles and can be unit-tested as plain C++, with the Python integration layered on separately in bindings.cpp."
+    },
+    {
+      "q": "In `MonteCarloEngine::priceCall`, why does each `std::async` task seed its own independent `std::mt19937_64` rather than sharing one random engine across threads?",
+      "options": [
+        "Shared state like a single RNG instance being mutated from multiple threads concurrently is a data race; giving each task its own engine avoids needing any mutex",
+        "std::mt19937_64 cannot be constructed more than once in a program",
+        "Sharing one RNG would make the Monte Carlo result deterministic in a way that's undesirable",
+        "pybind11 forbids calling std::async more than once per module"
+      ],
+      "answer": 0,
+      "explain": "A single RNG object mutated by multiple threads without synchronization is a classic data race. Giving each async task its own seeded engine avoids any shared mutable state, so no lock is required."
+    },
+    {
+      "q": "What does calling `.get()` on each `std::future<double>` returned by `std::async` do?",
+      "options": [
+        "It cancels the asynchronous task immediately",
+        "It blocks the calling thread until that task completes, then returns its result",
+        "It restarts the task from the beginning",
+        "It has no effect unless the task has already thrown an exception"
+      ],
+      "answer": 1,
+      "explain": "`std::future::get()` blocks until the associated asynchronous task finishes and then returns (or rethrows, if the task threw) its result — this is how `priceCall` joins all the chunk results together."
+    },
+    {
+      "q": "In the bindings layer, why does `py::class_<MonteCarloEngine>(m, \"MonteCarloEngine\").def(\"price_call\", [](...) { ... })` use a lambda instead of binding `&MonteCarloEngine::priceCall` directly?",
+      "options": [
+        "Lambdas run faster than member function pointers in every case",
+        "`priceCall` takes a `BlackScholesInputs` struct as one argument, and the lambda adapts separate keyword arguments (spot, strike, rate, vol, expiry) into that struct before calling it",
+        "pybind11 cannot bind any const member function directly",
+        "MonteCarloEngine has no member function named priceCall"
+      ],
+      "answer": 1,
+      "explain": "The lambda exists purely to translate the five separate Python-facing keyword arguments into the single `BlackScholesInputs` struct that the underlying C++ method actually expects."
+    },
+    {
+      "q": "What does `find_package(Threads REQUIRED)` combined with `target_link_libraries(quantpricer_cpp PRIVATE Threads::Threads)` accomplish in the CMakeLists.txt?",
+      "options": [
+        "It installs Python's threading module",
+        "It locates and links the platform's native threading library so code using `std::async` and `std::thread` links and runs correctly",
+        "It disables multithreading to avoid data races",
+        "It is unnecessary boilerplate with no functional effect"
+      ],
+      "answer": 1,
+      "explain": "`std::thread`/`std::async` require linking against the platform threading library (e.g. pthreads on Linux); `find_package(Threads REQUIRED)` locates it and `target_link_libraries` links it into the extension."
+    }
+  ]
+}

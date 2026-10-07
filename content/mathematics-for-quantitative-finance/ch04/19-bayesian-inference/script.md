@@ -1,0 +1,25 @@
+# Script — Bayesian Inference
+
+## Segment 1 (title)
+
+The last lesson's maximum likelihood and method of moments both produce a single point estimate and treat the unknown parameter as fixed. Bayesian inference takes a different stance: the parameter has a distribution representing your belief, and observing data updates that belief. That's a natural fit for finance, where you're constantly revising a view as new data arrives.
+
+## Segment 2 (steps)
+
+Bayes' theorem says the posterior is proportional to the likelihood times the prior. The prior is what you believed before seeing any data. The likelihood is how probable the data is for each possible value of the parameter — the same object maximum likelihood maximizes. And the posterior combines both into your updated belief.
+
+## Segment 3 (code)
+
+The most useful conjugate pair in finance is Beta-Binomial, for updating a belief about an unknown probability, like a strategy's true win rate. Start with a Beta prior, observe some wins and losses, and the update is pure arithmetic: add the wins to the first parameter, the losses to the second. No integration required.
+
+## Segment 4 (code)
+
+For updating a belief about a mean instead of a probability, the Normal-Normal pair does the same job. The posterior mean turns out to be a precision-weighted average of your prior mean and the sample mean, where precision just means one over variance. As more data comes in, that average leans harder and harder toward the sample mean, exactly as it should.
+
+## Segment 5 (steps)
+
+A credible interval and a confidence interval sound similar but mean genuinely different things. A credible interval is a direct probability statement about the parameter, given the data you actually observed. A confidence interval is a statement about the long-run behavior of the procedure across many repeated samples. With a weak prior and enough data, the numbers often coincide, but their meanings don't.
+
+## Segment 6 (outro)
+
+Bayesian inference turns a point estimate into a full distribution of belief, updated by data through Bayes' theorem. Up next, lesson twenty: hypothesis testing revisited, going back to the frequentist machinery of p-values and significance with a sharper eye.

@@ -1,0 +1,25 @@
+# Script — Profiling Tools
+
+## Segment 1 (title)
+
+Every lesson in this chapter has quietly assumed you already know which function is slow. In real code, that assumption is usually wrong. A profiler tells you where a program actually spends its time, and this lesson is your map of the main tools for finding out.
+
+## Segment 2 (steps)
+
+Here's why this matters: developers are reliably bad at guessing where time goes. A function that feels expensive because the logic is complicated is often a tiny slice of total runtime. A function that feels trivial — string formatting, a container lookup — sitting inside a hot loop is very often the real cost. A profiler replaces that guess with evidence.
+
+## Segment 3 (code)
+
+Perf is the standard Linux profiler, and it works by sampling — interrupting your running program thousands of times a second and recording where it was at each interrupt. Record with the call-graph flag, then look at the report, and functions that accumulate the most samples are where the time actually went. Because sampling barely slows the program down, perf works fine on a realistic workload, not just a toy benchmark.
+
+## Segment 4 (steps)
+
+Valgrind takes a different approach: it runs your program inside a software CPU emulator, which lets it measure things a hardware sampler can't see directly — at the cost of running twenty to fifty times slower. Callgrind gives you exact instruction counts and a precise call graph. Cachegrind simulates the cache hierarchy from a couple lessons back and reports actual cache-miss counts per line, which is the most direct way to confirm a data-layout change really helped. Given the slowdown, point these at a small representative run, not a full production-scale one.
+
+## Segment 5 (steps)
+
+A flame graph turns a pile of call-stack samples into a picture: each bar is a function, its width is how much total time it and everything it called were on the stack, and stacking shows who called whom. The widest bars, wherever they sit, are the bottlenecks actually worth your attention — which makes a flame graph often the fastest way to spot a surprise, rather than scrolling through a table of percentages.
+
+## Segment 6 (outro)
+
+Perf gives you fast, realistic sampling, Valgrind's tools trade speed for exact counts, and a flame graph makes the whole picture visible at once. That's the end of performance optimization. Up next, chapter seven begins with lesson thirty-one: calling C++ from Python with pybind11, wiring the C++ you've just learned to measure and optimize into the stack most quant desks actually research in day to day.

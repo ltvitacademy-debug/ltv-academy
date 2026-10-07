@@ -1,0 +1,21 @@
+# Script — Building a Small Safety Eval Suite
+
+## Segment 1 (title)
+
+This chapter covered the pieces separately — the capability/safety distinction, threat-model-driven design, the pitfalls, sandbagging, external review. This closing lesson puts them together into the actual sequence behind building a working eval suite of your own.
+
+## Segment 2 (steps)
+
+Start by naming the behavior of concern in concrete, testable terms — not "the model should be safe," but something specific enough to write a failing test case against. Then write test cases that actively try to produce a failure: adversarial phrasing, indirect framing, multi-turn setups that build context before the real ask. And favor variety over volume — twenty genuinely different approaches to the same risk reveal more than two hundred near-duplicates of one template, because models can learn to pattern-match a specific phrasing without the underlying behavior actually generalizing.
+
+## Segment 3 (steps)
+
+Keep a meaningful portion of the suite unpublished and rotate in fresh items as older ones risk contamination, the same concern from earlier in this chapter. For scoring, a model-as-judge setup scales cheaply across hundreds of cases but inherits its own blind spots, so pair it with human review of a genuine random sample — not just the cases the judge flagged as borderline — and treat disagreement between judge and human as something to investigate, not average away.
+
+## Segment 4 (steps)
+
+A single eval run is a snapshot; the real value is running the same suite against each new model version and watching the trend. Did the behavior improve, stay flat, or shift into a more disguised form after an unrelated update? Treat the suite as infrastructure that evolves alongside the model, not a checklist filed away after the first run.
+
+## Segment 5 (outro)
+
+Every technique in this chapter still assumes a human, or a tool grounded in human judgment, can check the result at all. The next chapter asks what happens once a task genuinely outgrows that — the scalable oversight problem.

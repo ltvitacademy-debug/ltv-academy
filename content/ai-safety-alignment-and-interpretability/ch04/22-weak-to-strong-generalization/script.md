@@ -1,0 +1,21 @@
+# Script — Weak-to-Strong Generalization
+
+## Segment 1 (title)
+
+Most scalable oversight proposals design for a future where models exceed human expertise. Weak-to-strong generalization takes a different approach: build a miniature version of that problem with today's models, and study it empirically now, rather than waiting for the real version to arrive.
+
+## Segment 2 (steps)
+
+OpenAI's weak-to-strong generalization work builds an analogy: fine-tune a weak model on a task, then use its sometimes-mistaken labels to train a much stronger pretrained model on that same task, instead of ground-truth labels. The weak model stands in for a human supervisor who can't fully verify a superhuman task; the strong model stands in for a future system exceeding that supervisor's ability. Because both exist today, and researchers can check ground truth afterward for grading, this lets the field study a version of the real future problem years early.
+
+## Segment 3 (steps)
+
+Naive fine-tuning on a weak supervisor's labels would seem to cap the strong model near the weak model's own performance, since that's literally what it's being trained to imitate. The interesting question is whether the strong model does better than that — whether its own pretrained knowledge lets it generalize past the weak supervisor's specific mistakes, recovering some of the gap between weak-supervisor performance and what the strong model could achieve with true labels.
+
+## Segment 4 (steps)
+
+The main finding is encouraging: strong models trained on weak labels often do perform better than the weak supervisor, recovering a meaningful fraction of that gap. But the recovery is partial, not complete, and varies a lot across tasks and model pairs. The paper itself frames this as an early, imperfect analogy — today's weak models fail differently than a real human supervisor would, and whether this result holds as the capability gap grows and tasks get harder is an open question the researchers themselves flag, not one they've closed.
+
+## Segment 5 (outro)
+
+Debate, recursive reward modeling, and weak-to-strong generalization are all specific techniques inside one larger family. Next lesson names that family directly: AI-assisted human oversight.

@@ -1,0 +1,21 @@
+# Script — Labeling Financial Data
+
+## Segment 1 (title)
+
+Every supervised learning problem needs a label, the thing the model is trying to predict. In most ML courses the label is obvious. In finance, deciding what counts as the market going up turns out to be a real design decision, and getting it wrong quietly breaks everything downstream.
+
+## Segment 2 (steps)
+
+The simplest approach, fixed horizon labeling, looks a fixed number of bars ahead and labels the outcome by whether the return over that window clears a threshold. It's easy to implement, but it ignores everything that happens in between. A position could blow through a painful stop loss on day two and then happen to recover by day five, and a fixed horizon label would call that a win, even though no trader following a stop loss discipline would have held on to see it.
+
+## Segment 3 (code)
+
+The triple barrier method fixes that by labeling each observation based on whichever of three barriers gets touched first. A profit take barrier above the entry price, a stop loss barrier below it, and a time barrier that caps how long you wait. Whichever one triggers first decides the label, which mirrors how a real position is actually managed, so the label reflects an outcome a trading rule could genuinely have realized.
+
+## Segment 4 (steps)
+
+A related idea is meta labeling. A primary model decides the direction of a trade, long or short. A second model is trained only to decide whether to act on that call at all, essentially predicting whether the primary model will be right this time. Separating which way from how confident tends to improve precision, and it's a pattern we'll come back to once we reach ensembling later in this chapter.
+
+## Segment 5 (outro)
+
+How you define the label shapes everything the model can learn from it. Up next, lesson four: sample weights and overlapping outcomes, where we deal with a side effect of triple barrier labels — they overlap in time, and that breaks a standard machine learning assumption.

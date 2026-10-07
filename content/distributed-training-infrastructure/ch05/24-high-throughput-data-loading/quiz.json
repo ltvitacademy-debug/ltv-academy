@@ -1,0 +1,60 @@
+{
+  "lesson": "high-throughput-data-loading",
+  "questions": [
+    {
+      "q": "What is \"GPU starvation\" in the context of a large training run?",
+      "options": [
+        "A GPU overheating and throttling its clock speed",
+        "GPUs sitting idle because the data loader can't produce the next batch in time",
+        "A node running out of GPU memory mid-step",
+        "The scheduler refusing to allocate any GPUs to a job"
+      ],
+      "answer": 1,
+      "explain": "GPU starvation is GPUs waiting on data rather than computing — the job keeps running and printing loss, just slower than the hardware allows, which makes it easy to miss."
+    },
+    {
+      "q": "Why does a data loading throughput requirement depend on batch size and step time?",
+      "options": [
+        "It doesn't — any DataLoader configuration works at any scale",
+        "Because each node must read and prepare its share of the global batch within the measured step time, every step",
+        "Because step time is set by the network, not the data loader",
+        "Because batch size only affects GPU memory, not throughput"
+      ],
+      "answer": 1,
+      "explain": "The required throughput is derived directly from how much data a step needs and how long the step is allowed to take — it's a hard constraint, not a tuning afterthought."
+    },
+    {
+      "q": "What does setting `pin_memory=True` on a PyTorch DataLoader actually do?",
+      "options": [
+        "It locks the dataset file so other processes can't modify it",
+        "It allocates batches in page-locked host memory, enabling a faster, asynchronous host-to-device copy",
+        "It keeps worker processes alive across epochs",
+        "It forces all data loading onto a single CPU core"
+      ],
+      "answer": 1,
+      "explain": "pin_memory uses page-locked (non-pageable) host memory, which the CUDA driver can copy to the GPU asynchronously and faster than ordinary pageable memory."
+    },
+    {
+      "q": "Why does reading a dataset split into millions of small files hurt throughput on object storage like S3?",
+      "options": [
+        "Small files compress worse than large files",
+        "S3 charges more per request for small objects",
+        "Each sample becomes its own request, and per-request latency multiplies across every sample and every rank",
+        "S3 has a hard limit on the number of objects per bucket"
+      ],
+      "answer": 2,
+      "explain": "Object storage has real per-request latency (tens of milliseconds). Millions of tiny files turn that latency into a large cumulative tax; streaming through fewer, larger shards amortizes it."
+    },
+    {
+      "q": "What problem does `persistent_workers=True` specifically address?",
+      "options": [
+        "GPU memory fragmentation across epochs",
+        "The CPU overhead of tearing down and respawning worker processes at the start of every epoch",
+        "Network congestion between nodes during AllReduce",
+        "Checkpoint corruption on resume"
+      ],
+      "answer": 1,
+      "explain": "Without persistent_workers, DataLoader worker processes are destroyed and recreated every epoch. On a large cluster, that respawn cost repeated on every node, every epoch, adds up."
+    }
+  ]
+}

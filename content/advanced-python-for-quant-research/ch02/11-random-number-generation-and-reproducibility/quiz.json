@@ -1,0 +1,60 @@
+{
+  "lesson": "random-number-generation-and-reproducibility",
+  "questions": [
+    {
+      "q": "What is the main problem with the legacy `np.random.seed()` / global-state random API that `np.random.default_rng()` addresses?",
+      "options": [
+        "The legacy API cannot generate normal distributions, only uniform ones",
+        "The legacy API mutates a single hidden global state, so any other code touching that same global state can silently change your results",
+        "The legacy API is faster but less accurate than default_rng",
+        "The legacy API requires a GPU to function"
+      ],
+      "answer": 1,
+      "explain": "np.random.seed sets a single global state shared across the whole process. Any other code (including imported libraries) that also draws from the global random state can silently affect your results. default_rng returns an explicit Generator object instead, avoiding this interference."
+    },
+    {
+      "q": "What is PCG64, and what is its role relative to a `Generator` object?",
+      "options": [
+        "PCG64 is a plotting library used to visualize random distributions",
+        "PCG64 is the default bit generator — the underlying engine that produces the raw pseudo-random bit stream that Generator methods like .normal() and .integers() draw from",
+        "PCG64 is a deprecated alias for np.random.seed",
+        "PCG64 is a type of neural network used for random sampling"
+      ],
+      "answer": 1,
+      "explain": "Generator is the user-facing API; it delegates to a bit generator for the actual raw random bits. PCG64 is the default bit generator used by default_rng, chosen for better statistical properties and performance than the legacy MT19937."
+    },
+    {
+      "q": "Why would running the same seed across multiple parallel worker processes be a problem for a Monte Carlo simulation?",
+      "options": [
+        "It would cause a runtime error immediately",
+        "Each worker would produce an identical, correlated random stream, defeating the statistical benefit of running independent simulations in parallel",
+        "It would make the simulation run faster with no downside",
+        "Seeds cannot be reused across any two Generator instances, ever"
+      ],
+      "answer": 1,
+      "explain": "Using the same seed in multiple parallel workers produces identical, correlated draws across all of them, which undermines the goal of generating independent samples — exactly the problem SeedSequence.spawn() is designed to solve."
+    },
+    {
+      "q": "What does `SeedSequence(12345).spawn(4)` produce, and why is it useful for parallel Monte Carlo simulation?",
+      "options": [
+        "Four identical copies of the same seed, for consistency across workers",
+        "Four statistically independent child seeds derived from one parent seed, so each parallel worker gets its own independent, reproducible random stream while the whole run stays reproducible from the single parent seed",
+        "Four unrelated random numbers with no connection to reproducibility",
+        "A single Generator object shared by reference across four threads"
+      ],
+      "answer": 1,
+      "explain": "spawn() derives multiple independent child SeedSequences from one parent, letting each worker get its own reproducible, non-correlated Generator while the entire parallel run remains reproducible from one parent seed."
+    },
+    {
+      "q": "In Monte Carlo estimation, how does the standard error of the estimate relate to the number of simulations (n_sims), and what practical consequence does that have?",
+      "options": [
+        "Standard error is independent of n_sims; more simulations never improve precision",
+        "Standard error shrinks proportionally to n_sims, so doubling simulations halves the error immediately",
+        "Standard error shrinks with the square root of n_sims, so cutting the error in half requires roughly four times as many simulations",
+        "Standard error increases with more simulations, so fewer simulations are always better"
+      ],
+      "answer": 2,
+      "explain": "Monte Carlo error scales as 1/sqrt(n_sims), meaning precision improves slowly as simulation count grows — to halve the error, you need roughly four times as many simulated draws."
+    }
+  ]
+}

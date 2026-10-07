@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "GPU Computing · Chapter 3",
+    "titlePlain": "Finding & Fixing a GPU ",
+    "titleEmphasis": "Bottleneck",
+    "titleSuffix": "",
+    "subtitle": "Lesson 17 · GPU Memory & Performance"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1 — is the GPU even the bottleneck?",
+    "code": "$ nvidia-smi dmon -s u\n# gpu   sm   mem\n    0    12    4\n    0     0    0\n    0    85   30\n    0     0    0",
+    "caption": "Utilization bouncing to zero repeatedly means the GPU is starved, usually by the dataloader"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 — if the GPU is busy, see on what",
+    "code": "$ nsys profile -o report python train.py\n\n// Look for: unnecessary host-device sync\n// a .item() or .cpu() call inside the loop stalls every iteration",
+    "caption": "The timeline shows serialized work that should overlap"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 3 — profile the one kernel that's slow",
+    "code": "$ ncu --set full --kernel-name matmul_kernel -o report python train.py\n\n// Read the \"speed of light\" section:\n// high DRAM%% + low compute%% = memory-bound\n// low DRAM%% + high compute%% = compute-bound",
+    "caption": "Let the limiter verdict decide the fix — don't guess"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Step 4 — match the fix to the diagnosis",
+    "titlePlain": "The right fix depends on ",
+    "titleEmphasis": "which",
+    "titleSuffix": " bottleneck",
+    "steps": [
+      { "label": "CPU-starved", "sub": "more workers, pinned memory, prefetching" },
+      { "label": "Memory-bound", "sub": "fix coalescing, fuse kernels" },
+      { "label": "Compute-bound", "sub": "mixed precision, Tensor Cores" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 4 · Lesson 18",
+    "titlePlain": "Device Placement in ",
+    "titleEmphasis": "Practice",
+    "titleSuffix": "",
+    "subtitle": "Chapter 4 turns to PyTorch itself — starting with getting tensors onto the GPU correctly."
+  }
+]

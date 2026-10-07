@@ -1,0 +1,60 @@
+{
+  "lesson": "int8-and-int4-quantization",
+  "questions": [
+    {
+      "q": "What is the key difference between bitsandbytes and GPTQ/AWQ?",
+      "options": [
+        "bitsandbytes only supports INT8, while GPTQ and AWQ only support INT4",
+        "bitsandbytes quantizes with no calibration dataset; GPTQ and AWQ both run a calibration pass first",
+        "GPTQ and AWQ require retraining the entire model from scratch",
+        "bitsandbytes is slower to load than GPTQ or AWQ"
+      ],
+      "answer": 1,
+      "explain": "bitsandbytes quantizes at load time with no calibration data. GPTQ and AWQ both calibrate on sample data first, which is what lets them compress further with less accuracy loss."
+    },
+    {
+      "q": "How does GPTQ limit the accuracy loss from rounding weights to a lower bit-width?",
+      "options": [
+        "It skips quantizing any weight it judges important",
+        "It quantizes one layer at a time and uses remaining weights to compensate for rounding error, guided by Hessian information",
+        "It retrains the full model after quantizing",
+        "It only ever quantizes to 8-bit, never lower"
+      ],
+      "answer": 1,
+      "explain": "GPTQ quantizes layer by layer and, after rounding each weight, adjusts the not-yet-quantized weights to compensate for the introduced error based on second-order sensitivity information."
+    },
+    {
+      "q": "What does 'activation-aware' mean in AWQ's approach?",
+      "options": [
+        "AWQ only quantizes activations, never weights",
+        "AWQ identifies weight channels tied to unusually large activation values and protects them during quantization",
+        "AWQ requires the model to be retrained with new activation functions",
+        "AWQ ignores activations entirely and only looks at weight magnitude"
+      ],
+      "answer": 1,
+      "explain": "AWQ looks at activation magnitudes during calibration to find the small set of 'salient' weight channels, then scales them to minimize their precision loss when quantized."
+    },
+    {
+      "q": "What is the main practical trade-off between INT8 and INT4 quantization?",
+      "options": [
+        "INT8 and INT4 always produce identical accuracy and memory savings",
+        "INT4 roughly doubles memory usage compared to INT8",
+        "INT8 keeps more memory footprint but loses less accuracy; INT4 saves far more memory but is more sensitive to quantization method quality",
+        "INT4 is only usable on CPUs, never GPUs"
+      ],
+      "answer": 2,
+      "explain": "INT8 is the conservative choice — modest savings, minimal accuracy loss. INT4 roughly halves memory again, which can be the difference in GPU count needed, but accuracy risk rises without good calibration."
+    },
+    {
+      "q": "Why does calibration-based error correction (as in GPTQ and AWQ) matter more at 4-bit than at 8-bit?",
+      "options": [
+        "It doesn't — calibration provides identical benefit at any bit-width",
+        "8-bit quantization is never used in practice, so the comparison is moot",
+        "The narrower the representable range, the more naive rounding error accumulates, so careful calibration has more accuracy to recover",
+        "Calibration only works at 4-bit due to a hardware limitation"
+      ],
+      "answer": 2,
+      "explain": "At lower bit-widths the available range to represent values shrinks, so rounding error from naive quantization grows — which is exactly where GPTQ's and AWQ's calibration-based corrections pay off most."
+    }
+  ]
+}

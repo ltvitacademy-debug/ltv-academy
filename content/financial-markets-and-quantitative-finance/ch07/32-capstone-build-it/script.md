@@ -1,0 +1,21 @@
+# Script — Capstone: Build It
+
+## Segment 1 (title)
+
+Lesson 31 set up the project: ZQX Inc at a hundred dollars, three options, a three percent risk-free rate, and a goal of flattening portfolio delta. This lesson does the actual work — real Python and NumPy code that prices each option with Black-Scholes, computes its Greeks, aggregates them to the portfolio level, and sizes the hedge trade.
+
+## Segment 2 (code)
+
+Here's the core of it. d1 comes from the log of spot over strike, plus the rate and half the variance, times time, all divided by volatility times the square root of time. d2 is just d1 minus volatility times the square root of time. The call price comes from spot times N of d1, minus strike times the discount factor times N of d2. Delta for a call is simply N of d1. Gamma uses the normal density, not the cumulative function, divided by spot times vol times the square root of time — and that formula is identical for calls and puts. Vega follows a similar shape, scaled here so it reads as dollars per one percentage point move in volatility.
+
+## Segment 3 (steps)
+
+Running that function on all three positions gives three different pictures. Option A, the at-the-money call, prices around seven dollars and seventy-seven cents with a delta near point-five-seven — just above a half, since it's sitting right at the money. Option B, further out-of-the-money, prices lower, around two-seventy, with a correspondingly lower delta near point-three-one. And option C, the put, has a negative delta near negative point-three-two, and because it's out-of-the-money on the put side, that magnitude is also under a half.
+
+## Segment 4 (code)
+
+Now aggregate. Each option's delta, gamma, and vega gets multiplied by its position size and the hundred-share contract multiplier, then summed across all three. Because option C is short, its already-negative delta flips to a positive contribution at the portfolio level. Running that sum gives a portfolio delta of roughly plus nine hundred seventy-nine shares-equivalent. Negate that number and you have the hedge: sell short approximately nine hundred seventy-nine shares of ZQX to bring the portfolio's net delta to zero.
+
+## Segment 5 (outro)
+
+The code prices all three options, aggregates their Greeks, and converts the result directly into a hedge trade. Up next, Lesson 33: reviewing whether that hedge actually worked, what's still exposed, and how to present this project well.

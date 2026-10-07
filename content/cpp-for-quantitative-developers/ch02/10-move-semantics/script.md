@@ -1,0 +1,29 @@
+# Script — Move Semantics
+
+## Segment 1 (title)
+
+This lesson answers a question that's been sitting in the background since lesson eight: if a unique pointer can't be copied, how does a function return one by value at all? The answer is move semantics, and it's one of the most important performance features modern C++ added.
+
+## Segment 2 (code)
+
+Here's the problem it solves. This function builds a vector of prices locally and returns it. Before C++ eleven, that return would copy every single element — new heap memory, every value copied over, then the original destroyed. Move semantics let the compiler transfer ownership of that heap buffer directly instead, leaving the original empty, with no element copying at all.
+
+## Segment 3 (steps)
+
+What determines whether something gets copied or moved comes down to two categories. An lvalue has a persistent identity — it has a name, it'll still exist after the expression — and assigning from one copies it, because the original needs to stay intact. An rvalue is a temporary that's about to be destroyed anyway, like a function's return value, and the compiler moves from those automatically, because there's no reason to preserve something that's disappearing regardless.
+
+## Segment 4 (code)
+
+This double ampersand is an rvalue reference — it only binds to a temporary, and it signals that this object's internals are fair game to take. The move constructor just chains down to the vector's own move constructor, which is a pointer swap, not a copy of every element.
+
+## Segment 5 (code)
+
+std::move itself does nothing at runtime. It's purely a cast that tells the compiler to treat an lvalue as if it were a temporary, which makes the move versions eligible to run instead of the copy versions. After this line, the original vector still exists and is safe to destroy or reassign, but you should never read its contents again.
+
+## Segment 6 (steps)
+
+Because of move semantics, and a related optimization that can skip the move or copy entirely, returning a large object by value — a vector, a string, a type you wrote yourself — is efficient in modern C++. You don't need a raw-pointer output parameter just to dodge a copy the way older C++ sometimes required. Write the natural signature and let the compiler handle the efficiency.
+
+## Segment 7 (outro)
+
+Move semantics let C++ transfer ownership of a resource instead of copying it, and that's exactly how a unique pointer gets returned by value. That closes chapter two and the foundational half of this course. Up next, chapter three begins with lesson eleven: classes and encapsulation, where you'll start building your own types from scratch.

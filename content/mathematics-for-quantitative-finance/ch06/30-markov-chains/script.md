@@ -1,0 +1,25 @@
+# Script — Markov Chains
+
+## Segment 1 (title)
+
+The random walk from the last lesson had a property worth naming precisely: its next step depends only on where it is right now, not on how it got there. A Markov chain generalizes that idea to any finite set of states with arbitrary transition probabilities between them, which is the standard tool for modeling credit rating migration and regime switching.
+
+## Segment 2 (steps)
+
+The Markov property says the probability of moving to any future state, given the entire past, depends only on the current state. That's fully captured by a transition matrix, where each entry gives the one step probability of moving from one state to another, and every row sums to one. To get the probability of landing somewhere after several steps instead of one, you simply raise that transition matrix to a power.
+
+## Segment 3 (code)
+
+Take a four state credit rating chain: AAA, BBB, CCC, and default. The default state is absorbing, meaning once you're there, you stay there with probability one, so its row has a single one and the rest zeros. Every other row describes realistic year over year migration probabilities between rating grades.
+
+## Segment 4 (steps)
+
+For chains without an absorbing state, the long run behavior settles into a stationary distribution, a probability vector that stays fixed once the chain reaches it, found as the left eigenvector of the transition matrix for eigenvalue one. But with an absorbing default state, there's no such stationary mix among the living ratings — probability mass just keeps draining into default as time goes on.
+
+## Segment 5 (code)
+
+That's why real credit models report finite horizon numbers instead of a stationary distribution: the probability of each rating after five years, found by raising the matrix to the fifth power, or the cumulative probability of default by year ten, found the same way. Those matrix powers are the entire computational engine behind credit migration analysis.
+
+## Segment 6 (outro)
+
+A Markov chain is the random walk's memoryless property, generalized to any set of states. Up next, lesson thirty one takes the random walk itself to its continuous time limit: Brownian motion.

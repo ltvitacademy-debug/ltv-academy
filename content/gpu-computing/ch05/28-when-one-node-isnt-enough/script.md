@@ -1,0 +1,21 @@
+# Script — When One Node Isn't Enough
+
+## Segment 1 (title)
+
+This closes out multi-GPU basics by looking past the single server. Everything so far has lived inside one machine's four or eight GPUs. This lesson covers what changes when a job needs more than that.
+
+## Segment 2 (steps)
+
+The same DistributedDataParallel abstraction scales across nodes — only the vocabulary gets more precise. World size is the total number of processes across every node combined. Global rank is a process's unique ID across the whole job, distinct from its local rank on just its own node. Rendezvous is how processes on different machines find each other and agree on their ranks before training starts.
+
+## Segment 3 (code)
+
+A real launch command names the node count, which node this is, and a master address every node can reach — eight GPUs across four nodes gives a world size of thirty-two, with every node running an equivalent command with its own node rank.
+
+## Segment 4 (steps)
+
+Inside a node, gradients cross NVLink at hundreds of gigabytes per second. Between nodes, communication crosses a real network — InfiniBand or high-speed Ethernet — an order of magnitude slower, with real latency added by the network stack itself.
+
+## Segment 5 (outro)
+
+Once a job spans multiple nodes, something has to decide which nodes it runs on and who gets which GPU. Next up, chapter six, lesson twenty-nine: GPU scheduling in Kubernetes.

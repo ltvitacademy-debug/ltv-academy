@@ -1,0 +1,60 @@
+{
+  "lesson": "sft-then-reward-model-then-ppo",
+  "questions": [
+    {
+      "q": "What does the SFT stage actually train on, and what loss does it use?",
+      "options": [
+        "Preference pairs (chosen/rejected), using the Bradley-Terry loss",
+        "A dataset of (prompt, ideal response) demonstration pairs, using ordinary cross-entropy loss on the response tokens",
+        "Reward model scores, using a policy-gradient loss",
+        "Randomly generated text, using a contrastive loss"
+      ],
+      "answer": 1,
+      "explain": "SFT is plain supervised fine-tuning on human-written demonstrations — no reward signal or RL is involved at this stage."
+    },
+    {
+      "q": "Why is the reward model in this pipeline initialized from the SFT checkpoint rather than from the raw pretrained base model?",
+      "options": [
+        "It isn't — the reward model is always trained completely from scratch",
+        "Because the reward model is trained on preference pairs sampled from the SFT model's own outputs, so building it on the same base weights keeps it aligned with that distribution",
+        "Because the pretrained base model has no weights to initialize from",
+        "Because TRL's RewardTrainer requires a randomly initialized model"
+      ],
+      "answer": 1,
+      "explain": "The reward model swaps in a scalar-reward head on top of the SFT weights, keeping it consistent with the model whose outputs it was trained to score."
+    },
+    {
+      "q": "In the PPO stage, what are the two distinct roles the SFT checkpoint is loaded into, and how do they differ?",
+      "options": [
+        "Both are trainable policies updated identically",
+        "A trainable policy (with an added value head, updated during training) and a frozen reference model (same weights, never updated, used to measure drift via the KL penalty)",
+        "One is the reward model and the other is the demonstration dataset",
+        "There is only one role — the SFT checkpoint is used just once"
+      ],
+      "answer": 1,
+      "explain": "PPO loads the SFT checkpoint both as the trainable policy (plus a value head for advantage estimation) and, separately, as a frozen reference model that never updates."
+    },
+    {
+      "q": "What is the role of AutoModelForCausalLMWithValueHead in this pipeline, and why is it needed?",
+      "options": [
+        "It replaces the reward model entirely",
+        "It adds a value-function head on top of the SFT weights, which PPO's advantage estimation (GAE) requires",
+        "It is only used during the SFT stage, not during PPO",
+        "It removes the language-modeling head so the model can no longer generate text"
+      ],
+      "answer": 1,
+      "explain": "PPO's advantage estimation needs a value function; this class attaches that value head to the same underlying SFT-derived weights used as the policy."
+    },
+    {
+      "q": "During the PPO stage, is the reward model's own weights ever updated?",
+      "options": [
+        "Yes, the reward model is fine-tuned jointly with the policy at every PPO step",
+        "No — the reward model is frozen during PPO and used only to score the policy's generations",
+        "Yes, but only every other PPO step",
+        "The reward model is discarded entirely once PPO begins"
+      ],
+      "answer": 1,
+      "explain": "The reward model's weights stay fixed throughout PPO fine-tuning; it is used purely as a scoring function for the policy's generated text."
+    }
+  ]
+}

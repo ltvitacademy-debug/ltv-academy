@@ -1,0 +1,60 @@
+{
+  "lesson": "why-training-teams-need-to-know-inference",
+  "questions": [
+    {
+      "q": "Why is inference often latency-bound while training is throughput-bound?",
+      "options": [
+        "Inference always uses more GPUs than training",
+        "Training only measures aggregate progress through data with no single example waiting on a response, while inference often has a real user waiting right now for tokens to appear",
+        "Inference never uses batching, so it is always slower",
+        "Training and inference actually have identical performance profiles"
+      ],
+      "answer": 1,
+      "explain": "Training optimizes for getting through as much data as possible per GPU-hour, with no one waiting on a single example. Interactive inference has a user waiting on a response right now, which makes latency, not just throughput, a first-class concern."
+    },
+    {
+      "q": "What distinguishes the prefill phase from the decode phase when serving an autoregressive LLM?",
+      "options": [
+        "Prefill and decode are identical; the terms are interchangeable",
+        "Prefill processes the full prompt in one compute-bound pass, while decode generates one token at a time and is memory-bandwidth-bound because of KV cache lookups",
+        "Decode happens before prefill in every request",
+        "Prefill only occurs when fine-tuning a model, never during inference"
+      ],
+      "answer": 1,
+      "explain": "Prefill is a single forward pass over the whole prompt, which is compute-bound. Decode generates tokens one at a time, attending back over the KV cache, which is memory-bandwidth-bound rather than compute-bound."
+    },
+    {
+      "q": "Which training-time architecture choice directly reduces KV cache size at serving time?",
+      "options": [
+        "Increasing the vocabulary size",
+        "Using grouped-query attention (GQA) or multi-query attention (MQA) instead of plain multi-head attention (MHA)",
+        "Increasing the maximum supported context length",
+        "Switching from bf16 to fp32 during pretraining"
+      ],
+      "answer": 1,
+      "explain": "GQA and MQA reduce the number of distinct key/value projections compared to full multi-head attention, directly shrinking the KV cache that must be stored per request at serving time."
+    },
+    {
+      "q": "What does time-to-first-token (TTFT) primarily measure, and what phase dominates it?",
+      "options": [
+        "The total cost of training the model; it has nothing to do with inference",
+        "The latency from request arrival until the first generated token appears, dominated by the prefill phase",
+        "The time it takes to load the model weights onto disk",
+        "The average latency per output token, dominated by the decode phase"
+      ],
+      "answer": 1,
+      "explain": "TTFT is the latency from when a request arrives until the first output token is produced, and because that requires processing the full prompt first, it is dominated by the compute-bound prefill phase."
+    },
+    {
+      "q": "Why can a model that trains efficiently still decode slowly in production?",
+      "options": [
+        "Because training and decode are mathematically identical operations, so efficiency always transfers",
+        "Because training never exercises the one-token-at-a-time decode path at all -- it processes full sequences in parallel with teacher-forcing, so decode performance is untested by training throughput",
+        "Because decode speed depends only on the number of GPUs used during pretraining",
+        "Because efficient training always implies efficient decoding by definition"
+      ],
+      "answer": 1,
+      "explain": "Training sees full sequences in parallel via teacher-forcing and never performs the sequential, memory-bandwidth-bound decode step that inference requires, so training throughput says nothing about decode latency."
+    }
+  ]
+}

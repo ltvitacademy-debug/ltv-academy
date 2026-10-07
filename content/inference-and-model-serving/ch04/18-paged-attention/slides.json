@@ -1,0 +1,59 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Inference & Model Serving · Chapter 4",
+    "titlePlain": "Paged ",
+    "titleEmphasis": "Attention",
+    "titleSuffix": "",
+    "subtitle": "Lesson 18 · KV Cache & LLM-Specific Serving Techniques"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Reserved for worst case, used for far less",
+    "titlePlain": "The old way: ","titleEmphasis": "wasted space",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "One contiguous block per request", "sub": "sized for the maximum possible length" },
+      { "label": "200 tokens generated, 4096 reserved", "sub": "the rest sits empty, unusable by anyone else" },
+      { "label": "Internal fragmentation", "sub": "caps concurrency on top of raw cache cost" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Borrowed directly from OS virtual memory",
+    "titlePlain": "An LTV diagram: ",
+    "titleEmphasis": "logical → physical",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Logical blocks (per request)", "sub": "block 0, block 1, block 2 … fixed-size, 16 tokens each" },
+      { "label": "Block table", "sub": "maps each logical block to a physical block" },
+      { "label": "Physical blocks (GPU memory)", "sub": "scattered anywhere — allocated just-in-time" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Indirection unlocks more than space savings",
+    "titlePlain": "Why this ",
+    "titleEmphasis": "matters",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Near-zero fragmentation", "sub": "waste capped at a fraction of one block" },
+      { "label": "Far more concurrent requests", "sub": "no pre-reserved worst-case memory" },
+      { "label": "Shared physical blocks", "sub": "identical prefixes point to the same memory" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "A block table, conceptually",
+    "code": "# Request A's logical blocks -> physical block IDs\nblock_table[\"req_A\"] = [block_42, block_7, block_91]\n\n# Request B shares the same system prompt (blocks 0-1)\nblock_table[\"req_B\"] = [block_42, block_7, block_15]\n#                        ^shared^  ^shared^  ^own copy, diverged here",
+    "caption": "Blocks 42 and 7 are physically shared until request B's content diverges from A's — then it copy-on-writes."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 19",
+    "titlePlain": "Continuous ",
+    "titleEmphasis": "Batching",
+    "titleSuffix": "",
+    "subtitle": "Using that same block-based flexibility to keep the GPU busy at the scheduling level."
+  }
+]

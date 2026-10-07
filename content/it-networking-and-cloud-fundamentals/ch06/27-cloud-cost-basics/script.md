@@ -1,0 +1,25 @@
+# Script — Cloud Cost Basics
+
+## Segment 1 (title)
+
+Everything so far in this chapter — what the cloud is, which service model fits, where resources live, who secures what — comes together every month in the bill. Unlike an owned server, a cloud bill is a running total built from several independent meters.
+
+## Segment 2 (screenshot)
+
+Before committing to a design, most providers offer a pricing calculator — a tool for estimating cost without provisioning anything. Azure's version starts with a product picker: search for and add the services a design is planning to use, and an estimate builds up from there.
+
+## Segment 3 (screenshot)
+
+Once services are added, the calculator breaks the estimate down into its individual elements — each service, its configuration, and its contribution to the running total — so the pieces actually driving the cost are visible before a single resource goes live.
+
+## Segment 4 (steps)
+
+Providers typically offer the same underlying resource at a few different price points. Pay-as-you-go has no upfront commitment and bills by actual usage — the most flexible, usually the most expensive per unit. Reserved capacity means committing to a resource for one or three years for a steep discount, well suited to workloads that run continuously. And spot capacity is unused provider capacity sold cheap, which the provider can reclaim with little notice — fine for batch jobs that can tolerate being interrupted.
+
+## Segment 5 (code)
+
+A bill isn't one number. Compute covers the VMs or app instances actually running. Storage covers data sitting on disk, billed by the gigabyte per month. And data egress — traffic leaving the provider's network — is often the hidden driver, since traffic coming in is usually free but traffic going out usually isn't. A workload that looks cheap on compute alone can still produce a large bill if it moves a lot of data out every month. Tagging resources with labels like team or environment is what turns one opaque combined bill into something a finance team can actually break down by who's responsible for what.
+
+## Segment 6 (outro)
+
+That's the whole chapter: what the cloud is, which model to use, where to run it, who secures it, and what it costs. Now it's time to put all of it, and everything from the networking chapters before it, into one capstone project.

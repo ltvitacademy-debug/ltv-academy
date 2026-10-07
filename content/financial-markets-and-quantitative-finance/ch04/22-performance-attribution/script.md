@@ -1,0 +1,21 @@
+# Script — Performance Attribution
+
+## Segment 1 (title)
+
+A portfolio manager beat the market by three percent last year. Is that skill, or just a high-beta portfolio riding a strong market? This lesson closes the chapter with the toolkit for answering that properly — a handful of ratios that each adjust return for a different notion of risk.
+
+## Segment 2 (code)
+
+The Sharpe ratio divides excess return by total risk, standard deviation — right for evaluating a standalone portfolio. The Treynor ratio divides excess return by beta instead — right when the portfolio is one piece of a larger diversified holding, where only systematic risk matters. Jensen's alpha subtracts the CAPM-predicted return from the actual return, directly answering whether there was skill beyond the risk taken. And the information ratio divides active return against a specific benchmark by tracking error — the risk taken relative to that benchmark specifically.
+
+## Segment 3 (code)
+
+Here's a worked example. A portfolio returned twelve percent, against a three percent risk-free rate, eighteen percent standard deviation, a beta of 1.3, and a nine percent market return. The Sharpe ratio comes out to 0.50, the Treynor ratio to about 0.069. CAPM would have predicted a return of 10.8 percent given that beta, so Jensen's alpha is 1.2 percent — the actual, most direct signal of skill beyond the risk already taken.
+
+## Segment 4 (steps)
+
+Attribution also breaks return down by where it came from. The allocation effect is return earned from over- or underweighting whole sectors relative to a benchmark, regardless of which stocks were picked. The selection effect is return earned from which specific securities were picked within a sector, holding that sector's weight fixed. Separating the two tells you whether the top-down weighting call or the bottom-up stock-picking call actually drove performance.
+
+## Segment 5 (outro)
+
+Four ratios, each dividing excess return by a different kind of risk, plus allocation and selection effects to separate where return actually came from — that closes chapter four on portfolio theory. Up next, lesson twenty-three, opening chapter five: value at risk and expected shortfall, moving from measuring past performance to quantifying forward-looking risk.

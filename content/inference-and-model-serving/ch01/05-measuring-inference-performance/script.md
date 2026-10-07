@@ -1,0 +1,21 @@
+# Script — Measuring Inference Performance
+
+## Segment 1 (title)
+
+The first four lessons gave you the vocabulary: latency, throughput, the request lifecycle, prefill and decode. This lesson turns that vocabulary into numbers you can actually collect, so you know what to look at when chapter two introduces real serving frameworks.
+
+## Segment 2 (steps)
+
+Track time to first token, which reflects prefill plus queuing delay. Track time per output token, which reflects decode speed under load. Track throughput, total output tokens per second across all concurrent requests. And consider goodput, a stricter metric that only counts requests that also met a latency target, since raw throughput can hide an SLO violation for a meaningful share of users.
+
+## Segment 3 (steps)
+
+Averages can look great while real users have a bad experience, because a few slow outliers get smoothed out by many fast ones. Report percentiles instead. P50 is the typical experience. P95 and p99 are the tail — what your least lucky users feel, and where serving teams almost always set their actual latency targets.
+
+## Segment 4 (code)
+
+Here's what a load-test report typically looks like. Notice the gap between mean TTFT at 182 milliseconds and p99 TTFT at nearly 900 milliseconds — that's the tail risk this chapter has been building toward, and it's usually concentrated in queuing and batching, not in decode itself.
+
+## Segment 5 (outro)
+
+TTFT, TPOT, throughput, and tail percentiles are how you turn chapter one's ideas into something you can track before and after any change. Chapter one is complete. Up next, chapter two begins with lesson six: why dedicated serving frameworks like vLLM exist at all.

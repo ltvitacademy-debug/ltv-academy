@@ -1,0 +1,60 @@
+{
+  "lesson": "zero-and-fsdp-conceptually",
+  "questions": [
+    {
+      "q": "What redundancy does ZeRO target that plain data parallelism has?",
+      "options": [
+        "Redundant copies of the training dataset on disk",
+        "Full, replicated copies of optimizer state, gradients, and parameters on every GPU, even though each replica only needs its own slice at any given moment",
+        "Redundant logging of training metrics",
+        "Duplicate forward passes on the same data"
+      ],
+      "answer": 1,
+      "explain": "In plain DDP, every GPU stores a complete copy of parameters, gradients, and optimizer state. ZeRO shards these instead of replicating them, since no GPU needs the full copy of all of it simultaneously."
+    },
+    {
+      "q": "What distinguishes ZeRO stage 1 from stage 2 from stage 3?",
+      "options": [
+        "They are three unrelated optimizers with no shared design",
+        "Stage 1 shards optimizer state; stage 2 additionally shards gradients; stage 3 additionally shards parameters themselves, so no GPU holds the full model at rest",
+        "Each stage uses a different learning rate schedule",
+        "Stage 3 disables gradient computation entirely"
+      ],
+      "answer": 1,
+      "explain": "ZeRO's three stages progressively shard more memory-heavy state: stage 1 optimizer state only, stage 2 adds gradients, and stage 3 adds parameters, trading more communication for more memory savings at each step."
+    },
+    {
+      "q": "Under ZeRO stage 3 or FSDP's FULL_SHARD strategy, how are a layer's full parameters made available for computation?",
+      "options": [
+        "They are never fully reconstructed -- computation happens directly on shards",
+        "An all-gather reconstructs the full layer weights from shards right before they're needed for forward or backward computation, then frees them immediately afterward",
+        "The parameters are permanently copied to every GPU at the start of training",
+        "They are read from disk on every forward pass"
+      ],
+      "answer": 1,
+      "explain": "Stage 3 / FULL_SHARD sharding reconstructs each shardable unit's parameters via an all-gather exactly when needed, then releases that memory right after, rather than keeping full copies resident."
+    },
+    {
+      "q": "What is PyTorch's FullyShardedDataParallel (FSDP) relative to ZeRO?",
+      "options": [
+        "A completely unrelated memory-saving technique with no overlap with ZeRO",
+        "PyTorch's native implementation of essentially the same sharding idea, with FULL_SHARD roughly equivalent to ZeRO stage 3",
+        "A tool only usable for inference, never training",
+        "A replacement for DistributedDataParallel that disables data parallelism entirely"
+      ],
+      "answer": 1,
+      "explain": "FSDP implements the same core sharding idea as ZeRO as a native PyTorch API; its FULL_SHARD strategy is roughly equivalent to ZeRO stage 3, and SHARD_GRAD_OP is roughly equivalent to stage 2."
+    },
+    {
+      "q": "What is the core trade-off when choosing a more aggressive ZeRO/FSDP sharding stage?",
+      "options": [
+        "More aggressive stages always run strictly faster with no downside",
+        "More aggressive sharding reduces per-GPU memory usage but increases the volume of communication required during training",
+        "More aggressive stages eliminate the need for gradient synchronization entirely",
+        "More aggressive stages only affect inference, not training"
+      ],
+      "answer": 1,
+      "explain": "Each more aggressive ZeRO/FSDP stage shards more state, which reduces per-GPU memory but requires more frequent communication (such as all-gathers) to reconstruct state on demand, making it a genuine trade-off rather than a free upgrade."
+    }
+  ]
+}

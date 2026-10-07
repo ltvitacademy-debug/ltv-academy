@@ -1,0 +1,60 @@
+{
+  "lesson": "multi-model-serving",
+  "questions": [
+    {
+      "q": "What is the main motivation for multi-model serving?",
+      "options": [
+        "To make every model run slower on purpose",
+        "To share GPU capacity across many models instead of dedicating an underused GPU pool to each one",
+        "To avoid ever needing more than one GPU in a company",
+        "To eliminate the need for load balancing"
+      ],
+      "answer": 1,
+      "explain": "Dedicating a GPU pool to every model is simple but wasteful since most models don't fully use their pinned capacity most of the time. Multiplexing shares that capacity across models."
+    },
+    {
+      "q": "What distinguishes full model multiplexing from LoRA adapter multiplexing?",
+      "options": [
+        "There is no difference; both terms describe the same technique",
+        "Full model multiplexing serves genuinely distinct models each with their own weights; LoRA multiplexing serves many fine-tuned variants of one shared base model",
+        "LoRA adapters can only be used for image models",
+        "Full model multiplexing requires no GPU memory at all"
+      ],
+      "answer": 1,
+      "explain": "Full multiplexing (e.g., a Triton model repository) loads distinct models side by side, each with its own full weights. LoRA multiplexing shares one base model's weights and swaps small adapters per request."
+    },
+    {
+      "q": "Why is LoRA adapter multiplexing dramatically cheaper for serving many per-tenant fine-tuned variants?",
+      "options": [
+        "Because adapters are typically tens to a few hundred megabytes, versus the full gigabytes a separate model would need, while the base weights load only once",
+        "Because LoRA adapters eliminate the need for a GPU entirely",
+        "Because LoRA adapters are only used for training, never for serving",
+        "Because each adapter requires its own dedicated server"
+      ],
+      "answer": 0,
+      "explain": "LoRA adapters are small relative to full model weights, and the shared base model is loaded only once, so adding another tenant's variant costs megabytes rather than a whole new model's footprint."
+    },
+    {
+      "q": "In the example vLLM command, what does `--lora-modules customer-a=... customer-b=...` do?",
+      "options": [
+        "It deletes the base model after loading",
+        "It registers two named LoRA adapters that can be selected per request on top of the shared base model",
+        "It forces every request to use both adapters simultaneously",
+        "It disables GPU memory sharing"
+      ],
+      "answer": 1,
+      "explain": "This flag loads named adapters alongside the base model; a request specifies which one it wants applied, letting many tenants share one base model's loaded weights."
+    },
+    {
+      "q": "Why does isolation (resource quotas, priority tiers) still matter in multi-model serving even though sharing raises utilization?",
+      "options": [
+        "Because without limits, one model's traffic spike or bug can starve or disrupt other models sharing the same GPU",
+        "Isolation is purely a legal requirement with no technical purpose",
+        "Because GPUs automatically isolate every process with zero configuration",
+        "Priority tiers are only relevant for CPU-based services, not GPU serving"
+      ],
+      "answer": 0,
+      "explain": "Shared GPU capacity means contention: a quota caps how much any one model can claim, and priority tiers keep a lower-priority model's heavy load from blocking higher-priority traffic."
+    }
+  ]
+}

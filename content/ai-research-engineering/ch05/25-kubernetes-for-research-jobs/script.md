@@ -1,0 +1,21 @@
+# Script — Kubernetes for Research Jobs
+
+## Segment 1 (title)
+
+Kubernetes wasn't built for research workloads, it was built for long-running services. But it shows up in industry research labs when the company already runs Kubernetes for production and research reuses the same cluster. Using it well means working with its run-to-completion primitives rather than fighting the scheduler's service-oriented defaults.
+
+## Segment 2 (code)
+
+A Deployment restarts forever on failure, which is the wrong model for a training run that should execute once and stop. A Job is Kubernetes' primitive for run-to-completion work: restartPolicy Never combined with a backoff limit means it gives up after a bounded number of attempts and reports failure, rather than restarting indefinitely.
+
+## Segment 3 (steps)
+
+Most research teams don't choose between Kubernetes and Slurm from first principles — they inherit whichever one the organization already runs. Slurm has decades of tuning specifically for research-style batch workloads; Kubernetes wins when research code needs to share infrastructure with production services. Neither is objectively better — it depends on what else is already running on the cluster.
+
+## Segment 4 (code)
+
+kubectl get jobs shows completion status across jobs, and kubectl describe is the first stop when a job fails without an obvious reason in the logs — it surfaces scheduling failures, like not finding a node with a free GPU, that never reach the container's own output at all.
+
+## Segment 5 (outro)
+
+That's the Kubernetes-specific shape of running research jobs. Next: data versioning for experiments — code and config get versioned by git, but datasets need their own versioning story.

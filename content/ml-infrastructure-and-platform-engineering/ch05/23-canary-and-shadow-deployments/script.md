@@ -1,0 +1,25 @@
+# Script — Canary & Shadow Deployments
+
+## Segment 1 (title)
+
+A model that passed every offline check can still behave badly the moment it meets real traffic — distributions shift, edge cases show up, latency changes under real load. Canary and shadow deployments are the two main ways to find that out before it affects every user, instead of after.
+
+## Segment 2 (code)
+
+In a shadow deployment, Istio's mirror field duplicates every live request to the new model and discards its response. The production model's answer is the only one that ever reaches the user. You get to see what the new model would have said, on real traffic, with zero actual risk.
+
+## Segment 3 (code)
+
+A canary is different. Here, five percent of real requests are actually routed to and served by the new version, and real users act on those predictions. If metrics stay healthy, that weight ratchets up over time. If they don't, it drops back to zero, which you'll see in full next lesson.
+
+## Segment 4 (steps)
+
+So the two techniques answer different questions. Shadow mode mirrors all the traffic with zero user impact, which is great for catching latency and gross prediction problems. Canary actually exposes a small slice of real users, which is the only way to validate real business outcomes. Most teams chain them: shadow first, and only once that looks clean, promote to a small real canary.
+
+## Segment 5 (steps)
+
+And picking the right signal for that canary gate matters. Watching error rate alone isn't enough — a good gate also watches the model's own output score distribution against the incumbent, business outcome proxies like approval rate or fraud catch rate, and segment-level breakdowns, because a canary that looks fine in aggregate can quietly be worse for one customer segment.
+
+## Segment 6 (outro)
+
+Shadow for zero-risk validation, canary for real signal, and usually both in sequence. Next, lesson twenty-four: exactly how a canary, or any deployment, gets rolled back when those metrics go wrong.

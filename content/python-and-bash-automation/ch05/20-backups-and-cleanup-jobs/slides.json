@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python & Bash Automation · Chapter 5",
+    "titlePlain": "Backups & ",
+    "titleEmphasis": "Cleanup Jobs",
+    "titleSuffix": "",
+    "subtitle": "Lesson 20 · Real Automation Tasks"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Dump, compress, and fail loudly",
+    "code": "set -euo pipefail\n\npg_dump -U northbridge -d orders | gzip > \"$BACKUP_FILE\"\n\nif ! [ -s \"$BACKUP_FILE\" ]; then\n    echo \"ERROR: backup is empty\" >&2\n    exit 1\nfi",
+    "caption": "pipefail matters here -- without it, a failing pg_dump can hide behind a successful gzip."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Shipping it somewhere durable",
+    "code": "s3.upload_file(\n    Filename=str(backup_file),\n    Bucket=\"northbridge-db-backups\",\n    Key=f\"orders/{backup_file.name}\",\n)",
+    "caption": "A backup that only lives on the server it protects isn't a backup."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A retention policy, locally and in S3",
+    "code": "cutoff = datetime.now() - timedelta(days=14)\n\nfor backup in backup_dir.glob(\"orders-*.sql.gz\"):\n    if datetime.fromtimestamp(backup.stat().st_mtime) < cutoff:\n        backup.unlink()",
+    "caption": "Delete anything past the cutoff -- the same datetime comparison from lesson 16."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What a real backup job needs",
+    "titlePlain": "Dump, ",
+    "titleEmphasis": "ship",
+    "titleSuffix": ", prune",
+    "steps": [
+      { "label": "Dump & compress", "sub": "pg_dump piped into gzip, with pipefail catching a hidden failure" },
+      { "label": "Ship off-server", "sub": "upload_file to S3 so losing the server doesn't lose the backup" },
+      { "label": "Enforce retention", "sub": "delete anything past the cutoff, locally and in the cloud" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 21",
+    "titlePlain": "Health Checks & ",
+    "titleEmphasis": "Alerts",
+    "titleSuffix": "",
+    "subtitle": "Catching problems before someone has to ask about them."
+  }
+]

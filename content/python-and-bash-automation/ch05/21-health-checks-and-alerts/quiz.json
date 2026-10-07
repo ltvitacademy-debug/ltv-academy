@@ -1,0 +1,60 @@
+{
+  "lesson": "health-checks-and-alerts",
+  "questions": [
+    {
+      "q": "Why does check_endpoint() pass a `timeout` to requests.get() instead of calling it without one?",
+      "options": [
+        "Timeouts make the HTTP response arrive faster",
+        "Without a timeout, requests.get() can hang indefinitely on an unresponsive server, turning the health check itself into a hang",
+        "timeout is required syntax and has no functional effect",
+        "It converts the response into JSON automatically"
+      ],
+      "answer": 1,
+      "explain": "A server that has stopped responding, rather than returning an error, can leave requests.get() waiting forever with no timeout set. The timeout guarantees the check itself fails fast instead of hanging."
+    },
+    {
+      "q": "What does shutil.disk_usage() check, and why doesn't it need a network request?",
+      "options": [
+        "It checks a remote server's disk space over SSH",
+        "It reads total, used, and free bytes for a local path directly from the filesystem, since disk space is a local resource, not a network-dependent one",
+        "It checks disk space only inside Docker containers",
+        "It requires a Slack webhook to function"
+      ],
+      "answer": 1,
+      "explain": "Disk space is a property of the local filesystem, so shutil.disk_usage() reads it directly without any HTTP call -- unlike the endpoint check, which has to go over the network."
+    },
+    {
+      "q": "Why does the Slack alert function read SLACK_WEBHOOK_URL from an environment variable instead of hardcoding it in the script?",
+      "options": [
+        "Environment variables make the script run faster",
+        "A Slack webhook URL is a credential -- anyone who has it can post as Northbridge's monitoring, so it follows the same secrets-handling rule as other credentials in this course",
+        "Slack webhooks only work when read from an environment variable",
+        "Hardcoding strings is a Python syntax error"
+      ],
+      "answer": 1,
+      "explain": "Anyone who obtains the webhook URL can post messages through it, which makes it a credential like any API key or token -- so it belongs in an environment variable, not hardcoded in source code."
+    },
+    {
+      "q": "What problem does \"alert on change, not on every check\" solve?",
+      "options": [
+        "It makes the health check run faster",
+        "Alert fatigue -- without it, a 15-minute check on an ongoing outage would send the same alert dozens of times a day until people stop reading them",
+        "It reduces the accuracy of the health check",
+        "It removes the need for a timeout on requests.get()"
+      ],
+      "answer": 1,
+      "explain": "A check that alerts every time it runs, rather than only when the state flips, will repeat the same message every 15 minutes during a prolonged outage -- and people tune out alerts that repeat that often."
+    },
+    {
+      "q": "In check_and_alert(), what triggers sending a message -- is_healthy being False, or something else?",
+      "options": [
+        "is_healthy being False on its own, every time the check runs",
+        "is_healthy differing from the previously stored state (was_healthy), whether that's a failure or a recovery",
+        "The function sends an alert on every single call regardless of status",
+        "Only the disk-space check can ever trigger an alert"
+      ],
+      "answer": 1,
+      "explain": "The function compares the current is_healthy to the previously stored was_healthy and only alerts when they differ -- covering both the DOWN transition and the RECOVERED transition, not a failing status by itself."
+    }
+  ]
+}

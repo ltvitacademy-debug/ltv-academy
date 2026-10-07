@@ -10,12 +10,12 @@ A larger vocabulary means more whole words get their own single token, so the sa
 
 ## Segment 3 (code)
 
-That efficiency isn't free. Every vocabulary entry needs a row in the embedding matrix and a matching row in the output projection, and both scale linearly with vocabulary size times hidden size. For smaller models especially, a bigger vocabulary can eat a surprisingly large share of the total parameter budget.
+That efficiency isn't free. Every vocabulary entry needs a row in the embedding matrix and a matching row in the output projection, and both scale linearly with vocabulary size times hidden size. For smaller models especially, a bigger vocabulary can eat a surprisingly large share of the total parameter budget, parameters that would otherwise go toward the transformer layers doing the actual reasoning work.
 
 ## Segment 4 (steps)
 
-There's a subtler cost too: a larger vocabulary means more individual tokens appear rarely in training, so their embeddings get fewer gradient updates and can end up undertrained. And multilingual models need larger vocabularies specifically so languages other than English don't constantly fall back to inefficient byte-level fragments.
+There's a subtler cost too: a larger vocabulary means more individual tokens appear rarely in training, so their embeddings get fewer gradient updates and can end up undertrained, which shows up as weaker handling of uncommon words or entities. And multilingual models need larger vocabularies specifically so languages other than English don't constantly fall back to inefficient byte-level fragments.
 
 ## Segment 5 (outro)
 
-Real tokenizers span a wide range, from GPT-2's fifty thousand to Llama 3's hundred twenty eight thousand, and that range is a useful anchor for your own choices. Next up, lesson nine: where the raw training data actually comes from before it ever reaches the tokenizer.
+Real tokenizers span a wide range, from GPT-2's fifty thousand to Llama 3's hundred twenty eight thousand, and that jump reflects a deliberate push for better multilingual and general tokenization efficiency. That range is a useful anchor for your own choices. Next up, lesson nine: where the raw training data actually comes from before it ever reaches the tokenizer.

@@ -1,0 +1,60 @@
+{
+  "lesson": "quantization-for-inference-an-overview",
+  "questions": [
+    {
+      "q": "How does inference-time quantization differ in goal from QLoRA's training-time quantization covered in Lesson 26?",
+      "options": [
+        "There is no difference; they are the same technique with the same goal",
+        "QLoRA quantizes a frozen base model so it fits in memory while fine-tuning an adapter, while inference quantization compresses a finished model to reduce serving memory and improve latency/throughput",
+        "Inference quantization only applies to the tokenizer, not the model weights",
+        "QLoRA is used only at serving time, never during training"
+      ],
+      "answer": 1,
+      "explain": "QLoRA's quantization goal is enabling fine-tuning under memory constraints with a frozen quantized base. Inference quantization's goal is compressing a completed model to reduce serving memory footprint and cost."
+    },
+    {
+      "q": "Why does quantizing a model's weights to 4-bit often improve decode throughput, not just save memory?",
+      "options": [
+        "Because decode is compute-bound, and fewer bits means fewer floating point operations per token",
+        "Because decode is memory-bandwidth-bound, so moving fewer bytes per weight during each decode step can directly reduce the time spent moving data",
+        "Because quantization eliminates the need for a KV cache",
+        "Because 4-bit weights automatically increase the model's context length"
+      ],
+      "answer": 1,
+      "explain": "As established in the KV cache lesson, decode is memory-bandwidth-bound. Since quantized weights require moving fewer bytes, memory-bandwidth-bound decode can run faster, not just more memory-efficiently."
+    },
+    {
+      "q": "What distinguishes GPTQ and AWQ from naive round-to-nearest (RTN) quantization?",
+      "options": [
+        "GPTQ and AWQ both use a small calibration dataset to measure which weights' precision loss actually hurts outputs, and allocate precision accordingly, rather than rounding every weight the same way",
+        "RTN requires a calibration dataset while GPTQ and AWQ do not",
+        "GPTQ and AWQ can only be used during pretraining, not after a model is finished",
+        "There is no meaningful difference between RTN and calibration-based methods"
+      ],
+      "answer": 0,
+      "explain": "GPTQ solves a per-layer least-squares problem using calibration data to minimize rounding error, and AWQ specifically protects activation-salient weights. Both outperform naive RTN at the same bit width because they target precision where it matters most."
+    },
+    {
+      "q": "What specifically does AWQ (Activation-aware Weight Quantization) protect?",
+      "options": [
+        "It protects the tokenizer's vocabulary from being modified",
+        "It protects the subset of weights that activations reveal to be most salient to the model's output, quantizing the remaining weights more aggressively",
+        "It protects the optimizer state during a fine-tuning run",
+        "It protects all weights equally, with no differentiation"
+      ],
+      "answer": 1,
+      "explain": "AWQ uses activation statistics to identify which weights matter most to model outputs and preserves their precision more carefully, while quantizing less-salient weights more aggressively."
+    },
+    {
+      "q": "What practice does this lesson recommend before shipping a quantized model to production?",
+      "options": [
+        "Trust the memory and latency improvements alone as sufficient evidence the model is ready",
+        "Re-run the same evaluation set used on the full-precision checkpoint and examine the accuracy delta before deciding the quantization level is acceptable for the use case",
+        "Skip evaluation since quantization never affects accuracy",
+        "Only evaluate quantized models on throughput benchmarks, never on task accuracy"
+      ],
+      "answer": 1,
+      "explain": "The lesson explicitly ties back to Chapter 7's evaluation discipline: never ship a quantized model on memory/latency numbers alone -- re-run the same eval set and look at the accuracy delta before deciding a quantization level is acceptable."
+    }
+  ]
+}

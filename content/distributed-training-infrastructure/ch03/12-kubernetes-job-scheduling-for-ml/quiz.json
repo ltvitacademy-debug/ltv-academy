@@ -1,0 +1,60 @@
+{
+  "lesson": "kubernetes-job-scheduling-for-ml",
+  "questions": [
+    {
+      "q": "Why doesn't a plain Kubernetes Deployment fit a multi-node PyTorch training run?",
+      "options": [
+        "Deployments cannot request GPU resources at all",
+        "Deployments keep identical, interchangeable replicas with no concept of a rank-0 master or cross-pod coordination",
+        "Deployments can only run one Pod at a time",
+        "Deployments are deprecated in current Kubernetes versions"
+      ],
+      "answer": 1,
+      "explain": "A Deployment's replicas are interchangeable by design. Training needs a distinguished rank-0 (Master) and coordinated startup across all ranks, which a Deployment has no concept of."
+    },
+    {
+      "q": "In a PyTorchJob spec, what does the Master replica group represent?",
+      "options": [
+        "A separate monitoring sidecar container",
+        "Rank 0 of the distributed job, typically the single pod responsible for coordination and checkpoint writes",
+        "A backup copy of the Worker replicas for failover",
+        "The Kubernetes control plane node running the scheduler"
+      ],
+      "answer": 1,
+      "explain": "The Master replica (always replicas: 1) is rank 0 — the process torchrun treats as the coordination point, and in Solara's setup, the one that writes checkpoints."
+    },
+    {
+      "q": "Which four environment variables does torchrun require before it can call init_process_group, and who sets them in a PyTorchJob?",
+      "options": [
+        "CPU_COUNT, MEM_LIMIT, GPU_TYPE, NODE_NAME — set manually by the user in each container",
+        "RANK, WORLD_SIZE, MASTER_ADDR, MASTER_PORT — injected automatically by the Kubeflow Training Operator",
+        "NAMESPACE, POD_NAME, SERVICE_NAME, CLUSTER_ID — set by kubelet at pod creation",
+        "IMAGE_TAG, REPLICA_TYPE, RESTART_COUNT, JOB_NAME — set by the container runtime"
+      ],
+      "answer": 1,
+      "explain": "The Training Operator derives the Master's Service DNS name and each replica's rank/world size, injecting MASTER_ADDR, MASTER_PORT, RANK, and WORLD_SIZE into every Pod automatically."
+    },
+    {
+      "q": "Solara's PyTorchJob has 1 Master replica and 63 Worker replicas, each requesting nvidia.com/gpu: 8. How many GPUs does the job use in total?",
+      "options": [
+        "64 GPUs",
+        "63 GPUs",
+        "512 GPUs",
+        "8 GPUs"
+      ],
+      "answer": 2,
+      "explain": "64 total replicas (1 Master + 63 Workers) × 8 GPUs each = 512 GPUs, the full solara-train cluster."
+    },
+    {
+      "q": "A Worker Pod in the PyTorchJob exits with a non-zero code and its restartPolicy is OnFailure. What happens first?",
+      "options": [
+        "The entire PyTorchJob is immediately marked Failed with no retry",
+        "The operator restarts just that Pod; the job only moves to Failed if retries are exhausted",
+        "Kubernetes deletes the whole namespace",
+        "Nothing — restartPolicy only applies to Deployments, not PyTorchJobs"
+      ],
+      "answer": 1,
+      "explain": "The Training Operator honors restartPolicy per replica: a failing Worker gets restarted individually first, and the job is only marked Failed once retries are exhausted."
+    }
+  ]
+}

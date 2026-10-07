@@ -1,0 +1,21 @@
+# Script — Test-Time Compute & Search
+
+## Segment 1 (title)
+
+Lesson 58, Chapter 9. Every lesson so far has been about changing the policy through training. This lesson is a different lever entirely: spending more compute at inference time, after training is done, to get a better answer out of a fixed model.
+
+## Segment 2 (code)
+
+Best-of-n samples several completions for the same prompt and keeps whichever one a scorer ranks highest — a verifier when ground truth is checkable, a reward model otherwise. Self-consistency is a cheaper variant that needs no scorer at all: sample several reasoning paths, extract each final answer, and take a majority vote, since independent errors rarely agree with each other.
+
+## Segment 3 (steps)
+
+Those two only look at completed traces. A process reward model can instead guide search while generating, scoring partial paths and pruning the weak ones before they're even finished — closer to classic tree search than to simple resampling. It costs more per answer, but spends that extra compute more intelligently, abandoning bad lines of reasoning early.
+
+## Segment 4 (steps)
+
+Test-time search and RLVR training aren't competing — they stack. Training raises the policy's odds of a good trace on a single try; search then multiplies on top of that, and needs fewer samples when the base rate is already higher. This is also exactly where a PRM's labeling cost from lesson 54 pays off — too expensive to use as a dense RL signal across millions of rollouts, but affordable as a search guide on the much smaller number of queries that reach a user.
+
+## Segment 5 (outro)
+
+Best-of-n, self-consistency, and PRM-guided search buy better answers from a fixed policy, stacking with training rather than replacing it. Next, lesson 59 asks the harder question: how do you know any of this chapter actually improved reasoning, rather than just inflating a benchmark score?

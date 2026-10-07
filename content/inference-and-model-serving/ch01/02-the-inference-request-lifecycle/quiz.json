@@ -1,0 +1,60 @@
+{
+  "lesson": "the-inference-request-lifecycle",
+  "questions": [
+    {
+      "q": "At which stage of the request lifecycle does queuing delay first get introduced?",
+      "options": [
+        "Tokenization",
+        "Routing and admission, when a GPU is already busy",
+        "Detokenization and response streaming",
+        "GPU execution (the forward pass)"
+      ],
+      "answer": 1,
+      "explain": "Queuing delay happens at the routing/admission stage: if every GPU replica is already busy, a request waits here before any model code runs at all."
+    },
+    {
+      "q": "Why can a model-only micro-benchmark look much faster than what users actually experience in production?",
+      "options": [
+        "Micro-benchmarks use a different, more accurate clock",
+        "It only measures the GPU execution stage, missing queuing delay, cold starts, and batch-formation wait",
+        "Production servers always use slower GPUs than benchmarks",
+        "Tokenization time is impossible to measure"
+      ],
+      "answer": 1,
+      "explain": "A benchmark of the forward pass alone omits queuing delay, cold starts, and batch-formation wait — stages that often dominate real-world latency."
+    },
+    {
+      "q": "What is a \"cold start\" in the context of model serving?",
+      "options": [
+        "A request that arrives with no prompt text",
+        "The delay from loading a model's weights into GPU memory before it can serve its first request",
+        "A request that gets rejected by the load balancer",
+        "The time it takes to tokenize a very long prompt"
+      ],
+      "answer": 1,
+      "explain": "A cold start is the delay a new replica incurs loading model weights into GPU memory, which can take anywhere from seconds to a couple of minutes for a large model."
+    },
+    {
+      "q": "What is the key difference between the serving framework's job and the model runtime's job?",
+      "options": [
+        "There is no difference — they are the same layer",
+        "The serving framework handles routing, admission, scheduling, and the client protocol; the runtime executes the actual GPU forward pass",
+        "The runtime handles networking; the framework handles only tokenization",
+        "The framework only runs on CPU, while the runtime only runs on GPU"
+      ],
+      "answer": 1,
+      "explain": "The serving framework (like vLLM, TensorRT-LLM, or Triton) owns the request-handling layers, while the underlying runtime owns the actual matrix-multiplication execution on the GPU."
+    },
+    {
+      "q": "Why might a scheduler deliberately hold a request for a few extra milliseconds before running it?",
+      "options": [
+        "To intentionally punish slow clients",
+        "Because tokenization requires extra time for every request",
+        "To give dynamic batching a chance to group it with other incoming requests, trading a little latency for better throughput",
+        "Because GPUs cannot process one request at a time"
+      ],
+      "answer": 2,
+      "explain": "This is the batch-formation wait: a scheduler doing dynamic batching may hold a request briefly, hoping another request arrives to batch with it, improving overall throughput at a small latency cost."
+    }
+  ]
+}

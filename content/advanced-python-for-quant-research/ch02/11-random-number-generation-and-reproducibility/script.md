@@ -1,0 +1,25 @@
+# Script — Random Number Generation & Reproducibility
+
+## Segment 1 (title)
+
+Monte Carlo simulation, bootstrap resampling, and randomized backtests all depend on random number generation — and in research, random has to mean reproducible, not just statistically well-behaved. This closing lesson of chapter two covers the modern Generator API, seeding, and the basics of Monte Carlo estimation.
+
+## Segment 2 (code)
+
+The legacy np.random.seed followed by np.random.normal mutates a single hidden global state — risky in larger codebases, since any other code touching that same global state silently changes your results. default_rng returns an explicit Generator object you pass around instead, and two Generator instances never silently interfere with each other.
+
+## Segment 3 (code)
+
+A Generator doesn't make randomness itself — it delegates to a bit generator producing the raw stream. default_rng uses PCG64 by default, which has better statistical properties and performance than MT19937, the algorithm the legacy RandomState API used. You rarely touch the bit generator directly, but it's the swappable machinery underneath the user-facing methods.
+
+## Segment 4 (code)
+
+Running independent simulations across processes with the same seed produces identical, correlated streams, defeating the point of parallelizing. SeedSequence solves that: spawn four independent child seeds from one parent, build one Generator per worker, and the whole run stays reproducible from that single parent seed while every worker's stream is statistically independent.
+
+## Segment 5 (code)
+
+A simple Monte Carlo example: simulate terminal stock prices under geometric Brownian motion, take the discounted average payoff as the option price estimate. The standard error shrinks with the square root of the number of simulations — cutting it in half costs roughly four times as many draws — which is also exactly why the seed matters: the precise estimate depends on which random draws you happened to use.
+
+## Segment 6 (outro)
+
+Use default_rng, seed it for reproducibility, and spawn independent child seeds when parallelizing. That closes chapter two on numerical computing. Up next, lesson twelve opens chapter three: profiling and actually speeding up the Python code built on everything covered so far.

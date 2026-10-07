@@ -1,0 +1,21 @@
+# Script — Adjusting for Splits & Dividends
+
+## Segment 1 (title)
+
+Last lesson we turned prices into returns. This lesson deals with a problem that corrupts that calculation silently: the raw closing price an exchange reports isn't a clean measure of what an investor actually experienced.
+
+## Segment 2 (steps)
+
+Two corporate actions create fake price discontinuities. A 2-for-1 stock split doubles your share count and roughly halves the price — nothing happened to the company's value, but a naive return calculation sees a 50% crash that never occurred. A cash dividend mechanically drops the price by about the dividend amount on the ex-dividend date, because that cash really did leave the company — but the shareholder received it, so they aren't actually down. Computing returns on raw, unadjusted prices mistakes both of these for real gains or losses.
+
+## Segment 3 (code)
+
+Data vendors fix this with an adjusted close series, built by back-adjustment. For a split with ratio s, every price before the split date gets divided by s. For a dividend d paid at price P, every price before the ex-date gets multiplied by one minus d over P. Critically, this runs backward from today — so the most recent adjusted price still matches the live quote, while history gets scaled down underneath it.
+
+## Segment 4 (steps)
+
+There's a second distinction hiding inside "adjusted close" that's easy to blur: price return only adjusts for splits, while total return adjusts for splits and reinvested dividends. A split-only series is fine for most uses, but it understates a dividend payer's real long-run performance, since it never credits the dividend cash back. Comparing a stock to an index over ten years really calls for total return.
+
+## Segment 5 (outro)
+
+Always check which adjustment a vendor's field actually applies — splits only, or splits and dividends both — before trusting it in a backtest. Next lesson: once prices are cleaned up and converted to returns correctly, what do those returns actually look like statistically?

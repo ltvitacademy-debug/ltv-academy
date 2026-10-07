@@ -1,0 +1,60 @@
+{
+  "lesson": "designing-for-node-failure",
+  "questions": [
+    {
+      "q": "In the full failure-to-recovery timeline, what is the correct order of major steps after a node starts failing?",
+      "options": [
+        "Replace the node first, then detect the failure, then resume training",
+        "Detect the failure, cordon the bad node, re-form the job's process group at reduced size, resume from the last checkpoint, then provision a replacement node",
+        "Resume from checkpoint first, then detect the failure afterward",
+        "Drain the node permanently with no replacement ever provisioned"
+      ],
+      "answer": 1,
+      "explain": "The sequence runs: detection (timeout or health check) -> cordon the bad node -> elastic re-formation at reduced world size -> checkpoint resume -> replacement node provisioning, with the bad node's own diagnostics happening separately."
+    },
+    {
+      "q": "What is the difference between kubectl cordon and kubectl drain?",
+      "options": [
+        "They are identical commands with different names",
+        "cordon marks a node unschedulable for new Pods without touching what's already running; drain additionally evicts the Pods already running on it",
+        "cordon deletes a node permanently; drain only pauses it temporarily",
+        "drain only works on GPU nodes; cordon only works on CPU nodes"
+      ],
+      "answer": 1,
+      "explain": "cordon stops the scheduler from placing new Pods on a node but leaves existing Pods running. drain goes further and evicts existing Pods too, which is needed before hardware diagnostics or repair can safely proceed."
+    },
+    {
+      "q": "Why does the Solara ML Platform team run node-level health checks (like checking for ECC/Xid errors) independent of any specific training job?",
+      "options": [
+        "Because NCCL's own collective timeout is the fastest possible way to detect a problem",
+        "Because waiting for a hung collective to time out is the slowest detection path, so catching a degrading GPU earlier via direct hardware checks lets it be cordoned before it ever causes a job's collective to hang",
+        "Because Kubernetes requires a separate health check for every Pod individually",
+        "Because training jobs cannot report their own errors under any circumstance"
+      ],
+      "answer": 1,
+      "explain": "Relying solely on a hung collective's timeout to notice trouble is slow (can take minutes) and only triggers after the damage (a hang) has already occurred. Independent node-level checks can catch degradation proactively."
+    },
+    {
+      "q": "Why does the training job's recovery not wait for the failed node to be fully drained and diagnosed first?",
+      "options": [
+        "Because draining and diagnosis happen before the job can even detect the failure",
+        "Because cordon/drain actions on the node are decoupled from the job's elastic re-formation — the job moves on with the ranks it has while the bad node's remediation proceeds in parallel on its own timeline",
+        "Because Kubernetes forbids running any job until all nodes are healthy",
+        "Because drained nodes are automatically deleted, making diagnosis impossible"
+      ],
+      "answer": 1,
+      "explain": "The job's path (re-form, resume from checkpoint) and the node's path (cordon, drain, diagnose, repair) run independently and in parallel, so the job isn't blocked waiting on hardware remediation."
+    },
+    {
+      "q": "Why does this lesson emphasize designing for 'repeated' failure rather than planning for a single rehearsed failure event?",
+      "options": [
+        "Because a single training run on 512 GPUs over weeks should, by the failure-rate math from earlier in the chapter, expect this detect-cordon-resume-replace sequence to happen more than once",
+        "Because repeated failure is purely a hypothetical that never actually occurs in practice",
+        "Because Kubernetes only supports handling one failure per cluster lifetime",
+        "Because checkpoint intervals reset to zero after the first failure, making subsequent failures free"
+      ],
+      "answer": 0,
+      "explain": "Given the compounding failure probability across 512 GPUs over weeks (covered in the chapter's opening lesson), the platform must be designed and tested to handle this recovery sequence recurring multiple times over a run's life, not just once."
+    }
+  ]
+}

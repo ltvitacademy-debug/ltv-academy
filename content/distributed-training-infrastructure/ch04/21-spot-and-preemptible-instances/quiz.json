@@ -1,0 +1,60 @@
+{
+  "lesson": "spot-and-preemptible-instances",
+  "questions": [
+    {
+      "q": "Why can't the Master (rank 0) pod safely run on a spot instance without extra handling, while a Worker pod can?",
+      "options": [
+        "Master pods require more GPU memory than spot instances provide",
+        "The Master anchors the rendezvous address and drives checkpoint writes, so losing its node loses the entire job's coordination point, not just one worker's GPUs",
+        "Spot instances cannot run containers at all",
+        "AWS does not allow rank-0 processes on spot instances by policy"
+      ],
+      "answer": 1,
+      "explain": "The Master plays a distinguished coordination role. If its node is reclaimed, the whole job loses the point everything else was rendezvousing through — a much larger blast radius than losing an individual Worker."
+    },
+    {
+      "q": "Roughly how much advance warning does AWS give before actually terminating a spot instance, and what is the practical implication?",
+      "options": [
+        "About 2 minutes — short enough that only an automated response can react in time",
+        "About 24 hours — long enough for a human to manually intervene",
+        "No warning at all is ever given",
+        "Exactly 500 training steps worth of time"
+      ],
+      "answer": 0,
+      "explain": "AWS's spot interruption notice gives roughly 2 minutes before termination. That window is far too short for human reaction time, so any handling of it has to be fully automated."
+    },
+    {
+      "q": "Why does Solara AI's interruption-handling code trigger an emergency checkpoint save immediately upon seeing the interruption notice, rather than waiting for the next scheduled checkpoint?",
+      "options": [
+        "Because scheduled checkpoints are disabled when running on spot instances",
+        "Because the instance may be terminated before the next ~500-step/~30-minute scheduled checkpoint would occur, so an out-of-cycle save is the only way to capture progress before losing the node",
+        "Because emergency checkpoints are smaller and faster than scheduled ones",
+        "Because AWS requires an emergency checkpoint before allowing any spot termination"
+      ],
+      "answer": 1,
+      "explain": "The ~2-minute interruption window could occur at any point between scheduled checkpoints, potentially discarding up to ~30 minutes of progress if nothing is done — triggering an immediate save minimizes that loss."
+    },
+    {
+      "q": "Why is a roughly 60-90% cost discount typically available for spot/preemptible instances in the first place?",
+      "options": [
+        "Cloud providers lose money on spot instances deliberately as a promotional strategy",
+        "The provider is selling capacity that would otherwise sit idle, on the condition it can reclaim it on short notice if a higher-paying customer needs it",
+        "Spot instances use older, slower hardware than on-demand instances",
+        "The discount only applies to instances with no GPU attached"
+      ],
+      "answer": 1,
+      "explain": "Spot/preemptible pricing monetizes otherwise-idle capacity. The discount exists specifically because the customer accepts the risk of losing that capacity with little warning."
+    },
+    {
+      "q": "Why is the GCP preemption notice (around 30 seconds) more operationally demanding to handle than AWS's spot interruption notice (around 2 minutes)?",
+      "options": [
+        "It isn't more demanding — the two are functionally identical in every respect",
+        "The much shorter window leaves less time for an emergency checkpoint's parallel, sharded write to complete before the instance is actually reclaimed",
+        "GCP preemptible VMs cannot run GPU workloads at all",
+        "GCP requires manual approval before any checkpoint can be saved"
+      ],
+      "answer": 1,
+      "explain": "A shorter advance-warning window means the emergency checkpoint save has less time to complete before the node disappears, making the margin for error tighter on GCP than on AWS."
+    }
+  ]
+}

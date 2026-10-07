@@ -1,0 +1,23 @@
+## Segment 1 (title)
+
+Every image Northbridge has used so far was built by someone else. This lesson writes the first one themselves -- a Dockerfile that packages the product-catalog app's own code into an image anyone can run.
+
+## Segment 2 (code)
+
+FROM node 20 slim starts from an official base image. WORKDIR app sets where every later instruction runs from. COPY brings the dependency manifests in first, RUN npm install bakes the dependencies in as a build step, then COPY dot dot brings in the rest of the application code. EXPOSE documents the port, and CMD sets the command that runs when a container starts from this image.
+
+## Segment 3 (steps)
+
+So reading top to bottom: FROM and WORKDIR pick the base image and set the working directory. COPY and RUN bring files in and install dependencies as a build step. EXPOSE and CMD document the port and set the default startup command.
+
+## Segment 4 (code)
+
+docker build dash t tags the resulting image with a name and version. The dot at the end is the build context -- the directory Docker reads the Dockerfile and COPY sources from. Each instruction becomes its own step in the build output.
+
+## Segment 5 (code)
+
+Running it uses the exact same docker run flags from Lesson Six -- dash d, dash dash name, dash p -- only now the image is one Northbridge built themselves, not one they pulled from Docker Hub.
+
+## Segment 6 (outro)
+
+That's a basic Dockerfile, built and running. Next up: why copying the dependency files before the rest of the code actually matters, once you understand layers and caching.

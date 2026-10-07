@@ -1,0 +1,43 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ML Infrastructure & Platform Engineering · Chapter 4",
+    "titlePlain": "Building a Reproducible ",
+    "titleEmphasis": "Training Pipeline",
+    "titleSuffix": "",
+    "subtitle": "Lesson 17 · What a stranger needs to get your exact model"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Five commitments, not one setting",
+    "titlePlain": "What \"reproducible\" ",
+    "titleEmphasis": "actually requires",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Pinned dependencies", "sub": "Lockfile or image digest, never \"latest\"" },
+      { "label": "Fixed seeds", "sub": "numpy, torch, every RNG explicitly seeded" },
+      { "label": "Versioned data", "sub": "A snapshot or hash, not a live table" },
+      { "label": "Code + config captured", "sub": "Git SHA and full hyperparameter object" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Inside an Airflow TaskFlow task",
+    "code": "@task\ndef train_with_reproducibility(data_uri, config):\n    np.random.seed(config[\"seed\"])\n    torch.manual_seed(config[\"seed\"])\n    sha = get_git_sha()\n\n    with mlflow.start_run():\n        mlflow.log_params(config)\n        mlflow.log_param(\"git_sha\", sha)\n        model = fit_model(data_uri, config)\n        metrics = evaluate(model)\n        if metrics[\"auc\"] >= config[\"min_auc\"]:\n            mlflow.register_model(model, \"fraud\")",
+    "caption": "All five commitments, captured in one place, every time the task runs."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Same logic, pinned KFP component",
+    "code": "@dsl.component(\n    base_image=\"python:3.11-slim@sha256:9c7f...\",\n    packages_to_install=[\"torch==2.4.0\"],\n)\ndef train(data_uri: str, config: dict,\n           model: Output[Model]):\n    np.random.seed(config[\"seed\"])\n    torch.manual_seed(config[\"seed\"])\n    with mlflow.start_run():\n        mlflow.log_params(config)\n        clf = fit_model(data_uri, config)\n        save_model(clf, model.path)",
+    "caption": "The base_image digest pins the environment; the body still seeds, logs, and trains."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 18",
+    "titlePlain": "Pipeline Scheduling ",
+    "titleEmphasis": "& Triggers",
+    "titleSuffix": "",
+    "subtitle": "How these pipelines actually get kicked off."
+  }
+]

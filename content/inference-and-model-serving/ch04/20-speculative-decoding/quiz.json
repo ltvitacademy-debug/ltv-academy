@@ -1,0 +1,60 @@
+{
+  "lesson": "speculative-decoding",
+  "questions": [
+    {
+      "q": "What resource does speculative decoding spend in order to reduce the number of sequential decode steps?",
+      "options": [
+        "Extra GPU memory for the KV cache",
+        "Extra GPU compute, which decode's memory-bound nature normally leaves underused",
+        "Extra network bandwidth between GPUs",
+        "Extra disk storage for model checkpoints"
+      ],
+      "answer": 1,
+      "explain": "Decode is memory-bound, meaning the GPU's compute units are often underused during normal decode. Speculative decoding spends that spare compute verifying multiple drafted tokens in one parallel pass."
+    },
+    {
+      "q": "What roles do the draft model and target model play?",
+      "options": [
+        "The draft model is the final authority; the target model only proposes tokens",
+        "The draft model quickly proposes several candidate tokens; the target model verifies all of them in a single parallel forward pass",
+        "Both models run completely independently with no verification step",
+        "The target model is always smaller and faster than the draft model"
+      ],
+      "answer": 1,
+      "explain": "A small, fast draft model proposes several tokens in a row, and the large target model checks all of them at once in a parallel forward pass rather than one sequential step per token."
+    },
+    {
+      "q": "Why is the verification step described as more than just 'checking for a match'?",
+      "options": [
+        "Because it skips verification entirely and trusts the draft model",
+        "Because it uses a rejection-sampling procedure that guarantees the final output has exactly the same probability distribution as standard decoding",
+        "Because it always rejects every drafted token regardless of accuracy",
+        "Because it only verifies the first drafted token and ignores the rest"
+      ],
+      "answer": 1,
+      "explain": "The verification procedure is a specific rejection-sampling method that preserves the target model's exact output distribution, making speculative decoding a speed optimization rather than a quality trade-off."
+    },
+    {
+      "q": "What happens when a drafted token is rejected during verification?",
+      "options": [
+        "The entire request is cancelled and restarted from the beginning",
+        "Everything after that token in the draft is discarded, and the target model samples that position itself before continuing",
+        "The draft model is immediately replaced with a different model",
+        "Nothing — rejected tokens are used anyway"
+      ],
+      "answer": 1,
+      "explain": "On rejection, the drafted tokens after that point are discarded, and the target model re-samples the rejected position itself, after which drafting can resume from there."
+    },
+    {
+      "q": "Why is acceptance rate the key metric for deciding whether speculative decoding is worthwhile?",
+      "options": [
+        "Acceptance rate measures how much GPU memory the draft model uses",
+        "If acceptance rate is low, the cost of running the draft model isn't recovered, since verification still mostly falls back to one-token-at-a-time generation",
+        "Acceptance rate has no effect on whether speculative decoding helps",
+        "Acceptance rate only matters when using prompt lookup decoding"
+      ],
+      "answer": 1,
+      "explain": "Speculative decoding only pays off when drafted tokens are accepted often enough to offset the cost of drafting. A low acceptance rate means most steps still fall back to standard sequential decoding."
+    }
+  ]
+}

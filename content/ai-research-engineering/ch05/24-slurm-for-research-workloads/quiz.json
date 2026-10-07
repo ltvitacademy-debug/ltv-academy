@@ -1,0 +1,60 @@
+{
+  "lesson": "slurm-for-research-workloads",
+  "questions": [
+    {
+      "q": "What problem does a Slurm job array solve for a hyperparameter sweep?",
+      "options": [
+        "It automatically picks the best hyperparameters without running any trials",
+        "It lets the entire sweep be submitted as a single job with an index, instead of one sbatch call per trial",
+        "It merges all trials into a single GPU process to save memory",
+        "It disables logging for all trials to save disk space"
+      ],
+      "answer": 1,
+      "explain": "A job array (#SBATCH --array=0-39) submits one Slurm job that spawns many indexed task instances, each accessible via $SLURM_ARRAY_TASK_ID, avoiding the need to submit each sweep trial as a separate sbatch call."
+    },
+    {
+      "q": "What does $SLURM_ARRAY_TASK_ID provide inside a job array script?",
+      "options": [
+        "The total number of GPUs available on the cluster",
+        "A unique index for each array element, usable to select a different config file or input per trial",
+        "The current fair-share priority of the submitting user",
+        "The git commit hash of the code being run"
+      ],
+      "answer": 1,
+      "explain": "Each task in a job array gets a unique $SLURM_ARRAY_TASK_ID value, which the script can use (e.g. to index into an array of config files) to run a different trial per array element."
+    },
+    {
+      "q": "For a multi-node, multi-GPU distributed training job, why must the Slurm resource request match what the training launcher (e.g. torch.distributed.run) expects?",
+      "options": [
+        "Mismatches only cause a minor slowdown, never a failure",
+        "If they don't match, ranks may fail to find each other or sit idle waiting for processes that were never scheduled",
+        "Slurm automatically adjusts the launcher's settings to match its own allocation",
+        "The launcher ignores Slurm's resource allocation entirely"
+      ],
+      "answer": 1,
+      "explain": "The Slurm allocation (--nodes, --ntasks-per-node, --gres) and the distributed launcher's own settings (--nnodes, --nproc_per_node) both describe the same topology; a mismatch between them causes ranks to fail to rendezvous or sit idle."
+    },
+    {
+      "q": "What is the key difference between squeue and sacct?",
+      "options": [
+        "squeue and sacct are two names for the exact same command",
+        "squeue shows the live queue (pending/running jobs); sacct shows completed job history including exit codes",
+        "sacct only works for job arrays, while squeue works for all jobs",
+        "squeue shows historical jobs; sacct shows only currently running jobs"
+      ],
+      "answer": 1,
+      "explain": "squeue -u $USER shows a user's currently pending/running jobs. sacct queries completed/historical job records, including exit codes, which is the right tool for diagnosing why a job that's no longer in the live queue failed."
+    },
+    {
+      "q": "What do the %A and %a tokens expand to in a Slurm --output path for a job array?",
+      "options": [
+        "The researcher's username and the current date",
+        "The array job's overall job ID (%A) and the individual array task's ID (%a)",
+        "The GPU model and the node hostname",
+        "The git branch name and commit hash"
+      ],
+      "answer": 1,
+      "explain": "%A expands to the array job's ID and %a to the specific array task ID, so each trial in a job array gets routed automatically to its own uniquely named log file."
+    }
+  ]
+}

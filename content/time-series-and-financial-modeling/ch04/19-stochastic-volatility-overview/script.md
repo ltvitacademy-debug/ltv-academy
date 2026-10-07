@@ -1,0 +1,21 @@
+# Script — Stochastic Volatility Overview
+
+## Segment 1 (title)
+
+Every model in the last two lessons makes conditional variance an exact function of past observed data. Stochastic volatility models take a different stance: volatility itself is a latent random process, driven by its own separate source of randomness. This lesson gives a conceptual overview and contrasts the two approaches.
+
+## Segment 2 (steps)
+
+In GARCH, variance is pinned down exactly by yesterday's shock and yesterday's variance — no new randomness enters that equation. In a stochastic volatility model, log-volatility follows its own stochastic process with its own innovation, completely separate from the shock driving returns. Because volatility is never directly observed, even given the full history of returns, there's genuine residual uncertainty about its exact current value — it's a latent variable, not something you can compute exactly the way GARCH's variance is.
+
+## Segment 3 (code)
+
+The canonical discrete-time version has returns equal to volatility times a standard normal shock, and log-volatility following something like an AR one process in log space, with its own separate normal innovation. One shock drives the return, a different one drives the volatility.
+
+## Segment 4 (steps)
+
+Because that volatility process sits unobserved between the data and the likelihood, standard maximum likelihood estimation doesn't apply cleanly the way it does for GARCH — you need particle filters or Markov chain Monte Carlo methods instead, and neither is a one-line fit call. That extra estimation burden is the main reason GARCH models remain far more common in everyday risk and trading use. The continuous-time cousin of this idea is the Heston model, popular in options pricing because it can reproduce the volatility smile that a constant-volatility model can't.
+
+## Segment 5 (outro)
+
+GARCH makes volatility a deterministic function of past data; stochastic volatility treats it as its own latent random process, more flexible but much harder to estimate. Next, lesson twenty closes the chapter by putting GARCH-style forecasts to work in real risk management.

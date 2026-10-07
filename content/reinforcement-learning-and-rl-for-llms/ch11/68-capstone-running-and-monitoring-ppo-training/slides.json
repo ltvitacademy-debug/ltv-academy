@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Reinforcement Learning & RL for LLMs · Chapter 11",
+    "titlePlain": "Capstone: Running & Monitoring ",
+    "titleEmphasis": "PPO Training",
+    "titleSuffix": "",
+    "subtitle": "Lesson 68 · Capstone: Train a Model With PPO on a Verifiable-Reward Task"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Wiring up TRL's PPOTrainer",
+    "code": "from trl import PPOTrainer, PPOConfig, AutoModelForCausalLMWithValueHead\n\nconfig = PPOConfig(\n    model_name=\"Qwen/Qwen2.5-0.5B-Instruct\",\n    learning_rate=1e-5,\n    batch_size=64,\n    mini_batch_size=8,\n)\nmodel = AutoModelForCausalLMWithValueHead.from_pretrained(config.model_name)\nref_model = AutoModelForCausalLMWithValueHead.from_pretrained(config.model_name)\n\nppo_trainer = PPOTrainer(config, model, ref_model, tokenizer, dataset=train_set)",
+    "caption": "The frozen reference model is what the KL penalty measures distance from"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Generate, score, step",
+    "code": "for batch in ppo_trainer.dataloader:\n    query_tensors = batch[\"input_ids\"]\n    response_tensors = ppo_trainer.generate(query_tensors, max_new_tokens=256)\n    responses = tokenizer.batch_decode(response_tensors, skip_special_tokens=True)\n\n    rewards = [torch.tensor(verify_reward(r, gt))\n               for r, gt in zip(responses, batch[\"ground_truth\"])]\n\n    stats = ppo_trainer.step(query_tensors, response_tensors, rewards)",
+    "caption": "step() computes advantages, the clipped objective, and the KL penalty in one call"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Watch these together, live",
+    "titlePlain": "Four signals, ",
+    "titleEmphasis": "not one",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Mean reward trending up", "sub": "not just a single spike" },
+      { "label": "KL from reference policy", "sub": "gradual rise, not a sudden explosion" },
+      { "label": "Response length drift", "sub": "a telltale reward-hacking symptom" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 69",
+    "titlePlain": "Capstone: Evaluation Against ",
+    "titleEmphasis": "Baseline",
+    "titleSuffix": "",
+    "subtitle": "Did the training run actually improve the model?"
+  }
+]

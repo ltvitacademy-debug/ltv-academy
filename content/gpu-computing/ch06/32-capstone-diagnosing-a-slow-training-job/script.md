@@ -1,0 +1,21 @@
+# Script — Capstone: Diagnosing a Slow Training Job
+
+## Segment 1 (title)
+
+This is the final lesson of GPU Computing. Instead of a new concept, it walks through one realistic scenario end to end: a four-GPU job suddenly taking twice as long per epoch, with no code changes to the model itself.
+
+## Segment 2 (steps)
+
+The diagnostic order matters more than any single tool. Start with nvidia-smi dmon to rule out a straggler GPU. Then time the gap between batches to rule out a CPU-bound data loader. Then check the NCCL transport log to rule out a slow all-reduce path. Only then, open a full profiler to look at the kernel itself.
+
+## Segment 3 (code)
+
+Here, all four GPUs sit around thirty-five percent utilization, fairly evenly — that rules out one bad card and points toward every GPU waiting on something upstream, not computing.
+
+## Segment 4 (code)
+
+Checking the NCCL debug log confirms whether the all-reduce is still using NVLink, or has silently fallen back to a slower path — something that can happen invisibly after a driver update or a change in which physical GPUs a job lands on.
+
+## Segment 5 (outro)
+
+Every tool in this walkthrough — nvidia-smi, data loader timing, NCCL logs, Nsight — was introduced earlier in this course. GPU Computing is complete: architecture, CUDA, memory, PyTorch, multi-GPU, and cluster scheduling, all in service of one diagnostic habit — cheap and broad first, expensive and detailed last.

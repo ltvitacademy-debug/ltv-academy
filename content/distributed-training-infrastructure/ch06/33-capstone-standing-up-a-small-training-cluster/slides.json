@@ -1,0 +1,44 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Distributed Training Infrastructure · Chapter 6",
+    "titlePlain": "Capstone: Standing Up a Small ",
+    "titleEmphasis": "Training Cluster",
+    "titleSuffix": "",
+    "subtitle": "Lesson 33 · Monitoring & Cost Management for Training Clusters"
+  },
+  {
+    "type": "code",
+    "eyebrow": "A real PyTorchJob, 1 master + 3 workers",
+    "code": "kubectl apply -k \"github.com/kubeflow/training-operator/manifests/overlays/standalone\"\n\n# capstone-pytorchjob.yaml\nspec:\n  pytorchReplicaSpecs:\n    Master:\n      replicas: 1\n      template:\n        spec:\n          containers:\n            - command: [\"torchrun\", \"--nnodes=4\",\n                         \"--nproc_per_node=1\", \"train.py\"]\n    Worker:\n      replicas: 3\n      template: { ... same container ... }",
+    "caption": "Drop nvidia.com/gpu from resources entirely to run this CPU-only."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Injected automatically — don't set these yourself",
+    "code": "dist.init_process_group(backend=\"nccl\")  # \"gloo\" for CPU-only\nrank = dist.get_rank()\nworld_size = dist.get_world_size()\n# world_size == 4, distinct rank per pod -> genuinely distributed\n\nmodel = FSDP(model)\ndcp.save({\"model\": model.state_dict()},\n         checkpoint_id=\"s3://your-bucket/capstone-checkpoints/step-500\")",
+    "caption": "MASTER_ADDR, MASTER_PORT, RANK, and WORLD_SIZE come from the Training Operator, not from you."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The whole capstone, in order",
+    "titlePlain": "Five steps, ",
+    "titleEmphasis": "end to end",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "1. Install operator", "sub": "the controller that watches PyTorchJob objects" },
+      { "label": "2. Submit PyTorchJob", "sub": "1 master + 3 workers" },
+      { "label": "3. Verify distributed", "sub": "world_size 4, distinct rank per pod" },
+      { "label": "4. FSDP + DCP", "sub": "shard the model, checkpoint to S3-compatible storage" },
+      { "label": "5. kubectl monitoring", "sub": "status + logs across every worker at once" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 34 · Final lesson",
+    "titlePlain": "Capstone ",
+    "titleEmphasis": "Write-Up",
+    "titleSuffix": "",
+    "subtitle": "What you built, what you'd change at 10x and 100x scale."
+  }
+]

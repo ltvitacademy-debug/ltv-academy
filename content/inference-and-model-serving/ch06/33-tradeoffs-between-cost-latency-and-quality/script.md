@@ -1,0 +1,21 @@
+# Script — Trade-offs Between Cost, Latency & Quality
+
+## Segment 1 (title)
+
+This lesson closes chapter six, and with it, the main body of the course. Every lesson since chapter three has, underneath its specific topic, been adjusting one of three dials: cost, latency, and quality. This lesson names that trade-off explicitly.
+
+## Segment 2 (steps)
+
+In almost every serving decision, you can improve two of these at the expense of the third, rarely all three at once. A bigger model raises quality but costs more and usually adds latency. Aggressive quantization or a smaller model lowers cost and latency but risks giving up quality. More replicas lower latency under load but raise cost directly, since every extra replica is paid for whether it's fully used or not.
+
+## Segment 3 (steps)
+
+Quantization, pruning, and distillation from chapter three move along the cost and latency side at a real, measured quality cost. The KV cache, paged attention, and continuous batching from chapter four are mostly free wins — they compute the same result more efficiently rather than approximating it, so they raise throughput without touching quality. And this chapter's autoscaling, routing, benchmarking, and SLOs are mostly about cost and latency under real traffic, largely separate from the model's own quality.
+
+## Segment 4 (steps)
+
+A more durable approach than optimizing cost first: set the quality floor and latency ceiling from actual requirements first, take the free wins from chapter four before trading any quality away, and only then minimize cost within whatever that leaves you. Optimizing cost first and backfilling quality afterward is how teams quietly ship a worse product to save money they didn't need to save.
+
+## Segment 5 (outro)
+
+Cost, latency, and quality trade off against each other in almost every decision this course has covered — set the floor and ceiling first, take the free wins, then minimize cost. That closes chapter six. Up next, the capstone: lesson thirty-four kicks off the project where you'll make every one of these trade-offs for real.

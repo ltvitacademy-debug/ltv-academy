@@ -1,0 +1,60 @@
+{
+  "lesson": "building-a-custom-query-optimization-environment",
+  "questions": [
+    {
+      "q": "Which two methods does every gymnasium.Env subclass implement to be usable by stable-baselines3?",
+      "options": [
+        "connect() and disconnect()",
+        "reset() and step()",
+        "train() and evaluate()",
+        "sample() and score()"
+      ],
+      "answer": 1,
+      "explain": "reset() starts a new episode and returns an observation; step() takes an action and returns the next observation, reward, and termination flags."
+    },
+    {
+      "q": "What does QueryPlanEnv's reset() method actually do?",
+      "options": [
+        "Executes the hinted SQL query against the sandbox",
+        "Samples a fresh (date_range_days, territory) pair and returns an observation, without touching the database",
+        "Trains the PPO policy for one step",
+        "Clears all previously logged logical-read statistics"
+      ],
+      "answer": 1,
+      "explain": "reset() only samples the episode's parameters and builds the observation vector — no SQL executes until step() is called."
+    },
+    {
+      "q": "How does the environment capture logical reads for a query?",
+      "options": [
+        "By estimating them from the query's text length",
+        "By running SET STATISTICS IO ON and parsing the resulting messages on the pyodbc cursor",
+        "By calling a stable-baselines3 built-in cost estimator",
+        "By reading them from the SQL Server query plan XML only"
+      ],
+      "answer": 1,
+      "explain": "SET STATISTICS IO ON makes SQL Server emit per-table read statistics as messages, which pyodbc exposes on the cursor and a small parser extracts."
+    },
+    {
+      "q": "What do step()'s terminated and truncated flags get set to, and why?",
+      "options": [
+        "terminated=False, truncated=True, because episodes never end",
+        "terminated=True, truncated=False, because one query decision is the entire episode",
+        "Both True, because every episode hits a time limit",
+        "Both False, because the environment loops forever"
+      ],
+      "answer": 1,
+      "explain": "Every episode ends after exactly one step — there's no horizon to truncate, matching the contextual-bandit framing from Lesson 4."
+    },
+    {
+      "q": "Why does the QueryPlanEnv constructor take a precomputed list of territories with their customer counts, rather than querying it fresh each episode?",
+      "options": [
+        "SQL Server does not allow repeated SELECT queries",
+        "It makes the territory-size proxy in the observation cheap to compute at reset time",
+        "stable-baselines3 requires all observations to be hardcoded",
+        "Customer counts change every time a query runs"
+      ],
+      "answer": 1,
+      "explain": "Precomputing the territory list avoids an extra database round-trip on every reset() call just to build part of the observation."
+    }
+  ]
+}

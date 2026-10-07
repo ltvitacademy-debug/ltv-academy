@@ -1,0 +1,60 @@
+{
+  "lesson": "allreduce-and-allgather-conceptually",
+  "questions": [
+    {
+      "q": "What are the two phases of the ring AllReduce algorithm, in order?",
+      "options": [
+        "Broadcast, then reduce",
+        "Scatter-reduce, then all-gather",
+        "All-gather, then scatter-reduce",
+        "Reduce, then broadcast"
+      ],
+      "answer": 1,
+      "explain": "Ring AllReduce first runs scatter-reduce, where each GPU ends up holding one fully-reduced piece of the result, then all-gather, where those pieces circulate so every GPU ends up with the complete result."
+    },
+    {
+      "q": "Why is ring AllReduce described as 'bandwidth-optimal'?",
+      "options": [
+        "Because it uses zero bandwidth",
+        "Because each GPU's total traffic approaches a constant (≈2S) as N grows, independent of the number of GPUs participating",
+        "Because it only works with exactly 2 GPUs",
+        "Because it eliminates the need for a network entirely"
+      ],
+      "answer": 1,
+      "explain": "Per-GPU traffic in ring AllReduce is 2×(N-1)/N×S, which approaches a constant 2S as N grows large — meaning the data volume any single GPU must move doesn't increase just because more GPUs join the collective."
+    },
+    {
+      "q": "What is the main drawback of the ring AllReduce algorithm at very large GPU counts?",
+      "options": [
+        "It uses too much GPU memory",
+        "It requires 2(N-1) total sequential communication steps, and the fixed per-step latency overhead adds up at large N",
+        "It cannot be used with FSDP",
+        "It only works over Ethernet, never InfiniBand"
+      ],
+      "answer": 1,
+      "explain": "Even though ring AllReduce's bandwidth cost per GPU stays flat, it requires 2(N-1) sequential steps. At very large N, the fixed latency overhead of each step accumulates, which is where tree-based algorithms become more attractive."
+    },
+    {
+      "q": "How does a tree algorithm address ring AllReduce's weakness at scale?",
+      "options": [
+        "It eliminates the need for any network bandwidth",
+        "It reduces the number of sequential steps to roughly log(N), trading a bit more bandwidth for lower latency",
+        "It only works for Broadcast operations, not AllReduce",
+        "It requires every GPU to be on the same physical node"
+      ],
+      "answer": 1,
+      "explain": "Tree algorithms cut the number of sequential communication steps down to roughly log(N) instead of ring's 2(N-1), reducing latency at large scale at the cost of somewhat higher bandwidth usage. NCCL_ALGO controls which algorithm is selected."
+    },
+    {
+      "q": "How does FSDP's use of ReduceScatter plus AllGather relate to a single ring AllReduce operation?",
+      "options": [
+        "They are completely unrelated algorithms with no shared structure",
+        "ReduceScatter and AllGather together are structurally similar to splitting AllReduce's two phases apart across the forward and backward passes",
+        "AllGather replaces the need for any reduction operation in FSDP",
+        "ReduceScatter is only used for model inference, never training"
+      ],
+      "answer": 1,
+      "explain": "Ring AllReduce's scatter-reduce phase mirrors ReduceScatter, and its all-gather phase mirrors AllGather. FSDP splits these two phases apart, using ReduceScatter for gradients and AllGather for parameters, effectively spreading one AllReduce's work across the training step."
+    }
+  ]
+}

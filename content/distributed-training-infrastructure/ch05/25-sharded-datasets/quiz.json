@@ -1,0 +1,60 @@
+{
+  "lesson": "sharded-datasets",
+  "questions": [
+    {
+      "q": "What is a \"shard\" in the context of a training dataset?",
+      "options": [
+        "A single training sample stored as its own object",
+        "A fixed-size bundle of many samples, commonly packed into a tar file and read sequentially",
+        "A checkpoint of model weights split across GPUs",
+        "A partition of the GPU's memory reserved for data loading"
+      ],
+      "answer": 1,
+      "explain": "A shard packs hundreds or thousands of samples into one file, so reading it is one sequential, streamable request instead of many tiny ones."
+    },
+    {
+      "q": "What problem does the WebDataset tar-shard pattern specifically solve?",
+      "options": [
+        "It reduces the model's parameter count",
+        "It replaces the per-sample request overhead of small-object storage with sequential, streamable reads",
+        "It eliminates the need for data shuffling",
+        "It compresses model checkpoints for faster upload to S3"
+      ],
+      "answer": 1,
+      "explain": "By packing many samples into one archive and streaming through it, WebDataset avoids turning every sample into its own storage request."
+    },
+    {
+      "q": "Why does the lesson recommend that shard count significantly outnumber the total worker count across the cluster?",
+      "options": [
+        "More shards always means better model accuracy",
+        "So that workers have spare shards to move to and don't stall waiting for one slow shard to finish",
+        "Because S3 requires at least one shard per GPU",
+        "To make the dataset smaller on disk"
+      ],
+      "answer": 1,
+      "explain": "With too few, oversized shards relative to worker count, some workers end up idle waiting for a shard to finish streaming with no next one ready."
+    },
+    {
+      "q": "Why doesn't true random-access shuffling work well for a multi-terabyte corpus in object storage?",
+      "options": [
+        "Random access is actually faster than sequential reads on object storage",
+        "Jumping to arbitrary offsets across streaming object storage is inefficient compared to sequential reads",
+        "Object storage doesn't support any form of randomization",
+        "Random access would exceed the GPU's memory capacity"
+      ],
+      "answer": 1,
+      "explain": "Object storage is optimized for sequential, streamable access; true random-access shuffling at scale conflicts with that, so shard-level and in-buffer shuffling approximate it instead."
+    },
+    {
+      "q": "In WebDataset's two-level shuffling, what does the in-memory shuffle buffer (e.g. `.shuffle(5000)`) do?",
+      "options": [
+        "It randomizes which shard a worker reads next",
+        "It permanently reorders the shard files on disk",
+        "It randomizes sample order within a sliding window as a shard streams past",
+        "It deletes samples that have already been seen"
+      ],
+      "answer": 2,
+      "explain": "The in-memory buffer holds a sliding window of samples and emits them in randomized order, approximating randomness without requiring random-access reads."
+    }
+  ]
+}

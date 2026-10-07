@@ -1,0 +1,21 @@
+# Script — Combining & Ensembling Models
+
+## Segment 1 (title)
+
+Every model in this chapter has a different failure mode. Ridge is stable but can't capture non-linear interactions. Trees capture interactions but can be unstable. Boosting is powerful but overfits easily if under regularized. Neural nets need a lot of data to earn their place. Ensembling combines several models so their individual mistakes don't line up, and in a low signal environment, that's often worth more than any single model's extra sophistication.
+
+## Segment 2 (steps)
+
+In portfolio theory, combining uncorrelated assets reduces risk without sacrificing expected return, and the same logic applies to models. If ridge, a random forest, and a boosted tree each make different mistakes, because they have different biases and see the data differently, averaging their predictions cancels out some of each model's idiosyncratic error while keeping whatever real signal all of them are picking up on. Because financial signal is so faint to begin with, this error cancellation is often a bigger practical win than finding one marginally better model.
+
+## Segment 3 (code)
+
+Voting regressor is scikit learn's built in tool for this. It fits every base model you give it, here ridge, a random forest, and xgboost, and combines their predictions with fixed weights, equal by default, or tuned through validation if you want.
+
+## Segment 4 (code)
+
+Stacking regressor goes a step further. Instead of a fixed average, it trains a simple meta model, often a plain linear model, on the base models' out of fold predictions, learning how to weight each one's contribution. One important catch: the cross validation setting inside stacking regressor needs a walk forward or purged splitter on real financial data, not a plain k fold, for the same leakage reasons covered earlier in this course.
+
+## Segment 5 (outro)
+
+Combining models with different failure modes to cancel out idiosyncratic error is often more valuable than chasing one best model. That wraps up chapter two's supervised toolkit. The course continues from here into chapter three, unsupervised learning in finance, starting with clustering assets and regimes.

@@ -1,0 +1,25 @@
+# Script — Classes & Encapsulation
+
+## Segment 1 (title)
+
+The last two chapters had you working with raw data — built-in types, pointers, memory you managed by hand. This lesson introduces the tool C++ gives you to stop passing that data around naked: the class. Every real quant library, from a pricing engine to an order management system, is built from classes that hide their internals and expose a narrow, deliberate interface.
+
+## Segment 2 (steps)
+
+Struct and class are actually the same language feature, with exactly one difference: a struct's members are public by default, a class's members are private by default. That's the whole distinction. Convention uses struct for plain data bags, and class for types that own behavior and need to protect their own invariants.
+
+## Segment 3 (code)
+
+Here's a Position class that protects itself. Quantity and average price are both private, and the only way to change them is through one method, addFill, which recomputes both together. A caller can never update quantity without updating average price to match, because there's no door into the object that lets them do that.
+
+## Segment 4 (steps)
+
+Encapsulation needs objects built correctly from the moment they exist, and that's the constructor's job. The member initializer list — the colon syntax before the constructor body — sets each member directly in declaration order, which is both faster than assigning inside the body and the only option for const members or references. A destructor then runs automatically when the object goes away.
+
+## Segment 5 (code)
+
+This Order class shows why the initializer list matters. Its id is const, assigned once from a static counter, which is only legal in the initializer list — you cannot assign to a const member inside the constructor body at all. Get comfortable with this pattern; you'll use it in nearly every class you write from here on.
+
+## Segment 6 (outro)
+
+A class bundles data with the behavior that protects it, defaults everything to private, and builds itself correctly through the initializer list. Next up, lesson twelve: inheritance and polymorphism — how one base class lets many derived types share a common interface.

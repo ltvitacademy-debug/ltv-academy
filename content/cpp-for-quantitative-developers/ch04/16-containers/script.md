@@ -1,0 +1,25 @@
+# Script — Containers
+
+## Segment 1 (title)
+
+Chapter four moves from the language itself to the standard library you'll use every single day: the Standard Template Library, or STL. Its most immediately useful piece is the set of containers — ready-made, well-tested data structures that replace almost every hand-rolled array, linked list, or lookup table you'd otherwise write yourself.
+
+## Segment 2 (code)
+
+vector is the default choice for a resizable, contiguous sequence. Pushing a new value onto the back is constant time on average, and reading any element by index is also constant time — it behaves like a dynamically sized array, because under the hood, it is one.
+
+## Segment 3 (steps)
+
+vector isn't the only sequence container. array is fixed-size, with that size fixed at compile time, which means no heap allocation at all. deque trades a little of vector's simplicity for fast insertion and removal at both the front and the back, something vector can't do efficiently at the front.
+
+## Segment 4 (code)
+
+map stores key-value pairs sorted by key, backed by a balanced tree, so lookup, insertion, and removal are all logarithmic time. The useful side effect: iterating a map always visits keys in sorted order, which matters anytime you need, say, prices walked through alphabetically by symbol.
+
+## Segment 5 (steps)
+
+unordered_map gives up that sorted order entirely, in exchange for average constant-time lookup, insertion, and removal through hashing instead of a tree. When you need the fastest possible lookup and genuinely don't care what order the entries come back in, this is the one to reach for.
+
+## Segment 6 (outro)
+
+vector covers contiguous sequences, map and set cover sorted lookups, and the unordered versions cover the fastest average-case lookups — between them, that's most of what you'll ever need. Next up, lesson seventeen: iterators and algorithms — the glue that lets one algorithm work across every container you just learned.

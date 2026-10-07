@@ -1,0 +1,60 @@
+{
+  "lesson": "elastic-training",
+  "questions": [
+    {
+      "q": "What does torchrun's --nnodes=1:64 flag actually express in an elastic launch?",
+      "options": [
+        "The job will always use exactly 64 nodes and fail if any node is missing",
+        "The job is allowed to run with anywhere from 1 to 64 nodes, continuing at a reduced size rather than failing outright if nodes drop out",
+        "The job requires 64 separate launches, one per node",
+        "The job will automatically scale up to 1:64 ratio of GPUs to CPUs"
+      ],
+      "answer": 1,
+      "explain": "The min:max syntax defines an allowed range of node counts the elastic job can operate within, rather than a fixed requirement — letting it continue at reduced scale if nodes are lost."
+    },
+    {
+      "q": "What role does the c10d rendezvous backend play when a Worker node disappears mid-training?",
+      "options": [
+        "It permanently deletes the job's state to force a clean restart",
+        "It lets surviving ranks re-discover each other and agree on a new, smaller group membership without any human re-launching the job",
+        "It automatically provisions a replacement GPU instance",
+        "It converts the job from PyTorch to a different framework"
+      ],
+      "answer": 1,
+      "explain": "c10d is the rendezvous mechanism that allows the remaining ranks to tear down the old process group and re-form a new one with the updated membership, entirely in software, without manual intervention."
+    },
+    {
+      "q": "After surviving ranks re-form the process group following a Worker failure, where does training resume from?",
+      "options": [
+        "From step zero, as if the job were starting fresh",
+        "From exactly the in-flight step that was running when the Worker disappeared",
+        "From the last saved checkpoint, since in-memory state on the survivors was built for the old world size and must be reloaded against the new one",
+        "Training cannot resume at all after any rank failure"
+      ],
+      "answer": 2,
+      "explain": "The in-flight step is lost (there's no resuming mid-collective), so the reformed group reloads state from the most recent checkpoint via dcp.load rather than starting over or magically preserving the exact in-flight computation."
+    },
+    {
+      "q": "What does --max-restarts=3 protect against in an elastic training job?",
+      "options": [
+        "It limits the job to exactly 3 total training steps",
+        "It caps how many times the elastic agent will attempt to re-form the group before giving up and marking the job genuinely Failed, protecting against a flapping node looping forever",
+        "It restricts the job to 3 GPUs maximum",
+        "It sets the maximum checkpoint file size to 3 gigabytes"
+      ],
+      "answer": 1,
+      "explain": "Without a cap, a node that keeps getting reclaimed and rejoining could cause the elastic agent to retry re-formation indefinitely. max-restarts bounds that retry behavior."
+    },
+    {
+      "q": "Why does Solara AI set the practical floor of --nnodes well above 1, even though the syntax allows it?",
+      "options": [
+        "Because torchrun technically forbids values below 8",
+        "Because training a 70B-parameter model on a handful of nodes would be so slow that it's not worth continuing, versus waiting for replacement capacity and resuming from checkpoint at full scale",
+        "Because checkpoints can only be loaded onto exactly 64 nodes",
+        "Because NCCL requires a minimum of 32 nodes to initialize at all"
+      ],
+      "answer": 1,
+      "explain": "Elastic training's range sets both a ceiling and, practically, a floor — continuing at too small a scale may be so inefficient that it's better to pause and resume at full capacity once replacement nodes are available."
+    }
+  ]
+}

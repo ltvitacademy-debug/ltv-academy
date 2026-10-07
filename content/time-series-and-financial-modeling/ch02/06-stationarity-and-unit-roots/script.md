@@ -1,0 +1,21 @@
+# Script — Stationarity & Unit Roots
+
+## Segment 1 (title)
+
+Chapter one built clean, correctly computed returns. Chapter two starts the formal time series toolkit those returns feed into, and the very first concept everything else leans on is stationarity.
+
+## Segment 2 (steps)
+
+What's actually used in practice is weak, or covariance, stationarity: constant mean, constant variance, and autocovariance that depends only on the lag between two points, never on calendar time itself. A series that's clearly trending, or whose volatility is obviously expanding — like raw price levels — fails this immediately, which is exactly why we converted to returns in chapter one before any of this analysis.
+
+## Segment 3 (code)
+
+Take the simplest autoregressive model, today's value equals phi times yesterday's value plus noise. If phi is less than one in absolute value, shocks decay and the series is stationary. If phi equals exactly one, you get a random walk — today's value is just yesterday's value plus noise, shocks never decay, and the variance grows without bound. That's a unit root, and a unit root means non-stationary.
+
+## Segment 4 (code)
+
+The Augmented Dickey-Fuller test is the standard way to test for a unit root, and its null hypothesis trips almost everyone up the first time: the null is that the series HAS a unit root, meaning it's non-stationary. So a low p-value — letting you reject that null — is the result you want if you're hoping for a stationary series. In statsmodels, adfuller with autolag set to AIC runs the test and picks the right number of lagged difference terms automatically.
+
+## Segment 5 (outro)
+
+Run this on raw prices and you'll almost always fail to reject the unit-root null — prices behave like a random walk. Run it on log returns and you'll almost always reject it decisively. Next lesson: once you know a series is stationary, ACF and PACF tell you exactly how it depends on its own past.

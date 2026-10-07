@@ -1,0 +1,29 @@
+# Script — Capstone: Designing a Platform for a Growing ML Team
+
+## Segment 1 (title)
+
+This is the capstone. Every chapter in this course has been a piece of a platform. This lesson gives you one realistic scenario and asks you to design the whole thing, end to end — naming the real concepts from every chapter as you go.
+
+## Segment 2 (steps)
+
+Meet Northline Analytics. Eighteen months ago, one data scientist built one churn model in a notebook, deployed by SSHing into a box. Today there are six data scientists and fifteen models, and the cracks are everywhere: nobody knows what's actually live, two people built two incompatible definitions of the same feature, a missing feature caused a four hour outage, and there's no on-call rotation — whoever the CEO happens to message at 2am is on call, by accident.
+
+## Segment 3 (steps)
+
+Every one of those symptoms maps straight onto a chapter of this course. The duplicate feature problem is chapter two, a feature store. Not knowing what's live is chapter three, a model registry. The four hour outage is exactly what chapter five's canary deployments and approval gates exist to catch. And no SLOs, no on-call, no incident process is this entire chapter seven, wide open.
+
+## Segment 4 (steps)
+
+Start with the data and experimentation layer, because it's causing active, silent errors right now. A central feature store, split online and offline, with one owner per feature definition. A shared experiment tracker and registry so every model, from every data scientist, reports to the same source of truth. And full lineage, so a bad prediction traces back to its feature, its data, and its code in minutes.
+
+## Segment 5 (steps)
+
+Then the deployment and reliability layer. Canary deployments and approval gates would have caught that four hour outage at one percent of traffic instead of all of it. Per-model SLOs, because a real-time fraud model and a weekly batch pricing model have no business sharing the same target. And a real on-call rotation with runbooks, replacing an accident with a process.
+
+## Segment 6 (steps)
+
+Northline can't build all of this at once with six people. Registry first — cheapest, and it answers the most painful unknown today. Feature store second, because it's stopping wrong answers right now. Canary deployments and basic SLOs third, because that outage was the most expensive thing that's already happened. On-call fourth. Full pipeline orchestration and audit infrastructure last — valuable, but least urgent relative to everything above it.
+
+## Segment 7 (outro)
+
+Fifteen models, every symptom mapped to a chapter you already know, and a build order driven by which pain point is costing the most right now. Up next, lesson thirty-five: turning this design into a write-up a reviewer or hiring manager would actually want to read.

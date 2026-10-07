@@ -1,0 +1,60 @@
+{
+  "lesson": "the-kv-cache-in-depth",
+  "questions": [
+    {
+      "q": "What exactly does the KV cache store?",
+      "options": [
+        "The model's weights, duplicated for faster access",
+        "The key and value tensors computed for every token processed so far, at every layer",
+        "A copy of the tokenizer's vocabulary",
+        "Only the final output logits from the last decode step"
+      ],
+      "answer": 1,
+      "explain": "The KV cache holds the key and value tensors produced during attention for every token processed so far (prompt plus generated tokens), at every layer, so they don't need to be recomputed."
+    },
+    {
+      "q": "Which of the following does NOT directly increase the size of the KV cache, according to the size formula?",
+      "options": [
+        "The number of layers in the model",
+        "The batch size (number of concurrent sequences)",
+        "The sequence length processed so far",
+        "The size of the vocabulary used by the tokenizer"
+      ],
+      "answer": 3,
+      "explain": "The KV cache size formula is driven by layers, KV heads, head dimension, sequence length, batch size, and bytes per element — vocabulary size does not appear in it."
+    },
+    {
+      "q": "Why does KV cache size often cap how many concurrent requests a GPU can serve, rather than raw compute?",
+      "options": [
+        "Because GPUs have unlimited compute but very little memory",
+        "Because the cache grows per active request and per token generated, while model weights are a fixed size once loaded",
+        "Because the cache is stored on the CPU, not the GPU",
+        "Because compute is never a bottleneck in LLM inference"
+      ],
+      "answer": 1,
+      "explain": "Model weights occupy a fixed amount of memory once loaded, but every active request's KV cache keeps growing as more tokens are processed — which is why cache size, not compute, frequently becomes the binding constraint."
+    },
+    {
+      "q": "What is the key difference between multi-query attention (MQA) and grouped-query attention (GQA)?",
+      "options": [
+        "MQA has every query head share one key/value head; GQA splits heads into groups that each share one key/value head, balancing quality and cache size",
+        "GQA removes the KV cache entirely; MQA does not",
+        "MQA is used only for prefill, GQA only for decode",
+        "There is no meaningful difference between the two"
+      ],
+      "answer": 0,
+      "explain": "MQA shares a single key/value head across all query heads for the smallest cache but more quality loss. GQA groups query heads and shares key/value heads within each group, recovering most of standard multi-head attention's quality with a smaller cache."
+    },
+    {
+      "q": "Why does lowering numeric precision (as in Lesson 12) also help the KV cache specifically?",
+      "options": [
+        "It doesn't — the KV cache is always stored at a fixed precision regardless of quantization",
+        "Because bytes_per_element is one of the multiplying terms in the cache size formula, so quantizing the cache (e.g. to INT8/FP8) shrinks it directly",
+        "Because quantization only affects the model's weights, never its activations",
+        "Because quantization removes the need for a KV cache entirely"
+      ],
+      "answer": 1,
+      "explain": "Since bytes_per_element multiplies directly into the KV cache size formula, many serving stacks quantize the cache itself (independently of weight precision) to shrink its memory footprint."
+    }
+  ]
+}

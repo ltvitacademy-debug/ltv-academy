@@ -1,0 +1,21 @@
+# Script — Volatility Forecasting in Practice
+
+## Segment 1 (title)
+
+This closing lesson ties the whole volatility toolkit together. GARCH, EGARCH, and GJR-GARCH all produce a forecast of future variance — the question here is how that forecast actually gets used and evaluated in real risk management, which is ultimately the point of modeling volatility at all.
+
+## Segment 2 (code)
+
+Once a GARCH-family model is fit, forecasting forward is mechanical: call forecast with a chosen horizon and read the variance forecast back out, taking a square root to get it in volatility terms. Because conditional variance mean-reverts toward its long-run average whenever alpha plus beta is below one, forecasts further out flatten toward that unconditional level instead of continuing to react to yesterday's specific shock.
+
+## Segment 3 (steps)
+
+A variance forecast is only useful if it tracks what volatility turns out to actually be. The standard check compares it against realized volatility over the days that have since passed, using the same RMSE and MAE metrics from the forecasting lesson earlier in the course. And just like with price forecasts, you always compare against a naive benchmark too — something as simple as using today's rolling volatility unchanged as tomorrow's forecast.
+
+## Segment 4 (steps)
+
+The real payoff shows up downstream. Volatility targeting sizes a position inversely to its forecast volatility, so its risk contribution stays roughly constant even as conditions change — if forecast volatility doubles, the position gets cut roughly in half. Value at risk uses that same forecast volatility to estimate the loss level you don't expect to exceed except with some small probability, letting the risk estimate rise ahead of turbulent periods instead of only reacting after the fact.
+
+## Segment 5 (outro)
+
+A GARCH forecast earns its keep by beating a naive benchmark against realized volatility, and its real value shows up in volatility-targeted position sizing and adaptive value-at-risk estimates. That closes out volatility modeling. Chapter five turns to factor models and cross-sectional analysis, starting with Fama-French and factor investing.

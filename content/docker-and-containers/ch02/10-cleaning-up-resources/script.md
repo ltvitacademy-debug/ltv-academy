@@ -1,0 +1,23 @@
+## Segment 1 (title)
+
+Every pull, build, and stopped container leaves something behind. Left unchecked, a machine that's been running Northbridge's containers for months quietly fills up with things nobody uses anymore. Here's how to see what's taking up space, and reclaim it safely.
+
+## Segment 2 (code)
+
+docker system df breaks disk usage down by images, containers, and volumes. The reclaimable column is the number that matters -- on a machine that's rebuilt the catalog and checkout images repeatedly, most of that usage is often sitting in things nobody's actively using.
+
+## Segment 3 (code)
+
+A dangling image has no tag pointing to it anymore -- usually the previous version of an image, left behind after you rebuild it under the same tag. The old layers still exist on disk under a new, untagged ID. They're not broken, just orphaned.
+
+## Segment 4 (code)
+
+Targeted cleanup touches one category at a time. container prune removes stopped containers. image prune removes dangling images only. volume prune and network prune clear out the unused ones in each category. Each asks for confirmation first, and none of them touch an image still backing a container you might restart.
+
+## Segment 5 (code)
+
+system prune with dash a and dash dash volumes does all of that at once, as aggressively as cleanup gets -- including images you haven't rebuilt in a while but might still need. Read the warning before typing y; on a shared build machine, it removes more than you'd expect.
+
+## Segment 6 (outro)
+
+That's Chapter Two -- pulling, running, debugging, and cleaning up images and containers. Chapter Three starts building Northbridge's own images from scratch, with a Dockerfile.

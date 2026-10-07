@@ -1,0 +1,21 @@
+# Script — Alpha, Beta & Edge
+
+## Segment 1 (title)
+
+Every strategy's return can be split into two pieces: the part that's just riding the market, and the part that isn't. Getting that split right, and staying honest about how small the second piece usually is, is maybe the single most important habit in this field. Let's get precise about it.
+
+## Segment 2 (steps)
+
+The single-factor model says a strategy's return equals alpha, plus beta times the market's return, plus leftover noise. Beta is how much of your return is just market exposure you could've gotten for free with an index fund. Alpha is what's left over once that exposure is stripped out. And epsilon is just noise that should average out to zero over time.
+
+## Segment 3 (code)
+
+Concretely, beta is covariance of the strategy's returns with the market's, divided by the variance of the market's returns. Once you have beta, alpha is just the strategy's average return minus beta times the market's average return — the same slope and intercept you'd get running a linear regression. Multiply the daily alpha by 252 trading days to annualize it.
+
+## Segment 4 (steps)
+
+But a number isn't the same as a reason. Edge is your answer to why alpha should keep existing — processing information faster, genuinely being willing to hold risk other people want to offload, or exploiting a structural friction that persists because fixing it isn't worth it to most people. "The backtest went up" is not edge. It's a result that edge, or plain luck, could equally have produced.
+
+## Segment 5 (outro)
+
+Treat a backtest's alpha as a claim that needs evidence, not a conclusion — chapters four and five of this course exist to help you tell a real edge from a lucky number. Up next, lesson three: the major strategy families — momentum, mean reversion, and carry.

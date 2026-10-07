@@ -1,0 +1,25 @@
+# Script — Parquet, Arrow & Efficient Storage
+
+## Segment 1 (title)
+
+CSV is a row-oriented text format: slow to parse, no type information, no way to read part of a file without reading all of it. Parquet is the columnar alternative quant workflows have mostly standardized on, and Arrow is the in-memory format that makes moving that data into pandas or Polars fast and often copy-free.
+
+## Segment 2 (steps)
+
+A CSV stores every field of row one, then every field of row two, and so on — computing one column's average still means reading past every other column. Parquet stores all of column one together, then all of column two, so reading one column means reading one contiguous block. Everything else on disk gets skipped entirely, which matches exactly how quant workloads actually query: a few columns, across many rows.
+
+## Segment 3 (code)
+
+pyarrow is the library underneath both pandas's to_parquet and read_parquet, and Polars's native memory format. That shared format is why converting between pandas, Polars, and a Parquet file on disk is usually cheap — the data doesn't need reshaping, just reinterpreting.
+
+## Segment 4 (code)
+
+read_parquet takes a columns argument that skips reading the other columns' data blocks entirely — column pruning. A filters argument pushes a predicate into the reader itself, using Parquet's per-row-group statistics to skip whole chunks that can't possibly match — predicate pushdown. Both avoid work rather than doing it faster: the goal is to never read bytes you don't need.
+
+## Segment 5 (code)
+
+Parquet compresses each column's block, and you pick the codec. Snappy is fast to compress and decompress with a modest ratio — a good default when you'll read the file often. Zstd compresses more slowly but noticeably smaller, while still decompressing fast — reach for it when storage or network cost is the binding constraint.
+
+## Segment 6 (outro)
+
+Column pruning and predicate pushdown mean Parquet reads only the bytes it actually needs, the opposite of CSV, which has to be read start to finish no matter what you're after. Next up, lesson six: Polars itself, and when its lazy, Arrow-native engine is worth reaching for over pandas.

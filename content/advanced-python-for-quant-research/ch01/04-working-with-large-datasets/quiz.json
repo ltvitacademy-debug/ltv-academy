@@ -1,0 +1,60 @@
+{
+  "lesson": "working-with-large-datasets",
+  "questions": [
+    {
+      "q": "Why can `df.memory_usage(deep=False)` significantly understate a DataFrame's real memory footprint?",
+      "options": [
+        "It only measures the index, not the columns",
+        "For object (string) columns, it reports the size of the pointers rather than the actual string contents",
+        "It only works on DataFrames with fewer than 1000 rows",
+        "It rounds all sizes down to the nearest megabyte"
+      ],
+      "answer": 1,
+      "explain": "Without deep=True, memory_usage reports the size of the object pointers for string columns, not the strings themselves, which can massively understate true memory use."
+    },
+    {
+      "q": "What does `pd.read_csv(path, chunksize=250_000)` return, and what is the typical processing pattern?",
+      "options": [
+        "The entire file loaded as one DataFrame, just slower",
+        "An iterator of smaller DataFrames; you process and reduce each chunk, then merge the partial results",
+        "A single row at a time, like .iterrows()",
+        "A DataFrame with only the first 250,000 rows, discarding the rest"
+      ],
+      "answer": 1,
+      "explain": "chunksize makes read_csv return an iterator of DataFrames. The standard pattern is to aggregate each chunk (e.g. groupby + sum) and merge the partial results, so the full file is never held in memory at once."
+    },
+    {
+      "q": "What does `pd.to_numeric(series, downcast=\"integer\")` do?",
+      "options": [
+        "Converts the series to strings",
+        "Picks the smallest integer dtype that can still hold every value in the series without loss",
+        "Rounds all values to the nearest integer, discarding decimals",
+        "Always converts to int8 regardless of the data's range"
+      ],
+      "answer": 1,
+      "explain": "downcast=\"integer\" finds the smallest integer dtype (e.g. int16 instead of int64) that still losslessly represents every value in the column, reducing memory use."
+    },
+    {
+      "q": "Why does converting a ticker column with only a few distinct values to `category` dtype save so much memory?",
+      "options": [
+        "category compresses the DataFrame using gzip internally",
+        "It stores each unique string value once and represents every row as a small integer code pointing at it, instead of storing a full string per row",
+        "category dtype deletes duplicate rows automatically",
+        "It converts the column to a NumPy array with no index"
+      ],
+      "answer": 1,
+      "explain": "category dtype stores the small set of unique values once and encodes each row as a compact integer code referencing one of them, which is dramatically cheaper than storing a full Python string per row."
+    },
+    {
+      "q": "According to the lesson, what is the recommended order of operations when a dataset seems too large for pandas?",
+      "options": [
+        "Immediately switch to a distributed cluster, skipping pandas entirely",
+        "Try chunked reading, dtype downcasting, and category conversion first (they're nearly free); only reach for an out-of-core engine if the data still doesn't fit",
+        "Always rewrite the pipeline in a different programming language first",
+        "Delete rows at random until the file fits in memory"
+      ],
+      "answer": 1,
+      "explain": "The lesson's rule of thumb is to try the nearly-free techniques (chunking, downcasting, category) first since they often yield a 3-10x reduction, and only move to an out-of-core or distributed engine if the data still doesn't fit after that."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "nccl-and-collective-communication",
+  "questions": [
+    {
+      "q": "Which NCCL collective operation does FSDP use to reconstruct a layer's full parameters from sharded pieces before a forward pass?",
+      "options": [
+        "Broadcast",
+        "AllReduce",
+        "ReduceScatter",
+        "AllGather"
+      ],
+      "answer": 3,
+      "explain": "AllGather takes a shard on each GPU and produces the full, concatenated result on every GPU — exactly what FSDP needs to reconstruct full parameters before using them in a forward or backward pass."
+    },
+    {
+      "q": "What distinguishes ReduceScatter from AllReduce?",
+      "options": [
+        "ReduceScatter doesn't perform any reduction at all",
+        "AllReduce gives every GPU the full reduced result; ReduceScatter reduces the data but each GPU keeps only its own shard of the result",
+        "ReduceScatter only works with Broadcast, not with gradients",
+        "AllReduce is slower than ReduceScatter in every case"
+      ],
+      "answer": 1,
+      "explain": "Both perform a reduction (e.g., sum), but AllReduce distributes the full reduced result to every GPU, while ReduceScatter gives each GPU only its own shard — which is what FSDP uses for sharded gradients."
+    },
+    {
+      "q": "What does setting NCCL_DEBUG=INFO let you observe?",
+      "options": [
+        "The model's current loss value",
+        "Which network path and algorithm NCCL selected, visible in its startup log output",
+        "The number of training tokens processed so far",
+        "The GPU temperature"
+      ],
+      "answer": 1,
+      "explain": "NCCL_DEBUG=INFO turns on verbose logging that shows topology discovery and the ring/tree communication pattern NCCL built, including which network path (e.g., InfiniBand vs. sockets) it chose."
+    },
+    {
+      "q": "In NCCL_DEBUG=INFO output, what would it mean if the log showed 'NET/Socket' being used instead of 'NET/IB' on solara-train?",
+      "options": [
+        "This is the expected, fastest configuration",
+        "It indicates NCCL fell back to a slower network path instead of using InfiniBand, signaling a possible misconfiguration",
+        "It means the job completed successfully",
+        "It means FSDP is disabled"
+      ],
+      "answer": 1,
+      "explain": "solara-train's fast inter-node path is InfiniBand. Seeing NET/Socket instead of NET/IB in the debug log suggests NCCL fell back to a much slower path, which usually points to an InfiniBand configuration problem worth investigating."
+    },
+    {
+      "q": "How does NCCL decide whether to route communication over NVLink or InfiniBand for a given pair of GPUs?",
+      "options": [
+        "The training script must explicitly specify the physical path for every operation",
+        "NCCL inspects the hardware topology at startup and automatically builds its communication pattern around the fastest available path",
+        "It always uses InfiniBand, even for GPUs on the same node",
+        "It picks randomly between available paths"
+      ],
+      "answer": 1,
+      "explain": "NCCL automatically discovers the hardware topology (which GPUs share NVLink vs. which only reach each other over InfiniBand) at startup and builds its ring/tree pattern to prefer the fastest links, without requiring the training code to know the physical layout."
+    }
+  ]
+}

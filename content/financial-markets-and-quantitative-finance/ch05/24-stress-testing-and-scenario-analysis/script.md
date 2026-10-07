@@ -1,0 +1,21 @@
+# Script — Stress Testing & Scenario Analysis
+
+## Segment 1 (title)
+
+Lesson 23 covered VaR and Expected Shortfall — risk measures built from statistics on historical or modeled returns. Both share a weakness: they're only as good as the data feeding them, and markets occasionally do things that fall outside any recent pattern. Stress testing and scenario analysis are built specifically to probe those "what if something genuinely unusual happens" questions.
+
+## Segment 2 (steps)
+
+There are four common types. Historical scenario replay takes a real past crisis — 2008, the 2020 COVID crash, the 1998 LTCM collapse — and applies those exact market moves to the portfolio you hold today; it's historically grounded but backward-looking by construction. Hypothetical scenarios are constructed by a risk team to be plausible even though they haven't happened, reaching forward in a way historical replay can't. Sensitivity analysis shocks one risk factor at a time, holding everything else fixed, which isolates exposure but ignores how factors move together in a real crisis. And reverse stress testing flips the whole exercise around.
+
+## Segment 3 (steps)
+
+Ordinary stress testing starts with a scenario and asks what loss it would cause. Reverse stress testing starts from a specific, unacceptable loss — one big enough to breach a capital or liquidity limit — and works backward to ask what combination of market moves would be needed to produce it. That backward direction is exactly what makes it useful: it can surface hidden concentrations and fragile assumptions that nobody thought to build into a forward-looking scenario in the first place.
+
+## Segment 4 (code)
+
+Regulators run their own standardized versions of this. In the United States, the Federal Reserve's CCAR and DFAST programs put large banks through Fed-specified adverse and severely adverse macroeconomic scenarios every year, and each bank has to show its capital ratios stay above required minimums under both. It's one concrete point of contact between risk management and regulation, which this chapter comes back to directly in a couple of lessons.
+
+## Segment 5 (outro)
+
+Four tools, one goal: probe the risks that a purely statistical VaR or Expected Shortfall number might never see coming. Up next, Lesson 25: market, credit, and liquidity risk — the three broad risk types all of this machinery is ultimately trying to measure.

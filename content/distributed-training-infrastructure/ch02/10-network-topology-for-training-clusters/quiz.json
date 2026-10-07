@@ -1,0 +1,60 @@
+{
+  "lesson": "network-topology-for-training-clusters",
+  "questions": [
+    {
+      "q": "In a fat-tree (leaf-spine) topology, how does traffic travel between two compute nodes connected to different leaf switches?",
+      "options": [
+        "Directly between the two nodes, bypassing switches entirely",
+        "It always goes leaf switch → spine switch → leaf switch",
+        "It must go through every leaf switch in the cluster",
+        "It's not possible — nodes on different leaf switches can't communicate"
+      ],
+      "answer": 1,
+      "explain": "In a fat-tree topology, leaf switches connect to compute nodes and spine switches connect leaf switches to each other. Traffic between nodes on different leaves always transits through a spine switch."
+    },
+    {
+      "q": "What does 'bisection bandwidth' measure, and why does this lesson say it's the number that actually matters for training fabrics?",
+      "options": [
+        "The bandwidth of a single network cable; it matters because that's the fastest possible link",
+        "The total bandwidth available between two halves of the cluster under a worst-case split; it matters because collective operations need data to cross between every pair of nodes",
+        "The number of switches in the fabric; it matters for cost estimation only",
+        "The bandwidth available to a single GPU; it matters for per-GPU throughput only"
+      ],
+      "answer": 1,
+      "explain": "Bisection bandwidth is the total bandwidth available between the two halves of a cluster in the worst-case split. It matters for training because collectives like ring AllReduce genuinely need data to move across that split, making it the real ceiling on cluster-wide communication speed."
+    },
+    {
+      "q": "A leaf switch has 16 nodes connected at 400 Gb/s each, but only 8×400 Gb/s of uplink to the spine. What is its oversubscription ratio?",
+      "options": [
+        "1:1 (non-blocking)",
+        "2:1",
+        "4:1",
+        "8:1"
+      ],
+      "answer": 1,
+      "explain": "16 nodes at 400 Gb/s = 6400 Gb/s of downlink demand, against 8×400 Gb/s = 3200 Gb/s of uplink capacity. That's a 2:1 oversubscription ratio — twice as much downlink capacity as uplink capacity."
+    },
+    {
+      "q": "Why does this lesson say training fabrics like solara-train's should be built 'non-blocking' rather than oversubscribed?",
+      "options": [
+        "Non-blocking fabrics are always cheaper to build",
+        "Collective-heavy LLM training often needs many nodes to move data across leaf switches simultaneously, so oversubscription becomes a real bottleneck rather than a safe cost-saving trade-off",
+        "Oversubscription is illegal under InfiniBand standards",
+        "Non-blocking fabrics eliminate the need for NCCL"
+      ],
+      "answer": 1,
+      "explain": "Oversubscription is a reasonable trade-off when traffic rarely needs full cross-leaf bandwidth at once. Collective-heavy training frequently does need that bandwidth simultaneously across many nodes, so training fabrics are typically built non-blocking (1:1) to avoid the uplink becoming a bottleneck."
+    },
+    {
+      "q": "How does solara-train's rail-optimized wiring (from Lesson 4) relate to the fat-tree structure described in this lesson?",
+      "options": [
+        "Rail-optimization replaces the need for a fat-tree structure entirely",
+        "Rail-optimization sits on top of the same leaf-spine structure, dedicating a separate set of leaf switches to each GPU index's traffic across all nodes",
+        "Rail-optimization only applies to NVLink, not to the InfiniBand fabric",
+        "Rail-optimization and fat-tree topology are mutually exclusive designs"
+      ],
+      "answer": 1,
+      "explain": "Rail-optimization is layered on top of the fat-tree structure: each GPU index (rail) gets its own dedicated leaf switches across all nodes, connected non-blocking to the spine — combining the overall fat-tree shape with traffic-pattern-aware wiring."
+    }
+  ]
+}

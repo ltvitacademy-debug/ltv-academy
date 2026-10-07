@@ -1,0 +1,21 @@
+# Script — Autoscaling a Training Cluster
+
+## Segment 1 (title)
+
+Not every hour needs all sixty-four nodes of solara-train running. Between large runs, teams run smaller experiments that need a handful of GPUs, not all five hundred twelve, and keeping every node powered on around the clock wastes money the rest of the time. This lesson covers how Solara AI autoscales GPU nodes with Karpenter.
+
+## Segment 2 (steps)
+
+A web tier's autoscaler can add a CPU node in under a minute. An H100 node is a different story — provisioning the instance, attaching the fabric, loading GPU drivers and the NCCL stack, can take minutes to tens of minutes. GPU instances also cost far more per hour, so an autoscaler that's slow to scale down costs real money, and one that's too eager to scale down can kill a job that needed that capacity back.
+
+## Segment 3 (code)
+
+Karpenter defines a NodePool describing exactly what it's allowed to provision. Here, an eight-GPU H100 instance type, capped at five hundred twelve GPUs total to match the hardware ceiling. The consolidation policy only removes a node once it's sat completely idle for ten minutes, so short gaps between jobs don't thrash nodes up and down.
+
+## Segment 4 (steps)
+
+When a gang-scheduled job needs sixty-four nodes and only forty exist, Volcano won't place any of its pods — but those pending pods are exactly the signal Karpenter watches for. Karpenter provisions the missing nodes, and only once all sixty-four are ready does Volcano release the job to actually schedule. Gang scheduling decides when pods are placed; autoscaling decides how many nodes exist to place them on.
+
+## Segment 5 (outro)
+
+The real risk isn't slow scale-up, it's scaling down a node mid-collective. Solara's training pods carry a disruption budget covering the full replica count, so no node backing an active job is ever a candidate for removal. That closes out orchestration. Next up, chapter four, lesson eighteen: why long training runs need fault tolerance.

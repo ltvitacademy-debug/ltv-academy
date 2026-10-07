@@ -1,0 +1,25 @@
+# Script — Modern C++ Features (C++17/20)
+
+## Segment 1 (title)
+
+Older material you may have seen elsewhere teaches C++98-style patterns — raw new and delete, hand-written copy constructors, out-parameters instead of returning multiple values. Production quant code today looks different. This lesson closes out the chapter with the handful of C++17 and C++20 features that define how modern C++ is actually written.
+
+## Segment 2 (code)
+
+unique_ptr owns a heap object exclusively and deletes it automatically the moment it goes out of scope — no manual delete anywhere, and no leak even on an early return or a thrown exception. make_unique is the standard way to create one. You should rarely see a raw new in modern C++ code at all.
+
+## Segment 3 (steps)
+
+Copying a vector of a million prices is expensive, because every element gets duplicated. Moving it instead just transfers the internal pointers and leaves the source empty — essentially free. std::move signals that intent by casting an object to an rvalue reference, and a move constructor you write yourself implements the actual transfer for your own classes.
+
+## Segment 4 (code)
+
+auto deduces a variable's type from its initializer without sacrificing static typing — the type is still fixed at compile time, it's just not spelled out by hand. Structured bindings take that further: this loop unpacks every key and value out of a map in one line, with no separate calls to first and second.
+
+## Segment 5 (steps)
+
+Before optional existed, "no price available" was usually signaled with a sentinel like negative one, or a separate boolean flag — both easy to misuse. std::optional makes "might not have a value" part of the type itself, and checking it before dereferencing is explicit and hard to skip accidentally.
+
+## Segment 6 (outro)
+
+Modern C++ replaces manual memory management with smart pointers, expensive copies with move semantics, and fragile sentinels with optional — while auto and structured bindings cut the boilerplate without giving up static typing. That closes out chapter three. Up next, chapter four, lesson sixteen: containers — the Standard Template Library's workhorses.

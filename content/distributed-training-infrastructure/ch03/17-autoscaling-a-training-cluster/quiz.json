@@ -1,0 +1,60 @@
+{
+  "lesson": "autoscaling-a-training-cluster",
+  "questions": [
+    {
+      "q": "Why does GPU node autoscaling take much longer than typical CPU node autoscaling?",
+      "options": [
+        "GPU nodes are not supported by any cloud autoscaler",
+        "Provisioning an H100 node involves attaching high-speed fabric, loading GPU drivers and the NCCL stack, and running health checks before it's usable — minutes to tens of minutes versus under a minute for CPU",
+        "GPU nodes autoscale instantly, faster than CPU nodes",
+        "Autoscaling only works for stateless web services, never for compute nodes"
+      ],
+      "answer": 1,
+      "explain": "GPU nodes require substantially more setup (drivers, fabric attachment, NCCL stack, health checks) before they're usable, making scale-up inherently slower than a typical CPU node."
+    },
+    {
+      "q": "In the Karpenter NodePool example, what does limits: nvidia.com/gpu: \"512\" control?",
+      "options": [
+        "The number of GPUs each individual Pod may request",
+        "A hard cap on the total GPUs Karpenter is allowed to provision across the entire NodePool, matching solara-train's hardware ceiling",
+        "The minimum number of GPUs required before any node is created",
+        "The GPU driver version to install"
+      ],
+      "answer": 1,
+      "explain": "The limits field on a NodePool caps the aggregate resources Karpenter will provision for that pool, preventing it from provisioning more GPU capacity than actually exists in the account/cluster."
+    },
+    {
+      "q": "How does gang scheduling (Volcano) interact with Karpenter's autoscaling when a job needs more nodes than currently exist?",
+      "options": [
+        "Volcano schedules the job on whatever partial capacity exists, ignoring the shortfall",
+        "The job's Pods stay Pending because Volcano won't place a partial gang; those Pending Pods are the signal Karpenter uses to provision the missing nodes, and Volcano only releases the Pods once the full count is Ready",
+        "Karpenter and Volcano cannot be used together under any circumstance",
+        "Autoscaling disables gang scheduling automatically whenever capacity is short"
+      ],
+      "answer": 1,
+      "explain": "The two systems compose without special integration: Volcano's gang-scheduling rule keeps Pods Pending until full capacity exists, and those Pending Pods are exactly what triggers Karpenter to provision more nodes."
+    },
+    {
+      "q": "What is the main risk Solara AI guards against when scaling down GPU nodes, and how does it guard against it?",
+      "options": [
+        "The risk of running out of IP addresses; guarded against with a larger subnet",
+        "The risk of consolidating away a node that is mid-collective in an active training job; guarded against with a PodDisruptionBudget covering the full replica count",
+        "The risk of overpaying for idle CPU nodes; guarded against by disabling autoscaling entirely",
+        "The risk of GPU driver version mismatches; guarded against by pinning a single driver version"
+      ],
+      "answer": 1,
+      "explain": "Scaling down a node actively running training Pods would kill the job mid-collective. Solara AI sets a PodDisruptionBudget with minAvailable equal to the full replica count so active training nodes are never eviction/consolidation candidates."
+    },
+    {
+      "q": "What does consolidationPolicy: WhenEmpty with consolidateAfter: 10m accomplish in the NodePool spec?",
+      "options": [
+        "It forces every node to be recreated every 10 minutes regardless of usage",
+        "It only removes a node once it has sat completely idle for 10 minutes, avoiding scale-down thrashing for short gaps between jobs",
+        "It prevents Karpenter from ever scaling down GPU nodes",
+        "It sets the maximum lifetime of any node to 10 minutes"
+      ],
+      "answer": 1,
+      "explain": "This policy delays removal of an empty node by 10 minutes, which avoids rapidly tearing down and re-provisioning expensive GPU nodes for brief idle periods between jobs."
+    }
+  ]
+}

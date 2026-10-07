@@ -1,0 +1,60 @@
+{
+  "lesson": "mutexes-locks-and-condition-variables",
+  "questions": [
+    {
+      "q": "What does std::lock_guard<std::mutex> do that calling m.lock() / m.unlock() manually does not guarantee?",
+      "options": [
+        "It locks the mutex on a separate thread",
+        "It automatically unlocks the mutex when it goes out of scope, even if an exception is thrown",
+        "It allows multiple threads to hold the lock simultaneously",
+        "It converts the mutex into a condition variable"
+      ],
+      "answer": 1,
+      "explain": "lock_guard is an RAII type: its destructor unlocks the mutex automatically, so an early return or thrown exception between lock and unlock can't leave the mutex permanently locked."
+    },
+    {
+      "q": "Why does std::condition_variable::wait require a std::unique_lock rather than a std::lock_guard?",
+      "options": [
+        "unique_lock is faster at acquiring the mutex",
+        "wait() needs to unlock the mutex while sleeping and re-lock it before returning, which lock_guard cannot do",
+        "lock_guard cannot be constructed on a std::mutex",
+        "Only unique_lock supports RAII"
+      ],
+      "answer": 1,
+      "explain": "condition_variable::wait must release the mutex while the thread sleeps and reacquire it on wakeup. unique_lock supports unlocking and relocking; lock_guard does not."
+    },
+    {
+      "q": "Why should cv.wait(lk, predicate) be used instead of the no-predicate cv.wait(lk)?",
+      "options": [
+        "The predicate overload runs faster on all platforms",
+        "The no-predicate overload is deprecated and removed in C++20",
+        "The predicate guards against spurious wakeups and notifications that arrive before waiting begins",
+        "The predicate overload does not require a mutex at all"
+      ],
+      "answer": 2,
+      "explain": "A condition_variable can wake a waiting thread without a real notify_* call (a spurious wakeup), and a notify can also be missed if it arrives too early. The predicate overload re-checks the condition in a loop, handling both cases correctly."
+    },
+    {
+      "q": "In the producer/consumer example, what is notify_one() used for?",
+      "options": [
+        "To unlock the mutex on the producer's behalf",
+        "To wake one thread currently waiting on the condition variable",
+        "To terminate the consumer thread",
+        "To push a new item onto the queue"
+      ],
+      "answer": 1,
+      "explain": "notify_one() wakes (at most) one thread currently blocked in a wait() call on that condition variable, prompting it to re-check its predicate."
+    },
+    {
+      "q": "What is the main risk of calling mtx.lock() and mtx.unlock() directly instead of using an RAII lock type?",
+      "options": [
+        "The mutex becomes recursive automatically",
+        "A thrown exception or early return between lock() and unlock() leaves the mutex locked forever, deadlocking other threads",
+        "The compiler will reject the code",
+        "It makes the mutex non-copyable"
+      ],
+      "answer": 1,
+      "explain": "Without RAII, any control-flow path that skips the unlock() call (an exception, an early return) leaves the mutex locked, and every other thread waiting on it blocks forever."
+    }
+  ]
+}

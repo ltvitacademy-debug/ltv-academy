@@ -1,0 +1,60 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Inference & Model Serving · Chapter 3",
+    "titlePlain": "",
+    "titleEmphasis": "Pruning",
+    "titleSuffix": "",
+    "subtitle": "Lesson 14 · Model Optimization for Inference"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Removing weights, not shrinking them",
+    "titlePlain": "Pruning vs. ",
+    "titleEmphasis": "quantization",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Quantization", "sub": "keeps every weight, lowers its precision" },
+      { "label": "Pruning", "sub": "removes weights entirely, betting on redundancy" },
+      { "label": "Usually combined", "sub": "not competing techniques" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Where the removed weights live decides the payoff",
+    "titlePlain": "Unstructured vs. ",
+    "titleEmphasis": "structured",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Unstructured", "sub": "scattered zeros — needs sparse kernels for real speedup" },
+      { "label": "Structured", "sub": "whole rows/heads/layers — dense kernels can just skip them" },
+      { "label": "N:M (e.g. 2:4)", "sub": "fixed pattern matching NVIDIA sparse tensor cores" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "A cheap, effective local heuristic",
+    "titlePlain": "Magnitude ",
+    "titleEmphasis": "pruning",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Smallest weights go first", "sub": "assumed to contribute least to the output" },
+      { "label": "Ignores weight interaction", "sub": "a local heuristic, not a global one" },
+      { "label": "Prune, then fine-tune", "sub": "iteratively, to recover accuracy" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "2:4 structured sparsity with PyTorch",
+    "code": "from torch.sparse import to_sparse_semi_structured\nimport torch\n\n# mask: exactly 2 of every 4 contiguous weights are zero\nweight.data = (weight.data * mask).contiguous()\nsparse_weight = to_sparse_semi_structured(weight.data)\n\n# layer now runs on Ampere+ sparse tensor cores\nlinear.weight = torch.nn.Parameter(sparse_weight)",
+    "caption": "N:M sparsity needs this exact fixed pattern to engage dedicated sparse hardware — scattered zeros don't qualify."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 15",
+    "titlePlain": "Knowledge ",
+    "titleEmphasis": "Distillation",
+    "titleSuffix": "",
+    "subtitle": "Training a smaller model to imitate the original, instead of editing it."
+  }
+]

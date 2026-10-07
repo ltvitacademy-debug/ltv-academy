@@ -1,0 +1,60 @@
+{
+  "lesson": "numerical-issues-in-training-code",
+  "questions": [
+    {
+      "q": "Why is a NaN loss described as a symptom rather than the cause of a numerical bug?",
+      "options": [
+        "Because NaN values are randomly generated and have no specific origin",
+        "Because the NaN almost always originates from a specific operation earlier in the computation, such as log(0) or division by a zero sum, and only becomes visible once it reaches the loss",
+        "Because NaN losses only occur due to hardware failures",
+        "Because the loss value is computed after the optimizer step, not before"
+      ],
+      "answer": 1,
+      "explain": "A handful of specific operations (log of zero/negative, division by a sum that can be zero, exploding gradients) actually produce the NaN; it then silently propagates downstream until it surfaces in the loss value."
+    },
+    {
+      "q": "What does `torch.autograd.set_detect_anomaly(True)` do that a plain `torch.isfinite(loss)` check does not?",
+      "options": [
+        "It prevents NaN values from ever being created",
+        "It raises an exception at the exact backward operation that produced the NaN/Inf, pinpointing the source rather than just confirming the final loss is non-finite",
+        "It automatically fixes the numerical instability",
+        "It only works for mixed-precision training"
+      ],
+      "answer": 1,
+      "explain": "Anomaly detection localizes the problem to the specific op in the backward pass, which is more expensive but far more useful for debugging than simply detecting that the final loss is non-finite."
+    },
+    {
+      "q": "Why does mixed-precision (fp16) training specifically need loss scaling?",
+      "options": [
+        "Because fp16 computes gradients slower than fp32",
+        "Because fp16 has a much smaller exponent range than fp32, so small gradients can silently underflow to zero (or overflow to Inf) before the loss itself looks wrong",
+        "Because fp16 requires a different optimizer than fp32",
+        "Because loss scaling makes training use less GPU memory"
+      ],
+      "answer": 1,
+      "explain": "fp16's narrow exponent range means gradients representable in fp32 can underflow/overflow in fp16. Loss scaling multiplies the loss up before backward to keep gradients in fp16's representable range, then unscales before the optimizer step."
+    },
+    {
+      "q": "What does gradient clipping (`clip_grad_norm_`) do in a training loop?",
+      "options": [
+        "It removes gradients below a certain magnitude entirely",
+        "It caps the norm of the gradient before the optimizer step, preventing a single unstable batch from pushing weights into an unrecoverable region",
+        "It converts gradients from fp16 to fp32",
+        "It skips the backward pass entirely for that step"
+      ],
+      "answer": 1,
+      "explain": "Gradient clipping bounds the gradient norm before the optimizer applies the update, acting as a safety net against instability from a bad batch or a transient spike, independent of precision format."
+    },
+    {
+      "q": "Why do some large-scale training setups prefer bf16 over fp16?",
+      "options": [
+        "bf16 uses more memory than fp16 but trains faster",
+        "bf16 keeps fp32's wider exponent range (avoiding fp16's underflow/overflow problem) at the cost of reduced mantissa precision, often avoiding the need for loss-scaling complexity",
+        "bf16 is only usable on CPUs, never GPUs",
+        "bf16 automatically increases model accuracy regardless of other settings"
+      ],
+      "answer": 1,
+      "explain": "bf16 retains fp32's exponent range, so it largely avoids the underflow/overflow issues that make loss scaling necessary in fp16, trading away some mantissa precision instead."
+    }
+  ]
+}

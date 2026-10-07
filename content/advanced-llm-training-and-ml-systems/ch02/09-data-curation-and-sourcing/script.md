@@ -6,15 +6,15 @@ Lesson three sketched acquisition as the first stage of the data pipeline. This 
 
 ## Segment 2 (steps)
 
-Web crawl is by far the largest source by volume, built on Common Crawl and cleaned derivatives like C4, RefinedWeb, and FineWeb. Code comes from repositories like The Stack. Books and long-form text add long-range coherence that short web documents don't. And curated multi-source mixtures like The Pile and RedPajama deliberately blend all of these into one documented corpus.
+Web crawl is by far the largest source by volume, built on Common Crawl and cleaned derivatives like C4, RefinedWeb, and FineWeb. Code comes from repositories like The Stack. Books and long-form text add long-range coherence that short web documents don't. Wikipedia contributes dense, verified factual content relative to its size. And curated multi-source mixtures like The Pile and RedPajama deliberately blend all of these into one documented corpus.
 
 ## Segment 3 (steps)
 
-Turning raw crawl data into usable text takes real work. Main-content extraction strips out navigation, ads, and footers from the raw HTML. Language identification classifies each document so you can target the languages you actually want. And basic structural filtering drops documents that are too short or mostly symbols, before the heavier quality and toxicity filtering in lesson eleven.
+Turning raw crawl data into usable text takes real work. Main-content extraction strips out navigation, ads, and footers from the raw HTML, using dedicated tools rather than relying on the crawl's own generic text extraction. Language identification classifies each document so you can target the languages you actually want. And basic structural filtering drops documents that are too short or mostly symbols, before the heavier quality and toxicity filtering in lesson eleven.
 
 ## Segment 4 (code)
 
-Hugging Face's datasets library lets you stream a real corpus like FineWeb directly, reading one document at a time instead of downloading tens of terabytes upfront.
+Hugging Face's datasets library lets you stream a real corpus like FineWeb directly, reading one document at a time instead of downloading tens of terabytes upfront, and the metadata fields on each example, like url, date, and language, help later filtering stages make better decisions.
 
 ## Segment 5 (outro)
 

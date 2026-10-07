@@ -14,7 +14,7 @@ Instruction tuning fixes that with additional training on instruction-response p
 
 ## Segment 4 (steps)
 
-Here's the surprising part: this dataset is tens of thousands to a few million examples, compared to trillions of pretraining tokens, yet the behavioral shift is huge. The accepted explanation is that pretraining already built the knowledge — instruction tuning isn't teaching new facts, it's teaching the model which of the things it already knows how to do it should actually do.
+Here's the surprising part: this dataset is tens of thousands to a few million examples, compared to trillions of pretraining tokens, yet the behavioral shift is huge. The accepted explanation is that pretraining already built essentially all the knowledge and capability the model needs — instruction tuning isn't teaching new facts, it's teaching the model which of the things it already knows how to do it should actually do, by demonstration.
 
 ## Segment 5 (outro)
 

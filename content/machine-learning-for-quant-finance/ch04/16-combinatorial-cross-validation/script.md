@@ -1,0 +1,21 @@
+# Script — Combinatorial Cross-Validation
+
+## Segment 1 (title)
+
+Walk-forward validation, even with purging and embargoing, still gives you one backtest path — one sequence of splits, one Sharpe ratio. Combinatorial purged cross-validation, also from Marcos Lopez de Prado, answers a question that single number can't: how much of it is skill, and how much is this one slice of history happening to be kind to this model?
+
+## Segment 2 (steps)
+
+Here's the issue with a single path. Even a scrupulously leak-free backtest is still just one sample from the space of ways a strategy could have played out, and financial time series are short relative to how much noise sits inside them. It's entirely possible for a mediocre strategy to look great on the one historical path you happened to test, purely by chance. One number can't tell you whether that happened.
+
+## Segment 3 (code)
+
+CPCV fixes this by splitting the data into N groups and, instead of holding out one group at a time, holding out every possible combination of k groups at once as the test set — purging and embargoing applied around each combination exactly as before. With six groups and two held out at a time, that's fifteen distinct combinations from the same dataset, each one a legitimately purged and embargoed split, and those out-of-sample segments can be reassembled into complete backtest paths.
+
+## Segment 4 (steps)
+
+Instead of one Sharpe ratio, you now have fifteen, or however many combinations you ran. Looking at the distribution — the mean, the spread, how many combinations were actually profitable — tells you something a single number can't: whether the edge holds up consistently across different slices of data, or whether it depends heavily on which chunk of history ended up in the test set. A high average Sharpe with enormous variance across combinations is a strategy that got lucky somewhere, not one you should trust the way a single backtest would suggest.
+
+## Segment 5 (outro)
+
+CPCV turns one lucky-or-not backtest path into a distribution of out-of-sample Sharpe ratios that reveals how consistent a strategy's edge really is. Next, lesson seventeen: the deflated Sharpe ratio and multiple testing, which tackles what happens to that Sharpe ratio once you've tested many strategies and reported only the best one.

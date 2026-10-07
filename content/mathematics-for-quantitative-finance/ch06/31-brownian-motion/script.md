@@ -1,0 +1,25 @@
+# Script — Brownian Motion
+
+## Segment 1 (title)
+
+The random walk's standard deviation grew like the square root of time. Brownian motion is what you get when you shrink that walk's time step all the way to zero while keeping that square root scaling exact. It's the continuous time limit underneath every diffusion model in finance.
+
+## Segment 2 (steps)
+
+Standard Brownian motion has four defining properties. It starts at zero. Its increments over non overlapping time intervals are independent of each other. Each increment over an interval of length t minus s is normally distributed with mean zero and variance t minus s, so the variance of the process at time t is simply t itself. And its paths are continuous, with no jumps.
+
+## Segment 3 (code)
+
+You simulate it exactly the way you simulated a random walk, just with the increment distribution fixed: each small step is normal with mean zero and variance equal to the time step. Cumulatively summing twenty thousand of those paths and checking the variance at several checkpoints confirms it tracks the elapsed time almost exactly, at every single point along the way.
+
+## Segment 4 (steps)
+
+Brownian motion hides two surprising structural facts. First, even though its paths are continuous everywhere, they're differentiable nowhere — there's no ordinary instantaneous slope, because the step size over a shrinking interval grows relative to that interval without bound. Second, its quadratic variation, the sum of squared increments over a fine partition, converges to the elapsed time itself, not to zero the way it would for a smooth function.
+
+## Segment 5 (code)
+
+You can see that quadratic variation directly in simulation: summing the squared increments of one simulated path lands close to the total elapsed time, not near zero. That single fact, informally written as dW squared equals dt, is the reason stochastic calculus needs an extra term that ordinary calculus doesn't have.
+
+## Segment 6 (outro)
+
+Brownian motion is continuous, memoryless in its increments, and impossible to differentiate in the ordinary sense. Up next, lesson thirty two looks at it from another angle: Brownian motion is also the first and cleanest example of a martingale.

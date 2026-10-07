@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-build-it",
+  "questions": [
+    {
+      "q": "In the catalog Dockerfile's runtime stage, what does `USER catalog` accomplish?",
+      "options": [
+        "It creates the catalog database user inside Postgres",
+        "It switches the active user for the rest of the Dockerfile and the running container, so the process doesn't run as root",
+        "It renames the image to \"catalog\"",
+        "It tells Compose which service this Dockerfile belongs to"
+      ],
+      "answer": 1,
+      "explain": "`USER catalog` switches the effective user from root to the dedicated `catalog` account created earlier with `useradd`, so the container's main process runs non-root."
+    },
+    {
+      "q": "What does `depends_on: catalog-db: condition: service_healthy` do for the checkout service?",
+      "options": [
+        "It deletes catalog-db if checkout fails to start",
+        "It delays starting checkout until catalog-db's health check actually passes, not just until catalog-db starts",
+        "It makes checkout and catalog-db share the same container",
+        "It has no real effect outside of swarm mode"
+      ],
+      "answer": 1,
+      "explain": "The `service_healthy` condition ties startup order to the dependency's health check result, not just its process starting -- so checkout waits for a database that's genuinely ready to accept connections."
+    },
+    {
+      "q": "Why can `checkout` reach the database at the hostname `catalog-db` instead of needing its IP address?",
+      "options": [
+        "Because catalog-db is hardcoded into the checkout image",
+        "Because every container shares the host's /etc/hosts file by default",
+        "Because both services sit on the same user-defined network, where Docker's embedded DNS resolves service names automatically",
+        "Because `mem_limit` enables name resolution"
+      ],
+      "answer": 2,
+      "explain": "On a user-defined network like `northbridge-net`, Docker runs embedded DNS that resolves each service's name to its current container IP, so services can reach each other by name."
+    },
+    {
+      "q": "Why is `catalog-db-data` declared under `volumes:` and mounted into catalog-db, rather than left as part of the container's own filesystem?",
+      "options": [
+        "So the database's data persists independently of the catalog-db container's lifecycle",
+        "So the image builds faster",
+        "Named volumes are required for a healthcheck to work",
+        "It has no practical effect and is purely cosmetic"
+      ],
+      "answer": 0,
+      "explain": "A named volume lives outside any single container's writable layer. catalog-db's data directory survives `docker compose down` and container recreation because it's stored in the volume, not in the container itself."
+    },
+    {
+      "q": "After `docker compose up -d`, what does seeing `catalog-db` and `catalog` listed as \"Up (healthy)\" in `docker compose ps` confirm?",
+      "options": [
+        "That the images were pulled from a registry rather than built locally",
+        "That those services' health checks have actually passed, not just that their processes started",
+        "That resource limits have been removed",
+        "That the .env file was committed to the repo"
+      ],
+      "answer": 1,
+      "explain": "The \"(healthy)\" status only appears once a service's configured `healthcheck` succeeds -- it's a stronger signal than \"Up\" alone, which just means the container's process started."
+    }
+  ]
+}

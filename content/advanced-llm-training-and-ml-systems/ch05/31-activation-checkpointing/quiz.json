@@ -1,0 +1,60 @@
+{
+  "lesson": "activation-checkpointing",
+  "questions": [
+    {
+      "q": "What memory cost does activation checkpointing target, which ZeRO and FSDP do not address?",
+      "options": [
+        "The optimizer state's moment buffers",
+        "Activations -- the intermediate layer outputs the backward pass needs, which scale with depth, batch size, and sequence length rather than parameter count",
+        "The size of the dataset on disk",
+        "The size of the model checkpoint file"
+      ],
+      "answer": 1,
+      "explain": "ZeRO and FSDP shard weights, gradients, and optimizer state. Activations are a separate memory consumer, scaling with depth times batch size times sequence length, independent of how parameters are sharded."
+    },
+    {
+      "q": "What is the core trade-off activation checkpointing makes?",
+      "options": [
+        "It reduces both memory and compute simultaneously with no downside",
+        "It discards intermediate activations during the forward pass and recomputes them during the backward pass, trading extra compute time for reduced peak memory",
+        "It permanently deletes gradients to save disk space",
+        "It reduces the number of layers in the model"
+      ],
+      "answer": 1,
+      "explain": "Activation checkpointing discards activations after use in the forward pass and recomputes them via a second forward pass when the backward pass needs them -- more compute in exchange for less peak activation memory."
+    },
+    {
+      "q": "In PyTorch's torch.utils.checkpoint.checkpoint, what does setting use_reentrant=False do?",
+      "options": [
+        "It disables checkpointing entirely",
+        "It selects PyTorch's newer, more robust checkpointing implementation, which is the current recommended default over the older reentrant-autograd-based one",
+        "It forces the model to run only in fp32",
+        "It increases the batch size automatically"
+      ],
+      "answer": 1,
+      "explain": "use_reentrant=False opts into PyTorch's newer checkpointing implementation, which is more robust than the original reentrant-autograd-based approach and is the currently recommended setting."
+    },
+    {
+      "q": "What is the simplest way to enable activation checkpointing on a Hugging Face Transformers model?",
+      "options": [
+        "Manually rewrite every layer's forward method",
+        "Call model.gradient_checkpointing_enable(), or set gradient_checkpointing=True in TrainingArguments/SFTConfig",
+        "Switch the optimizer from AdamW to SGD",
+        "Reduce the model's hidden size"
+      ],
+      "answer": 1,
+      "explain": "Hugging Face Transformers exposes activation checkpointing as a single call, model.gradient_checkpointing_enable(), or equivalently as a TrainingArguments/SFTConfig flag, applied automatically at transformer-block granularity."
+    },
+    {
+      "q": "Why is activation checkpointing typically combined with data parallelism and ZeRO/FSDP rather than chosen as an alternative to them?",
+      "options": [
+        "Because it is functionally identical to ZeRO stage 3",
+        "Because it targets a completely different part of the memory budget (activations) than those techniques (weights, gradients, optimizer state), so combining them frees up different kinds of memory simultaneously",
+        "Because PyTorch requires all four techniques to be used together or none at all",
+        "Because activation checkpointing only works without any form of parallelism"
+      ],
+      "answer": 1,
+      "explain": "Activation checkpointing addresses activation memory, a separate line item from the weights/gradients/optimizer-state memory that data parallelism, ZeRO, and FSDP address, so production configs commonly combine all of them."
+    }
+  ]
+}

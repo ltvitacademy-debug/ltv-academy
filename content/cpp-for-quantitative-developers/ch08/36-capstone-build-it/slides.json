@@ -1,0 +1,60 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "C++ for Quantitative Developers · Chapter 8",
+    "titlePlain": "Capstone: ",
+    "titleEmphasis": "Build It",
+    "titleSuffix": "",
+    "subtitle": "Lesson 36 · From architecture to compiling code"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The pricing core — no Python in sight",
+    "code": "struct BlackScholesInputs {\n  double spot, strike, rate,\n         vol, timeToExpiry;\n};\n\ninline double blackScholesCall(\n    const BlackScholesInputs& in) {\n  double sqrtT =\n    std::sqrt(in.timeToExpiry);\n  double d1 = (...) / (in.vol*sqrtT);\n  double d2 = d1 - in.vol*sqrtT;\n  return in.spot*normCdf(d1) -\n    in.strike*std::exp(-in.rate*\n    in.timeToExpiry)*normCdf(d2);\n}",
+    "caption": "A plain C++ header — this file never includes pybind11, so it builds and tests on its own."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Chapter 5's pattern, put to work",
+    "titlePlain": "MonteCarloEngine: ",
+    "titleEmphasis": "task-based parallelism",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Split paths across threads", "sub": "numPaths / numThreads_ per task" },
+      { "label": "std::async per chunk", "sub": "each task simulates independently" },
+      { "label": "Seeded-per-chunk RNG", "sub": "no shared state, no mutex needed" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Launching the chunks",
+    "code": "double priceCall(\n    const BlackScholesInputs& in,\n    long numPaths) const {\n  std::vector<std::future<double>>\n    futures;\n  long perThread =\n    numPaths / numThreads_;\n  for (unsigned t=0;\n       t<numThreads_; ++t)\n    futures.push_back(std::async(\n      std::launch::async,\n      [this,in,perThread,t]{\n        return simulateChunk(\n          in, perThread, t);\n      }));\n  double total = 0.0;\n  for (auto& f : futures)\n    total += f.get();\n  return total / numThreads_;\n}",
+    "caption": "Each future runs an independent chunk of paths; .get() joins them all back together."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The one file that knows Python",
+    "titlePlain": "The ",
+    "titleEmphasis": "bindings",
+    "titleSuffix": " layer",
+    "steps": [
+      { "label": "price_european(...)", "sub": "py::array_t in, loops the core, array out" },
+      { "label": "py::class_<Bond>", "sub": "constructor + price() bound directly" },
+      { "label": "py::class_<MonteCarloEngine>", "sub": "a lambda adapts price_call's arguments" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Both pricers, one import",
+    "code": "import numpy as np\nimport quantpricer_cpp as qp\n\nprices = qp.price_european(\n    spots=np.array([100., 105.]),\n    strikes=np.array([100., 100.]),\n    rates=np.array([0.03, 0.03]),\n    vols=np.array([0.2, 0.2]),\n    expiries=np.array([1.0, 1.0]))\n\nengine = qp.MonteCarloEngine(\n    num_threads=8)\nmc = engine.price_call(\n    spot=100.0, strike=100.0,\n    rate=0.03, vol=0.2,\n    expiry=1.0, num_paths=1_000_000)",
+    "caption": "The closed-form and Monte Carlo pricers both ship from the same compiled extension."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 37",
+    "titlePlain": "Capstone: Wrap-Up & ",
+    "titleEmphasis": "Portfolio Presentation",
+    "titleSuffix": "",
+    "subtitle": "Proving QuantPricer meets its requirements, and presenting it well."
+  }
+]

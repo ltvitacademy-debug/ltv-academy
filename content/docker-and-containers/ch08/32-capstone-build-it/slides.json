@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker & Containers · Chapter 8",
+    "titlePlain": "Capstone: ",
+    "titleEmphasis": "Build It",
+    "titleSuffix": "",
+    "subtitle": "Lesson 32 · Capstone · Dockerfiles, compose.yaml, and docker compose up"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The catalog Dockerfile -- multi-stage, non-root",
+    "code": "FROM node:20-slim AS build\nWORKDIR /app\nRUN npm install --production\nCOPY . .\n\nFROM node:20-slim\nRUN useradd --create-home catalog\nUSER catalog",
+    "caption": "Build stage installs dependencies; the runtime stage switches to a non-root user before it ever listens."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Teach the pattern once, reuse it everywhere",
+    "titlePlain": "Checkout: ",
+    "titleEmphasis": "Same Pattern",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Same multi-stage split", "sub": "a build stage, then a fresh runtime stage" },
+      { "label": "Its own non-root user", "sub": "USER checkout instead of USER catalog" },
+      { "label": "Its own application code", "sub": "only the COPY source and user name differ" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "compose.yaml -- the wiring that makes it one app",
+    "code": "catalog-db:\n  volumes: [catalog-db-data:/var/lib/postgresql/data]\n  healthcheck:\n    test: [\"pg_isready\"]\ncheckout:\n  depends_on:\n    catalog-db:\n      condition: service_healthy",
+    "caption": "checkout won't start taking traffic until catalog-db's health check actually passes."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Verifying it actually works",
+    "code": "$ docker compose up -d\n$ docker compose ps\nNAME        STATUS\ncatalog     Up (healthy)\ncatalog-db  Up (healthy)\ncheckout    Up\n$ curl -X POST localhost:8081/api/checkout ...\n{\"orderId\": \"ord_8841\", \"status\": \"confirmed\"}",
+    "caption": "A real order confirmation -- checkout reached catalog and catalog-db by name over the network."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 33",
+    "titlePlain": "Capstone: ",
+    "titleEmphasis": "Wrap-Up",
+    "titleSuffix": "",
+    "subtitle": "Writing this up for a portfolio, a resume, and a job interview."
+  }
+]

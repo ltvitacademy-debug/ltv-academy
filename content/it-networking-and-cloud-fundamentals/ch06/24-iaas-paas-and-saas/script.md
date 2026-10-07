@@ -1,0 +1,21 @@
+# Script — IaaS, PaaS & SaaS
+
+## Segment 1 (title)
+
+Cloud providers rent out computing resources, but not all cloud services hand you the same amount of control. A provider can give you anything from a bare virtual machine to a finished application you just log into.
+
+## Segment 2 (steps)
+
+Every cloud service sits somewhere on a line between managing almost everything yourself and managing almost nothing. Infrastructure as a Service hands you raw VMs, storage, and networking — you install and manage the OS, runtime, and application yourself, same as the VMs from earlier in this course, just on someone else's hypervisor. Platform as a Service goes further: the provider manages the OS and runtime too, so you just deploy your application code with no server to log into or patch. Software as a Service goes all the way — the provider manages the application itself, and you just use it through a browser or an app.
+
+## Segment 3 (code)
+
+Most real organizations run a mix, matched to each workload. Northbridge Retail's custom checkout service needs specific OS-level tuning, so it runs on IaaS virtual machines they configure and patch themselves. Their marketing website is a fairly standard web app, so it runs on a PaaS web app service — they push code and the platform handles the server underneath. And their email and CRM run entirely on SaaS products — nobody there manages a server for either one.
+
+## Segment 4 (steps)
+
+More control costs more effort. IaaS is the most flexible option when a workload needs something nonstandard, but it also means patching, scaling, and securing the OS yourself. SaaS is the opposite end — almost no operational work, but almost no ability to customize what's running underneath. The right model usually comes down to whether a workload needs that flexibility badly enough to justify managing it.
+
+## Segment 5 (outro)
+
+That control-versus-effort tradeoff carries straight into security, which the next lesson covers directly. First, though: where in the world do these resources actually run, and what happens if the data center hosting them has a bad day?

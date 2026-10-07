@@ -1,0 +1,21 @@
+# Script — Training a Data-Quality Reward Model
+
+## Segment 1 (title)
+
+Lesson 11 produced roughly two hundred sixty labeled chosen and rejected pairs. This lesson turns them into an actual trained model: a small pretrained encoder with a scalar head, trained with the same pairwise loss that reward models across the RLHF literature use.
+
+## Segment 2 (code)
+
+Each original messy record and one candidate cleaned record gets flattened into a single text string before it reaches the encoder. Both go into the same string, in the same call, because the model's whole job is to judge the candidate relative to what it started from, not in isolation.
+
+## Segment 3 (code)
+
+The model itself is distilbert base uncased with a scalar linear head on top of its pooled output. DistilBERT is small enough to fine-tune quickly on a dataset this size, and its pretrained language understanding gives it a running start instead of learning English from scratch on two hundred sixty pairs.
+
+## Segment 4 (steps)
+
+The model is never trained to predict an absolute number, only to score the chosen candidate higher than the rejected one for the same row. That's the Bradley-Terry pairwise loss: negative log sigmoid of the chosen score minus the rejected score, optimized with AdamW at a small batch size over a few epochs, since more epochs on this little data would risk overfitting to one rater's idiosyncrasies.
+
+## Segment 5 (outro)
+
+This reward model is trained end to end on real human pairwise preferences, with its own weights and its own failure modes — a genuinely separate learned model, unlike Project 3's programmatic execution-correctness reward. Up next, Lesson 13: evaluating this model on held-out pairs, including a deliberately adversarial check.

@@ -1,0 +1,21 @@
+# Script — Reinforcement Learning for Trading Overview
+
+## Segment 1 (title)
+
+Every model in this course so far has been supervised: given features, predict a label. Reinforcement learning frames the problem differently. An agent takes sequential actions in an environment and learns, purely from the rewards it receives, which actions tend to pay off. Trading looks, on the surface, like a natural fit for that.
+
+## Segment 2 (steps)
+
+The standard framing is a Markov decision process. The state is what the agent observes before acting: market features, recent price history, and its own portfolio, including position and cash. The action is what it's allowed to do, like buy, sell, hold, or a specific position size. And the reward is the feedback it receives afterward, typically profit and loss, often shaped to penalize drawdowns rather than just rewarding raw P&L. The agent's job is to learn a policy, a mapping from state to action, that maximizes cumulative reward over time.
+
+## Segment 3 (code)
+
+Two broad families of method show up repeatedly in this research. Q-learning and its deep-network version, DQN, learn a function estimating the expected future reward of taking a given action in a given state, then act by picking the highest-estimated action. Policy-gradient methods skip that step and learn the policy itself directly, adjusting its parameters to make higher-reward actions more likely over time, which tends to work better when actions are continuous, like choosing an exact position size.
+
+## Segment 4 (steps)
+
+Here's why this remains hard. Finance's usual low signal-to-noise and non-stationarity problems bite harder under reinforcement learning, because the agent learns an entire sequential policy from reward signals that are mostly noise and keep shifting. These agents also need far more interactions than real market history can supply, so training mostly happens in simulation, and that simulation must capture market impact and transaction costs realistically or the learned policy fails live. And when a reward only becomes clear many steps after the actions that caused it, deciding which action deserves credit is a hard problem on its own.
+
+## Segment 5 (outro)
+
+Reinforcement learning for trading is genuinely promising for narrower problems like optimal trade execution, but it remains a research-stage area, not an off-the-shelf solution. That closes chapter six's tour of modern topics. Chapter seven is the capstone, and lesson twenty-six kicks it off by laying out the final project.

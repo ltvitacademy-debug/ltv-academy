@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Research Engineering · Chapter 6",
+    "titlePlain": "Silent Bugs vs. ",
+    "titleEmphasis": "Loud",
+    "titleSuffix": " Bugs",
+    "subtitle": "Lesson 28 · Debugging Research Code"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "A loud bug is actually the easy case",
+    "titlePlain": "Make the bugs ",
+    "titleEmphasis": "loud",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Loud bug: crash, stack trace", "sub": "job won't run until someone fixes it -- self-correcting" },
+      { "label": "Silent bug: trains fine, loss drops", "sub": "no error, just a wrong number ready to be reported" },
+      { "label": "The fix is a habit, not a tool", "sub": "assert shapes and modes at every boundary that could break silently" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The most common silent bug: an unintended broadcast",
+    "code": "preds = model(x)      # shape (B,)\ntargets = y            # shape (B, 1) -- extra dim\n\nloss = ((preds - targets) ** 2).mean()\n# broadcasts to (B,B), not elementwise (B,) -- still runs,\n# still returns a number, the number is wrong\n\n# Fix: assert the shapes match before the op\nassert preds.shape == targets.shape, f\"{preds.shape} vs {targets.shape}\"",
+    "caption": "Broadcasting never raises an error -- it just silently computes something other than what you meant."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Two more patterns that cost nothing to crash",
+    "code": "model.eval()\nwith torch.no_grad():\n    val_logits = model(val_x)\nmodel.train()   # flip back -- forgetting this skews every later step\n\nfor batch in loader:\n    optimizer.zero_grad()   # omit this and grads silently accumulate\n    loss = compute_loss(model, batch)\n    loss.backward()\n    optimizer.step()",
+    "caption": "Neither mistake raises an exception -- eval-mode dropout and accumulated grads just quietly bias every number downstream."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Numerical Issues in ",
+    "titleEmphasis": "Training Code",
+    "titleSuffix": "",
+    "subtitle": "NaNs, Infs, and loss-of-precision bugs -- the specific silent failures that show up in gradients and mixed precision."
+  }
+]

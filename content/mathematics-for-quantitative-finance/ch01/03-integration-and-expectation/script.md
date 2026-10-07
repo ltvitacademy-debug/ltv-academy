@@ -1,0 +1,25 @@
+# Script — Integration & Expectation
+
+## Segment 1 (title)
+
+Derivatives measure instantaneous change. Integrals undo that and measure accumulation. In quantitative finance, the integral you'll use constantly isn't abstract area under a curve, it's expected value, which is an integral against a probability density. This lesson connects the two.
+
+## Segment 2 (steps)
+
+A definite integral is built from a Riemann sum. Slice the interval into thin strips, add up the area of each one as a rectangle, and let the number of strips go to infinity. What that sum approaches is the integral.
+
+## Segment 3 (code)
+
+Expectation is exactly that same kind of integral, weighted by how likely each outcome is. And this is the single most important integral in finance: a call option's fair price is the discounted expectation of its payoff, an integral of the payoff against the risk-neutral density.
+
+## Segment 4 (code)
+
+When that integral has no closed form, you can approximate it by simulation. Draw a million random outcomes, average the payoff, discount it back. Running that gives seven point one three two zero, essentially matching the Black-Scholes closed form of seven point one two eight one.
+
+## Segment 5 (steps)
+
+That works because of the law of large numbers: the sample average converges to the true expectation as you add more draws. The catch is the error only shrinks with the square root of the sample size, so quadrupling your samples only halves your error.
+
+## Segment 6 (outro)
+
+An integral is the limit of a sum of thin slices, and expectation is that same integral weighted by probability. Up next, lesson four: Taylor series and approximation, learning to approximate any smooth function with a polynomial.

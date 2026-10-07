@@ -1,0 +1,60 @@
+{
+  "lesson": "load-balancing-across-gpus",
+  "questions": [
+    {
+      "q": "Why does round-robin load balancing fit LLM inference poorly?",
+      "options": [
+        "Round robin cannot be implemented in any load balancer",
+        "It assumes every request costs roughly the same work, but prompt length, output length, and KV cache size vary widely between requests",
+        "Round robin only works with a single backend server",
+        "GPUs cannot be load balanced at all"
+      ],
+      "answer": 1,
+      "explain": "Round robin assumes uniform request cost. LLM requests vary a lot in prefill length, generation length, and memory footprint, so strict rotation creates unevenly loaded replicas."
+    },
+    {
+      "q": "What does least-outstanding-requests (least connections) routing do?",
+      "options": [
+        "Routes every request to the same replica for consistency",
+        "Routes each new request to whichever replica currently has the fewest in-flight requests",
+        "Routes requests alphabetically by hostname",
+        "Disables load balancing entirely"
+      ],
+      "answer": 1,
+      "explain": "Least outstanding requests uses current in-flight load as the routing signal, which tracks actual load far better than a fixed rotation."
+    },
+    {
+      "q": "Why is session or prefix affinity especially useful for multi-turn chat workloads?",
+      "options": [
+        "It guarantees the lowest possible cost regardless of load",
+        "It routes the same conversation back to the same replica so a cached prompt prefix (KV cache) can be reused instead of recomputed",
+        "It prevents the model from ever generating long responses",
+        "It is required by every cloud provider's networking layer"
+      ],
+      "answer": 1,
+      "explain": "Session affinity keeps a conversation on the replica that already holds its cached context, avoiding the cost of recomputing a shared prefix from scratch on a different replica."
+    },
+    {
+      "q": "In the example Nginx upstream configuration, what does `max_fails=2 fail_timeout=10s` do?",
+      "options": [
+        "Limits each server to exactly two total requests ever",
+        "Pulls a backend out of rotation for a cooldown period after it fails health checks twice",
+        "Forces the server to restart every 10 seconds",
+        "Encrypts traffic between the load balancer and backend"
+      ],
+      "answer": 1,
+      "explain": "This is a health-aware failure threshold: after two failures, Nginx stops sending traffic to that backend for the fail_timeout period, keeping a struggling replica from dragging down the pool."
+    },
+    {
+      "q": "What is a reasonable approach for a load-balanced pool with mixed GPU generations or memory sizes?",
+      "options": [
+        "Split traffic exactly evenly regardless of each replica's capacity",
+        "Weight routing so more capable replicas receive a proportionally larger share of traffic",
+        "Only ever use the slowest GPU in the pool",
+        "Disable load balancing for heterogeneous pools"
+      ],
+      "answer": 1,
+      "explain": "A capacity-aware load balancer can weight routing toward more capable nodes instead of splitting evenly, which would let weaker replicas fall behind under equal load."
+    }
+  ]
+}

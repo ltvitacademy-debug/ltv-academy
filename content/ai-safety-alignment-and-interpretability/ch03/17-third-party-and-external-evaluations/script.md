@@ -1,0 +1,21 @@
+# Script — Third-Party & External Evaluations
+
+## Segment 1 (title)
+
+A lab grading its own model's safety isn't a neutral act, even in complete good faith. Financial incentive and competitive pressure both pull toward reassuring results. This lesson covers why independent evaluation became standard, and what it can and can't guarantee.
+
+## Segment 2 (steps)
+
+A lab evaluating its own model has every technical skill needed to do it well, and still faces a conflict that skill can't resolve. Commercial pressure to ship favors interpretations of ambiguous results that lean toward "safe to release." Closeness to the product creates blind spots an outsider would catch immediately. None of this requires bad faith — it's a structural property of being both builder and grader, which is exactly why every mature safety-critical industry eventually adds inspection separate from the manufacturer.
+
+## Segment 3 (steps)
+
+METR builds and runs autonomy and agentic-capability evaluations under time-limited pre-release access, publishing its own assessment rather than one filtered through a lab's communications team. The UK AI Safety Institute runs its own dangerous-capability testing with legal independence from the companies it evaluates. Apollo Research focuses specifically on deceptive and strategic behavior, including the sandbagging questions from the previous lesson. Each brings a different lens — none of them just reruns the lab's own test suite.
+
+## Segment 4 (steps)
+
+Several labs now voluntarily grant limited pre-release access so this testing happens before public launch, not just after — a real step beyond pure self-regulation. But it's still lab-controlled: the lab decides who gets access, at what level, and for how long before a release date the lab sets. Evaluators typically don't get model weights, so no fine-tuning-based sandbagging checks, no deep interpretability access, and testing windows are usually days or weeks, not the months a thorough evaluation might need.
+
+## Segment 5 (outro)
+
+External evaluation substantially improves on pure self-assessment, but it isn't full, unconstrained access — a clean third-party result is meaningful, not a complete guarantee. Next lesson turns this whole chapter into something concrete: building a small safety eval suite of your own.

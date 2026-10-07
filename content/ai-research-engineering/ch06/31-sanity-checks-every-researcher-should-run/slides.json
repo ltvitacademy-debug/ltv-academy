@@ -1,0 +1,43 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Research Engineering · Chapter 6",
+    "titlePlain": "Sanity Checks Every ",
+    "titleEmphasis": "Researcher",
+    "titleSuffix": " Should Run",
+    "subtitle": "Lesson 31 · Debugging Research Code"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Cheap checks, run before trusting any result",
+    "titlePlain": "A five-minute ",
+    "titleEmphasis": "checklist",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Overfit a single batch to ~0 loss", "sub": "proves gradients flow and the pipeline is wired correctly" },
+      { "label": "Every trainable param gets a gradient", "sub": "a detached or unused subgraph silently never updates" },
+      { "label": "Garbage input makes the loss worse", "sub": "if noise scores the same as real input, something's broken" },
+      { "label": "Beats a trivial baseline", "sub": "predict-the-mean / majority-class sets the floor to clear" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Check 1 + 2: overfit one batch, audit every gradient",
+    "code": "batch = next(iter(loader))\nfor step in range(300):\n    optimizer.zero_grad()\n    loss = compute_loss(model, batch)\n    loss.backward()\n    optimizer.step()\nprint(loss.item())  # should be near 0\n\nfor name, p in model.named_parameters():\n    if p.requires_grad and (p.grad is None or torch.all(p.grad == 0)):\n        print(f\"WARNING: {name} got no usable gradient\")",
+    "caption": "A parameter with no gradient never updates, but the rest of the model can sometimes still drive the loss down and mask it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Check 3 + 4: noise ablation and baseline sanity",
+    "code": "noise_batch = {**batch, \"input_ids\": torch.randint(0, VOCAB_SIZE, batch[\"input_ids\"].shape)}\nprint(compute_loss(model, batch).item(), compute_loss(model, noise_batch).item())\n# noise should score clearly worse\n\nmean_baseline_mse = np.mean((targets - targets.mean()) ** 2)\nprint(mean_baseline_mse, model_mse)\n# model_mse should be meaningfully below the trivial baseline",
+    "caption": "If noise scores close to real input, or the model barely beats predicting the mean, something is wrong before architecture even matters."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Debugging a Run That ",
+    "titleEmphasis": "Won't Improve",
+    "titleSuffix": "",
+    "subtitle": "Closing Chapter 6: a systematic process for the case where training runs cleanly but the metric just won't move."
+  }
+]

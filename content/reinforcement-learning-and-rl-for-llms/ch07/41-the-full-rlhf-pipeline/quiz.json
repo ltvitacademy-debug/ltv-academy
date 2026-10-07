@@ -1,0 +1,60 @@
+{
+  "lesson": "the-full-rlhf-pipeline",
+  "questions": [
+    {
+      "q": "What are the three stages of the RLHF pipeline, in order?",
+      "options": [
+        "Reward model training, then PPO, then SFT",
+        "Supervised fine-tuning (SFT), then reward model training, then PPO fine-tuning against the reward model",
+        "PPO, then SFT, then reward model training",
+        "SFT, then PPO, then reward model training"
+      ],
+      "answer": 1,
+      "explain": "RLHF is a fixed three-stage pipeline: SFT produces a starting policy, a reward model is trained on preference comparisons of that policy's outputs, and PPO then fine-tunes the SFT policy against the reward model."
+    },
+    {
+      "q": "Why is the reward model trained on comparisons between responses sampled from the SFT model specifically, rather than from the raw pretrained base model?",
+      "options": [
+        "It makes no difference which model generated the sampled responses",
+        "Because the reward model's preference judgments need to be calibrated to the response distribution PPO will actually be sampling from during RL, which is the SFT model's distribution",
+        "Because the pretrained base model cannot generate any text at all",
+        "Because reward models can only be trained on a single response per prompt"
+      ],
+      "answer": 1,
+      "explain": "If the reward model were trained on comparisons from a different (weaker) policy's outputs, its judgments would be miscalibrated for the distribution of text PPO generates during RL fine-tuning."
+    },
+    {
+      "q": "Why does PPO fine-tuning start from the SFT checkpoint instead of the raw pretrained base model?",
+      "options": [
+        "Starting from the SFT checkpoint avoids spending RL steps teaching the model basic instruction-following on a noisy, indirect reward signal",
+        "The pretrained base model cannot be loaded into a PPO trainer",
+        "Starting from SFT is required by the Bradley-Terry objective",
+        "It has no effect on training efficiency either way"
+      ],
+      "answer": 0,
+      "explain": "The SFT model already follows instructions reasonably well, so RL fine-tuning can focus on refining behavior rather than learning it from scratch under a much noisier reward signal."
+    },
+    {
+      "q": "In this pipeline, what role does the frozen reference model play, and where does it come from?",
+      "options": [
+        "It is a randomly initialized model used only for debugging",
+        "It is a copy of the SFT checkpoint, kept unchanged throughout RL, used to measure how far the policy has drifted",
+        "It is the reward model itself, renamed",
+        "It is the pretrained base model, used to replace the policy if PPO fails"
+      ],
+      "answer": 1,
+      "explain": "The reference model is a frozen copy of the SFT checkpoint; the policy is compared against it (via the KL penalty, covered next lesson) to catch drift during RL fine-tuning."
+    },
+    {
+      "q": "According to this lesson, what changes about PPO's clipped objective, GAE, or the reward model's Bradley-Terry training when they're used inside the RLHF pipeline?",
+      "options": [
+        "Nothing about those mechanics changes; what's new is that PPO's reward function becomes a call to the trained reward model on generated text",
+        "PPO's clipping range must be set to zero inside RLHF",
+        "The Bradley-Terry objective is replaced by a different loss function",
+        "GAE can no longer be used once a reward model is introduced"
+      ],
+      "answer": 0,
+      "explain": "PPO's objective, advantage estimation, and the reward model's training objective all carry over unchanged from earlier chapters; the new element is that the reward signal PPO optimizes now comes from the trained reward model instead of a hand-written environment reward."
+    }
+  ]
+}

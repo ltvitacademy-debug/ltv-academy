@@ -6,7 +6,7 @@ LoRA already shrinks trainable-parameter memory to a sliver of the model, but th
 
 ## Segment 2 (steps)
 
-Frozen weights never get updated, so a one-time precision loss from quantization is far safer than quantizing something actively training. QLoRA's NF4 format allocates more representable values near zero, matching how pretrained weights actually distribute. Double quantization squeezes the scaling constants themselves too. Meanwhile the LoRA matrices stay in bf16 the whole time — anything that receives a gradient keeps full precision.
+Frozen weights never get updated, so a one-time precision loss from quantization is far safer than quantizing something actively training. QLoRA's NF4 format allocates more representable values near zero, matching how pretrained weights actually distribute, rather than spacing values evenly like a naive 4-bit integer format would. Double quantization squeezes the scaling constants themselves too. Meanwhile the LoRA matrices stay in bf16 the whole time — anything that receives a gradient keeps full precision.
 
 ## Segment 3 (code)
 

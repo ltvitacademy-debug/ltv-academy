@@ -1,0 +1,19 @@
+## Segment 1 (title)
+
+Northbridge Retail's checkout app isn't one container -- it's a web front end, an API, and a database. Typing out docker run commands for all three, every time, gets old fast. That's what Docker Compose is for.
+
+## Segment 2 (code)
+
+Here's the whole Compose file for just the product-catalog service. Services is the top-level key -- catalog is this service's name, and Compose uses it as the container's hostname. Image says what to run. Ports maps host port eighty-eighty to container port eighty, same syntax as docker run dash p. And volumes mounts a named volume, declared again at the bottom so Compose knows to create and track it.
+
+## Segment 3 (code)
+
+docker compose up dash d builds the network and starts every service in one command -- here it created a network called ch06 underscore default, named after the project folder. docker compose down stops and removes the containers and that network. It does not remove named volumes, though -- catalog-data survives until you add the dash v flag.
+
+## Segment 4 (steps)
+
+Three keys matter most when you're reading a Compose file. Services, where each entry becomes a container named after its key. Ports, mapping host to container exactly like docker run's dash p flag. And volumes, named or bind-mounted, declared per service and listed again at the bottom.
+
+## Segment 5 (outro)
+
+That's the shape of a Compose file. Next lesson, Northbridge's full stack -- web, API, and database -- goes into one compose.yaml together, with depends_on controlling what starts first.

@@ -1,0 +1,21 @@
+# Script — How Platform Needs Change With Scale
+
+## Segment 1 (title)
+
+The components from the last lesson don't all need to exist on day one, and building them too early is its own mistake. This lesson walks through the stages a company's ML platform needs typically pass through as the number of models and teams grows, so you can recognize which stage an organization is actually in.
+
+## Segment 2 (steps)
+
+Four stages show up repeatedly. In stage one, a single team owns one or two models end to end, training in a notebook with no platform — and there shouldn't be one yet. In stage two, more models exist, and the same steps get copy-pasted and tweaked per model rather than shared, which is where the first real pain shows up. In stage three, once a company has a dozen or more models across multiple teams, investing in shared tooling starts paying for itself immediately. And in stage four, at hundreds of models, the platform team's job shifts to building a self-service system teams use without hand-holding.
+
+## Segment 3 (steps)
+
+The signal that it's time to move stages isn't a headcount number, it's repeated, costly manual work a tool would eliminate. If only one team has hit a painful step once, investing in a general tool is a bet on a guess. If multiple teams have independently hit the same wall, that's a strong signal the investment pays off right away instead of speculatively.
+
+## Segment 4 (steps)
+
+Building too early has a real failure mode of its own. The platform gets built around guesses about future needs, and those guesses are usually wrong once real usage shows up. The team ends up maintaining a system nobody asked for, while the actual pain points that emerge later go unaddressed because nobody anticipated them.
+
+## Segment 5 (outro)
+
+Size platform investment to the stage you're actually in, not the one you expect to be in eventually. That closes chapter one. Chapter two starts the deep dive into the first component: feature stores, beginning with what problem they actually solve.

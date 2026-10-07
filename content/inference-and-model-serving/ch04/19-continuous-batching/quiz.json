@@ -1,0 +1,60 @@
+{
+  "lesson": "continuous-batching",
+  "questions": [
+    {
+      "q": "What is the main inefficiency of classic request-level dynamic batching for LLM workloads?",
+      "options": [
+        "It cannot run on GPUs at all",
+        "A batch runs as a fixed unit until every request in it finishes, so a request that finishes early leaves its GPU slot idle until the whole batch ends",
+        "It requires every request to have exactly the same prompt",
+        "It uses more GPU memory than static batching in every case"
+      ],
+      "answer": 1,
+      "explain": "Because LLM requests generate different numbers of output tokens, they finish at different times, but request-level batching can't admit a new request into a slot freed early — that slot sits idle until the entire batch completes."
+    },
+    {
+      "q": "What does continuous (iteration-level) batching change about scheduling?",
+      "options": [
+        "It schedules requests once per day instead of per batch",
+        "It makes scheduling decisions after every single decode step, admitting new requests into freed slots immediately",
+        "It removes the need for a KV cache entirely",
+        "It only works for requests with identical prompt lengths"
+      ],
+      "answer": 1,
+      "explain": "Continuous batching checks after every decode step which requests finished and immediately fills their slots with new requests, so batch composition can change every iteration rather than only between whole batches."
+    },
+    {
+      "q": "Why does continuous batching depend on PagedAttention's block-based memory model?",
+      "options": [
+        "It doesn't — the two techniques are unrelated",
+        "Swapping requests in and out of the batch every step requires allocating and freeing cache memory constantly, which only works efficiently with flexible, block-by-block allocation rather than large contiguous reservations",
+        "PagedAttention eliminates the need for scheduling altogether",
+        "Continuous batching only applies to prefill, which doesn't use the KV cache"
+      ],
+      "answer": 1,
+      "explain": "Without PagedAttention's ability to allocate cache memory in small blocks on demand, swapping requests in and out of the running batch every single step would require expensive, constant memory reshuffling."
+    },
+    {
+      "q": "What problem does chunked prefill solve?",
+      "options": [
+        "It prevents any new requests from joining a running batch",
+        "A new request's compute-heavy prefill step can stall the decode steps of requests already running, so prefill is split into smaller chunks interleaved with ongoing decode",
+        "It removes the need for continuous batching entirely",
+        "It only affects requests that have already finished generating"
+      ],
+      "answer": 1,
+      "explain": "Chunked prefill splits a long prompt's prefill into smaller pieces that fit alongside ongoing decode steps in the same iteration, instead of forcing one large prefill to run in exclusive isolation and stall other requests."
+    },
+    {
+      "q": "In continuous batching, how does one request's lifetime relate to another's within the running batch?",
+      "options": [
+        "Every request must start and finish at exactly the same time",
+        "A request's lifetime is independent — it joins when there's room and leaves the moment it's done, regardless of other requests",
+        "Only one request can be processed at a time",
+        "Requests are processed strictly in the order they were submitted, with no overlap"
+      ],
+      "answer": 1,
+      "explain": "Continuous batching breaks the 'whole batch moves together' assumption — each request joins the batch when a slot is free and leaves as soon as it finishes, independent of any other request's progress."
+    }
+  ]
+}

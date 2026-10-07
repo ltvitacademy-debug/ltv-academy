@@ -1,0 +1,25 @@
+# Script — CPU Caches & Data Layout
+
+## Segment 1 (title)
+
+A CPU core executes an instruction in about a nanosecond. Fetching data from main memory can take a hundred nanoseconds or more — two orders of magnitude slower. Caches exist to hide that gap, and this lesson is about how your data layout decides whether they actually can.
+
+## Segment 2 (steps)
+
+Every core sits behind several layers. L1 is tiny and private, around a nanosecond. L2 and L3 are bigger and shared more broadly, somewhere from three to twenty nanoseconds. Main memory is gigabytes in size but a hundred nanoseconds or worse to reach — a hundred times slower than L1. Code whose access pattern keeps hitting the fast layers can run tens of times faster than functionally identical code that keeps missing out to RAM, with no change to the algorithm at all.
+
+## Segment 3 (code)
+
+Memory doesn't arrive one byte at a time — it arrives in fixed chunks called cache lines, typically sixty-four bytes. Read one double from an array, and the other seven doubles sharing that line come along for free. That's why a plain sequential loop over a vector is fast: each fetch quietly pays for the next several elements too.
+
+## Segment 4 (steps)
+
+That insight has a direct consequence for how you lay out records. Say you've got a million orders, each with a price, a quantity, and a symbol, and you just need to sum the prices. Store them as an array of structs, and summing prices drags quantity and symbol along for every single element — wasted cache bandwidth. Store each field in its own array instead — struct of arrays — and every byte you fetch is a price you actually use. Array of structs still wins, though, when you consistently need every field of one record at once.
+
+## Segment 5 (steps)
+
+That same cache-friendliness is why vector tends to beat list for most quant workloads, even though inserting into the middle of a list is the textbook O of one operation. Vector stores everything contiguously, so the cache rewards every traversal. List scatters each node across the heap, so every step to the next element risks a fresh, slow cache miss. In practice, that constant-factor cost dwarfs list's asymptotic advantage often enough that vector should be your default, full stop.
+
+## Segment 6 (outro)
+
+Sequential, contiguous access wins far more often than raw algorithmic complexity suggests it should, and that's the whole reason data layout belongs in a performance chapter before anything about algorithms. Up next, lesson twenty-eight: avoiding allocation and copies, the next bottleneck once layout is handled.

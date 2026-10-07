@@ -1,0 +1,41 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Distributed Training Infrastructure · Chapter 6",
+    "titlePlain": "Alerting on a ",
+    "titleEmphasis": "Stalled",
+    "titleSuffix": " Training Run",
+    "subtitle": "Lesson 32 · Monitoring & Cost Management for Training Clusters"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Nothing crashes, so nothing obviously fires",
+    "titlePlain": "Stalled is ",
+    "titleEmphasis": "not",
+    "titleSuffix": " the same as crashed",
+    "steps": [
+      { "label": "Crashed", "sub": "status flips to Failed — a clear, discrete signal" },
+      { "label": "Stalled", "sub": "still Running; progress has quietly stopped" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Two signals, watched as a trend",
+    "code": "# GPU utilization near-zero for a \"Running\" job\navg(DCGM_FI_DEV_GPU_UTIL{namespace=\"training-lm\"}) by (job_name) < 5\n\n# Loss hasn't moved in 30 minutes\nchanges(solara_training_loss{namespace=\"training-lm\"}[30m]) == 0",
+    "caption": "Neither signal alone is perfect — that's why the Alertmanager rule requires it to hold for a sustained window, not an instant."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Routed by the same namespace split",
+    "code": "- alert: TrainingJobStalled\n  expr: avg(DCGM_FI_DEV_GPU_UTIL{namespace=~\"training-lm|training-mm\"})\n        by (namespace, job_name) < 5\n  for: 15m\n  labels: {severity: critical}\n\nroute:\n  routes:\n    - match: {namespace: training-lm}\n      receiver: lm-team-slack\n    - match: {namespace: training-mm}\n      receiver: mm-team-slack",
+    "caption": "The same training-lm / training-mm labels that drove monitoring and cost now route the alert to the right team."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 33",
+    "titlePlain": "Capstone: Standing Up a Small ",
+    "titleEmphasis": "Training Cluster",
+    "titleSuffix": "",
+    "subtitle": "Putting the whole course together, hands-on."
+  }
+]

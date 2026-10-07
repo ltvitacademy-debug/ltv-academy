@@ -6,11 +6,11 @@ This closes out chapter two by returning to the sourcing question from lesson ni
 
 ## Segment 2 (steps)
 
-Raw web crawl dwarfs high-quality sources like books or Wikipedia in sheer token count, even though per-token value for building strong reasoning isn't equal across domains. In practice, labs upsample smaller, higher-value domains and downsample the largest, lowest-value domain, web text, rather than training on the natural distribution.
+Raw web crawl dwarfs high-quality sources like books or Wikipedia in sheer token count, even though per-token value for building strong reasoning isn't equal across domains. In practice, labs upsample smaller, higher-value domains and downsample the largest, lowest-value domain, web text, rather than training on the natural distribution. Meta's publicly described Llama data mixtures are a well-known real example of exactly this kind of hand-chosen, non-proportional blend.
 
 ## Segment 3 (code)
 
-Hugging Face's datasets library implements this directly with interleave_datasets, which draws from multiple source datasets according to specified sampling probabilities. A comparatively small but high-value dataset like Wikipedia can be deliberately overrepresented relative to its true size in the raw collected data.
+Hugging Face's datasets library implements this directly with interleave_datasets, which draws from multiple source datasets according to specified sampling probabilities. A comparatively small but high-value dataset like Wikipedia can be deliberately overrepresented relative to its true size in the raw collected data, regardless of how many underlying tokens each source dataset actually contains.
 
 ## Segment 4 (steps)
 
@@ -18,4 +18,4 @@ Hand-picking those weights through trial and error is expensive, since each cand
 
 ## Segment 5 (outro)
 
-Mixture weighting is often one of the highest-leverage decisions in the entire data pipeline, because it directly shapes what the model ends up knowing. That closes chapter two. Chapter three moves into pretraining large models directly.
+Mixture weighting is often one of the highest-leverage decisions in the entire data pipeline, because it directly shapes what the model ends up knowing and which skills it's actually good at. That closes chapter two, tokenization and data pipelines at scale. Chapter three moves into pretraining large models directly.

@@ -1,0 +1,21 @@
+# Script — Choosing a Serving Framework
+
+## Segment 1 (title)
+
+Lessons seven through nine introduced vLLM, TensorRT-LLM, and Triton one at a time. In practice, teams rarely pick exactly one in isolation — they pick a combination, shaped by hardware, model, and available engineering time. This lesson gives you a framework for making that call.
+
+## Segment 2 (steps)
+
+vLLM focuses on scheduling and memory, with low setup effort. TensorRT-LLM focuses on compiling the model for raw execution speed, but it's NVIDIA-specific and takes more setup. Triton is the networked, framework-agnostic serving layer, built for hosting many models at once.
+
+## Segment 3 (steps)
+
+Three patterns show up again and again. vLLM alone, for one model needing a fast OpenAI-compatible API with minimal setup — the most common starting point, and often the ending point too. TensorRT-LLM behind Triton, once a team has squeezed what it can from configuration-level tuning and needs the extra raw speed at real scale, usually because the volume is high enough that a throughput gain translates into real GPU-cost savings. And Triton hosting multiple backends, for organizations serving many different kinds of models under one consistent operational surface.
+
+## Segment 4 (steps)
+
+Before picking anything, ask four questions. How many different models do you need to serve, and how similar are their frameworks? How much engineering time can you spend on performance tuning versus simply shipping? Are you committed to NVIDIA hardware specifically, or do you need more flexibility? And do you specifically need an OpenAI-compatible API out of the box?
+
+## Segment 5 (outro)
+
+Raw speed comparisons are highly workload-dependent — the more durable question is which combination fits your constraints well enough to operate reliably. Up next, lesson eleven: actually deploying a model with a serving framework, start to finish.

@@ -1,0 +1,25 @@
+# Script — Benchmarking a Serving Stack
+
+## Segment 1 (title)
+
+Every number in the last lesson's cost formula — tokens per second, utilization, latency — has to come from somewhere real. This lesson covers how to actually measure a serving stack's performance under conditions that resemble production, instead of a single hand-timed request.
+
+## Segment 2 (steps)
+
+A useful benchmark captures time to first token and inter-token latency, not just end-to-end time, since they show where time actually goes. It captures throughput in both requests and tokens per second. And it reports percentiles — p50, p90, and especially p99 — because a single average hides whether most requests are fast with a few catastrophic outliers, or everything is uniformly mediocre.
+
+## Segment 3 (steps)
+
+A benchmark against one request at a time, or a uniform set of toy prompts, doesn't measure what production looks like. Testing at increasing concurrency finds where behavior actually changes; simulating bursty, uneven arrivals is closer to real traffic; and realistic prompt and output length distributions avoid under-representing the long requests that show up for real.
+
+## Segment 4 (code)
+
+Here's a real command using vLLM's built-in benchmarking tool, sending five hundred prompts at a sustained rate of twenty per second against a live endpoint — a genuine load test, not a single curl call.
+
+## Segment 5 (steps)
+
+A few mistakes quietly invalidate results. Skipping warm-up lets one-time startup costs skew early numbers. Too few requests makes a p99 reading untrustworthy. And if the load-generating client itself runs out of CPU or connections, you end up benchmarking the client instead of the server.
+
+## Segment 6 (outro)
+
+A trustworthy benchmark captures TTFT, ITL, and throughput at real percentiles under realistic load — and warm-up, sample size, and client capacity are the usual places it quietly goes wrong. Up next, lesson thirty-one: turning reliable measurements into a concrete commitment, an SLO.

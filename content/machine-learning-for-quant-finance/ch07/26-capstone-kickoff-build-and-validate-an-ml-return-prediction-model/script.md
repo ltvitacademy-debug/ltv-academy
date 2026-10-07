@@ -1,0 +1,21 @@
+# Script — Capstone Kickoff: Build and Validate an ML Return-Prediction Model
+
+## Segment 1 (title)
+
+Everything in this course has been building toward one project: build a machine learning model that predicts financial returns, and validate it the way a careful quant researcher actually would. The single most important idea here is that your validation plan has to be decided before you train a single model, not bolted on afterward once you've already seen which approach worked.
+
+## Segment 2 (steps)
+
+Three decisions come first. You need a panel of assets with features, either real or a deliberately simulated dataset, and simulated is completely fine as long as you're honest about it. Then go back to chapter one and choose a label deliberately, something like the triple-barrier method, rather than defaulting to next-day return just because it's the easiest column to compute. Then pick a model family from chapter two's toolkit, ideally one you can also explain later with the interpretation tools from chapter five.
+
+## Segment 3 (steps)
+
+Here's the step most tutorials skip entirely, and the one this whole course has been building toward. Before you fit a single model, decide your cross-validation scheme, purged and embargoed walk-forward at minimum, from chapter four. Decide your purge and embargo windows based on how long your label actually takes to resolve. Decide your evaluation metric up front, something like out-of-sample information coefficient from chapter five, not just raw accuracy. And decide how you'll report uncertainty, since a single Sharpe ratio number isn't acceptable on its own.
+
+## Segment 4 (code)
+
+If you need a dataset, you can simulate one deliberately: a weak, noisy signal with a slow regime shift layered on top of random noise. That's actually the realistic target to aim for, mostly noise with a little genuine structure buried in it, which is exactly the kind of signal this course has trained you to detect and validate honestly rather than assume.
+
+## Segment 5 (outro)
+
+Writing all of this down before you see any results is the entire point, separating honest research from fitting a validation scheme to whatever answer you already liked. Up next, lesson twenty-seven: build it, a full worked example walking this exact pipeline end to end.

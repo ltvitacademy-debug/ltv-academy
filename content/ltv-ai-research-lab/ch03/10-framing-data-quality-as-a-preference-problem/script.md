@@ -1,0 +1,21 @@
+# Script — Framing Data Quality as a Preference Problem
+
+## Segment 1 (title)
+
+Project 2 starts from a different kind of question than Project 1: not which action produces the best measurable outcome, but which of two things a person would actually prefer. That shift from scoring to comparing is the whole reason reward models exist.
+
+## Segment 2 (steps)
+
+The concrete mess is Northwind's Customers table: inconsistent phone formatting, country name variants like U K versus United Kingdom, casing and whitespace noise in company names, and malformed or missing postal codes. All ordinary messiness any real customer table accumulates over years of manual entry.
+
+## Segment 3 (code)
+
+The naive approach is to have a human assign each cleanup an absolute quality score, say one to ten. In practice that's inconsistent — a rater might call the same cleanup a seven on one day and an eight on another, with no stable anchor for what a seven even means. Asking which of two candidates they'd actually keep is a direct, checkable comparison instead.
+
+## Segment 4 (steps)
+
+This isn't a quirk of this project. It's the same justification that motivates preference-based reward models across the RLHF literature generally, including, conceptually, this lab's own Project 3: a human rater is measurably more consistent comparing two candidates than scoring one in isolation, because comparison is a judgment humans are naturally calibrated to make.
+
+## Segment 5 (outro)
+
+Project 2 treats which cleanup is better as a pairwise preference problem over real Northwind messiness, for the same reason RLHF reward models generally use pairwise preferences instead of absolute scores. Up next, Lesson 11: building the actual preference dataset from corrupted rows and two rule-based cleaners.

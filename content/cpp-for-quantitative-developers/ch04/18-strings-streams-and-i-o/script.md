@@ -1,0 +1,25 @@
+# Script — Strings, Streams & I/O
+
+## Segment 1 (title)
+
+Every piece of quant infrastructure eventually has to read a CSV of historical prices, parse a config file, or print a formatted report, and in C++ all three go through std::string and the stream classes. This lesson covers the text-handling tools you'll reach for constantly: string, stringstream, and file I/O.
+
+## Segment 2 (code)
+
+std::string manages its own memory and supports plus for concatenation directly, plus substr and find for pulling pieces back out. find returns a special sentinel value, string::npos, when the search comes up empty — that's not a valid position, so always check for it before trusting the result.
+
+## Segment 3 (code)
+
+stringstream lets you treat an ordinary string as if it were a stream, pulling typed fields out of it the same way you'd read from standard input. Combined with getline using a comma as the delimiter, this is the standard way to split a line of comma-separated values into its individual fields.
+
+## Segment 4 (steps)
+
+stringstream, ifstream, and ofstream all share the same stream interface — the extraction operator and the insertion operator work identically across all three. Learn the pattern once on an in-memory string, and reading or writing an actual file works exactly the same way.
+
+## Segment 5 (code)
+
+Reading a file is a loop: getline pulls one line at a time from the ifstream, and each line gets handed to its own stringstream for field-by-field parsing. One thing to watch for — opening a file that doesn't exist doesn't throw an exception by default, it just leaves the stream in a failed state, so check is_open before you start reading.
+
+## Segment 6 (outro)
+
+string and the stream classes share one consistent interface for reading and writing text, which is why the same getline-plus-stringstream pattern parses both a single in-memory line and an entire file. Next up, lesson nineteen: lambdas and functional style — writing inline functions that capture their surrounding context.

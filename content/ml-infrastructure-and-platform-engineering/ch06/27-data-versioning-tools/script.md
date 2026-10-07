@@ -1,0 +1,25 @@
+# Script — Data Versioning Tools
+
+## Segment 1 (title)
+
+Git tracks code beautifully and tracks data terribly — a fifty gigabyte training set committed straight into a repo makes every clone and diff miserable. Data versioning tools give datasets the same which-exact-version-produced-this guarantee Git gives code, without storing the data itself inside Git.
+
+## Segment 2 (code)
+
+DVC's trick is keeping a tiny metadata file in Git and the actual data bytes in object storage. dvc add moves the file into DVC's cache, replaces it with a small pointer file, and Git never sees the real data. Push that pointer to S3 or GCS and anyone who checks out the commit can pull back the exact bytes.
+
+## Segment 3 (code)
+
+Beyond a single file, dvc.yaml defines a full pipeline of stages with declared dependencies and outputs. dvc repro walks that graph and only re-runs the stages whose dependencies actually changed — if the training script changed but the data didn't, the prepare stage gets skipped entirely and DVC reuses its cached output.
+
+## Segment 4 (steps)
+
+So the pointer file is the whole trick. It holds a content hash, that's what Git actually commits. The real bytes sit in a DVC remote, S3 or GCS or Azure. And dvc pull resolves that hash back into the exact file it represents, every time.
+
+## Segment 5 (steps)
+
+DVC isn't the only approach, though. It fits a typical repo where the unit of versioning is files next to code. lakeFS sits in front of an entire data lake and gives you git-like branching over the whole bucket. And Delta Lake adds a transaction log to Parquet tables, giving built-in time travel without a separate tool at all.
+
+## Segment 6 (outro)
+
+Pick DVC for files in a repo, lakeFS or Delta Lake when many pipelines read and write the same lake or table concurrently. Next, lesson twenty-eight: how data versioning fits into making the entire ML lifecycle, not just the dataset, reproducible.

@@ -1,0 +1,21 @@
+# Script — Simulation vs. Real Environments for Agent Training
+
+## Segment 1 (title)
+
+Lesson 64, Chapter 10. Every lesson so far assumed tool calls just happen, fast and free. In practice, each one is a real decision: run against the actual target system, or a simulation built to stand in for it.
+
+## Segment 2 (code)
+
+RL training needs thousands to millions of rollouts. Running every one against a real system multiplies real costs by that same factor — rate limits, dollar costs, latency that compounds across a multi-turn episode, and in some domains, real consequences while the policy is still bad at the task. A simulated environment trades that fidelity for speed and safety, but it's only as good as the simulation itself.
+
+## Segment 3 (steps)
+
+That's the sim-to-real gap. A simulated API rarely reproduces a real one's rate-limit errors or intermittent failures. A simulated page doesn't match a real site's DOM quirks or dynamic content. A policy can over-specialize to a simulation's specific quirks, look excellent in evaluation, and then underperform once deployed against the real thing — the same evaluation-trustworthiness problem lesson 59 raised, now showing up as a sim-to-real gap.
+
+## Segment 4 (steps)
+
+When real interaction is unavoidable, the standard mitigations generalize lesson 56's sandboxing ideas: isolate real-world actions to a staging account or environment copy rather than production, enforce hard rate and spending caps independent of the policy, and gate any irreversible action class behind human or rule-based approval until the policy earns reduced supervision.
+
+## Segment 5 (outro)
+
+Most recipes sequence this rather than choosing one: simulate heavily early where mistakes are free, then mix in sandboxed real episodes later to catch what the simulation missed, with real-environment evaluation treated as the trustworthy signal throughout. Next, lesson 65 closes the chapter with a survey of what's still unsolved across this whole course.

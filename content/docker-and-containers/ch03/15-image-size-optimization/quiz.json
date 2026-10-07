@@ -1,0 +1,60 @@
+{
+  "lesson": "image-size-optimization",
+  "questions": [
+    {
+      "q": "What is the general size relationship between `node:20`, `node:20-slim`, and `node:20-alpine`?",
+      "options": [
+        "They are all exactly the same size; the suffix only affects behavior, not size",
+        "node:20 is the largest (full Debian userland), node:20-slim is smaller, and node:20-alpine (Alpine Linux-based) is typically the smallest of the three",
+        "node:20-alpine is always the largest because it includes extra security tools",
+        "Size depends entirely on the application code, not the base image"
+      ],
+      "answer": 1,
+      "explain": "The full node:20 image includes a complete Debian userland with many tools most apps never use. -slim strips much of that out, and -alpine, based on a smaller Linux distribution, is typically smaller still."
+    },
+    {
+      "q": "What does a `.dockerignore` file do?",
+      "options": [
+        "It prevents Docker from ever building the image",
+        "It excludes listed files and directories from the build context, so COPY can't pull them in and they're never sent to the Docker daemon",
+        "It automatically deletes files from the running container after startup",
+        "It only affects which files docker logs displays"
+      ],
+      "answer": 1,
+      "explain": "Without a .dockerignore, everything in the build context (like a local node_modules or .git folder) is sent to the Docker daemon even if unused -- .dockerignore excludes it entirely, shrinking images and speeding up builds."
+    },
+    {
+      "q": "Why doesn't deleting the apt cache in a separate, later `RUN` instruction reduce the final image size, compared to deleting it within the same `RUN` that created it?",
+      "options": [
+        "Because apt caches cannot be deleted by any Docker instruction",
+        "Because each RUN produces its own layer, and a layer permanently retains everything written during it -- so the cache is already baked into the earlier layer and remains even after a later RUN removes the files",
+        "Because deleting files always increases image size due to metadata overhead",
+        "Because RUN instructions execute in a random, non-sequential order"
+      ],
+      "answer": 1,
+      "explain": "Since each RUN creates its own immutable layer, files written and later deleted in a different RUN still occupy space in the earlier layer. Chaining install and cleanup into a single RUN avoids ever persisting that cache."
+    },
+    {
+      "q": "What does `docker history northbridge/catalog:1.4` show you?",
+      "options": [
+        "A log of every time the container has been started or stopped",
+        "The image's layers, listed with the instruction that created each one and its individual size, useful for finding which instruction is responsible for bloat",
+        "The git commit history of the application's source code",
+        "A list of every container ever created from this image"
+      ],
+      "answer": 1,
+      "explain": "docker history breaks a built image down layer by layer, showing the creating instruction and size for each -- the tool to use when an image is bigger than expected."
+    },
+    {
+      "q": "Why might a team hesitate before switching a production image straight to an `-alpine` base, despite the size savings?",
+      "options": [
+        "Alpine images cannot run any application code at all",
+        "Alpine uses musl instead of glibc, which can occasionally cause compatibility issues with native modules that expect glibc",
+        "Alpine-based images are always larger in practice once running",
+        "Docker does not support running alpine-based images in production"
+      ],
+      "answer": 1,
+      "explain": "Alpine Linux's musl-based libc differs from the glibc most native Node modules are built and tested against, which can occasionally cause compatibility issues worth checking before switching."
+    }
+  ]
+}

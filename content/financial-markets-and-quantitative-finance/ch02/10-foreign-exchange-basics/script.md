@@ -1,0 +1,21 @@
+# Script — Foreign Exchange Basics
+
+## Segment 1 (title)
+
+This lesson closes out chapter two with the currency asset class previewed back in lesson one. Every cross-border trade, investment, or loan eventually touches the FX market — it's the largest, most liquid market in the world, and it runs on its own set of conventions.
+
+## Segment 2 (steps)
+
+FX prices quote one currency against another. In a pair like EUR/USD, the base currency, euro, is the unit being priced, and the quote currency, dollar, is what it's priced in — a quote of one ten means one euro buys one dollar ten cents. The spot rate settles almost immediately. The forward rate is agreed today for an exchange that happens on a specified future date, the same forward contract idea from the last lesson, applied to currencies.
+
+## Segment 3 (code)
+
+Covered interest rate parity links spot, forward, and both currencies' interest rates through a no-arbitrage condition: forward equals spot times one plus the domestic rate, divided by one plus the foreign rate. Take EUR/USD spot at one ten, a five percent dollar rate, a three percent euro rate, one year out. One ten times one-oh-five over one-oh-three works out to one twelve fourteen. The euro trades at a forward premium, and the dollar at a forward discount — exactly matching the fact that the dollar earns the higher rate.
+
+## Segment 4 (steps)
+
+A carry trade tries to exploit the gap between that no-arbitrage forward and what actually happens in reality: borrow in a low-rate currency, convert into a high-rate currency, invest there, and pocket the rate differential — deliberately staying unhedged, because locking in a forward would erase the profit. It works as long as the high-rate currency doesn't depreciate enough to wipe out the gain, which parity says should happen on average but often doesn't over shorter horizons.
+
+## Segment 5 (outro)
+
+Pairs quote one currency in another, forwards are pinned to spot by interest rate parity, and the carry trade bets reality doesn't fully close that gap. That's chapter two, done. Up next, lesson eleven: option basics and payoffs, opening chapter three, options and derivatives.

@@ -1,0 +1,60 @@
+{
+  "lesson": "choosing-a-parallelism-strategy",
+  "questions": [
+    {
+      "q": "What is the first question that determines a model's parallelism strategy, according to this lesson's decision framework?",
+      "options": [
+        "How many quiz questions the course includes",
+        "Whether the model's weights, activations, and optimizer state fit on a single GPU",
+        "Whether the dataset is larger than 1 terabyte",
+        "Whether the model was trained with LoRA or full fine-tuning"
+      ],
+      "answer": 1,
+      "explain": "Whether the model fits on one GPU is the fork in the road: if it does, data parallelism (with ZeRO 1/2 as needed) suffices; if not, sharding or explicit model parallelism becomes necessary."
+    },
+    {
+      "q": "When a model doesn't fit on a single GPU but training stays on one multi-GPU node, what is the recommended next-cheapest lever before reaching for tensor or pipeline parallelism?",
+      "options": [
+        "Immediately switch to 3D parallelism across many nodes",
+        "ZeRO stage 3 or FSDP's FULL_SHARD combined with activation checkpointing, since both are simple config flags or wrapping calls",
+        "Reduce the model's parameter count by removing layers",
+        "Switch the optimizer to plain SGD"
+      ],
+      "answer": 1,
+      "explain": "ZeRO-3/FSDP plus activation checkpointing is comparatively simple to enable and doesn't require restructuring the model's code, making it the path of least complexity before adding explicit model parallelism."
+    },
+    {
+      "q": "Why does tensor parallelism typically stay confined within a single server rather than stretching across nodes?",
+      "options": [
+        "Because tensor parallelism doesn't require any communication at all",
+        "Because its frequent in-layer all-reduces need the low latency of a fast interconnect like NVLink, which is available within a server but not typically between servers",
+        "Because tensor parallelism only works with pipeline parallelism, never alone",
+        "Because tensor parallelism is incompatible with data parallelism"
+      ],
+      "answer": 1,
+      "explain": "Tensor parallelism requires communication inside every layer's forward and backward pass, many times per step, which needs the low latency and high bandwidth of an intra-server interconnect like NVLink to stay efficient."
+    },
+    {
+      "q": "What does '3D parallelism' refer to?",
+      "options": [
+        "Training three separate models simultaneously",
+        "Combining data parallelism, tensor parallelism, and pipeline parallelism simultaneously, each operating on its own axis of the cluster",
+        "Using three different learning rates during training",
+        "A three-stage curriculum learning schedule"
+      ],
+      "answer": 1,
+      "explain": "3D parallelism combines all three parallelism axes at once: tensor parallel within a server, pipeline parallel across servers, and data parallel replicating the whole tensor+pipeline structure, as frameworks like Megatron-DeepSpeed orchestrate."
+    },
+    {
+      "q": "In a 3D parallelism setup with tensor-parallel size 8, pipeline-parallel size 4, and data-parallel size 16, how many total GPUs does the configuration use?",
+      "options": [
+        "28 (8 + 4 + 16)",
+        "512 (8 × 4 × 16)",
+        "8 (only the tensor-parallel size matters)",
+        "64 (8 × 8)"
+      ],
+      "answer": 1,
+      "explain": "The three parallelism degrees multiply together to determine total GPU usage: 8 × 4 × 16 = 512 GPUs, each playing a specific role across the three axes."
+    }
+  ]
+}

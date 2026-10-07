@@ -1,0 +1,21 @@
+# Script — Verifying Correctness Without Ground Truth
+
+## Segment 1 (title)
+
+Most software testing assumes you know the right answer — call a function, compare to an expected value, pass or fail. Research code frequently breaks that assumption: you're implementing a new loss or a custom gradient, and there's no existing correct output to compare against. This lesson covers the actual techniques for gaining confidence without a labeled answer key.
+
+## Segment 2 (steps)
+
+The most broadly useful technique is reducing a general implementation to a special case with a known analytical answer — a new loss that should evaluate to exactly zero under a specific condition. Gradient checking verifies a custom backward pass by comparing it numerically to finite differences, without needing to know the right output at all. And invariance tests check a known relationship between two outputs, like a permutation-invariant model producing the same result when input order is shuffled.
+
+## Segment 3 (code)
+
+A KL-divergence-based loss comparing a distribution to itself should return exactly zero — that's a cheap, free assertion with a known right answer. For a custom autograd Function with a hand-written backward, torch.autograd.gradcheck numerically estimates the gradient via finite differences and compares it to your analytical one — it only checks internal consistency, not whether the output is meaningful, but a backward that fails gradcheck is definitively wrong.
+
+## Segment 4 (code)
+
+A model, loss, and training loop implemented correctly should be able to drive the loss to near zero on a tiny, even single, batch within a couple hundred steps. This doesn't test generalization at all — it tests that gradients are actually flowing and nothing in the pipeline is silently broken, which is a prerequisite for trusting any larger result.
+
+## Segment 5 (outro)
+
+Next lesson pulls these ideas together into the standard checklist researchers run at the start of every new experiment — the sanity checks worth running before trusting any result, covered one by one.

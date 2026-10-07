@@ -10,7 +10,7 @@ ChatML is one widely used style: every turn gets wrapped in explicit role marker
 
 ## Segment 3 (code)
 
-The correct way to build this is never to hand-concatenate strings yourself. Hugging Face tokenizers store the model's exact chat template and expose it through apply_chat_template, which takes a list of role and content dicts and produces the correctly formatted sequence — including, when you ask for it, the marker that signals it's now the assistant's turn to generate.
+The correct way to build this is never to hand-concatenate strings yourself. Hugging Face tokenizers store the model's exact chat template, often as a Jinja2 template bundled with the tokenizer config, and expose it through apply_chat_template, which takes a list of role and content dicts and produces the correctly formatted sequence — including, when you ask for it, the marker that signals it's now the assistant's turn to generate.
 
 ## Segment 4 (steps)
 

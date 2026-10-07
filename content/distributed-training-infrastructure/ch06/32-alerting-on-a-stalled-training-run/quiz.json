@@ -1,0 +1,60 @@
+{
+  "lesson": "alerting-on-a-stalled-training-run",
+  "questions": [
+    {
+      "q": "Why is a \"stalled\" training run harder to catch than a crashed one?",
+      "options": [
+        "Stalled runs always consume more GPU memory",
+        "The job still reports Running and pods are alive, so no discrete failure event fires an obvious alert",
+        "Stalled runs cannot be detected by any monitoring tool",
+        "Stalled runs always resolve themselves within a minute"
+      ],
+      "answer": 1,
+      "explain": "A crash produces a clear status change to Failed. A stall looks healthy at a glance — process alive, pods Running — so it requires watching a trend over time rather than a single discrete event."
+    },
+    {
+      "q": "What does the PromQL expression `changes(solara_training_loss{namespace=\"training-lm\"}[30m]) == 0` detect?",
+      "options": [
+        "That the loss has decreased by more than 30% in 30 minutes",
+        "That the loss metric's value has not changed at all over the last 30 minutes",
+        "That the job has been running for exactly 30 minutes",
+        "That GPU utilization is exactly zero"
+      ],
+      "answer": 1,
+      "explain": "changes() counts how many times a metric's value changed over the given window; a result of zero means the value has been frozen, a sign training progress has stopped."
+    },
+    {
+      "q": "Why does the Alertmanager rule in this lesson use `for: 15m` instead of firing immediately when GPU utilization drops under 5%?",
+      "options": [
+        "Prometheus requires all rules to wait exactly 15 minutes",
+        "To avoid false positives from brief, normal dips, such as during checkpointing",
+        "Because GPU metrics are only updated every 15 minutes",
+        "15 minutes is the maximum alert duration Alertmanager supports"
+      ],
+      "answer": 1,
+      "explain": "A sustained-duration requirement filters out short, legitimate dips (like a checkpoint save) that would otherwise trigger false alarms if the rule fired on an instantaneous reading."
+    },
+    {
+      "q": "How does Alertmanager route a `TrainingJobStalled` alert to the correct research team?",
+      "options": [
+        "By randomly assigning alerts to on-call engineers",
+        "By matching the alert's `namespace` label (training-lm or training-mm) to a routing rule with the corresponding receiver",
+        "All alerts are sent to every team regardless of namespace",
+        "By checking which team deployed Alertmanager"
+      ],
+      "answer": 1,
+      "explain": "Because namespace is carried as a label on the alert, Alertmanager's route configuration can match on it and send the alert to that team's specific receiver, such as a Slack channel."
+    },
+    {
+      "q": "Why does the lesson recommend combining a GPU-utilization signal with a loss-metric signal to detect a stall, rather than relying on just one?",
+      "options": [
+        "Because Prometheus requires at least two conditions per alert rule",
+        "Because neither signal alone is perfect — each can have legitimate, non-stall explanations for a brief anomaly",
+        "Because loss metrics are more accurate than GPU metrics in all cases",
+        "Because GPU metrics cannot be queried with PromQL"
+      ],
+      "answer": 1,
+      "explain": "A brief GPU dip can be normal (e.g. during checkpointing) and a loss can plateau briefly for legitimate reasons, so using both signals together, each with a sustained-duration requirement, reduces false positives."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+# Script — Cleaning & Exploring Market Data
+
+## Segment 1 (title)
+
+Phase one starts here: before any statistics or models, the raw Stooq CSVs have to become a clean, aligned panel you can trust. This lesson walks through the cleaning steps and then explores the result to get a feel for the data before testing anything.
+
+## Segment 2 (steps)
+
+Four cleaning steps turn thirteen raw CSVs into one usable panel. Calendar alignment reindexes every ticker onto SPY's trading calendar. Missing-day handling forward-fills gaps for at most one session, never further. Verifying adjusted close means spot-checking it against known splits and dividends. And the dynamic universe is handled correctly — XLRE and XLC are included only from their real launch dates, which is what point-in-time data means: the code only ever sees names that actually existed on a given date.
+
+## Segment 3 (code)
+
+Log returns — the log of the price ratio between two periods — are used instead of simple returns because they're additive across time and better match how asset prices actually behave, which keeps the rolling-window statistics well-behaved.
+
+## Segment 4 (steps)
+
+A few things stand out once the panel is clean. Daily return histograms show fatter tails than a normal distribution — more large moves than you'd expect. A twenty-day rolling realized volatility series shows clear clustering, with spikes in 2008, 2020, and 2022. The correlation matrix across the eleven sectors is almost all positive and often high, confirming a shared market factor — which is exactly why this strategy is dollar-neutral rather than simply long sectors outright. And the VIX tracks trailing realized volatility closely, but leads it around spikes.
+
+## Segment 5 (code)
+
+That twenty-day annualized realized volatility calculation feeds straight into the feature set built in the next chapter, not just this lesson's exploration.
+
+## Segment 6 (outro)
+
+The data is clean, aligned, and explored. Next lesson: formal statistical tests of the reversal hypothesis against this cleaned panel — rank correlation, HAC t-stats, the ADF test, and the VIX-tercile split.

@@ -1,0 +1,60 @@
+{
+  "lesson": "paged-attention",
+  "questions": [
+    {
+      "q": "What problem did KV cache allocation have before PagedAttention?",
+      "options": [
+        "Caches could not be stored on GPUs at all",
+        "Each request's cache was allocated as one contiguous block sized for the worst-case maximum length, wasting most of it for shorter requests",
+        "Requests could not share a GPU with each other",
+        "Caches were recomputed from scratch at every decode step"
+      ],
+      "answer": 1,
+      "explain": "Before PagedAttention, serving engines reserved one contiguous chunk of memory sized for the maximum possible sequence length per request, which went mostly unused for requests that ended up shorter — internal fragmentation."
+    },
+    {
+      "q": "What idea does PagedAttention borrow to solve this problem?",
+      "options": [
+        "Database indexing techniques",
+        "Operating-system virtual memory paging — small fixed-size blocks tracked by a table, rather than one large contiguous allocation",
+        "Network packet fragmentation",
+        "CPU instruction pipelining"
+      ],
+      "answer": 1,
+      "explain": "PagedAttention applies the same idea OS virtual memory uses: divide memory into small fixed-size blocks and use a table to map logical blocks to wherever they physically live, allocating just-in-time instead of reserving a worst-case span."
+    },
+    {
+      "q": "What is a block table in PagedAttention?",
+      "options": [
+        "A list of every token the model has ever generated",
+        "The mapping from a request's logical sequence of cache blocks to the physical memory blocks that actually hold them",
+        "A table of hyperparameters used to train the model",
+        "A record of every GPU in the serving cluster"
+      ],
+      "answer": 1,
+      "explain": "The block table is the indirection layer: it maps each request's logical block sequence to wherever those fixed-size blocks actually sit in physical GPU memory, which doesn't need to be contiguous."
+    },
+    {
+      "q": "Beyond reducing wasted memory, what additional capability does the block-table indirection enable?",
+      "options": [
+        "It enables physically sharing the same cache blocks between requests with identical prefixes, splitting only when content diverges",
+        "It allows the model's weights to be stored at lower precision automatically",
+        "It eliminates the need for a GPU to serve any requests",
+        "It prevents more than one request from using the GPU at a time"
+      ],
+      "answer": 0,
+      "explain": "Because the block table maps logical blocks to physical ones, requests sharing an identical prefix (e.g. the same system prompt) can point to the same physical blocks, with a copy-on-write split only once their content actually diverges."
+    },
+    {
+      "q": "Why does near-zero internal fragmentation translate into higher throughput under real traffic?",
+      "options": [
+        "Because fragmentation has no relationship to how many requests a GPU can serve",
+        "Because memory isn't pre-reserved for a worst-case length, so a GPU can host many more active requests concurrently than the old contiguous-allocation approach allowed",
+        "Because fragmentation only affects CPU memory, never GPU memory",
+        "Because PagedAttention eliminates the need for a KV cache altogether"
+      ],
+      "answer": 1,
+      "explain": "Without large worst-case reservations sitting mostly empty, far more of the GPU's memory is actually available to serve concurrent requests, which is the main driver behind PagedAttention-based engines' higher throughput under mixed-length traffic."
+    }
+  ]
+}

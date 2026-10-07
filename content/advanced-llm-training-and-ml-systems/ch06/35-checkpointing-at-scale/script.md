@@ -1,0 +1,21 @@
+# Script — Checkpointing at Scale
+
+## Segment 1 (title)
+
+A training run spanning days or weeks across hundreds of GPUs will hit a hardware fault or a preemption before it finishes. Checkpointing is what turns that from a catastrophe into an inconvenience — this lesson covers what has to be saved, and how to save it without stalling the cluster.
+
+## Segment 2 (steps)
+
+A checkpoint is more than model weights. You also need the optimizer state — for Adam, that's often twice the size of the parameters themselves — plus the scheduler state, the step counter, and the data loader's position. Skip the optimizer state and resumed training visibly loss-spikes, because Adam's moment estimates restart from zero instead of picking up where they were.
+
+## Segment 3 (steps)
+
+Gathering every shard onto one rank to write a single file doesn't scale: that rank has to hold the entire model and optimizer state in memory, and all the I/O serializes through its disk and network. The fix is sharded checkpointing — each rank writes only the shard it already holds, directly, in parallel. On load, the shards get redistributed to whatever layout the resuming job is using, even if that's a different GPU count than the run that saved them.
+
+## Segment 4 (code)
+
+PyTorch's torch.distributed.checkpoint module does exactly this: get_state_dict pulls each rank's local shard, and dcp.save writes it straight to a shared path with no gather step. DeepSpeed's save_checkpoint and load_checkpoint work the same way under the hood. And because a save is seconds of disk I/O that would otherwise idle the GPUs, asynchronous checkpointing copies state to host memory fast and overlaps the actual write with continued training.
+
+## Segment 5 (outro)
+
+How often you checkpoint trades off compute lost to failure against I/O overhead — a few hundred to a few thousand steps is typical, tuned against how often the cluster actually fails. Which is exactly what the next lesson covers: fault tolerance for long training runs.

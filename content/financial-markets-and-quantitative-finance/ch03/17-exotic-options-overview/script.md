@@ -1,0 +1,21 @@
+# Script — Exotic Options Overview
+
+## Segment 1 (title)
+
+Everything so far has been a vanilla option: a plain call or put, European-style, paying off based on the stock price at a single point in time. Real markets trade a much wider menu. Exotic options add features that make them useful for specific hedging needs, and that usually push them outside what a closed-form formula can handle.
+
+## Segment 2 (steps)
+
+Four structures to know. American options can be exercised any time up to expiration, not just at the end. Asian options pay off on the average price over a window of time, not one snapshot. Barrier options only exist, or stop existing, depending on whether the underlying touches a trigger level — that's knock-in versus knock-out. And digital options pay a fixed amount if a condition is met, while lookback options pay off based on the best or worst price the underlying actually reached.
+
+## Segment 3 (code)
+
+Look at the payoffs themselves. An Asian call pays off on the average price minus the strike. A lookback call pays off on the final price minus the lowest price seen during the option's life — effectively buying at the best price in hindsight. A digital call just pays a fixed amount if the stock finishes above the strike, nothing otherwise. Every one of these depends on more than a single future stock price.
+
+## Segment 4 (steps)
+
+That's exactly why closed-form Black-Scholes doesn't apply here — it only works when the payoff depends on one number at one point in time. Once the payoff depends on the whole path, or on an early-exercise decision, you need numerical methods. Binomial and trinomial trees handle early exercise naturally. Monte Carlo simulation handles path-dependent payoffs by simulating thousands of random paths and averaging the discounted result. And finite-difference methods solve the pricing equation directly on a numerical grid.
+
+## Segment 5 (outro)
+
+That closes out options and derivatives — vanilla payoffs, no-arbitrage pricing, the Greeks, implied volatility, and now the exotic structures that need numerical methods. Up next, lesson eighteen, opening chapter four: risk, return, and diversification, moving from single instruments to whole portfolios.

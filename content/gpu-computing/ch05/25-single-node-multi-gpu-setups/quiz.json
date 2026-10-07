@@ -1,0 +1,60 @@
+{
+  "lesson": "single-node-multi-gpu-setups",
+  "questions": [
+    {
+      "q": "What does the CUDA_VISIBLE_DEVICES environment variable control?",
+      "options": [
+        "The precision format used for training",
+        "Which physical GPUs a process can see and use",
+        "The number of CPU threads available to PyTorch",
+        "The NCCL backend version"
+      ],
+      "answer": 1,
+      "explain": "CUDA_VISIBLE_DEVICES restricts which physical GPUs are visible to a process, remapping them internally starting from device 0."
+    },
+    {
+      "q": "What is the main architectural downside of torch.nn.DataParallel?",
+      "options": [
+        "It cannot run on more than one GPU at all",
+        "It runs in a single process and funnels gradient-gathering through one GPU, creating a bottleneck that doesn't scale across nodes",
+        "It only works with CPU tensors",
+        "It requires manually writing CUDA kernels"
+      ],
+      "answer": 1,
+      "explain": "DataParallel operates in a single process, splitting batches across GPUs but gathering gradients back onto one GPU, which becomes a bottleneck and prevents scaling beyond a single node."
+    },
+    {
+      "q": "How does DistributedDataParallel (DDP) avoid the bottleneck that DataParallel has?",
+      "options": [
+        "By running the entire model on the CPU instead",
+        "By running one separate process per GPU, each with its own model copy, and synchronizing gradients across processes without a single gathering point",
+        "By only training on one GPU and ignoring the rest",
+        "By avoiding gradient computation entirely"
+      ],
+      "answer": 1,
+      "explain": "DDP runs one process per GPU, each with its own full copy of the model. After backward(), gradients are synchronized (via NCCL) and averaged across all processes without any single GPU acting as a bottleneck."
+    },
+    {
+      "q": "What does `torchrun --nproc_per_node=4 train.py` do?",
+      "options": [
+        "It runs the script once, using all 4 GPUs automatically inside one process",
+        "It starts 4 separate Python processes, one per GPU, each receiving a LOCAL_RANK value",
+        "It compiles the script into CUDA C++",
+        "It restricts the script to use only CPU cores"
+      ],
+      "answer": 1,
+      "explain": "torchrun launches one process per GPU (4 in this case), with each process receiving a LOCAL_RANK environment variable telling it which GPU it owns."
+    },
+    {
+      "q": "What does the LOCAL_RANK environment variable tell a DDP training process?",
+      "options": [
+        "The total number of nodes in the training cluster",
+        "Which GPU, on the current machine, that process should use",
+        "The current training epoch number",
+        "The batch size for that process"
+      ],
+      "answer": 1,
+      "explain": "LOCAL_RANK identifies which GPU on the current machine a given DDP process is responsible for, set automatically by the launcher (such as torchrun)."
+    }
+  ]
+}

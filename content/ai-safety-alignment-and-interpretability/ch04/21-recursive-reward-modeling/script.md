@@ -1,0 +1,21 @@
+# Script — Recursive Reward Modeling
+
+## Segment 1 (title)
+
+Instead of betting on adversarial structure the way debate does, recursive reward modeling bets on bootstrapping: use the AI capability you already have to help a human evaluate harder tasks, train against that improved evaluation, then repeat.
+
+## Segment 2 (steps)
+
+Recursive reward modeling starts from ordinary reward modeling — train a reward model from human feedback, train an agent against it. The recursive step is in how the human gives feedback on hard tasks: instead of judging an entire complex output alone, the human gets AI assistants that handle specific sub-components, summarizing a long document, checking a factual claim, flagging a suspicious section of code. The human's now-extended judgment is what produces the data the reward model trains on.
+
+## Segment 3 (steps)
+
+It's called recursive because the process repeats across generations. Round one trains an agent on tasks within reach of human-plus-assistant evaluation. That agent can then become the assistant used in round two, helping evaluate an even harder task round one's setup couldn't have handled alone. Each round feeds the next, so oversight capability is meant to climb the same ladder the models themselves are climbing, instead of getting left behind at a fixed human-only level.
+
+## Segment 4 (steps)
+
+The whole scheme depends on each round's assistants being trustworthy enough that extended judgment is actually more accurate, not just more confident. An assistant's blind spot or error gets baked into the reward model the next agent trains against, and because the process is recursive, that error can compound across rounds instead of staying contained. It's the same scalability ceiling from earlier in the course, relocated rather than eliminated — now the question is whether the assistants' judgment is reliable, and checking that is itself a real oversight problem.
+
+## Segment 5 (outro)
+
+Rather than bootstrapping judgment this way, the next technique asks a more direct empirical question today: how well does a strong model generalize beyond a weak supervisor's own mistakes? That's weak-to-strong generalization.

@@ -1,0 +1,21 @@
+# Script — SFT, Then Reward Model, Then PPO
+
+## Segment 1 (title)
+
+Lesson 42. Last lesson named the three RLHF stages and why the order is fixed. This lesson gets concrete: the actual checkpoints and model classes that move between them.
+
+## Segment 2 (code)
+
+Stage one is ordinary supervised fine-tuning — a dataset of prompt and ideal-response pairs, cross-entropy loss, no reward signal at all yet. The goal is just shifting the base model toward instruction-following text, and the output is a plain checkpoint.
+
+## Segment 3 (code)
+
+Stage two builds the reward model on top of that same SFT checkpoint — swapping the language-modeling head for a scalar-reward head — and trains it on preference pairs sampled from the SFT model's own outputs, exactly as covered back in Chapter 6.
+
+## Segment 4 (steps)
+
+Stage three is where it comes together. PPO needs the SFT checkpoint in two roles at once: a trainable policy with a value head added for advantage estimation, and a frozen reference copy used only to measure drift. The reward model checkpoint plugs in as a third piece, frozen, used only to score generations.
+
+## Segment 5 (outro)
+
+One SFT checkpoint seeds three roles, plus the reward model as a frozen scorer. Next lesson covers the KL penalty that ties the trainable policy back to that frozen reference model, and why RLHF needs it at all.

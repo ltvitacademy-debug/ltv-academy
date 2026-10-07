@@ -1,0 +1,25 @@
+# Script — Numerical Optimization in Python
+
+## Segment 1 (title)
+
+Four lessons built the theory: critical points, Lagrange multipliers, convexity, and the standard QP and LP forms. This lesson closes chapter five by surveying the actual Python toolkit that solves these problems in practice, and by being honest about where the guarantees stop applying.
+
+## Segment 2 (steps)
+
+SciPy's optimize dot minimize is one entry point to several algorithms. BFGS and L BFGS B are the default workhorses for smooth problems with simple bounds. SLSQP and trust constr handle general equality and inequality constraints, which is what solved the portfolio QPs in earlier lessons. And linprog is a separate, dedicated, much faster solver just for linear programs.
+
+## Segment 3 (code)
+
+Here's a harder objective: maximizing the Sharpe ratio instead of minimizing variance, under a long only, fully invested constraint. Supplying the analytic gradient through the jac argument, instead of letting the solver approximate it with finite differences, makes convergence faster and far more accurate, especially since the Sharpe ratio divides by a volatility that can get numerically delicate.
+
+## Segment 4 (steps)
+
+That Sharpe ratio objective isn't convex the way plain variance was, so the guarantees from the convexity lesson don't automatically apply. Watch for three things: local minima, since a nonconvex objective can have more than one; poor variable scaling, which slows convergence badly; and constraint tolerance, since an equality constraint is only ever satisfied approximately, not exactly.
+
+## Segment 5 (code)
+
+The practical fix for local minima is multi start: run the same optimization from many different random starting weight vectors, and keep whichever result achieves the lowest objective value. That doesn't prove global optimality the way convexity did, but it's the standard, honest way to guard against trusting a single run's result.
+
+## Segment 6 (outro)
+
+That closes out optimization. Up next, lesson twenty nine opens chapter six, and moves from optimizing a fixed function to modeling randomness that evolves over time, starting with the random walk.

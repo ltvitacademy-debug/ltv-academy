@@ -1,0 +1,21 @@
+# Script — Stylized Facts of Financial Returns
+
+## Segment 1 (title)
+
+With clean, correctly adjusted log returns in hand, what do they actually look like? Decades of research across equities, currencies, and commodities keep finding the same handful of patterns, called the stylized facts, and every model later in this course exists specifically to capture one of them.
+
+## Segment 2 (steps)
+
+Four patterns matter most. Fat tails: extreme daily moves happen far more often than a Normal distribution predicts. Volatility clustering: calm and turbulent periods come in runs rather than volatility staying constant — this is exactly what GARCH models in chapter four are built to capture. Negative skew and the leverage effect: falling prices mechanically raise a company's financial leverage, which raises risk further, so big down moves tend to be more extreme than big up moves. And aggregational Gaussianity: returns look progressively closer to Normal as you move from daily to weekly to monthly data.
+
+## Segment 3 (code)
+
+Here's the statistical fingerprint of volatility clustering. Plot the autocorrelation of raw log returns, and it's close to zero at every lag beyond the first — consistent with market efficiency, you can't easily predict tomorrow's direction from today's return. But plot the autocorrelation of squared returns, and you get strong, slowly decaying correlation. Returns are hard to predict; volatility is not.
+
+## Segment 4 (code)
+
+To quantify how non-Normal a return series is, scipy gives you skewness and excess kurtosis directly — kurtosis already comes with the Normal distribution's baseline of 3 subtracted off. The Jarque-Bera test formalizes it: a low p-value is a statistical rejection of Normality, confirming what the skew and kurtosis numbers already suggest for almost any raw return series.
+
+## Segment 5 (outro)
+
+Fat tails, volatility clustering, negative skew, and near-zero return autocorrelation alongside strong squared-return autocorrelation — hold onto all four. Next lesson looks at a different kind of distortion: biases baked into the historical data itself, before a single return is even computed.

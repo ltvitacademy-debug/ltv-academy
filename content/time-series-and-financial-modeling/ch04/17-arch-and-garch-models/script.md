@@ -1,0 +1,21 @@
+# Script — ARCH & GARCH Models
+
+## Segment 1 (title)
+
+Lesson sixteen showed how to measure volatility after the fact. ARCH and GARCH do something more ambitious: they treat volatility as a quantity with its own dynamics, one that depends on the recent past and can be forecast forward. This lesson covers both and how to fit them in Python.
+
+## Segment 2 (steps)
+
+An ordinary ARMA model assumes constant error variance, but real returns clearly don't behave that way — that's volatility clustering again. ARCH, autoregressive conditional heteroskedasticity, models conditional variance directly as a function of past squared shocks. It captures clustering, but in practice often needs a lot of lags to fit real data well, which is the main motivation for GARCH.
+
+## Segment 3 (code)
+
+GARCH adds a lagged term for the variance itself, letting one or two lags do work that ARCH might need a dozen lags for. GARCH one one is omega plus alpha times yesterday's squared shock plus beta times yesterday's variance. Alpha and beta both have to be non-negative, and alpha plus beta has to stay below one for the process to be stationary with a well-defined long-run average variance. Beta captures persistence — how much of yesterday's variance carries into today.
+
+## Segment 4 (code)
+
+In Python's arch package, you call arch_model with vol equals Garch, p equals one, q equals one, fit it, and read off omega, alpha, and beta from the parameters. One easy mix-up: here, p is the lagged variance term and q is the lagged shock term, which is the opposite convention from ARIMA's p, d, q. Then forecast forward with a chosen horizon to get the model's variance forecast.
+
+## Segment 5 (outro)
+
+ARCH models conditional variance from past squared shocks; GARCH adds memory of past variance itself, usually fitting far better with just one lag of each. Next, lesson eighteen covers GARCH extensions that fix its blind spot around the direction of a shock.

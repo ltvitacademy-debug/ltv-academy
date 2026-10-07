@@ -6,7 +6,7 @@ The last two lessons covered why instruction tuning works and how conversations 
 
 ## Segment 2 (steps)
 
-Data comes from three blended sources. Human-written demonstrations are the most expensive but highest quality, and were the backbone of InstructGPT's original dataset. Model-generated responses, often called distillation, scale far more cheaply. And existing Q&A or support data gets reformatted into the same instruction-response shape. All of it still needs the quality filtering and dedup from Chapter 2.
+Data comes from three blended sources. Human-written demonstrations are the most expensive but highest quality, and were the backbone of InstructGPT's original dataset. Model-generated responses, often called distillation, scale far more cheaply, provided it stays within the generating model's usage terms. And existing Q&A or support data gets reformatted into the same instruction-response shape. All of it still needs the quality filtering and dedup from Chapter 2.
 
 ## Segment 3 (code)
 
