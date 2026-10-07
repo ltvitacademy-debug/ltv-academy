@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { COURSES, getCourse, lessonCount, loadCourseTest, getCourseFlashcards } from "@/lib/courses";
+import {
+  COURSES,
+  getCourse,
+  lessonCount,
+  loadCourseTest,
+  getCourseFlashcards,
+  getCoursePracticeQuestions,
+} from "@/lib/courses";
 import LessonRow from "@/components/app/LessonRow";
 import CoursePathBreadcrumb from "@/components/app/CoursePathBreadcrumb";
 
@@ -19,6 +26,7 @@ export default async function CoursePage({
   if (!course) notFound();
   const test = loadCourseTest(course);
   const flashcardCount = getCourseFlashcards(course).length;
+  const practiceCount = getCoursePracticeQuestions(course).length;
 
   if (course.status === "coming-soon") {
     return (
@@ -60,6 +68,14 @@ export default async function CoursePage({
             className="text-sm font-semibold text-crimson-deep hover:text-crimson"
           >
             Review flashcards →
+          </Link>
+        )}
+        {practiceCount > 0 && (
+          <Link
+            href={`/app/courses/${course.slug}/practice`}
+            className="text-sm font-semibold text-crimson-deep hover:text-crimson"
+          >
+            Guided practice →
           </Link>
         )}
       </div>
@@ -104,6 +120,24 @@ export default async function CoursePage({
             className="mt-4 inline-block rounded-[2px] border border-ink/20 px-6 py-3 text-sm font-semibold hover:border-crimson hover:text-crimson"
           >
             Review flashcards →
+          </Link>
+        </div>
+      )}
+
+      {practiceCount > 0 && (
+        <div className="mt-14 border-2 border-ink/15 p-7">
+          <p className="eyebrow mb-2">Guided practice</p>
+          <h2 className="display text-2xl">Can you explain it, not just recognize it?</h2>
+          <p className="mt-2 max-w-2xl text-stone">
+            {practiceCount} questions from across the course. Write your own answer, then reveal
+            the real one and why — no grading, no score, just practice. Missed ones come back
+            first next time.
+          </p>
+          <Link
+            href={`/app/courses/${course.slug}/practice`}
+            className="mt-4 inline-block rounded-[2px] border border-ink/20 px-6 py-3 text-sm font-semibold hover:border-crimson hover:text-crimson"
+          >
+            Start guided practice →
           </Link>
         </div>
       )}

@@ -2023,3 +2023,57 @@ export function getCourseFlashcards(course: CourseMeta): Flashcard[] {
   }
   return cards;
 }
+
+export type PracticeQuestion = {
+  id: string; // stable across visits: "<lessonSlug>:<questionIndex>"
+  q: string;
+  // The stored-correct answer today, as a single-item array. The shape is
+  // ready for a lesson to later carry a hand-authored `alsoCorrect: string[]`
+  // in its quiz.json so a question can show more than one valid solution
+  // (e.g. BETWEEN vs. >= / <= both being right) — no code change needed
+  // when that content lands, just more items in the array.
+  correctAnswers: string[];
+  why: string;
+  lessonTitle: string;
+};
+
+// Guided practice reuses each lesson's existing quiz.json — every question
+// already has a correct option and an `explain` field, so this costs zero
+// new authoring, the same way flashcards reuse "Key terms". No AI grades
+// anything here: the student types their own attempt, reveals the stored
+// answer + why, and self-marks Got it / Review again.
+export function getCoursePracticeQuestions(course: CourseMeta): PracticeQuestion[] {
+  const contentBase = course.contentBase ?? course.slug;
+  const items: PracticeQuestion[] = [];
+  for (const ch of course.chapters ?? []) {
+    for (const lesson of ch.lessons) {
+      if (!lesson.contentDir) continue;
+      const quizPath = path.join(
+        process.cwd(),
+        "content",
+        contentBase,
+        lesson.contentDir,
+        "quiz.json"
+      );
+      if (!fs.existsSync(quizPath)) continue;
+      let quiz: Quiz;
+      try {
+        quiz = JSON.parse(fs.readFileSync(quizPath, "utf8"));
+      } catch {
+        continue;
+      }
+      quiz.questions?.forEach((question, qi) => {
+        const correct = question.options?.[question.answer];
+        if (!question.q || !correct) return;
+        items.push({
+          id: `${lesson.slug}:${qi}`,
+          q: question.q,
+          correctAnswers: [correct],
+          why: question.explain ?? "",
+          lessonTitle: lesson.title,
+        });
+      });
+    }
+  }
+  return items;
+}
