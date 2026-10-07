@@ -1,0 +1,21 @@
+# Script — Troubleshooting Flows: Run History and Error Diagnosis
+
+## Segment 1 (title)
+
+A dispatcher at Castlebridge Logistics messages you Monday morning: the overnight flow that emails drivers their route updates never ran. Every cloud flow keeps a detailed record of exactly what happened on every run, and this lesson is about reading that record, the run history, to find the failure and fix it without guessing.
+
+## Segment 2 (screenshot)
+
+Every flow has a run history panel on its details page, listing each run's start time, duration, and status. Power Automate keeps 28 days of this history by default, so Castlebridge trains its admins to check a reported failure the same day it's reported, before that run disappears for good.
+
+## Segment 3 (screenshot)
+
+Opening a failed run expands every step the flow executed, in order, with the one that actually failed marked by a red exclamation icon, so you're never guessing which of a dozen steps broke. Opening that specific step reveals the exact error message on the right-hand pane, often with a How to fix suggestion right there.
+
+## Segment 4 (steps)
+
+Most of Castlebridge's failures fall into two buckets. An Unauthorized error, or a 401 or 403 code, means a connection expired or was never authorized, and the fix is reauthorizing it. A Bad request or Not found error, or a 400 or 404 code, means a setting inside an action is wrong, like a renamed SharePoint list, and the fix is editing that action. A 500 or 502 is usually just a temporary hiccup in the service that was called.
+
+## Segment 5 (outro)
+
+Once the real problem is fixed, selecting Resubmit reruns that exact failed run immediately with its original trigger data, no waiting for tomorrow night's schedule. That closes out governance, ALM, and troubleshooting for Chapter 2.

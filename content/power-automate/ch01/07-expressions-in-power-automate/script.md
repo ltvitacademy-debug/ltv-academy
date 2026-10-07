@@ -1,0 +1,21 @@
+# Script — Expressions in Power Automate
+
+## Segment 1 (title)
+
+Dynamic content gives you a value exactly as an action produced it, with no room to change it. Most of the time, Castlebridge Logistics needs something transformed first — a date shifted forward, text joined together, a condition checked before a decision gets made. That transformation, start to finish, is what an expression does.
+
+## Segment 2 (screenshot)
+
+Every input field gets two small buttons once you select it: a lightning bolt for inserting dynamic content directly, and an fx button that opens the full expression editor. You can also just type a forward slash in the field as a quick shortcut to the very same popup, without reaching for the mouse at all.
+
+## Segment 3 (screenshot)
+
+The expression editor itself is multi-line, with a Dynamic content tab and a Function tab, each with its own search box so you're never hunting through a long list by eye. An expression is always a function name followed by parentheses holding its arguments, and functions can nest inside each other — the result of one becomes the input to the next, as deep as the formula needs to go.
+
+## Segment 4 (code)
+
+Here's a real one: add days to the current time, nested inside format date time, nested around a date pulled straight from the trigger. Read it from the inside out — take the submitted date, add three days to it, then format the result as readable text like "Thursday, March 12." One expression like this replaces what would otherwise take several separate Compose actions chained together.
+
+## Segment 5 (outro)
+
+That inside-out reading habit is the one thing worth holding onto with expressions. Next up, lesson eight: automating Outlook, with real email triggers and actions you'll use constantly.

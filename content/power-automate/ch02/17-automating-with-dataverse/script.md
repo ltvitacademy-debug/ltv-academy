@@ -1,0 +1,25 @@
+# Script — Automating with Dataverse Triggers and Actions
+
+## Segment 1 (title)
+
+In the last lesson you met Dataverse tables, rows, and columns. Now you'll put them to work. This lesson covers the triggers that start a flow when Dataverse data changes, and the actions you'll use to read, write, and delete that data.
+
+## Segment 2 (steps)
+
+Dataverse gives you three trigger types. When a row is added, modified, or deleted fires automatically whenever a chosen table changes, and it's the one you'll use most. When a row is selected fires when someone clicks a button inside a model-driven app. And when an action is performed fires after a specific Dataverse action runs, which is more advanced and comes up less often for Castlebridge's flows.
+
+## Segment 3 (screenshot)
+
+Here's a flow Castlebridge Logistics built on exactly that first trigger. When a row is added, modified, or deleted on the Shipments table, the flow lists related rows, then updates one of them, all without a single line of code. That trigger-then-action shape is the pattern you'll reuse constantly.
+
+## Segment 4 (steps)
+
+On the action side, List rows retrieves records from a table, with optional filtering so you're not pulling every row every time. Create a row and Update a row write new or changed data back. And Delete a row removes a record permanently, so use it carefully, usually behind an approval step.
+
+## Segment 5 (code)
+
+List rows accepts a filter expression in OData syntax. This one keeps only shipments still in progress on a specific route, so Castlebridge's flow only processes the rows dispatch actually cares about, instead of scanning the entire Shipments table every run.
+
+## Segment 6 (outro)
+
+You now know how to trigger on and act on Dataverse data. Next lesson, you'll connect a flow directly to a SQL Server database instead.

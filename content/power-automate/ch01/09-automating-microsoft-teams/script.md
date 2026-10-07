@@ -1,0 +1,21 @@
+# Script — Automating Microsoft Teams: Notifications and Approvals
+
+## Segment 1 (title)
+
+Castlebridge Logistics' dispatch team lives in Microsoft Teams during a shift, not in their inbox. The Teams connector lets a flow post directly into a channel or chat — either a plain one-way notification, or a richly formatted, interactive adaptive card that collects a response without anyone leaving Teams.
+
+## Segment 2 (steps)
+
+Post message in a chat or channel sends plain text, one-way, with no pause in the flow. Post an adaptive card and wait for a response is different — it posts a structured JSON card and actually pauses the flow until someone responds to it. And before either one will post anything at all, the Workflows app has to be installed in that Teams — miss that one prerequisite, and the action just silently fails.
+
+## Segment 3 (screenshot)
+
+An adaptive card's content is JSON: a body of text blocks and inputs, and an actions array with buttons like Submit. Paste that JSON into the action's Message field and swap in your own labels, questions, and choices — an Input dot ChoiceSet block is specifically what turns it from something people just read into something they can actually click and answer.
+
+## Segment 4 (screenshot)
+
+Because the wait-for-response action pauses the flow, you can react to whatever was submitted afterward — and even replace the card itself with a confirmation view, using that action's Update message setting, so the person who answered sees their own response reflected back instead of the same blank card sitting there.
+
+## Segment 5 (outro)
+
+Remember the Workflows app prerequisite — it's the single most common reason a brand-new Teams flow fails on its first run. Next up, lesson ten: automating Excel, reading and writing real rows in a table.

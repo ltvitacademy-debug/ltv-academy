@@ -1,0 +1,21 @@
+# Script — Connecting a Copilot Studio Agent to Power Automate Flows
+
+## Segment 1 (title)
+
+An agent that can only talk is a chatbot. An agent that can call a flow is automation. This lesson covers the exact mechanism Copilot Studio uses to let an agent trigger real work: the agent flow, added to the agent as a tool.
+
+## Segment 2 (steps)
+
+Not every flow qualifies. To become a tool, a flow needs the "When an agent calls the flow" trigger, and a "Respond to the agent" action that hands its result back. It also has to respond synchronously — the asynchronous toggle off — and finish within a hundred-second limit, because the agent is waiting on the other end. And naturally, it has to be published.
+
+## Segment 3 (steps)
+
+Once a flow qualifies, you attach it one of two ways. As an agent-level tool, the orchestrator can call it any time it decides it's relevant. As a topic-level tool, it's scoped to a single topic's conversation path. Either way, write a clear description in the configuration panel — the orchestrator reads that description to decide when the flow is the right one to call.
+
+## Segment 4 (screenshot)
+
+Here's a published agent flow in the Copilot Studio designer: a trigger, an AI step that summarizes and assigns a category, and a branch that routes the result to different teams. Notice the shape — trigger, classify, route by category. That's almost exactly the flow you'll build for Castlebridge Logistics' support triage capstone later in this chapter.
+
+## Segment 5 (outro)
+
+Once a flow is attached, test it from the agent's chat panel — ask something that matches its description and watch whether it fires. Up next, Lesson 17: what happens when an agent has more than one tool to choose from.

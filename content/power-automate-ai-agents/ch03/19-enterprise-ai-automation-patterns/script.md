@@ -1,0 +1,25 @@
+# Script — Enterprise AI Automation Patterns and Governance
+
+## Segment 1 (title)
+
+Everything up to this lesson has been about getting one agent, with one or two flows, working correctly. Once agents like this are running in production, reading real tickets and proposing real actions, a new set of questions shows up — organizational, not technical.
+
+## Segment 2 (steps)
+
+Who can publish an agent? What can it connect to? Who can see what it did, afterward? A single test agent in your own environment is low-risk because you're the only one talking to it. A published agent that employees or customers interact with is different — it might read sensitive data and propose actions with real consequences.
+
+## Segment 3 (screenshot)
+
+This is a real tenant-wide setting in the Power Platform admin center: a toggle controlling whether agents using AI features can be published at all. It's the kind of control an organization flips on deliberately, while it's still deciding its AI policy.
+
+## Segment 4 (steps)
+
+Beyond that one toggle, admins have several levers. Data policies govern which connectors and capabilities agents in an environment can use at all. Agent inventory gives a centralized view of every agent in the tenant — who built it, when it was published, how it authenticates. And audit logging plus capacity caps answer what ran, who built it, and what it cost.
+
+## Segment 5 (steps)
+
+A few patterns show up constantly once you're designing for a real organization. Build a shared capability once, as an agent flow, and attach it as a tool to every agent that needs it, instead of rebuilding the logic each time. Separate dev, test, and production environments, with looser data policies in test and locked-down policies in production. And the trigger, classify, route shape from Lesson 16 comes up everywhere — tickets, feedback, invoices.
+
+## Segment 6 (outro)
+
+Up next, Lesson 20, the capstone: every pattern from this chapter, built end to end for Castlebridge Logistics' support team.

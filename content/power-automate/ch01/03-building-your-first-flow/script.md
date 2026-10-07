@@ -1,0 +1,25 @@
+# Script — Building Your First Flow: An Approval on a New SharePoint Item
+
+## Segment 1 (title)
+
+Time to build a real flow. Castlebridge Logistics runs vacation requests through a SharePoint list, and a supervisor currently emails each decision back by hand. This lesson replaces that manual step: when someone creates a request, the flow starts an approval, emails the decision, and updates the list automatically.
+
+## Segment 2 (screenshot)
+
+Here's the whole shape before you build it. A SharePoint item gets created, which triggers the flow. An approval request goes out by email and to the approvals center. Once a decision is made, a decision email goes out, and the SharePoint list item gets updated with that decision. One trigger, four steps.
+
+## Segment 3 (screenshot)
+
+After the trigger, you add the approval action itself. Search the Add an action panel for "approval," and under the Approvals category, select Start and wait for an approval. This action is what pauses your flow and waits for a real person to respond, instead of continuing immediately.
+
+## Segment 4 (screenshot)
+
+Configuring it means picking an approval type, giving it a title, choosing who it's assigned to, and writing details. Notice the Details field mixes dynamic content, those teal chips pulled from the trigger, with plain typed text — that's how you get "wants to go on vacation from this date until that date" built from real data, not static text.
+
+## Segment 5 (screenshot)
+
+Once you add a condition on the response and an email and update on each branch, this is what the finished flow looks like: trigger, profile lookup, approval, a condition with two branches. Every piece has a name you already know from this chapter.
+
+## Segment 6 (outro)
+
+That's the whole shape — trigger, action, approval, decision. Up next, Lesson 4: conditions, where you'll learn exactly how that approve-or-reject branch gets built.

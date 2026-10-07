@@ -1,0 +1,21 @@
+# Script — Environments and Environment Strategy
+
+## Segment 1 (title)
+
+Every flow you've built so far has lived in one Power Platform environment. That works for learning, but it's not how a real company operates. This lesson is about the environment itself — what it isolates, and how a company like Castlebridge Logistics should plan which ones it needs.
+
+## Segment 2 (steps)
+
+You'll run into a handful of environment types. Production is for permanent, business-critical work — full control, real data. Sandbox environments are non-production, used for development and testing, and they support copy and reset. Every tenant also gets one Default environment, shared by everyone, that isn't meant for serious building. And Trial or Developer environments are short-term or single-user, not for team projects.
+
+## Segment 3 (screenshot)
+
+An environment is a hard boundary. Apps, flows, connections, and a Dataverse database inside one environment are isolated from every other environment — even within the same company and the same tenant. A single tenant can host several of these side by side, each carrying its own apps, flows, and data, completely separate from the others.
+
+## Segment 4 (steps)
+
+That's exactly why Castlebridge runs at least three environments instead of one. Dev is where makers build and break things freely, against non-production data. Test is a stable sandbox for validation before anything reaches the business. And Production is what real dispatchers, drivers, and the finance team depend on. A flow is built once in Dev, exported as a solution, and promoted through Test into Production.
+
+## Segment 5 (outro)
+
+Separating environments this way means a mistake in development never touches a shipment record a dispatcher is relying on. Next, we'll look at the DLP policies an admin uses to control which connectors are even allowed to mix inside those environments.

@@ -1,0 +1,29 @@
+# Script — Structured Output: Prompts and JSON Schemas
+
+## Segment 1 (title)
+
+A two-sentence Teams summary from lesson ten is perfect for a human to read, but it's useless to a flow that needs to act on individual pieces of that answer. AI Builder's prompt builder solves this with a JSON output mode: the model's response comes back matching a format you define, instead of free text.
+
+## Segment 2 (steps)
+
+Picture a prompt answering three questions at once from a shipment email: the shipment ID, the requested delivery date, and whether it's urgent. A text response packs all three into one paragraph, forcing a second step just to split them back apart. JSON output skips that — each answer becomes its own key, immediately.
+
+## Segment 3 (screenshot)
+
+Inside the prompt builder, the output type is a toggle in the top-right corner — switch it from Text to JSON, and that one toggle changes the entire shape of what comes back.
+
+## Segment 4 (steps)
+
+Once JSON is selected, you choose auto-detected or custom format. Auto-detected infers the shape fresh every time you test — convenient while you're still iterating. Custom locks the format to your own example, so it never silently changes later, even if you keep tweaking the prompt's wording.
+
+## Segment 5 (screenshot)
+
+For a Castlebridge shipment-triage prompt, a custom format locks in exactly shipment ID, requested date, and urgent — no surprises once a flow downstream depends on those exact key names.
+
+## Segment 6 (screenshot)
+
+Back in the flow, every key in that JSON format becomes its own piece of dynamic content, individually selectable in later actions — no separate Parse JSON step required, because AI Builder already parsed it for you.
+
+## Segment 7 (outro)
+
+Next, lesson twelve: going one layer deeper than the prompt builder, calling Azure OpenAI and Azure AI Services directly from a flow.

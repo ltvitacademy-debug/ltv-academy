@@ -1,0 +1,25 @@
+# Script — Summarizing Content with AI Builder and Azure AI
+
+## Segment 1 (title)
+
+A Castlebridge dispatcher doesn't need to read a six-paragraph complaint in full — a two-sentence summary usually tells them everything they need. The last two lessons pulled fixed fields and category labels out of content. This lesson generates brand new text from content: a summary, written by a generative model, inside a flow.
+
+## Segment 2 (steps)
+
+A prompt is plain-language instructions run against real input text by a generative model. Unlike classification, the output isn't a predefined category — it's new generated text, shaped by your instructions. AI Builder prompts run on GPT model versions powered by Azure OpenAI Service, part of the broader Azure AI family — the same family you'll call more directly in lesson twelve.
+
+## Segment 3 (steps)
+
+You build a prompt once in AI Builder's prompt builder: give it a name, define an input like EmailBody as a text type, write the instruction referencing that input, and test it against sample text before saving.
+
+## Segment 4 (screenshot)
+
+Once the prompt exists, you call it with Run a prompt — it was called Create text with GPT using a prompt before May 2025. The input you defined appears right in the flow designer, filled with dynamic content from the trigger, same as any other action.
+
+## Segment 5 (screenshot)
+
+The action produces an output variable, typically called Text, holding whatever the model generated. That's just dynamic content for everything downstream — here, a Teams message carrying a two-sentence summary instead of Castlebridge's dispatcher reading the full email. The same variable could just as easily feed a spreadsheet row or another action further down the flow.
+
+## Segment 6 (outro)
+
+Next, lesson eleven: what to do when plain text summaries aren't structured enough, and you need the model's response back as actual JSON.

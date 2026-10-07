@@ -1,0 +1,21 @@
+# Script — Automating SharePoint: Lists, Libraries and Document Automation
+
+## Segment 1 (title)
+
+Welcome to Lesson 11 of Business Process Automation: automating SharePoint. Every flow you've built in this chapter has touched Outlook, Teams, or Excel — now you'll connect to SharePoint, the system Castlebridge Logistics already uses to store its shipping exception reports and driver incident documents. SharePoint hands Power Automate two very different shapes of data: structured lists and file libraries, and this lesson covers triggers and actions for both.
+
+## Segment 2 (screenshot)
+
+SharePoint triggers are what start a flow. "When an item is created," "when an item is modified," and "when a file is created in a folder" each watch one specific list or library and fire the moment something changes there — exactly how Castlebridge Logistics kicks off a flow the instant a dispatcher logs a new shipping exception.
+
+## Segment 3 (screenshot)
+
+Once a flow starts, SharePoint actions do the work. Create item, get items, create file, and check in file are a few of the more than forty actions available — enough to add a row, pull back a filtered list of open exceptions, or drop a signed document into a library, all without anyone opening SharePoint by hand.
+
+## Segment 4 (steps)
+
+Lists and libraries aren't interchangeable. A list holds structured rows — columns like exception type, driver, and status, the same shape a database table would use. A library holds actual files: a signed bill of lading, a damage photo, an incident PDF. Castlebridge Logistics automates both in the same flow: a list trigger opens an approval, and once it clears, a library action files the supporting document automatically.
+
+## Segment 5 (outro)
+
+You now know how a flow watches and acts on SharePoint lists and libraries alike. Next, in Lesson 12, you'll connect Power Automate to Power BI itself, turning a data-driven alert into an automatic notification the moment Castlebridge Logistics' numbers cross a threshold.

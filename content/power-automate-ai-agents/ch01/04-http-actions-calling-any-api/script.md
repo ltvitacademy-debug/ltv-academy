@@ -1,0 +1,25 @@
+# Script — HTTP Actions: Calling Any API from a Flow
+
+## Segment 1 (title)
+
+Power Automate ships hundreds of connectors, but you won't find one for your company's internal inference endpoint or most third-party AI APIs. For those, there's the HTTP action — a raw, general-purpose action that sends any request to any URL. If you've used requests.post in Python, this is that, as a flow step.
+
+## Segment 2 (screenshot)
+
+Every HTTP action configures the same five things any HTTP client needs: Method, URI, Headers, Queries, and Body. Nothing here is Power-Automate-specific — it's exactly what you'd set on a Postman request.
+
+## Segment 3 (screenshot)
+
+Here's one configured for real: a POST to a Graph endpoint, with dynamic content tokens from earlier steps dropped directly into the URI and the JSON body. Those small blue tokens are how a flow threads data from one action into the next.
+
+## Segment 4 (steps)
+
+Most real APIs need something before they'll respond with data instead of a 401. For an API key, that's usually a header — Authorization Bearer, or an x-api-key field. For Microsoft's own services, there's a built-in Authentication section using Azure AD OAuth so you skip handling the token yourself. And don't hardcode a raw key into a flow — that belongs in Key Vault, a pattern you'll see later.
+
+## Segment 5 (screenshot)
+
+Once the action runs, it returns headers, a body, and a status code. The body is almost always what you want — if the API returned JSON, it lands there as an opaque string until you parse it, which is the entire subject of the next lesson. Here's a finished flow using exactly this pattern to post a result into Microsoft Teams.
+
+## Segment 6 (outro)
+
+Method, URI, headers, body, and a status code to branch on — that's the whole action. Next up, lesson five: parsing that JSON body into something a flow can actually reference.
