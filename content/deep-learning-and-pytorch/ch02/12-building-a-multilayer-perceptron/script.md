@@ -2,7 +2,7 @@
 
 ## Segment 1 (title)
 
-Everything in this chapter was building toward this lesson. A multilayer perceptron is linear layers and activations stacked inside a real nn.Module, trained with a real optimizer on data from a real DataLoader — every piece from this chapter, assembled into one script.
+Everything in this chapter was building toward this lesson. A multilayer perceptron is linear layers and activations stacked inside a real nn.Module, trained with a real optimizer on data from a real DataLoader — every piece from this chapter, assembled into one script. Nothing here is new; the only thing that changes is that all of it now lives in one coherent script.
 
 ## Segment 2 (code)
 
@@ -10,15 +10,15 @@ The output layer returns raw logits with no activation on top, exactly what Cros
 
 ## Segment 3 (code)
 
-The training loop itself has nothing new in it. DataLoader from lesson five, dot to device from lesson three, CrossEntropyLoss from lesson ten, Adam and the zero_grad, backward, step pattern from lesson eleven.
+The training loop itself has nothing new in it. DataLoader from lesson five, dot to device from lesson three, CrossEntropyLoss from lesson ten, Adam and the zero_grad, backward, step pattern from lesson eleven. Notice every batch gets moved to the same device as the model, right inside the loop, exactly the pattern from lesson three.
 
 ## Segment 4 (steps)
 
-Hidden size and depth are choices without a universal answer — chapter three covers more principled ways to think about them. What matters more right now: the output layer stays raw logits, since CrossEntropyLoss needs them unmodified.
+Hidden size and depth are choices without a universal answer — chapter three covers more principled ways to think about them. A model that's too small struggles to fit the data at all, while one that's too large risks memorizing it instead of learning general patterns. What matters more right now: the output layer stays raw logits, since CrossEntropyLoss needs them unmodified.
 
 ## Segment 5 (code)
 
-Evaluating uses model dot eval and torch dot no_grad together, doing different jobs — eval changes layer behavior, no_grad just skips building a graph you don't need. argmax picks the highest-scoring class per example, which you compare directly against the integer labels.
+Evaluating uses model dot eval and torch dot no_grad together, doing different jobs — eval changes layer behavior, no_grad just skips building a graph you don't need. argmax picks the highest-scoring class per example, which you compare directly against the integer labels. Checking predictions against labels this way gives you a single accuracy number you can track across training runs.
 
 ## Segment 6 (outro)
 

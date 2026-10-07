@@ -6,11 +6,11 @@ A loss function is the single number training is trying to minimize. Backward co
 
 ## Segment 2 (code)
 
-MSELoss computes the mean of the squared difference between predictions and targets. It's the standard choice whenever your target is a continuous number, and squaring the error penalizes big mistakes disproportionately more than small ones.
+MSELoss computes the mean of the squared difference between predictions and targets. It's the standard choice whenever your target is a continuous number, and squaring the error penalizes big mistakes disproportionately more than small ones. Picture predicting a house price: missing by a hundred thousand should cost far more than missing by a thousand, and squaring the error does exactly that.
 
 ## Segment 3 (code)
 
-CrossEntropyLoss is the standard loss for multi-class classification. It expects raw logits shaped batch by number of classes, and labels that are integer class indices, not one-hot vectors.
+CrossEntropyLoss is the standard loss for multi-class classification. It expects raw logits shaped batch by number of classes, and labels that are integer class indices, not one-hot vectors. Both of those shapes have to line up exactly, or you'll see the shape-mismatch error from the end of chapter one.
 
 ## Segment 4 (steps)
 
@@ -18,7 +18,7 @@ Here's the mistake that catches almost everyone once: don't apply softmax to you
 
 ## Segment 5 (code)
 
-The reduction argument controls how per-element losses combine. Mean, the default, divides by the count so the loss scale doesn't shift with batch size. Sum adds everything up, and none returns the per-element loss unreduced, for when you want to weight things yourself.
+The reduction argument controls how per-element losses combine. Mean, the default, divides by the count so the loss scale doesn't shift with batch size. Sum adds everything up, and none returns the per-element loss unreduced, for when you want to weight things yourself. In nearly every case you'll leave this at its default, but it's worth knowing it exists for the handful of times you need finer control.
 
 ## Segment 6 (outro)
 

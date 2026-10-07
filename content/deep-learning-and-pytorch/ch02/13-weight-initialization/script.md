@@ -10,11 +10,11 @@ You don't have to initialize anything yourself — nn.Linear already fills its w
 
 ## Segment 3 (steps)
 
-If weights start too large, activations and their gradients explode across layers. Too small, and they vanish toward zero instead — a problem you'll study properly in chapter three. Good initialization is designed to keep activation variance roughly stable across every layer from the start.
+If weights start too large, activations and their gradients explode across layers. Too small, and they vanish toward zero instead — a problem you'll study properly in chapter three. This happens before a single training step runs, purely from the starting values themselves. Good initialization is designed to keep activation variance roughly stable across every layer from the start.
 
 ## Segment 4 (code)
 
-Xavier initialization is derived assuming Sigmoid or Tanh activations. Kaiming initialization is derived specifically for ReLU, which zeros out roughly half its inputs — Kaiming's math accounts for that, Xavier's doesn't. Since ReLU is the default activation for most networks, Kaiming is the more common explicit choice.
+Xavier initialization is derived assuming Sigmoid or Tanh activations. Kaiming initialization is derived specifically for ReLU, which zeros out roughly half its inputs — Kaiming's math accounts for that, Xavier's doesn't. Since ReLU is the default activation for most networks, Kaiming is the more common explicit choice. Picking the wrong one isn't usually catastrophic, just a slower, noisier path to the same destination.
 
 ## Segment 5 (code)
 

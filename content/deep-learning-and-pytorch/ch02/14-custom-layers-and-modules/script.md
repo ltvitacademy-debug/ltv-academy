@@ -6,7 +6,7 @@ This closes out chapter two. You've used layers PyTorch ships out of the box, bu
 
 ## Segment 2 (code)
 
-Here's a custom layer that scales and shifts its input by learnable per-feature values — nothing PyTorch ships by default. It's exactly the lesson eight pattern: parameters in init, logic in forward. Scale and shift get discovered by dot parameters, flow through autograd, and get saved by state_dict, all for free.
+Here's a custom layer that scales and shifts its input by learnable per-feature values — nothing PyTorch ships by default. It's exactly the lesson eight pattern: parameters in init, logic in forward. There's nothing special about this layer beyond what you already know — it's an ordinary module with ordinary parameters. Scale and shift get discovered by dot parameters, flow through autograd, and get saved by state_dict, all for free.
 
 ## Segment 3 (code)
 
@@ -14,7 +14,7 @@ Sometimes a module needs a tensor that isn't learned but should still move with 
 
 ## Segment 4 (code)
 
-Custom modules really shine when you reuse a pattern. This block packages linear-then-ReLU as one unit, so a deeper model can compose an arbitrary number of them — more flexible than Sequential once your logic isn't just a straight line.
+Custom modules really shine when you reuse a pattern. This block packages linear-then-ReLU as one unit, so a deeper model can compose an arbitrary number of them — more flexible than Sequential once your logic isn't just a straight line. Reusable blocks like this are how real architectures stay readable even as they grow to dozens of layers.
 
 ## Segment 5 (steps)
 
