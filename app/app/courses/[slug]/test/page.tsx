@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { COURSES, getCourse, lessonCount, loadCourseTest } from "@/lib/courses";
+import { COURSES, getCourse, lessonCount } from "@/lib/courses";
+import { buildFinalTest, passingScore } from "@/lib/finalTest";
 import CourseTest from "@/components/app/CourseTest";
 
 export function generateStaticParams() {
@@ -16,7 +17,8 @@ export default async function CourseTestPage({
   const course = getCourse(slug);
   if (!course || !course.chapters) notFound();
 
-  const test = loadCourseTest(course);
+  const test = buildFinalTest(course);
+  const hasQuestions = test.questions.length > 0;
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
@@ -33,14 +35,20 @@ export default async function CourseTestPage({
       <p className="eyebrow mb-3">Final test · {lessonCount(course)} lessons covered</p>
       <h1 className="display text-3xl sm:text-4xl">{course.title}</h1>
 
-      {test ? (
+      {hasQuestions ? (
         <>
           <p className="mt-4 max-w-2xl text-stone">
             {test.questions.length} questions covering the whole course. You need
-            90% ({Math.ceil(test.questions.length * 0.9)} of {test.questions.length})
-            to pass. There's no penalty for retaking it — review the explanations
-            below each miss, then try again.
+            90% ({passingScore(test.questions.length)} of {test.questions.length})
+            to pass. There's no penalty for retaking it — review the submitted and
+            correct answers below each question, then try again.
           </p>
+          {test.shortfall > 0 && (
+            <p className="mt-2 max-w-2xl text-xs uppercase tracking-[0.18em] text-crimson-deep">
+              This course&apos;s final test bank is still being built out — showing
+              {" "}{test.questions.length} of a planned {test.targetSize} questions.
+            </p>
+          )}
           <div className="mt-10 border-t-2 border-gold pt-8">
             <CourseTest
               storageKey={`courseTest:${course.slug}`}
