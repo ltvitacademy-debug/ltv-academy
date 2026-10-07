@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { COURSES, getCourse, lessonCount, loadCourseTest } from "@/lib/courses";
+import { COURSES, getCourse, lessonCount, loadCourseTest, getCourseFlashcards } from "@/lib/courses";
 import LessonRow from "@/components/app/LessonRow";
 import CoursePathBreadcrumb from "@/components/app/CoursePathBreadcrumb";
 
@@ -18,6 +18,7 @@ export default async function CoursePage({
   const course = getCourse(slug);
   if (!course) notFound();
   const test = loadCourseTest(course);
+  const flashcardCount = getCourseFlashcards(course).length;
 
   if (course.status === "coming-soon") {
     return (
@@ -49,9 +50,19 @@ export default async function CoursePage({
         <span className="text-crimson">.</span>
       </h1>
       <p className="mt-4 max-w-2xl text-stone">{course.tagline}</p>
-      <p className="mt-2 text-sm uppercase tracking-[0.18em] text-gold">
-        {lessonCount(course)} lessons
-      </p>
+      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+        <p className="text-sm uppercase tracking-[0.18em] text-gold">
+          {lessonCount(course)} lessons
+        </p>
+        {flashcardCount > 0 && (
+          <Link
+            href={`/app/courses/${course.slug}/flashcards`}
+            className="text-sm font-semibold text-crimson-deep hover:text-crimson"
+          >
+            Review flashcards →
+          </Link>
+        )}
+      </div>
 
       <div className="mt-12 space-y-10">
         {course.chapters!.map((ch) => (
@@ -80,6 +91,22 @@ export default async function CoursePage({
           </section>
         ))}
       </div>
+
+      {flashcardCount > 0 && (
+        <div className="mt-14 border-2 border-ink/15 p-7">
+          <p className="eyebrow mb-2">Review</p>
+          <h2 className="display text-2xl">Drill every key term before you move on</h2>
+          <p className="mt-2 max-w-2xl text-stone">
+            {flashcardCount} terms pulled from every lesson in this course, in one flip-card deck.
+          </p>
+          <Link
+            href={`/app/courses/${course.slug}/flashcards`}
+            className="mt-4 inline-block rounded-[2px] border border-ink/20 px-6 py-3 text-sm font-semibold hover:border-crimson hover:text-crimson"
+          >
+            Review flashcards →
+          </Link>
+        </div>
+      )}
 
       {test && (
         <div className="mt-14 border-2 border-gold bg-gold/10 p-7">

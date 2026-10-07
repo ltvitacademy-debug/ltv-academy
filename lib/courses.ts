@@ -1952,3 +1952,74 @@ export function loadCourseTest(course: CourseMeta): Quiz | null {
   );
   return fs.existsSync(testPath) ? JSON.parse(fs.readFileSync(testPath, "utf8")) : null;
 }
+
+export type Flashcard = { term: string; definition: string; lessonTitle: string };
+
+// Every lesson's guide.md ends with a "## Key terms" section, written as
+// either a markdown table (first column = term) or a bullet list
+// ("- **Term** — definition" / "- **Term**: definition"). This pulls those
+// out across a whole course so a flashcard deck can be built from content
+// that already exists, with zero new authoring per lesson.
+function parseKeyTerms(guideMd: string): { term: string; definition: string }[] {
+  const heading = guideMd.match(/^##\s*Key [Tt]erms\s*$/m);
+  if (!heading) return [];
+  const start = heading.index! + heading[0].length;
+  const rest = guideMd.slice(start);
+  const nextHeading = rest.search(/^##\s/m);
+  const section = (nextHeading === -1 ? rest : rest.slice(0, nextHeading)).trim();
+  if (!section) return [];
+
+  const stripMd = (s: string) =>
+    s
+      .replace(/\*\*(.+?)\*\*/g, "$1")
+      .replace(/`([^`]+)`/g, "$1")
+      .trim();
+
+  const lines = section.split("\n").map((l) => l.trim());
+  const out: { term: string; definition: string }[] = [];
+
+  if (section.startsWith("|")) {
+    // Markdown table: row 1 is the header, row 2 is the --- separator,
+    // every row after that is a term in column 1 and its meaning in
+    // column 2 (extra columns, if any, are ignored).
+    const rows = lines.filter((l) => l.startsWith("|"));
+    for (let i = 2; i < rows.length; i++) {
+      const cells = rows[i]
+        .split("|")
+        .map((c) => c.trim())
+        .filter((c, idx, arr) => !(idx === 0 && c === "") && !(idx === arr.length - 1 && c === ""));
+      if (cells.length >= 2 && cells[0]) {
+        out.push({ term: stripMd(cells[0]), definition: stripMd(cells[1]) });
+      }
+    }
+  } else {
+    for (const line of lines) {
+      const m = line.match(/^-\s*\*\*(.+?)\*\*\s*[:—–-]\s*(.+)$/);
+      if (m) out.push({ term: stripMd(m[1]), definition: stripMd(m[2]) });
+    }
+  }
+  return out;
+}
+
+export function getCourseFlashcards(course: CourseMeta): Flashcard[] {
+  const contentBase = course.contentBase ?? course.slug;
+  const cards: Flashcard[] = [];
+  for (const ch of course.chapters ?? []) {
+    for (const lesson of ch.lessons) {
+      if (!lesson.contentDir) continue;
+      const guidePath = path.join(
+        process.cwd(),
+        "content",
+        contentBase,
+        lesson.contentDir,
+        "guide.md"
+      );
+      if (!fs.existsSync(guidePath)) continue;
+      const guideMd = fs.readFileSync(guidePath, "utf8");
+      for (const { term, definition } of parseKeyTerms(guideMd)) {
+        if (term && definition) cards.push({ term, definition, lessonTitle: lesson.title });
+      }
+    }
+  }
+  return cards;
+}
