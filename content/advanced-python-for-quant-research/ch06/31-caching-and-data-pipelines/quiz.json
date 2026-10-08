@@ -1,0 +1,60 @@
+{
+  "lesson": "caching-and-data-pipelines",
+  "questions": [
+    {
+      "q": "What is the key practical difference between `functools.lru_cache` and `diskcache`?",
+      "options": [
+        "lru_cache only works with strings, while diskcache works with any data type",
+        "lru_cache stores results in the current process's memory and loses them when the process exits; diskcache persists results to disk so they survive across process restarts",
+        "diskcache is always slower than lru_cache in every scenario",
+        "lru_cache requires a database server to run"
+      ],
+      "answer": 1,
+      "explain": "lru_cache's cache lives in process memory and disappears on exit; diskcache writes to disk, so a cache built up in one script run or job is still available the next time the process starts, which matters for research pipelines run repeatedly over time."
+    },
+    {
+      "q": "Why is cache invalidation described as one of the genuinely hard problems in caching?",
+      "options": [
+        "Because caches automatically delete themselves after 24 hours",
+        "Because the cache key must capture everything that actually determines the output -- too loose a key causes stale wrong answers to be returned for genuinely different inputs, while too specific a key never hits",
+        "Because disk space is always too limited to store a cache",
+        "Because Python does not support dictionaries larger than 1000 entries"
+      ],
+      "answer": 1,
+      "explain": "The core difficulty is correctness, not performance: a cache key that omits an argument that actually affects the result (e.g. keying only on signal_name while lookback also matters) causes two different calls to collide and the second to wrongly reuse the first's stale answer."
+    },
+    {
+      "q": "In the `expensive_backtest` example, why does the third call (different `lookback`) take about 1.004s again instead of returning instantly like the second call?",
+      "options": [
+        "diskcache has a maximum of two cached entries",
+        "The cache key includes lookback, and a different lookback value produces a different key, so it is correctly treated as a new computation rather than reusing the first call's cached result",
+        "The third call always re-runs regardless of the cache",
+        "time.sleep() ignores cached results"
+      ],
+      "answer": 1,
+      "explain": "The cache key is (signal_name, lookback) -- both values that actually determine the result -- so changing lookback produces a genuinely different key, correctly causing a cache miss and a fresh computation rather than reusing a stale cached answer."
+    },
+    {
+      "q": "What does the real measured timing in this lesson's example demonstrate?",
+      "options": [
+        "That diskcache is incompatible with time.sleep()",
+        "That the second call with identical arguments returned in about 0.000s versus 1.004s for the first call, directly proving the cache avoided redoing the expensive computation",
+        "That the first call is always faster than later calls",
+        "That caching only works for integer return values"
+      ],
+      "answer": 1,
+      "explain": "The measured timing is the actual evidence: a 1.004s first call followed by a ~0.000s second call with identical arguments confirms the cache hit skipped the simulated expensive work rather than merely claiming it would."
+    },
+    {
+      "q": "According to the lesson's closing section, how does caching fit into the overall research pipeline built across this chapter?",
+      "options": [
+        "It replaces the need for a data layer entirely",
+        "It is one more piece of the same reproducibility and efficiency story -- wrapping expensive computation steps so a scheduled job or re-run after a crash doesn't redo finished work, alongside the data layer's own caching and DuckDB's columnar efficiency",
+        "It only matters for kdb+-based systems",
+        "It is unrelated to the data layer or scheduled jobs covered earlier in the course"
+      ],
+      "answer": 1,
+      "explain": "The lesson frames caching as integrating with the data layer (lesson 25), scheduled jobs (lesson 27), and columnar SQL access (lessons 28-29) into one coherent pipeline, rather than as an isolated optimization trick bolted on at the end."
+    }
+  ]
+}

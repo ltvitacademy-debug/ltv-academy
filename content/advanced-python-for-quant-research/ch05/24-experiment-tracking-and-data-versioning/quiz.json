@@ -1,0 +1,60 @@
+{
+  "lesson": "experiment-tracking-and-data-versioning",
+  "questions": [
+    {
+      "q": "A researcher re-runs an unchanged backtest script six months later and gets a different Sharpe ratio. According to this lesson, what is the most likely cause?",
+      "options": [
+        "Python's floating-point arithmetic changed between versions",
+        "The underlying data changed (e.g. restated fundamentals or a new data pull) even though the code and git history show nothing different",
+        "Git automatically modifies old commits over time",
+        "pandas randomizes row order on every import"
+      ],
+      "answer": 1,
+      "explain": "The code and parameters can be byte-identical to last time while the input data silently changed underneath -- a restated value, an updated table, a different pull -- which is exactly the failure mode this lesson addresses with data versioning."
+    },
+    {
+      "q": "In experiment tracking (e.g. the MLflow-style pattern), what are the three things logged per run?",
+      "options": [
+        "Parameters, metrics, and artifacts",
+        "Only the final Sharpe ratio",
+        "The git commit hash and nothing else",
+        "CPU usage, memory usage, and disk usage"
+      ],
+      "answer": 0,
+      "explain": "Experiment tracking logs the input parameters that varied (e.g. lookback window), the resulting metrics (e.g. Sharpe ratio), and any output artifacts (e.g. a plot or results table), making every run queryable later."
+    },
+    {
+      "q": "What does content-addressed storage (the approach tools like DVC use) provide that simply hashing a file does not?",
+      "options": [
+        "It makes the dataset load faster at runtime",
+        "It automatically fixes data errors before storage",
+        "It stores large data files by their content hash and ties that storage to git, so checking out an old commit retrieves the exact dataset that commit was built against",
+        "It encrypts data at rest for compliance purposes"
+      ],
+      "answer": 2,
+      "explain": "Content-addressed storage extends git-style versioning to data too large to put directly in git, linking a specific git commit to the exact data snapshot it was built against -- a hash alone tells you data changed, but doesn't manage retrieving old versions."
+    },
+    {
+      "q": "In the `fingerprint` example, why does hashing `df.to_csv(index=False)` rather than the DataFrame object directly matter?",
+      "options": [
+        "to_csv() is required because hashlib cannot hash DataFrames",
+        "It produces a stable byte representation of the data's actual contents that can be hashed consistently and compared across runs",
+        "It compresses the DataFrame to save disk space",
+        "It removes duplicate rows before hashing"
+      ],
+      "answer": 1,
+      "explain": "hashlib operates on bytes, not Python objects, so the DataFrame needs a stable byte representation first; to_csv(index=False) gives a consistent serialization of the actual values, which is what SHA-256 then hashes."
+    },
+    {
+      "q": "In the lesson's example, changing a single close price from 191.04 to 191.50 changed the SHA-256 fingerprint completely rather than slightly. Why is that the desired property?",
+      "options": [
+        "It proves the hash function is broken and should not be used",
+        "It guarantees the fingerprint can't accidentally match two datasets that differ, even by one value, which is exactly what's needed to detect a silent restatement",
+        "It means the data was corrupted during hashing",
+        "SHA-256 only works correctly on numeric columns"
+      ],
+      "answer": 1,
+      "explain": "Cryptographic hashes like SHA-256 are designed so any change to the input, however small, produces an unrelated-looking output -- this is what makes the fingerprint reliable for detecting that data changed at all, rather than by how much."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "working-with-market-data-vendors-and-apis",
+  "questions": [
+    {
+      "q": "In the `fetch_with_retry` example, what does exponential backoff mean in practice?",
+      "options": [
+        "Each retry happens at a fixed 1-second interval regardless of attempt number",
+        "The wait time between retries doubles after each failed attempt, so a transient blip gets a quick retry while repeated failures back off more aggressively",
+        "The function gives up after exactly one retry no matter what",
+        "The function retries faster each time to recover quickly"
+      ],
+      "answer": 1,
+      "explain": "The delay is computed as base_delay * (2 ** (attempt - 1)), so each successive retry waits twice as long as the previous one -- in the example, 0.1s then 0.2s -- avoiding hammering a struggling vendor at full speed."
+    },
+    {
+      "q": "Why does using unadjusted (raw traded) prices to compute returns across a stock split produce a nonsensical result?",
+      "options": [
+        "Unadjusted prices are always wrong and should never be used for any purpose",
+        "A split changes the raw share price mechanically (e.g. quartered on a 4-for-1 split) without reflecting any actual change in value, so a return calculated across that date looks like an enormous, meaningless gain or loss",
+        "yfinance does not provide unadjusted prices at all",
+        "Unadjusted prices are only available for the most recent trading day"
+      ],
+      "answer": 1,
+      "explain": "A stock split changes the raw quoted price by a mechanical ratio with no change in underlying value; adjusted prices back this out so return calculations across the split date remain meaningful, which is why adjusted prices are the right choice for backtests."
+    },
+    {
+      "q": "What is survivorship bias, as described in this lesson?",
+      "options": [
+        "A bug where a vendor API returns duplicate rows",
+        "Backtesting against a historical index membership list that reflects today's constituents rather than who was actually in the index at that historical date, silently excluding companies that were later delisted or dropped",
+        "A timezone conversion error between UTC and exchange local time",
+        "The practice of only trading stocks that have survived a bear market"
+      ],
+      "answer": 1,
+      "explain": "Using today's constituent list projected backward silently removes companies that were delisted or dropped -- disproportionately the worse performers -- which inflates a backtest's apparent historical returns."
+    },
+    {
+      "q": "Why can restated fundamentals data cause lookahead bias in a backtest?",
+      "options": [
+        "Restated fundamentals are always less accurate than the original filing",
+        "A vendor's fundamentals table may store only the latest known value for a reporting period, so a backtest using that figure as if it were known on the original filing date leaks future information into the past",
+        "Restated data is only available for companies outside the S&P 500",
+        "Fundamentals data cannot be stored in Parquet files"
+      ],
+      "answer": 1,
+      "explain": "If a vendor's table reflects revisions made after the original filing date, using that revised figure as though it were known on the original date gives the backtest knowledge it couldn't actually have had at that point in history -- the defining trait of lookahead bias."
+    },
+    {
+      "q": "According to the lesson, what is the real fix for both survivorship bias and lookahead bias?",
+      "options": [
+        "Rounding all prices to two decimal places",
+        "Switching from yfinance to a different vendor",
+        "Using point-in-time data -- a feed or stored snapshots that record exactly what was known as of each historical date, not what is known now",
+        "Running the backtest twice and averaging the results"
+      ],
+      "answer": 2,
+      "explain": "Both biases stem from using present-day knowledge (current index membership, current restated figures) as a stand-in for historical knowledge; point-in-time data records what was actually knowable at each historical date, which is the only way to avoid leaking future information into a backtest."
+    }
+  ]
+}

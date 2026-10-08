@@ -1,0 +1,60 @@
+{
+  "lesson": "multiprocessing-and-parallelism",
+  "questions": [
+    {
+      "q": "Why don't Python threads help speed up CPU-bound work in CPython?",
+      "options": [
+        "Threads are only available on Linux",
+        "The Global Interpreter Lock (GIL) allows only one thread to execute Python bytecode at a time, even on a multi-core machine",
+        "Threads automatically run slower than a single-process loop",
+        "Python threads cannot call functions that use NumPy"
+      ],
+      "answer": 1,
+      "explain": "CPython's GIL means only one thread executes Python bytecode at a time; for CPU-bound work this means threads effectively take turns on one core rather than running in parallel, unlike I/O-bound work where the GIL is released while waiting."
+    },
+    {
+      "q": "Why does code using `ProcessPoolExecutor` need an `if __name__ == \"__main__\":` guard?",
+      "options": [
+        "It's purely a style convention with no functional effect",
+        "Spawning a worker process re-imports the module; without the guard, that re-import would try to spawn the pool again, recursively",
+        "It is required only when using joblib, not ProcessPoolExecutor",
+        "It prevents the GIL from being created"
+      ],
+      "answer": 1,
+      "explain": "Especially on Windows (which uses the spawn method), a new process re-imports the launching module -- without the __main__ guard, that re-import re-executes the pool-creation code, recursively spawning more processes."
+    },
+    {
+      "q": "What is the main cost that `joblib.Parallel`/`delayed` and `ProcessPoolExecutor` both incur when sending work to a worker process?",
+      "options": [
+        "Compiling the function to machine code",
+        "Pickling (serializing) arguments and return values to send them across process boundaries",
+        "Converting the function to Cython",
+        "Re-running the GIL initialization"
+      ],
+      "answer": 1,
+      "explain": "Every argument and return value crossing a process boundary must be pickled by the sender and unpickled by the receiver, which has real overhead, especially for large objects."
+    },
+    {
+      "q": "In the measured 'tiny task' example (x + 1 run 200 times), what happened when it was parallelized across processes?",
+      "options": [
+        "It ran about 4x faster, matching the number of CPU cores",
+        "It ran over 12,000x slower than the serial version, because process/pickling overhead vastly exceeded the trivial computation",
+        "It produced incorrect results",
+        "It ran at exactly the same speed as serial"
+      ],
+      "answer": 1,
+      "explain": "The measured numbers showed serial at 0.025 ms vs. parallel at 320.703 ms -- a clear case where the per-task overhead of multiprocessing dwarfed the actual (trivial) work being done."
+    },
+    {
+      "q": "Based on this lesson, what rule of thumb determines whether a task is worth parallelizing across processes?",
+      "options": [
+        "Any task, no matter how small, benefits from parallelization",
+        "Only tasks that use NumPy benefit",
+        "Each task should be expensive enough (roughly tens of milliseconds or more) that the fixed per-task process/pickling overhead doesn't dominate the actual work",
+        "Parallelization only works for tasks that take exactly 1 second"
+      ],
+      "answer": 2,
+      "explain": "Multiprocessing has real, fixed overhead per task from process coordination and pickling; it only pays off once each unit of work is substantial enough that this overhead is a small fraction of the total."
+    }
+  ]
+}

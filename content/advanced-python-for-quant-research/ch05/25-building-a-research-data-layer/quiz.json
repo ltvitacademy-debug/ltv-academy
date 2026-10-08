@@ -1,0 +1,60 @@
+{
+  "lesson": "building-a-research-data-layer",
+  "questions": [
+    {
+      "q": "What is the main problem with ten different notebooks each calling `pd.read_parquet(\"C:/data/aapl.parquet\")` directly?",
+      "options": [
+        "Parquet files cannot be read more than once",
+        "Changing the data source means finding and fixing every call site, and any two call sites that handle raw quirks slightly differently can silently disagree",
+        "pandas limits the number of scripts that can read the same file",
+        "Parquet files are always corrupted after the second read"
+      ],
+      "answer": 1,
+      "explain": "Hardcoded reads spread the same fragility everywhere they're duplicated: a source change requires touching every call site, and inconsistent handling of raw data quirks (timezones, column names) across call sites produces disagreeing results from what should be the same data."
+    },
+    {
+      "q": "What is the core idea behind a function like `load_prices(universe, start, end)` as a research data layer?",
+      "options": [
+        "It hides the underlying source (file, API, or database) behind a stable interface, so callers depend on a contract rather than a specific file path",
+        "It replaces pandas entirely with a faster data format",
+        "It guarantees the data is always up to date in real time",
+        "It only works with CSV files, never Parquet or databases"
+      ],
+      "answer": 0,
+      "explain": "The data layer's value is the indirection: research code asks for data by meaning, and the source can change behind that interface without requiring changes to every script built on top of it, as long as the output contract stays the same."
+    },
+    {
+      "q": "In the lesson's example, the raw Parquet file has columns named `Date`, `Symbol`, and `ClosePx` with timezone-aware timestamps. What does `load_prices` do with that before returning it?",
+      "options": [
+        "It deletes those columns and leaves the DataFrame empty",
+        "It renames the columns to lowercase (`date`, `symbol`, `close`) and normalizes the timestamps to tz-naive UTC, enforcing a consistent contract regardless of the source's raw format",
+        "It re-encodes the file as CSV before returning it",
+        "It converts all columns to string dtype"
+      ],
+      "answer": 1,
+      "explain": "The data layer's schema/contract consistency work happens exactly here: normalizing raw, source-specific column names and timezone handling into one consistent contract that every downstream caller can rely on."
+    },
+    {
+      "q": "In the cache_info() output, what does `CacheInfo(hits=1, misses=1, ...)` after two identical calls to `load_prices` indicate?",
+      "options": [
+        "The function failed on the second call",
+        "The first call was a cache miss (had to read the file), and the second identical call was a cache hit, reusing the result instead of reading the file again",
+        "Both calls read the file from disk independently",
+        "The cache was cleared between the two calls"
+      ],
+      "answer": 1,
+      "explain": "functools.lru_cache keys its cache on the function's arguments; identical arguments on the second call produce a cache hit, confirmed by hits=1, while the first call's distinct read is the one miss."
+    },
+    {
+      "q": "Why is `functools.lru_cache` described as suitable for caching within one research session but not necessarily across process restarts?",
+      "options": [
+        "lru_cache only works with integer arguments",
+        "lru_cache stores results in memory tied to the running process, so the cache is lost when the process exits or restarts",
+        "lru_cache automatically deletes its cache every 60 seconds",
+        "lru_cache cannot be used with DataFrames as return values"
+      ],
+      "answer": 1,
+      "explain": "lru_cache's cache lives in the Python process's memory; it speeds up repeated calls within that process but provides no persistence once the process ends, unlike disk-based caching covered later in the chapter."
+    }
+  ]
+}

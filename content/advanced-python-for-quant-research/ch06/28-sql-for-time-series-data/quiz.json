@@ -1,0 +1,60 @@
+{
+  "lesson": "sql-for-time-series-data",
+  "questions": [
+    {
+      "q": "How does a window function (e.g. `AVG(price) OVER (ORDER BY ts ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)`) differ from a `GROUP BY` aggregate?",
+      "options": [
+        "Window functions can only be used with the AVG function",
+        "A GROUP BY collapses many rows into one per group; a window function computes a per-row value using nearby rows without collapsing any rows",
+        "Window functions require a separate database server, unlike GROUP BY",
+        "There is no difference; they always produce identical output"
+      ],
+      "answer": 1,
+      "explain": "GROUP BY reduces the row count by collapsing groups into aggregates, losing row-level detail. A window function computes an aggregate-like value for each individual row using a defined window of surrounding rows, so every original row survives with an added computed column."
+    },
+    {
+      "q": "In the moving-average example, why is `ma_3` for the very first row (09:30:00) still a real number (190.1) rather than NaN, while `prev_price` for that same row is NaN?",
+      "options": [
+        "This is a bug in DuckDB",
+        "ROWS BETWEEN 2 PRECEDING AND CURRENT ROW simply averages whatever rows are available (just the current row, if no prior rows exist yet), while LAG specifically requires a previous row to exist and returns NULL/NaN when there isn't one",
+        "ma_3 is computed independently of the ts column",
+        "prev_price and ma_3 always return the same value"
+      ],
+      "answer": 1,
+      "explain": "The moving-average window clause averages over however many preceding rows actually exist up to CURRENT ROW, so the first row's average is just itself; LAG, by contrast, has no previous row to look at for the first row and correctly returns NaN."
+    },
+    {
+      "q": "What does `ASOF JOIN` do that distinguishes it from a regular equality join?",
+      "options": [
+        "It joins every row on the left to every row on the right (a cross join)",
+        "For each row on the left, it finds the single best-matching row on the right at or before the left row's timestamp, based on the specified condition",
+        "It only joins rows with exactly matching timestamps",
+        "It requires both tables to have the same number of rows"
+      ],
+      "answer": 1,
+      "explain": "ASOF JOIN is designed specifically for point-in-time matching: given a left-side timestamp, it finds the most recent qualifying right-side row at or before that timestamp, rather than requiring an exact match or producing a full cross product."
+    },
+    {
+      "q": "In the ASOF JOIN example, a request at 09:32:30 matched the price tick at 09:32:00 rather than 09:33:00. Why does that matter for research correctness?",
+      "options": [
+        "It doesn't matter; either match would be equally valid",
+        "Matching to 09:33:00 would mean using a price that didn't exist yet at the time of the request -- a lookahead-biased match using future information",
+        "DuckDB always rounds timestamps down to the nearest minute",
+        "The 09:33:00 price was deleted from the table"
+      ],
+      "answer": 1,
+      "explain": "Matching a 09:32:30 request to a 09:33:00 price would mean the query 'knew' a price that hadn't occurred yet relative to the request time, which is exactly the lookahead-bias problem flagged in the previous lesson -- ASOF JOIN's at-or-before semantics avoid it by construction."
+    },
+    {
+      "q": "What is the risk of using `ROWS BETWEEN 2 PRECEDING AND CURRENT ROW` on data that has gaps (e.g. missing trading days)?",
+      "options": [
+        "The query will fail to execute",
+        "It operates over whatever rows exist, meaning \"the two previous rows\" rather than \"the two previous calendar days\" -- so a gap silently changes what's actually being averaged",
+        "DuckDB automatically fills gaps with zero before computing",
+        "ROWS BETWEEN cannot be combined with ORDER BY"
+      ],
+      "answer": 1,
+      "explain": "A ROWS-based window operates over existing rows, not calendar time, so if a day is missing from the data, \"2 preceding rows\" silently spans a wider calendar gap than intended -- resampling onto a complete time grid (e.g. via generate_series) is the fix when calendar-time semantics are required."
+    }
+  ]
+}

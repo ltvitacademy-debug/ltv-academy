@@ -1,0 +1,60 @@
+{
+  "lesson": "scheduling-and-automating-research-jobs",
+  "questions": [
+    {
+      "q": "What is the key difference between cron/Windows Task Scheduler and an in-process scheduler like APScheduler?",
+      "options": [
+        "cron only works on Windows, while APScheduler only works on Linux",
+        "cron and Task Scheduler trigger a program at the OS level independent of any running process, while APScheduler runs inside a long-lived Python process and can schedule jobs dynamically from code",
+        "APScheduler cannot run jobs more than once",
+        "cron requires a GUI, while APScheduler is command-line only"
+      ],
+      "answer": 1,
+      "explain": "cron and Task Scheduler are OS-level mechanisms that run independent of any particular process; APScheduler runs inside a Python process, trading OS independence for the ability to add/remove jobs dynamically and share state with the running application."
+    },
+    {
+      "q": "What does it mean for a scheduled job to be idempotent?",
+      "options": [
+        "The job runs faster each time it is executed",
+        "The job can only be run once per calendar day",
+        "Running the job twice, or re-running it after a failure, produces the same correct end state rather than duplicated or corrupted output",
+        "The job never logs any output"
+      ],
+      "answer": 2,
+      "explain": "Idempotency is about safety under re-runs: a job that overwrites a dated snapshot or upserts by key produces the same correct state no matter how many times it runs, while a job that blindly appends a new row every run is not idempotent."
+    },
+    {
+      "q": "Why is a job that appends a new row to a table every time it runs, with no deduplication, NOT idempotent?",
+      "options": [
+        "Because appending rows is always slower than overwriting a file",
+        "Because running it twice (e.g. after an accidental re-run) produces a duplicate row, meaning the end state depends on how many times it happened to run rather than converging to one correct state",
+        "Because tables cannot have more than one row with the same values",
+        "Because APScheduler blocks jobs that write to tables"
+      ],
+      "answer": 1,
+      "explain": "An append-only job without deduplication accumulates a duplicate every time it's accidentally re-run, so the end state is not stable under re-runs -- the defining failure of non-idempotent design."
+    },
+    {
+      "q": "In the APScheduler example, what does `max_instances=1` prevent?",
+      "options": [
+        "The scheduler from ever stopping once started",
+        "The job from running more than once total",
+        "A slow-running execution of the job from overlapping with the next scheduled trigger, which could let two concurrent runs corrupt the same output",
+        "The log messages from including a timestamp"
+      ],
+      "answer": 2,
+      "explain": "max_instances=1 ensures that if a run takes longer than the scheduled interval, the next trigger won't start a second overlapping execution -- important because concurrent overlapping runs against the same output can break idempotency."
+    },
+    {
+      "q": "Why does the lesson emphasize logging and alerting for unattended scheduled jobs specifically?",
+      "options": [
+        "Because logging is required by APScheduler's API to function at all",
+        "Because no one is watching an unattended job fail in real time, so the job itself must make failures visible with enough context to diagnose, and alert somewhere a human will actually notice",
+        "Because scheduled jobs cannot raise exceptions",
+        "Because cron automatically emails a log file after every run"
+      ],
+      "answer": 1,
+      "explain": "An unattended job's only way of surfacing a problem is through logs and alerts, since there's no person watching it execute -- clear, context-rich logging (tying back to Chapter 4's logging practices) and real alerting are what make a failure diagnosable rather than silently missed."
+    }
+  ]
+}

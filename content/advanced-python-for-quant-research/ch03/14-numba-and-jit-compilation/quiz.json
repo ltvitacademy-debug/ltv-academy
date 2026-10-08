@@ -1,0 +1,60 @@
+{
+  "lesson": "numba-and-jit-compilation",
+  "questions": [
+    {
+      "q": "What does `@njit` (as opposed to plain `@jit`) guarantee about how a function is compiled?",
+      "options": [
+        "It guarantees the function will run on a GPU",
+        "It compiles in nopython mode, with no silent fallback to slow Python object representation",
+        "It guarantees the function will be parallelized automatically",
+        "It converts the function into a pandas UDF"
+      ],
+      "answer": 1,
+      "explain": "`@njit` is shorthand for `jit(nopython=True)`, forcing full compilation with no object-mode fallback -- the mode needed to actually get Numba's speed benefit."
+    },
+    {
+      "q": "In the measured example, the first call to a `@njit` function took 332.19 ms while the second call took 0.0136 ms. Why?",
+      "options": [
+        "The second call used a smaller input",
+        "The first call paid the one-time cost of compiling the function for that argument type; subsequent calls reuse the cached compiled version",
+        "Numba caches results, not compiled code, so the second call just looked up a stored answer",
+        "The machine was under less load during the second call"
+      ],
+      "answer": 1,
+      "explain": "Numba compiles lazily on first call with a given set of argument types and caches the compiled machine code; later calls with the same argument types skip compilation entirely."
+    },
+    {
+      "q": "Which of the following is true about what Numba's nopython mode can compile?",
+      "options": [
+        "It can compile arbitrary Python objects and any third-party library call",
+        "It only understands a limited subset: NumPy arrays, numeric scalars, basic control flow, and an allow-listed set of NumPy functions -- not arbitrary objects or most of the standard library",
+        "It can compile pandas DataFrame methods natively but not NumPy arrays",
+        "It requires all code to be rewritten in Cython syntax first"
+      ],
+      "answer": 1,
+      "explain": "Nopython mode is restricted to a numeric subset of Python -- arrays, scalars, basic control flow, and specific supported functions -- which is why the numeric core of a computation is typically pulled into a small @njit function."
+    },
+    {
+      "q": "In the real benchmark, what happened when `parallel=True` and `prange` were added to the n=2000 pairwise example?",
+      "options": [
+        "It was dramatically faster than the single-threaded `@njit` version",
+        "It was roughly the same speed as, or slightly slower than, the single-threaded `@njit` version, because thread overhead offset the gain at that workload size",
+        "It failed to compile",
+        "It produced a different, incorrect result"
+      ],
+      "answer": 1,
+      "explain": "The measured numbers showed the parallel version (25.0 ms) was not faster than the plain @njit version (23.2 ms) on this 4-core machine at this workload size -- parallel=True adds overhead that only pays off with a large enough per-core workload."
+    },
+    {
+      "q": "What does `fastmath=True` trade away in exchange for potential speed?",
+      "options": [
+        "Memory safety",
+        "Strict IEEE-754 floating-point rules, allowing reordering that may not be bit-for-bit identical to the unrelaxed result",
+        "The ability to use NumPy arrays",
+        "Thread safety"
+      ],
+      "answer": 1,
+      "explain": "fastmath relaxes strict IEEE-754 floating-point semantics to allow faster operation reordering, at the cost of exact bit-for-bit reproducibility -- usually acceptable for aggregate numerical work but worth knowing about."
+    }
+  ]
+}
