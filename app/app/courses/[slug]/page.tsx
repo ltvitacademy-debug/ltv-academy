@@ -65,7 +65,7 @@ export default async function CoursePage({
   return (
     <main className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
       <Suspense fallback={<div className="mb-6 h-5" />}>
-        <CoursePathBreadcrumb />
+        <CoursePathBreadcrumb courseSlug={course.slug} />
       </Suspense>
 
       {heroImageSlug ? (

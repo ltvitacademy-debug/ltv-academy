@@ -2,33 +2,26 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { getCareerPath } from "@/lib/career-paths";
+import { getCareerPath, getPrimaryCareerPathForCourse } from "@/lib/career-paths";
 
-// The persistent Student Learning Center bar already links back to
-// /careers generally. This is the more specific link: when a course was
-// reached by clicking through from one particular career path's page
-// (the ?path=<slug> the career path page appends to its course links),
-// show a second link back to that exact path — since the same course
-// (T-SQL Development, say) sits inside almost every path, this can't be
-// a fixed property of the course itself.
-export default function CoursePathBreadcrumb() {
+// One smart "back" link: prefer the specific path the student actually
+// came from (the ?path=<slug> a career-path page appends to its course
+// links) over this course's own default path, since the same course sits
+// inside several paths — but always land somewhere specific rather than
+// the generic /careers index when we can tell which path makes sense.
+export default function CoursePathBreadcrumb({ courseSlug }: { courseSlug: string }) {
   const searchParams = useSearchParams();
   const pathSlug = searchParams.get("path");
-  const path = pathSlug ? getCareerPath(pathSlug) : undefined;
+  const path = (pathSlug ? getCareerPath(pathSlug) : undefined) ?? getPrimaryCareerPathForCourse(courseSlug);
 
   return (
     <nav className="mb-6 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-      <Link href="/careers" className="text-stone underline underline-offset-4 hover:text-crimson">
-        ← All career paths
+      <Link
+        href={path ? `/careers/${path.slug}` : "/careers"}
+        className="text-stone underline underline-offset-4 hover:text-crimson"
+      >
+        ← {path ? path.title : "All career paths"}
       </Link>
-      {path && (
-        <Link
-          href={`/careers/${path.slug}`}
-          className="text-stone underline underline-offset-4 hover:text-crimson"
-        >
-          ← {path.title}
-        </Link>
-      )}
     </nav>
   );
 }

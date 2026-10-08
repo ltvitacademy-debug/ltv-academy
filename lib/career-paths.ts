@@ -1585,3 +1585,22 @@ export const CAREER_PATHS: CareerPath[] = [
 ];
 
 export const getCareerPath = (slug: string) => CAREER_PATHS.find((p) => p.slug === slug);
+
+// Pure, client-safe (no fs): the first career path — by CAREER_PATHS' own
+// order, preferring a non-destination ("first choice") path over an
+// advanced destination — whose stages include this course. Used to send a
+// student "back" to the one career path a course most naturally belongs
+// to when they didn't arrive from a specific path's own page (no ?path=
+// query param to go on). Same selection rule as lib/courseHeroImage.ts's
+// image lookup, just without that function's additional photo-availability
+// filter, so this always resolves when the course is referenced anywhere
+// in CAREER_PATHS, regardless of /public/careers/ contents.
+export function getPrimaryCareerPathForCourse(courseSlug: string): CareerPath | undefined {
+  for (const preferNonDestination of [true, false]) {
+    for (const p of CAREER_PATHS) {
+      if (preferNonDestination ? p.isDestination : !p.isDestination) continue;
+      if (p.stages.some((st) => st.courseSlugs?.includes(courseSlug))) return p;
+    }
+  }
+  return undefined;
+}
