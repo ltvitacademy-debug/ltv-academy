@@ -1,0 +1,323 @@
+{
+  "questions": [
+    {
+      "id": "awscap-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Northfield's raw zone stores files under `s3://northfield-raw-zone/orders/dt=2026-09-19/...` instead of dropping every day's file into one flat folder. Why does the pipeline use this `dt=` layout specifically?",
+      "options": [
+        "It's a Hive-style partition key that Glue and Athena parse automatically, letting them skip whole days of data instead of scanning every file",
+        "S3 requires every object key to include a date segment",
+        "It keeps the bucket's total object count under a hard S3 limit",
+        "It's required so the Glue crawler can run on a fixed schedule instead of being triggered on demand"
+      ],
+      "correctIndex": 0,
+      "explain": "Hive-style `key=value` partitioning (`dt=2026-09-19`) is a naming convention that Glue and Athena both recognize without extra configuration, so a query for one day's orders can skip every other day's partition entirely instead of scanning the whole prefix."
+    },
+    {
+      "id": "awscap-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: every resource this capstone creates — buckets, the Glue database, the Step Functions state machine — is prefixed `________-`, so a teammate or interviewer can tell at a glance which resources belong to this project.",
+      "acceptedAnswers": ["northfield", "northfield-"],
+      "explain": "The naming convention table in Lesson 2 prefixes every resource `northfield-` (or `northfield_` for underscore-only namespaces like the Glue database), and that pattern is reused for every resource introduced in later lessons."
+    },
+    {
+      "id": "awscap-03",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each named resource to the layer of the architecture it belongs to.",
+      "left": [
+        "northfield-curated-zone",
+        "northfield_catalog",
+        "northfield-analytics",
+        "northfield-pipeline-orchestrator"
+      ],
+      "right": [
+        "Orchestration — the Step Functions state machine",
+        "Storage — the Glue ETL job's cleaned Parquet output bucket",
+        "Warehouse — the Redshift Serverless workgroup",
+        "Catalog — the Glue database holding table definitions"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "northfield-curated-zone is the S3 storage layer holding cleaned Parquet; northfield_catalog is the Glue Data Catalog database; northfield-analytics is the Redshift Serverless workgroup; northfield-pipeline-orchestrator is the Step Functions state machine tying everything together."
+    },
+    {
+      "id": "awscap-04",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "In an AWS data pipeline, what is the primary function of an AWS Glue crawler?",
+      "options": [
+        "It scans a data source, infers schema, and registers or updates tables in the Glue Data Catalog",
+        "It transforms raw data into a cleaned, typed output using a PySpark script",
+        "It runs ad hoc SQL directly against files in S3 without needing a catalog",
+        "It bulk-loads S3 data into a data warehouse table using a COPY-style command",
+        "It orchestrates multiple AWS services into one scheduled, repeatable workflow",
+        "It enforces least-privilege permissions for services that access S3"
+      ],
+      "correctIndex": 0,
+      "explain": "A Glue crawler's whole job is to scan a data source, infer its schema and partitions, and register or refresh that metadata in the Glue Data Catalog so other services can query it.",
+      "distractorExplain": "Option B describes the Glue ETL job, not the crawler. The crawler deliberately leaves data uncleaned and untyped beyond its best-guess inference — actually correcting types and values is a separate transformation step the crawler is not responsible for."
+    },
+    {
+      "id": "awscap-05",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about why `northfield-raw-crawler` leaves columns like `order_date` as an inferred string instead of a real date.",
+      "options": [
+        "The crawler's job is to make raw data catalogable, not to correct it",
+        "Fixing column types and inconsistent values happens in the Glue ETL job, in a later lesson",
+        "northfield-raw-crawler is invoked as a state inside the Step Functions orchestrator rather than running on its own schedule",
+        "The crawler automatically deduplicates and validates rows before registering the table",
+        "Every column the crawler infers is validated against Northfield's business rules first"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "The crawler scans and catalogs — schema inference, not data cleaning. Type correction and value fixes happen in the Glue ETL job. And because the orchestrator (not a cron schedule) decides when fresh data has landed, the crawler runs as one state inside that state machine rather than on its own timer."
+    },
+    {
+      "id": "awscap-06",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: `analytics.fact_orders` is defined with ________ (customer_id), the column that controls which compute node each customer's rows are colocated on for fast joins against dim_customer.",
+      "acceptedAnswers": ["DISTKEY", "DIST KEY", "DISTKEY(customer_id)"],
+      "explain": "DISTKEY (customer_id) colocates each customer's order rows on the same Redshift compute node, which is exactly what makes joins against dim_customer fast instead of requiring data to be shuffled across nodes at query time."
+    },
+    {
+      "id": "awscap-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "`analytics.fact_orders` uses `SORTKEY (dt)` rather than sorting by `order_id` or `product_sku`. Why `dt` specifically?",
+      "options": [
+        "It matches the query pattern analysts actually run — \"show me last month\" — so Redshift can skip whole blocks of unrelated dates",
+        "order_id and product_sku can't be used as sort keys because they're already used elsewhere in the schema",
+        "SORTKEY only accepts DATE-typed columns",
+        "Sorting by dt makes the COPY command run faster, independent of any later query pattern"
+      ],
+      "correctIndex": 0,
+      "explain": "SORTKEY determines on-disk row order, enabling block-level pruning. Since analysts' real queries filter by date range (\"last month's sales\"), sorting by dt lets Redshift skip scanning blocks outside that range — a column the query pattern doesn't actually filter on wouldn't give that benefit."
+    },
+    {
+      "id": "awscap-08",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "What does Amazon Redshift Serverless bill for, compared to a traditional provisioned Redshift cluster?",
+      "options": [
+        "RPU-seconds of compute actually consumed, auto-pausing between queries",
+        "A flat hourly rate that applies whether or not any query runs",
+        "Bytes scanned per query, with zero charge while idle",
+        "A fixed monthly subscription fee based on cluster size",
+        "A per-row charge for every record loaded via COPY",
+        "Data transferred out of the AWS region only"
+      ],
+      "correctIndex": 0,
+      "explain": "Redshift Serverless bills by RPU-second — the actual compute capacity consumed while a query runs — and auto-pauses the workgroup between queries, which fits a bursty workload far better than a provisioned cluster that bills by the hour regardless of usage.",
+      "distractorExplain": "Option C describes Amazon Athena's per-byte-scanned billing model, not Redshift Serverless. Redshift Serverless is billed on compute-seconds consumed (RPU-seconds), not purely on the volume of data a query touches."
+    },
+    {
+      "id": "awscap-09",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put these states of the `northfield-pipeline-orchestrator` state machine in the order a successful nightly run executes them.",
+      "items": [
+        "CrawlRawZone starts the Glue crawler against the raw zone",
+        "WaitForCrawler pauses briefly before assuming fresh partitions exist",
+        "RunETLJob runs the Glue ETL job and waits for it to finish",
+        "LoadRedshift runs the COPY statement into analytics.fact_orders",
+        "NotifySuccess publishes a success message to SNS"
+      ],
+      "explain": "The state machine starts the crawler, waits for it, then runs the ETL job synchronously, loads the curated output into Redshift, and finally notifies success — with a Catch on every task state routing any failure straight to NotifyFailure instead."
+    },
+    {
+      "id": "awscap-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "The `RunETLJob` state calls `glue:startJobRun.sync` instead of the plain `glue:startJobRun` action. What does the `.sync` suffix change?",
+      "options": [
+        "Step Functions waits for the Glue job to actually finish before moving to the next state",
+        "It runs the Glue job twice to confirm the result is consistent",
+        "It forces the Glue job to run synchronously inside the Lambda runtime instead of on Glue's own workers",
+        "It's purely cosmetic — functionally identical to the plain action"
+      ],
+      "correctIndex": 0,
+      "explain": "The `.sync` service integration makes Step Functions block on that task until the underlying Glue job actually completes, rather than firing the job and immediately moving on — which matters here because LoadRedshift must not run against data the ETL job hasn't finished producing yet."
+    },
+    {
+      "id": "awscap-11",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Match each pipeline stage to the AWS service that performs it.",
+      "left": [
+        "Cataloging raw files' schema",
+        "Transforming raw data into curated Parquet",
+        "Loading curated data into the warehouse",
+        "Running ad hoc SQL directly against S3"
+      ],
+      "right": [
+        "Amazon Athena",
+        "AWS Glue crawler",
+        "Amazon Redshift (COPY)",
+        "AWS Glue ETL job (PySpark)"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "The Glue crawler catalogs raw schema, the Glue ETL job (PySpark) transforms raw into curated Parquet, Redshift's COPY command loads curated Parquet into the warehouse, and Athena runs ad hoc SQL directly against S3 via the catalog."
+    },
+    {
+      "id": "awscap-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "The pipeline already has an SNS `NotifyFailure` state built into the Step Functions state machine. Why does Lesson 9 add two separate CloudWatch alarms on top of that?",
+      "options": [
+        "Because each alarm watches a different failure surface directly, so a failure is still caught even if the pipeline's own internal notify logic never runs",
+        "CloudWatch alarms are required by AWS for every Step Functions state machine",
+        "SNS notifications from Step Functions are deprecated and alarms are the replacement",
+        "The alarms replace the need for a Catch state in the ASL definition"
+      ],
+      "correctIndex": 0,
+      "explain": "A Glue job can fail without Step Functions reaching a Catch state yet, and the state machine itself can fail for reasons unrelated to Glue. Two alarms reading metrics independently mean a failure anywhere in the chain is caught by at least one of them, even if the pipeline's internal SNS logic never fires."
+    },
+    {
+      "id": "awscap-13",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about how IAM least privilege is applied in this pipeline.",
+      "options": [
+        "northfield-redshift-copy-role grants only read access to the curated zone bucket, nothing else",
+        "Every policy in this pipeline names specific resource ARNs instead of using \"Resource\": \"*\"",
+        "northfield-glue-role is granted s3:* across the whole account so future buckets are automatically accessible",
+        "northfield-stepfunctions-role can start any Glue job in the account, not just northfield-orders-etl",
+        "Resource-level scoping means a new, unrelated bucket added later doesn't automatically become accessible to these roles"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "Every role in this pipeline is scoped to exact resource ARNs — northfield-redshift-copy-role only reads the curated zone, and northfield-stepfunctions-role can only start the one named Glue job. That resource-level scoping is exactly what keeps a future unrelated bucket or job from becoming accessible by accident."
+    },
+    {
+      "id": "awscap-14",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: the raw zone's lifecycle policy moves objects older than 90 days into the ________ storage class — still instantly readable, at a fraction of Standard's storage cost.",
+      "acceptedAnswers": ["Glacier Instant Retrieval", "GLACIER_IR", "Glacier IR"],
+      "explain": "After 30 days objects move to Standard-IA, and after 90 days to Glacier Instant Retrieval — an archive-tier class that stays millisecond-readable while costing a fraction of S3 Standard, which matters once the raw zone holds a year or more of history nobody queries directly."
+    },
+    {
+      "id": "awscap-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Lesson 12 calls Redshift Serverless \"already the biggest cost lever\" for this pipeline, even though that choice was made back in Lesson 6. Why?",
+      "options": [
+        "Because Northfield's bursty, month-end-heavy query pattern means auto-pause avoids paying for idle compute the way a 24/7 provisioned cluster would — a bigger saving than any tuning pass could add later",
+        "Because Redshift Serverless was free during a limited promotional period",
+        "Because every other cost lever in the lesson turned out not to save any money",
+        "Because Lesson 6's choice can be changed at any time with no cost impact"
+      ],
+      "correctIndex": 0,
+      "explain": "A provisioned cluster bills for every idle hour; Serverless auto-pauses and only bills RPU-seconds actually consumed. For a workload that's heavy at month-end and quiet otherwise, that single architectural decision saves more than any later DPU-sizing or storage-tiering adjustment could add on top of a cluster."
+    },
+    {
+      "id": "awscap-16",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each disaster-recovery mechanism to the failure it protects against.",
+      "left": [
+        "S3 versioning on the raw zone",
+        "Cross-region replication to us-west-2",
+        "Redshift automated daily snapshot",
+        "Manual snapshot before a schema-touching deploy"
+      ],
+      "right": [
+        "A bad migration that needs a known-good restore point",
+        "An accidental object overwrite or delete",
+        "A bad load that needs recovery from a recent backup",
+        "A regional outage in us-east-1"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "Versioning recovers from accidental overwrites/deletes; cross-region replication covers a regional outage by already having a copy in us-west-2; the daily automated snapshot recovers from a bad load; and a manual pre-deploy snapshot gives a known-good restore point if a schema migration goes wrong."
+    },
+    {
+      "id": "awscap-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Why is `northfield-curated-zone` NOT set up with cross-region replication, while `northfield-raw-zone` is?",
+      "options": [
+        "The curated zone is fully reproducible by re-running the ETL job against the raw zone, so replicating it would just duplicate storage cost for data that isn't the actual source of truth",
+        "Cross-region replication only works on CSV files, and the curated zone stores Parquet",
+        "The curated zone changes too frequently for replication to keep up",
+        "Redshift already replicates the curated zone automatically as part of its COPY process"
+      ],
+      "correctIndex": 0,
+      "explain": "The raw zone is the real source of truth, so it needs replication to survive a regional outage. The curated zone is just the ETL job's output — it can always be rebuilt from the raw zone — so paying to replicate it cross-region would duplicate cost for data that isn't irreplaceable."
+    },
+    {
+      "id": "awscap-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "This capstone states its RPO for a regional S3 outage as roughly 24 hours, not minutes. Why is that the honest number rather than a more impressive-sounding one?",
+      "options": [
+        "Because the pipeline is a nightly batch system — RPO can't be better than \"since the last successful run\" without adding real-time replication the project doesn't actually need",
+        "Because AWS caps cross-region replication speed at once per day",
+        "Because a smaller RPO would require Redshift Serverless instead of a provisioned cluster",
+        "Because 24 hours is simply AWS's default RPO for every S3 bucket"
+      ],
+      "correctIndex": 0,
+      "explain": "Data only lands once a night, so the most recent replicated copy is always, at best, from last night's run. Claiming a sub-hour RPO for a system that ingests once daily would be a made-up number that falls apart under one follow-up question — stating the real batch cadence is what makes the number defensible."
+    },
+    {
+      "id": "awscap-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Why is the Lesson 9 CloudWatch dashboard specifically worth having open during the interview demo in Lesson 14?",
+      "options": [
+        "It makes the whole pipeline's health legible on one screen, instead of clicking through six separate service consoles",
+        "It's the only way to actually trigger the pipeline manually",
+        "It replaces the need to explain the architecture at all",
+        "It shows the exact dollar cost of the last run in real time"
+      ],
+      "correctIndex": 0,
+      "explain": "The dashboard pulls Glue duration/DPU-hours, Step Functions execution status, Redshift RPU-seconds, and Athena bytes scanned into one view — exactly the kind of single-screen legibility that makes a live interview demo land instead of requiring a tour through six consoles."
+    },
+    {
+      "id": "awscap-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "When presenting this capstone in an interview, why does the consistent `northfield-` naming convention across every resource actually matter?",
+      "options": [
+        "It lets a teammate — or an interviewer looking at the portfolio — tell at a glance exactly which resources belong to this project",
+        "AWS requires a consistent prefix for resources to appear in the same region",
+        "It reduces the AWS bill compared to resources with mixed naming",
+        "It's only a cosmetic preference with no practical benefit"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 2 introduces the `northfield-` prefix specifically so a teammate or an interviewer reviewing the portfolio can identify at a glance which of dozens of AWS resources belong to this one project — a small discipline that reads as real production judgment, not just a style choice."
+    }
+  ]
+}
