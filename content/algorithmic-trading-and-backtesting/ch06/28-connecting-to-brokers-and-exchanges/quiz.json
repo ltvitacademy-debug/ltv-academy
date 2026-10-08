@@ -1,0 +1,60 @@
+{
+  "lesson": "connecting-to-brokers-and-exchanges",
+  "questions": [
+    {
+      "q": "What is the main tradeoff of the FIX protocol compared to a REST API for broker connectivity?",
+      "options": [
+        "FIX is simpler to implement but has much higher latency",
+        "FIX is the institutional low-latency standard but is materially more complex to implement correctly, with session management and message recovery",
+        "FIX cannot be used for institutional trading at all",
+        "REST APIs are always faster than FIX in every case"
+      ],
+      "answer": 1,
+      "explain": "FIX is a persistent, stateful protocol that's the institutional standard for low latency, but it requires correctly handling session management, sequence numbers, and recovery after disconnects — meaningfully more complex than a simple REST request/response."
+    },
+    {
+      "q": "Why is checking only \"is the order filled, yes or no\" an inadequate way to track order state?",
+      "options": [
+        "Because orders are always either fully filled or fully rejected, with no other possibilities",
+        "Because it silently mishandles partial fills and rejections, both of which happen constantly in real trading and require their own handling",
+        "Because order status never changes once submitted",
+        "Because brokers never report partial fills"
+      ],
+      "answer": 1,
+      "explain": "The order lifecycle includes NEW, WORKING/acknowledged, PARTIALLY_FILLED (zero or more times), FILLED, REJECTED, and CANCELLED. A binary filled-or-not check misses partial fills and rejections entirely, both of which are common in live trading."
+    },
+    {
+      "q": "What problem does a client order ID, used idempotently, solve?",
+      "options": [
+        "It speeds up order execution by skipping the broker's risk checks",
+        "It prevents a retried submission — for example after a dropped network response where you don't know if the original request landed — from creating a duplicate order at the broker",
+        "It allows orders to be submitted without specifying a quantity",
+        "It automatically converts limit orders into market orders"
+      ],
+      "answer": 1,
+      "explain": "A client order ID is a unique identifier the broker uses as a de-duplication key. Resubmitting with the same ID after a network issue returns the existing order instead of creating a duplicate — preventing an accidental doubled position."
+    },
+    {
+      "q": "In the lesson's worked example, an order for 1,000 shares filled in three pieces at 50.10, 50.15, and 50.20. What is the correct reference price to compare against the arrival price for implementation shortfall?",
+      "options": [
+        "The first fill price, 50.10, since that's when the order started executing",
+        "The last fill price, 50.20, since that's when the order finished",
+        "The quantity-weighted average fill price across all three pieces (50.1425)",
+        "The simple average of 50.10, 50.15, and 50.20 regardless of size at each price"
+      ],
+      "answer": 2,
+      "explain": "Since the three fills were different sizes (400, 350, 250 shares) at different prices, the correct average is the quantity-weighted average (total notional / total filled quantity) = 50.1425, not a simple average of the three prices or any single fill."
+    },
+    {
+      "q": "What does the lesson say about hitting a broker's API rate limits in production?",
+      "options": [
+        "It is unavoidable bad luck that has nothing to do with system design",
+        "It is a design failure in your own system — the correct response is queuing and backing off, not retrying in a tight loop",
+        "Rate limits only apply to sandbox/paper environments, never production",
+        "Rate limits can always be bypassed by using FIX instead of REST"
+      ],
+      "answer": 1,
+      "explain": "The lesson frames hitting rate limits as a design failure in your own request pattern, to be addressed with proper queuing and backoff logic — not something to brute-force past with rapid retries, which would make the problem worse."
+    }
+  ]
+}
