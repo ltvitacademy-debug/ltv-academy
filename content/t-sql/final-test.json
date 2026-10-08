@@ -1,0 +1,1259 @@
+{
+  "questions": [
+    {
+      "id": "tsql-01",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of running your first query in SSMS, per Lesson 1, in the correct order.",
+      "items": [
+        "Connect to the SQL Server instance in Object Explorer",
+        "Confirm the database dropdown shows AdventureWorks2012, then click New Query",
+        "Type SELECT * FROM Person.Person; in the Query Editor",
+        "Press F5 (or click Execute) to run the statement",
+        "Read the returned rows in the Results grid and the row count in the Messages tab"
+      ],
+      "explain": "SSMS's workflow always runs in this order: connect first, open a New Query tab pointed at the right database, type the statement, execute it, then read the outcome in the Results grid and Messages tab. Skipping the database-dropdown check is a classic beginner mistake — a query can run successfully against the wrong database."
+    },
+    {
+      "id": "tsql-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "SELECT FirstName + ' ' + MiddleName + ' ' + LastName AS FullName\nFROM Person.Person;",
+      "prompt": "For a row where MiddleName is NULL, what does FullName actually contain, and why?",
+      "options": [
+        "FullName is NULL for that entire row, because any NULL piece poisons a + concatenation",
+        "FullName shows FirstName and LastName with a double space where MiddleName would go",
+        "FullName shows just FirstName and LastName with a single space, since NULL is treated like an empty string by +",
+        "The query raises an error, because MiddleName can't be NULL inside a concatenation"
+      ],
+      "correctIndex": 0,
+      "explain": "The + operator propagates NULL: if any single piece being concatenated is NULL, the entire result becomes NULL, even though FirstName and LastName both had real values. CONCAT() is the fix, since it treats NULL as an empty string instead."
+    },
+    {
+      "id": "tsql-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: FirstName + ' ' + MiddleName + ' ' + LastName returns NULL whenever MiddleName is NULL. Rewriting it as ________(FirstName, ' ', MiddleName, ' ', LastName) fixes this, because that function treats NULL as an empty string instead of propagating it.",
+      "acceptedAnswers": [
+        "CONCAT",
+        "CONCAT()"
+      ],
+      "explain": "CONCAT() joins its arguments together just like +, but treats a NULL argument as an empty string rather than letting it poison the entire result — exactly the fix for the NULL trap that + has."
+    },
+    {
+      "id": "tsql-04",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the simple CASE expression, per Chapter 1.",
+      "options": [
+        "CASE produces a value, so it can be used anywhere an expression is allowed, not just directly after SELECT",
+        "If no WHEN matches and there's no ELSE, the result is NULL for that row",
+        "CASE is a control-flow statement like IF/ELSE — it runs a separate block of code for whichever WHEN matches",
+        "If a value matches more than one WHEN, SQL Server evaluates every matching WHEN and combines their THEN values",
+        "A CASE expression needs an alias, the same as any other calculated column, or its output header is unreadable"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        4
+      ],
+      "explain": "CASE is an expression, not a statement — it evaluates to a single value per row and can be used wherever a value is allowed, which is also exactly why it needs an alias like any other calculated column. If nothing matches and ELSE is omitted, the result is NULL. SQL Server checks WHEN values in order and stops at the first match — it never evaluates multiple matching WHENs or combines their results."
+    },
+    {
+      "id": "tsql-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "code": "SELECT DISTINCT ProductID, Color\nFROM Production.Product;",
+      "prompt": "A developer runs the query above expecting to see each distinct Color exactly once. What does it actually return, and why?",
+      "options": [
+        "Every row in the table, because ProductID is unique per row, so no two rows are ever fully identical and DISTINCT has nothing to remove",
+        "Each distinct Color exactly once, because DISTINCT drops ProductID automatically once it detects a duplicate color",
+        "Each distinct Color exactly once, but with ProductID blanked out to NULL",
+        "An error, because DISTINCT can't be combined with a primary-key column"
+      ],
+      "correctIndex": 0,
+      "explain": "DISTINCT compares the entire combination of selected columns, not each column independently. Adding a column that varies row-to-row, like a primary key, defeats DISTINCT entirely, because now every row is unique again — the query returns the full table, not one row per color."
+    },
+    {
+      "id": "tsql-06",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each SSMS/T-SQL term to what it actually is.",
+      "left": [
+        "Object Explorer",
+        "Query Editor",
+        "Results grid",
+        "Schema"
+      ],
+      "right": [
+        "The tabbed window where you type and run T-SQL",
+        "A named container that groups related tables, like Person or Sales",
+        "A tree view of every server, database, table, and stored procedure you can access",
+        "Where returned rows are displayed, alongside a Messages tab for errors and row counts"
+      ],
+      "correctMap": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "explain": "Object Explorer is the tree view of servers, databases, and their objects. The Query Editor is the tabbed window you type and run T-SQL in. The Results grid is where returned rows land, with Messages alongside it. A schema is a named container grouping related tables, like Person or Sales in AdventureWorks2012."
+    },
+    {
+      "id": "tsql-07",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A query needs every product priced from $50 up to $100, including products priced at exactly $50 or exactly $100. Which WHERE clause correctly implements that?",
+      "options": [
+        "WHERE ListPrice BETWEEN 50 AND 100",
+        "WHERE ListPrice > 50 AND ListPrice < 100",
+        "WHERE ListPrice BETWEEN 100 AND 50",
+        "WHERE ListPrice IN (50, 100)",
+        "WHERE ListPrice >= 50 AND ListPrice < 100",
+        "WHERE ListPrice > 50 AND ListPrice <= 100"
+      ],
+      "correctIndex": 0,
+      "explain": "BETWEEN low AND high is shorthand for column >= low AND column <= high — both boundary values are included by definition. WHERE ListPrice BETWEEN 50 AND 100 is exactly the inclusive range the request asks for.",
+      "distractorExplain": "Option B looks like the same range check but uses strict > and <, which silently excludes rows priced at exactly $50 or exactly $100 — the opposite of what BETWEEN's inclusive boundaries guarantee. For a request that explicitly includes both endpoints, that one-character difference changes the result."
+    },
+    {
+      "id": "tsql-08",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A query needs every order placed at any point during 2013, inclusive of January 1 and December 31. Select every WHERE clause below that correctly achieves this against Sales.SalesOrderHeader.",
+      "options": [
+        "WHERE OrderDate BETWEEN '2013-01-01' AND '2013-12-31'",
+        "WHERE OrderDate >= '2013-01-01' AND OrderDate <= '2013-12-31'",
+        "WHERE OrderDate > '2013-01-01' AND OrderDate < '2013-12-31'",
+        "WHERE OrderDate NOT BETWEEN '2012-12-31' AND '2014-01-01'",
+        "WHERE OrderDate IN ('2013-01-01', '2013-12-31')"
+      ],
+      "correctIndices": [
+        0,
+        1
+      ],
+      "explain": "BETWEEN '2013-01-01' AND '2013-12-31' is shorthand for >= '2013-01-01' AND <= '2013-12-31' — the two options are functionally identical and both correct. Option C's strict < and > excludes orders placed on January 1 or December 31 themselves. Option D inverts the logic: NOT BETWEEN a wider one-day-padded range excludes nearly every 2013 order instead of selecting them. Option E only matches two specific calendar dates, not the days between them."
+    },
+    {
+      "id": "tsql-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "SELECT ListPrice * 0.9 AS DiscountedPrice\nFROM Production.Product\nWHERE DiscountedPrice < 50;",
+      "prompt": "This query fails to run. Why?",
+      "options": [
+        "WHERE is evaluated before SELECT in the logical processing order, so the alias DiscountedPrice doesn't exist yet when WHERE runs",
+        "ListPrice * 0.9 is not allowed inside a SELECT list at all",
+        "DiscountedPrice needs to be wrapped in an aggregate function before it can be filtered",
+        "WHERE can only filter on columns that exist in the table, never on calculated numbers"
+      ],
+      "correctIndex": 0,
+      "explain": "SQL Server processes clauses in a specific logical order, and WHERE is evaluated before SELECT — so a SELECT-list alias simply doesn't exist yet at that point. The fix is to repeat the expression itself in WHERE: WHERE ListPrice * 0.9 < 50."
+    },
+    {
+      "id": "tsql-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "SELECT Name, Color, ListPrice\nFROM Production.Product\nWHERE Color = 'Red' OR Color = 'Blue' AND ListPrice > 500;",
+      "prompt": "A developer wrote this query intending to return only red or blue products priced over $500. What does it actually return, and why?",
+      "options": [
+        "Every red product regardless of price, plus blue products priced over $500 — because AND evaluates before OR, so the price filter only attaches to the Blue condition",
+        "Only red or blue products priced over $500, exactly as intended, because SQL Server reads conditions left to right",
+        "Only products that are both red and blue and priced over $500",
+        "An error, because AND and OR can't be mixed in the same WHERE clause without parentheses"
+      ],
+      "correctIndex": 0,
+      "explain": "AND binds tighter than OR. Without parentheses, this means Color = 'Red' OR (Color = 'Blue' AND ListPrice > 500) — every red product is included regardless of price, and only the blue ones are actually filtered by price. Parentheses around (Color = 'Red' OR Color = 'Blue') AND ListPrice > 500 fix it."
+    },
+    {
+      "id": "tsql-11",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in a LIKE pattern, the ________ wildcard matches exactly one character, while % matches zero or more characters of any kind.",
+      "acceptedAnswers": [
+        "_",
+        "underscore",
+        "the underscore"
+      ],
+      "explain": "The underscore (_) stands for exactly one character, no more and no fewer — 'BK-____' matches a BK- prefix followed by exactly four more characters. % is unbounded; _ is exactly one."
+    },
+    {
+      "id": "tsql-12",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each TOP-related term to what it actually controls, per Chapter 2.",
+      "left": [
+        "TOP n with no ORDER BY",
+        "TOP n PERCENT",
+        "TOP n WITH TIES",
+        "Plain TOP n (with ORDER BY)"
+      ],
+      "right": [
+        "Returns n rows in an undefined order — which specific rows come back isn't guaranteed",
+        "Returns a percentage of the total row count, rounded up",
+        "Returns the top n rows plus any additional rows tied with the value at the cutoff — requires ORDER BY",
+        "Cuts off at exactly n rows after sorting, even if that splits a group of tied values arbitrarily"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "Without ORDER BY, TOP n grabs some n rows in whatever order the engine happens to produce — meaningless as 'the first n'. TOP n PERCENT returns a percentage of total rows, rounded up. TOP n WITH TIES requires ORDER BY and includes every row tied with the cutoff value. Plain TOP n with ORDER BY cuts off at exactly n rows, potentially splitting a tie arbitrarily."
+    },
+    {
+      "id": "tsql-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "code": "SELECT p.Name, p.ListPrice, sod.OrderQty\nFROM Production.Product AS p\nINNER JOIN Sales.SalesOrderDetail AS sod\n    ON p.ProductID = sod.ProductID;",
+      "prompt": "A product in Production.Product has never appeared in any Sales.SalesOrderDetail row. What happens to it in this query's result, and why?",
+      "options": [
+        "It doesn't appear at all — INNER JOIN only keeps rows where the ON condition matches on both sides",
+        "It appears once, with OrderQty shown as NULL",
+        "It appears once, with OrderQty shown as 0",
+        "It appears once for every row in Sales.SalesOrderDetail"
+      ],
+      "correctIndex": 0,
+      "explain": "INNER JOIN returns only rows where the ON condition is true on both sides. A product with zero sales orders has no SalesOrderDetail row to pair with, so it never appears in the result at all — it isn't NULL-filled or defaulted, it's simply absent."
+    },
+    {
+      "id": "tsql-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "SELECT p.Name\nFROM Production.Product AS p\nLEFT JOIN Sales.SalesOrderDetail AS sod\n    ON p.ProductID = sod.ProductID\nWHERE sod.ProductID IS NOT NULL;",
+      "prompt": "A developer intended this query to list every product that has never been sold, but it's wrong. What does it actually return?",
+      "options": [
+        "Every product that HAS sold at least once — the opposite of what was intended, since IS NOT NULL keeps only the rows where the join actually matched",
+        "Every product that has never sold, exactly as intended",
+        "Every product in the table, matched or not",
+        "An error, because LEFT JOIN can't be combined with IS NOT NULL"
+      ],
+      "correctIndex": 0,
+      "explain": "Finding unmatched rows with LEFT JOIN requires filtering for WHERE sod.ProductID IS NULL, since that column can only be NULL when the join found no match. Flipping it to IS NOT NULL keeps exactly the rows that did match — products that have sold — which is backwards from the intent."
+    },
+    {
+      "id": "tsql-15",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the four join types from Chapter 3.",
+      "options": [
+        "INNER JOIN returns only rows that match on both sides",
+        "LEFT JOIN fills the right table's columns with NULL for any left-side row with no match",
+        "If every row in both tables has a match, FULL OUTER JOIN and INNER JOIN return the exact same result",
+        "RIGHT JOIN keeps every row from the table named in FROM, the same as LEFT JOIN",
+        "FULL OUTER JOIN can be used to find every unmatched row from either side at once, combined with IS NULL checks on both join columns"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "explain": "INNER JOIN keeps only matches; LEFT JOIN NULL-fills unmatched right-side columns. When nothing is actually unmatched on either side, FULL OUTER JOIN has no extra rows to add beyond what INNER JOIN already returns, so the two are identical in that case. RIGHT JOIN keeps everything from the right (the table after JOIN), not the table in FROM — that's backwards. Checking IS NULL on both join columns after a FULL OUTER JOIN finds every gap from either direction in one query."
+    },
+    {
+      "id": "tsql-16",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "SELECT p.Name, c.Name\nFROM Production.Product AS p\nCROSS JOIN Production.ProductCategory AS c;",
+      "prompt": "Production.Product has 504 rows and Production.ProductCategory has 4 rows. How many rows does this query return?",
+      "options": [
+        "2,016 — CROSS JOIN pairs every row from one table with every row from the other (504 x 4)",
+        "508 — CROSS JOIN adds the two row counts together",
+        "504 — CROSS JOIN only keeps rows from the first table",
+        "4 — CROSS JOIN only keeps rows from the second table"
+      ],
+      "correctIndex": 0,
+      "explain": "CROSS JOIN has no ON clause and pairs every row from the left table with every row from the right table — a Cartesian product. Row counts multiply, not add: 504 x 4 = 2,016, not 508. This is also why an accidental CROSS JOIN (a forgotten ON clause) is a classic real-world bug."
+    },
+    {
+      "id": "tsql-17",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a self join lists the same table twice in the FROM/JOIN clause, each copy given a different ________, since otherwise SQL Server has no way to tell the two roles (like 'assembly' and 'component') apart.",
+      "acceptedAnswers": [
+        "alias",
+        "table alias"
+      ],
+      "explain": "A self join is a table joined to itself. Without two different aliases, SQL Server can't distinguish 'this row's role' from 'the other row's role,' since both copies come from the exact same table — like pAssembly and pComponent in the BillOfMaterials example."
+    },
+    {
+      "id": "tsql-18",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Match each plain-English requirement to the join type that correctly satisfies it, per Lesson 31's decision framework.",
+      "left": [
+        "Every product and its category, but only for products that actually have a category assigned",
+        "Every product, whether or not it has a category assigned",
+        "Every possible size-and-color combination for a planning matrix, not just combinations that already exist",
+        "The finished-product/component relationship, where both roles come from the same Product table"
+      ],
+      "right": [
+        "SELF JOIN",
+        "INNER JOIN",
+        "CROSS JOIN",
+        "LEFT JOIN"
+      ],
+      "correctMap": [
+        1,
+        3,
+        2,
+        0
+      ],
+      "explain": "'Only rows that genuinely relate to both tables' means INNER JOIN. 'Everything from one side, matched or not' means LEFT JOIN. 'Every combination, not a match at all' means CROSS JOIN. 'The relationship lives inside one table' means SELF JOIN — exactly Lesson 31's one decisive question applied four ways."
+    },
+    {
+      "id": "tsql-19",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A query needs to list each non-NULL Color along with its average ListPrice, but only for colors whose average ListPrice exceeds $500. Which query correctly does this?",
+      "options": [
+        "SELECT Color, AVG(ListPrice) AS AveragePrice FROM Production.Product WHERE Color IS NOT NULL GROUP BY Color HAVING AVG(ListPrice) > 500;",
+        "SELECT Color, AVG(ListPrice) AS AveragePrice FROM Production.Product WHERE Color IS NOT NULL AND AVG(ListPrice) > 500 GROUP BY Color;",
+        "SELECT Color, AVG(ListPrice) AS AveragePrice FROM Production.Product GROUP BY Color HAVING AVG(ListPrice) > 500;",
+        "SELECT Color, AVG(ListPrice) AS AveragePrice FROM Production.Product WHERE Color IS NOT NULL HAVING AVG(ListPrice) > 500 GROUP BY Color;",
+        "SELECT Color, AVG(ListPrice) AS AveragePrice FROM Production.Product WHERE Color IS NOT NULL GROUP BY Color WHERE AVG(ListPrice) > 500;",
+        "SELECT Color, AVG(ListPrice) AS AveragePrice FROM Production.Product GROUP BY Color, AVG(ListPrice) HAVING Color > 500;"
+      ],
+      "correctIndex": 0,
+      "explain": "WHERE Color IS NOT NULL removes rows with no recorded color before grouping starts; GROUP BY Color forms one group per color; HAVING AVG(ListPrice) > 500 then filters those already-aggregated groups down to the ones whose average exceeds $500 — the correct logical order is FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY.",
+      "distractorExplain": "Option B keeps the same WHERE Color IS NOT NULL filter and the same intent, but moves the aggregate condition into WHERE instead of HAVING. WHERE is evaluated before GROUP BY forms any groups, so AVG(ListPrice) doesn't exist yet at that point — SQL Server rejects an aggregate function inside WHERE outright, which is exactly why HAVING exists as WHERE's counterpart for filtering groups after aggregation."
+    },
+    {
+      "id": "tsql-20",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: suppose Production.Product has 504 total rows, and 248 of them have a NULL Color. Then COUNT(*) and COUNT(Color) run on that table will differ by exactly ________.",
+      "acceptedAnswers": [
+        "248"
+      ],
+      "explain": "COUNT(*) counts every row regardless of NULLs, so it returns 504. COUNT(Color) only counts non-NULL values, so it returns 504 - 248 = 256 — a difference of exactly 248, the number of rows where Color itself is NULL."
+    },
+    {
+      "id": "tsql-21",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about how SUM, AVG, MIN, and MAX handle NULL values, per Chapter 4.",
+      "options": [
+        "AVG(Weight) ignores rows where Weight is NULL, rather than treating them as zero",
+        "If 50 of 500 rows have a NULL Weight, AVG(Weight) averages across all 500 rows, counting each NULL as zero",
+        "MIN() and MAX() can be used on text columns, returning the alphabetically first or last value",
+        "SUM() returns NULL for the whole result if even one row's value is NULL, the same way + concatenation does",
+        "COUNT(DISTINCT Color) counts each unique non-NULL color once, not once per row it appears in"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        4
+      ],
+      "explain": "SUM, AVG, MIN, and MAX all skip NULL values entirely rather than treating them as zero — if AVG() counted NULLs as zero, it would pull the average down artificially. MIN/MAX work on text and dates, not just numbers, following alphabetical or chronological order. COUNT(DISTINCT Color) counts unique non-NULL values, unlike COUNT(Color) which counts every non-NULL occurrence. SUM() does not propagate NULL the way + concatenation does — it simply skips NULL rows."
+    },
+    {
+      "id": "tsql-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "SELECT Name, Color, AVG(ListPrice) AS AveragePrice\nFROM Production.Product\nGROUP BY Color;",
+      "prompt": "What happens when this query runs, and why?",
+      "options": [
+        "It fails with an error, because Name is neither wrapped in an aggregate function nor listed in GROUP BY",
+        "It runs fine, showing one arbitrary product's Name per color group",
+        "It runs fine, showing every product's Name in that color group, comma-separated",
+        "It runs fine, but AveragePrice is calculated incorrectly because Name is present"
+      ],
+      "correctIndex": 0,
+      "explain": "Every column in SELECT must be either wrapped in an aggregate function or listed in GROUP BY. Name varies within each color group, so there's no single, unambiguous Name to show per group — SQL Server rejects the query rather than guessing which product's name to display."
+    },
+    {
+      "id": "tsql-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "code": "SELECT Color FROM Production.Product WHERE Color IS NOT NULL\nUNION\nSELECT Color FROM Production.Product WHERE Color IS NOT NULL;",
+      "prompt": "Both halves of this UNION query are identical. What does it actually return?",
+      "options": [
+        "The exact same distinct colors as running just one half alone — UNION removes duplicate rows across the combined result, including rows duplicated by the second, identical half",
+        "Every row twice — once from each half, since UNION just stacks results without checking for duplicates",
+        "An error, because UNION can't combine a query with itself",
+        "An empty result, because UNION cancels out identical queries"
+      ],
+      "correctIndex": 0,
+      "explain": "UNION stacks two result sets and then removes duplicate rows from the combined whole, behaving like an implicit DISTINCT across everything. Since the second half returns exactly the same rows as the first, every one of them is a duplicate and gets removed, leaving the same distinct colors a single copy of the query would have returned. UNION ALL, by contrast, would have kept every row from both halves."
+    },
+    {
+      "id": "tsql-24",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "SELECT EmailAddress,\n       SUBSTRING(EmailAddress, 1, CHARINDEX('@', EmailAddress) - 1) AS Username\nFROM Person.EmailAddress\nWHERE EmailAddress = 'ken0@adventure-works.com';",
+      "prompt": "What does Username contain for this row?",
+      "options": [
+        "ken0",
+        "ken0@",
+        "adventure-works.com",
+        "An error, because CHARINDEX returns 0"
+      ],
+      "correctIndex": 0,
+      "explain": "CHARINDEX('@', EmailAddress) finds the '@' at position 5 (k-e-n-0-@). Subtracting 1 gives a length of 4, so SUBSTRING extracts the first 4 characters — 'ken0' — exactly the username portion before the '@', the same combination pattern from Lesson 45's lab."
+    },
+    {
+      "id": "tsql-25",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A query needs to extract the domain portion of EmailAddress (everything after the '@'), using only SUBSTRING and CHARINDEX. Select every expression below that correctly extracts it.",
+      "options": [
+        "`SUBSTRING(EmailAddress, CHARINDEX('@', EmailAddress) + 1, LEN(EmailAddress))`",
+        "`SUBSTRING(EmailAddress, CHARINDEX('@', EmailAddress) + 1, LEN(EmailAddress) - CHARINDEX('@', EmailAddress))`",
+        "`SUBSTRING(EmailAddress, CHARINDEX('@', EmailAddress), LEN(EmailAddress))`",
+        "`SUBSTRING(EmailAddress, 1, CHARINDEX('@', EmailAddress) + 1)`",
+        "`STUFF(EmailAddress, CHARINDEX('@', EmailAddress), LEN(EmailAddress), '')`"
+      ],
+      "correctIndices": [
+        0,
+        1
+      ],
+      "explain": "Both correct options start one character past the '@' (CHARINDEX(...) + 1). Option A over-specifies the length as LEN(EmailAddress) — harmless, since SUBSTRING simply stops at the end of the string instead of erroring on an oversized length. Option B computes the exact remaining length instead and lands on the same result. Option C starts at the '@' itself, so the result keeps a leading '@'. Option D starts at position 1, extracting the username plus the '@' instead of the domain. Option E uses STUFF to delete everything from the '@' onward, which leaves the username behind, not the domain — STUFF deletes/replaces by position, it doesn't extract a piece out."
+    },
+    {
+      "id": "tsql-26",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: ________() is shorthand for doing LTRIM(RTRIM(...)) in a single call, removing both leading and trailing whitespace at once.",
+      "acceptedAnswers": [
+        "TRIM",
+        "TRIM()"
+      ],
+      "explain": "TRIM() removes both leading and trailing whitespace in one call. Before it was added to T-SQL, developers had to nest LTRIM and RTRIM together to get the same result; TRIM() is simply the cleaner modern way to write it."
+    },
+    {
+      "id": "tsql-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "SELECT DATEDIFF(DAY, '2024-03-10', '2024-03-01') AS Result;",
+      "prompt": "What does this return?",
+      "options": [
+        "-9",
+        "9",
+        "0",
+        "An error, because the start date is after the end date"
+      ],
+      "correctIndex": 0,
+      "explain": "DATEDIFF(interval, startDate, endDate) counts from startDate to endDate. Here startDate (March 10) is after endDate (March 1), so the result is negative: -9. Reversing which date is 'start' and which is 'end' flips the sign of the result — it doesn't raise an error."
+    },
+    {
+      "id": "tsql-28",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Match each string function to what it actually does.",
+      "left": [
+        "SUBSTRING(string, start, length)",
+        "CHARINDEX(searchFor, searchIn)",
+        "STUFF(string, start, length, replaceWith)",
+        "REPLACE(string, find, replaceWith)"
+      ],
+      "right": [
+        "Finds every occurrence of matching text and swaps it, regardless of position",
+        "Extracts a piece of a string starting at a 1-based position, for a given length",
+        "Deletes characters at a given position and length, then inserts replacement text there, regardless of content",
+        "Returns the 1-based position of the first match, or 0 if not found"
+      ],
+      "correctMap": [
+        1,
+        3,
+        2,
+        0
+      ],
+      "explain": "SUBSTRING extracts by position and length. CHARINDEX returns a 1-based position, or 0 (not NULL) if nothing matches. STUFF replaces by position, with no concept of matching text at all. REPLACE matches on the text itself, wherever it occurs, with no concept of position."
+    },
+    {
+      "id": "tsql-29",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Put these steps in the correct order for safely finding and removing duplicate rows.",
+      "items": [
+        "Run a SELECT using ROW_NUMBER() OVER (PARTITION BY the duplicate-defining columns ORDER BY a tiebreaker column) to number rows within each duplicate group",
+        "Review the results and confirm every row with RowNum greater than 1 is a row you actually want removed",
+        "Wrap the same ROW_NUMBER() query in a CTE so it can be referenced by a DELETE",
+        "Run DELETE FROM the CTE WHERE RowNum > 1 to remove every row except the first in each group"
+      ],
+      "explain": "ROW_NUMBER() with PARTITION BY first identifies which rows are duplicates (any RowNum greater than 1). Always verify those are genuinely the rows you want gone before converting anything to a DELETE. Only then do you wrap the query in a CTE and run the DELETE against it — exactly the order Lesson 51 walks through."
+    },
+    {
+      "id": "tsql-30",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "A subquery's result column might contain NULL. Which statement correctly describes the difference between using NOT IN versus NOT EXISTS with that subquery?",
+      "options": [
+        "NOT EXISTS only checks whether any row exists at all, so a NULL in the subquery's result column has no effect on it; NOT IN compares values directly, so a single NULL in the subquery's results makes the entire comparison return no rows.",
+        "NOT IN only checks whether any row exists at all, so a NULL in the subquery's result column has no effect on it; NOT EXISTS compares values directly, so a single NULL in the subquery's results makes the entire comparison return no rows.",
+        "Both NOT IN and NOT EXISTS are immune to NULL in the subquery's results, since both operate on the primary key implicitly.",
+        "NOT IN and NOT EXISTS always return identical results in every case, so which one is used is purely a style preference.",
+        "A NULL in the subquery's result column causes NOT IN to raise a runtime error rather than silently returning no rows.",
+        "NOT EXISTS can only be used when the subquery returns a single column, while NOT IN can be used with subqueries returning multiple columns."
+      ],
+      "correctIndex": 0,
+      "explain": "NOT EXISTS never inspects individual values — it only asks whether any row matched — so a NULL in the subquery's results doesn't affect it. NOT IN does compare values directly against each item in the list, and since 'is this NOT equal to unknown (NULL)' can never resolve to TRUE, a single NULL anywhere in the subquery's results makes the entire NOT IN comparison silently return zero rows — no error, just a wrong answer. This is exactly why the course recommends NOT EXISTS over NOT IN whenever NULLs are possible.",
+      "distractorExplain": "Option B swaps which operator does what — it's NOT IN that compares each value directly and silently breaks on a single NULL; NOT EXISTS is the one that only asks 'did any row match at all,' which is exactly why it's immune to the NULL trap. Getting the two backwards is the mistake this lesson specifically warns against."
+    },
+    {
+      "id": "tsql-31",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "A report needs every product priced above the average ListPrice within its own ProductSubcategoryID. Select every query below that correctly produces this result.",
+      "options": [
+        "A correlated subquery: `SELECT p1.Name, p1.ListPrice FROM Production.Product p1 WHERE p1.ListPrice > (SELECT AVG(p2.ListPrice) FROM Production.Product p2 WHERE p2.ProductSubcategoryID = p1.ProductSubcategoryID)`",
+        "A CTE using a window function: `WITH CategoryAvg AS (SELECT *, AVG(ListPrice) OVER (PARTITION BY ProductSubcategoryID) AS AvgPrice FROM Production.Product) SELECT Name, ListPrice FROM CategoryAvg WHERE ListPrice > AvgPrice`",
+        "A scalar subquery with no correlation: `SELECT Name, ListPrice FROM Production.Product WHERE ListPrice > (SELECT AVG(ListPrice) FROM Production.Product)`",
+        "A grouped CTE compared with a plain scalar subquery and no join back to Product: `WITH CategoryAvg AS (SELECT ProductSubcategoryID, AVG(ListPrice) AS AvgPrice FROM Production.Product GROUP BY ProductSubcategoryID) SELECT Name, ListPrice FROM Production.Product WHERE ListPrice > (SELECT AvgPrice FROM CategoryAvg)`",
+        "A grouped CTE joined back to Product on ProductSubcategoryID: `WITH CategoryAvg AS (SELECT ProductSubcategoryID, AVG(ListPrice) AS AvgPrice FROM Production.Product GROUP BY ProductSubcategoryID) SELECT p.Name, p.ListPrice FROM Production.Product p JOIN CategoryAvg ca ON p.ProductSubcategoryID = ca.ProductSubcategoryID WHERE p.ListPrice > ca.AvgPrice`"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        4
+      ],
+      "explain": "Options A, B, and E are three genuinely different, equally valid ways to solve the same problem: A re-evaluates a correlated subquery once per outer row (Lesson 54); B uses a window function to compute each row's category average without collapsing rows, then filters; E groups into per-category averages first and explicitly joins that back to Product so each row compares against its own category's average. Option C compares against the single overall average across every product, not each row's own subcategory — that's Lesson 52's plain scalar subquery, answering a different question entirely. Option D groups correctly but never joins the per-category averages back to Product by ProductSubcategoryID, so its (SELECT AvgPrice FROM CategoryAvg) subquery would try to return one value per subcategory and fail as an invalid scalar subquery."
+    },
+    {
+      "id": "tsql-32",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a CTE defined with WITH is temporary — it only exists for the ________ statement that immediately follows it.",
+      "acceptedAnswers": [
+        "single",
+        "one",
+        "single statement",
+        "one statement"
+      ],
+      "explain": "A CTE only exists for the single statement immediately following its WITH clause. It isn't saved anywhere and disappears the moment that statement finishes — unlike a VIEW, which is genuinely reusable and persists."
+    },
+    {
+      "id": "tsql-33",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "code": "SELECT p.Name\nFROM Production.Product AS p\nWHERE EXISTS (\n    SELECT ProductID\n    FROM Sales.SalesOrderDetail AS sod\n    WHERE sod.ProductID = p.ProductID\n);",
+      "prompt": "A colleague insists this query is broken because the subquery selects ProductID instead of the usual placeholder SELECT 1. Is the colleague correct?",
+      "options": [
+        "No — EXISTS only checks whether the subquery returns any row at all, so SELECT ProductID works exactly the same as SELECT 1 here.",
+        "Yes — EXISTS requires the subquery to SELECT 1 specifically, or SQL Server raises a syntax error.",
+        "No, but only because ProductID happens to be the join column — a different column in the SELECT would break it.",
+        "Yes — selecting an actual column name inside EXISTS makes it behave like IN, comparing values instead of just checking for a match."
+      ],
+      "correctIndex": 0,
+      "explain": "EXISTS never looks at what columns the subquery returns, only whether any row comes back at all. SELECT 1, SELECT *, and SELECT ProductID are all functionally identical inside an EXISTS subquery — the convention of writing SELECT 1 is purely a style habit, not a requirement."
+    },
+    {
+      "id": "tsql-34",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each term to what it actually is.",
+      "left": [
+        "PIVOT",
+        "UNPIVOT",
+        "Anchor member",
+        "Recursive member"
+      ],
+      "right": [
+        "The starting point of a recursive CTE, evaluated once before UNION ALL",
+        "Turns distinct row values into column headers using an aggregate function",
+        "References the CTE by its own name, repeated until a pass produces no new rows",
+        "Turns multiple columns back into rows, one row per original column"
+      ],
+      "correctMap": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "explain": "PIVOT rotates row values into column headers using an aggregate function. UNPIVOT does the reverse, collapsing several columns back into rows. A recursive CTE's anchor member is its one-time starting point; its recursive member references the CTE by its own name and keeps running until a pass adds no new rows."
+    },
+    {
+      "id": "tsql-35",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps in the order SQL Server actually executes a recursive CTE.",
+      "items": [
+        "The anchor member runs once, producing the starting rows at Level 0",
+        "The recursive member joins against the CTE's own most recent results, producing the next level down",
+        "SQL Server repeats the recursive member automatically until a pass produces no new rows",
+        "The final result combines the anchor member's rows with every recursive pass, via UNION ALL"
+      ],
+      "explain": "The anchor member runs exactly once as the starting point. The recursive member then joins against the CTE's own name to find the next level, and SQL Server keeps repeating that recursive step until a pass comes back empty — at which point every row produced, anchor plus every recursive pass, makes up the final result."
+    },
+    {
+      "id": "tsql-36",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "code": "DECLARE @MinPrice MONEY = 500;\nGO\nSELECT Name, ListPrice\nFROM Production.Product\nWHERE ListPrice > @MinPrice;",
+      "prompt": "What happens when this runs?",
+      "options": [
+        "An error — @MinPrice no longer exists once GO starts a new batch",
+        "It runs fine, returning every product priced over $500",
+        "It prints 500 instead of running the SELECT",
+        "It runs the SELECT with @MinPrice treated as NULL, returning every row"
+      ],
+      "correctIndex": 0,
+      "explain": "GO is a client-tool signal, not T-SQL itself — it splits the script into separate batches, and a variable only lives for the batch that declared it. @MinPrice is declared in the first batch and is already gone by the time the second batch runs, so SQL Server reports it as undeclared."
+    },
+    {
+      "id": "tsql-37",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "A procedure needs to filter Production.Product by a caller-supplied @ColorInput value. Select every approach below that is actually safe from SQL injection.",
+      "options": [
+        "`CREATE PROCEDURE usp_GetByColor @Color NVARCHAR(15) AS BEGIN SELECT * FROM Production.Product WHERE Color = @Color END`, called with a normal parameter",
+        "Concatenate @ColorInput's raw value directly into a string and run it with `EXEC(@SQL)`",
+        "`EXEC sp_executesql @SQL, N'@Color NVARCHAR(50)', @Color = @ColorInput`, where @SQL contains @Color as a placeholder, not the raw value",
+        "`SET @SQL = 'SELECT * FROM Production.Product WHERE Color = ''' + @ColorInput + ''''; EXEC(@SQL)`",
+        "Declare the parameter in the procedure's signature with no data type, as just `@Color AS BEGIN ... END`"
+      ],
+      "correctIndices": [
+        0,
+        2
+      ],
+      "explain": "A and C both keep the caller's value strictly as data — A through an ordinary typed procedure parameter, C through sp_executesql's own parameter list — so SQL Server never treats @ColorInput's text as executable SQL. B and D both concatenate the raw value directly into the SQL string before running it, which is exactly the SQL injection pattern Lesson 70 warns against: a value like `'; DROP TABLE Production.Product; --` would execute as real SQL. E isn't valid T-SQL at all — every procedure parameter must declare a data type."
+    },
+    {
+      "id": "tsql-38",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a WHILE loop whose condition never becomes false, because nothing inside the loop changes the value it tests, runs ________.",
+      "acceptedAnswers": [
+        "forever",
+        "infinitely",
+        "indefinitely",
+        "an infinite loop",
+        "in an infinite loop"
+      ],
+      "explain": "A WHILE loop keeps running the block as long as its condition stays TRUE. Without something inside the loop that eventually makes the condition FALSE, the loop runs forever."
+    },
+    {
+      "id": "tsql-39",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "code": "MERGE Production.Product AS target\nUSING StagingProduct AS source\n    ON target.ProductID = source.ProductID\nWHEN NOT MATCHED BY SOURCE THEN\n    INSERT (ProductID, Name, ListPrice)\n    VALUES (source.ProductID, source.Name, source.ListPrice);",
+      "prompt": "This MERGE is meant to insert every new product from StagingProduct into Production.Product, but it fails. What's actually wrong?",
+      "options": [
+        "WHEN NOT MATCHED BY SOURCE means the row exists only in target, with no matching source row at all — there's nothing to insert from. Inserting new staging rows needs WHEN NOT MATCHED BY TARGET instead.",
+        "MERGE doesn't support INSERT inside any WHEN clause — only UPDATE and DELETE are valid actions.",
+        "The ON clause is missing a second join condition — MERGE always requires joining on at least two columns.",
+        "VALUES can't reference source columns inside a MERGE's INSERT clause — only literal values are allowed."
+      ],
+      "correctIndex": 0,
+      "explain": "WHEN NOT MATCHED BY SOURCE fires for rows that exist in target but have no matching row in source — by definition there's no source row left to pull Name or ListPrice from, so an INSERT there makes no sense (that branch is for DELETE, or sometimes UPDATE). Inserting new rows that exist in source but not target is what WHEN NOT MATCHED BY TARGET is for."
+    },
+    {
+      "id": "tsql-40",
+      "type": "matching",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Match each term to what it actually controls.",
+      "left": [
+        "Named notation",
+        "Default parameter value",
+        "sp_executesql",
+        "@@FETCH_STATUS"
+      ],
+      "right": [
+        "Makes a parameter optional when the caller doesn't supply a value",
+        "Runs a dynamic SQL string safely, with properly typed parameters",
+        "0 while the last FETCH succeeded; nonzero once a cursor's rows are exhausted",
+        "Naming each parameter explicitly at the call site, e.g. @Color = 'Red'"
+      ],
+      "correctMap": [
+        3,
+        0,
+        1,
+        2
+      ],
+      "explain": "Named notation names each parameter explicitly at the call site. A default parameter value makes supplying that parameter optional. sp_executesql runs a dynamic SQL string safely with real typed parameters instead of raw concatenation. @@FETCH_STATUS reports whether a cursor's last FETCH succeeded, driving the WHILE loop that steps through it."
+    },
+    {
+      "id": "tsql-41",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of the cursor pattern in the correct order.",
+      "items": [
+        "DECLARE a cursor naming the SELECT query it will step through",
+        "OPEN the cursor, which runs that query and positions it before the first row",
+        "FETCH NEXT the first row into variables, then keep fetching inside a WHILE @@FETCH_STATUS = 0 loop",
+        "CLOSE the cursor once every row has been processed",
+        "DEALLOCATE the cursor to remove its definition entirely"
+      ],
+      "explain": "DECLARE defines the cursor's underlying query; OPEN executes it and positions the cursor before the first row; FETCH NEXT retrieves rows one at a time, with @@FETCH_STATUS driving the loop until rows run out; CLOSE releases the result set; and DEALLOCATE removes the cursor definition — both cleanup steps are required, not optional."
+    },
+    {
+      "id": "tsql-42",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Transaction A holds an exclusive lock on a row while it updates it. Transaction B then tries to touch that same row. Which statement correctly describes what actually happens?",
+      "options": [
+        "Transaction B must wait until Transaction A's exclusive lock on that row is released before it can even read it — this is ordinary blocking, not an error, and SQL Server doesn't report it as a failure.",
+        "Transaction B must wait until Transaction A's exclusive lock on that row is released before it can update it, but Transaction B can still read the row's current committed value at the same time without waiting.",
+        "SQL Server immediately cancels Transaction B's statement the instant it detects another transaction already holds a lock on that row.",
+        "Both transactions can update the same row at the same time, as long as they each eventually COMMIT at a different moment.",
+        "Transaction B is automatically chosen as the deadlock victim and rolled back any time it has to wait on another transaction's lock.",
+        "Locking only applies to DELETE statements — UPDATE and INSERT don't acquire locks at all."
+      ],
+      "correctIndex": 0,
+      "explain": "An exclusive lock is held by exactly one transaction at a time, and while it's held, every other transaction is blocked from both reading and writing that same data, not just from writing it. Transaction B simply waits — that's ordinary blocking, not an error, and SQL Server doesn't cancel or fail B's statement because of it. Nothing here makes B a deadlock victim either, since a deadlock specifically requires two transactions waiting on each other's locks.",
+      "distractorExplain": "Option B keeps the right idea — Transaction B has to wait — but adds one wrong detail: an exclusive lock blocks every other transaction from reading that row too, not just from writing it. Transaction B can't read the row's value while A's exclusive lock is held; it has to wait for the lock to release just to read it, let alone update it."
+    },
+    {
+      "id": "tsql-43",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "code": "BEGIN TRY\n    BEGIN TRANSACTION;\n    UPDATE Production.ProductInventory SET Quantity = Quantity - 10 WHERE ProductID = 1 AND LocationID = 1;\n    UPDATE Production.ProductInventory SET Quantity = Quantity + 10 WHERE ProductID = 1 AND LocationID = 2;\n    COMMIT TRANSACTION;\nEND TRY\nBEGIN CATCH\n    ROLLBACK TRANSACTION;\n    PRINT ERROR_MESSAGE();\nEND CATCH",
+      "prompt": "Select every true statement about this TRY/CATCH and transaction pattern.",
+      "options": [
+        "If the second UPDATE fails, execution jumps immediately to the CATCH block, skipping COMMIT TRANSACTION entirely.",
+        "ERROR_MESSAGE() returns NULL outside a CATCH block, so it only produces real output here because it's called inside CATCH.",
+        "If both UPDATEs succeed, CATCH never runs, so ROLLBACK TRANSACTION is never reached.",
+        "Moving ROLLBACK TRANSACTION out of CATCH and into TRY, right after COMMIT TRANSACTION, would behave identically.",
+        "This pattern guarantees the two UPDATEs happen as a single atomic unit — either both succeed, or neither does."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "explain": "A, B, and C describe exactly how TRY/CATCH behaves: an error inside TRY jumps straight to CATCH, skipping anything left in TRY including COMMIT; ERROR_MESSAGE() only returns real data inside CATCH; and CATCH simply never runs on a clean success. E is the whole point of combining TRY/CATCH with a transaction — atomicity even when something fails unexpectedly. D is wrong: ROLLBACK has to live inside CATCH specifically, so it only ever runs when something actually failed. Placing it in TRY right after COMMIT would mean it never runs on success (COMMIT already finished), and on failure execution would have already jumped to CATCH before ever reaching that ROLLBACK line in TRY."
+    },
+    {
+      "id": "tsql-44",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: when two transactions are each waiting on a lock the other holds, SQL Server automatically detects the deadlock and rolls back one of them — the transaction chosen is called the deadlock ________.",
+      "acceptedAnswers": [
+        "victim"
+      ],
+      "explain": "SQL Server detects a deadlock automatically and picks one of the two transactions as the deadlock victim, rolling it back and raising an error the application typically handles by retrying. The other transaction proceeds normally."
+    },
+    {
+      "id": "tsql-45",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "A two-step transaction wrapped in TRY/CATCH fails on its second statement. Put the resulting sequence of events in order.",
+      "items": [
+        "BEGIN TRANSACTION starts the transaction",
+        "The first UPDATE runs successfully, changing data provisionally within the transaction",
+        "The second UPDATE fails with a runtime error",
+        "Execution jumps immediately to the CATCH block, skipping COMMIT TRANSACTION",
+        "ROLLBACK TRANSACTION undoes both the failed statement's attempt and the first UPDATE's provisional change"
+      ],
+      "explain": "The transaction starts, the first UPDATE succeeds provisionally, and the second UPDATE fails. The instant that error occurs, execution jumps to CATCH, never reaching COMMIT. ROLLBACK inside CATCH then undoes everything done since BEGIN TRANSACTION, including the first UPDATE that had actually succeeded — exactly the atomicity guarantee a transaction exists to provide."
+    },
+    {
+      "id": "tsql-46",
+      "type": "fill-in",
+      "chapter": "ch09",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a window function using OVER() computes a value across a group of related rows, but unlike GROUP BY, it does NOT ________ the result set — every original row still appears in the output.",
+      "acceptedAnswers": [
+        "collapse",
+        "collapse rows",
+        "collapse the rows",
+        "reduce"
+      ],
+      "explain": "GROUP BY collapses many rows into one summary row per group. A window function computes its value using a group of related rows (optionally scoped with PARTITION BY) but keeps every original row in the output — nothing collapses."
+    },
+    {
+      "id": "tsql-47",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "code": "SELECT Name, Color, ListPrice,\n       ROW_NUMBER() OVER (PARTITION BY Color ORDER BY ListPrice DESC) AS RankInColor\nFROM (VALUES\n    ('Widget A', 'Red',   50.00),\n    ('Widget B', 'Red',   75.00),\n    ('Widget C', 'Black', 30.00),\n    ('Widget D', 'Red',   75.00)\n) AS t(Name, Color, ListPrice);",
+      "prompt": "Widget B and Widget D are both Red and both priced at 75.00 — a genuine tie on the ORDER BY column. What can you say about the RankInColor values ROW_NUMBER() assigns them?",
+      "options": [
+        "One of them gets 1 and the other gets 2, but which one gets which isn't guaranteed — ROW_NUMBER() always produces unique numbers, even for tied rows, and without another tiebreaker column the choice is arbitrary",
+        "They both get RankInColor 1, since ROW_NUMBER() treats a genuine tie as a dead heat",
+        "The query raises an error, because ROW_NUMBER() can't be used when the ORDER BY column contains duplicate values",
+        "Widget D always gets 1, because it appears later in the VALUES list, and ROW_NUMBER() breaks ties by preferring the last-listed row"
+      ],
+      "correctIndex": 0,
+      "explain": "ROW_NUMBER() never produces a tie — even when two rows are genuinely equal on the ORDER BY column, one arbitrarily gets the lower number. Without an additional, deterministic tiebreaker column in the ORDER BY, which of the two tied rows gets 1 versus 2 isn't guaranteed to be consistent. This is exactly the gap RANK() and DENSE_RANK() exist to close for cases where a tie should matter."
+    },
+    {
+      "id": "tsql-48",
+      "type": "matching",
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Match each ranking function to how it actually handles a tie on the ORDER BY column.",
+      "left": [
+        "ROW_NUMBER()",
+        "RANK()",
+        "DENSE_RANK()"
+      ],
+      "right": [
+        "Ties share the same number, and the next distinct value picks up right afterward with no gap",
+        "Never ties — every row gets a unique, sequential number even when values are equal",
+        "Ties share the same number, but the next distinct value's number skips ahead by the size of the tie"
+      ],
+      "correctMap": [
+        1,
+        2,
+        0
+      ],
+      "explain": "ROW_NUMBER() always assigns unique numbers, so a real tie gets split arbitrarily. RANK() gives tied rows the same number but leaves a gap afterward sized to the tie (two rows tied for 1st means the next row gets 3). DENSE_RANK() also gives tied rows the same number, but the next distinct value gets the very next number with no gap. This exact distinction — whether ties 'cost' a rank — is the single most common real-world confusion between the three."
+    },
+    {
+      "id": "tsql-49",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "code": "SELECT Name, ListPrice,\n       NTILE(4) OVER (ORDER BY ListPrice DESC) AS PriceQuartile\nFROM Production.Product;",
+      "prompt": "This query runs against a result set of 22 rows. Per how SQL Server distributes rows that don't divide evenly, how many rows land in each of the 4 NTILE groups, in order from group 1 to group 4?",
+      "options": [
+        "6, 6, 5, 5",
+        "5, 5, 6, 6",
+        "6, 5, 6, 5",
+        "5, 6, 5, 6"
+      ],
+      "correctIndex": 0,
+      "explain": "22 rows into 4 groups doesn't divide evenly (22 / 4 = 5.5). SQL Server hands the extra rows to the earliest groups first, one at a time, so group 1 and group 2 each get one extra row (6 rows) while group 3 and group 4 get the base amount (5 rows): 6, 6, 5, 5. You don't get to choose which groups receive the extras — SQL Server always assigns them starting from group 1."
+    },
+    {
+      "id": "tsql-50",
+      "type": "multi-select",
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the window functions covered in this chapter.",
+      "options": [
+        "ROW_NUMBER() requires an ORDER BY inside OVER() — without one, 'which row is first' is undefined",
+        "AVG(ListPrice) OVER (PARTITION BY Color) is valid with no ORDER BY at all, and attaches one average per color to every row in that color",
+        "NTILE(4) OVER (PARTITION BY Color ORDER BY ListPrice DESC) computes price quartiles across the entire table, ignoring the PARTITION BY",
+        "PARTITION BY, like GROUP BY, physically removes any row that doesn't match the current group from the result set",
+        "RANK() and DENSE_RANK() both need an ORDER BY inside OVER(), since there's no way to detect a tie or compute a rank without an order to rank by"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        4
+      ],
+      "explain": "ROW_NUMBER() and the other ranking functions all require ORDER BY to know what order to number in. AVG()/COUNT()-style aggregates don't need ORDER BY at all when used as window functions — PARTITION BY alone is enough to compute one value per group, attached to every row in that group. NTILE(4) PARTITION BY Color computes quartiles separately within each color, not across the whole table — the PARTITION BY still applies to it like every other function in this chapter. And PARTITION BY never removes rows; the row-level result set is completely unaffected, which is the entire point of a window function versus GROUP BY."
+    },
+    {
+      "id": "tsql-51",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "SellStartDate on Production.Product is a DATETIME column. A query needs every product that started selling at any point during 2013, written so the predicate can still use an index on SellStartDate. Which statement is correct?",
+      "options": [
+        "SellStartDate >= '2013-01-01' AND SellStartDate < '2014-01-01' is SARGable and correct — untouched column, no gap at the boundary",
+        "SellStartDate BETWEEN '2013-01-01' AND '2013-12-31' is just as correct as the half-open range above, since both describe the same calendar year",
+        "YEAR(SellStartDate) = 2013 is the clearest way to express 'in 2013,' and it's still SARGable because YEAR() is a simple, cheap function to evaluate",
+        "SellStartDate = '2013' correctly matches every row from 2013, since SQL Server automatically expands a year-only literal to cover the full year",
+        "CAST(SellStartDate AS CHAR(4)) = '2013' is SARGable, since comparing two short strings is always cheaper than comparing two dates",
+        "SellStartDate >= '2013-01-01' AND SellStartDate <= '2013-12-31 23:59:59' is required instead, since a < '2014-01-01' upper bound would cut off the last moments of December 31st"
+      ],
+      "correctIndex": 0,
+      "explain": "A predicate stays SARGable only when the indexed column itself is left untouched in the comparison. The half-open range — >= the start of the year, < the start of the next year — covers every moment of 2013 with no boundary gap, and SQL Server can use an index on SellStartDate directly to jump to that range. Wrapping the column in YEAR() or CAST() forces a full scan regardless of any index, and a bare year-string comparison doesn't reliably match a date column's actual values at all.",
+      "distractorExplain": "Option B looks like a harmless rewording of the correct range, but SellStartDate is DATETIME, not DATE: the literal '2013-12-31' parses as 2013-12-31 00:00:00.000. BETWEEN's upper bound is inclusive of that exact instant, but any row timestamped later in the day — say 2013-12-31 16:45:00 — falls after it and gets silently excluded. The half-open range in the correct option has no such gap, because its upper bound is the very start of the next year, not the last day of the current one."
+    },
+    {
+      "id": "tsql-52",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch10",
+      "difficulty": "foundational",
+      "code": "SELECT p.Name, sod.OrderQty\nFROM Production.Product AS p, Sales.SalesOrderDetail AS sod;",
+      "prompt": "Production.Product has roughly 500 rows; Sales.SalesOrderDetail has roughly 121,000 rows. This query has no ON clause and no WHERE clause relating the two tables at all. Approximately how many rows does it return?",
+      "options": [
+        "About 500",
+        "About 121,000",
+        "About 121,500 (the two row counts added together)",
+        "About 60,500,000 (the two row counts multiplied together)"
+      ],
+      "correctIndex": 3,
+      "explain": "An old-style comma join with no join condition falls back to a Cartesian product — every row of one table paired with every row of the other. Row counts multiply, not add: 500 x 121,000 is roughly 60.5 million rows, not the sum of the two tables. On genuinely large tables, this kind of accidental Cartesian product can exhaust server memory or run for a very long time before anyone notices something is wrong."
+    },
+    {
+      "id": "tsql-53",
+      "type": "multi-select",
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "Three queries all try to answer 'which products have at least one sales order?' — one with EXISTS, one with IN, and one with JOIN + DISTINCT. Select every true statement about them.",
+      "options": [
+        "The JOIN version needs DISTINCT because a product with 5 matching order-detail rows would otherwise appear as 5 separate rows in the result",
+        "EXISTS stops scanning the moment it finds one matching row — it never needs to know how many matches actually exist, only whether any do",
+        "The IN version silently drops any product that has more than one matching order, which makes it unsafe for this question",
+        "If the query actually needed columns from the matched SalesOrderDetail rows — not just 'does a match exist' — JOIN would be the right tool, not EXISTS or IN",
+        "EXISTS, IN, and JOIN + DISTINCT are guaranteed to return three different sets of product names for this exact question"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "JOIN returns one row per matching combination, so a product with multiple orders shows up multiple times without DISTINCT to collapse it back down. EXISTS only needs to confirm presence, so it can stop at the first match. EXISTS/IN can only test for presence — they can't hand back columns from the matched row — so JOIN becomes the right choice the moment you need the matched data itself, not just a yes/no. IN doesn't drop anything here; all three queries return the same set of product names when written correctly."
+    },
+    {
+      "id": "tsql-54",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "A team wants Production.Product to support fast lookups by both ProductID and by Name, and proposes creating a clustered index on each of the two columns. What actually happens?",
+      "options": [
+        "Only one clustered index can exist per table — the second CREATE attempt has to be a nonclustered index instead, since a clustered index defines the table's single physical row order",
+        "SQL Server creates both clustered indexes successfully, since 'clustered' just means 'sorted,' and nothing stops a table from having two separate sort orders stored at once",
+        "SQL Server silently converts the second clustered index request into a nonclustered index with no warning or error message of any kind",
+        "Creating a second clustered index is allowed, but only if the table is partitioned across multiple filegroups first"
+      ],
+      "correctIndex": 0,
+      "explain": "A clustered index physically sorts the table's rows on disk — a table can only be sorted one way at a time, so there can be at most one clustered index per table. A second attempt to create one either fails outright or has to be explicitly created as PRIMARY KEY NONCLUSTERED / CREATE NONCLUSTERED INDEX instead. Name lookups would need a nonclustered index of their own, layered on top of whichever column gets the single clustered slot."
+    },
+    {
+      "id": "tsql-55",
+      "type": "matching",
+      "chapter": "ch10",
+      "difficulty": "foundational",
+      "prompt": "Match each execution-plan or indexing term to what it actually means.",
+      "left": [
+        "Index Seek",
+        "Index Scan",
+        "Key Lookup",
+        "Covering index"
+      ],
+      "right": [
+        "An index that contains every column a specific query needs, so no trip back to the full row is required at all",
+        "SQL Server used the index's B-tree structure to jump directly to the rows it needed",
+        "A follow-up trip back to the clustered index to fetch a column that wasn't part of the nonclustered index used",
+        "SQL Server read through every row of the index or table in order, checking each one"
+      ],
+      "correctMap": [
+        1,
+        3,
+        2,
+        0
+      ],
+      "explain": "Index Seek is the fast path: direct navigation straight to the needed rows. Index Scan (or Clustered Index Scan) reads every row in order, checking each one — fine if the query genuinely needs most of the table, a red flag if it doesn't. Key Lookup is the extra trip back to the clustered index for a column the nonclustered index didn't carry. A covering index avoids that extra trip entirely by including every column the query asks for, directly in the index."
+    },
+    {
+      "id": "tsql-56",
+      "type": "sequencing",
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of this chapter's performance-tuning workflow in the correct order, for a query suspected of being slower than it should be.",
+      "items": [
+        "Turn on the actual execution plan (Ctrl+M) and run the query",
+        "Identify whether the costly operator is an Index Scan or Clustered Index Scan against a large table",
+        "Check whether the WHERE/JOIN predicate is SARGable, or whether a function is wrapping the indexed column",
+        "Create or adjust an index -- including included columns -- so it actually covers what the query needs",
+        "Re-run the query with SET STATISTICS IO ON and confirm the logical reads count actually dropped"
+      ],
+      "explain": "The workflow builds in order: see the plan's real shape first (Ctrl+M), spot a scan where a seek was expected, trace that scan back to a non-SARGable predicate if one exists, fix it with the right index, and only then confirm the fix genuinely helped with a stable, comparable number -- logical reads -- rather than assuming it worked just because the plan's shape changed."
+    },
+    {
+      "id": "tsql-57",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch10",
+      "difficulty": "advanced",
+      "prompt": "A stored procedure builds an intermediate result set of roughly 200,000 rows from a large join, needs to query that set multiple times with different WHERE filters, and would benefit from having its own index. Per this chapter's decision rule, which structure fits best?",
+      "options": [
+        "A #temp table, because SQL Server maintains real statistics on it and lets you add an explicit index — the right fit for a large, reused, indexable set",
+        "A CTE, because it's the most readable option for a multi-step calculation",
+        "A table variable, because it avoids query plan recompiles inside the procedure",
+        "A ##global temp table, because the data needs to survive being queried more than once"
+      ],
+      "correctIndex": 0,
+      "explain": "The decision rule is explicit: a large set, reused more than once, that might need its own index points straight at a #temp table — SQL Server tracks real statistics on it, letting the optimizer build a genuinely good plan, and it supports explicit indexes. A table variable is the pick for a handful of rows inside a procedure where dodging recompiles matters more than statistics. A CTE isn't stored at all — referencing it multiple times can mean re-running its underlying query multiple times. A ##global temp table solves cross-session visibility, which isn't the problem here at all."
+    },
+    {
+      "id": "tsql-58",
+      "type": "multi-select",
+      "chapter": "ch10",
+      "difficulty": "advanced",
+      "prompt": "Select every query or technique below that demonstrates one of this chapter's performance anti-patterns.",
+      "options": [
+        "SELECT * FROM Sales.SalesOrderDetail WHERE SalesOrderID = 43659; -- when only 3 of the table's 10 columns are ever actually used afterward",
+        "SELECT * FROM Production.Product WHERE ProductID = '712'; -- where ProductID is an INT column being compared to a string literal",
+        "UPDATE Production.Product SET ListPrice = ListPrice * 1.1 WHERE Color = 'Red'; -- a single set-based statement updating every matching row at once",
+        "A cursor that FETCHes one ProductID at a time and runs a separate UPDATE for each one, instead of a single set-based UPDATE",
+        "SELECT * FROM Sales.SalesOrderHeader WHERE dbo.udf_FiscalYear(OrderDate) = 2013; -- calling a scalar user-defined function on the column inside WHERE"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3,
+        4
+      ],
+      "explain": "SELECT * can defeat a covering index and pulls columns nobody uses. Comparing an INT column to a string literal ('712') forces an implicit conversion on every row, blocking index use. The row-by-row cursor abandons SQL Server's set-based strength for the slowest possible way to update many rows. A scalar UDF in WHERE is invoked once per row and is also non-SARGable — one of the hardest anti-patterns to spot. The single UPDATE ... WHERE Color = 'Red' statement is itself the FIX for the cursor anti-pattern, not an anti-pattern — it's exactly the set-based alternative this chapter recommends."
+    },
+    {
+      "id": "tsql-59",
+      "type": "fill-in",
+      "chapter": "ch11",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a PRIMARY KEY constraint guarantees two things about its column (or columns) at once — every value is unique, and no value is ever ________.",
+      "acceptedAnswers": [
+        "null",
+        "NULL"
+      ],
+      "explain": "A primary key guarantees both uniqueness and NOT NULL at the same time. Together, that means a primary key value always identifies exactly one row — the single most fundamental building block of relational design."
+    },
+    {
+      "id": "tsql-60",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch11",
+      "difficulty": "foundational",
+      "prompt": "An Employee table has a DepartmentID foreign key referencing Department, defined with no ON DELETE option specified. Department still has Employee rows pointing at DepartmentID 1, and someone runs DELETE FROM Department WHERE DepartmentID = 1. What happens?",
+      "options": [
+        "The DELETE fails with a foreign key violation (Error 547) — SQL Server refuses to create an orphaned Employee row",
+        "The DELETE succeeds, and every Employee row referencing DepartmentID 1 is automatically deleted as well",
+        "The DELETE succeeds, and the affected Employee rows have their DepartmentID automatically set to NULL",
+        "The DELETE succeeds for the Department row, and the Employee rows keep referencing a DepartmentID that no longer exists"
+      ],
+      "correctIndex": 0,
+      "explain": "By default — with no ON DELETE CASCADE specified — a foreign key blocks exactly this: deleting a referenced row while dependent rows still point at it fails with Error 547. Automatically cascading the delete, or nulling out the reference, both require ON DELETE CASCADE (or ON DELETE SET NULL) to be explicitly configured; neither happens on its own."
+    },
+    {
+      "id": "tsql-61",
+      "type": "multi-select",
+      "chapter": "ch11",
+      "difficulty": "advanced",
+      "code": "CREATE TABLE dbo.OrderLine (\n    OrderID      INT NOT NULL,\n    ProductID    INT NOT NULL,\n    ProductName  NVARCHAR(50),\n    CustomerZip  CHAR(5),\n    CustomerCity NVARCHAR(50),\n    Quantity     INT NOT NULL,\n    CONSTRAINT PK_OrderLine PRIMARY KEY (OrderID, ProductID)\n);",
+      "prompt": "Select every true statement about this table's normalization.",
+      "options": [
+        "ProductName depends only on ProductID, not on the whole (OrderID, ProductID) composite key — a 2NF violation (a partial dependency)",
+        "CustomerCity depends on CustomerZip, a non-key column, rather than directly on the primary key — a 3NF violation (a transitive dependency)",
+        "This table violates 1NF, because Quantity is not an atomic value",
+        "This table is already in 3NF, because every column uses an ordinary scalar data type",
+        "Moving ProductName into a separate Product table keyed by ProductID would fix the 2NF violation"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        4
+      ],
+      "explain": "ProductName only needs ProductID to be known — it doesn't actually depend on OrderID at all, which is the textbook partial-dependency 2NF violation. CustomerCity is really a fact about CustomerZip, not about the (OrderID, ProductID) key directly — a transitive dependency, violating 3NF. Quantity is a single, indivisible number, so there's no 1NF problem here. And pulling ProductName out into its own Product table, looked up by ProductID, is exactly the standard 2NF fix — the same pattern Sales.SalesOrderDetail already follows in AdventureWorks2012 by storing only ProductID, never ProductName, directly."
+    },
+    {
+      "id": "tsql-62",
+      "type": "matching",
+      "chapter": "ch11",
+      "difficulty": "intermediate",
+      "prompt": "Match each relationship shape to its real AdventureWorks2012 example.",
+      "left": [
+        "One-to-one",
+        "One-to-many",
+        "Many-to-many"
+      ],
+      "right": [
+        "Sales.SalesOrderHeader to Sales.SalesOrderDetail: one order has many line items, and each line item belongs to exactly one order",
+        "Person.Person to HumanResources.Employee: BusinessEntityID serves as both tables' primary key, with Employee's also being a foreign key back to Person",
+        "Sales.SalesOrderHeader to Sales.SalesReason, connected through the Sales.SalesOrderHeaderSalesReason junction table"
+      ],
+      "correctMap": [
+        1,
+        0,
+        2
+      ],
+      "explain": "One-to-one is enforced by making the same column both primary key and foreign key, exactly what Employee.BusinessEntityID does against Person. One-to-many is just an ordinary, unconstrained foreign key — SalesOrderDetail.SalesOrderID pointing back at SalesOrderHeader. Many-to-many needs a junction table in between, since neither side can hold a single foreign key to the other — SalesOrderHeaderSalesReason plays exactly that role between orders and reasons."
+    },
+    {
+      "id": "tsql-63",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch11",
+      "difficulty": "advanced",
+      "prompt": "A Code column has a UNIQUE constraint and already contains one NULL (a department whose code hasn't been assigned yet). A second INSERT also tries to leave Code as NULL. What happens, and why does it surprise people who know standard SQL theory?",
+      "options": [
+        "The second INSERT fails — SQL Server implements UNIQUE as a unique index, and its B-tree treats a second NULL as a duplicate, even though standard SQL theory says NULL is never equal to another NULL",
+        "The second INSERT succeeds — UNIQUE constraints in SQL Server allow any number of NULLs, exactly as standard SQL theory predicts",
+        "The second INSERT fails, but only because Code also happens to be the table's primary key",
+        "The second INSERT succeeds, but SQL Server silently replaces the newest NULL with an auto-generated placeholder value"
+      ],
+      "correctIndex": 0,
+      "explain": "Standard SQL theory treats NULL as 'unknown,' so two NULLs are never considered equal to each other — you'd expect unlimited NULLs under a UNIQUE constraint. SQL Server's actual implementation is a unique index, and that index's B-tree treats a second NULL as a literal duplicate value, allowing only one NULL per UNIQUE column. This has nothing to do with whether the column is also a primary key — a primary key wouldn't allow even the first NULL."
+    },
+    {
+      "id": "tsql-64",
+      "type": "sequencing",
+      "chapter": "ch11",
+      "difficulty": "intermediate",
+      "prompt": "The whole server feels slow, but no specific query has been identified yet. Put these diagnostic steps in the correct order.",
+      "items": [
+        "Notice the server feels slow overall, with no specific query pinpointed yet",
+        "Start an XEvent Profiler trace (or legacy SQL Server Profiler) to capture every query running against the server",
+        "Scan the trace's Duration and Reads columns to find the one specific statement actually responsible",
+        "Turn on the actual execution plan (Ctrl+M) for that one statement to see its scan/seek shape",
+        "Apply a fix -- an index or a SARGable rewrite -- and confirm the improvement with SET STATISTICS IO"
+      ],
+      "explain": "A trace is the tool for exactly this situation — 'something, somewhere' is slow and no specific statement has been picked yet — which none of Chapter 10's per-query tools can help with on their own. Once the trace narrows the problem down to one statement, Chapter 10's own toolkit (execution plan, then STATISTICS IO) takes over from there to diagnose and confirm the fix."
+    },
+    {
+      "id": "tsql-65",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch12",
+      "difficulty": "intermediate",
+      "prompt": "In AdventureWorksDW2014, FactInternetSales joins directly to DimProduct in one hop. DimProduct then has a foreign key to DimProductSubcategory, which in turn has a foreign key to DimProductCategory. What schema shape does the product dimension actually form, and why?",
+      "options": [
+        "Star schema — FactInternetSales joins DimProduct in one hop, and that single join is all that determines a dimension's shape in this schema",
+        "Snowflake schema — DimProduct's category and subcategory names live in separate tables, reached only after extra hops past DimProduct",
+        "Star schema — a warehouse only counts as a snowflake once the fact table has more than four dimension tables attached to it directly",
+        "Snowflake schema — DimDate and DimCustomer would also have to be split into sub-dimension tables before anything here could count as a snowflake",
+        "Star schema — AdventureWorksDW2014 denormalizes every one of its dimension tables, including DimProduct, by design, with no exceptions",
+        "Snowflake schema — FactInternetSales has no direct foreign key to DimProduct at all, only to DimProductSubcategory underneath it"
+      ],
+      "correctIndex": 1,
+      "explain": "A dimension is snowflaked when reaching its full descriptive attributes requires passing through one or more extra sub-dimension tables beyond the first hop from the fact table. DimProduct's category and subcategory names live in DimProductSubcategory and DimProductCategory, two extra hops away — that's a real snowflake for the product family specifically. AdventureWorksDW2014 is a genuine hybrid: DimDate and DimCustomer sit one hop away (star-shaped), while the product family chains deeper (snowflaked) — a schema doesn't have to be purely one or the other.",
+      "distractorExplain": "Option A correctly notes that FactInternetSales joins DimProduct in exactly one hop — that part is true. Its error is treating that single fact-to-DimProduct join as the whole story: whether a dimension is snowflaked is decided by what happens past that first hop, not by it alone. DimProduct's own category/subcategory attributes sitting in further linked tables is exactly what makes the product dimension a snowflake, regardless of how many hops separate the fact table from DimProduct itself."
+    },
+    {
+      "id": "tsql-66",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch12",
+      "difficulty": "intermediate",
+      "code": "INSERT INTO dbo.FactInternetSales (ProductKey, OrderDateKey, SalesAmount, OrderQuantity)\nSELECT dp.ProductKey, dd.DateKey,\n       sod.UnitPrice * sod.OrderQty * (1 - sod.UnitPriceDiscount),\n       sod.OrderQty\nFROM Staging.SalesOrderDetail AS sod\nJOIN dbo.DimProduct AS dp ON dp.ProductAlternateKey = sod.ProductID\nJOIN dbo.DimDate AS dd ON dd.FullDateAlternateKey = CAST(sod.OrderDate AS DATE);",
+      "prompt": "Staging.SalesOrderDetail already holds the raw rows pulled straight from the source system, with no transformation applied yet. What pipeline pattern does this INSERT...SELECT statement itself represent, and why?",
+      "options": [
+        "ELT — the raw data was already Loaded into staging first, and this statement is the Transform step, running inside the warehouse's own SQL engine after the fact",
+        "ETL — this statement is the Extract step, pulling rows out of the source system for the very first time",
+        "ELT — this statement is actually the Extract step, since it reads from a table named Staging",
+        "ETL — the Transform step always has to happen in a dedicated engine outside of T-SQL, so this statement can only be the final Load step"
+      ],
+      "correctIndex": 0,
+      "explain": "The raw rows already sitting in Staging.SalesOrderDetail means Extract and Load already happened — this statement's joins against DimProduct and DimDate, resolving source keys into warehouse keys and computing SalesAmount, are the Transform step itself, running entirely in T-SQL after the data landed. That order — load raw first, transform second, using the target's own compute — is exactly what makes this ELT rather than ETL, and it's why T-SQL can act as the transformation engine at all."
+    },
+    {
+      "id": "tsql-67",
+      "type": "multi-select",
+      "chapter": "ch12",
+      "difficulty": "intermediate",
+      "prompt": "A new FactOrderLines table is being designed to sit in a star schema. Select every column below that correctly belongs in a FACT table like this one, rather than being pulled out into a dimension.",
+      "options": [
+        "ProductKey — a foreign key pointing at DimProduct",
+        "SalesAmount — a numeric measure meant to be summed",
+        "ProductCategoryName — a descriptive text attribute of the product",
+        "OrderDateKey — a foreign key pointing at DimDate",
+        "SalespersonFullName — a descriptive text attribute of the salesperson"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "A fact table stays narrow on purpose: mostly foreign keys pointing at dimensions, plus the numeric measures you'd sum, average, or count. ProductKey and OrderDateKey are exactly that kind of foreign key, and SalesAmount is a textbook measure. ProductCategoryName and SalespersonFullName are both descriptive, filterable/groupable text attributes — the kind of wide, low-row-count content that belongs in DimProduct and a salesperson dimension instead, not duplicated across millions of fact rows."
+    },
+    {
+      "id": "tsql-68",
+      "type": "matching",
+      "chapter": "ch12",
+      "difficulty": "intermediate",
+      "prompt": "Match each slowly changing dimension concept to what it actually describes.",
+      "left": [
+        "SCD Type 1",
+        "SCD Type 2",
+        "SCD Type 3",
+        "DimProduct's StartDate / EndDate / Status columns"
+      ],
+      "right": [
+        "The real AdventureWorksDW2014 columns that implement full Type 2 history tracking for products",
+        "Overwrite the old value in place — no history is preserved at all",
+        "Insert a new row with a new surrogate key and mark the old row's end date — full history is kept",
+        "Add one extra column holding just the immediately-prior value — limited, one-level history only"
+      ],
+      "correctMap": [
+        1,
+        2,
+        3,
+        0
+      ],
+      "explain": "Type 1 simply overwrites, losing the old value entirely. Type 2 inserts a brand-new row with its own surrogate key whenever the tracked attribute changes, leaving the old row in place with an EndDate marking when it stopped being current — exactly what DimProduct's real StartDate/EndDate/Status columns implement. Type 3 is the lightweight middle ground: one extra column for just the prior value, with no new rows and no deeper history than that single step back."
+    },
+    {
+      "id": "tsql-69",
+      "type": "fill-in",
+      "chapter": "ch12",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: DimProduct's Type 2 history requires its ________ key (ProductKey) — not its natural key (ProductAlternateKey) — to serve as the primary key, because the same natural key value has to be able to repeat across multiple historical version rows.",
+      "acceptedAnswers": [
+        "surrogate",
+        "surrogate key"
+      ],
+      "explain": "If ProductAlternateKey (the natural key) were the primary key, a product could never have more than one row, since a primary key can't repeat — making Type 2 history impossible. The surrogate key (ProductKey) is the one that actually has to stay unique, which is exactly what lets the same natural key appear on multiple historical rows, one per version."
+    },
+    {
+      "id": "tsql-70",
+      "type": "sequencing",
+      "chapter": "ch12",
+      "difficulty": "foundational",
+      "prompt": "Put these four stages of the BI/warehousing pipeline in the order data actually moves through them.",
+      "items": [
+        "Source (OLTP): real transactions get recorded in AdventureWorks2012 -- orders, customers, products",
+        "Transform (ETL/ELT): raw source rows get reshaped into warehouse-ready facts and dimensions, often via a T-SQL INSERT...SELECT",
+        "Warehouse (OLAP): cleaned, structured, historical data lands in AdventureWorksDW2014's fact and dimension tables",
+        "BI tools: Power BI or another reporting layer visualizes the result, backed by a T-SQL query underneath"
+      ],
+      "explain": "Data is recorded first in an OLTP source system, reshaped by a transform step into warehouse-ready facts and dimensions, loaded into the OLAP warehouse's fact/dimension tables, and only then visualized by a BI tool sitting on top -- every chart or table that tool renders is ultimately backed by a T-SQL query against that warehouse."
+    }
+  ]
+}
