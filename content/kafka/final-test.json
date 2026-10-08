@@ -1,0 +1,445 @@
+{
+  "questions": [
+    {
+      "id": "kf-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Which statement correctly describes why Kafka is called a durable log rather than a traditional message queue?",
+      "options": [
+        "Kafka is a message queue like RabbitMQ, just one that happens to run faster at higher throughput",
+        "Kafka retains every event for a configured retention period, but only one consumer across the entire cluster is ever allowed to read a given event at any time, exactly like how a traditional message queue works for every message it holds",
+        "Kafka retains every event for a configured retention period, and any number of independent consumers can read the same event — including re-reading it later — unlike a queue where a message is removed once a worker consumes it",
+        "Kafka removes an event immediately after the first consumer group commits its offset, the same way a queue removes a message after it's acknowledged",
+        "Kafka stores events only in memory and never writes them to disk, which is what lets consumers replay history quickly",
+        "Kafka guarantees every consumer reads every event in the exact same global order across the whole topic, which is what distinguishes it from a queue"
+      ],
+      "correctIndex": 2,
+      "explain": "Kafka's core structure is a durable, ordered log: every event is retained for a configured period and stays readable by any number of independent consumers, each tracking its own position. A traditional queue removes a message once a worker consumes it, which makes replay impossible by design. That one property — retained, re-readable history — is the whole reason Kafka can support multiple independent consumers of the same topic, and it's what makes Kappa-style reprocessing possible later in the course.",
+      "distractorExplain": "Option B keeps the 'retained and re-readable' part right but adds a constraint Kafka doesn't actually have: the one-consumer-per-partition rule applies only within a single consumer group, not across the whole cluster. A second, independent consumer group reading the same topic gets its own full copy of the stream, including every event the first group already read — that's exactly the decoupling that makes Kafka useful for multiple independent teams."
+    },
+    {
+      "id": "kf-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: within a single partition, Kafka assigns each event an increasing integer called its ________ — unique within that one partition, but not unique across the whole topic.",
+      "acceptedAnswers": ["offset"],
+      "explain": "An offset is a partition-local, increasing integer identifying an event's position. Partition 0's offset 500 and partition 1's offset 500 are two unrelated events — a consumer's job is to track its own next-unread offset per partition it's assigned, which is also what makes replay possible: rewind the tracked offset, and history re-reads from that point forward."
+    },
+    {
+      "id": "kf-03",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "A broker currently leading one of a topic's partitions goes down. Put the resulting sequence of events in the correct order.",
+      "items": [
+        "The broker currently leading a partition crashes or becomes unreachable",
+        "The cluster's controller detects the dead broker missed its session timeout",
+        "A new leader is elected from the partition's in-sync replica (ISR) set",
+        "Producers and consumers discover the new leader automatically on their next metadata refresh"
+      ],
+      "explain": "Replication exists for exactly this sequence: the leader fails, the controller (ZooKeeper- or KRaft-based) notices via a missed session timeout, an already-caught-up in-sync replica is promoted to leader so no data is lost, and clients find the new leader transparently on their next metadata lookup — no manual failover, no application code change."
+    },
+    {
+      "id": "kf-04",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "producer.produce(topic=\"orders\", key=\"order-4471\", value=event1)\nproducer.produce(topic=\"orders\", key=\"order-9981\", value=event2)",
+      "prompt": "The orders topic has 6 partitions, and order-4471 and order-9981 hash to two different partitions. Which statement correctly describes Kafka's ordering guarantee for event1 and event2?",
+      "options": [
+        "Kafka guarantees event1 and event2 arrive at a consumer in the exact order they were produced, because they were sent to the same topic",
+        "Kafka guarantees no ordering at all between event1 and event2, because they land in different partitions — ordering only holds within a single partition, never across a whole topic",
+        "Kafka guarantees event2 arrives before event1, because keys are compared alphabetically before Kafka decides delivery order",
+        "Kafka delays delivering event2 until event1's partition is fully caught up, to preserve topic-wide order"
+      ],
+      "correctIndex": 1,
+      "explain": "Kafka only guarantees ordering within a partition, never across an entire topic. Since order-4471 and order-9981 hash to different partitions, there's no ordering relationship between event1 and event2 at all — each is only strictly ordered relative to other events sharing its own key's partition. This is exactly why the partitioning key matters: everything that needs relative ordering must share a key."
+    },
+    {
+      "id": "kf-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "producer_config = {\n    \"bootstrap.servers\": \"b1:9092,b2:9092,b3:9092\",\n    \"acks\": \"0\",\n}",
+      "prompt": "This configuration is used to send payment-confirmation events, where losing an event means a customer is silently never charged. What's wrong with it, and what should change?",
+      "options": [
+        "Nothing is wrong — acks=0 is fine as long as linger.ms is also set",
+        "acks=0 means the producer never waits for any broker acknowledgment, so a broker failure right after receiving the write can silently lose the event; acks should be set to all for an event this costly to lose",
+        "acks=0 is fine; the real problem is that no partitioning key is set on the producer calls",
+        "acks=0 only affects consumer behavior, not producer durability, so this configuration is unrelated to the risk described"
+      ],
+      "correctIndex": 1,
+      "explain": "acks=0 is the fastest setting because the producer doesn't wait for any acknowledgment at all — which also means it can silently lose events if the broker fails right after receiving them. That trade-off fits high-volume telemetry where an occasional lost metric doesn't matter. A payment confirmation is exactly the case where losing an event has a real cost, which is what acks=all is for: the producer waits for the leader and enough in-sync replicas before considering the write done."
+    },
+    {
+      "id": "kf-06",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about Kafka's delivery semantics, per this course.",
+      "options": [
+        "At-most-once delivery can lose an event if a consumer commits its offset before processing actually finishes",
+        "At-least-once delivery guarantees no duplicates, only possible data loss",
+        "An idempotent producer (enable.idempotence=true) lets the broker detect and discard a duplicate write from a retried producer",
+        "Exactly-once delivery, once configured, also guarantees that a write to an external database outside Kafka can never be duplicated",
+        "At-least-once is the common default in real systems because it never silently loses data, even though it can create duplicates"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "At-most-once loses events if a commit happens before processing finishes. An idempotent producer uses a producer ID and sequence number per partition so the broker itself discards a retried duplicate write. At-least-once is the common real-world default because duplicates are a problem you can design around (idempotent handling), while silent loss usually isn't acceptable. Exactly-once is real but only covers the Kafka-to-Kafka hop — the moment a pipeline writes to something outside Kafka, that external write needs its own idempotency handling, so option 2 and option 4 are both false."
+    },
+    {
+      "id": "kf-07",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: setting ________=true (the default behavior in most Kafka clients) commits offsets on a timer, regardless of whether processing of the last batch actually finished — which is what can silently lose work if the consumer crashes at the wrong moment.",
+      "acceptedAnswers": ["enable.auto.commit"],
+      "explain": "enable.auto.commit=true is convenient but has a real gap: if the consumer crashes after auto-committing but before handle() finishes for the last batch, that batch is lost — the committed offset says 'already processed' even though it wasn't. Committing manually, only after processing genuinely succeeds, closes that gap."
+    },
+    {
+      "id": "kf-08",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each consumer-group term to what it actually means.",
+      "left": ["group.id", "Group coordinator", "Rebalance", "Idle consumer"],
+      "right": [
+        "Re-running partition assignment after membership or partition count changes",
+        "A group member left with no partition because there aren't enough partitions to go around",
+        "The shared identifier that makes a set of consumers one logical consumer group",
+        "The broker-side component that assigns a topic's partitions to a group's members"
+      ],
+      "correctMap": [2, 3, 0, 1],
+      "explain": "Every consumer sharing the same group.id is a member of the same consumer group. The group coordinator is the broker-side component that divides a topic's partitions among the group's members. A rebalance re-runs that assignment whenever membership or partition count changes. An idle consumer is a group member left with no partition because there are more members than partitions to go around."
+    },
+    {
+      "id": "kf-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A topic has 3 partitions. A consumer group named order-processors has 5 members running. What actually happens, and why?",
+      "options": [
+        "All 5 members process every partition in parallel, since Kafka load-balances across all available consumers regardless of partition count",
+        "Exactly 3 members each get one partition; the other 2 sit idle, because Kafka never assigns more than one consumer per partition within a group, and a partition is the smallest unit of parallelism a group can use",
+        "Kafka automatically increases the partition count to 5 to give every consumer work",
+        "The group fails to start, because a consumer group can't have more members than a topic has partitions"
+      ],
+      "correctIndex": 1,
+      "explain": "Kafka never assigns more than one consumer to a partition at the same time within a group, so 3 partitions can only ever keep 3 members busy. The other 2 consumers sit idle — not an error, just wasted capacity — ready to take over instantly if another member fails. Adding more consumers than there are partitions does nothing for throughput; the only way to actually use them is to increase the partition count."
+    },
+    {
+      "id": "kf-10",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A topic is configured with replication.factor=3 and min.insync.replicas=2, and its producers use acks=all. How many of the brokers holding this topic's replicas can go down at once before the topic stops accepting new writes?",
+      "options": [
+        "0 — any single broker going down immediately stops every write from succeeding, since the leader and all three configured replicas must always be fully reachable and caught up before acks=all can succeed at all",
+        "1 — losing one broker still leaves 2 replicas in sync, satisfying min.insync.replicas=2; losing a second broker would drop the in-sync count below that minimum and the topic would stop accepting writes",
+        "2 — losing two brokers still leaves one replica (the leader) able to serve writes on its own, and min.insync.replicas only restricts which replicas can be read from, not which can accept writes",
+        "3 — replication.factor=3 means the topic can lose all three replicas and still keep accepting writes once they recover",
+        "It depends only on acks=all and has nothing to do with min.insync.replicas, since acks is a producer-side setting with no relationship to replica count",
+        "min.insync.replicas only takes effect once cleanup.policy=compact is also set on the topic"
+      ],
+      "correctIndex": 1,
+      "explain": "With replication.factor=3 and min.insync.replicas=2, a write under acks=all only succeeds once the leader and at least one in-sync follower have it. Losing one broker still leaves 2 replicas in sync, so writes keep succeeding. Losing a second broker drops the in-sync count to 1, below the required minimum, and Kafka refuses new writes rather than silently accepting data it can't guarantee survives — a deliberate availability-versus-durability trade-off, not a bug.",
+      "distractorExplain": "Option C gets the mechanism half right — the leader alone can technically still serve a write — but it misapplies min.insync.replicas, treating it as a read-only restriction. In fact min.insync.replicas gates writes directly under acks=all: a write isn't acknowledged unless that many replicas (including the leader) are in sync. With only the leader left, the in-sync count is 1, below the configured minimum of 2, so writes are rejected outright rather than served by the leader alone."
+    },
+    {
+      "id": "kf-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "producer.produce(topic=\"events\", key=country_code, value=event_json)",
+      "prompt": "90% of this application's traffic originates from a single country. What's the most likely operational symptom of keying every event by country_code like this, and why?",
+      "options": [
+        "Even load across all partitions, because Kafka's hashing always spreads keys perfectly regardless of their real-world distribution",
+        "One partition — and the broker leading it — absorbs most of the load while the others sit comparatively idle; a hot partition, because country_code has low cardinality and one value dominates the traffic",
+        "The topic refuses to accept any more writes once one partition exceeds the others in volume",
+        "Consumer lag drops to zero across the whole group, since one very active partition speeds up the others"
+      ],
+      "correctIndex": 1,
+      "explain": "Hash-based partitioning only spreads load evenly if the key values themselves are reasonably even. country_code is low-cardinality and skewed here, so hash(key) % numPartitions routes 90% of events to one partition, and that partition's consumer falls behind while its siblings sit idle. A hot partition doesn't show up as an error — it shows up as exactly this uneven lag pattern, which is harder to diagnose than an outright failure."
+    },
+    {
+      "id": "kf-12",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: setting cleanup.policy=________ on a topic makes Kafka keep only the latest value for every key forever, deleting only the older, superseded values for keys that have been overwritten.",
+      "acceptedAnswers": ["compact"],
+      "explain": "cleanup.policy=compact is a genuinely different retention model from time- or size-based deletion. It never deletes a key entirely — it keeps the latest value per key forever and cleans up only the superseded older values, which fits a 'current state' changelog like a user profile but is the wrong model for an event history where every past event matters."
+    },
+    {
+      "id": "kf-13",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each term to what it actually is, per this course's ZooKeeper-to-KRaft discussion.",
+      "left": ["ZooKeeper", "KRaft", "Controller", "Kafka 4.0"],
+      "right": [
+        "The broker (or quorum, in KRaft) responsible for cluster metadata and leader election",
+        "The version where ZooKeeper support was removed entirely, making KRaft the only supported mode",
+        "The external coordination system Kafka historically depended on, requiring its own separate cluster to run",
+        "Kafka's own built-in Raft-based consensus, replacing that external system entirely"
+      ],
+      "correctMap": [2, 3, 0, 1],
+      "explain": "ZooKeeper was the external, separately-run coordination system Kafka historically leaned on. KRaft replaces it with consensus built directly into Kafka. The controller is the role (a broker under ZooKeeper, a quorum under KRaft) actually responsible for metadata and leader election. Kafka 4.0 is the version where ZooKeeper support was removed entirely, making KRaft the only supported mode, not just the recommended default."
+    },
+    {
+      "id": "kf-14",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about Schema Registry compatibility modes, per this course.",
+      "options": [
+        "BACKWARD compatibility means a new schema version can read data written with the old schema — safe to upgrade consumers before producers",
+        "FORWARD compatibility means an old schema can read data written with a new schema — safe to upgrade producers before consumers",
+        "FULL compatibility is less restrictive than BACKWARD alone, since it only has to satisfy one direction",
+        "Adding a new optional field with a default value is typically backward-compatible, since old consumers can simply ignore it",
+        "A consumer always deserializes using the latest schema version in the Registry, regardless of which version the message was actually written with"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "BACKWARD and FORWARD are correctly described, and adding an optional field with a default is a textbook backward-compatible change. FULL compatibility is actually the most restrictive mode, not the least — it requires both backward and forward compatibility to hold at once, not just one direction. And a consumer doesn't assume the latest schema; it looks up the schema ID embedded in the message and fetches that exact version from the Registry, which is what lets it correctly read messages written under older schema versions too."
+    },
+    {
+      "id": "kf-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "A team wants to capture every insert, update, and delete from a Postgres orders table, in order, and turn each one into a Kafka message as it happens. Which approach fits, per this course?",
+      "options": [
+        "A sink connector pointed at Postgres, since sink connectors handle reading from external databases",
+        "A source connector using CDC (e.g., a Debezium-style connector) that reads Postgres's own replication log and turns each change into a message, in order",
+        "A custom consumer polling Postgres with a SELECT on a timer, since Kafka Connect doesn't support database sources",
+        "A Kafka Streams topology, since Kafka Streams is what reads data out of external databases"
+      ],
+      "correctIndex": 1,
+      "explain": "A CDC source connector reads the database's own write-ahead log directly, catching every insert, update, and delete in the exact order it happened, with no gap between polls and no missed deletes. A sink connector moves data the opposite direction (Kafka to an external system), and Kafka Streams processes data already inside a topic — neither one captures changes out of Postgres the way a CDC source connector does."
+    },
+    {
+      "id": "kf-16",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a Kafka Streams app's stateful operations (like a running count) keep their state in a local state store, which is also replicated back to Kafka as a ________ topic so that state can be rebuilt if an instance fails.",
+      "acceptedAnswers": ["changelog"],
+      "explain": "Stateful operations need to remember something across events — a running count, a running total, a join. Kafka Streams keeps that state in a local state store backed by RocksDB on disk, and replicates it back to Kafka as a changelog topic specifically so the state can be rebuilt from scratch if an instance fails."
+    },
+    {
+      "id": "kf-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "CREATE STREAM high_value_orders AS\n  SELECT order_id, customer_id, amount, status\n  FROM orders\n  WHERE amount > 100\n  EMIT CHANGES;",
+      "prompt": "What does this ksqlDB statement actually do once it's running?",
+      "options": [
+        "It runs once, producing a static snapshot of every order currently over $100, then stops",
+        "It runs continuously, writing a new row to high_value_orders every time a new event over $100 arrives on orders — EMIT CHANGES is what marks it as a continuous streaming query rather than a one-time snapshot",
+        "It deletes every order from the orders topic that isn't over $100",
+        "It only works if the orders topic is a compacted topic"
+      ],
+      "correctIndex": 1,
+      "explain": "CREATE STREAM ... AS SELECT compiles into a continuous topology, the same kind Kafka Streams builds by hand. EMIT CHANGES is specifically what marks this as a continuous, streaming query: it keeps running and keeps producing new rows on high_value_orders as new events keep arriving on orders, rather than evaluating the query once against a fixed snapshot."
+    },
+    {
+      "id": "kf-18",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Match each Kafka concept to the honest difference this course draws against its Fabric Eventstreams equivalent.",
+      "left": ["Topic", "Consumer group", "Kafka Connect", "Self-hosted / Confluent Cloud"],
+      "right": [
+        "Eventstream's built-in connectors — Fabric's own curated set, not a vendor-neutral ecosystem",
+        "Fabric handles parallel consumption as part of the managed runtime, with no equivalent group-membership concept to configure",
+        "Fully managed by Microsoft, with no cluster concept to reason about at all",
+        "Eventstream — a managed pipeline object where partitioning and retention aren't knobs you tune directly"
+      ],
+      "correctMap": [3, 1, 0, 2],
+      "explain": "A Kafka topic maps to an Eventstream, but Fabric doesn't surface partitioning and retention as tunable knobs the way a Kafka topic does. A Kafka consumer group is a protocol you interact with directly; Fabric handles parallel consumption internally with no group-membership concept to configure. Kafka Connect's vendor-neutral connector ecosystem contrasts with Eventstream's own curated, Fabric-specific connectors. And even Kafka's easiest cloud path still involves a cluster concept, while an Eventstream has no cluster to reason about at all."
+    },
+    {
+      "id": "kf-19",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Kafka Connect, per this course.",
+      "options": [
+        "Connect handles reconnects, retries, offset tracking, and error handling for a connector declaratively, without you writing producer or consumer code",
+        "Every Connect connector is either a source (external system to Kafka) or a sink (Kafka to external system) — never both at once",
+        "A CDC source connector works by polling the source database with a SELECT on a timer, just like a custom consumer would",
+        "tasks.max controls how much of a single connector's work runs in parallel",
+        "Kafka Connect replaces the need for a Schema Registry entirely, since connectors handle schema compatibility on their own"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Connect's whole point is handling reconnects, retries, offsets, and error handling declaratively, and every connector is one of exactly two directions, source or sink. tasks.max is the real setting controlling a connector's parallelism. CDC specifically does not poll on a timer — it reads the database's own replication log, catching every change in order with no gap, which is the meaningful difference from a polling query. Connect also doesn't replace a Schema Registry; serialization and schema compatibility are a separate concern this course covers in Lessons 10 and 15."
+    },
+    {
+      "id": "kf-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "A team points their existing Kafka producer/consumer application at an Azure Event Hubs namespace's Kafka-compatible endpoint instead of a real Kafka broker. Which of these should they NOT assume will work the same way, per this course?",
+      "options": [
+        "Their existing KafkaProducer.send() and KafkaConsumer.poll() calls, once bootstrap.servers and the SASL_SSL auth config are updated",
+        "Deploying their existing Kafka Connect connectors and Kafka Streams topologies against the endpoint exactly as they would against a self-hosted cluster or Confluent Cloud",
+        "Authenticating with a connection-string-based SASL_SSL configuration instead of their previous setup",
+        "Producing and consuming events using the same client library classes as before"
+      ],
+      "correctIndex": 1,
+      "explain": "Event Hubs' Kafka-compatible endpoint broadly supports the producer/consumer API path — the same client classes and calls work with a connection-string and auth-config change. What it does not guarantee is Kafka Connect and Kafka Streams running the way they do against a self-hosted cluster or Confluent Cloud; some connectors work against the endpoint, but it's not a guarantee across the whole Connect/Streams ecosystem the way it is against real Kafka."
+    },
+    {
+      "id": "kf-21",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of provisioning and using a Confluent Cloud cluster in the correct order.",
+      "items": [
+        "Choose a cluster type and cloud region in the Confluent Cloud console",
+        "Confluent provisions the underlying broker infrastructure for that cluster automatically",
+        "Create a topic inside the cluster and set its partition count",
+        "Connect a producer or consumer using the same Kafka client APIs as a self-hosted cluster"
+      ],
+      "explain": "Confluent Cloud replaces manually choosing broker count and standing up VMs with a single cluster-type-and-region decision, after which Confluent provisions the infrastructure. A topic still has to be created, with the same partition-count decision from Lesson 2, before any client can connect — and that client uses the exact same producer/consumer APIs it would against a self-hosted cluster, since the wire protocol doesn't change."
+    },
+    {
+      "id": "kf-22",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the managed-vs-self-hosted Kafka trade-off, per this course.",
+      "options": [
+        "A managed service takes capacity planning, patching, and failure recovery off the team's plate, in exchange for throughput-based pricing",
+        "Self-hosting is always cheaper than a managed service, regardless of scale or in-house expertise",
+        "At very large, sustained throughput, a team with in-house Kafka expertise can sometimes end up paying less self-hosting than they would under managed throughput-based pricing",
+        "Managed Kafka is the better fit when a team doesn't already have deep Kafka operations experience and throughput is moderate or unpredictable"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "A managed service's entire value proposition is taking capacity planning, patching, and failure recovery off a team's plate, priced by throughput and storage instead of server count. Self-hosting can be cheaper, but only at large sustained scale and only for a team that already has in-house expertise — it's not a blanket rule that self-hosting always wins. Managed is the better default when a team lacks deep Kafka operations experience or throughput is unpredictable."
+    },
+    {
+      "id": "kf-23",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the single most important Kafka metric to watch is ________ ________ — the gap between the latest offset written to a partition and the offset a consumer group has actually committed.",
+      "acceptedAnswers": ["consumer lag"],
+      "explain": "Consumer lag climbing means a consumer is falling behind the rate events are arriving, which eventually means real-time processing stops being real-time. It's directly comparable to watermark/late-data concepts elsewhere in this catalog — both answer 'how far behind is processing, relative to when things actually happened?'"
+    },
+    {
+      "id": "kf-24",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "A team needs to join incoming order events against an existing Delta table and compute a running aggregate before the data lands anywhere, straight from a Kafka topic. Which approach fits, per this course?",
+      "options": [
+        "The Snowflake Kafka Sink Connector, since it's the standard way to land Kafka events into a warehouse",
+        "Databricks Structured Streaming's spark.readStream.format(\"kafka\"), since it gives a live DataFrame that can run real Spark transforms — joins, aggregations — before anything lands",
+        "Either approach works identically, since both are config-driven with no transform logic",
+        "Kafka Connect's sink connector framework, configured with a custom join expression in its JSON config"
+      ],
+      "correctIndex": 1,
+      "explain": "The Snowflake Sink Connector is config-driven with no transform logic — the right call when the destination just needs raw events as rows, fast. Databricks' spark.readStream.format(\"kafka\") returns a live DataFrame that can run any transform Spark can express, including a join against a Delta table and a running aggregation, before anything lands — exactly what this scenario needs."
+    },
+    {
+      "id": "kf-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "code": "for attempt in range(3):\n    try:\n        process_order(msg.value())\n        break\n    except TransientError:\n        time.sleep(2 ** attempt)\nelse:\n    send_to_dlq(msg)\nconsumer.commit(msg)",
+      "prompt": "A message has a malformed payload that will never parse successfully, no matter how many times it's retried — a genuine poison pill, not a TransientError. If this retry loop is the only error handling in place, what actually happens, and why is that a problem?",
+      "options": [
+        "process_order raises something other than TransientError, so the except clause never catches it, the loop never reaches send_to_dlq, and the exception propagates — likely crashing the consumer instead of routing the bad message to the DLQ",
+        "The loop correctly retries it 3 times, then correctly routes it to the DLQ via the else clause, exactly as intended",
+        "Kafka automatically detects a poison pill and skips it without any application code needed",
+        "The message blocks every other partition in the topic, not just its own, until it's manually removed"
+      ],
+      "correctIndex": 0,
+      "explain": "This loop only catches TransientError — it's built for a downstream call that fails for a moment and usually succeeds on retry. A malformed payload raises a parsing error, not a TransientError, so the except clause never fires, the else clause (which routes to the DLQ) never runs, and the exception propagates uncaught — risking a consumer crash instead of the intended dead-letter handling. This is exactly why the course treats poison-pill handling (a broad except routing straight to a DLQ) and transient-failure retry as two different patterns, not one loop that's supposed to cover both."
+    },
+    {
+      "id": "kf-26",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each Kafka security term to what it actually controls.",
+      "left": ["SASL/SCRAM", "SSL (in transit)", "ACL", "security.protocol=SASL_SSL"],
+      "right": [
+        "Turns on both an authentication mechanism and encryption in transit at once, as two separate settings",
+        "Encrypts every byte moving between client and broker, independent of who's talking",
+        "A specific grant of one operation, on one resource, to one principal — Kafka's authorization layer",
+        "An authentication mechanism where a client proves its identity with a username and password"
+      ],
+      "correctMap": [3, 1, 2, 0],
+      "explain": "SASL/SCRAM is the authentication mechanism proving identity with a username and password. SSL is encryption in transit, a separate concern from who's talking. An ACL is a narrow authorization grant — one operation, one resource, one principal. security.protocol=SASL_SSL is the setting that turns on authentication and encryption together, as two deliberately separate concerns, not one combined setting."
+    },
+    {
+      "id": "kf-27",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: setting ________=True on a producer closes the gap acks=all leaves open — if the producer's own retry logic resends a message the broker already wrote, the broker recognizes the duplicate and drops it instead of writing it twice.",
+      "acceptedAnswers": ["enable.idempotence"],
+      "explain": "acks=all guarantees a write is durable before it's acknowledged, but it doesn't stop a producer's retry from resending a message whose acknowledgment, not the write itself, got lost. enable.idempotence=True closes exactly that gap: the broker uses a producer ID and sequence number per partition to recognize and drop the duplicate."
+    },
+    {
+      "id": "kf-28",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of building the capstone's clickstream pipeline in the correct order.",
+      "items": [
+        "Create the clickstream topic with 8 partitions, replication factor 3, and 3 days of retention",
+        "Create the clickstream-dlq topic with 1 partition",
+        "Configure the producer with acks=all and enable.idempotence=True",
+        "Configure the consumer to send any message that fails process_event to clickstream-dlq, then commit the offset either way"
+      ],
+      "explain": "The topics have to exist before anything can produce or consume from them, and the main topic is created before its dead-letter topic since the DLQ exists to catch failures from the main pipeline. The producer's durability settings and the consumer's dead-letter handling are the two configuration decisions this capstone reuses directly from Lessons 25 and 27."
+    },
+    {
+      "id": "kf-29",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "This capstone gives clickstream 8 partitions but clickstream-dlq only 1. Why is that difference actually correct, rather than an oversight?",
+      "options": [
+        "clickstream-dlq is less important, so it doesn't need replication either",
+        "Failures routed to the DLQ should be rare, and there's no reason ordering among them needs to be preserved — clickstream itself is sized for its real expected throughput and its consumer group's target parallelism",
+        "Kafka requires every DLQ topic to have exactly 1 partition by convention",
+        "8 partitions on clickstream is a mistake; both topics should use the same partition count"
+      ],
+      "correctIndex": 1,
+      "explain": "Partition count is a real sizing decision, not an afterthought: clickstream gets 8 partitions for its real expected throughput and to give its consumer group room to scale. clickstream-dlq only needs 1 partition because failures routed there should be rare, and unlike the main topic, there's no entity-ordering requirement to preserve among dead-lettered messages."
+    },
+    {
+      "id": "kf-30",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the configuration choices this capstone reuses from earlier in the course, per Lessons 25, 27, and 29.",
+      "options": [
+        "The producer uses acks=all plus enable.idempotence=True, the same combination Lesson 25 established for any producer where losing or duplicating an event is a real problem",
+        "The consumer commits its offset only when process_event succeeds, and never commits at all if it fails, leaving the message permanently stuck on that partition",
+        "A malformed event is routed to clickstream-dlq instead of being retried forever, which is what actually keeps the partition moving",
+        "The capstone invents a new error-handling pattern specifically for clickstream data, rather than reusing Lesson 27's dead-letter approach"
+      ],
+      "correctIndices": [0, 2],
+      "explain": "The capstone's producer reuses Lesson 25's acks=all plus enable.idempotence combination directly, and its consumer reuses Lesson 27's dead-letter pattern: a malformed event goes to clickstream-dlq instead of blocking the partition. The consumer actually commits the offset either way, success or failure, which is what keeps the pipeline moving — it does not leave failed messages stuck, and it does not invent a new pattern; the whole point of the capstone is proving the earlier lessons' decisions compose."
+    }
+  ]
+}
