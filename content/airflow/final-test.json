@@ -1,0 +1,457 @@
+{
+  "questions": [
+    {
+      "id": "af-01",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: DAG stands for ________ ________ ________.",
+      "acceptedAnswers": ["Directed Acyclic Graph"],
+      "explain": "A DAG is a Directed Acyclic Graph: a structure of nodes (tasks) connected by edges (dependencies) where every edge points one way and no path of edges ever loops back to a task already visited."
+    },
+    {
+      "id": "af-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "extract >> transform\ntransform >> load\nload >> extract   # added by mistake",
+      "prompt": "A DAG file ends up with the three dependency lines above. What actually happens when Airflow tries to load this file?",
+      "options": [
+        "Airflow refuses to load the DAG at all — a cycle like this breaks the 'acyclic' requirement and makes the schedule impossible to compute",
+        "Airflow loads the DAG but runs extract, transform, and load in parallel since their order is now ambiguous",
+        "Airflow loads the DAG and simply ignores the load >> extract line, keeping the original two dependencies",
+        "Airflow loads the DAG and alternates the order of extract and load on every other run"
+      ],
+      "correctIndex": 0,
+      "explain": "The 'acyclic' part of DAG isn't a style preference — it's a mathematical requirement. A path that starts at extract and, by following arrows forward, arrives back at extract means extract would have to wait on itself. Airflow refuses to load a DAG file containing a cycle like this rather than guessing at a workable order."
+    },
+    {
+      "id": "af-03",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each Airflow UI tab to what it actually shows.",
+      "left": ["DAGs list", "Grid view", "Graph view", "Calendar tab", "Code tab"],
+      "right": [
+        "Renders a DAG's nodes and edges as a picture, one run's structure at a time",
+        "Plots DAG run outcomes across a full month to spot date-based patterns",
+        "Shows every task across every run at once, as a colored status grid",
+        "The exact Python source that produced this DAG, version by version",
+        "A table of every DAG Airflow knows, with filter chips and at-a-glance status"
+      ],
+      "correctMap": [4, 2, 0, 1, 3],
+      "explain": "The DAGs list is the home page triaging every DAG at once. The Grid view stacks every run into rows and columns per task. The Graph view draws the actual nodes and edges. The Calendar tab plots outcomes across a month. The Code tab shows the literal parsed Python source behind the DAG."
+    },
+    {
+      "id": "af-04",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these steps in the correct order for going from nothing installed to a working local Airflow session.",
+      "items": [
+        "Install Airflow with pip, pinning both the Airflow version and a matching constraints file",
+        "Run airflow standalone to initialize the metadata database and start every component at once",
+        "Retrieve the generated admin password from $AIRFLOW_HOME/simple_auth_manager_passwords.json.generated",
+        "Open http://localhost:8080 in a browser",
+        "Log in with username admin and that generated password"
+      ],
+      "explain": "pip install (with its constraints file) comes first, then the single airflow standalone command that bootstraps the database, scheduler, webserver, and triggerer together. Only after that has finished does the generated password file actually exist to read, and only then can you open the UI and log in with it."
+    },
+    {
+      "id": "af-05",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A DAG is scheduled schedule=\"0 6 * * *\" and is meant to process 'yesterday's complete data' every morning. Which statement correctly describes its logical date versus when it actually executes?",
+      "options": [
+        "A run with logical date 2024-01-15 actually executes at 2024-01-16 06:00 — the logical date is the period the run represents, not the moment it fires",
+        "A run with logical date 2024-01-15 actually executes at 2024-01-15 06:00, the same calendar day its logical date names",
+        "The logical date is always today's date at the moment the scheduler happens to fire",
+        "Logical date and actual execution time are two names for the exact same moment; Airflow just displays both for convenience",
+        "A run's logical date is chosen by whoever manually triggers it, not by the schedule",
+        "Logical date only applies to DAGs using cron presets like @daily, not to DAGs using a raw cron string like \"0 6 * * *\""
+      ],
+      "correctIndex": 0,
+      "explain": "A DAG run's logical date is the start of the period the run covers, not the moment it actually executes. A run meant to represent 'the 15th, complete' can only fire after the 15th has fully ended — that's 2024-01-16 06:00, not sometime during the 15th itself. This is exactly why {{ ds }} is useful: it gives the period the run represents, not 'right now.'",
+      "distractorExplain": "Option B keeps 'logical date' correctly tied to 'the day the run covers' — the one error is which calendar day it actually fires on. If it fired on 2024-01-15 at 06:00, the day it's supposed to represent as 'complete' wouldn't have finished yet, which defeats the entire point of using a logical date for a day-over-day pipeline."
+    },
+    {
+      "id": "af-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "extract >> [transform_orders, transform_customers] >> load",
+      "prompt": "In the DAG above, transform_orders fails outright and transform_customers succeeds. With the default trigger rule, what does load show once the run finishes?",
+      "options": [
+        "load shows failed, because it ran and then failed",
+        "load shows upstream_failed — it never actually ran, because one of its two upstream tasks didn't succeed",
+        "load shows success, because at least one of its two upstream tasks succeeded",
+        "load shows skipped, because branching chose not to run it"
+      ],
+      "correctIndex": 1,
+      "explain": "The default trigger rule, all_success, requires every upstream task to have succeeded before a task runs. Since transform_orders failed, load never attempts to run at all — Airflow marks it upstream_failed, correctly distinguishing 'never ran because something it depended on failed' from an actual failed attempt."
+    },
+    {
+      "id": "af-07",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "def clean_customer_records(table_name, batch_size=500):\n    ...",
+      "prompt": "This function needs to run as a task, called with table_name=\"stg_customers\" and batch_size=1000. Select every option below that correctly wires those arguments into the task.",
+      "options": [
+        "Use classic PythonOperator with op_kwargs={\"table_name\": \"stg_customers\", \"batch_size\": 1000}",
+        "Use classic PythonOperator with op_args=[\"stg_customers\", 1000]",
+        "Decorate the function with @task() and call it directly as clean_customer_records(table_name=\"stg_customers\", batch_size=1000)",
+        "Use PythonOperator with python_callable=clean_customer_records(\"stg_customers\", 1000) — calling the function immediately and handing PythonOperator its return value",
+        "Use PythonOperator with python_callable=clean_customer_records and pass table_name and batch_size directly as extra keyword arguments to PythonOperator itself"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "op_kwargs passes keyword arguments into the callable exactly like calling it directly would; op_args does the same positionally. The TaskFlow @task style lets you call the decorated function with normal arguments and Airflow turns that call into a task automatically. Option D calls the function immediately at DAG-parse time and hands PythonOperator its return value instead of the function itself — the function never runs as a task. Option E is wrong because PythonOperator doesn't forward arbitrary extra keyword arguments through to the callable; arguments have to go through op_kwargs or op_args."
+    },
+    {
+      "id": "af-08",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in the TaskFlow API, a @task function's ________ becomes an XCom automatically, so calling one task's result as another task's input wires up the push and pull for you.",
+      "acceptedAnswers": ["return value", "returned value", "return_value"],
+      "explain": "A @task-decorated function's return value is automatically pushed to XCom under the key return_value. Calling log_row_count(get_row_count()) tells Airflow to wire that XCom through without any explicit xcom_push/xcom_pull calls."
+    },
+    {
+      "id": "af-09",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each term to its actual meaning.",
+      "left": ["DAG", "DAG Run", "Task Instance", "Try Number"],
+      "right": [
+        "How many times one specific Task Instance has been attempted",
+        "One task, within one specific execution of the DAG — the same task has a different one of these per run",
+        "The pipeline's definition as a Python file — it doesn't run by itself",
+        "One specific execution of a DAG, tied to one logical date, with its own overall status"
+      ],
+      "correctMap": [2, 3, 1, 0],
+      "explain": "A DAG is the template; a DAG Run is one execution of that template tied to one logical date; a Task Instance is one task within one specific DAG Run (the same task gets a new Task Instance every run); and Try Number tracks how many times that one Task Instance has actually been attempted."
+    },
+    {
+      "id": "af-10",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Match each term to what it actually is.",
+      "left": ["Connection", "Hook", "Operator", "Provider package"],
+      "right": [
+        "A task-shaped wrapper for one unit of work, often built internally on top of a Hook",
+        "A separately-installed package bundling a system's Hooks, Operators, Sensors, and connection type together",
+        "A stored record of credentials and connection details, identified by a conn_id — never touched directly by DAG code",
+        "A Python class that looks up a Connection and turns it into a real, authenticated connection object your code can use"
+      ],
+      "correctMap": [2, 3, 0, 1],
+      "explain": "A Connection just stores credentials under a conn_id. A Hook is the Python class that turns that stored record into a real, usable connection. An Operator is the task-shaped wrapper, often built on top of a Hook internally. A provider package is what bundles a system's Hooks, Operators, Sensors, and connection type together as one installable unit."
+    },
+    {
+      "id": "af-11",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: pip install apache-airflow-providers-________ is the package that adds Snowflake support — Hooks, Operators, Sensors, and the Snowflake connection type — to Airflow.",
+      "acceptedAnswers": ["snowflake"],
+      "explain": "Core Airflow knows nothing about specific external systems by design. apache-airflow-providers-snowflake is the separately-versioned package that adds SnowflakeHook, SnowflakeOperator, and the 'Snowflake' Connection Type option all at once."
+    },
+    {
+      "id": "af-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A task needs to run a SELECT against Snowflake, check whether the row count is zero, and raise an error before any downstream task runs if it is. Which approach actually fits, per this course?",
+      "options": [
+        "A SnowflakeHook, used directly inside a PythonOperator (or @task) so the code can inspect the result and decide whether to raise",
+        "A SnowflakeOperator, since it already runs arbitrary SQL against Snowflake and that covers this case",
+        "A BashOperator calling the snowsql CLI, since bash commands are easier to conditionally fail",
+        "A Connection by itself, since a Connection stores the credentials needed to check the row count"
+      ],
+      "correctIndex": 0,
+      "explain": "An Operator like SnowflakeOperator (or SQLExecuteQueryOperator) covers 'just run this SQL' — it doesn't hand the result back for your own branching logic. A Hook gives you the raw connection, so using SnowflakeHook.get_first() inside a PythonOperator or @task lets the code inspect the count and raise a real error, exactly the kind of custom logic Lesson 14 says is when to reach for a Hook directly."
+    },
+    {
+      "id": "af-13",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Per this course, which of these actually belong in a Snowflake Connection's Extra JSON field, rather than one of the standard Connection fields (Login, Password, Schema)?",
+      "options": [
+        "account",
+        "warehouse",
+        "database",
+        "role",
+        "Login — it belongs in Extra alongside account and warehouse",
+        "Password — it must be entered in Extra instead of the standard Password field"
+      ],
+      "correctIndices": [0, 1, 2, 3],
+      "explain": "Per Lesson 16's field table, Login and Password are standard Connection fields, and Schema is also standard (optional). account, warehouse, database, and role all go under the Extra JSON field specifically — they're Snowflake-specific settings the generic Connection fields don't have slots for."
+    },
+    {
+      "id": "af-14",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A branch task sends a DAG down one of two paths; the unchosen path is marked skipped. A downstream task must run once the branch resolves, but only if nothing upstream genuinely failed. Which trigger rule is the one this course recommends for that task, and why?",
+      "options": [
+        "none_failed_min_one_success — runs once nothing upstream failed and at least one upstream task succeeded; a skipped path doesn't block it",
+        "one_success — runs once at least one upstream task succeeded, even if another upstream task actually failed outright",
+        "all_success — the default; requires every upstream task, including the skipped one, to have succeeded",
+        "all_done — runs once every upstream task has finished, regardless of success, failure, or skip",
+        "all_failed — runs only when every upstream task failed",
+        "none_skipped — runs only when no upstream task was skipped at all"
+      ],
+      "correctIndex": 0,
+      "explain": "The default all_success treats a skipped branch path as 'not succeeded,' so the join task gets skipped too, even though the chosen branch ran fine. none_failed_min_one_success is the standard fix: it only cares that nothing actually failed and that at least one upstream task succeeded, which exactly matches a branch's one-chosen-path, one-skipped-path shape.",
+      "distractorExplain": "Option B, one_success, sounds interchangeable but isn't: it fires as soon as any single upstream task succeeds, even if another upstream task genuinely failed outright rather than being skipped. That means one_success would mask a real failure elsewhere in the join that none_failed_min_one_success would correctly block the task from running past."
+    },
+    {
+      "id": "af-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A FileSensor may need to wait anywhere from a few minutes up to 6 hours for a file to land. Which mode should it use, and why?",
+      "options": [
+        "mode=\"reschedule\", because it frees the worker slot between checks instead of holding it for the entire wait",
+        "mode=\"poke\", because it checks more frequently and finds the file faster",
+        "mode=\"reschedule\", because it skips the timeout setting entirely",
+        "mode=\"poke\", because reschedule mode cannot be combined with a timeout"
+      ],
+      "correctIndex": 0,
+      "explain": "mode=\"poke\" holds a worker slot for the entire wait, which is fine for a short wait but wastes a worker for hours doing nothing most of the time. mode=\"reschedule\" frees the slot between checks and reschedules itself — exactly the right choice once a wait could stretch to hours, as this one can."
+    },
+    {
+      "id": "af-16",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "code": "@task\ndef add_one(x: int):\n    return x + 1\n\n@task\ndef sum_it(values):\n    return sum(values)\n\nadded = add_one.expand(x=[1, 2, 3])\nsum_it(added)",
+      "prompt": "Select every true statement about what this code actually does.",
+      "options": [
+        "add_one.expand(x=[1, 2, 3]) creates one separate task instance per item in the list, determined at run time",
+        ".expand() runs the task once, passing the entire list in as a single argument instead of creating multiple instances",
+        "Each mapped task instance gets its own Map Index identifying which specific list element it processed",
+        "sum_it still runs only once, receiving all of add_one's mapped results together as a single list",
+        "The number of mapped task instances is fixed at DAG-authoring time and can't change without editing the code"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "expand(x=[1, 2, 3]) creates three separate task instances of add_one, each handling one element (x=1, x=2, x=3), each with its own Map Index. sum_it(added) is the reduce half: it runs once, automatically receiving all three mapped results as a list. The count of mapped instances is determined by the length of the list at run time, not hardcoded — changing the list's length changes the instance count with no code change, which is the entire point of dynamic task mapping."
+    },
+    {
+      "id": "af-17",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: @task.branch's return value must be a ________ (or a list of them) naming which downstream task(s) Airflow should actually run; every other downstream task is marked skipped.",
+      "acceptedAnswers": ["task id", "task_id", "a task id", "task ids"],
+      "explain": "@task.branch works exactly like @task except its return value is a task ID (or list of task IDs) telling Airflow which downstream task(s) to run. Every task not named is deliberately skipped, not failed."
+    },
+    {
+      "id": "af-18",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each Sensor/mapping term to what it actually controls.",
+      "left": ["poke_interval", "timeout", "mode=\"reschedule\"", "Map Index"],
+      "right": [
+        "Frees the worker slot between checks instead of holding it the whole time",
+        "Identifies which specific list element a mapped task instance processed",
+        "How often a Sensor re-checks whether its condition is true yet",
+        "How long a Sensor keeps checking before the task is marked failed"
+      ],
+      "correctMap": [2, 3, 0, 1],
+      "explain": "poke_interval sets how often a Sensor re-checks its condition; timeout sets how long it keeps checking before giving up and failing; mode=\"reschedule\" frees the worker slot between checks rather than holding it; and Map Index identifies which element of a mapped list a specific task instance actually processed."
+    },
+    {
+      "id": "af-19",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A task with retries=3 and an on_failure_callback ends up failing on every attempt. Put the resulting sequence of events in order.",
+      "items": [
+        "A task raises an exception and is marked failed on this attempt",
+        "Airflow waits retry_delay (or a longer backed-off interval) before trying again",
+        "The task instance is retried, incrementing its Try Number",
+        "Once retries is exhausted and the task is still failing, it's marked permanently failed",
+        "on_failure_callback fires with the full failure context, alerting the data team"
+      ],
+      "explain": "Each failed attempt is followed by a wait (retry_delay, possibly growing with exponential backoff), then a retry that bumps the Try Number. Only once every retry is exhausted and the task still hasn't succeeded does Airflow mark it permanently failed — and that's the exact moment on_failure_callback actually fires, not after each individual attempt."
+    },
+    {
+      "id": "af-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A BashOperator task runs dbt build against a 40-model dbt project. One model fails partway through. What does Airflow's Graph view show for that task, and what do you have to do to find out which model broke?",
+      "options": [
+        "One red box for the whole task — you have to open that task's log and read dbt's own output to find the specific model",
+        "40 separate boxes, one per model, with the failed one shown in red",
+        "One red box, and Airflow automatically names the failed model in the Graph view's tooltip",
+        "The task shows success, because dbt swallows individual model failures by default"
+      ],
+      "correctIndex": 0,
+      "explain": "To Airflow, running dbt via BashOperator is one task — a single box. dbt's own internal DAG runs invisibly inside it. If one of 40 models fails, Airflow's Graph view still just shows one red box; finding which model broke means opening the log and reading dbt's own build output. That per-model visibility is exactly what astronomer-cosmos adds instead."
+    },
+    {
+      "id": "af-21",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about running a scheduled COPY INTO load from Airflow, per this course.",
+      "options": [
+        "Use SQLExecuteQueryOperator pointed at a Snowflake conn_id — Airflow's Snowflake provider docs no longer document a dedicated SnowflakeOperator",
+        "A scheduled Airflow COPY INTO load is the better fit when the load needs to be coordinated with other pipeline steps (a check, then dbt), not just run as fast as possible",
+        "Snowpipe is event-driven loading, and Airflow's scheduled COPY INTO replaces it entirely — once Airflow is in place, Snowpipe should always be removed",
+        "The COPY INTO SQL text must be rewritten in a special Airflow-only syntax before it will run",
+        "The task log for a COPY INTO run only shows pass/fail — the real COPY INTO result (rows parsed, rows loaded) is hidden from Airflow"
+      ],
+      "correctIndices": [0, 1],
+      "explain": "The Snowflake provider's current documentation recommends the general-purpose SQLExecuteQueryOperator over the older Snowflake-specific operator. Airflow's scheduled COPY INTO is the right tool when a load has to be coordinated with other steps (check, load, then trigger dbt) rather than just be fast — it doesn't replace Snowpipe, which is still the right tool for unpredictable, near-instant arrivals. The SQL itself is ordinary COPY INTO, unchanged, and the task log shows the real COPY INTO result — file name, rows parsed, rows loaded — exactly as Snowflake returns it."
+    },
+    {
+      "id": "af-22",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "code": "load_to_snowflake = SQLExecuteQueryOperator(\n    task_id=\"load_to_snowflake\",\n    conn_id=\"snowflake_default\",\n    sql=\"copy_into_raw_sales.sql\",\n    retries=5,\n    retry_delay=timedelta(minutes=2),\n    ________=True,\n    max_retry_delay=timedelta(minutes=30),\n)",
+      "prompt": "Fill in the blank: which parameter makes each retry wait longer than the last, instead of a fixed delay, capped by max_retry_delay?",
+      "acceptedAnswers": ["retry_exponential_backoff"],
+      "explain": "retry_exponential_backoff=True makes each retry wait roughly double the previous wait, starting from retry_delay, capped at max_retry_delay so it never waits forever — the right shape when retrying a struggling downstream system quickly and repeatedly would only make things worse."
+    },
+    {
+      "id": "af-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "A task has retries=3 and an on_failure_callback set. It fails on its original attempt and on all 3 retries — 4 failed attempts total. At what point does on_failure_callback actually fire?",
+      "options": [
+        "Once, after the 4th and final attempt fails and the task instance is marked permanently failed",
+        "Four times — once after each failed attempt, including the three that are about to be retried",
+        "Immediately after the first failed attempt, before any retries happen",
+        "It doesn't fire at all unless retries is set to 0"
+      ],
+      "correctIndex": 0,
+      "explain": "on_failure_callback runs the instant a task instance is marked failed — which only happens after every retry is exhausted, not after each individual attempt that's still going to be retried. With retries=3, that's after the 4th attempt, exactly once."
+    },
+    {
+      "id": "af-24",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Match each deployment option to what actually differentiates it, per this course.",
+      "left": ["Astronomer", "AWS MWAA", "Google Cloud Composer", "Self-hosted"],
+      "right": [
+        "AWS runs the Airflow infrastructure inside your own AWS account — a natural fit when the rest of the stack is already S3/Redshift/IAM",
+        "You own the metadata database, scheduler/webserver uptime, version upgrades, and worker scaling yourself",
+        "Google's managed Airflow on GCP — a natural fit when the rest of the stack is already BigQuery/GCS",
+        "The Airflow-specific vendor — manages the scheduler, webserver, and upgrades, and adds its own deploy tooling and support on top of open-source Airflow"
+      ],
+      "correctMap": [3, 0, 2, 1],
+      "explain": "Astronomer is the Airflow-specific vendor layering tooling and support on open-source Airflow. AWS MWAA and Google Cloud Composer are each cloud provider's managed Airflow, a natural fit when the rest of the stack already lives there. Self-hosted means you own the database, uptime, upgrades, and scaling end to end, in exchange for lower direct cost and full control."
+    },
+    {
+      "id": "af-25",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of this course's diagnostic checklist for a failed task in the correct order.",
+      "items": [
+        "Read the actual error in the task's log first",
+        "Check the status of the task's upstream dependencies",
+        "Check whether the error points at a Connection that might be misconfigured",
+        "Decide whether the failure is a reproducible code bug or an environment-specific issue"
+      ],
+      "explain": "The checklist works in order: read what Airflow already told you in the log, then confirm the failure isn't actually further back in an upstream task, then check whether a Connection (host, credential, ID) is the real cause if an external system is involved, and only then classify the failure as a code bug versus an environment issue to decide what to actually fix."
+    },
+    {
+      "id": "af-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "A DAG's Snowflake-loading task has run correctly every day for months. Today, with no changes to the DAG's code, it fails with a connection error — and a developer confirms the exact same task code runs fine locally. Per this course's diagnostic checklist, what's the most likely category of problem, and what should be checked first?",
+      "options": [
+        "An environment issue — check whether the Connection in this environment still has valid, current credentials and the right host",
+        "A code bug — the Python in the task must have a logic error that only shows up some days",
+        "A code bug — rewrite the task's SQL, since identical code producing different results always means bad SQL",
+        "There's no way to narrow it down further than 're-run it and see'"
+      ],
+      "correctIndex": 0,
+      "explain": "Per the checklist's own table, 'works locally, fails in the deployed environment only' and 'started failing after nothing in the DAG code changed' both point to an environment issue, not a code bug — a code bug reproduces identically everywhere. The fastest next step is checking Connections: an expired credential or changed host is a genuinely common cause of exactly this pattern."
+    },
+    {
+      "id": "af-27",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Select every true statement about the Grid view versus a task's log, per this course.",
+      "options": [
+        "The Grid view shows every task across every run at once, as a colored status grid — letting you see at a glance whether a failure is isolated or a repeating pattern",
+        "A task's log contains the actual timestamped output and full exception traceback produced by that one specific run",
+        "The Grid view shows the full Python exception traceback for a failed task, so you never actually need to open the log",
+        "A task's log lists every DAG run's status at a glance across the whole pipeline, the same thing the Grid view shows"
+      ],
+      "correctIndices": [0, 1],
+      "explain": "The Grid view is the run-by-run, task-by-task overview — good for spotting whether a failure is a one-off or a pattern, but it doesn't contain the actual error text. A task's log is where the real timestamped output and full traceback live, for exactly one specific run. Each view answers a different question; neither replaces the other."
+    },
+    {
+      "id": "af-28",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Per the capstone brief, select every requirement a complete capstone DAG must actually satisfy.",
+      "options": [
+        "At least three tasks using real operators (PythonOperator, BashOperator, or a provider operator), not placeholder EmptyOperator tasks",
+        "A real Connection (Snowflake or another warehouse) used by a hook or provider operator, not a hardcoded credential",
+        "A sensor or branch whose condition is driven by real data or state, not a hardcoded True",
+        "A task that actually triggers a dbt build or run against the data the pipeline loaded",
+        "retries and retry_delay on at least the tasks touching external systems, plus a real alerting hook that actually fires on a real failure",
+        "Dynamic task mapping (.expand()) used somewhere in the pipeline"
+      ],
+      "correctIndices": [0, 1, 2, 3, 4],
+      "explain": "The brief's five numbered sections are: real tasks with real dependencies (including an XCom), a real warehouse Connection used through a hook or provider operator, a sensor or branch driven by real data, a dbt trigger against the loaded data, and real retries plus alerting proven with a deliberate failure. Dynamic task mapping is a real Chapter 4 technique, but it's never named as a capstone requirement."
+    },
+    {
+      "id": "af-29",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of this course's recommended capstone walkthrough order in sequence.",
+      "items": [
+        "Show the Graph view to prove the dependency structure is real",
+        "Show a passing run in the Grid view to prove the pipeline actually executes successfully",
+        "Walk through the retries, retry_delay, and on_failure_callback configuration",
+        "Show the task that triggers dbt against the real data the pipeline loaded into Snowflake",
+        "If available, show one deliberately broken run that the Grid caught"
+      ],
+      "explain": "The recommended order builds credibility step by step: structure first (Graph view), then proof it actually runs (a passing Grid run), then the retry/alerting safety net, then the dbt+Snowflake integration tying the whole path together, and finally — if available — a real caught failure, which is more convincing than only ever showing success."
+    },
+    {
+      "id": "af-30",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "In an interview, you're asked: 'Why trigger dbt from Airflow instead of letting it run on its own separate schedule?' Based on this course, what's the strongest answer?",
+      "options": [
+        "Because Airflow can coordinate the dbt run as one controlled step in a larger pipeline — waiting for the load to finish, retrying it, and alerting if it fails — instead of dbt running on a disconnected schedule of its own",
+        "Because dbt has no way to run on a schedule at all without an external orchestrator",
+        "Because Airflow replaces dbt's own internal ref() dependency graph with a faster one",
+        "Because Snowflake requires Airflow to authenticate before dbt can connect to it"
+      ],
+      "correctIndex": 0,
+      "explain": "dbt already has its own correct internal dependency graph from ref() — Airflow doesn't replace or speed that up. What Airflow adds is the outer layer: deciding when the whole dbt project runs, what runs before it (the load step), and what happens if it fails, with retries and alerting wrapped around the whole pipeline — not just dbt running on its own disconnected schedule."
+    }
+  ]
+}

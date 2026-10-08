@@ -95,19 +95,19 @@ export const MATHEMATICS_FOR_QUANTITATIVE_FINANCE_CHAPTERS: ChapterMeta[] = [
     n: 7,
     title: "Quant Interview Mathematics",
     lessons: [
-      L(35, "probability-brainteasers", "Probability Brainteasers"),
-      L(36, "expected-value-and-betting-problems", "Expected Value & Betting Problems"),
-      L(37, "combinatorics-and-counting", "Combinatorics & Counting"),
-      L(38, "mental-math-and-estimation", "Mental Math & Estimation"),
+      L(35, "probability-brainteasers", "Probability Brainteasers", { contentDir: "ch07/35-probability-brainteasers" }),
+      L(36, "expected-value-and-betting-problems", "Expected Value & Betting Problems", { contentDir: "ch07/36-expected-value-and-betting-problems" }),
+      L(37, "combinatorics-and-counting", "Combinatorics & Counting", { contentDir: "ch07/37-combinatorics-and-counting" }),
+      L(38, "mental-math-and-estimation", "Mental Math & Estimation", { contentDir: "ch07/38-mental-math-and-estimation" }),
     ],
   },
   {
     n: 8,
     title: "Capstone",
     lessons: [
-      L(39, "capstone-kickoff-a-mathematical-model-of-asset-prices", "Capstone Kickoff: A Mathematical Model of Asset Prices"),
-      L(40, "capstone-build-it", "Capstone: Build It"),
-      L(41, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation"),
+      L(39, "capstone-kickoff-a-mathematical-model-of-asset-prices", "Capstone Kickoff: A Mathematical Model of Asset Prices", { contentDir: "ch08/39-capstone-kickoff-a-mathematical-model-of-asset-prices" }),
+      L(40, "capstone-build-it", "Capstone: Build It", { contentDir: "ch08/40-capstone-build-it" }),
+      L(41, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch08/41-capstone-wrap-up-and-portfolio-presentation" }),
     ],
   },
 ];
