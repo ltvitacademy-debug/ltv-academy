@@ -1,0 +1,457 @@
+{
+  "questions": [
+    {
+      "id": "ofsa-01",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of how a single transaction flows through Oracle Fusion Financials, per Lesson 1, in the correct order.",
+      "items": [
+        "A subledger application (for example, Payables) captures a transaction and raises an accounting event",
+        "Subledger Accounting intercepts the event and applies the active accounting method's rules",
+        "SLA produces a subledger journal entry, reviewable in Draft inside the subledger",
+        "Once finalized, SLA transfers the journal entry to the General Ledger",
+        "The journal becomes a GL journal that can be posted and rolled into the trial balance"
+      ],
+      "explain": "Every number that lands in the General Ledger from a subledger passes through this exact chain: the subledger raises an event, SLA applies rules to build the journal entry, the entry is reviewable in Draft, Final mode and transfer move it to GL, and only then does it get posted into the trial balance. GL never talks directly to the subledgers — SLA is the only path."
+    },
+    {
+      "id": "ofsa-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "A supplier invoice is validated, generating one accounting event. Three days later, someone adjusts the invoice's amount. How does SLA classify the second occurrence?",
+      "options": [
+        "As a different event type (such as Invoice Adjusted) within the same event class, Invoices, since the event class covers the category of transaction and the event type identifies specifically what happened",
+        "As the exact same event as the validation, since SLA only tracks events by event class and doesn't distinguish specific event types",
+        "As a new event class entirely, since any change to an invoice after validation creates a new category of transaction",
+        "SLA does not classify an adjustment as an event at all, since no money changed hands yet"
+      ],
+      "correctIndex": 0,
+      "explain": "Event class is the category of transaction (Invoices), and event type is the specific thing that happened within that category (Invoice Validated, then later Invoice Adjusted). The adjustment stays in the same event class but gets its own event type, which is exactly what lets rules treat the original validation and the later adjustment differently if needed."
+    },
+    {
+      "id": "ofsa-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the Subledger Accounting Method and rule types, per Lesson 3.",
+      "options": [
+        "A Subledger Accounting Method is a container that points, per subledger application, to the journal entry rule sets that should fire for each event class",
+        "Journal line rules decide which lines appear on a journal entry and whether each is a debit or a credit",
+        "Account rules decide which GL account a line should post to",
+        "A Subledger Accounting Method contains the actual accounting logic itself, rather than pointing to rule sets defined elsewhere",
+        "A single company can only ever use one Subledger Accounting Method across every ledger it owns"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "The accounting method is a pointer/container, not the logic itself — it directs each subledger application to the journal entry rule set that should fire for a given event class, and journal line rules and account rules are two of the four rule types that actually live inside those rule sets. A company can use more than one accounting method, one per ledger, when it needs genuinely different treatment of the same transactions, as Chapter 6 covers in full."
+    },
+    {
+      "id": "ofsa-04",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 1 term to what it actually is.",
+      "left": ["Accounting event", "Event class", "Event type", "Source"],
+      "right": [
+        "A specific piece of transaction data, like supplier name or invoice amount, that a rule can reference",
+        "A business occurrence inside a subledger application that may require a journal entry",
+        "The specific thing that happened within a category, like Invoice Validated",
+        "A category of business transaction within a subledger application, like Invoices"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "An accounting event is the business occurrence itself. Event class groups events by category (Invoices). Event type is the specific thing that happened within that category (Invoice Validated). A source is a specific piece of transaction data, like supplier name, that a rule can reference — a different concept entirely from the event classification."
+    },
+    {
+      "id": "ofsa-05",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a journal line rule attaches conditions to a seeded ________, which is Oracle's pre-configured definition of a kind of accounting line (like Invoice, Tax, or Freight) with built-in debit/credit and accounting-class properties.",
+      "acceptedAnswers": ["journal line type", "JLT", "journal line types"],
+      "explain": "A journal line type is the seeded building block — a kind of line, like Invoice or Tax, with Oracle-defined debit/credit and accounting-class properties already attached. A journal line rule is what you build on top of it, adding the specific conditions for when that kind of line should actually generate."
+    },
+    {
+      "id": "ofsa-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A Tax journal line rule is configured to generate a line only if the invoice has a non-zero tax amount. An invoice with $0 tax is validated. What happens?",
+      "options": [
+        "No Tax line generates for that invoice, because the rule's condition isn't satisfied — the other journal line rules for that event still fire independently",
+        "The Tax line still generates, but with a $0 amount, because every journal line rule defined for the event class must produce a line regardless of its condition",
+        "The entire journal entry fails to generate, because one journal line rule's condition wasn't met",
+        "The Invoice and Item Expense lines also stop generating, since journal line rules evaluate as a single all-or-nothing group"
+      ],
+      "correctIndex": 0,
+      "explain": "Each journal line rule evaluates independently against its own condition. An invoice with no tax simply doesn't satisfy the Tax rule's condition, so no Tax line generates — but the Invoice, Item Expense, and any other applicable journal line rules still fire on their own, producing whatever lines actually apply to that specific transaction."
+    },
+    {
+      "id": "ofsa-07",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "An account rule for the Cost Center segment has priority 1, 'if expense category is Travel, use Cost Center 500,' and priority 2, 'otherwise, use the Cost Center from the source transaction.' Select every true statement about how this resolves on real transactions.",
+      "options": [
+        "A Travel expense transaction uses Cost Center 500, regardless of what Cost Center is recorded on the source transaction",
+        "A Meals expense transaction falls through to priority 2 and uses the Cost Center from the source transaction",
+        "SLA evaluates every priority level for every transaction and averages the results when more than one could apply",
+        "This priority structure lets one account rule handle multiple real-world cases without needing a separate rule for every scenario",
+        "If priority 2 were deleted, a Meals transaction would automatically default to Cost Center 500 instead of failing"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "SLA evaluates conditions in priority order and uses the first one that matches, stopping there — it never averages or combines multiple priority levels. A Travel transaction matches priority 1 and stops there, using Cost Center 500. A Meals transaction doesn't match priority 1's Travel-only condition, so it correctly falls through to priority 2 and uses the Cost Center from the source transaction. This is exactly what lets one rule handle many real-world cases cleanly. If priority 2 were removed, a Meals transaction would have no matching condition at all and would produce the same kind of gap Lessons 14 and 18 warn about — it would not default to Cost Center 500, since priority 1's Travel-only condition still wouldn't be satisfied."
+    },
+    {
+      "id": "ofsa-08",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each account-rule value-derivation method to how it actually works, per Lesson 6.",
+      "left": ["Constant value", "Source value", "Mapping set", "Account combination rule"],
+      "right": [
+        "Translates one or more input values into an output value through a lookup table",
+        "Always uses the same fixed value regardless of the transaction",
+        "Derives the entire account string in one step, typically from an account already on the source transaction",
+        "Uses a value taken directly from the transaction, like the natural account already on the invoice distribution"
+      ],
+      "correctMap": [1, 3, 0, 2],
+      "explain": "A constant value is always the same fixed value. A source value is pulled straight from the transaction, like the natural account already recorded on the distribution. A mapping set is a lookup table translating one or more inputs into an output. An account combination rule derives the whole account in one step rather than segment by segment."
+    },
+    {
+      "id": "ofsa-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A company wants to track which supplier each line in the shared Accounts Payable Trade control account relates to, without changing the Chart of Accounts. What is the correct way to do this, and why?",
+      "options": [
+        "Attach a supplier-number supporting reference to the AP Trade lines, since a supporting reference carries transaction-specific detail without requiring a new Chart of Accounts segment",
+        "Add a new Supplier segment to the Chart of Accounts, since that is the only way to carry a supplier number on a journal line",
+        "Use a mapping set on the Natural Account segment, since mapping sets can embed supplier detail directly into the account string itself",
+        "Nothing additional is needed, since the AP Trade account balance already breaks down by supplier automatically"
+      ],
+      "correctIndex": 0,
+      "explain": "A supporting reference attaches additional, transaction-specific detail at the subledger journal level without forcing that detail into a permanent Chart of Accounts segment that every account combination in the ledger would then carry, whether or not it relates to a supplier. On its own, a GL balance for a shared control account only shows the total, not the breakdown — the supporting reference is what makes that breakdown possible."
+    },
+    {
+      "id": "ofsa-10",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: an Application Accounting Definition (AAD) is built and managed inside a tool called the ________, which is where journal line rules, account rules, description rules, and supporting references are all actually configured.",
+      "acceptedAnswers": ["Accounting Methods Builder", "AMB", "the Accounting Methods Builder"],
+      "explain": "The Accounting Methods Builder, abbreviated AMB, is the tool everything from Chapter 2 is actually configured inside, and an AAD is the top-level object it ultimately produces for each subledger application."
+    },
+    {
+      "id": "ofsa-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A consultant needs to add a company-specific supporting reference to Oracle's seeded 'Standard Accrual' AAD for Payables. What is the correct, safe way to do this?",
+      "options": [
+        "Copy the seeded AAD, give the copy a descriptive name, and make the change on the copy, leaving the seeded original untouched",
+        "Edit the seeded AAD directly, since Oracle expects consultants to tailor seeded content to the company's needs",
+        "Delete the seeded AAD and build a brand-new one from a blank slate, since seeded AADs cannot be safely modified at all",
+        "Request Oracle Support to make the change, since only Oracle can modify any seeded AAD"
+      ],
+      "correctIndex": 0,
+      "explain": "The standard, safe workflow is copy-first: copy the seeded AAD, rename it clearly, and make every change on the copy. This leaves the seeded original available as a stable reference and a safety net, and avoids the risk of a future Oracle patch overwriting or conflicting with a directly-edited seeded object."
+    },
+    {
+      "id": "ofsa-12",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 3 object to its role in the configuration chain, per Lessons 10 through 13.",
+      "left": ["Application Accounting Definition (AAD)", "Subledger Accounting Method", "Journal entry rule set", "Ledger"],
+      "right": [
+        "The object a ledger is actually assigned, mapping each subledger application to exactly one AAD",
+        "Bundles the journal line rules, account rules, description rules, and supporting references for one event class",
+        "The object that carries the Subledger Accounting Method as one of its four core defining attributes",
+        "A complete, named, versionable package of every journal entry rule set for one subledger application"
+      ],
+      "correctMap": [3, 0, 1, 2],
+      "explain": "An AAD bundles every journal entry rule set for one subledger application into one named package. A Subledger Accounting Method is the object actually assigned to a ledger, mapping each application to one AAD. A journal entry rule set bundles the rules for one event class. A ledger carries the accounting method as one of its four defining attributes alongside Chart of Accounts, calendar, and currency."
+    },
+    {
+      "id": "ofsa-13",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "An account rule for the Natural Account segment on Freight journal lines has exactly one condition: 'if freight category is Domestic, use account 6510,' with no fallback. Select every true statement about what happens to this rule during validation and later live use.",
+      "options": [
+        "Validation is designed to catch this kind of gap — an incomplete rule with no default or catch-all condition — before the AAD can be activated",
+        "If a transaction with freight category 'International' later arrives in live processing and this gap was never caught, the account rule has nothing to return for it",
+        "Oracle will activate this AAD as long as it is free of typos, regardless of whether every condition has a fallback",
+        "Validation only checks spelling and formatting of rule names, not whether conditions are logically complete",
+        "This exact gap is the kind of incomplete-rule error that later surfaces as a Create Accounting failure rather than being caught safely during setup, if it slips past validation"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "Validation checks whether every account rule has a complete set of conditions with no gaps, specifically to catch a case like this before activation. Oracle will not activate an AAD that fails validation, regardless of whether the rule is otherwise typo-free. If a gap like this is ever missed and the rule goes live, an unmatched real transaction — like an International freight invoice — has no condition to return a value from, producing exactly the incomplete-rule error category covered later in the course."
+    },
+    {
+      "id": "ofsa-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "A company's primary ledger uses Accounting Method A, and its secondary ledger, recording the same transactions under IFRS, uses Accounting Method B. At what level is each accounting method assignment actually made?",
+      "options": [
+        "At the ledger level — each ledger independently carries its own accounting method assignment",
+        "At the business unit level — each business unit sharing a ledger can carry its own accounting method",
+        "At the Chart of Accounts level — the accounting method is a property of the Chart of Accounts structure itself",
+        "At the subledger application level, globally — one accounting method applies to that application across every ledger in the environment"
+      ],
+      "correctIndex": 0,
+      "explain": "The accounting method is one of a ledger's core defining attributes, assigned at the ledger level, not the business-unit level, because the ledger is what actually gets debited and credited. That is exactly why a primary and a secondary ledger, each defined independently, can each carry a different accounting method for the same underlying transactions."
+    },
+    {
+      "id": "ofsa-15",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: once Create Accounting runs in ________ mode, the resulting subledger journal entry becomes permanent and eligible to transfer to the General Ledger, and correcting it later requires reversal rather than simply re-running the process.",
+      "acceptedAnswers": ["Final", "final"],
+      "explain": "Final mode makes the journal entry permanent and transfer-eligible. Draft mode, by contrast, can be freely re-run and replaced, but Final cannot — once an entry is Final, correcting it means reversal, not a casual re-run."
+    },
+    {
+      "id": "ofsa-16",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A $1,200 Payables invoice ($1,000 goods, $100 freight, $100 tax) is validated. Which statement correctly describes how Create Accounting builds the resulting subledger journal entry?",
+      "options": [
+        "Every journal line rule defined for the Invoices event class is evaluated independently, and each one whose condition is met generates its own line, with the total debits equal to the total credits.",
+        "Every journal line rule defined for the Invoices event class is evaluated independently, and each one whose condition is met generates its own line, with the total debits exceeding the total credits by the tax amount.",
+        "Only the single journal line rule with the highest priority fires; the rest are skipped once one rule matches.",
+        "SLA generates one combined line for the full $1,200, with no separate Freight or Tax lines, since all three amounts belong to the same invoice.",
+        "The Invoice journal line rule fires only if the Tax and Freight journal line rules also fire successfully on the same transaction.",
+        "Each journal line rule fires only when the invoice total exceeds $1,000, regardless of which accounting class it belongs to."
+      ],
+      "correctIndex": 0,
+      "explain": "Each journal line rule defined for the event class — Invoice, Item Expense, Freight, Tax — evaluates independently against its own condition, and every one that matches generates its own line. The credit line for $1,200 (what's owed) balances exactly against the debit lines of $1,000 + $100 + $100, because a journal entry SLA produces must always balance in total.",
+      "distractorExplain": "Option B describes the identical mechanism — every journal line rule firing independently — but changes one detail: it claims debits exceed credits by the tax amount. A subledger journal entry always balances; nothing in how journal line rules fire would leave debits and credits unequal. The $1,200 credit and the $1,000+$100+$100 debits are exactly equal, not off by the tax amount."
+    },
+    {
+      "id": "ofsa-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "In Payables, which action represents the event that relieves a liability and reduces cash, rather than the event that first recognizes the liability?",
+      "options": [
+        "Payment made against a validated invoice",
+        "Invoice validation",
+        "Invoice completion",
+        "Receipt application"
+      ],
+      "correctIndex": 0,
+      "explain": "Invoice validation raises the Invoices event, recognizing that the company now owes the supplier. Payment made against that invoice raises a separate Payments event, which is what relieves the liability and reduces cash. Invoice completion and receipt application are the equivalent Receivables-side triggers, not Payables triggers."
+    },
+    {
+      "id": "ofsa-18",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "A subledger journal entry has gone Final, and someone later discovers it posted to the wrong account because of an incomplete account rule. Select every true statement about correcting this, per Lessons 18 and 28.",
+      "options": [
+        "The Final entry should be reversed, not deleted, to preserve the audit trail",
+        "A new, correct entry should be booked alongside the reversal",
+        "Since this traces back to a flawed rule, every other transaction already affected by the same rule should also be identified and corrected, not just the one noticed first",
+        "Fixing the account rule going forward automatically corrects every past transaction that rule already touched",
+        "The original flawed entry should be deleted outright once the reversal is booked, since keeping it would double-count the error"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "A Final entry is corrected through reversal plus a new correct entry, never deletion, to preserve the audit trail. Because this is a rule problem, not a one-off data problem, every other transaction the same flawed rule touched also needs to be identified — using the Account Analysis and Journal Entries Reports — and corrected, not just the transaction that happened to get noticed first. Fixing the rule itself only changes future behavior; it does nothing to transactions already accounted under the old version."
+    },
+    {
+      "id": "ofsa-19",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 4 process or term to what it actually does.",
+      "left": ["Create Accounting", "Transfer Journal Entries to GL", "Post in General Ledger option", "Journal import"],
+      "right": [
+        "The GL-side mechanism that converts arriving journal data into a properly structured GL journal batch",
+        "Applies the active accounting method's rules to eligible accounting events, producing subledger journal entries",
+        "Moves Final, not-yet-transferred subledger journal entries into GL as journal batches",
+        "Updates GL account balances immediately as part of the same transfer run, instead of leaving the batch unposted"
+      ],
+      "correctMap": [1, 2, 3, 0],
+      "explain": "Create Accounting applies rules to produce subledger journal entries. Transfer Journal Entries to GL moves Final entries into GL journal batches. The Post in General Ledger option, when selected on that transfer, also posts the batch immediately. Journal import is the underlying GL mechanism that actually structures the incoming data into a proper journal batch."
+    },
+    {
+      "id": "ofsa-20",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of getting a validated Payables invoice's accounting into a posted General Ledger balance in the correct order.",
+      "items": [
+        "Payables raises an accounting event when the invoice is validated",
+        "Create Accounting runs in Draft mode so the resulting entry can be reviewed",
+        "Create Accounting runs in Final mode, making the entry permanent and transfer-eligible",
+        "Transfer Journal Entries to GL moves the Final entry into a GL journal batch via journal import",
+        "The journal batch is posted, updating the GL account balances"
+      ],
+      "explain": "Validation raises the event, Draft lets the result be reviewed safely, Final makes it permanent and transfer-eligible, transfer plus journal import land it as a proper GL journal batch, and posting is the final step that actually updates account balances — each step is a distinct, deliberate gate, not one automatic cascade."
+    },
+    {
+      "id": "ofsa-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "A controller wants to see every subledger journal line that posted to the Accounts Payable Trade account during March, to investigate an unexpected balance. Which report should they run?",
+      "options": [
+        "The Account Analysis Report, since it organizes activity by GL account rather than by transaction",
+        "The Journal Entries Report, since it also organizes activity strictly by GL account",
+        "The Open Account Balances Listing, since it shows every line that has ever posted historically, not just open items",
+        "The Review Journal Entries page, since it is the only screen capable of searching by GL account"
+      ],
+      "correctIndex": 0,
+      "explain": "The Account Analysis Report organizes by GL account: for a chosen account and period, it lists every subledger journal line that posted there, which is exactly 'show me everything that hit this account this period.' The Journal Entries Report instead organizes by transaction, batch, or period, and the Open Account Balances Listing shows only what's still open, not full historical activity."
+    },
+    {
+      "id": "ofsa-22",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: the Open Account Balances Listing report relies directly on ________ data — like a supplier number attached to AP Trade lines — to break a control account's net balance down into its specific open, unsettled items.",
+      "acceptedAnswers": ["supporting reference", "supporting references", "supporting reference data"],
+      "explain": "Without supporting reference data captured on each line, the Open Account Balances Listing would have nothing to group open items by. The supplier-number supporting reference from Chapter 2 is exactly what lets this report attribute an open balance back to a specific supplier or invoice."
+    },
+    {
+      "id": "ofsa-23",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "During month-end, a company's Payables subledger balance for AP Trade doesn't match the GL balance on the AP Trade account. Select every cause this course identifies as a plausible explanation, per Lesson 23.",
+      "options": [
+        "A subledger journal entry was created but never transferred to GL",
+        "Someone posted a manual journal entry directly to the GL AP Trade account outside of Subledger Accounting",
+        "A transaction was accounted in one period but the GL transfer happened in a different period",
+        "The Account Analysis Report was run for the wrong ledger, which by itself changes the underlying GL balance",
+        "Supporting references were attached to the AP Trade lines, which inherently causes subledger and GL balances to diverge"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "A missed transfer, a manual GL journal that bypasses the subledger's own record, and a timing gap between accounting and transfer are the three causes this course identifies. Running a report for the wrong ledger is a user mistake in reading the data, not a cause of an actual balance mismatch, and supporting references exist to help reconciliation, not to cause divergence."
+    },
+    {
+      "id": "ofsa-24",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 5 term to what it actually is, per Lesson 24.",
+      "left": ["Accounting attribute", "Source", "Header-level attribute", "Line-level attribute"],
+      "right": [
+        "A specific piece of transaction data, like supplier name, that a rule can reference",
+        "A specific value SLA itself needs, by name, to build a correctly structured journal entry",
+        "Applies individually to each line, since different lines can carry different values, like Entered Amount",
+        "Applies once per journal entry as a whole, like Accounting Date"
+      ],
+      "correctMap": [1, 0, 3, 2],
+      "explain": "An accounting attribute is a value SLA needs by name, like Accounting Date or Entered Amount, distinct from a source, which is just data available from the transaction. Header-level attributes apply once per entry; line-level attributes apply per line, since different lines can differ."
+    },
+    {
+      "id": "ofsa-25",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "A controller reports that a validated invoice from a new supplier isn't showing up anywhere in the General Ledger. Put the diagnostic steps from Lesson 25's troubleshooting walkthrough in the correct order.",
+      "items": [
+        "Check the Review Journal Entries page to see whether a subledger journal entry exists for the transaction at all",
+        "If no entry exists, check the Create Accounting process results for an error specific to this transaction",
+        "If an entry exists but is still Draft, recognize that Final mode simply hasn't run yet for this event",
+        "If the entry is Final, check whether Transfer Journal Entries to GL has run and whether journal import created the GL batch",
+        "Once the root cause is found, fix it following the copy-first and Draft-then-Final patterns, then confirm the corrected result"
+      ],
+      "explain": "The lesson's structured approach checks the simplest explanations first: does an entry exist at all, did it error, is it Draft or Final, and if Final, did transfer and import actually run — only after isolating the cause does the fix (rule correction, re-run, or simply waiting for a scheduled Final run) get applied."
+    },
+    {
+      "id": "ofsa-26",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "A company's primary ledger must report under local GAAP and its secondary ledger must report the exact same transactions under IFRS, with different depreciation treatment. Which statement correctly describes how Oracle Fusion delivers both representations?",
+      "options": [
+        "The subledger transaction is entered once; the primary ledger's accounting method and the secondary ledger's accounting method each apply their own AADs to that one event, generating separate journal entries in each ledger.",
+        "The subledger transaction is entered once; the primary ledger's accounting method and the secondary ledger's accounting method each apply the same shared AAD to that one event, generating identical journal entries in each ledger.",
+        "The transaction must be entered twice, once in each ledger, so that each ledger's accounting method has its own data to work from.",
+        "A single accounting method is shared across both ledgers, and the depreciation difference is handled entirely inside the Fixed Assets module, outside of SLA.",
+        "Only the primary ledger receives a subledger journal entry; the secondary ledger's balance is derived later through currency translation, not through SLA.",
+        "The secondary ledger simply reuses the primary ledger's journal entries, adjusting only the posted amounts after the fact."
+      ],
+      "correctIndex": 0,
+      "explain": "The subledger transaction — one asset addition, one invoice — is entered only once. What differs is the accounting method assigned to each ledger: the primary ledger's method applies its own AADs (built for local GAAP), and the secondary ledger's method applies its own, different AADs (built for IFRS), to that same one event, producing two separate, independently correct journal entries in two separate ledgers.",
+      "distractorExplain": "Option B keeps the correct first half — the transaction is entered once — but changes the key detail: it has both ledgers apply the same shared AAD. If both ledgers used the same AAD, they would produce identical journal entries and could never deliver two genuinely different depreciation treatments. The entire point of multiple accounting representations is that each ledger's accounting method references its own AADs, built for its own standard."
+    },
+    {
+      "id": "ofsa-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "A company wants to ensure the people who enter AP invoices day-to-day are not also the people who can change account rules in the Accounting Methods Builder. What security concept does this describe?",
+      "options": [
+        "Segregation of duties, separating transaction processing from AMB configuration access",
+        "A data access set, limiting which ledgers a user can see or act on",
+        "Validation and activation, which only check the structure of a rule, not who can edit it",
+        "An accounting attribute assignment, which only controls where a value comes from, not who edits rules"
+      ],
+      "correctIndex": 0,
+      "explain": "Segregation of duties is specifically about separating who processes transactions day to day from who can configure the rules that determine how every future transaction of that kind gets accounted — exactly because a flawed rule affects far more than a single transaction. A data access set controls which ledgers a user can touch, not whether they can edit rules at all."
+    },
+    {
+      "id": "ofsa-28",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "An account rule's missing condition was fixed last week, following the copy-first discipline. Select every true statement about what this does and does not fix, per Lesson 28.",
+      "options": [
+        "It changes how future Create Accounting runs behave for new events",
+        "It automatically corrects every past transaction that was already accounted under the old, flawed rule",
+        "Transactions still in Draft under the old rule can simply be re-run in Draft mode to pick up the fix",
+        "Transactions already transferred to GL and posted require following GL period-close and adjustment procedures in addition to a subledger-level correction",
+        "Determining the full scope of affected transactions is unnecessary, since only the transaction that was first noticed needs correcting"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "Fixing a rule only changes future Create Accounting behavior — it does nothing by itself to transactions already accounted under the old version. Draft transactions can simply be re-run, but transactions already transferred and posted require GL period-close procedures on top of a subledger correction. Determining the full scope of everything the old rule affected, using the Chapter 5 reports, is essential — stopping at the one transaction first noticed leaves the books still wrong."
+    },
+    {
+      "id": "ofsa-29",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Oracle Fusion limits which ledgers a given user can see or act on through ________, a security construct that restricts visibility and transaction rights to specific ledgers or ledger sets rather than granting blanket access to every ledger.",
+      "acceptedAnswers": ["data access sets", "a data access set", "data access set"],
+      "explain": "Data access sets are what keep a consultant working on one subsidiary's books from seeing or affecting a different subsidiary's ledger, which matters especially in multiple-ledger, multiple-representation scenarios where a user may legitimately need the primary ledger but not the secondary one."
+    },
+    {
+      "id": "ofsa-30",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "For the manufacturing company design scenario in Lesson 29, match each subledger's design need to the Subledger Accounting concept that addresses it.",
+      "left": [
+        "Payables, with both domestic and international freight suppliers",
+        "Receivables, where a distributor may dispute a balance",
+        "Fixed Assets, with dozens of equipment categories",
+        "Cash Management, reconciling bank activity against AP and AR"
+      ],
+      "right": [
+        "Description rules combining customer name and invoice number, for a usable Account Analysis Report",
+        "Mapping sets translating asset category into the correct Natural Account segment",
+        "Account rule conditions covering every freight category actually in use, not just the common case",
+        "Accuracy of all the upstream account rules and supporting references, since Cash Management reconciliation depends on them"
+      ],
+      "correctMap": [2, 0, 1, 3],
+      "explain": "Payables needs freight account rule conditions covering every real-world freight category, learned the hard way back in Lesson 25. Receivables needs description rules combining customer name and invoice number so a disputed balance is readable on the Account Analysis Report. Fixed Assets needs mapping sets to translate dozens of equipment categories into accounts without a separate rule condition for each. Cash Management's reconciliation is only as clean as everything upstream in AP and AR, which is the connective-tissue idea this entire course was built around."
+    }
+  ]
+}
