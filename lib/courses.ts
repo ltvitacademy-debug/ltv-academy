@@ -188,6 +188,7 @@ import { GOV_DATA_GOVERNANCE_ARCHITECTURE_CHAPTERS } from "./data-governance-arc
 import { GOV_DATA_GOVERNANCE_CAREER_AND_CAPSTONE_CHAPTERS } from "./data-governance-career-and-capstone-outline";
 import { POWER_AUTOMATE_CHAPTERS } from "./power-automate-outline";
 import { POWER_AUTOMATE_AI_AGENTS_CHAPTERS } from "./power-automate-ai-agents-outline";
+import { HOW_IT_TEAMS_WORK_CHAPTERS } from "./how-it-teams-work-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -1895,6 +1896,15 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: POWER_AUTOMATE_AI_AGENTS_CHAPTERS,
     contentBase: "power-automate-ai-agents",
+  },
+  {
+    slug: "how-it-teams-work",
+    title: "How IT Teams Work: Agile, Waterfall, Scrum, Kanban & Software Releases",
+    tagline:
+      "How real IT departments assign work, manage projects, test changes, and release software — the shared professional foundation behind every technical role.",
+    status: "available",
+    chapters: HOW_IT_TEAMS_WORK_CHAPTERS,
+    contentBase: "how-it-teams-work",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,

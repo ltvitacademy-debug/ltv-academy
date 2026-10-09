@@ -101,6 +101,7 @@ export const CAREER_PATHS: CareerPath[] = [
         label: "Job Ready",
         note: "The whole program — this is the complete foundation, not step one of something bigger",
         courseSlugs: [
+          "how-it-teams-work",
           "t-sql-development",
           "ssis-development",
           "ssrs-development",
@@ -129,7 +130,7 @@ export const CAREER_PATHS: CareerPath[] = [
     stages: [
       {
         label: "Job Ready",
-        courseSlugs: ["t-sql-development", "power-bi", "python-for-power-bi", "tableau", "advanced-excel-for-data-analysts"],
+        courseSlugs: ["how-it-teams-work", "t-sql-development", "power-bi", "python-for-power-bi", "tableau", "advanced-excel-for-data-analysts"],
       },
       {
         label: "Advanced",
@@ -150,7 +151,7 @@ export const CAREER_PATHS: CareerPath[] = [
     stages: [
       {
         label: "Job Ready",
-        courseSlugs: ["t-sql-development", "power-bi", "snowflake", "dbt-analytics-engineering", "git-github-cicd-for-data"],
+        courseSlugs: ["how-it-teams-work", "t-sql-development", "power-bi", "snowflake", "dbt-analytics-engineering", "git-github-cicd-for-data"],
       },
       { label: "Advanced", courseSlugs: ["data-factory", "airflow"] },
     ],
@@ -169,6 +170,7 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         label: "Job Ready",
         courseSlugs: [
+          "how-it-teams-work",
           "t-sql-development",
           "data-engineering-foundations",
           "data-factory",
@@ -196,7 +198,7 @@ export const CAREER_PATHS: CareerPath[] = [
     stages: [
       {
         label: "Job Ready",
-        courseSlugs: ["t-sql-development", "data-engineering-foundations", "data-factory", "azure-databricks-and-delta-lake"],
+        courseSlugs: ["how-it-teams-work", "t-sql-development", "data-engineering-foundations", "data-factory", "azure-databricks-and-delta-lake"],
       },
       {
         label: "Advanced",
@@ -223,7 +225,7 @@ export const CAREER_PATHS: CareerPath[] = [
     stages: [
       {
         label: "Job Ready",
-        courseSlugs: ["t-sql-development", "data-engineering-foundations", "aws-fundamentals-for-data-engineers", "aws-data-engineering"],
+        courseSlugs: ["how-it-teams-work", "t-sql-development", "data-engineering-foundations", "aws-fundamentals-for-data-engineers", "aws-data-engineering"],
       },
       {
         label: "Advanced",
@@ -245,7 +247,7 @@ export const CAREER_PATHS: CareerPath[] = [
     stages: [
       {
         label: "Job Ready",
-        courseSlugs: ["t-sql-development", "snowflake", "dbt-analytics-engineering", "data-factory", "power-bi"],
+        courseSlugs: ["how-it-teams-work", "t-sql-development", "snowflake", "dbt-analytics-engineering", "data-factory", "power-bi"],
       },
       { label: "Advanced", courseSlugs: ["airflow", "git-github-cicd-for-data", "terraform-bicep-for-data-engineers"] },
     ],
@@ -263,7 +265,7 @@ export const CAREER_PATHS: CareerPath[] = [
     stages: [
       {
         label: "Job Ready",
-        courseSlugs: ["t-sql-development", "azure-fundamentals", "azure-database-administrator", "data-factory"],
+        courseSlugs: ["how-it-teams-work", "t-sql-development", "azure-fundamentals", "azure-database-administrator", "data-factory"],
       },
       { label: "Advanced", courseSlugs: ["powershell-fundamentals", "terraform-bicep-for-data-engineers", "git-github-cicd-for-data"] },
     ],
@@ -282,7 +284,7 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         label: "Job Ready",
         note: "T-SQL, used like a DBA, then real on-prem administration",
-        courseSlugs: ["t-sql-development", "t-sql-for-database-administrators", "sql-server-database-administration"],
+        courseSlugs: ["how-it-teams-work", "t-sql-development", "t-sql-for-database-administrators", "sql-server-database-administration"],
       },
       {
         label: "Advanced SQL Server",
@@ -404,6 +406,13 @@ export const CAREER_PATHS: CareerPath[] = [
       ]
     },
     "stages": [
+      {
+        "label": "How IT Teams Work",
+        "note": "Existing LTV course",
+        "courseSlugs": [
+          "how-it-teams-work"
+        ]
+      },
       {
         "label": "T-SQL Development",
         "note": "Existing LTV course",
@@ -540,6 +549,7 @@ export const CAREER_PATHS: CareerPath[] = [
         label: "Job Ready",
         note: "The whole program — SQL and Python foundations, then statistics, machine learning, AI, cloud ML, and MLOps",
         courseSlugs: [
+          "how-it-teams-work",
           "t-sql-development",
           "python-for-data-science",
           "statistics-and-probability-for-data-science",
@@ -571,6 +581,7 @@ export const CAREER_PATHS: CareerPath[] = [
         label: "Job Ready",
         note: "The whole program — no prior course assumed",
         courseSlugs: [
+          "how-it-teams-work",
           "python-for-ai-engineering",
           "git-github-for-software-engineers",
           "apis-json-for-ai-applications",
@@ -701,6 +712,7 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         "label": "Salesforce Foundations",
         "courseSlugs": [
+          "how-it-teams-work",
           "salesforce-and-crm-foundations",
           "salesforce-hands-on-environment",
           "salesforce-data-model-fundamentals"
@@ -817,7 +829,7 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         label: "Oracle & Financial Foundations",
         note: "No accounting or ERP background assumed",
-        courseSlugs: ["oracle-fusion-cloud-and-erp-foundations", "accounting-fundamentals-for-oracle-professionals"],
+        courseSlugs: ["how-it-teams-work", "oracle-fusion-cloud-and-erp-foundations", "accounting-fundamentals-for-oracle-professionals"],
       },
       {
         label: "Financials Configuration",
@@ -875,6 +887,7 @@ export const CAREER_PATHS: CareerPath[] = [
         label: "Job Ready",
         note: "The whole program — no prior course assumed",
         courseSlugs: [
+          "how-it-teams-work",
           "it-networking-and-cloud-fundamentals",
           "linux-administration",
           "git-github-for-software-engineers",
@@ -907,6 +920,7 @@ export const CAREER_PATHS: CareerPath[] = [
         label: "Job Ready",
         note: "The whole program — no prior course assumed",
         courseSlugs: [
+          "how-it-teams-work",
           "js-ts-blockchain",
           "blockchain",
           "blockchain-apis-backend",
