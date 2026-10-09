@@ -1,0 +1,591 @@
+{
+  "questions": [
+    {
+      "id": "allm-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Which expression is the standard rough estimate of total pretraining compute (in FLOPs) for a dense transformer, used throughout this course?",
+      "options": [
+        "C ≈ 6 × N × D",
+        "C ≈ N × D",
+        "C ≈ 2 × N × D",
+        "C ≈ N² × D",
+        "C ≈ 6 × N / D",
+        "C ≈ N + D"
+      ],
+      "correctIndex": 0,
+      "explain": "The rough compute identity C ≈ 6ND comes from approximately 2 FLOPs per parameter per token for the forward pass, doubled to roughly 4 for the backward pass, plus additional terms — 6 is the widely used rough constant from Kaplan et al.'s scaling-law work. N is the (non-embedding) parameter count and D is the number of training tokens.",
+      "distractorExplain": "Option B drops the factor of 6 entirely, treating compute as simply parameters times tokens. That factor of 6 is exactly what accounts for both the forward pass (~2 FLOPs/parameter/token) and the more expensive backward pass (~4 FLOPs/parameter/token) — omitting it understates real training compute by roughly 6x."
+    },
+    {
+      "id": "allm-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "A pretraining dashboard shows training loss trending down normally with typical noise, but Model FLOPs Utilization (MFU) suddenly drops from 42% to 18% with no corresponding change in the loss curve. What does this pattern most likely indicate?",
+      "options": [
+        "An infrastructure problem — a slow node, a data-loading bottleneck, or a communication stall — rather than anything wrong with the model itself",
+        "The learning rate has become too high and is about to cause a loss spike",
+        "The model has started overfitting to the training data",
+        "The data mixture weights were misconfigured for this stage of training"
+      ],
+      "correctIndex": 0,
+      "explain": "MFU measures how much of a GPU's theoretical peak FLOPs is actually being used for productive computation. A sudden MFU drop with no accompanying change in loss behavior points to an infrastructure issue — a slow node, a data-loading stall, or a communication bottleneck — rather than anything about the model's learning dynamics, which would normally show up in the loss or gradient-norm curves instead."
+    },
+    {
+      "id": "allm-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the architectural components covered in this course's survey of current model families.",
+      "options": [
+        "RoPE encodes token position by rotating query/key vectors in attention, rather than using a separate learned or sinusoidal position embedding",
+        "RMSNorm re-centers the mean of activations in addition to normalizing by root-mean-square, which makes it more expensive than LayerNorm",
+        "Grouped-Query Attention (GQA) groups several query heads per shared key/value head, shrinking the KV cache relative to standard multi-head attention",
+        "A Mixture-of-Experts model activates every parameter for every token, exactly like a dense transformer",
+        "SwiGLU is a gated activation function used in feed-forward blocks, shown to improve quality over plain ReLU/GELU at the same parameter count"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "RoPE rotates query/key vectors to encode position. GQA groups query heads around shared key/value heads, specifically to shrink the KV cache. SwiGLU is a gated feed-forward activation shown to beat plain ReLU/GELU at equal parameter count. RMSNorm is cheaper than LayerNorm precisely because it does NOT re-center the mean — it only normalizes by root-mean-square. A Mixture-of-Experts model routes each token to only a small subset of experts, activating far fewer than its total parameters per token, unlike a dense transformer."
+    },
+    {
+      "id": "allm-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the fraction of a GPU's theoretical peak FLOPs actually achieved during real training — after accounting for communication overhead, memory-bandwidth limits, and data-loading stalls — is called Model FLOPs ________.",
+      "acceptedAnswers": ["Utilization", "utilization"],
+      "explain": "Model FLOPs Utilization (MFU) is the fraction of a GPU's theoretical peak FLOPs actually realized during training. Well-tuned large runs often report MFU in the 35-50% range; a poorly tuned run can fall well below that, silently doubling real-world cost for the same FLOPs budget."
+    },
+    {
+      "id": "allm-05",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these stages of the pretraining data pipeline, as laid out in this course's overview lesson, in the correct order.",
+      "items": [
+        "Acquisition of raw sources such as Common Crawl snapshots, code repositories, and books",
+        "Extraction & cleaning, stripping boilerplate out of raw HTML/WARC files",
+        "Deduplication, removing exact and near-duplicate documents",
+        "Quality & toxicity filtering, scoring and removing low-quality or harmful text",
+        "Tokenization, converting cleaned text into integer token IDs",
+        "Packing, concatenating tokenized documents into fixed-length training sequences"
+      ],
+      "explain": "The data pipeline overview lays out acquisition first, then extraction/cleaning of raw crawl formats, then deduplication, then quality/toxicity filtering, then tokenization, then packing into fixed-length sequences (with mixture weighting and sharding following after). Skipping or reordering any of these has concrete costs: no dedup wastes compute re-memorizing text, no quality filtering lets spam into training, and no packing wastes GPU time on padding."
+    },
+    {
+      "id": "allm-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A team trains two byte-level BPE tokenizers on the same English corpus: Tokenizer A with vocab_size=32,000, Tokenizer B with vocab_size=128,000. Tokenizing the same held-out document with each, what should they expect, and why?",
+      "options": [
+        "Tokenizer B produces fewer tokens for the same text, because a larger vocabulary represents more whole words and common sub-word chunks as single tokens",
+        "Tokenizer A produces fewer tokens for the same text, because a smaller vocabulary is inherently more token-efficient",
+        "Both tokenizers produce exactly the same number of tokens, since BPE's merge logic doesn't depend on the target vocabulary size",
+        "Tokenizer B fails to tokenize the document at all, since byte-level BPE requires the vocabulary to exactly match the corpus"
+      ],
+      "correctIndex": 0,
+      "explain": "A larger vocabulary means more whole words and common multi-word chunks get merged all the way up into single tokens, so the same text tokenizes into fewer tokens on average. This is exactly why Llama 3's ~128,256-token vocabulary produces shorter token sequences than GPT-2's ~50,257-token vocabulary for the same text."
+    },
+    {
+      "id": "allm-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "A deduplication pipeline uses MinHashLSH(threshold=0.8, num_perm=128). Two documents are estimated to have a Jaccard similarity of 0.65 under their MinHash signatures. What happens to them in this pipeline?",
+      "options": [
+        "They are not flagged as near-duplicates, since their estimated similarity falls below the 0.8 threshold",
+        "They are flagged as near-duplicates and one is dropped, since any nonzero similarity triggers LSH's bucketing",
+        "They are flagged as exact duplicates, since MinHash is only used for exact-match hashing",
+        "The pipeline raises an error, since num_perm=128 requires at least 0.8 similarity to compute a valid signature"
+      ],
+      "correctIndex": 0,
+      "explain": "The threshold parameter controls how similar two documents must be, by estimated Jaccard similarity, to be treated as near-duplicates. A pair estimated at 0.65 similarity falls below a 0.8 threshold, so LSH does not bucket them together as likely near-duplicates, and both documents are kept. MinHash/LSH is specifically for near-duplicate detection, not exact-match hashing, which is handled separately by simple content hashing."
+    },
+    {
+      "id": "allm-08",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about quality and toxicity filtering, per this course's data pipeline chapter.",
+      "options": [
+        "Heuristic quality filters (length bounds, alphabetic-character ratio, stopword ratio) are cheaper to run than a trained classifier",
+        "KenLM-based perplexity filtering scores documents by how 'surprised' a small n-gram model trained on high-quality text is by the candidate text",
+        "PII scrubbing is just a byproduct of toxicity filtering and doesn't need its own separate pass",
+        "fastText classifiers used for quality filtering are typically trained on a small set of human- or LLM-labeled examples",
+        "Perspective API and Detoxify are tools used to filter documents for quality, not toxicity"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Heuristic rules are the cheapest filtering pass, run before any model-based filtering. KenLM scores documents by perplexity against a model trained on high-quality text like Wikipedia. fastText classifiers for quality filtering (e.g. the approach behind FineWeb-Edu) are trained on small labeled sets. PII scrubbing is explicitly called out as its own independent pass, separate from both quality and toxicity scoring. Perspective API and Detoxify are toxicity/safety-scoring tools, not quality tools."
+    },
+    {
+      "id": "allm-09",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in sequence packing, tokenized documents are concatenated end-to-end, each one separated from the next by an ________ token, before the resulting stream is chunked into fixed-length training sequences.",
+      "acceptedAnswers": ["EOS", "EOS token", "end-of-sequence", "end of sequence"],
+      "explain": "Packing concatenates documents end-to-end, separated by an end-of-sequence (EOS) token, then chunks the resulting stream into fixed-length blocks — so nearly every position in every training sequence carries real content instead of wasted padding."
+    },
+    {
+      "id": "allm-10",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each data-sourcing term to what it actually is.",
+      "left": ["Common Crawl", "WARC", "WET", "The Pile / RedPajama"],
+      "right": [
+        "Common Crawl's raw HTTP-response file format, including full HTML",
+        "A curated multi-source dataset deliberately combining web, code, books, and reference text into one documented mixture",
+        "The largest public raw web-crawl dataset, the base source behind most curated web-text corpora",
+        "Common Crawl's extracted-plain-text file format, still full of boilerplate like navigation and ads"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "Common Crawl is the largest public raw web-crawl dataset. WARC files are the raw HTTP-response format (full HTML); WET files are the extracted-plain-text format, still full of boilerplate. The Pile and RedPajama are curated multi-source mixtures deliberately combining web, code, books, and reference text."
+    },
+    {
+      "id": "allm-11",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "According to the Chinchilla paper (Hoffmann et al., 2022), what is the widely-cited compute-optimal rule of thumb for how many training tokens a model should see per parameter?",
+      "options": [
+        "Roughly 20 tokens per parameter",
+        "Roughly 6 tokens per parameter",
+        "Roughly 100 tokens per parameter",
+        "Exactly 1 token per parameter",
+        "Token count doesn't matter; only parameter count determines compute-optimal allocation",
+        "Roughly 1,000 tokens per parameter"
+      ],
+      "correctIndex": 0,
+      "explain": "Chinchilla's fitted curves gave a widely cited planning heuristic of roughly 20 tokens of training data per parameter for compute-optimal allocation — for example, a 7-billion-parameter model's compute-optimal token budget lands around 140 billion tokens (20 × 7e9).",
+      "distractorExplain": "Option B confuses this tokens-per-parameter ratio with the unrelated factor of 6 in the C ≈ 6ND compute formula used to estimate total training FLOPs. That 6 describes FLOPs per parameter per token (forward plus backward passes), not how many tokens a compute-optimal model should train on per parameter — the two numbers answer completely different questions."
+    },
+    {
+      "id": "allm-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A team training in fp16 without loss scaling sees training loss suddenly become NaN partway through a run. What most likely happened, and what's the standard fix?",
+      "options": [
+        "Small gradients underflowed to zero or large values overflowed to infinity under fp16's narrow exponent range; the fix is loss scaling (e.g. GradScaler) or switching to bf16",
+        "The learning-rate scheduler divided by zero at the start of cosine decay; the fix is to increase warmup_steps",
+        "The tokenizer produced an out-of-vocabulary token ID; the fix is to increase vocab_size",
+        "Gradient clipping was set too aggressively; the fix is to remove gradient clipping entirely"
+      ],
+      "correctIndex": 0,
+      "explain": "fp16's narrow exponent range makes it prone to overflow (to infinity) or underflow (small values collapsing to zero), either of which can corrupt a backward pass and produce NaN loss. The standard fixes are loss scaling (multiplying the loss before backward, then unscaling gradients) or switching to bf16, which has fp32's wider exponent range and needs no loss scaling at all."
+    },
+    {
+      "id": "allm-13",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about monitoring a pretraining run, per this course.",
+      "options": [
+        "Gradient norm is often the earliest warning sign of instability, sometimes drifting upward before loss visibly moves",
+        "A sudden drop in MFU with no corresponding change in loss behavior usually points to an infrastructure problem, not a model problem",
+        "Held-out evaluation loss is computed on the same batches as training loss, just logged at a later step",
+        "A well-tuned large-scale pretraining run commonly achieves MFU somewhere in the 30-55% range",
+        "Training loss alone is always sufficient to detect every kind of instability, which is why gradient norm doesn't need to be logged separately"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Gradient norm frequently precedes or coincides with a loss spike, making it an early-warning signal. MFU drops without loss changes usually indicate infrastructure issues. Well-tuned large runs commonly land in the 30-55% MFU range. Held-out evaluation loss is computed on a validation set the model never trains on, specifically to catch overfitting or leakage that training loss alone can't reveal — and gradient norm is logged precisely because training loss alone can miss early signs of instability."
+    },
+    {
+      "id": "allm-14",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a loss spike that does not recover within a reasonable window, instead drifting upward or oscillating indefinitely, is called ________.",
+      "acceptedAnswers": ["divergence", "non-recovering divergence"],
+      "explain": "Divergence is the dangerous version of a loss spike — one that doesn't self-recover. If training continues past that point without intervention, the optimizer keeps pushing weights further from a usable region, wasting every subsequent GPU-hour."
+    },
+    {
+      "id": "allm-15",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A pretraining run's loss and gradient norm spike and fail to recover within several hundred steps. Put the resulting sequence of events, per this course's restart-decision framework, in the correct order.",
+      "items": [
+        "The team recognizes the spike is not self-recovering within the normal window",
+        "Training is stopped rather than left running on a model drifting further from a usable state",
+        "The last checkpoint saved before the spike began is identified",
+        "Training resumes from that checkpoint, possibly skipping the offending data shard or lowering the learning rate"
+      ],
+      "explain": "The clearest signal for a restart is non-recovering divergence: once it's clear the spike isn't self-correcting, the run is stopped, the last good checkpoint before the spike is identified, and training resumes from there — sometimes skipping a bad data shard, sometimes with a slightly lowered learning rate if the cause looks systemic."
+    },
+    {
+      "id": "allm-16",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A team builds their SFT training examples by calling `tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)` on every already-complete (prompt, response) pair before training. What's wrong with this?",
+      "options": [
+        "add_generation_prompt=True appends the assistant turn-start marker meant for inference prompts; using it on completed training examples adds an extra marker that doesn't belong there, risking a training/inference formatting mismatch",
+        "apply_chat_template can only be used at inference time, never for building training data at all",
+        "tokenize=False means the examples won't actually be tokenized before training, so the model receives raw strings",
+        "Nothing is wrong; this is exactly the recommended way to format both training and inference data"
+      ],
+      "correctIndex": 0,
+      "explain": "add_generation_prompt=True appends whatever marker signals 'now it's the assistant's turn to generate' — exactly what you want when building a prompt for inference, but not for a training example where the assistant turn is already filled in. Applying it to completed training examples introduces a formatting mismatch relative to how the model will actually be served."
+    },
+    {
+      "id": "allm-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "A LoRA adapter targets a 4096×4096 attention projection matrix with rank r=16. Roughly how many trainable parameters does the adapter add for that one matrix, and how does it compare to fully fine-tuning that matrix?",
+      "options": [
+        "About 131,000 parameters (r × (d_in + d_out) = 16 × 8192) — a reduction of over 99% versus the matrix's roughly 16.8 million full parameters",
+        "About 16.8 million parameters — the same as the full matrix, since LoRA still has to represent the same update",
+        "About 4,096 parameters, since only one dimension of the matrix is adapted",
+        "About 65,000 parameters, exactly half the full matrix's parameter count"
+      ],
+      "correctIndex": 0,
+      "explain": "LoRA's A and B matrices together have r × (d_in + d_out) parameters. For r=16 on a 4096×4096 matrix, that's 16 × (4096 + 4096) = 131,072 parameters, versus the full matrix's 4096 × 4096 ≈ 16.8 million — over a 99% reduction, exactly the memory savings mechanism behind parameter-efficient fine-tuning."
+    },
+    {
+      "id": "allm-18",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the memory cost of full fine-tuning with AdamW in mixed precision, per this course.",
+      "options": [
+        "Model weights in bf16 cost roughly 2 bytes per parameter",
+        "AdamW's optimizer state (two moment estimates, typically in fp32) is usually the single largest memory cost, larger than the weights themselves",
+        "Gradients must be stored in fp32 even when weights are in bf16, doubling gradient memory relative to the weights",
+        "All told, Adam-based full fine-tuning in mixed precision needs roughly 16-18 bytes per parameter for weights, gradients, and optimizer state, before activations",
+        "Parameter-efficient fine-tuning reduces this cost because gradients and optimizer state only need to be stored for the small trainable fraction of parameters"
+      ],
+      "correctIndices": [0, 1, 3, 4],
+      "explain": "Weights and gradients are both typically stored in bf16 (2 bytes each), while AdamW's two moment estimates are kept in fp32 (4 bytes each, 8 bytes total) — making optimizer state the dominant cost, not the weights. Summing weights, gradients, and optimizer state gives roughly 16-18 bytes per parameter before activations. PEFT's memory win comes directly from only needing gradients and optimizer state for the small trainable fraction. Gradients are not forced into fp32 just because optimizer state is — they typically stay at the same bf16 precision as the weights."
+    },
+    {
+      "id": "allm-19",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: during SFT, setting label positions for prompt (non-response) tokens to ________ causes PyTorch's CrossEntropyLoss to ignore them, so loss is computed only over the assistant's response tokens.",
+      "acceptedAnswers": ["-100"],
+      "explain": "The conventional sentinel value -100 (IGNORE_INDEX) is used for prompt-token label positions; PyTorch's CrossEntropyLoss treats any label equal to -100 as 'ignore this position,' which is exactly how prompt masking is implemented."
+    },
+    {
+      "id": "allm-20",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each LoRA-related term to what it actually controls.",
+      "left": ["r (rank)", "lora_alpha", "target_modules", "merge_and_unload()"],
+      "right": [
+        "Which weight matrices (e.g. q_proj, v_proj) receive a LoRA adapter",
+        "The bottleneck dimension of the A and B matrices, controlling adapter capacity and parameter count",
+        "Folds the trained low-rank update into the base weights, producing a standalone model with no PEFT wrapper",
+        "The scaling factor applied to the low-rank update relative to the frozen base weights"
+      ],
+      "correctMap": [1, 3, 0, 2],
+      "explain": "r is the bottleneck dimension of the LoRA matrices, controlling adapter capacity. lora_alpha scales the low-rank update's contribution relative to the frozen base weights. target_modules specifies which weight matrices get a LoRA adapter. merge_and_unload() folds the adapter into the base weights for a standalone deployable model."
+    },
+    {
+      "id": "allm-21",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly distinguishes data parallelism from tensor parallelism, as covered in this course?",
+      "options": [
+        "Data parallelism replicates the full model on every GPU and splits the data across replicas; tensor parallelism splits an individual weight matrix across GPUs so each holds only a slice of a layer",
+        "Data parallelism splits the model's layers across GPUs as sequential stages; tensor parallelism replicates the full model on every GPU",
+        "Both techniques split the data across GPUs; they differ only in which collective communication operation they use",
+        "Tensor parallelism requires no GPU-to-GPU communication, while data parallelism requires an all-reduce every step",
+        "Data parallelism only works for models small enough to fit on one GPU, so it is never combined with any other technique",
+        "Tensor parallelism replicates the optimizer state on every GPU while sharding only the model weights"
+      ],
+      "correctIndex": 0,
+      "explain": "Data parallelism keeps a full model replica on every GPU and splits the data, with each replica's gradients synchronized by an all-reduce. Tensor parallelism instead splits an individual weight matrix across GPUs, so each GPU holds only a slice of a given layer, requiring communication inside every layer's forward and backward pass.",
+      "distractorExplain": "Option B swaps the two techniques' definitions. It's pipeline parallelism, not data parallelism, that splits the model's layers into sequential stages across GPUs — data parallelism keeps a full model replica on every GPU and splits the data across replicas instead."
+    },
+    {
+      "id": "allm-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "A team enables ZeRO stage 2 for a data-parallel training job. Under this configuration, what is sharded across the data-parallel group, and what remains fully replicated?",
+      "options": [
+        "Optimizer state and gradients are sharded; parameters remain fully replicated on every GPU",
+        "Only optimizer state is sharded; gradients and parameters remain fully replicated",
+        "Parameters, gradients, and optimizer state are all sharded; no GPU holds a full copy of anything",
+        "Only parameters are sharded; gradients and optimizer state remain fully replicated"
+      ],
+      "correctIndex": 0,
+      "explain": "ZeRO stage 1 shards only optimizer state. Stage 2 additionally shards gradients, so each GPU only holds the gradient shard it needs for its own parameter update — but parameters themselves remain fully replicated. Stage 3 is the one that additionally shards parameters, with each layer's weights gathered on demand."
+    },
+    {
+      "id": "allm-23",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about communication overhead in distributed training, per this course.",
+      "options": [
+        "A single large gradient all-reduce in data parallelism is mostly bandwidth-bound rather than latency-bound",
+        "Data parallelism's all-reduce cost scales with batch size, not model size",
+        "Tensor parallelism requires communication inside every layer's forward and backward pass, which is why it's typically confined to a single server's NVLink",
+        "Pipeline parallelism's frequent small point-to-point activation hand-offs are comparatively more latency-sensitive than one large bandwidth-bound transfer",
+        "InfiniBand is slower and higher-latency than standard Ethernet for AI training cluster traffic"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "DP's all-reduce moves a gradient for every parameter, so its cost scales with model size, not batch size — doubling the model roughly doubles synced gradient volume, while doubling batch size doesn't change what needs to be synced. Tensor parallelism's frequent in-layer all-reduces need NVLink's speed. Pipeline parallelism's many small point-to-point sends are more latency-sensitive than one large transfer. InfiniBand is specifically built for low-latency, high-bandwidth collectives and is far faster than standard Ethernet for this traffic, not slower."
+    },
+    {
+      "id": "allm-24",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Match each interconnect or communication term to what it actually is.",
+      "left": ["NVLink / NVSwitch", "InfiniBand", "Standard Ethernet", "NCCL"],
+      "right": [
+        "NVIDIA's collective communication library implementing all-reduce, all-gather, and similar operations",
+        "Direct GPU-to-GPU links within a single server, the fastest interconnect tier",
+        "The common network between servers in an AI training cluster, built for low-latency, high-bandwidth collectives",
+        "A network tier that is far slower and higher-latency than InfiniBand, a poor fit for tightly-coupled model-parallel training across nodes"
+      ],
+      "correctMap": [1, 2, 3, 0],
+      "explain": "NVLink/NVSwitch is the fastest tier, direct GPU-to-GPU links within one server. InfiniBand is the common high-bandwidth, low-latency network between servers. Standard Ethernet is far slower and higher-latency, a poor fit for tightly-coupled cross-node model parallelism. NCCL is NVIDIA's library implementing the collective operations (all-reduce, all-gather) that run over these interconnects."
+    },
+    {
+      "id": "allm-25",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Per this course's parallelism decision framework, put these steps of scaling up a training job's parallelism strategy in the order they should be reached for.",
+      "items": [
+        "Check whether the model fits on a single GPU; if so, use plain data parallelism (with ZeRO stage 1/2 if optimizer memory is tight)",
+        "If the model doesn't fit on a single GPU, turn on ZeRO stage 3 / FSDP FULL_SHARD plus activation checkpointing first",
+        "If sharding alone still bottlenecks on communication or doesn't fit, add tensor parallelism within each node",
+        "When scaling across many nodes, add pipeline parallelism across nodes and data parallelism across replicas of the whole structure"
+      ],
+      "explain": "The decision framework starts with whether the model fits on one GPU at all; if it does, plain data parallelism (plus ZeRO 1/2 if needed) is simplest. If it doesn't fit, ZeRO-3/FSDP plus activation checkpointing is the next-cheapest lever, requiring no code restructuring. Only when sharding alone isn't enough does tensor parallelism (within a node, needing NVLink) get added, followed by pipeline parallelism across nodes and data parallelism across the whole replicated structure for frontier-scale 3D parallelism."
+    },
+    {
+      "id": "allm-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "PyTorch's `torch.distributed.checkpoint` (DCP) lets a checkpoint saved under one parallelism layout be loaded into a job running a different layout — for example, resuming with a different number of GPUs. What is this capability called?",
+      "options": [
+        "Resharding — DCP redistributes shards to whatever parallelism layout the resuming job actually uses",
+        "Offloading — DCP moves the sharded state out to CPU or NVMe memory",
+        "Elastic training — the job automatically restarts failed workers without resubmission",
+        "Double quantization — the checkpoint's numeric precision is reduced further to save space"
+      ],
+      "correctIndex": 0,
+      "explain": "DCP's resharding capability means a checkpoint doesn't have to be loaded back under the exact layout that saved it — shards get redistributed to whatever parallelism layout the resuming job uses, which is useful when resuming with a different GPU count."
+    },
+    {
+      "id": "allm-27",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about fp16 versus bf16 mixed-precision training, per this course.",
+      "options": [
+        "fp16 has a narrower exponent range than bf16, making it more prone to overflow or underflow during training",
+        "bf16 has the same 8-bit exponent width as fp32, giving it the same dynamic range and largely avoiding fp16's underflow problem",
+        "fp16 training requires loss scaling to keep small gradient values representable; bf16 does not need it",
+        "bf16 has more mantissa bits than fp16, which is the reason it avoids fp16's overflow problem",
+        "GradScaler dynamically adjusts the loss-scale factor based on whether it detects overflow (inf/nan) in a given step"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "fp16's narrow exponent range makes it overflow/underflow-prone; bf16 shares fp32's 8-bit exponent width, avoiding this. fp16 needs loss scaling; bf16 doesn't. GradScaler dynamically tunes the scale factor based on detected overflow. bf16 actually has FEWER mantissa bits than fp16 (trading precision for range) — its wider exponent range, not more mantissa bits, is what avoids the overflow problem."
+    },
+    {
+      "id": "allm-28",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in synchronous data-parallel training, an all-reduce is a ________ point — every participating rank must arrive at it before any of them can proceed, which is why one chronically slow GPU can tax the whole job's wall-clock time.",
+      "acceptedAnswers": ["synchronization", "synchronization point"],
+      "explain": "An all-reduce is a synchronization point: every rank must arrive before any can proceed past it. If one rank takes 20% longer, every other rank sits idle for that extra 20%, which is exactly why a straggler node drags down the whole job's effective throughput."
+    },
+    {
+      "id": "allm-29",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "A GPU in a large training job degrades without crashing, causing a collective communication operation to hang. Put the resulting sequence of events, per this course's fault-tolerance material, in the correct order.",
+      "items": [
+        "A collective operation (such as an all-reduce) blocks, waiting on the degraded rank that will never respond",
+        "The explicit NCCL timeout set on the process group elapses, raising an error instead of letting the job hang indefinitely",
+        "The elastic launcher automatically restarts the failed workers, up to the configured maximum number of restarts",
+        "The rendezvous backend lets the surviving and replacement workers reconnect to each other",
+        "Training resumes from the most recent checkpoint"
+      ],
+      "explain": "A silent hang blocks a collective operation with no error until an explicit timeout on the process group elapses, converting the hang into a detectable, actionable error. The elastic launcher then automatically restarts failed workers (bounded by max-restarts), the rendezvous backend lets workers reconnect, and training resumes from the last checkpoint — which is why checkpoint cadence and fault tolerance are really one system."
+    },
+    {
+      "id": "allm-30",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "A model's held-out cross-entropy loss on a validation set is 3.0 (natural log). Approximately what is its perplexity, and how should that number be interpreted?",
+      "options": [
+        "About 20 — the model is, on average, as uncertain about the next token as if choosing uniformly among about 20 equally likely options",
+        "About 3 — perplexity equals the loss value directly, with no transformation applied",
+        "About 9 — perplexity is the loss value squared",
+        "About 0.05 — perplexity is the reciprocal of the loss value"
+      ],
+      "correctIndex": 0,
+      "explain": "Perplexity is exp(loss). exp(3.0) ≈ 20.1, which is interpreted as an average 'effective branching factor' — the model is, on average, as uncertain about the next token as if it had to choose uniformly among about 20 equally likely options."
+    },
+    {
+      "id": "allm-31",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about LLM-as-judge evaluation biases and their mitigations, per this course.",
+      "options": [
+        "Position bias is mitigated by running the comparison twice with the two responses swapped, and only counting a win if the same response wins both orderings",
+        "Verbosity bias means judges tend to rate longer responses as better even without added value, which length-controlled win rates can help isolate",
+        "A panel-of-judges approach reduces the influence of any single judge model's idiosyncratic preferences by aggregating multiple models' verdicts",
+        "Once validated against human preference data, an LLM judge's calibration is guaranteed to remain accurate forever, so it never needs re-checking",
+        "Position bias only affects human annotators, never LLM judges, since LLMs process both compared options within the same context window"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Swapping response order and only counting consistent wins mitigates position bias. Length-controlled win rates help isolate verbosity bias. Panel-of-judges aggregates multiple models' verdicts to reduce any one model's idiosyncratic preferences. An LLM judge can drift out of alignment with human preferences over time, so periodic re-validation remains necessary — and position bias affects LLM judges too, which is exactly why the swap-and-compare mitigation exists for them specifically."
+    },
+    {
+      "id": "allm-32",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Cohen's kappa and Fleiss' kappa measure inter-annotator agreement while correcting for the level of agreement expected by ________ alone.",
+      "acceptedAnswers": ["chance", "pure chance", "random chance"],
+      "explain": "Cohen's kappa (two annotators) and Fleiss' kappa (more than two) correct for the agreement expected purely by chance, which raw percent-agreement doesn't account for — a kappa in the 0.6-0.8 range is generally read as substantial agreement."
+    },
+    {
+      "id": "allm-33",
+      "type": "matching",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Match each standard benchmark to the capability it's designed to measure.",
+      "left": ["MMLU", "HellaSwag", "GSM8K", "HumanEval"],
+      "right": [
+        "Functional Python code generation, graded by executing the generated solution against unit tests",
+        "Broad factual and reasoning knowledge across 57 subjects via multiple-choice questions",
+        "Multi-step arithmetic reasoning via grade-school math word problems",
+        "Commonsense sentence-completion, picking the most plausible continuation over distractors"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "MMLU tests broad factual/reasoning knowledge across 57 subjects. HellaSwag tests commonsense sentence-completion. GSM8K tests multi-step arithmetic reasoning. HumanEval tests functional code generation, graded by actually executing the generated code against unit tests."
+    },
+    {
+      "id": "allm-34",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "A model has 32 layers, 8 KV heads (GQA), head_dim=128, and runs in bf16 (2 bytes per element) while serving a single sequence at an 8,192-token context length. Using this course's KV-cache sizing formula, approximately how large is the KV cache for that one sequence?",
+      "options": [
+        "About 1.1 GB",
+        "About 1.1 MB",
+        "About 11 GB",
+        "About 110 MB"
+      ],
+      "correctIndex": 0,
+      "explain": "cache_bytes = 2 × num_layers × num_kv_heads × head_dim × seq_len × bytes_per_element = 2 × 32 × 8 × 128 × 8192 × 2 bytes ≈ 1.1 GB for one sequence — exactly the worked example this course uses to show why long-context, high-concurrency serving is a memory problem first."
+    },
+    {
+      "id": "allm-35",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the prefill and decode phases of LLM inference, per this course.",
+      "options": [
+        "Prefill is compute-bound and is where time-to-first-token (TTFT) comes from",
+        "Decode is memory-bandwidth-bound, since the GPU spends most of its time moving cached keys and values rather than doing dense math",
+        "A model that trains efficiently is guaranteed to decode quickly too, since training already exercises the exact same decode path",
+        "Grouped-query attention (GQA) and multi-query attention (MQA) shrink the KV cache, directly reducing a serving-time cost",
+        "A larger vocabulary size has no effect on decode cost, since the vocabulary only matters during tokenization"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Prefill processes the prompt in one compute-bound forward pass, producing TTFT. Decode generates one token at a time, memory-bandwidth-bound by KV cache movement. GQA/MQA shrink the KV cache, a direct serving-cost win. Training never exercises the decode path at all (it sees full sequences in parallel via teacher-forcing), so efficient training doesn't guarantee fast decode. A larger vocabulary also means a larger final projection/logits tensor computed on every single decode step, so it does affect decode cost."
+    },
+    {
+      "id": "allm-36",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: GPTQ and AWQ are both ________-based post-training quantization methods — they use a small representative dataset to measure which weights' precision loss actually hurts outputs, rather than rounding every weight naively.",
+      "acceptedAnswers": ["calibration", "calibration-based"],
+      "explain": "GPTQ and AWQ are both calibration-based: they use a small calibration dataset to measure which weights' precision loss actually matters, then spend their precision budget protecting those weights — which is why they consistently beat naive round-to-nearest (RTN) quantization at the same bit width."
+    },
+    {
+      "id": "allm-37",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of estimating a model's serving cost, per this course's worked example, in the correct order.",
+      "items": [
+        "Determine the model's weight memory from its parameter count and serving precision",
+        "Add the KV cache memory needed at the target context length and concurrency",
+        "Confirm the total fits the chosen GPU's memory, including both weights and KV cache",
+        "Benchmark real throughput (tokens/sec) on that hardware and serving stack",
+        "Convert the GPU's hourly cost and benchmarked throughput into a cost per million tokens"
+      ],
+      "explain": "The worked serving-cost estimate starts from weight memory (parameters × bytes per parameter), adds KV cache memory scaled by target concurrency, confirms the total fits the target GPU, benchmarks real throughput on that hardware and stack (not a theoretical FLOPs calculation), and finally converts GPU-hour cost and measured throughput into a cost-per-million-tokens figure."
+    },
+    {
+      "id": "allm-38",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "A capstone fine-tune improves its task metric from 0.41 to 0.78 but drops 0.09 on a general-capability MMLU subset relative to the base model. Per this course's evaluation discipline, what should the write-up do?",
+      "options": [
+        "Report both numbers together as a real trade-off, since a task-metric win alongside a meaningful capability regression is a result to reason about honestly, not hide",
+        "Report only the task-metric improvement, since the general-capability number is unrelated to what the fine-tune was meant to do",
+        "Discard the entire fine-tune, since any capability regression at all means the project failed",
+        "Re-run training with more epochs until the general-capability number improves, then report only that final run"
+      ],
+      "correctIndex": 0,
+      "explain": "The course's evaluation discipline is explicit: a fine-tune that wins on the task metric but regresses meaningfully elsewhere is still a result worth reporting honestly, as a trade-off to reason about — not a failure to hide and not a number to quietly omit from the write-up."
+    },
+    {
+      "id": "allm-39",
+      "type": "fill-in",
+      "chapter": "ch09",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: before any training happens on the capstone's SFT dataset, a ________ slice should be set aside and not looked at again until the final evaluation lesson.",
+      "acceptedAnswers": ["held-out", "held out"],
+      "explain": "A held-out split is set aside before any training happens, and not touched again until final evaluation — this is what lets later evaluation measure genuine task performance on examples the model never trained on, rather than quietly evaluating on data it has already seen."
+    },
+    {
+      "id": "allm-40",
+      "type": "matching",
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Match each capstone fine-tuning term to what it actually refers to.",
+      "left": ["QLoRA config", "Held-out loss monitoring", "Adapter checkpoint", "Forgetting-aware defaults"],
+      "right": [
+        "The conservative learning rate and epoch count chosen specifically to limit general-capability regression",
+        "A 4-bit quantized base model combined with a trainable LoRA adapter, assembled from BitsAndBytesConfig and LoraConfig",
+        "The small set of trainable LoRA weights saved after training, distinct from the frozen base model",
+        "Tracking loss on data not trained on, during the run, to catch overfitting early"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "A QLoRA config combines a 4-bit quantized base model with a trainable LoRA adapter. Held-out loss monitoring tracks loss on untrained-on data during the run to catch overfitting early. An adapter checkpoint is the small set of saved LoRA weights, distinct from the frozen base model. Forgetting-aware defaults are the conservative learning rate and epoch count chosen to limit general-capability regression."
+    }
+  ]
+}

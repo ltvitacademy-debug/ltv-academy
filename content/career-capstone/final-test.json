@@ -1,0 +1,893 @@
+{
+  "questions": [
+    {
+      "id": "cc-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Which of the following best defines idempotency for a data pipeline write, as this course defines it?",
+      "options": [
+        "The write completes in under one second regardless of load",
+        "The write uses a surrogate key instead of a natural key",
+        "Running the same write twice produces the same result as running it once",
+        "The write is guaranteed to be delivered exactly once by the network layer",
+        "The write always succeeds, even if the downstream table is unavailable",
+        "The write is encrypted in transit and at rest"
+      ],
+      "correctIndex": 2,
+      "explain": "Idempotency is the property that running the same write twice produces the same result as running it once — Lesson 11 generalizes this from Databricks & Delta Lake's bronze-to-silver pipeline definition to any write in a system design.",
+      "distractorExplain": "The closest wrong option — claiming the write is guaranteed exactly-once by the network layer — describes true exactly-once delivery, which Lesson 12 explicitly calls an impossibility at the network layer. Idempotency is what makes an at-least-once delivery guarantee behave safely; it doesn't require the network to promise exactly-once delivery in the first place."
+    },
+    {
+      "id": "cc-02",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "What does the 'grain' of a fact table mean, as Lesson 8 defines it?",
+      "options": [
+        "The physical file format the fact table is stored in",
+        "The number of dimension tables joined to the fact table",
+        "The partition column chosen for the fact table",
+        "The exact thing one row of the fact table represents",
+        "The column used as the fact table's surrogate key",
+        "The compression ratio achieved on the fact table's files"
+      ],
+      "correctIndex": 3,
+      "explain": "Grain is the exact thing one row represents — 'one row per order' and 'one row per order line item' are both valid grains that produce very different row counts and downstream joins. Lesson 8 stresses fixing the grain before choosing a schema.",
+      "distractorExplain": "The closest wrong option — the partition column chosen for the fact table — describes partitioning (Lesson 9), a decision made after the grain and schema are already fixed; it's a physical storage choice, not the definition of what one row represents."
+    },
+    {
+      "id": "cc-03",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "FactOrders is partitioned as order_date=2024-01-15/, order_date=2024-01-16/, and so on. A query filtering for January 2024 only touches that month's partitions instead of the whole table. What is this payoff called?",
+      "options": ["Sharding", "Partition pruning", "Schema-on-read", "Watermarking"],
+      "correctIndex": 1,
+      "explain": "Partition pruning is the query engine recognizing from partition boundaries alone which folders can't possibly match a filter, and skipping them entirely without opening a single file inside — at billion-row scale, this is the difference between scanning the whole table and scanning one month."
+    },
+    {
+      "id": "cc-04",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Lesson 20's ride-sharing platform stores driver location pings in a low-latency, frequently-overwritten store instead of object storage. Why?",
+      "options": [
+        "Object storage cannot hold location data",
+        "It needs to answer 'where is this driver right now,' not scan history",
+        "Driver pings need a star schema before they can be stored at all",
+        "Location pings must be sharded before they can be ingested"
+      ],
+      "correctIndex": 1,
+      "explain": "Lesson 4's storage choice is driven by how data is actually read. Live matching needs to answer 'where is driver X right now' with fast single-row access, which object storage (built for durable, cheap bulk storage) doesn't provide — trip events, by contrast, do go to Delta Lake on object storage because they're the durable, replayable source Kappa needs."
+    },
+    {
+      "id": "cc-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "Lesson 22's retail inventory platform justifies Lambda architecture's two codepaths, while Lesson 20's ride-sharing platform didn't need them. What's the key difference?",
+      "options": [
+        "Retail inventory data is larger in volume than ride-sharing data",
+        "Ride-sharing platforms are not allowed to use Lambda architecture",
+        "The restock trigger and the nightly merchandising reconciliation genuinely need different computations, not the same logic replayed",
+        "Lambda architecture is required whenever more than one dashboard reads the same data"
+      ],
+      "correctIndex": 2,
+      "explain": "Lambda earns its keep specifically when the speed and batch layers need genuinely different logic. The restock trigger only needs a simple running total; the nightly merchandising job needs full reconciliation against shipments, returns, and shrinkage — a materially different computation, unlike the ride-sharing platform's single Kappa-replayable codepath."
+    },
+    {
+      "id": "cc-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Lesson 23's social media analytics pipeline shards engagement events by a hashed content_id instead of by time bucket. Why?",
+      "options": [
+        "Hashing by content_id is required by Fabric's Eventstream feature",
+        "Time-bucket sharding is illegal under GDPR for engagement data",
+        "A single viral post's writes get spread across many shards instead of piling onto one",
+        "content_id sharding removes the need for any caching layer"
+      ],
+      "correctIndex": 2,
+      "explain": "Sharding by time bucket means every write for today's one viral post piles onto a single bucket. Hashing by content_id spreads even a viral post's engagement events across all shards evenly, avoiding the hot-shard problem Lesson 10 described."
+    },
+    {
+      "id": "cc-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "Why does Kappa architecture require the event source to be durably replayable?",
+      "options": [
+        "Replayability is only needed to satisfy compliance audits",
+        "Kappa architecture stores all data in a relational OLTP database",
+        "A replayable source is needed only if the system also uses Lambda architecture",
+        "Reprocessing happens by replaying old events back through the same live streaming pipeline, not a separate batch job"
+      ],
+      "correctIndex": 3,
+      "explain": "Kappa's whole premise is one codepath used for both live processing and historical reprocessing, by replaying old events through that same pipeline. Without a durably replayable source, there's nothing to replay, and Kappa simply isn't an option."
+    },
+    {
+      "id": "cc-08",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about Lambda architecture's real cost, as Lesson 6 describes it.",
+      "options": [
+        "The speed layer and batch layer are two separate implementations of the same aggregation logic",
+        "If the two implementations ever compute something even slightly differently, the dashboard can show an unexplained discrepancy between 'today' and 'yesterday'",
+        "Lambda architecture eliminates the need for a serving layer entirely",
+        "The two codepaths typically run on two different engines, such as KQL for the speed layer and PySpark for the batch layer",
+        "Lambda architecture guarantees the speed and batch layers will always agree"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Lambda's real cost is maintaining two separate implementations of the same logic — often in two different engines (streaming KQL vs. batch PySpark) — that can quietly drift apart, producing a dashboard discrepancy that has nothing to do with the actual underlying data."
+    },
+    {
+      "id": "cc-09",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about CAP theorem as this course frames it (Lesson 19).",
+      "options": [
+        "Partition tolerance isn't really an optional design choice for a distributed system over a real network",
+        "The theorem effectively reduces to a choice between Consistency and Availability during a partition",
+        "A well-built system can often approach all three guarantees outside of an actual partition",
+        "CAP theorem guarantees a system can have Consistency, Availability, AND Partition tolerance simultaneously at all times",
+        "Tunable consistency lets a system choose the C-vs-A trade-off per operation rather than once for the whole system"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Any system spread across a real network will eventually experience a partition, so P isn't a real choice — the actual question is what the system does when a partition happens: refuse to answer (favor C) or answer anyway with possibly stale data (favor A). Outside of a partition, a well-built system can often approach all three, and systems like Delta Lake offer tunable, per-operation consistency rather than one system-wide choice."
+    },
+    {
+      "id": "cc-10",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the real-time fraud detection case study's design (Lesson 21).",
+      "options": [
+        "The system deliberately leans AP, favoring availability over perfect freshness during a partition",
+        "Every scoring operation is keyed on transaction_id so a duplicate delivery produces the same result instead of a new one",
+        "The design includes a nightly batch job that reconciles the day's fraud scores for full accuracy",
+        "The design accepts scoring against slightly stale rolling features rather than erroring out",
+        "Fabric Activator is used to turn a crossed score threshold into an actual real-time alert"
+      ],
+      "correctIndices": [0, 1, 3, 4],
+      "explain": "The fraud detector has no sensible batch path at all — scoring is streaming-only, using Kappa. It leans AP on purpose (favoring availability over blocking a legitimate purchase), keys every scoring write on transaction_id for idempotency, accepts slightly stale rolling features rather than erroring out, and uses Activator to fire the real-time alert once a score crosses the threshold."
+    },
+    {
+      "id": "cc-11",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a MERGE statement's ON clause must match on a ________ key — one that exists in the source data itself — rather than a surrogate key, in order to keep a reprocessed batch idempotent.",
+      "acceptedAnswers": ["natural", "natural key"],
+      "explain": "A natural key (like the source system's own order_id) is stable across retries and reprocessed batches, which is exactly what MERGE needs to match on to avoid creating duplicate rows. A surrogate key generated fresh on each load wouldn't be stable across attempts."
+    },
+    {
+      "id": "cc-12",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a hot ________ is one piece of a sharded system absorbing a disproportionate share of traffic while the rest of the cluster sits nearly idle.",
+      "acceptedAnswers": ["shard", "hot shard"],
+      "explain": "A hot shard is exactly this failure mode — a sequential shard key like signup_date concentrates traffic onto whichever shard owns 'today,' while every other shard sits underused, defeating the point of sharding."
+    },
+    {
+      "id": "cc-13",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: storing a cached result is the easy half of a caching strategy — ________ (knowing when a cached answer has gone stale and needs recomputing) is where real caching designs actually fail.",
+      "acceptedAnswers": ["invalidation", "cache invalidation"],
+      "explain": "Lesson 16 names invalidation as the genuinely hard part of caching: a cache that's never invalidated serves confidently wrong numbers forever, while one invalidated too aggressively defeats its own purpose by recomputing constantly."
+    },
+    {
+      "id": "cc-14",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each Lambda architecture layer to what it actually does.",
+      "left": ["Speed layer", "Batch layer", "Serving layer"],
+      "right": [
+        "Merges both views into one answer for whoever's looking",
+        "Reprocesses everything periodically, slower, fully accurate",
+        "Processes data as it arrives, low latency, approximate is acceptable"
+      ],
+      "correctMap": [2, 1, 0],
+      "explain": "The speed layer processes data as it arrives with low latency and approximate results; the batch layer reprocesses everything periodically for full accuracy; the serving layer merges both views into one answer for whoever's actually looking."
+    },
+    {
+      "id": "cc-15",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "Match each of Chapter 1's four case studies to the design choice that defines it.",
+      "left": [
+        "Ride-sharing platform (Lesson 20)",
+        "Fraud detection (Lesson 21)",
+        "Retail inventory (Lesson 22)",
+        "Social media analytics (Lesson 23)"
+      ],
+      "right": [
+        "Streaming-only, no batch path, idempotent scoring, leaning AP",
+        "One Kappa-replayable pipeline serving two grains at two different SLAs",
+        "Lambda justified because the speed and batch layers need genuinely different logic",
+        "content_id sharding plus a refreshed leaderboard cache, leaning AP for scale"
+      ],
+      "correctMap": [1, 0, 2, 3],
+      "explain": "Ride-sharing uses one Kappa pipeline serving two grains (location pings, trip events) at two SLAs; fraud detection is streaming-only with idempotent scoring, leaning AP; retail inventory justifies Lambda because the restock trigger and nightly reconciliation are genuinely different computations; social media leans on content_id sharding and a refreshed leaderboard cache to handle viral volume."
+    },
+    {
+      "id": "cc-16",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each storage shape to its defining trait.",
+      "left": ["OLTP", "OLAP", "Object storage", "Sharding"],
+      "right": [
+        "Row-oriented, optimized for fast single-row reads/writes",
+        "Column-oriented, optimized for aggregating across millions of rows",
+        "Cheap, durable file storage with no built-in fast query pattern",
+        "Splitting data across separate storage instances, not just folders in one system"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "OLTP is row-oriented for fast single-row access; OLAP is column-oriented for aggregation; object storage is cheap, durable file storage with no fast query pattern built in; sharding splits data across genuinely separate storage instances, one level up from partitioning within a single system."
+    },
+    {
+      "id": "cc-17",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put Lesson 24's four-step structure for presenting a system design in the order it's meant to be delivered.",
+      "items": [
+        "Clarify requirements — functional and non-functional",
+        "Estimate the scale — rough numbers, out loud",
+        "Propose storage and a processing model, and say why",
+        "Discuss trade-offs — what you'd change if a constraint moved"
+      ],
+      "explain": "The four-step structure is clarify requirements, estimate scale, propose storage and processing model with reasoning, then discuss trade-offs — skipping straight to a proposed architecture before clarifying requirements is the single most common interview mistake."
+    },
+    {
+      "id": "cc-18",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these pipeline layers in the order Lessons 13–16 designed them, from first decision to last.",
+      "items": [
+        "Ingestion layer — landing raw data into bronze",
+        "Transformation layer — bronze to silver to gold",
+        "Serving layer — putting gold in front of consumers",
+        "Caching strategy — layered on top of the serving layer"
+      ],
+      "explain": "Lesson 13 designed the ingestion layer first (getting data in reliably), Lesson 14 the transformation layer (bronze to silver to gold), Lesson 15 the serving layer (putting gold in front of consumers), and Lesson 16 then layered caching strategy on top of that serving layer."
+    },
+    {
+      "id": "cc-19",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Which Fabric item provides a full read/write T-SQL surface with enforced schema and multi-table transactions, as DP-700 tests it?",
+      "options": ["Lakehouse", "Dataflow Gen2", "Warehouse", "Notebook", "Eventhouse", "OneLake"],
+      "correctIndex": 2,
+      "explain": "A Fabric Warehouse is the full T-SQL surface with enforced schema and full multi-table ACID transactions, built for exactly this kind of BI-tool SQL connectivity.",
+      "distractorExplain": "The closest wrong option, Lakehouse, is the trap: a Lakehouse's SQL endpoint only supports a read-only subset of T-SQL and gets its consistency from Delta Lake's per-table transactions, not a single cross-table transaction scope — it cannot support INSERT/UPDATE/DELETE through that endpoint the way a Warehouse can."
+    },
+    {
+      "id": "cc-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A Direct Lake semantic model's report performance degrades noticeably after the underlying table grows large. What does DP-700 expect you to check first?",
+      "options": [
+        "Whether the Monitoring Hub has been deleted",
+        "Whether Direct Lake fell back to DirectQuery because the table exceeded its size or row-group limits",
+        "Whether the workspace's Git integration is broken",
+        "Whether the report was built with a sensitivity label"
+      ],
+      "correctIndex": 1,
+      "explain": "The single highest-yield Domain 3 fact is Direct Lake's fallback behavior: if a table is too large or has too many row groups, Fabric silently falls back to DirectQuery instead of failing outright, which is exactly what causes a sudden performance drop after a large load."
+    },
+    {
+      "id": "cc-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "An IoT sensor fleet needs continuous ingestion into a KQL database, not a scheduled load. Which Fabric tool is the right ingestion path?",
+      "options": ["Data Factory pipeline", "Eventstream", "Dataflow Gen2", "Deployment pipeline"],
+      "correctIndex": 1,
+      "explain": "Eventstream is built to receive continuous event traffic and route it — a pipeline or Dataflow would be the wrong answer because both are batch-oriented, and the scenario explicitly describes continuous ingestion."
+    },
+    {
+      "id": "cc-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A finance analyst needs read access to just one table inside a shared department lakehouse — not the other tables, and not the workspace's pipelines or notebooks. What's the narrowest correct control?",
+      "options": [
+        "Promoting the analyst to workspace Contributor",
+        "Sharing the entire lakehouse item with the analyst",
+        "A OneLake data access role scoped to that one table's folder",
+        "Duplicating the table into a brand-new lakehouse for the analyst"
+      ],
+      "correctIndex": 2,
+      "explain": "DP-700 rewards the narrowest correct control. A workspace role or whole-item share both grant far more than the scenario needs, and duplicating the table breaks the single-source-of-truth principle — a OneLake data access role scoped to the one table's folder grants exactly the access required."
+    },
+    {
+      "id": "cc-23",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Select every true statement about DP-700's three skills-measured domains, per Lesson 27.",
+      "options": [
+        "Each of the three domains is weighted roughly a third of the exam",
+        "There is no single domain that's safe to skip or cram at the expense of the others",
+        "Domain 2 covers ingesting and transforming data, including pipelines, Dataflows, and Eventstreams",
+        "Domain 1 is worth significantly more than Domain 2 or Domain 3",
+        "Domain 3 covers monitoring and optimizing an analytics solution"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "DP-700's three domains sit in a near-even ~30-35% range each — no domain is skippable or worth significantly more than the others. Domain 2 covers ingestion/transformation (pipelines, Dataflows, Eventstreams, notebooks/Spark); Domain 3 covers monitoring and optimizing a running solution."
+    },
+    {
+      "id": "cc-24",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Fabric sensitivity labels, per Lesson 35.",
+      "options": [
+        "A sensitivity label attaches to the data itself, not to the workspace it started in",
+        "A sensitivity label persists through a report and into an exported Excel file",
+        "A sensitivity label resets once data leaves its original warehouse for a report",
+        "Sensitivity labels are Purview-backed",
+        "A sensitivity label is scoped to one workspace, the same way a workspace role is"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Sensitivity labels are Purview-backed and attach to the data itself, traveling through the semantic model, into the report, and into an exported file — unlike workspace roles and item permissions, which do reset at the workspace boundary."
+    },
+    {
+      "id": "cc-25",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the DP-700 trap patterns named in Lesson 37.",
+      "options": [
+        "A wrong option often swaps a Fabric item type for a similar-sounding lookalike, like Lakehouse for Warehouse",
+        "Absolute wording like 'always' or 'never' is frequently, though not universally, a sign an option is false",
+        "An option that bolts on an external Azure service is usually the overcomplicated wrong answer when a native Fabric feature already solves the scenario",
+        "The exam never buries a load-bearing qualifier at the end of a long question stem",
+        "DP-700 generally rewards picking the narrowest correct control or tool over a broader one"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Lesson 37's five trap patterns are lookalike item types, absolute wording as bait, overcomplicated external-service answers, a buried qualifier at the end of the stem that changes the correct answer, and picking a broader control than the scenario needs — the qualifier trap is real, not absent, which is exactly why reading the whole stem matters."
+    },
+    {
+      "id": "cc-26",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: writes to a Lakehouse table happen through Spark, a pipeline, or a ________, never directly through its SQL endpoint, since that endpoint is read-only.",
+      "acceptedAnswers": ["Dataflow", "Dataflow Gen2"],
+      "explain": "Lesson 32 names this directly: a Lakehouse's SQL endpoint is read-only, so writes happen through Spark, a pipeline, or a Dataflow — never directly through the SQL endpoint itself, one of the most exam-tested Warehouse-vs-Lakehouse facts."
+    },
+    {
+      "id": "cc-27",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: DP-700 is scored on a scale of 1 to 1000, with Microsoft setting the passing threshold around ________.",
+      "acceptedAnswers": ["700"],
+      "explain": "Lesson 26 states the scaled score directly: reported on a 1–1000 scale with a passing threshold Microsoft sets around 700 — which is also where the certification code 'DP-700' gets its memorable number."
+    },
+    {
+      "id": "cc-28",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each DP-700 domain to the earlier course material it maps onto, per Lesson 27.",
+      "left": [
+        "Domain 1 — Implement and manage an analytics solution",
+        "Domain 2 — Ingest and transform data",
+        "Domain 3 — Monitor and optimize an analytics solution"
+      ],
+      "right": [
+        "Fabric Chapter 2 plus Databricks & Delta Lake mechanics (pipelines, Dataflows, Eventstreams, notebooks, Spark)",
+        "Fabric Chapter 3 (Monitoring Hub, Direct Lake, CI/CD, incident response, governance)",
+        "Fabric Chapter 1 (workspaces, OneLake, Lakehouse, Warehouse, capacities)"
+      ],
+      "correctMap": [2, 0, 1],
+      "explain": "Domain 1 maps to Fabric Chapter 1's workspace/OneLake/Lakehouse/Warehouse material; Domain 2 maps to Fabric Chapter 2 plus Databricks Delta mechanics; Domain 3 maps to Fabric Chapter 3's monitoring, Direct Lake, CI/CD, and governance material."
+    },
+    {
+      "id": "cc-29",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Match each security/governance control to what it actually governs, per Lesson 35.",
+      "left": ["Workspace role", "OneLake data access role", "Sensitivity label", "Row-level security (RLS)"],
+      "right": [
+        "Access to every item in one workspace",
+        "Folder/table-scoped access inside one lakehouse, independent of workspace role",
+        "A tag that travels with the data itself, including through exports",
+        "Filters which rows a user sees inside a semantic model"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "A workspace role grants access to every item in a workspace; a OneLake data access role narrows that to specific folders/tables inside one lakehouse; a sensitivity label travels with the data itself through exports; and row-level security filters rows at the semantic-model layer specifically, not the lakehouse."
+    },
+    {
+      "id": "cc-30",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put Lesson 38's 4-week DP-700 study plan in order.",
+      "items": [
+        "Week 1 — Domain 1 review and practice (OneLake and Lakehouses, Data Warehouses)",
+        "Week 2 — Domain 2 review and practice (Eventstreams and KQL, Notebooks and Spark)",
+        "Week 3 — Domain 3 review and practice (Security and Governance, Monitoring and Deployment)",
+        "Week 4 — full-length mock exams under real time constraints"
+      ],
+      "explain": "The 4-week plan reviews each domain in its own week — Domain 1, then Domain 2, then Domain 3 — before dedicating the final week to full-length mock exams under real time pressure, since that's what actually tells you whether you're ready."
+    },
+    {
+      "id": "cc-31",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put this chapter's own arc in the order Lesson 42's recap walks back through it.",
+      "items": [
+        "What DP-700 is, and its three near-even domains",
+        "Each domain drilled directly for exam focus (Lessons 28-30)",
+        "Six practice-question sets across all three domains (Lessons 31-36)",
+        "The trap patterns that repeat across every domain (Lesson 37)",
+        "A full 18-question mixed-domain mock exam (Lessons 40-41)"
+      ],
+      "explain": "Chapter 2's arc moves from what DP-700 is and its domain weighting, to drilling each domain directly, to six practice-question sets, to naming the recurring trap patterns, and finally to a full mixed-domain mock exam — the study plan and exam-day pacing lessons sit between the traps lesson and the mock exam."
+    },
+    {
+      "id": "cc-32",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "What does 'grounding' mean in the context of retrieval-augmented generation (RAG), as Lesson 50 defines it?",
+      "options": [
+        "Converting text into a vector that captures its meaning",
+        "Storing vectors in a structure built for fast similarity search",
+        "Giving the model current, relevant, real content at the moment you ask, instead of relying on what it memorized during training",
+        "Asking a second LLM to evaluate the first LLM's output",
+        "Scoring a transaction before it completes",
+        "Filtering sensitive data out of a prompt before sending it"
+      ],
+      "correctIndex": 2,
+      "explain": "Grounding means giving the model the actual, current, relevant information at the moment you ask, instead of relying on what it happened to memorize during training — RAG is the standard pattern for doing this at scale when the relevant content is too large to paste into every prompt by hand.",
+      "distractorExplain": "The closest wrong option — converting text into a vector that captures its meaning — describes embedding, one of RAG's four stages, not grounding itself. Embedding is the mechanism that makes content comparable by meaning; grounding is the broader goal that retrieval, fed by embeddings, is actually accomplishing."
+    },
+    {
+      "id": "cc-33",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Asked to read sales.csv and compute total revenue by region excluding cancelled orders, Copilot's chat pane drafted code that ran successfully and returned a plausible number. What did the generated code actually get wrong?",
+      "options": [
+        "It used the wrong file path for sales.csv",
+        "It grouped by product instead of region",
+        "It never filtered out cancelled orders, despite the prompt explicitly asking for that",
+        "It failed to run at all"
+      ],
+      "correctIndex": 2,
+      "explain": "The generated code ran cleanly and produced a real number, which is exactly what made it dangerous to accept without reading: it silently dropped the 'excluding cancelled orders' clause of the prompt entirely."
+    },
+    {
+      "id": "cc-34",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Why does Lesson 51 chunk a data catalog by whole table — name, description, and full column list together — rather than one chunk per column?",
+      "options": [
+        "Per-column chunking is required by every embedding model",
+        "A question like 'which table has customer churn data' needs the table-level description and enough column context in one retrieved unit",
+        "Whole-table chunks are always smaller than per-column chunks",
+        "Chunking by column is illegal under the chapter's guardrails"
+      ],
+      "correctIndex": 1,
+      "explain": "Splitting into per-column chunks would force the retrieval step to reassemble several fragments just to answer one question — chunking by whole table keeps the table-level description and column context together in the single unit that actually answers a question like this."
+    },
+    {
+      "id": "cc-35",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Why does a wrong AI-proposed schema mapping cause more damage than a wrong AI-generated test case, even though both start from the same kind of draft?",
+      "options": [
+        "Schema mapping always involves more columns than test generation",
+        "A wrong test case fails loudly and gets caught before shipping; a wrong mapping ships silently and corrupts downstream data with no error",
+        "Test cases cannot be reviewed by a human before running",
+        "Schema mapping is performed by a different, less capable model"
+      ],
+      "correctIndex": 1,
+      "explain": "A wrong test fails loudly — the test doesn't pass, someone notices, it gets fixed before it ships. A wrong schema mapping does the opposite: it ships silently, and every downstream report built on the mis-mapped field is now quietly wrong with nothing throwing an error to say so."
+    },
+    {
+      "id": "cc-36",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Why does a genuinely novel bug — one with no similar failure in the model's training data — tend to produce a confidently wrong AI answer rather than an honestly uncertain one?",
+      "options": [
+        "Novel bugs always produce a clear error message the model can read directly",
+        "The model refuses to answer when a bug is genuinely novel",
+        "The model still generates a plausible-sounding answer even when it has nothing real to pattern-match against",
+        "Novel bugs are outside the scope of what RCA drafting is used for"
+      ],
+      "correctIndex": 2,
+      "explain": "Lesson 54's RCA drafting leans on the model pattern-matching an error against similar failures it has seen before. When no such pattern exists, the model doesn't become uncertain — it still generates a plausible-sounding answer, which is exactly why Lesson 61 calls this the AI's weakest case."
+    },
+    {
+      "id": "cc-37",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about what Lesson 56 says must never be pasted into a third-party LLM prompt.",
+      "options": [
+        "Real customer names, emails, or SSNs",
+        "API keys, connection strings, passwords, or tokens",
+        "Unredacted production data of any kind",
+        "Synthetic data generated specifically to resemble the real schema",
+        "A schema with no real rows attached"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Lesson 56 draws the hard line at real PII, secrets/credentials, and any unredacted production data. Synthetic data and a bare schema with no real rows are explicitly offered as the safe alternative, not something to avoid."
+    },
+    {
+      "id": "cc-38",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about running an LLM call once per row inside a production pipeline, per Lesson 57.",
+      "options": [
+        "The per-call token cost and latency multiply into real dollars and real delays at high row volumes",
+        "A per-row LLM call can make a pipeline miss a real-time SLA it would otherwise hit",
+        "A deterministic rule, lookup, or regex usually beats an LLM call for enumerable, high-volume cases",
+        "Running an LLM once, offline, outside the hot path avoids this problem entirely",
+        "An LLM call costs the same, in dollars and latency, as a CASE statement or regex"
+      ],
+      "correctIndices": [0, 1, 2, 3],
+      "explain": "A per-row LLM call multiplies a real per-call cost and latency across every row, which can blow both the budget and a real-time SLA — a deterministic rule wins for enumerable cases, and running the LLM once, offline, sidesteps the hot-path cost entirely. An LLM call is categorically more expensive and slower than a CASE statement or regex, not equivalent to one."
+    },
+    {
+      "id": "cc-39",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about LLM-as-judge as an evaluation technique, per Lesson 58.",
+      "options": [
+        "It scales review across a large volume of AI output faster than manual spot-checking",
+        "It shares the same blind spots as the model being judged — no more access to your real systems or undocumented edge cases",
+        "It can confirm internal consistency, like whether a test case follows logically from the spec it was given",
+        "It fully replaces the need for a human spot-check against real ground-truth data",
+        "It has no access to your actual production systems"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "LLM-as-judge scales fast and can catch internal inconsistency, but it has the exact same blind spots as the original model — no real access to your systems or undocumented edge cases — so Lesson 58 explicitly says it cannot replace a human spot-check against real ground truth."
+    },
+    {
+      "id": "cc-40",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in-cell Copilot's slash commands include /explain, /fix, /optimize, and /________ for adding documentation to a cell.",
+      "acceptedAnswers": ["comments"],
+      "explain": "Lesson 44 lists the four in-cell slash commands: /explain, /fix, /comments, and /optimize — /comments is the one that adds documentation."
+    },
+    {
+      "id": "cc-41",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the four-stage RAG pipeline, per Lesson 50, is embed, index, retrieve, and ________.",
+      "acceptedAnswers": ["generate"],
+      "explain": "The four stages are embed (turn content into a vector), index (store it for fast search), retrieve (find the closest match to a question), and generate (hand the retrieved content to the LLM to produce an answer)."
+    },
+    {
+      "id": "cc-42",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: the z-score anomaly-detection rule of thumb flags a value as an anomaly when the absolute value of its z-score exceeds ________.",
+      "acceptedAnswers": ["3"],
+      "explain": "Lesson 47 gives the rule of thumb directly: |z| > 3 flags an anomaly, assuming the metric is roughly normally distributed — a strong weekday/weekend pattern or a hard floor at zero breaks that assumption and causes false alarms."
+    },
+    {
+      "id": "cc-43",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each AI-assisted task to the specific input that made its draft more useful, per this chapter.",
+      "left": [
+        "Generating documentation (Lesson 48)",
+        "Generating test cases (Lesson 53)",
+        "Proposing a schema mapping (Lesson 55)",
+        "Drafting a root cause analysis (Lesson 54)"
+      ],
+      "right": [
+        "The error message, surrounding log lines, and what changed recently",
+        "Schema plus real sample rows, including edge cases",
+        "The transformation's spec (types, nullability, business rules), not just the code",
+        "The source and target column lists plus sample rows from each"
+      ],
+      "correctMap": [1, 2, 3, 0],
+      "explain": "Documentation drafts need schema plus real sample rows to catch edge cases; test-case drafts need the spec, not just the code, to catch mismatches between intent and implementation; schema mapping needs both column lists plus sample data to assign a confidence signal; and RCA drafts need the error, surrounding logs, and recent changes to form a plausible hypothesis."
+    },
+    {
+      "id": "cc-44",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Match each term to its meaning.",
+      "left": ["Z-score", "Isolation forest", "Embedding", "Chunk"],
+      "right": [
+        "Flags points that separate out in few random splits, with no distribution assumption",
+        "A vector representation of text that captures its meaning",
+        "Standard deviations from the mean; assumes a roughly normal distribution",
+        "The unit of content embedded and retrieved together"
+      ],
+      "correctMap": [2, 0, 1, 3],
+      "explain": "Z-score measures standard deviations from the mean and assumes a normal-ish distribution; isolation forest flags points that separate out in few random splits with no distribution assumption; an embedding is a vector representation capturing meaning; a chunk is the unit of content embedded and retrieved together."
+    },
+    {
+      "id": "cc-45",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put Lesson 53's AI-generated-test-case workflow in order.",
+      "items": [
+        "Draft — the LLM proposes test cases from the schema and spec",
+        "Review — check each proposed case against real system behavior",
+        "Trim — drop any test that doesn't reflect anything real",
+        "Run — the surviving tests join the actual test suite"
+      ],
+      "explain": "The workflow is draft (LLM proposes from the spec), review (check against real system behavior), trim (drop anything unreal), then run (surviving tests join the real suite) — treating every AI-generated list as an outline, not a finished suite."
+    },
+    {
+      "id": "cc-46",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Put the steps of Lesson 59's worked AI-assisted debugging example in order.",
+      "items": [
+        "Sanitize the log and strip identifying data before pasting anything into the assistant",
+        "The assistant drafts a hypothesis about the likely root cause",
+        "Query the real source table to confirm the hypothesis against actual data",
+        "Apply the fix and re-verify it against the previously-failing rows"
+      ],
+      "explain": "The on-call engineer first sanitizes the log per Lesson 56's guardrails, gets a draft hypothesis from the assistant, verifies that hypothesis against real queried data rather than trusting its confidence, and only then applies and re-verifies the fix against actual failing rows."
+    },
+    {
+      "id": "cc-47",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "In a star-schema load process like Project 2's warehouse migration, what is the standard reason dimension tables are loaded before the fact table?",
+      "options": [
+        "Dimension tables are always smaller than fact tables",
+        "Fact rows need valid foreign keys that reference already-loaded dimension rows",
+        "Loading dimensions first is required by Delta Lake's file format",
+        "Fact tables cannot be partitioned until dimensions exist",
+        "Dimension tables must be loaded first to satisfy GDPR",
+        "Loading order has no effect on correctness, only on speed"
+      ],
+      "correctIndex": 1,
+      "explain": "Writing a fact row requires a valid customer_key and product_key, and those foreign keys only exist once the dimension loads have already run — in Project 2 this is a hard dependency, not a convenience, which is why DimCustomer and DimProduct load before FactOrders.",
+      "distractorExplain": "The closest wrong option — that dimension tables are always smaller than fact tables — is a true-sounding but irrelevant fact; table size is not why load order matters here. The actual reason is referential: a fact row's foreign keys must resolve to dimension rows that already exist."
+    },
+    {
+      "id": "cc-48",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Why does Project 1's retail analytics platform use a hybrid, Lambda-shaped ingestion design instead of pure batch or pure streaming?",
+      "options": [
+        "Fabric does not support pure batch ingestion",
+        "Its non-functional requirements — same-day freshness, no lost events, surviving traffic spikes — rule out a pure nightly-batch design before any tool is chosen",
+        "A pure streaming design would be cheaper to operate",
+        "Online orders and in-store sales use the same database technology"
+      ],
+      "correctIndex": 1,
+      "explain": "Lesson 64's non-functional requirements — same-day freshness, never losing a sale event, and surviving Black-Friday-scale spikes — together rule out the simplest possible design, nightly batch only, before a single line of code is written, pointing straight at a hybrid ingestion design."
+    },
+    {
+      "id": "cc-49",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Why does Project 2's migration call the customer/product crosswalk table the single most important artifact in the whole migration?",
+      "options": [
+        "The crosswalk table is the largest table in the new warehouse",
+        "Every fact table in the new warehouse depends on it existing and being correct before cutover, not fixed up afterward",
+        "The crosswalk table replaces the need for a star schema entirely",
+        "The crosswalk table is only used during the rollback plan"
+      ],
+      "correctIndex": 1,
+      "explain": "The three legacy systems never agreed on a shared key scheme. The crosswalk resolves that disagreement into one conformed key, and every foreign key in FactOrders depends on that resolution being correct before a single fact row loads — not corrected after the fact."
+    },
+    {
+      "id": "cc-50",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Why does Project 3's fraud detector compute rolling features with a sliding window rather than a tumbling window?",
+      "options": [
+        "Sliding windows are required by Fabric's Eventstream feature for all use cases",
+        "A tumbling window resets at fixed boundaries and can split a fraud burst across two windows, undercounting it",
+        "Tumbling windows cannot process more than one event per second",
+        "A sliding window eliminates the need for a watermark"
+      ],
+      "correctIndex": 1,
+      "explain": "A fraud signal like '5 purchases in 2 minutes' needs a rolling count over a moving interval. A tumbling window resets to zero at fixed boundaries, so a burst that straddles a boundary gets split and undercounted — a sliding window recomputes continuously, so the last 2 minutes always means the actual last 2 minutes."
+    },
+    {
+      "id": "cc-51",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Why does Project 2's cutover plan default to a phased, parallel-run cutover rather than a big-bang cutover?",
+      "options": [
+        "A phased cutover is always faster to complete than a big-bang cutover",
+        "It has a lower blast radius — a bug in the new warehouse doesn't make everything wrong for every consumer at once",
+        "A phased cutover requires no reconciliation checks",
+        "Big-bang cutovers are not supported by Fabric Data Warehouse"
+      ],
+      "correctIndex": 1,
+      "explain": "Big-bang retires the old sources on one date with no partial-failure mode — if a bug slipped through, everything is wrong for every consumer at once. A multi-source migration like Project 2's defaults to a phased, parallel-run cutover instead, where each validated report is evidence the migration works before the next one moves."
+    },
+    {
+      "id": "cc-52",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about Project 3's idempotent alert design, per Lesson 77.",
+      "options": [
+        "At-least-once delivery, on its own, does not prevent the same transaction from triggering a duplicate fraud alert",
+        "Keying the alert write as a MERGE on transaction_id makes a redelivered event a no-op instead of a duplicate alert",
+        "Activator is built to fire once per qualifying streaming event",
+        "The streaming platform guarantees exactly-once delivery end to end, so no extra idempotency work is needed",
+        "Making the alert idempotent is the same pattern Lesson 8's SCD merge and Databricks's MERGE INTO both use"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "At-least-once delivery explicitly allows redelivery, so without a safeguard the same transaction could alert twice. Keying the alert write as a MERGE on transaction_id, the same upsert pattern used elsewhere in the track, makes redelivery a no-op, and Activator fires once per qualifying event — none of this relies on the platform handing you exactly-once delivery for free, because it doesn't."
+    },
+    {
+      "id": "cc-53",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about what Project 2's rollback plan must define in advance, per Lesson 73.",
+      "options": [
+        "A specific, pre-agreed trigger threshold, such as a reconciliation variance above a set percentage",
+        "A repointing mechanism proven to work before cutover starts, not improvised during an incident",
+        "How long the old source is kept alive — long enough to actually roll back to",
+        "The rollback trigger can be decided in the moment, based on how confident the team feels that day",
+        "A cutover plan without a rollback plan is still a valid, complete cutover plan"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Lesson 73 is explicit that the trigger, the repointing mechanism, and how long the old source stays alive all have to be answered before cutover starts, not decided under pressure during an incident — a cutover plan without a rollback plan is called out directly as 'a bet,' not a complete plan."
+    },
+    {
+      "id": "cc-54",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about what a portfolio README should lead with, per Lesson 79.",
+      "options": [
+        "One or two sentences describing what the system does",
+        "The architecture diagram, immediately visible, not linked out",
+        "The hard decisions, pulled straight from the project's retrospective",
+        "The project's full commit history, since that's what reviewers check first",
+        "Setup steps proving the project actually works"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Lesson 79's four README questions, in order, are what the system does, what it looks like (the diagram, immediately visible), what the hard decisions were (from the retrospective), and how to run it. The full commit history is explicitly named as something that almost never gets read closely."
+    },
+    {
+      "id": "cc-55",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Project 1's fact table, FactSales, is fixed at a grain of one row per ________ per sale, whether the sale happened in-store or online.",
+      "acceptedAnswers": ["line item", "line-item"],
+      "explain": "Lesson 64 fixes the grain before anything else: one row per line item per sale, in-store or online — the same grain carried all the way from bronze through the gold FactSales table in Lesson 66."
+    },
+    {
+      "id": "cc-56",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: Lesson 80's four-part structure for telling a project's story out loud is Situation, Design, Trade-off, and ________.",
+      "acceptedAnswers": ["Retrospect"],
+      "explain": "The four parts are Situation (what the system needed to do), Design (the shape chosen and why), Trade-off (what was given up to get it), and Retrospect (what you'd do differently now) — mapping directly onto the retrospective questions from Lessons 74 and 78."
+    },
+    {
+      "id": "cc-57",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Match each capstone project to the architecture pattern that defines it.",
+      "left": [
+        "Project 1 — Real-Time Retail Analytics Platform",
+        "Project 2 — Multi-Source Data Warehouse Migration",
+        "Project 3 — Streaming Fraud Detector"
+      ],
+      "right": [
+        "Kappa architecture, a sliding window, and an idempotent Activator-driven alert",
+        "Hybrid, Lambda-shaped ingestion unifying nightly batch and streaming at bronze",
+        "A conformed-key crosswalk feeding a phased, parallel-run cutover"
+      ],
+      "correctMap": [1, 2, 0],
+      "explain": "Project 1 unifies nightly POS batch and streaming online orders into one bronze layer via hybrid, Lambda-shaped ingestion; Project 2 resolves three disagreeing systems through a conformed-key crosswalk, cut over in a phased, parallel-run migration; Project 3 is a pure Kappa pipeline with a sliding window and an idempotent Activator alert."
+    },
+    {
+      "id": "cc-58",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each term to its meaning, as used across this chapter's capstone projects.",
+      "left": ["Kappa fit", "Conformed key", "Sliding window", "Go/no-go gate"],
+      "right": [
+        "A single customer or product identity resolved across systems that never agreed on one",
+        "Recomputes continuously over the last N minutes as new events arrive",
+        "No separate batch layer exists or is needed; one streaming pipeline scores everything live",
+        "A pre-agreed, objective bar a report must clear before it's allowed to cut over"
+      ],
+      "correctMap": [2, 0, 1, 3],
+      "explain": "Kappa fit means no batch layer is needed because one streaming pipeline correctly serves both live and historical needs; a conformed key resolves identity across disagreeing systems; a sliding window recomputes continuously over a moving interval; and a go/no-go gate is the pre-agreed, objective bar a report must clear before cutover."
+    },
+    {
+      "id": "cc-59",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Put Project 1's five build lessons in order.",
+      "items": [
+        "Kickoff — requirements and the hybrid processing-model decision",
+        "Ingestion — the bronze landing zone for both batch and streaming sources",
+        "Transformation and modeling — silver conforming, gold star schema",
+        "Serving and dashboards — Direct Lake mode over gold.FactSales",
+        "Production hardening — dead-letter tables, retries, alerting"
+      ],
+      "explain": "Project 1 runs kickoff, then ingestion, transformation and modeling, serving and dashboards, and production hardening, in that order, before Lesson 69's wrap-up retrospective closes it out."
+    },
+    {
+      "id": "cc-60",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Put Project 2's migration load sequence in the order Lessons 71-72 establish it.",
+      "items": [
+        "Build the customer/product crosswalk, resolving identities across the three legacy systems",
+        "Load DimCustomer from the CRM, using the crosswalk's conformed key",
+        "Load DimProduct from the inventory system, in parallel with DimCustomer",
+        "Load FactOrders from the legacy SQL Server system, resolving every reference through the crosswalk"
+      ],
+      "explain": "The crosswalk has to be built and trustworthy before anything loads from it. Customers and products can then load in parallel since neither depends on the other, and FactOrders loads last because it has a hard dependency on both dimensions already existing with resolved, conformed keys."
+    }
+  ]
+}

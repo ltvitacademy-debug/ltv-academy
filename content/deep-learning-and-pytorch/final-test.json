@@ -1,0 +1,720 @@
+{
+  "questions": [
+    {
+      "id": "dlp-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "x = torch.randn(32, 10)\nw = torch.randn(20, 5)\n\ny = x @ w",
+      "prompt": "This matrix multiplication raises a RuntimeError. Which statement correctly explains why, and what the fix generally involves?",
+      "options": [
+        "x and w are different shapes entirely, so the fix is to make both tensors the exact same shape before multiplying",
+        "The inner dimensions don't match (10 != 20); matrix multiplication requires x's last dimension to equal w's first dimension, so the fix is usually upstream, e.g. in how w was built",
+        "torch.randn can't be used to create tensors that will be matrix-multiplied together",
+        "The batch dimension (32) must equal the output dimension (5) for matmul to work"
+      ],
+      "correctIndex": 1,
+      "explain": "PyTorch's error message for this exact case reports 'mat1 and mat2 shapes cannot be multiplied (32x10 and 20x5)' because matrix multiplication requires the inner dimensions to match (10 != 20). The fix is almost always upstream: either x has the wrong number of features, or w was built with the wrong input size."
+    },
+    {
+      "id": "dlp-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: calling .backward() twice without clearing gradients in between causes a leaf tensor's .grad to ________ rather than reset to the new value.",
+      "acceptedAnswers": [
+        "accumulate",
+        "accumulates",
+        "add"
+      ],
+      "explain": ".grad accumulates across calls to .backward() — it does not reset automatically. A tensor x with requires_grad=True that has .backward() called on y1=(x**2).sum() and then again on a fresh y2=(x**2).sum() ends up with .grad holding the sum of both gradients, not just the latest one. This is exactly why every training loop calls optimizer.zero_grad() (or sets .grad = None) before each backward pass."
+    },
+    {
+      "id": "dlp-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about autograd and devices in PyTorch, per Chapter 1.",
+      "options": [
+        "requires_grad=True on a tensor causes every tensor derived from it to get a grad_fn, building a computational graph dynamically",
+        ".grad accumulates across multiple .backward() calls unless explicitly cleared with optimizer.zero_grad() or tensor.grad = None",
+        "torch.no_grad() permanently disables gradient tracking for a tensor for the rest of the program",
+        "Combining a CPU tensor and a CUDA tensor in the same operation raises a RuntimeError rather than silently moving one of them",
+        ".to(device) always returns a brand-new tensor object, for both plain tensors and nn.Module instances"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "requires_grad=True starts a computational graph that grows with every derived tensor, and .grad keeps accumulating across backward() calls unless explicitly cleared. Mismatched devices raise a RuntimeError rather than being silently fixed. torch.no_grad() is only a context manager — it disables tracking only inside its block, not permanently. And .to(device) behaves differently depending on what it's called on: it returns a new tensor for plain tensors, but moves an nn.Module's parameters and buffers in place, returning the same model object."
+    },
+    {
+      "id": "dlp-04",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each data-loading term to what it actually does, per Chapter 1.",
+      "left": [
+        "Dataset",
+        "DataLoader",
+        "TensorDataset",
+        "num_workers"
+      ],
+      "right": [
+        "A class defining __len__ and __getitem__ for fetching one example at a time",
+        "Wraps a Dataset to handle batching, shuffling, and parallel loading",
+        "Built-in Dataset for data that already lives in plain tensors",
+        "Spawns background processes that prepare the next batch while the GPU works on the current one"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "Dataset only needs to answer 'how many examples, and how do I get one' via __len__ and __getitem__. DataLoader wraps a Dataset to handle batching, shuffling, and iteration. TensorDataset is the built-in shortcut for data that already lives in tensors, with no custom class needed. num_workers spawns background processes to prepare the next batch while the GPU is busy with the current one."
+    },
+    {
+      "id": "dlp-05",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these five steps of a from-scratch PyTorch training loop, per Lesson 4, in the correct order.",
+      "items": [
+        "Run the current parameters through the model to produce a prediction (forward pass)",
+        "Reduce the prediction's error against the true target to a single scalar loss",
+        "Clear out .grad from the previous iteration before computing new gradients",
+        "Call .backward() on the loss to populate .grad for every parameter",
+        "Inside torch.no_grad(), move each parameter a small step in the direction that reduces the loss"
+      ],
+      "explain": "Every training loop repeats the same five steps: forward pass, compute loss, zero gradients, backward pass, update. The update step happens inside torch.no_grad() specifically so autograd doesn't try to build a graph for the update itself, which would be both wasteful and incorrect."
+    },
+    {
+      "id": "dlp-06",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A classification model's final layer is a plain nn.Linear producing raw scores, and the loss is computed with nn.CrossEntropyLoss(logits, labels). Which statement correctly describes why this is the right setup?",
+      "options": [
+        "CrossEntropyLoss requires probabilities summing to 1, so the model should apply nn.Softmax before the loss is computed",
+        "labels must be one-hot encoded vectors of the same shape as logits for CrossEntropyLoss to work",
+        "CrossEntropyLoss internally combines a log-softmax and a negative-log-likelihood loss in one numerically stable operation, so it must receive raw, unnormalized logits rather than pre-softmaxed probabilities",
+        "CrossEntropyLoss works identically whether the model outputs probabilities or raw logits, since it renormalizes its input either way",
+        "CrossEntropyLoss is only valid for binary classification; multi-class problems require nn.BCEWithLogitsLoss instead",
+        "Applying softmax before CrossEntropyLoss produces the same gradients, just computed less efficiently"
+      ],
+      "correctIndex": 2,
+      "explain": "nn.CrossEntropyLoss expects logits of shape (batch_size, num_classes) — raw, unnormalized scores — and labels of shape (batch_size,) containing the integer class index, not one-hot vectors. It internally combines log-softmax and negative-log-likelihood in one numerically stable operation, which is exactly why the model's final layer should stay a plain nn.Linear with no activation on top.",
+      "distractorExplain": "The 'apply softmax first' option sounds reasonable since CrossEntropyLoss ultimately works with normalized probabilities internally — but it already applies a log-softmax itself. Pre-applying softmax would double-apply that transformation, producing incorrect gradients rather than just being redundant, which is exactly the mistake the lesson warns trips up almost everyone the first time."
+    },
+    {
+      "id": "dlp-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "class DeepMLP(nn.Module):\n    def __init__(self, sizes):\n        super().__init__()\n        self.blocks = [MLPBlock(sizes[i], sizes[i + 1]) for i in range(len(sizes) - 1)]\n\n    def forward(self, x):\n        for block in self.blocks:\n            x = block(x)\n        return x",
+      "prompt": "This model trains without raising any error, but the blocks inside self.blocks never actually learn. What's wrong?",
+      "options": [
+        "MLPBlock doesn't support being used inside a loop in forward()",
+        "sizes[i + 1] is out of bounds for the last iteration of the list comprehension",
+        "self.blocks is a plain Python list, so nn.Module's attribute-scanning never discovers the submodules inside it — their parameters are missing from .parameters(), state_dict(), and .to(device) entirely",
+        "nn.Module requires forward() to return exactly one layer's output, not the result of multiple chained blocks"
+      ],
+      "correctIndex": 2,
+      "explain": "If you store submodules in a plain Python list, nn.Module's attribute-scanning never finds them — .parameters() silently returns nothing for those layers, they never move with .to(device), and they're missing from state_dict(). This is a genuinely dangerous silent bug: the code runs without error, but those layers never train. The fix is nn.ModuleList, which behaves like a list but properly registers every module inside it."
+    },
+    {
+      "id": "dlp-08",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about optimizers, per Chapter 2.",
+      "options": [
+        "optim.SGD(params, lr=0.01) without momentum updates each parameter using only the current gradient, which can be slow to converge and prone to oscillation in narrow valleys",
+        "Adam's default learning rate (0.001) is smaller than SGD's typical range (0.01-0.1) because Adam's per-parameter adaptive scaling already does a lot of the work",
+        "Momentum keeps a running average of recent gradients, which is like a ball rolling downhill building speed in a consistent direction",
+        "optimizer.step() must be called before loss.backward() in every training loop",
+        "Adam combines momentum with a running average of squared gradients to automatically shrink the effective step size for parameters with large or noisy gradients"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "explain": "Plain SGD updates directly from the current gradient, which can be slow and oscillating. Momentum smooths updates using a running average of recent gradients, like a ball building speed downhill. Adam combines that momentum with a running average of squared gradients to adapt the effective step size per parameter, which is why its default lr=0.001 is much smaller than SGD's typical 0.01-0.1. The three-call pattern is always zero_grad, then backward, then step — backward must come before step, not after."
+    },
+    {
+      "id": "dlp-09",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a tensor assigned as a model attribute only gets auto-discovered by .parameters() if it's wrapped in nn.________, not a plain tensor.",
+      "acceptedAnswers": [
+        "Parameter",
+        "nn.Parameter",
+        "Parameter()"
+      ],
+      "explain": "nn.Parameter is a thin wrapper around a tensor that automatically sets requires_grad=True and tells nn.Module to track it as a learnable parameter. The moment an nn.Parameter is assigned as an attribute on a module, it's automatically registered and will show up in .parameters() and .named_parameters()."
+    },
+    {
+      "id": "dlp-10",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Match each nn.Module mechanism to what it actually does, per Chapter 2.",
+      "left": [
+        "nn.Parameter",
+        "register_buffer",
+        "nn.ModuleList",
+        "model.apply(fn)"
+      ],
+      "right": [
+        "A tensor wrapper with requires_grad=True that auto-registers as a learnable parameter when assigned as an attribute",
+        "Registers a non-learnable tensor that still moves with .to(device) and saves in state_dict(), but is never updated by gradients",
+        "A list-like container that properly registers every submodule inside it, unlike a plain Python list",
+        "Recursively calls fn on every submodule in the model"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "nn.Parameter auto-registers as a learnable parameter the moment it's assigned as an attribute. register_buffer tracks a non-learnable tensor for device-moving and saving purposes, without ever including it in .parameters() or updating it via gradients. nn.ModuleList is the container required (instead of a plain Python list) for a variable number of submodules to be properly discovered. model.apply(fn) recursively calls fn on every submodule, the same tree-walk that powers .parameters()."
+    },
+    {
+      "id": "dlp-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "model.eval()\nx = torch.randn(1, 3, 32, 32)\nout = model(x)",
+      "prompt": "model contains nn.BatchNorm2d layers and is called with a batch size of 1 while in eval() mode. What happens, and why is batch size 1 not a problem here?",
+      "options": [
+        "BatchNorm2d always computes statistics from the current batch regardless of train/eval mode, so a batch size of 1 would produce undefined variance and likely NaN output",
+        "model.eval() switches BatchNorm2d to use its stored running mean/variance instead of computing statistics from the current batch, so a batch size of 1 causes no issue",
+        "model.eval() disables all BatchNorm2d layers entirely, so they act as a no-op pass-through",
+        "A batch size of 1 causes a RuntimeError in eval mode, since BatchNorm2d requires batch_size > 1 at all times"
+      ],
+      "correctIndex": 1,
+      "explain": "During training, BatchNorm2d uses the current batch's mean and variance and updates a running estimate of them. During evaluation (model.eval()), it switches to using that stored running estimate instead of the current batch's statistics — which is exactly why batch norm behaves badly with a batch size of 1 during training, but is fine during eval."
+    },
+    {
+      "id": "dlp-12",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about regularization techniques, per Chapter 3.",
+      "options": [
+        "AdamW decouples weight decay from the gradient-based update, unlike plain Adam's L2-regularization-in-the-gradient approach",
+        "Dropout with p=0.5 zeroes roughly half of a layer's activations on every forward pass during training",
+        "Dropout behaves identically in model.train() and model.eval() mode",
+        "A growing gap between falling training loss and flat or rising validation loss is a sign of overfitting",
+        "weight_decay in torch.optim.SGD penalizes large weights by adding a term proportional to weight size"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3,
+        4
+      ],
+      "explain": "AdamW decouples the decay step from the gradient-based update, fixing the awkward interaction plain Adam has between L2 regularization and its adaptive learning rates. Dropout with p=0.5 zeroes roughly half of a layer's activations per forward pass during training only — it's disabled entirely in eval mode, so it does NOT behave identically in both modes. A widening train/validation gap is the classic overfitting signature, and weight decay penalizes weight size directly via the optimizer argument."
+    },
+    {
+      "id": "dlp-13",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: for StepLR, CosineAnnealingLR, and ReduceLROnPlateau, a learning rate scheduler's ________() method should be called once per epoch after training for that epoch is done, not once per batch inside the training loop.",
+      "acceptedAnswers": [
+        "step",
+        "scheduler.step",
+        "step()"
+      ],
+      "explain": "scheduler.step() is called once per epoch, after the epoch's training is done — not per batch, and not before optimizer.step() inside the batch loop. Mixing this up is a common, quiet bug: the learning rate ends up decaying far faster or slower than intended."
+    },
+    {
+      "id": "dlp-14",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 3 training technique to what it actually controls.",
+      "left": [
+        "StepLR",
+        "CosineAnnealingLR",
+        "ReduceLROnPlateau",
+        "Gradient clipping by norm"
+      ],
+      "right": [
+        "Multiplies the learning rate by gamma every fixed number of epochs",
+        "Decays the learning rate smoothly along a cosine curve toward near-zero over a set number of epochs",
+        "Decays the learning rate only when a tracked validation metric stops improving for a set number of epochs",
+        "Rescales all of a model's gradients proportionally so their combined norm never exceeds a fixed ceiling, preserving direction"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "StepLR cuts the learning rate by gamma every step_size epochs. CosineAnnealingLR follows a smooth cosine decay toward near-zero over T_max epochs. ReduceLROnPlateau decays based on a validation metric's stall, taking scheduler.step(val_loss) rather than no argument. Gradient clipping by norm (clip_grad_norm_) rescales every gradient proportionally so the combined norm doesn't exceed max_norm, preserving the gradient's direction."
+    },
+    {
+      "id": "dlp-15",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of the early-stopping pattern from Lesson 21 in the correct order.",
+      "items": [
+        "Run one epoch of training and then evaluate validation loss",
+        "Compare the new validation loss against the best validation loss seen so far",
+        "If it improved, reset the patience counter and save a new best checkpoint",
+        "If it didn't improve, increment the patience counter",
+        "Once the patience counter reaches the configured patience value, stop training"
+      ],
+      "explain": "Every epoch, validation loss either improves (reset the counter, save a new best checkpoint) or doesn't (increment the counter). Once the counter reaches the configured patience value, training stops — which is also why the checkpoint actually deployed is rarely the one from the final epoch of a fixed-length run."
+    },
+    {
+      "id": "dlp-16",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A convolutional layer uses a 3x3 kernel, stride 1, and padding 1 on a 28x28 input. Using the output size formula out = (H + 2P - K) / S + 1, what is the output's spatial size, and why?",
+      "options": [
+        "26x26 — padding is ignored by the formula, so the output always shrinks by kernel_size minus 1",
+        "30x30 — padding always increases the output size beyond the input's size",
+        "14x14 — stride 1 with padding 1 halves the input size regardless of kernel size",
+        "28x28 — with K=3, P=1, S=1, the formula gives (28+2-3)/1+1 = 28, which is exactly why this combination is the standard choice for preserving spatial size",
+        "9x9 — the kernel size divides the input size directly: 28/3 rounded down",
+        "28x28, but only if the input has exactly one channel; multi-channel inputs produce a different size"
+      ],
+      "correctIndex": 3,
+      "explain": "Plugging H=28, K=3, P=1, S=1 into out = (H + 2P - K) / S + 1 gives (28 + 2 - 3) / 1 + 1 = 28. padding=1 with a 3x3 kernel and stride=1 is a common combination specifically because it preserves the input's spatial size, regardless of how many channels the input has.",
+      "distractorExplain": "The '26x26' option assumes padding doesn't affect the formula at all, treating this like the no-padding case — where, without padding, a kernel can never be centered exactly on a border pixel, so the output is always a bit smaller than the input. But P=1 is exactly what cancels out the 3x3 kernel's natural shrinkage here, which is the entire point of this specific combination."
+    },
+    {
+      "id": "dlp-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "weights = ResNet18_Weights.DEFAULT\nmodel = resnet18(weights=weights)\n\nfor param in model.parameters():\n    param.requires_grad = False\n\nmodel.fc = nn.Linear(model.fc.in_features, num_classes)",
+      "prompt": "After this code runs, which parameters will actually receive gradient updates during training?",
+      "options": [
+        "No parameters at all, since the entire model was frozen with requires_grad = False",
+        "Every parameter in the model, since model.fc = nn.Linear(...) resets requires_grad to True for the whole model",
+        "Only the convolutional layers, since nn.Linear layers never require gradients",
+        "Only the new model.fc layer's weight and bias — every other parameter was frozen before the replacement, and newly created parameters default to requires_grad=True"
+      ],
+      "correctIndex": 3,
+      "explain": "Setting requires_grad = False on every existing parameter freezes the pretrained backbone. Replacing model.fc with a fresh nn.Linear automatically makes that new layer trainable, since newly created parameters default to requires_grad=True. Only the new layer learns from the data — this is feature extraction."
+    },
+    {
+      "id": "dlp-18",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about data augmentation, per Chapter 4.",
+      "options": [
+        "An augmentation is safe to use only if a human would still assign the same label to the transformed image",
+        "Augmentation should be applied to the training set only, never to validation or test data",
+        "RandomHorizontalFlip is always safe to apply to any image classification task, including reading handwritten digits",
+        "Data augmentation works by generating label-preserving variations of existing images, increasing effective data diversity without new labels",
+        "ColorJitter and RandomCrop must always be applied together, or neither has any effect"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "The rule of thumb for choosing augmentations is that a human would still assign the same label to the transformed image. Augmentation is applied only to training data, never validation or test, so evaluation reflects the real, unmodified distribution. RandomHorizontalFlip is NOT always safe — it would break a task like reading handwritten digits, where a flipped 6 looks like a 9. ColorJitter and RandomCrop are independent transforms that each have their own effect and can be used separately."
+    },
+    {
+      "id": "dlp-19",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in nn.AdaptiveAvgPool2d(output_size=(1, 1)), setting the output size to (1, 1) performs what's called ________ average pooling, collapsing each channel's entire feature map down to a single number.",
+      "acceptedAnswers": [
+        "global",
+        "global average"
+      ],
+      "explain": "Setting output_size=(1, 1) performs 'global average pooling' — collapsing each channel's entire feature map down to a single number. This is extremely common right before a classifier head, because the network can then accept variable input image sizes without the classifier's input dimension changing."
+    },
+    {
+      "id": "dlp-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A plain RNN trained on long sequences fails to learn dependencies more than roughly 20 timesteps back, while an LSTM trained on the same data learns them fine. What specifically about the LSTM's design explains this difference?",
+      "options": [
+        "The LSTM simply has more parameters than a plain RNN, and more parameters always fix vanishing gradients",
+        "The LSTM processes all timesteps in parallel, unlike the RNN's sequential processing",
+        "The LSTM's cell state is updated additively (c_t = f_t * c_{t-1} + i_t * g_t) rather than through a repeated chain of multiplications by small derivatives, so gradients can flow back through many timesteps without being forced to shrink exponentially",
+        "The LSTM uses ReLU activations instead of tanh/sigmoid, which never saturate"
+      ],
+      "correctIndex": 2,
+      "explain": "A plain RNN's backward pass multiplies by a tanh/sigmoid derivative at every timestep, and since those derivatives are almost always less than 1, the product shrinks toward zero over many timesteps — the vanishing gradient problem. The LSTM's cell state is instead updated additively through its forget, input, and output gates, so a gradient can flow straight back through many timesteps along that addition without being forced to shrink exponentially, as long as the forget gate stays close to 1 for the timesteps that matter. The LSTM is just as sequential as the plain RNN — neither parallelizes across timesteps."
+    },
+    {
+      "id": "dlp-21",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about self-attention and cross-attention, per Chapter 5.",
+      "options": [
+        "In self-attention, the query, key, and value are all projected from the same input sequence",
+        "In cross-attention, the output's sequence length matches the key/value sequence's length, not the query's",
+        "Cross-attention lets a decoder look back at an encoder's entire output sequence while generating its own output",
+        "Scaled dot-product attention requires the query and key sequences to have the same length",
+        "Self-attention powers both the encoder side of a transformer and the masked self-attention inside a decoder block"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        4
+      ],
+      "explain": "Self-attention projects Q, K, and V all from the same sequence. Cross-attention's output always matches the QUERY's sequence length, not the key/value's — that's what lets a decoder with a shorter target sequence attend over a longer encoder output. Attention only requires Q and K to share their last dimension, not their sequence-length dimension, which is exactly what makes cross-attention between sequences of different lengths possible. Self-attention is used both in a transformer's encoder and in a decoder's masked self-attention sublayer."
+    },
+    {
+      "id": "dlp-22",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: in scaled dot-product attention, the raw QK^T scores are divided by ________ before the softmax, which keeps the distribution from becoming too sharp as the query/key dimension grows.",
+      "acceptedAnswers": [
+        "sqrt(d_k)",
+        "the square root of d_k",
+        "sqrt d_k",
+        "square root of d_k"
+      ],
+      "explain": "As d_k (the query/key dimension) grows, the dot product q . k tends to grow too, since it's a sum of d_k terms. Dividing by sqrt(d_k) rescales the scores back to a stable range regardless of dimension, keeping the softmax well-behaved — exactly why it's called SCALED dot-product attention."
+    },
+    {
+      "id": "dlp-23",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Match each attention term to what it actually represents, per Chapter 5.",
+      "left": [
+        "Query (Q)",
+        "Key (K)",
+        "Value (V)",
+        "Positional encoding"
+      ],
+      "right": [
+        "What a position is looking for",
+        "What a position offers to be matched against",
+        "What a position actually contributes once selected",
+        "Information about token order, added elementwise to token embeddings since attention has no built-in sense of position"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "Query is 'what am I looking for' for the position doing the attending. Key is 'what do I have to offer' for a position being attended to. Value is 'what do I actually contribute if picked.' Positional encoding is injected separately because self-attention is permutation-equivariant and has no built-in sense of order on its own."
+    },
+    {
+      "id": "dlp-24",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Put these three reasons transformers replaced RNNs, per Lesson 35, in the order the course presents them.",
+      "items": [
+        "Self-attention computes every position's output in one batched matmul instead of a sequential per-timestep loop, enabling parallelism during training",
+        "Any two positions in self-attention are connected by a path length of O(1), versus an RNN's O(n), which helps with long-range dependencies",
+        "Self-attention's compute and memory scale as O(n^2 * d) with sequence length, a quadratic cost traded away from the RNN's linear O(n * d) cost"
+      ],
+      "explain": "Lesson 35 lays out three reasons in order: parallelism during training (one batched matmul instead of a sequential loop), path length for long-range dependencies (O(1) versus an RNN's O(n)), and the cost that was accepted to get there (O(n^2 * d) quadratic attention cost versus an RNN's linear O(n * d))."
+    },
+    {
+      "id": "dlp-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "code": "# Option A\nx = norm(x + sublayer(x))\n\n# Option B\nx = x + sublayer(norm(x))",
+      "prompt": "Which of these two lines of code is written in pre-norm form, the ordering GPT-2 and most modern transformers use?",
+      "options": [
+        "Option A — normalization happens before the sublayer runs",
+        "Option B — normalization happens before the sublayer runs, entirely inside the branch being added, so the residual path itself is never touched by normalization",
+        "Both are pre-norm; they differ only in variable naming",
+        "Neither is pre-norm; both are post-norm variants"
+      ],
+      "correctIndex": 1,
+      "explain": "Option B, x = x + sublayer(norm(x)), is pre-norm: normalization happens inside the branch being added, so the x on the left of the + is never touched by any normalization. Option A, x = norm(x + sublayer(x)), is post-norm, the original 2017 paper's ordering — the result of the residual add gets normalized before moving to the next block, which repeatedly rescales the identity signal gradients rely on."
+    },
+    {
+      "id": "dlp-26",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the feed-forward sublayer inside a transformer block, per Chapter 6.",
+      "options": [
+        "The feed-forward sublayer is position-wise: the same Linear -> activation -> Linear transformation runs on every token independently, with no cross-position mixing",
+        "d_ff is conventionally 4 times d_model, as in the original Transformer (512 -> 2048) and GPT-2 small (768 -> 3072)",
+        "Attention is the only sublayer that lets information move between positions in a transformer block",
+        "The feed-forward sublayer's two linear layers typically hold fewer parameters than attention's four projection matrices in the same block",
+        "Modern models like GPT-2 and onward typically use GELU instead of the original paper's ReLU inside the feed-forward sublayer"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "explain": "The feed-forward sublayer runs the same Linear->activation->Linear transform on every token independently, with no cross-position mixing — attention is the only sublayer that mixes information across positions. d_ff is conventionally 4x d_model, matching both the original Transformer and GPT-2 small. Modern models favor GELU over the original paper's ReLU. The FFN's two big matrices (~8*d_model^2 total) actually OUTWEIGH attention's four smaller projection matrices (~4*d_model^2), so the feed-forward sublayer holds MORE parameters, not fewer."
+    },
+    {
+      "id": "dlp-27",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: torch.triu(torch.ones(T, T), diagonal=1).bool() produces a causal mask where mask[i, j] is True exactly when j is ________ i, meaning position j is strictly in the future relative to position i.",
+      "acceptedAnswers": [
+        "greater than",
+        "> i",
+        "larger than",
+        "greater"
+      ],
+      "explain": "torch.triu keeps the upper triangle of a matrix (everything above the diagonal) and zeroes out the rest. With diagonal=1, the main diagonal itself is excluded from that upper triangle, so mask[i, j] is True exactly when j > i — position j is strictly in the future relative to position i, which is exactly what a causal mask needs to block."
+    },
+    {
+      "id": "dlp-28",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Match each sampling strategy to what it actually does, per Chapter 6.",
+      "left": [
+        "Greedy decoding",
+        "Temperature scaling",
+        "Top-k sampling",
+        "Top-p (nucleus) sampling"
+      ],
+      "right": [
+        "Always picks the single highest-scoring token; deterministic but prone to bland, repetitive output",
+        "Divides logits before softmax; values below 1 sharpen the distribution, values above 1 flatten it",
+        "Narrows the candidate pool to a fixed number of highest-scoring tokens before sampling",
+        "Keeps a variable-size set of tokens whose cumulative probability exceeds a threshold, adapting to model confidence"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "Greedy decoding is fully deterministic and prone to repetition since it never considers a close second-best option. Temperature scaling reshapes confidence without restricting which tokens are candidates. Top-k narrows to a fixed-size candidate pool before sampling. Top-p keeps a variable-size nucleus that shrinks when the model is confident and grows when it's uncertain, which is why it's the default in most modern text-generation libraries."
+    },
+    {
+      "id": "dlp-29",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of TinyGPT's forward pass, per Lesson 40, in the correct order.",
+      "items": [
+        "Look up token embeddings and positional embeddings, then add them together",
+        "Build a fresh causal mask sized to the current sequence length",
+        "Pass the combined embedding through every transformer block in the stack, in order, under the causal mask",
+        "Apply one final LayerNorm after the last block",
+        "Project each position's vector to vocabulary-sized logits with the linear head"
+      ],
+      "explain": "TinyGPT's forward method computes x = tok_emb(idx) + pos_emb(pos), builds a fresh causal mask (since sequence length can vary between batches), runs x through every block in the nn.ModuleList under that mask, normalizes once more with norm_f, and finally projects to vocab_size logits with the linear head."
+    },
+    {
+      "id": "dlp-30",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "A tensor holding the value 70,000.0 is converted with .half() (FP16) and separately with .bfloat16() (BF16). Which statement correctly describes what happens to each, and why?",
+      "options": [
+        "Both conversions overflow to inf, because 16-bit formats can never represent values above 65,504",
+        "Both conversions represent the value fine, because FP16 and BF16 share the same exponent range",
+        "The FP16 conversion represents it fine, but the BF16 conversion overflows, because BF16 sacrifices range for mantissa bits",
+        "Neither format can hold integer-valued floats like 70,000.0, only fractional values",
+        "The FP16 conversion overflows to inf, because FP16's largest representable finite value is 65,504; the BF16 conversion represents it fine, because BF16 keeps FP32's full 8-bit exponent range",
+        "The FP16 conversion rounds it down to 65,504 silently with no indication of loss, while BF16 raises a RuntimeError"
+      ],
+      "correctIndex": 4,
+      "explain": "FP16 gives only 5 bits to the exponent, so its largest representable finite value is 65,504 — 70,000.0 overflows to inf. BF16 keeps FP32's full 8-bit exponent (the same dynamic range, roughly 1e-38 to 3e38) while shrinking the mantissa to 7 bits, so that same 70,000.0 value is completely fine in BF16, at the cost of fewer significant digits rather than range.",
+      "distractorExplain": "The option claiming FP16 is fine but BF16 overflows gets the two formats exactly backwards: BF16 is the one that keeps FP32's full 8-bit exponent (and therefore FP32's range), while it's FP16 that shrinks the exponent to 5 bits and sacrifices range for more mantissa precision — the opposite trade-off from what that option describes."
+    },
+    {
+      "id": "dlp-31",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "code": "accum_steps = 4\noptimizer.zero_grad()\n\nfor i, (inputs, targets) in enumerate(train_loader):\n    output = model(inputs)\n    loss = loss_fn(output, targets)\n    loss.backward()\n\n    if (i + 1) % accum_steps == 0:\n        optimizer.step()\n        optimizer.zero_grad()",
+      "prompt": "This gradient accumulation loop has a subtle bug. What actually goes wrong when it trains?",
+      "options": [
+        "optimizer.zero_grad() is called in the wrong place and will raise a RuntimeError",
+        "backward() can't be called more than once before optimizer.step(), so this raises an exception on the second micro-batch",
+        "The loss isn't divided by accum_steps, so the accumulated gradient ends up accum_steps times larger than it should be — silently acting like multiplying the learning rate by accum_steps, with no error raised",
+        "The effective batch size ends up smaller than one micro-batch, not larger"
+      ],
+      "correctIndex": 2,
+      "explain": "loss.backward() accumulates sums of gradients across however many times it's called before zeroing. Without dividing the per-micro-batch loss by accum_steps, the accumulated gradient ends up accum_steps times larger than it should be — which silently acts exactly like multiplying the learning rate by accum_steps, with no error anywhere. The fix is loss = loss_fn(output, targets) / accum_steps before backward()."
+    },
+    {
+      "id": "dlp-32",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Automatic Mixed Precision (AMP), per Chapter 7.",
+      "options": [
+        "torch.autocast keeps numerically sensitive operations like softmax and layer norm in FP32 while running matrix multiplies and convolutions in a reduced-precision dtype",
+        "GradScaler exists because FP16's small range can cause small gradient values to underflow to zero before reaching the optimizer",
+        "BF16 training on modern GPUs usually still requires a GradScaler, for the same reason FP16 does",
+        "GradScaler multiplies the loss by a scale factor before backward(), then unscales the gradients before the optimizer step",
+        "torch.cuda.amp and the newer torch.amp are mutually incompatible APIs, and only one can be used in current PyTorch"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "torch.autocast triages ops automatically: matrix multiplies/convolutions run in reduced precision, while sensitive ops like softmax, layer norm, and loss reductions stay in FP32. GradScaler exists specifically because FP16's small range lets small gradients underflow to zero, and it fixes this by scaling the loss up before backward() and unscaling before the step. BF16 keeps FP32's exponent range, so gradients rarely underflow — the standard recommendation is to skip GradScaler entirely with BF16. Both the legacy torch.cuda.amp and the newer torch.amp APIs remain valid in current PyTorch, not mutually exclusive."
+    },
+    {
+      "id": "dlp-33",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: DistributedDataParallel launches one independent process per GPU and, after each backward pass, synchronizes gradients across every process with an operation called ________, which averages the gradients so every model copy applies the identical update.",
+      "acceptedAnswers": [
+        "all-reduce",
+        "all reduce",
+        "allreduce"
+      ],
+      "explain": "Each DDP process runs forward and backward on its own shard of the data completely independently — no scatter, no gather. At the end of the backward pass, the processes synchronize by running an all-reduce: they average their gradients across all processes, so every copy of the model ends up applying the identical update."
+    },
+    {
+      "id": "dlp-34",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "code": "running_loss = 0.0\nfor inputs, targets in train_loader:\n    optimizer.zero_grad()\n    loss = loss_fn(model(inputs), targets)\n    loss.backward()\n    optimizer.step()\n    running_loss += loss",
+      "prompt": "This training loop runs without crashing and the loss number it eventually prints looks plausible, but something is quietly wrong. What is it, and what's the fix?",
+      "options": [
+        "optimizer.step() is called before loss.backward(), so the model never actually updates",
+        "running_loss += loss keeps the entire computation graph for that step alive for the rest of the epoch, since loss is still a tensor attached to the graph; the fix is running_loss += loss.item() to detach it to a plain Python float",
+        "optimizer.zero_grad() is in the wrong position and gradients never get cleared",
+        "loss_fn(model(inputs), targets) computes the loss using stale model weights from the previous iteration"
+      ],
+      "correctIndex": 1,
+      "explain": "loss is a tensor attached to the entire computation graph for that step. Accumulating it directly into a running total instead of its plain Python value keeps that whole graph alive for every batch, for the rest of the epoch — nothing crashes, but memory use silently balloons. running_loss += loss.item() detaches it to a Python float, freeing the graph behind it."
+    },
+    {
+      "id": "dlp-35",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about reading loss curves, per Chapter 8.",
+      "options": [
+        "A widening gap where training loss keeps falling but validation loss flattens or rises is a sign of overfitting",
+        "Logging loss every batch instead of every epoch will always look jagged, even when training is going perfectly well, because each batch is a noisy sample of the true loss",
+        "A loss that climbs toward inf or nan and keeps climbing usually indicates too high a learning rate or exploding gradients",
+        "A plateau where both losses flatten out early always means the model has achieved its best possible performance",
+        "clip_grad_norm_ returns the post-clipping norm, which is always exactly equal to max_norm"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "A widening train/validation gap is the classic overfitting signature. Batch-level loss is inherently jagged since each batch is a noisy sample of the true loss — that's normal, not a sign of a problem. Divergence toward inf/nan usually means too high a learning rate or exploding gradients. A plateau often means the learning rate is too low or the model has run out of capacity, not that it has reached its best possible performance. clip_grad_norm_ returns the PRE-clipping total norm, not the post-clipping norm, which is itself useful for telling whether clipping is doing real work."
+    },
+    {
+      "id": "dlp-36",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: torch.manual_seed(42) seeds PyTorch's own random number generator, but does NOT seed Python's random module or ________, which need to be seeded separately for full reproducibility.",
+      "acceptedAnswers": [
+        "NumPy",
+        "numpy",
+        "numpy.random"
+      ],
+      "explain": "Python's random, NumPy, and PyTorch each keep their own independent random state. Seeding only torch.manual_seed while leaving the others alone is a common mistake if a data pipeline uses random or numpy for augmentation or shuffling — a complete set_seed function seeds all three plus torch.cuda.manual_seed_all."
+    },
+    {
+      "id": "dlp-37",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "foundational",
+      "prompt": "Match each Chapter 8 term to what it actually refers to.",
+      "left": [
+        "Gradient norm",
+        "Ablation study",
+        "worker_init_fn",
+        "Experiment tracking"
+      ],
+      "right": [
+        "The magnitude of a gradient tensor, or a whole model's gradients combined, computed after backward() and before the optimizer step",
+        "Removing or changing exactly one component while holding everything else fixed, to isolate its effect on a result",
+        "Seeds each DataLoader worker process individually, since worker processes don't inherit the main process's random seed",
+        "Logging metrics and hyperparameters somewhere searchable, instead of only printing loss to a terminal"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "Gradient norm is computed after backward() and before optimizer.step(), giving a direct numeric read on vanishing or exploding gradients. An ablation study changes exactly one component at a time to isolate its effect. worker_init_fn seeds each DataLoader worker process individually, since num_workers > 0 means each worker gets its own random state that doesn't inherit the main process's seed. Experiment tracking (TensorBoard, Weights & Biases) logs metrics and hyperparameters somewhere searchable rather than just printing to a terminal."
+    },
+    {
+      "id": "dlp-38",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "A tiny character-level GPT reports a validation perplexity of 4.14 on Tiny Shakespeare. Which statement correctly interprets this number?",
+      "options": [
+        "The model gets exactly 4.14% of next-character predictions correct",
+        "The model is 4.14 times more accurate than a model trained on open-domain English text",
+        "A perplexity of 4.14 means the model has essentially memorized the entire training set",
+        "On average, the model is about as uncertain about the next character as if it were choosing uniformly among roughly 4 equally likely options — a reasonable, honest result for this scale, not a claim about general language ability"
+      ],
+      "correctIndex": 3,
+      "explain": "Perplexity is exp(average cross-entropy loss per token), read as roughly 'how many tokens the model was effectively choosing between at each step.' A validation perplexity of 4.14 for a character-level tiny GPT on Tiny Shakespeare after a few thousand steps is a reasonable, honest result for this scale — not state-of-the-art, and it says nothing about how the model would perform on open-domain text."
+    },
+    {
+      "id": "dlp-39",
+      "type": "fill-in",
+      "chapter": "ch09",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: for a character-level tokenizer built on Tiny Shakespeare, the vocabulary is just the ________ characters that appear anywhere in the text — roughly 65 of them, including letters, punctuation, and whitespace.",
+      "acceptedAnswers": [
+        "distinct",
+        "unique"
+      ],
+      "explain": "A character-level vocabulary is built from chars = sorted(set(text)) — the distinct characters in the training text, about 65 for Tiny Shakespeare. This keeps the vocabulary small, which matters because the embedding table and output layer are among the largest parameter counts in a tiny model."
+    },
+    {
+      "id": "dlp-40",
+      "type": "sequencing",
+      "chapter": "ch09",
+      "difficulty": "foundational",
+      "prompt": "Put the four phases of the Deep Learning & PyTorch capstone project in the order the course presents them.",
+      "items": [
+        "Choose a dataset and a tokenization scheme sized to a tiny model and modest compute",
+        "Build the decoder-only transformer and train it with a complete training loop",
+        "Evaluate the trained model with held-out loss, perplexity, and qualitative generation",
+        "Write up a short model card documenting what was trained and what it can and can't do"
+      ],
+      "explain": "The capstone's four lessons cover, in order: choosing a dataset and tokenizer (Lesson 57), building and training the model (Lesson 58), evaluating it with perplexity and qualitative generation plus error analysis (Lesson 59), and writing it up as a short model card with next steps (Lesson 60)."
+    }
+  ]
+}
