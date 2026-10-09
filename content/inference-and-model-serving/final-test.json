@@ -1,0 +1,460 @@
+{
+  "questions": [
+    {
+      "id": "inf-01",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these six stages of a single inference request's lifecycle, per Lesson 2, in the order the request actually passes through them.",
+      "items": [
+        "Client request arrives over HTTP or gRPC at a load balancer or API gateway",
+        "Routing and admission: the framework decides which replica handles the request and whether to admit or queue it",
+        "Tokenization: the raw text prompt is converted into token IDs",
+        "Scheduling into a batch: the framework's scheduler decides which requests run together in this step",
+        "Model execution on the GPU: prefill of the prompt, then decode of each output token",
+        "Detokenization and response streaming: output token IDs are converted back to text and streamed to the client"
+      ],
+      "explain": "Lesson 2 traces a request through exactly these six stages: arrival, routing/admission (where queuing delay is born), tokenization, batch scheduling, GPU execution (prefill then decode), and finally detokenization/streaming. Benchmarks that only measure the GPU-execution stage routinely look faster than what users actually experience, because queuing and batch-formation wait happen before and around it."
+    },
+    {
+      "id": "inf-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "An engineer notices GPU compute utilization stays high while a request's prompt is being processed, then drops noticeably once token generation begins, even though the GPU is still fully busy moving data. What explains this pattern?",
+      "options": [
+        "Prefill is compute-bound, so the GPU's matrix-multiplication units stay busy processing the whole prompt in parallel; decode is memory-bound, so the GPU spends more time moving the growing KV cache than doing arithmetic",
+        "Decode always performs more total floating-point operations than prefill, which is why it looks less efficient",
+        "The utilization drop means the GPU is overheating and throttling itself during generation",
+        "Prefill and decode have identical compute profiles; the apparent difference is only measurement noise"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 4 draws exactly this distinction: prefill processes the entire prompt in one parallel forward pass and is compute-bound, keeping the GPU's math units busy. Decode generates one token at a time and is memory-bound — each step reads the whole KV cache so far, so the GPU spends much of its time moving data rather than computing, which under-utilizes its compute units even while it stays fully busy on memory traffic."
+    },
+    {
+      "id": "inf-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about latency and throughput, per Lesson 1.",
+      "options": [
+        "Time to first token (TTFT) reflects how long a user waits before seeing any output at all",
+        "Per-token latency (inter-token latency) is the gap between each subsequent token once generation has started",
+        "Batching more requests together tends to raise throughput while also raising the latency any individual request in that batch experiences",
+        "Average latency is a reliable stand-in for tail latency when setting a production SLO",
+        "Interactive chat and copilot workloads should generally be optimized for throughput first and TTFT second"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "TTFT and per-token latency are exactly the two pieces Lesson 1 splits latency into, and batching is the main lever that raises throughput while also raising the latency individual requests in that batch feel. Averages hide outliers that tail percentiles reveal, which is why they're a poor SLO basis. Interactive workloads are the case Lesson 1 specifically says to optimize for low latency (especially TTFT) first, with throughput secondary — the statement has that priority backwards."
+    },
+    {
+      "id": "inf-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: serving teams set latency SLOs on a tail ________ (commonly p95 or p99), not on the average, because the average can look fine while a meaningful share of real users have a bad experience.",
+      "acceptedAnswers": ["percentile", "tail percentile", "percentiles"],
+      "explain": "Lesson 5 makes this the whole point of reading a benchmark: a system can have an excellent average TTFT while its p99 TTFT is several times worse, and only the tail percentile reveals whether a latency SLA is actually being met for your least-lucky users."
+    },
+    {
+      "id": "inf-05",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "What is TensorRT-LLM's primary focus, as distinct from vLLM's?",
+      "options": [
+        "Compiling a trained model into an optimized, GPU-specific executable for maximum raw execution speed",
+        "Scheduling requests and managing KV cache memory through continuous batching and PagedAttention",
+        "Acting as a general-purpose, framework-agnostic server that can host many different model types behind one protocol",
+        "Running ad hoc SQL-style queries directly against a model's generated output",
+        "Load-balancing requests across multiple already-running GPU replicas",
+        "Enforcing least-privilege, IAM-style access permissions across a serving cluster"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 8 is explicit about this split: TensorRT-LLM takes a trained model and compiles it into an optimized, hardware-specific engine — applying kernel fusion, quantization support, and in-flight batching — to maximize raw execution speed on a specific NVIDIA GPU.",
+      "distractorExplain": "Option B describes vLLM's primary focus (Lesson 7), not TensorRT-LLM's — continuous batching and PagedAttention-style memory management are the ideas vLLM is known for. TensorRT-LLM instead focuses on compiling the model itself for speed, which is the single most common mix-up between the two tools in this chapter."
+    },
+    {
+      "id": "inf-06",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every job Lesson 6 lists as one of the four things a real serving framework takes on, that a naive 'call generate() per request' Python loop does not.",
+      "options": [
+        "Scheduling — deciding which requests run next and how they're grouped, including continuous batching",
+        "Memory management — allocating and reclaiming GPU memory for the KV cache efficiently across concurrent requests",
+        "Execution optimization — running the forward pass with optimized or compiled GPU kernels",
+        "A production-ready interface — exposing an API, streaming, health checks, metrics, and routing",
+        "Automatically retraining the model whenever its accuracy on held-out data drops"
+      ],
+      "correctIndices": [0, 1, 2, 3],
+      "explain": "Lesson 6 names exactly these four jobs — scheduling, memory management, execution optimization, and a production-ready interface — as what a naive serving loop fails to provide. Retraining a model is a training-pipeline concern entirely outside what any serving framework in this course is responsible for."
+    },
+    {
+      "id": "inf-07",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Match each serving tool or approach to its primary focus, per Lessons 6-9.",
+      "left": [
+        "vLLM",
+        "TensorRT-LLM",
+        "Triton Inference Server",
+        "A naive Python serving loop"
+      ],
+      "right": [
+        "Calls the model's generate() function directly per request, with no batching, scheduling, or memory management",
+        "Compiles a trained model into a GPU-specific, optimized executable for raw execution speed",
+        "A general-purpose, framework-agnostic server hosting many different backends behind one protocol",
+        "Pairs continuous batching with PagedAttention memory management, built specifically for LLM serving"
+      ],
+      "correctMap": [3, 1, 2, 0],
+      "explain": "vLLM pairs continuous batching with PagedAttention (Lesson 7). TensorRT-LLM compiles the model itself into a fast, GPU-specific engine (Lesson 8). Triton is the general-purpose, backend-agnostic server that can host either of them (Lesson 9). A naive loop is the baseline Lesson 6 contrasts all three against — no batching, scheduling, or memory management at all."
+    },
+    {
+      "id": "inf-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "INFO: Loading model weights took 14.92 seconds\nINFO: GPU KV cache size: 89,472 tokens\nINFO: Maximum concurrency for 8192 tokens per request: 10.92x\nINFO: Uvicorn running on http://0.0.0.0:8000",
+      "prompt": "A freshly launched vLLM server prints the startup log above. What does the 'Maximum concurrency for 8192 tokens per request: 10.92x' line actually tell you?",
+      "options": [
+        "Given --max-model-len and the GPU memory vLLM was able to allocate, roughly how many max-length requests it could run truly concurrently before the KV cache runs out of room",
+        "The exact number of GPU cores currently in active use",
+        "How many times faster this deployment is than an equivalent CPU-only server",
+        "The number of separate models this one server instance can load and serve at once"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 11 calls this line directly useful: it's vLLM's own estimate, given your --max-model-len and the KV cache memory it managed to allocate, of roughly how many full-length requests it could serve truly concurrently — a number worth sanity-checking against expected traffic before declaring a deployment done."
+    },
+    {
+      "id": "inf-09",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in a Triton model repository, each model's backend, batching settings, and GPU instance count are declared in a configuration file named ________.",
+      "acceptedAnswers": ["config.pbtxt", "config.pbtxt file", "the config.pbtxt file"],
+      "explain": "Lesson 9 shows this file directly: Triton reads config.pbtxt to know which backend to load for a model, how to batch requests, and how many GPU instances to run — the file every subdirectory in a model repository needs."
+    },
+    {
+      "id": "inf-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A team needs to quantize a model to 4-bit, has no calibration dataset available, and wants something working immediately — accepting that it won't be the most compression-efficient or fastest option available. Which method fits this situation, and why?",
+      "options": [
+        "bitsandbytes, because it quantizes weights on the fly at model-load time with no calibration dataset or separate conversion step required",
+        "GPTQ, because its layer-by-layer Hessian-based error correction works without any calibration data at all",
+        "AWQ, because activation-aware channel scaling can only be computed when no sample inputs are available",
+        "Knowledge distillation, because training a new student model requires no calibration set"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 13 is explicit that bitsandbytes is the zero-calibration option — pass a BitsAndBytesConfig at load time and it just works, with its NF4 4-bit mode recovering more accuracy than naive rounding. GPTQ and AWQ both require a calibration pass (a few hundred example sequences or activation statistics) to do their respective error-correction, so neither fits a 'no calibration data' constraint."
+    },
+    {
+      "id": "inf-11",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about pruning, per Lesson 14.",
+      "options": [
+        "Unstructured pruning can reach high sparsity ratios with little accuracy loss, but mostly saves disk and transfer size rather than inference compute, unless specialized sparse kernels are used",
+        "Structured pruning removes whole rows, columns, heads, or layers, which lets a standard dense kernel simply skip them, producing real latency savings",
+        "N:M sparsity patterns like '2:4' match dedicated sparse tensor cores on NVIDIA Ampere-and-newer GPUs",
+        "Magnitude pruning removes the weights with the largest absolute value first, on the assumption they contribute least",
+        "Pruning is rarely followed by fine-tuning, because zeroing out weights has no effect on the remaining model's behavior"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Unstructured pruning leaves a mechanically dense matrix for standard kernels, so it mostly saves storage, not compute; structured and N:M pruning remove chunks a dense kernel can actually skip, which is where real speedups come from, and 2:4 sparsity specifically targets Ampere-and-newer sparse tensor cores. Magnitude pruning removes weights closest to zero, not largest, and because removing weights is a harsher cut than quantization, it's almost always paired with fine-tuning afterward to recover accuracy — the opposite of both listed claims."
+    },
+    {
+      "id": "inf-12",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each compression technique to the action that actually defines it, per Lessons 12-15.",
+      "left": [
+        "Post-training quantization (PTQ)",
+        "Quantization-aware training (QAT)",
+        "Knowledge distillation",
+        "Magnitude pruning"
+      ],
+      "right": [
+        "Removes the weights closest to zero first, on the assumption they contribute least to the output",
+        "Simulates quantization during training so the model's weights adapt around the precision loss before it becomes permanent",
+        "Quantizes an already-trained model's weights using a calibration set, with no retraining required",
+        "Trains a new, smaller student model to reproduce a larger teacher model's soft output probability distribution"
+      ],
+      "correctMap": [2, 1, 3, 0],
+      "explain": "PTQ quantizes an already-trained model using a calibration set, with no retraining (Lesson 12). QAT simulates quantization during training so weights adapt to it. Distillation trains a new student model to match a teacher's soft targets (Lesson 15). Magnitude pruning removes the smallest-magnitude weights first (Lesson 14) — a different lever than any of the other three."
+    },
+    {
+      "id": "inf-13",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: ________ measures roughly how 'surprised' a model is by held-out real text, with lower being better — it's the cheapest quality check to run on a compressed model, since it needs no labeled task data, just representative text.",
+      "acceptedAnswers": ["perplexity"],
+      "explain": "Lesson 16 names perplexity as the cheapest quality signal available, precisely because it only needs a sample of representative text, not labeled task data — though it can stay flat even while a model's performance on a specific downstream task quietly collapses, which is why it's paired with task-specific benchmarks."
+    },
+    {
+      "id": "inf-14",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "What does the KV cache actually store during LLM inference?",
+      "options": [
+        "The key and value tensors computed by attention for every token processed so far, kept in GPU memory so they don't need to be recomputed at each decode step",
+        "A compressed copy of the model's weights, used only during the prefill phase",
+        "The full text of every prompt the server has ever received, retained for logging purposes",
+        "The query vector for the next token to be generated, precomputed before decode begins",
+        "A lookup table mapping active user sessions to the GPU replica currently serving them",
+        "The gradients computed during the model's original training run"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 17 defines the KV cache exactly this way: every token's key and value tensors, computed once (by prefill, then extended by each decode step) and kept in GPU memory so attention at later steps can read them instead of recomputing them from scratch.",
+      "distractorExplain": "Option D swaps which attention component gets cached. It's the key and value tensors from tokens already processed that are stored and reused — the query vector for the token currently being generated is computed fresh at each decode step, not precomputed or cached ahead of time."
+    },
+    {
+      "id": "inf-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "A model architecture team wants to shrink the KV cache substantially while preserving most of standard multi-head attention's quality, accepting a somewhat smaller cache reduction than the most aggressive option available in exchange for that quality. Which attention variant fits, and why?",
+      "options": [
+        "Grouped-query attention (GQA) — query heads are split into groups that each share one key/value head, recovering most of multi-head attention's quality while still cutting the cache substantially",
+        "Multi-query attention (MQA) — because it always preserves more quality than GQA while cutting the cache by the same factor",
+        "Multi-head attention (MHA) — because giving every head its own key/value projection is what minimizes KV cache size",
+        "PagedAttention — because it is an attention variant that reduces how many key/value tensors are computed per token"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 17 describes GQA as exactly this middle ground: grouping query heads so each group shares one key/value head cuts the cache substantially (commonly 4-8x) while recovering most of MHA's quality — unlike MQA, which cuts the cache further but at a bigger quality cost, or MHA, which gives every head its own projection and therefore the largest cache. PagedAttention is a memory-layout technique (Lesson 18), not an attention architecture."
+    },
+    {
+      "id": "inf-16",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about PagedAttention, per Lesson 18.",
+      "options": [
+        "The KV cache is divided into small, fixed-size blocks rather than one large contiguous allocation per request",
+        "A block table maps each request's logical sequence of blocks to wherever those blocks actually live physically in GPU memory",
+        "Two requests that share an identical prompt prefix can point to the same physical blocks via copy-on-write, instead of duplicating them",
+        "PagedAttention still requires every request's cache to be pre-sized for the maximum possible sequence length before the request starts",
+        "Because blocks are allocated just-in-time, a request wastes at most a fraction of one block of memory, not thousands of tokens' worth"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "PagedAttention's whole design is small fixed-size blocks tracked by a block table, allocated just-in-time, with identical prefixes able to share physical blocks via copy-on-write — all true. The claim about pre-sizing for the maximum possible length describes the old, pre-PagedAttention contiguous-allocation approach it specifically replaces, which is exactly the internal-fragmentation problem PagedAttention solves."
+    },
+    {
+      "id": "inf-17",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of speculative decoding, per Lesson 20, in the order they actually happen for one round of drafting and verification.",
+      "items": [
+        "A small, fast draft model proposes several candidate tokens in a row",
+        "The large target model checks all of those candidate tokens in a single parallel forward pass",
+        "Each drafted token is accepted or rejected using a rejection-sampling procedure that preserves the target model's exact output distribution",
+        "On a rejection, everything after that point in the draft is discarded and the target model samples that position itself",
+        "The next round of drafting begins from the newly confirmed position"
+      ],
+      "explain": "Speculative decoding runs in exactly this cycle: the draft model proposes several tokens quickly, the target model verifies all of them in one parallel pass, a rejection-sampling step decides acceptance token by token while preserving the target's exact distribution, a rejection discards everything drafted after that point and the target re-samples there itself, and drafting resumes from that confirmed position — acceptance rate determines whether this cycle is actually a net win."
+    },
+    {
+      "id": "inf-18",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: splitting a long prompt's prefill into smaller pieces interleaved with ongoing decode steps, so one long request doesn't stall everyone else's token generation, is called ________.",
+      "acceptedAnswers": ["chunked prefill"],
+      "explain": "Lesson 19 names this chunked prefill: because a new request's full prefill can take meaningfully longer than a typical decode step, splitting it into chunks sized to fit alongside ongoing decode steps keeps latency consistent for requests already in flight."
+    },
+    {
+      "id": "inf-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A team configures Kubernetes' Horizontal Pod Autoscaler to scale their vLLM deployment on CPU utilization, the default HPA signal. Under heavy inference load, why does this fail to trigger scale-out even though requests are clearly queuing?",
+      "options": [
+        "The CPU on an inference pod is mostly idle while the GPU does the real work, so CPU% barely moves even when the service is fully saturated and queuing requests",
+        "CPU-based autoscaling is automatically disabled for any pod that requests a GPU resource",
+        "Kubernetes stops reading CPU metrics for any pod that has been running for more than a few minutes",
+        "Queue depth and CPU utilization are mathematically identical for any containerized workload, so scaling on either should behave the same"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 23 calls out CPU utilization as 'close to useless' for GPU inference for exactly this reason: the CPU does little of the real work, so it stays low even under GPU saturation. Queue depth, GPU utilization, in-flight request count, and latency percentiles are the signals that actually track inference load."
+    },
+    {
+      "id": "inf-20",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about load balancing across GPU replicas, per Lesson 24.",
+      "options": [
+        "Round robin assumes every request costs roughly the same amount of work, which is a poor fit for LLM inference since prompt and output lengths vary widely",
+        "Least-outstanding-requests routing sends each new request to whichever replica currently has the fewest in-flight requests",
+        "Session or prefix affinity routes the same conversation's requests back to the same replica, to reuse cached context",
+        "A replica that is failing health checks should be kept in rotation with a reduced traffic share, never removed entirely",
+        "In a heterogeneous GPU pool, a capacity-aware load balancer can weight routing so more capable nodes receive a proportionally larger share of traffic"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Round robin's equal-cost assumption, least-outstanding-requests routing, and session/prefix affinity are all described exactly this way in Lesson 24, as is weighting routing for a heterogeneous pool. Health-aware routing does the opposite of the fourth statement: a failing replica should be pulled out of rotation immediately, not just rebalanced around with a smaller share."
+    },
+    {
+      "id": "inf-21",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each routing or resilience term to what it actually does, per Lesson 26.",
+      "left": [
+        "Cascade routing",
+        "Circuit breaker",
+        "Backoff with jitter",
+        "Fallback model"
+      ],
+      "right": [
+        "Stops sending requests to a model whose recent failure rate crosses a threshold, for a cooldown period",
+        "Tries a cheap, fast model first and escalates to a larger model only when its confidence falls short",
+        "Increasing delay plus randomness between retry attempts, so a transient blip doesn't become a self-inflicted traffic storm",
+        "A secondary model used in place of an unavailable or too-slow primary, instead of returning an outright error"
+      ],
+      "correctMap": [1, 0, 2, 3],
+      "explain": "Cascade routing tries a cheap model first and escalates only when needed. A circuit breaker trips on a failure-rate threshold and stops sending traffic to the struggling model for a cooldown. Backoff with jitter spaces out retries with randomness to avoid a retry storm. A fallback model stands in for an unavailable primary rather than letting the request fail outright."
+    },
+    {
+      "id": "inf-22",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of the autoscaling control loop, per Lesson 23, in the order they run on each interval.",
+      "items": [
+        "Observe the current value of the chosen metric, such as queue depth",
+        "Compare it against a target, such as 'queue depth per replica should average 5'",
+        "Compute a desired replica count from the gap between the observed value and the target",
+        "Scale the deployment up or down toward that desired replica count",
+        "Wait for new pods to become ready, then repeat the loop"
+      ],
+      "explain": "Lesson 23 describes every autoscaler, regardless of which metric it watches, running this same five-step loop on a fixed interval (commonly every 15-30 seconds): observe, compare to target, compute the desired count, scale toward it, and wait before repeating."
+    },
+    {
+      "id": "inf-23",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: when many fine-tuned variants of the same base model need to be served cheaply, the base model's weights are loaded once, and each variant is represented by a small ________ applied on top, instead of a full separate model in memory.",
+      "acceptedAnswers": ["LoRA adapter", "LoRA", "Low-Rank Adaptation adapter"],
+      "explain": "Lesson 25 describes LoRA adapter multiplexing exactly this way: the shared base model's weights load once, and each fine-tuned variant is a small adapter (often tens to a few hundred megabytes) applied on top — dramatically cheaper than loading a whole separate model per variant."
+    },
+    {
+      "id": "inf-24",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "code": "TTFT   p50 / p99:   410ms / 1,180ms\nTPOT   p50 / p99:    28ms /   61ms",
+      "prompt": "A benchmark run shows the TTFT and TPOT percentiles above: TTFT's p99 is nearly 3x its p50, while TPOT's p99 stays close to 2x its p50 and both are small in absolute terms. What does this specific pattern point to as the actual bottleneck?",
+      "options": [
+        "Queuing delay growing nonlinearly as the server approaches saturation, not a slow model itself",
+        "The model's decode speed is wildly inconsistent from one request to the next",
+        "The GPU's matrix-multiplication units are intermittently defective",
+        "The tokenizer occasionally fails and silently retries, adding random delay"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 36's capstone benchmark reads this exact pattern as pointing at queuing under burst traffic rather than the model: a TTFT tail that blows out far more than TPOT's tail means requests are waiting for GPU admission before model code even runs, consistent with Lesson 1's point that queuing delay grows nonlinearly near saturation. The fix is capacity (raising the batch ceiling), not precision tuning of the model itself."
+    },
+    {
+      "id": "inf-25",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about SLIs, SLOs, SLAs, and error budgets, per Lesson 31.",
+      "options": [
+        "An SLI is the actual measured number, such as p99 time to first token measured every 5 minutes",
+        "An SLO is the internal target set for that measured indicator",
+        "An SLA is typically set tighter than the internal SLO, to protect the business with extra safety margin",
+        "An error budget is the allowed share of requests that can miss the SLO before reliability work takes priority over new features",
+        "A good inference SLO should be written against an average rather than a percentile, since averages are simpler for stakeholders to understand"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "SLI, SLO, and error budget are defined exactly this way in Lesson 31. An SLA is the external, often contractual commitment, and it's typically set looser than the internal SLO, not tighter, to leave margin — the opposite of what's claimed. And a good SLO is written against a percentile specifically because an average can look fine while a real share of users have a bad experience, which is the whole reason percentiles matter in this course."
+    },
+    {
+      "id": "inf-26",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each capacity-planning term to what it actually means, per Lesson 32.",
+      "left": [
+        "Peak concurrent load",
+        "Proven per-replica capacity",
+        "Headroom factor",
+        "Spot / preemptible capacity"
+      ],
+      "right": [
+        "The highest simultaneous demand the fleet must handle — not the average",
+        "How much load one replica can take while still meeting the latency SLO, measured on real benchmarks",
+        "Extra capacity above the bare minimum, covering both unplanned spikes and planned failover",
+        "The cheapest capacity type, but reclaimable with little notice, so it fits burst rather than steady baseline"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Capacity planning sizes replicas from peak (not average) load, divided by a per-replica capacity number actually proven against the SLO by benchmarking, multiplied by a headroom factor covering both spikes and failover — with spot capacity reserved for burst that can tolerate interruption, never the steady baseline an SLO depends on."
+    },
+    {
+      "id": "inf-27",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: because a single token's cost is a vanishingly small fraction of a cent, teams usually report inference cost as ________ instead.",
+      "acceptedAnswers": ["cost per million tokens", "price per million tokens", "cost per 1 million tokens"],
+      "explain": "Lesson 29 introduces this unit directly: cost per token comes from GPU dollars per hour divided by sustained tokens/sec throughput, and that number is scaled up to cost per million tokens since a single token's cost is too small a fraction of a cent to reason about directly."
+    },
+    {
+      "id": "inf-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "For Anchorline Systems' internal support assistant, Mixtral 8x7B Instruct was passed over in favor of Llama 3.1 8B Instruct, even though Mixtral has a higher quality ceiling. Why?",
+      "options": [
+        "Mixtral's roughly 47B total parameters don't comfortably fit on the single mid-range GPU the budget calls for without aggressive quantization, while Llama 3.1 8B fits cleanly with headroom left over for the KV cache",
+        "Mixtral's license forbids any internal, non-redistributed use inside a company",
+        "Mixtral's context window is too short to cover Anchorline's pasted logs and API docs",
+        "Llama 3.1 8B Instruct scored strictly higher than Mixtral on every published benchmark"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 34 names GPU budget, not quality, as the deciding factor: Mixtral is a mixture-of-experts model with roughly 47B total parameters that doesn't comfortably fit the single mid-range GPU this internal tool's budget calls for without aggressive quantization, while Llama 3.1 8B Instruct fits cleanly on a 24GB-class GPU with room left for KV cache — exactly the 'we can run ourselves, one GPU' constraint from the brief."
+    },
+    {
+      "id": "inf-29",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the capstone's benchmark-and-tune discipline, per Lesson 36, in the correct order.",
+      "items": [
+        "Run the load benchmark against the current deployment configuration and record throughput, TTFT, TPOT, and latency percentiles",
+        "Identify the specific gap between the measured numbers and the target, such as p99 TTFT missing the SLO under load",
+        "Change exactly one configuration variable that plausibly addresses that gap",
+        "Re-run the identical benchmark command against the new configuration",
+        "Compare the before-and-after results to confirm which change actually caused the improvement"
+      ],
+      "explain": "Lesson 36's tuning loop is deliberately disciplined: benchmark first, name the specific gap the numbers reveal, change exactly one variable, re-run the same benchmark, and only then compare results — changing two variables in the same run would leave no way to say which one caused which improvement."
+    },
+    {
+      "id": "inf-30",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: vLLM ships its own built-in load-testing subcommand, invoked as `vllm bench ________`, for running realistic online serving benchmarks against a live endpoint.",
+      "acceptedAnswers": ["serve", "vllm bench serve"],
+      "explain": "Lesson 36 uses this exact subcommand, `vllm bench serve`, to fire synthetic requests shaped like real traffic at a running deployment and report throughput, TTFT, TPOT, and latency percentiles from the run."
+    }
+  ]
+}

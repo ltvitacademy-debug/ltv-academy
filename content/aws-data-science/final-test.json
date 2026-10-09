@@ -1,0 +1,483 @@
+{
+  "questions": [
+    {
+      "id": "awsds-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "A teammate wants to add a new, improved feature set on top of the churn-project data already in S3. Per Lesson 1's project-layout guidance, what should they do, and why?",
+      "options": [
+        "Write it to a new versioned prefix like processed/v2/, leaving processed/v1/ untouched, so any model already trained on v1 can still be exactly reproduced",
+        "Overwrite the existing processed/v1/ files in place, since S3 Versioning will keep the old copies automatically",
+        "Write directly into raw/, since that is where all project data should ultimately live",
+        "Delete processed/v1/ first, then write v2/, to avoid confusion about which prefix is current"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 1 gives two habits: never overwrite raw/ (treat it as read-only), and put a version in the processed path (v1, v2) so a new feature set never silently replaces the one an old model was trained on. Versioning the prefix, not the bucket setting, is what keeps old experiments reproducible."
+    },
+    {
+      "id": "awsds-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Lesson 1 saved the same synthetic 50,000-row customer table as both CSV (2,080,741 bytes) and Parquet (646,285 bytes). Parquet came out to about ________ percent of the CSV file's size.",
+      "acceptedAnswers": ["31", "31%", "about 31", "31 percent"],
+      "explain": "646,285 / 2,080,741 is approximately 0.31, matching the lesson's own statement: \"Same data, about 31 percent of the size.\" Parquet's columnar, typed, compressed format is why it shrinks so much compared to text-based CSV."
+    },
+    {
+      "id": "awsds-03",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "A Glue crawler finishes cataloging the raw customer files, but order_date is still registered as a plain string, not a real date type. What does Lesson 2 say is actually wrong here, and what fixes it?",
+      "options": [
+        "Nothing is wrong — the crawler's job is schema inference and cataloging only; correcting types and values is a separate concern handled by a Glue ETL job",
+        "The crawler failed and should be re-run on a tighter schedule until it infers a date type",
+        "order_date can only become a real date type after it has been queried once through Athena",
+        "String-typed columns are a permanent limitation of the Glue Data Catalog and can never be changed"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 2 is explicit that the catalog holds metadata the crawler infers, not cleaned data. Promoting a feature-prep flow — including type correction — out of a notebook and into a scaled Glue Spark job is exactly the \"when to move to a Glue job\" decision the lesson walks through."
+    },
+    {
+      "id": "awsds-04",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about reproducible sampling and cost-aware querying in Athena, per Lesson 3.",
+      "options": [
+        "TABLESAMPLE BERNOULLI(percentage) is random, so running it twice can return different rows",
+        "Filtering with a deterministic expression like customer_id % 10 = 0 returns the exact same rows every time, which is why Lesson 3 prefers it for repeatable experiments",
+        "Athena bills by query duration, not by the amount of data a query scans",
+        "A CTAS statement's external_location must point to a prefix that contains no existing data, or the statement fails",
+        "Selecting only the columns you need instead of SELECT * reduces how much data Athena scans, and therefore the cost"
+      ],
+      "correctIndices": [0, 1, 3, 4],
+      "explain": "Lesson 3 states TABLESAMPLE is random (different rows each run), while filtering on a fixed key like customer_id % 10 = 0 is repeatable. Athena bills by data scanned, not duration, which is exactly why selecting fewer columns lowers cost. CTAS's external_location rule — it must be empty, since Athena never deletes anything — is given as one of two explicit rules to remember."
+    },
+    {
+      "id": "awsds-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "code": "SELECT c.customer_id,\n       COUNT(o.order_date) AS orders_before,\n       COALESCE(SUM(o.amount), 0) AS spend_before\nFROM customers c\nLEFT JOIN orders o\n  ON o.customer_id = c.customer_id\n AND o.order_date < '2024-01-01'\nGROUP BY c.customer_id;",
+      "prompt": "This point-in-time feature query puts the date cutoff inside the LEFT JOIN's ON clause rather than in a WHERE clause. Why does that placement matter, per Lesson 4?",
+      "options": [
+        "Putting the cutoff in ON still keeps every customer in the result, including those with no pre-cutoff orders, who end up with zero counts — a WHERE clause would instead filter those NULL-filled rows out of the result entirely",
+        "It makes no difference — ON and WHERE always produce identical results on a LEFT JOIN",
+        "Only an INNER JOIN is allowed to carry a date condition inside its ON clause",
+        "The cutoff has to go in ON because Redshift rejects date literals written inside a WHERE clause"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 4 says it directly: \"The cutoff sits inside the join condition, not in a WHERE, so customers with no earlier orders still appear with zeros.\" Moving that same condition to WHERE would evaluate after the join and strip out exactly the unmatched (zero-order) customers the feature needs to keep."
+    },
+    {
+      "id": "awsds-06",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each identity or permission concept to what it actually is, per Lesson 5.",
+      "left": [
+        "You, signing in as an IAM user",
+        "The SageMaker execution role",
+        "A service role (e.g. the Glue job's role)",
+        "iam:PassRole"
+      ],
+      "right": [
+        "Used by a tool like Glue or Redshift to act on your behalf during a specific job",
+        "The identity SageMaker itself uses to read your data and write results when a job runs, not your personal login",
+        "Decides what you personally are allowed to start in the account",
+        "The permission required to hand a role to a service without that service separately authenticating as you"
+      ],
+      "correctMap": [2, 1, 0, 3],
+      "explain": "Lesson 5 keeps three identities straight: you (what you can start), the SageMaker execution role (what a training job runs as), and other service roles like Glue's. iam:PassRole is the specific permission that lets you hand one of those roles to a service, which is why most \"access denied\" errors in ML work come from mixing the identities up."
+    },
+    {
+      "id": "awsds-07",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "A data scientist attaches only the AmazonSageMakerFullAccess managed policy to their SageMaker execution role, then tries to read objects in a bucket named my-ds-bucket. The read fails. Per Lesson 5, why?",
+      "options": [
+        "AmazonSageMakerFullAccess grants S3 actions only on buckets or objects whose name contains \"SageMaker\", \"Sagemaker\", \"sagemaker\", or \"aws-glue\" (plus a few account-wide actions), and my-ds-bucket matches none of those patterns",
+        "AmazonSageMakerFullAccess grants no S3 permissions under any circumstances",
+        "The execution role's trust policy does not list sagemaker.amazonaws.com as a trusted principal",
+        "Buckets created before the SageMaker domain existed are permanently inaccessible to any role",
+        "The notebook never called get_execution_role() before trying to read the bucket",
+        "AmazonSageMakerFullAccess only grants S3 access to buckets in the same AWS Region as the training job"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 5 is explicit about this exact limit: AmazonSageMakerFullAccess \"grants certain S3 actions only on buckets or objects with SageMaker, Sagemaker, sagemaker, or aws-glue in the name, plus a few actions on any S3 resource.\" my-ds-bucket has none of those words, so the managed policy alone cannot reach it — an additional policy naming the bucket is required.",
+      "distractorExplain": "Option C describes a real failure mode (a bad trust policy), but nothing in the scenario suggests the trust policy is broken — the role is a legitimate SageMaker execution role that SageMaker can assume. The actual failure here is purely the permissions policy's S3 statements being scoped to resource names containing specific keywords, not a trust-policy problem."
+    },
+    {
+      "id": "awsds-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Inside a SageMaker Studio domain, what is the relationship between a space and an app, per Lesson 6?",
+      "options": [
+        "Each space has a one-to-one relationship with an app instance, and a space is either private to one user or shared across the whole domain",
+        "One space can run many apps simultaneously, one per user who opens it",
+        "An app exists independently of any space and can move freely between domains",
+        "A user profile and a space are simply two names for the same object"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 6 defines a space as managing the storage and resource needs of an application, with a one-to-one relationship to an app instance, and as either private (one user) or shared (everyone in the domain). The app is the running thing that actually executes notebooks, terminals and consoles inside that space."
+    },
+    {
+      "id": "awsds-09",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: with the SageMaker Python SDK v2, Session().default_bucket() returns (creating it if needed) a bucket named sagemaker-{region}-________, per Lesson 6.",
+      "acceptedAnswers": ["AWS account ID", "account ID", "{AWS account ID}", "the AWS account ID", "accountid"],
+      "explain": "Lesson 6 states the default bucket's name has the form sagemaker-{region}-{AWS account ID}. That name contains the word \"sagemaker\", which is exactly the keyword pattern AmazonSageMakerFullAccess's S3 statements are scoped to, as Lesson 5 described."
+    },
+    {
+      "id": "awsds-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "for c in [\"region\", \"plan\"]:\n    df[c] = df[c].astype(\"category\")",
+      "prompt": "Converting region and plan to pandas category dtype cut the 50,000-row customer table's measured memory from 8.1 MB to 2.1 MB. What does Lesson 7 say this measurement should and should not be used for when sizing a JupyterLab instance?",
+      "options": [
+        "It is a floor, not a budget — pandas operations often create temporary copies, so real instance sizing needs generous headroom beyond the raw measured size",
+        "Once you know the exact memory footprint, you should always buy the smallest instance type that matches that number exactly",
+        "The category-dtype conversion removes the need to ever think about instance size again, at any data scale",
+        "The measurement proves the data must move to Athena before any further notebook work is allowed"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 7 says this plainly: \"That estimate is a floor, not a budget: pandas operations often create temporary copies, so leave generous headroom.\" The measurement is a real, useful starting point, but it understates what an instance actually needs during live work."
+    },
+    {
+      "id": "awsds-11",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the Data Wrangler quality and leakage check described in Lesson 8.",
+      "options": [
+        "exit_survey_sent scored a single-feature AUC of 0.989, which Lesson 8 treats as a sign of leakage rather than genuine predictive power",
+        "tenure_months, with a single-feature AUC of 0.617, is the column Lesson 8 identifies as responsible for the leakage",
+        "Dropping the leaky column and retraining lowered the measured test AUC from 0.991 to 0.632, and Lesson 8 calls the lower number the honest one",
+        "Target leakage analysis is one of the things Data Wrangler's Analyze capability can run",
+        "Removing duplicate rows has no effect on a Data Wrangler quality report's findings"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "Lesson 8 flags exit_survey_sent, not tenure_months, as the leaky column (AUC 0.989 versus 0.617 for tenure_months), and explicitly calls the post-removal AUC of 0.632 \"the honest number.\" The quality report also found 390 duplicate rows, meaning duplicates are something the report does detect, contradicting the claim that removing them has no effect."
+    },
+    {
+      "id": "awsds-12",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Put these events of one SageMaker training job's lifecycle in the correct order, per Lesson 9.",
+      "items": [
+        "You call the SDK, which uploads your script and asks the SageMaker service to run a job",
+        "SageMaker starts the instances you asked for and pulls the container image",
+        "Each S3 input channel is downloaded to the container under /opt/ml/input/data/<channel>",
+        "Your script runs and writes the finished model to /opt/ml/model",
+        "SageMaker compresses /opt/ml/model into model.tar.gz, uploads it to S3, and terminates the instances"
+      ],
+      "explain": "Lesson 9 lays out this exact five-step lifecycle: the SDK call starts things, instances launch and pull the image, input channels download to fixed container paths, the script trains and writes to /opt/ml/model, and finally SageMaker packages the model artifact and shuts the compute down — the script itself never talks to S3 or SageMaker directly."
+    },
+    {
+      "id": "awsds-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "def to_builtin(df):\n    cols = [\"churned\"] + [c for c in df.columns if c != \"churned\"]\n    return df[cols]\n\nto_builtin(train).to_csv(\"train.csv\", header=False, index=False)",
+      "prompt": "Why does to_builtin() move churned to the first column and write the CSV with no header, per Lesson 10?",
+      "options": [
+        "Built-in algorithms like XGBoost and Linear Learner expect CSV input with the label as the first column and no header row",
+        "SageMaker automatically sorts CSV columns alphabetically no matter how they are written, so the order doesn't actually matter",
+        "This is purely a style preference with no effect on how a built-in algorithm reads the file",
+        "Built-in algorithms require the label in the last column, not the first"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 10 states the data-format rule directly: \"For XGBoost and Linear Learner, CSV input means the label is the first column and there is no header row.\" Getting this format wrong is exactly the kind of strict-data-format cost the lesson says you accept in exchange for writing no training code."
+    },
+    {
+      "id": "awsds-14",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each path or signal in the bring-your-own-container contract to what it actually represents, per Lesson 10.",
+      "left": [
+        "/opt/ml/input/config/hyperparameters.json",
+        "/opt/ml/input/data/<channel>/",
+        "/opt/ml/output/failure",
+        "Exit code 0"
+      ],
+      "right": [
+        "Tells SageMaker the job completed successfully",
+        "Where the training data for one named channel actually lives",
+        "Settings for the job, with every value stored as a string",
+        "Where your program writes a reason when training fails"
+      ],
+      "correctMap": [2, 1, 3, 0],
+      "explain": "Lesson 10's container contract is specific: hyperparameters.json holds job settings as strings, each channel's data sits under its own folder, a failure reason is written to /opt/ml/output/failure, and the process must exit 0 for Completed or non-zero for Failed — SageMaker reads the first 1,024 characters of that failure file as the job's FailureReason."
+    },
+    {
+      "id": "awsds-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "job 2: {'n-estimators': 57, 'max-depth': 10} -> 0.616\njob 4: {'n-estimators': 49, 'max-depth': 10} -> 0.608\njob 7: {'n-estimators': 234, 'max-depth': 3} -> 0.672\nbest: (0.672, {'n-estimators': 234, 'max-depth': 3})",
+      "prompt": "The winning job used max-depth=3 with many trees, while both max-depth=10 jobs scored lower. What pattern does Lesson 11 say this illustrates?",
+      "options": [
+        "On this noisy data, deep trees overfit, so shallow forests with many trees came out on top in the search",
+        "More trees always hurts accuracy, regardless of how shallow the trees are",
+        "The search proves max-depth must always be fixed at exactly 3 for any dataset",
+        "Accuracy in this search was unrelated to either hyperparameter"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 11 states this directly: \"On this noisy data, deep trees overfit, and shallow forests with many trees came out on top. That pattern is exactly what a search is for.\" The lesson frames it as a dataset-specific finding from the search, not a universal rule about tree depth."
+    },
+    {
+      "id": "awsds-16",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 11, the ________ tuning strategy is the SageMaker Python SDK's default; it treats tuning as a regression problem, using everything learned so far to choose the next candidate.",
+      "acceptedAnswers": ["Bayesian", "Bayesian optimization"],
+      "explain": "Lesson 11 describes Bayesian optimization as the SDK default, choosing each next candidate using what earlier trials revealed — sometimes near the best result so far, sometimes farther away to explore — which is why very high parallelism gives it less to learn from between choices."
+    },
+    {
+      "id": "awsds-17",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the MLflow tracking example and managed MLflow on SageMaker, per Lesson 12.",
+      "options": [
+        "Runs rf-2 and rf-3 drew identical hyperparameters and produced the identical validation accuracy, revealing wasted compute that tracking made visible",
+        "An MLflow tracking server's compute and metadata store are hosted in a SageMaker service account, but its artifact store is an S3 bucket in your own account",
+        "Switching the example script from a local mlruns folder to a SageMaker tracking server required rewriting every mlflow.log_params and mlflow.log_metric call",
+        "The current AWS documentation recommends new work use the SageMaker Experiments Python SDK rather than MLflow",
+        "Across the six tracked runs, accuracy fell as max_depth rose, pointing to where to search next"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "Lesson 12 shows rf-2 and rf-3 tying on identical settings and scores, and explicitly says only the tracking URI differs when moving to a SageMaker server — \"everything from the local example works unchanged.\" It also says current guidance is the reverse of option D: SageMaker Experiments is available only in Studio Classic now, and the docs recommend MLflow for new work."
+    },
+    {
+      "id": "awsds-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "[Condition] accuracy 0.666 >= 0.6? -> RegisterModel\n\n[Condition] accuracy 0.666 >= 0.8? -> Fail",
+      "prompt": "The same pipeline, trained on the same data to the same validation accuracy (0.666), reached RegisterModel with MinAccuracy=0.6 but failed with MinAccuracy=0.8. What does Lesson 13 say this demonstrates?",
+      "options": [
+        "A condition step turns an evaluation metric into an automated quality gate — the same code and data can produce a different outcome depending only on the threshold parameter",
+        "The pipeline must have trained a different model each time, which is why the outcomes differ",
+        "A condition step can only ever pass; a Fail outcome means the pipeline itself is broken",
+        "MinAccuracy only controls which S3 bucket the model artifact is written to, not whether the pipeline proceeds"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 13 draws this conclusion directly from the two runs: \"Same code and data, a different parameter, a different outcome. That is the whole value of a parameterized gate.\" The condition step compares the evaluation JSON's accuracy value against a ParameterFloat threshold, routing to RegisterModel or a fail branch."
+    },
+    {
+      "id": "awsds-19",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Put these SageMaker Pipelines steps in the order Lesson 13's example pipeline runs them.",
+      "items": [
+        "A Processing step preprocesses raw data into train, validation and test splits",
+        "A Training step trains a model from the processed data",
+        "A second Processing step evaluates the trained model on held-out data",
+        "A Condition step checks the evaluation result against a limit",
+        "On success, a RegisterModel step adds the model to the Model Registry"
+      ],
+      "explain": "Lesson 13 lists this exact five-step shape for a pipeline's directed acyclic graph: preprocess, train, evaluate, gate on the evaluation metric with a condition step, and only on success register the model — each step's output feeding the next through data dependencies, not a hand-drawn diagram."
+    },
+    {
+      "id": "awsds-20",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Match each Feature Store term to what it actually is, per Lesson 14.",
+      "left": [
+        "Record identifier",
+        "Event time",
+        "Online store",
+        "Offline store"
+      ],
+      "right": [
+        "When the event happened, supplied by you, as an ISO-8601 string or epoch seconds",
+        "Keeps every record as history in S3, for exploration, training and batch inference",
+        "The column, such as customer_id, that together with event time uniquely identifies a record",
+        "Keeps only the latest record per identifier, built for millisecond reads"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "Lesson 14 defines the record identifier plus event time as what uniquely identifies a record, the online store as keeping only the latest value for fast lookups, and the offline store as keeping the full history in S3 that makes point-in-time correct training sets possible."
+    },
+    {
+      "id": "awsds-21",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Per Lesson 15, which three SageMaker resources, created in this order, together make up a running real-time endpoint?",
+      "options": [
+        "A model (container image plus model artifact location), an endpoint configuration (one or more production variants), and the endpoint itself (the running deployment)",
+        "A training job, a hyperparameter tuning job, and an endpoint",
+        "A feature group, a model package, and an endpoint configuration",
+        "A domain, a user profile, and a space",
+        "A processing job, a training job, and a model package",
+        "An endpoint, an endpoint configuration, and a monitoring schedule, created in that order"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 15 names exactly three resources underneath every SDK: \"Model: names the container image... Endpoint configuration: lists one or more production variants... Endpoint: a named, running deployment of a configuration.\" Each is created in that order, with the endpoint depending on the configuration that must already exist.",
+      "distractorExplain": "Option F reuses two of the three real resources but gets the order backwards and swaps in a monitoring schedule, which Lesson 18 introduces as an optional add-on for drift checking — not one of the three resources a basic endpoint deployment requires. An endpoint configuration must exist before the endpoint that references it, not after."
+    },
+    {
+      "id": "awsds-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "def input_fn(request_body, request_content_type):\n    ...\n    return pd.DataFrame(rows, columns=FEATURES)",
+      "prompt": "The inference script's input_fn rebuilds a DataFrame using the training-time column names, rather than returning a plain list of numbers. Why, per Lesson 15?",
+      "options": [
+        "A model fitted on a DataFrame should be given the same column structure at prediction time, so rebuilding it keeps predictions correct",
+        "The SageMaker runtime rejects any input_fn that does not return a DataFrame, regardless of how the model was trained",
+        "This step is purely cosmetic and has no effect on what predict_fn returns",
+        "output_fn requires its input to already be a DataFrame, so input_fn is forced to produce one"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 15 explains the reason directly: \"input_fn rebuilds a DataFrame with the training column names, because a model fitted on a DataFrame should be given the same columns at prediction time.\" Skipping this step risks feeding the model columns in the wrong order or under the wrong names."
+    },
+    {
+      "id": "awsds-23",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about batch transform and serverless inference, per Lesson 16.",
+      "options": [
+        "For each input file, a batch transform job writes an output file with the same name plus .out, with predictions in the same order as the input records",
+        "One large input file split across several instances lets every instance work on it in parallel",
+        "A serverless endpoint's ServerlessConfig can set MemorySizeInMB, MaxConcurrency, and optionally ProvisionedConcurrency to keep some workers warm",
+        "Serverless endpoints accept request and response payloads up to 4 MB, and a single request must finish within 1 minute",
+        "A batch transform job keeps running after it finishes, the same way a real-time endpoint does, so it must be deleted manually"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "Lesson 16 states that one large file assigned to several instances means only one instance actually works on it — large data must be split into multiple files to parallelize. It also says transform jobs \"end by themselves,\" unlike endpoints, which is one of their charms, making the last statement false."
+    },
+    {
+      "id": "awsds-24",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 17, every registered model version carries a ModelApprovalStatus of PendingManualApproval, Approved, or ________.",
+      "acceptedAnswers": ["Rejected"],
+      "explain": "Lesson 17 names the three approval statuses: PendingManualApproval, Approved, and Rejected. With a SageMaker-provided MLOps project template, moving to Approved triggers CI/CD deployment; moving to Rejected does nothing, by design."
+    },
+    {
+      "id": "awsds-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "code": "week3  mean risk 0.392  violations 0  AUC 0.544",
+      "prompt": "In week 3 of the drift simulation, the PSI/KS checks fired zero violations, yet AUC collapsed to 0.544 from roughly 0.77-0.80 in prior weeks. What does Lesson 18 say this specific result demonstrates?",
+      "options": [
+        "Input (data) drift monitoring alone can miss concept drift — a quiet input check does not guarantee a healthy model, so quality metrics from delayed labels are also needed",
+        "The PSI and KS thresholds were simply set too high and should always be lowered to zero",
+        "An AUC that low means the drift-detection script itself must have had a bug",
+        "Concept drift can only happen after data drift has already occurred"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 18 draws this exact lesson from week 3: inputs looked normal and no violation fired, \"but the relationship changed and AUC collapsed to 0.544... Input monitoring alone would have missed it. You need both signals: input drift now, and quality metrics as soon as labels arrive.\""
+    },
+    {
+      "id": "awsds-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "(1 - (BillableTimeInSeconds / TrainingTimeInSeconds)) * 100",
+      "prompt": "Using the documented managed spot training savings formula above with BillableTimeInSeconds=100 and TrainingTimeInSeconds=500, what savings percentage does Lesson 19 report?",
+      "options": [
+        "80.0 percent",
+        "20.0 percent",
+        "50.0 percent",
+        "100.0 percent"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 19 computes this exact example: \"with 100 billable seconds against 500 training seconds it gives 80.0,\" confirmed by running the arithmetic. 1 - (100/500) = 0.8, times 100 is 80.0 percent saved versus paying for the full training time."
+    },
+    {
+      "id": "awsds-27",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Put these cleanup steps in the order Lesson 19's checklist gives them.",
+      "items": [
+        "Delete the monitoring schedule",
+        "Delete the endpoint",
+        "Delete the endpoint configuration",
+        "Delete the model"
+      ],
+      "explain": "Lesson 19's cleanup checklist runs delete_monitoring_schedule, then delete_endpoint, then delete_endpoint_config, then delete_model, in that order — each resource can only be safely removed once nothing still depends on it, with monitoring removed first since it reads from the endpoint."
+    },
+    {
+      "id": "awsds-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "weekly   n= 373 churn=0.18 recall=0.162",
+      "prompt": "The first capstone model reached test AUC 0.798 but only 16% recall on weekly-plan customers. Why does Lesson 20 treat this weak segment as something to record and revisit, rather than fix immediately?",
+      "options": [
+        "The kickoff stage is for establishing the baseline and success criteria — the segment weakness is deliberately recorded for the wrap-up stage to address later, not treated as a failure of criterion 1",
+        "A 16% recall on any single segment automatically disqualifies a model from meeting criterion 1",
+        "Segment-level recall cannot be measured until the model is deployed as a real-time endpoint",
+        "The weekly-plan segment was excluded from the test set entirely, so the number isn't meaningful"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 20 says exactly this: \"We will not fix it now; we will record it and revisit it in the wrap-up.\" The kickoff's job is framing the brief, the baseline, and the criteria; acting on a discovered weak segment is explicitly deferred to the project's later review stage."
+    },
+    {
+      "id": "awsds-29",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the capstone build phase, per Lesson 21.",
+      "options": [
+        "Among the three candidates compared, gradient boosting scored a lower validation AUC (0.7844) than either logistic-regression variant, so the simpler model was shipped",
+        "The container's default input_fn, which deserializes CSV, JSON or NPY into a NumPy array, was sufficient for this pipeline's named columns and text plan column, so no custom input_fn was written",
+        "The monitoring policy retrains when quality falls below the 0.75 gate, and flags \"investigate\" when input drift fires but quality is still acceptable",
+        "The packaged model.tar.gz contained model.joblib at the top level and inference.py under a code/ folder",
+        "Rejecting an unsupported content type with a clear error was considered worse than silently returning a default prediction"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "Lesson 21 says the default input_fn \"is not enough for a pipeline that expects named columns and a text plan column, so I wrote my own\" — the opposite of option B. It also calls rejecting unknown content types \"deliberate,\" since it tells the caller what went wrong instead of returning nonsense, the opposite of option E."
+    },
+    {
+      "id": "awsds-30",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "code": "per-plan thresholds applied to test:\n monthly 414 0.44   0.836      0.711\n  weekly 373 0.30   0.485      0.340",
+      "prompt": "Applying per-plan decision thresholds (chosen on the validation set, then applied to the untouched test set) raised overall recall from 0.556 to 0.726 but dropped overall precision from 0.708 to 0.609. How does Lesson 22 frame this trade-off?",
+      "options": [
+        "It catches more churners at the cost of more false alarms, and whether that trade is worth it is a business decision about the relative cost of a retention call versus a lost customer, not a modeling decision",
+        "The precision drop proves the per-plan thresholds are a modeling bug that should be reverted",
+        "Precision and recall cannot trade off against each other, so this result must reflect a measurement error",
+        "The thresholds were tuned directly on the test set, which is why the result can't be trusted"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 22 states this explicitly: \"Whether that trade is worth it depends on what a retention call costs versus what a lost customer costs, which is a business decision, not a modeling one.\" The thresholds were chosen on validation (maximizing F1) and only then applied to the untouched test set, so option D misstates the actual procedure."
+    }
+  ]
+}
