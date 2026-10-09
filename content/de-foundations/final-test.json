@@ -1,0 +1,889 @@
+{
+  "questions": [
+    {
+      "id": "def-ch01-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "What single setting turns plain Azure Blob storage into Azure Data Lake Storage (ADLS) Gen2?",
+      "options": [
+        "Enabling the hierarchical namespace setting on the storage account",
+        "Selecting the Premium performance tier instead of Standard",
+        "Choosing GRS replication instead of LRS",
+        "Creating the account as StorageV2 instead of any other account kind",
+        "Enabling soft delete on blobs and containers",
+        "Setting the account's access tier to Hot instead of Cool"
+      ],
+      "correctIndex": 0,
+      "explain": "ADLS Gen2 isn't a separate product \u2014 it's Blob storage with one feature switched on: the hierarchical namespace. With it enabled, a path like sales/2024/01/ becomes a real directory object in the account's own index instead of just a naming convention, which is what makes an atomic directory rename, real ACLs, and faster big-data listing all possible.",
+      "distractorExplain": "StorageV2 (general-purpose v2) is the account kind required to support hierarchical namespace, but choosing it alone doesn't enable ADLS Gen2 \u2014 you still have to separately check 'Enable hierarchical namespace' on the Advanced tab. A StorageV2 account with that box left unchecked is still plain Blob storage with a flat namespace."
+    },
+    {
+      "id": "def-ch01-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: inside a container, once hierarchical namespace is enabled, a path like raw/yellow/2024/01/ is a real ________ object \u2014 not just a naming convention \u2014 so renaming it is one atomic operation instead of a scan across every blob whose name happens to share that prefix.",
+      "acceptedAnswers": [
+        "directory",
+        "directory object",
+        "a directory"
+      ],
+      "explain": "With hierarchical namespace on, Azure maintains a real directory index separate from the blobs themselves. A directory is an actual, distinct object in that index \u2014 you can list, rename, or delete it as one atomic operation, instead of the storage service iterating every individually-named blob that happens to share the prefix."
+    },
+    {
+      "id": "def-ch01-03",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "A team has an existing Blob-only storage account full of production data and wants to enable hierarchical namespace without recreating the account. They start the official Data Lake Gen2 migration, but the Validate step fails. What is the most likely explanation?",
+      "options": [
+        "One or more blocking features \u2014 blob snapshots, encryption scopes, immutable storage, or soft delete \u2014 are still enabled and need to be disabled first",
+        "The storage account must be deleted and recreated instead, since no in-place upgrade path actually exists",
+        "Validation only fails when the account already has hierarchical namespace enabled",
+        "The account's redundancy setting must first be changed to LRS before validation can succeed"
+      ],
+      "correctIndex": 0,
+      "explain": "Microsoft's official upgrade is a real, multi-step process with real constraints: several features \u2014 blob snapshots, encryption scopes, immutable storage, and soft delete for both blobs and containers \u2014 all block the Validate step if they're currently enabled, and have to be turned off first. Validation exists specifically because not every account configuration is eligible to upgrade, and failing it is exactly how you find that out before committing to the one-way migration."
+    },
+    {
+      "id": "def-ch01-04",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of Azure's data-lake access check, per Lesson 5's official flow, in the correct order.",
+      "items": [
+        "A request comes in for a specific operation on a file or directory",
+        "Azure checks whether the identity holds an RBAC role that already allows the operation",
+        "If no RBAC role grants it, Azure checks whether any ABAC conditions apply and match",
+        "If access still isn't granted, Azure checks the ACL permissions set directly on the directory and file",
+        "Access is granted or denied, based on whichever check first produces an answer"
+      ],
+      "explain": "Azure checks both systems, in a fixed order, every time a request comes in: RBAC first, then ABAC, and only if neither already grants access does it fall through to checking ACLs on the target directory and file. An RBAC role like Owner or Contributor already grants access on its own \u2014 the ACL check never even runs in that case, since it's only reached when the earlier checks didn't already produce a grant."
+    },
+    {
+      "id": "def-ch01-05",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about managed identities for storage, per Lesson 6.",
+      "options": [
+        "A managed identity lets a resource authenticate to a storage account with no secret stored anywhere in code",
+        "A system-assigned managed identity is deleted automatically when the resource it's attached to is deleted",
+        "A user-assigned managed identity can be attached to multiple resources that all need the same access",
+        "A managed identity automatically has permission to read any storage account in the same subscription, with no role assignment needed",
+        "Azure rotates the underlying credential behind a managed identity automatically, the same way it would for a stored connection string"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "A managed identity removes the need for a connection string or access key sitting in code, with Azure issuing and rotating the credential behind the scenes. System-assigned identities are tied to one resource's lifecycle and disappear with it; user-assigned identities are standalone and can be shared across multiple resources. But a managed identity is still just an identity \u2014 on its own it can't do anything, and it needs an RBAC role assignment (Lesson 5) scoped to whatever it needs to touch before it can access a storage account. A stored connection string, unlike a managed identity's credential, is never automatically rotated by Azure \u2014 that's exactly the problem managed identities solve."
+    },
+    {
+      "id": "def-ch01-06",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each SAS URI query parameter to what it actually represents.",
+      "left": [
+        "sv",
+        "sr",
+        "sp",
+        "sig"
+      ],
+      "right": [
+        "Signed resource type, such as b for blob",
+        "The actual cryptographic signature proving the token was generated by someone holding the account key",
+        "Signed API version",
+        "Signed permissions \u2014 what operations the token allows, like read or write"
+      ],
+      "correctMap": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "explain": "sv is the signed API version, sr is the signed resource type (b for blob), sp is signed permissions like read/write/delete, and sig is the actual cryptographic signature proving the token was generated by someone who had the account key \u2014 without that key ever being exposed in the URI itself."
+    },
+    {
+      "id": "def-ch01-07",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Parquet compared to CSV and JSON, per Lesson 8.",
+      "options": [
+        "Parquet stores data column-by-column, which is what makes column pruning possible",
+        "Parquet embeds its schema directly in the file, while CSV has no schema at all",
+        "JSON can represent nested, hierarchical data in a way plain CSV cannot",
+        "CSV rows carry per-column min/max statistics, enabling predicate pushdown the same way Parquet does",
+        "Delta Lake is a completely separate storage format unrelated to Parquet"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Parquet's column-by-column layout is exactly what makes column pruning possible, and its embedded schema is a real structural difference from CSV, which has no schema at all \u2014 every value is just a string until something parses it. JSON adds real nesting that CSV structurally can't express. CSV has no built-in compression or per-column statistics of any kind, so it can't support predicate pushdown \u2014 that's a Parquet-specific feature, made possible by the min/max statistics Parquet stores per column chunk. Delta isn't a separate format from Parquet; it's Parquet files plus a transaction log alongside them."
+    },
+    {
+      "id": "def-ch01-08",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a query filtering WHERE year = 2024 AND month = 1 against Hive-style partitioned data can skip every other month's directory entirely, before opening a single file inside it \u2014 this is called partition ________.",
+      "acceptedAnswers": [
+        "pruning",
+        "partition pruning"
+      ],
+      "explain": "Partition pruning lets a query engine see that a directory like month=02/ can't possibly match the filter and skip it entirely, without opening a single file inside it. It operates one level above column pruning and predicate pushdown, which skip parts of a file rather than whole files or directories."
+    },
+    {
+      "id": "def-ch01-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "A data engineering team discovers, three months after ingesting a dataset, that their cleansing logic for the Silver/cleansed zone had a bug that silently dropped valid rows. Per Lessons 11 and 12, what should they do?",
+      "options": [
+        "Reprocess directly from the untouched raw/Bronze files using corrected cleansing logic, since raw was never modified by the original bug",
+        "Manually patch the cleansed/Silver files in place to add back the missing rows, since reprocessing from raw would be redundant",
+        "Restore the cleansed zone from the curated/Gold zone, since Gold always contains a superset of Silver's data",
+        "There is no way to recover, since the zoned architecture's whole point is that each zone can only move forward, never be rebuilt"
+      ],
+      "correctIndex": 0,
+      "explain": "Raw (Bronze) is deliberately never modified, no matter what's later discovered wrong with downstream processing \u2014 that's the entire point of keeping it separate. Since the bug lived in the cleansing logic, not in the raw files, the fix is to reprocess straight from the still-complete, untouched raw data with corrected logic, not to patch already-cleaned output or pull from Gold, which is itself a further aggregation built on top of the buggy Silver data."
+    },
+    {
+      "id": "def-ch02-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "code": "fare_amount = 14.50\ntip_amount = None\n\nprint(type(fare_amount))\nprint(type(tip_amount))",
+      "prompt": "What does this print, given Python's dynamic typing?",
+      "options": [
+        "<class 'float'> then <class 'NoneType'>",
+        "<class 'int'> then <class 'NoneType'>",
+        "<class 'float'> then <class 'int'>",
+        "<class 'str'> then <class 'NoneType'>"
+      ],
+      "correctIndex": 0,
+      "explain": "Python uses dynamic typing \u2014 a variable's type comes from the value currently assigned to it, not a declaration. 14.50 is a decimal value, so fare_amount is a float. None is Python's genuinely-absent value, a type entirely of its own called NoneType \u2014 it is not the same as 0 or an empty string."
+    },
+    {
+      "id": "def-ch02-02",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Given `fare_amounts = [14.50, 9.75, 22.00, 8.25]`, fill in the blank: `fare_amounts[________]` returns the last element, 8.25, without needing to know the list's length ahead of time.",
+      "acceptedAnswers": [
+        "-1"
+      ],
+      "explain": "A list is indexed by position starting at 0 for the first element. Python also supports negative indices counting backward from the end, so index -1 always refers to the last element, no matter how long the list is."
+    },
+    {
+      "id": "def-ch02-03",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about if/elif/else and boolean operators in Python.",
+      "options": [
+        "Python checks each condition top to bottom and runs only the first one that evaluates True, skipping the rest",
+        "`elif` and `else` are both optional in an if/elif/else chain",
+        "`not (fare_amount > 0)` is equivalent to checking whether fare_amount is zero or negative",
+        "Using `=` instead of `==` inside a condition is just a style choice with no functional difference",
+        "`and` returns True if at least one side is True, the same way `or` does"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Python evaluates an if/elif/else chain top to bottom and stops at the first True branch, and both elif and else are optional. `not` simply flips a condition's truth value, so `not (fare_amount > 0)` is true exactly when fare_amount is zero or negative. `=` assigns a value while `==` compares two values \u2014 confusing them is one of the most common early Python mistakes, not a harmless style choice. `and` requires BOTH sides to be True; only `or` is satisfied by just one side being True."
+    },
+    {
+      "id": "def-ch02-04",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of writing and running a Python script in VS Code, per Lesson 13, in the correct order.",
+      "items": [
+        "Open a folder in VS Code (File \u2192 Open Folder)",
+        "Create a new file ending in .py",
+        "Type the code into the file",
+        "Click Run (or right-click \u2192 Run Python File in Terminal)",
+        "Read the output in the Terminal panel at the bottom of VS Code"
+      ],
+      "explain": "Lesson 13's five-step loop always runs in this order: open the folder once, create a .py file, type the code, run it, then read whatever it printed in the integrated Terminal panel. That loop never changes, whether the script is two lines or Lesson 27's full ETL script."
+    },
+    {
+      "id": "def-ch02-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "def is_valid_trip(fare_amount, passenger_count, min_fare=0.01):\n    if fare_amount < min_fare:\n        return False\n    if passenger_count <= 0:\n        return False\n    return True\n\nprint(is_valid_trip(0.00, 1))\nprint(is_valid_trip(0.00, 1, min_fare=0))",
+      "prompt": "What does this print, given how default parameter values work?",
+      "options": [
+        "False then True",
+        "True then True",
+        "False then False",
+        "An error, because min_fare is never passed positionally on the first call"
+      ],
+      "correctIndex": 0,
+      "explain": "min_fare=0.01 is a default value, used automatically when a caller doesn't supply it. The first call leaves min_fare at its default 0.01, so fare_amount (0.00) is less than min_fare and the function returns False. The second call explicitly overrides min_fare to 0, so 0.00 < 0 is False and the function proceeds to return True."
+    },
+    {
+      "id": "def-ch02-06",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about try/except/finally in Python.",
+      "options": [
+        "Catching a specific exception type like ValueError is preferred over a bare except:, because a bare except can hide a real bug",
+        "A finally block only runs if the try block succeeds",
+        "If a KeyError is raised inside a try block that only has `except ValueError:`, that KeyError is still caught by the ValueError handler",
+        "Wrapping a risky line in try/except inside a loop lets the loop keep processing the remaining rows after one bad row",
+        "finally runs no matter whether the try block succeeded or failed"
+      ],
+      "correctIndices": [
+        0,
+        3,
+        4
+      ],
+      "explain": "Catching a specific exception type lets genuinely unexpected errors still surface instead of being silently hidden. The whole point of try/except inside a loop over rows is that one bad row doesn't crash the ten thousand good ones after it. finally always runs, regardless of success or failure \u2014 which is also why the second statement is false. A KeyError is a different exception type than ValueError, so an `except ValueError:` block does not catch it; it would propagate as an unhandled error."
+    },
+    {
+      "id": "def-ch02-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "with open(\"cleaned_fares.txt\", \"w\") as f:\n    f.write(\"14.50\\n\")\n\nwith open(\"cleaned_fares.txt\", \"w\") as f:\n    f.write(\"9.75\\n\")\n\nwith open(\"cleaned_fares.txt\", \"r\") as f:\n    print(f.read())",
+      "prompt": "What does this print, given how \"w\" mode behaves on each open() call?",
+      "options": [
+        "9.75 \u2014 because \"w\" mode overwrites the file completely every time it's opened, erasing what was written before",
+        "14.50 then 9.75 on separate lines, because with blocks never overwrite previous writes",
+        "14.50 only \u2014 the second with block fails silently since the file already exists",
+        "An error \u2014 a file written with \"w\" mode can't be reopened in \"w\" mode again"
+      ],
+      "correctIndex": 0,
+      "explain": "\"w\" mode creates the file if it doesn't exist, and overwrites it completely if it does. The second with block reopens cleaned_fares.txt in \"w\" mode again, erasing the first write entirely, so only \"9.75\" remains when the file is read back. \"a\" (append) would be the mode that adds to the end without erasing what's already there."
+    },
+    {
+      "id": "def-ch02-08",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Match each Pandas DataFrame inspection call to what it actually returns.",
+      "left": [
+        "df.head()",
+        "df.columns",
+        "df.dtypes",
+        "len(df)"
+      ],
+      "right": [
+        "Each column's inferred type",
+        "The row count",
+        "The first 5 rows",
+        "The column names"
+      ],
+      "correctMap": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "explain": "df.head() shows the first 5 rows. df.columns gives the column names. df.dtypes gives each column's inferred type. len(df) gives the row count. These four are the first thing to run on almost any DataFrame, per Lesson 21."
+    },
+    {
+      "id": "def-ch02-09",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "In Pandas, what does passing `parse_dates=[\"tpep_pickup_datetime\"]` to `pd.read_csv()` actually do?",
+      "options": [
+        "Converts that column to a real datetime type at read time, instead of loading it as plain text",
+        "Removes rows where that column is missing a date",
+        "Renames that column to a standard date format string",
+        "Sorts the DataFrame by that column after loading",
+        "Converts every column in the file to datetime, not just the one named",
+        "Validates that every value in that column is a real calendar date, raising an error if any value isn't"
+      ],
+      "correctIndex": 0,
+      "explain": "Without parse_dates, a date column loads as plain text; passing a column name in parse_dates tells Pandas to convert that specific column into an actual datetime type you can subtract, filter, and extract year/month/day from directly \u2014 exactly the fix for a column you plan to filter by date later.",
+      "distractorExplain": "Option E overgeneralizes what the parameter affects: parse_dates takes a list of specific column names, and only those named columns get converted to datetime \u2014 every other column in the file keeps whatever type Pandas separately inferred for it, unaffected by this parameter."
+    },
+    {
+      "id": "def-ch02-10",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about calling a REST API with the `requests` library, per Lesson 23.",
+      "options": [
+        "A status code of 200 means the request succeeded, while 404 means the resource wasn't found",
+        "Checking response.status_code is unnecessary if the request is already wrapped in a try/except block",
+        "If an API returns data one page at a time, a while loop is used because the number of pages isn't known in advance",
+        "response.json() parses the response body into Python dictionaries and lists",
+        "A 429 status code means the server itself crashed"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        3
+      ],
+      "explain": "200 means success and 404 means not found. Pagination uses a while loop specifically because you don't know in advance how many pages exist, stopping once an empty page comes back. response.json() parses the body into Python objects. Exceptions and status codes solve two different problems: an exception catches something that crashes the request outright, while a status code tells you the request completed but didn't necessarily succeed \u2014 checking status_code still matters even inside a try/except. 429 means you're being rate-limited, not that the server crashed; that's what 500 means."
+    },
+    {
+      "id": "def-ch02-11",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: calling `pd.json_normalize()` on nested JSON turns a nested key like `fare.amount` into a single column name, joining each level of nesting using ________ notation.",
+      "acceptedAnswers": [
+        "dot",
+        "dot notation",
+        "dot-separated",
+        "dotted"
+      ],
+      "explain": "json_normalize walks every level of nesting and turns it into dot-separated column names \u2014 fare.amount instead of a dictionary sitting inside a fare column \u2014 which is what actually makes a genuinely nested API response filterable and groupable like a normal table."
+    },
+    {
+      "id": "def-ch02-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "df = df[df[\"passenger_count\"] > 0 and df[\"trip_distance\"] > 0]",
+      "prompt": "A developer wrote this line intending to keep only rows where both passenger_count and trip_distance are positive, but it raises an error. What's actually wrong?",
+      "options": [
+        "Python's own `and` doesn't work correctly on whole DataFrame columns \u2014 `&` between two parenthesized conditions is required instead",
+        "passenger_count and trip_distance must be compared with `==` instead of `>`",
+        "DataFrame columns can't be compared using `>` at all",
+        "The condition needs to be wrapped in a separate if statement before it can be used to filter"
+      ],
+      "correctIndex": 0,
+      "explain": "Filtering a DataFrame on more than one condition at once needs `&` for \"and\" and `|` for \"or\", with each condition in its own parentheses \u2014 Python's own `and`/`or` don't work correctly across an entire column of True/False values the way `&`/`|` do. The corrected line is `df = df[(df[\"passenger_count\"] > 0) & (df[\"trip_distance\"] > 0)]`."
+    },
+    {
+      "id": "def-ch03-01",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these events in the order they actually happen when you call a few transformations followed by one action on a Spark DataFrame.",
+      "items": [
+        "Transformations like .filter() and .groupBy() are called, each one adding a step to the plan without anything actually running yet",
+        "An action like .show() is called, triggering execution of the entire plan at once",
+        "The Driver sends serialized instructions describing the plan to the Executors, not the data itself",
+        "Each Executor runs its assigned Tasks against the partitions of data already sitting on its own machine",
+        "Executors report back that they're done, or return a small result if the Driver explicitly asked for one"
+      ],
+      "explain": "Lazy evaluation means transformations only build a plan \u2014 nothing runs until an action is called. Once an action triggers execution, the Driver sends the plan as serialized instructions to the Executors (not the data, per data locality), each Executor runs its Tasks against its own local partitions, and Executors report completion or a small requested result back to the Driver rather than their full data."
+    },
+    {
+      "id": "def-ch03-02",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Match each component in Spark's architecture to what it actually does.",
+      "left": [
+        "Driver Program",
+        "Cluster Manager",
+        "Worker Node",
+        "Executor"
+      ],
+      "right": [
+        "Allocates machines and resources to the Spark job",
+        "Where your code runs; plans and coordinates the job without doing the heavy lifting itself",
+        "A process on a worker node that runs Tasks and can cache data in memory",
+        "A machine in the cluster that runs one or more Executors"
+      ],
+      "correctMap": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "explain": "The Driver Program is where your code actually runs and plans the job, but doesn't do the heavy lifting itself. The Cluster Manager allocates machines and resources to the job. A Worker Node is a machine in the cluster that runs one or more Executors. An Executor is the process on that node that actually runs Tasks and can cache data in memory."
+    },
+    {
+      "id": "def-ch03-03",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "df = spark.read.parquet(\"cleansed/yellow_tripdata_2024-01.parquet\")\ndf.filter(df[\"fare_amount\"] < 0)",
+      "prompt": "This code runs with no error, but nothing prints and nothing observable happens. Why?",
+      "options": [
+        "filter() only adds a step to the plan \u2014 since no action was called afterward, Spark never actually ran anything against the real data",
+        "Spark silently fails whenever a filter condition matches zero rows",
+        "The code has a syntax error that Spark quietly ignores at runtime",
+        "filter() only works when it's chained directly onto the same line as .show()"
+      ],
+      "correctIndex": 0,
+      "explain": "filter() is a transformation \u2014 it returns a new DataFrame describing one more step in the plan, but by design triggers no actual execution. Without an action like .show() or .count() to request a result, Spark never touches a single row of real data, which is exactly the lazy-evaluation surprise that trips up people coming from Pandas."
+    },
+    {
+      "id": "def-ch03-04",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about transformations and actions in Spark, per Chapter 3.",
+      "options": [
+        "A transformation returns a new DataFrame describing one more step in the plan, without running anything",
+        ".count() is an action, because it returns a plain value to the Driver instead of a new DataFrame",
+        "Chaining several transformations before a single action lets Spark combine them into one optimized pass over the data",
+        "Calling .filter() immediately scans the data and returns the filtered row count",
+        ".write.parquet(...) is a transformation, since it doesn't print anything to the console"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "A transformation like .filter() returns a new DataFrame and runs nothing by itself. .count() is an action because it returns a plain value, not a new DataFrame, to the Driver. Because transformations don't run individually, Spark can combine a whole chain of them into a single optimized pass once an action finally triggers execution. .filter() never scans anything immediately \u2014 that's eager Pandas behavior, not Spark's. .write.parquet(...) is an action, not a transformation, because it triggers real execution and produces output, even though it doesn't print to the console."
+    },
+    {
+      "id": "def-ch03-05",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a Spark partition is a chunk of a DataFrame's data held in ________ on one Executor \u2014 a completely different concept from Lesson 9's storage partition, which is a directory on disk.",
+      "acceptedAnswers": [
+        "memory",
+        "in memory"
+      ],
+      "explain": "A Spark partition lives in memory on one Executor, letting Spark process chunks of data in parallel across the cluster. Lesson 9's storage partition is a directory on disk, like year=2024/month=01/, used to let queries skip whole files \u2014 the same word, but two genuinely different concepts."
+    },
+    {
+      "id": "def-ch03-06",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "What does the Driver actually send to an Executor to run a Spark job, and what does the Executor send back by default?",
+      "options": [
+        "The Driver sends serialized instructions describing the plan to run, plus which local data to run it against; the Executor only reports back that the work is done, unless the Driver explicitly asked for a small result",
+        "The Driver sends the actual data itself to each Executor, since Executors can't access data directly",
+        "The Driver sends nothing; each Executor independently decides what work to do on its own",
+        "The Executor sends its entire result set back to the Driver after every single operation",
+        "The Driver sends a copy of the SparkSession object itself, which the Executor uses to read from storage directly",
+        "The Driver and Executor never communicate directly \u2014 only through the Cluster Manager"
+      ],
+      "correctIndex": 0,
+      "explain": "The Driver builds the whole plan and sends Executors serialized instructions describing the computation to run, plus which piece of data already sitting on that machine to run it against \u2014 it never sends the data itself. By default an Executor only reports back that it's done; it sends real values back only when the Driver explicitly asked for a small result, like .count() or .collect() on a tiny DataFrame.",
+      "distractorExplain": "Option B gets the direction of data movement backwards. Spark's whole point is data locality: moving a small amount of code/instructions to where the data already lives is fast, while moving large data across the network to the code is the slow approach distributed computing is specifically designed to avoid. Executors already hold their own local data \u2014 the Driver never needs to send it to them."
+    },
+    {
+      "id": "def-ch03-07",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each distributed-computing term to what it actually means.",
+      "left": [
+        "Data locality",
+        "Fault tolerance",
+        "Scaling up",
+        "Scaling out"
+      ],
+      "right": [
+        "Running code where the data already lives, instead of moving the data across the network",
+        "The system's ability to keep working correctly by re-running lost work elsewhere when a machine fails",
+        "Giving each node more cores and memory \u2014 fewer, bigger machines",
+        "Adding more nodes to the cluster \u2014 more, smaller machines"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "Data locality means sending code to where the data already lives rather than moving the data. Fault tolerance means the system keeps working correctly by re-running lost work elsewhere when a machine fails. Scaling up means fewer, bigger nodes; scaling out means more, smaller nodes \u2014 both add capacity, but trade off fault tolerance and network overhead differently."
+    },
+    {
+      "id": "def-ch03-08",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A Worker Node fails partway through a Spark job. Put these events in the order they actually happen.",
+      "items": [
+        "A Worker Node, and its Executor, fails while running its assigned Tasks",
+        "The Driver notices that Executor is no longer responding",
+        "The Driver reschedules that Executor's unfinished Tasks onto a different Worker Node",
+        "The newly assigned Executor runs those Tasks against the same partitions of data",
+        "The job completes successfully despite the failure, with no need to restart it from the beginning"
+      ],
+      "explain": "Individual machine failures are expected in a distributed system, not treated as fatal errors. When a Worker Node's Executor fails mid-task, the Driver notices and reschedules its unfinished Tasks onto a different Worker Node, which runs them against the same data, letting the overall job complete successfully instead of failing outright \u2014 exactly the fault-tolerance behavior Lesson 29 and Lesson 30 describe."
+    },
+    {
+      "id": "def-ch03-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "spark.sql(\"SELECT VendorID, COUNT(*) FROM trips GROUP BY VendorID\")\n\ndf.groupBy(\"VendorID\").count()",
+      "prompt": "Both of these are run against the same registered DataFrame. What's actually true about them?",
+      "options": [
+        "They compile down to the exact same underlying execution plan through Spark's Catalyst optimizer, so they produce identical results",
+        "The SQL version runs only on the Driver, while the DataFrame version runs across the Executors",
+        "The SQL version executes immediately, breaking lazy evaluation, while the DataFrame version stays lazy",
+        "They produce different results, because the SQL API and the DataFrame API use separate, unrelated optimizers"
+      ],
+      "correctIndex": 0,
+      "explain": "The SQL API and the DataFrame API are two different ways of describing the same computation \u2014 both compile down to the exact same plan through Spark's Catalyst optimizer, which doesn't care which syntax you started from. spark.sql() also returns a DataFrame and stays just as lazy as any other transformation, requiring an action to actually execute."
+    },
+    {
+      "id": "def-ch04-01",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: when spark.read.csv() is called with inferSchema=True, Spark must read the file ________ time(s) \u2014 once to guess column types, once to actually load the data.",
+      "acceptedAnswers": [
+        "2",
+        "two",
+        "twice"
+      ],
+      "explain": "Lesson 40 is explicit about this cost: with inferSchema=True, Spark reads the file twice \u2014 once to guess types, once to actually load it. Without inferSchema, every column just comes back as a string, with only one read pass needed."
+    },
+    {
+      "id": "def-ch04-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "StructField(\"passenger_count\", IntegerType(), False)\n\ndf = spark.read.csv(path, header=True, schema=taxi_schema)",
+      "prompt": "A schema declares passenger_count with nullable=False, but the source CSV actually contains a null in that column. What happens when Spark reads the file with this schema?",
+      "options": [
+        "Spark loads the file normally, including the null value \u2014 nullable=False is treated as a hint for the optimizer, not an enforced constraint on read",
+        "Spark raises an error immediately and refuses to read the file",
+        "Spark silently drops the row containing the null",
+        "Spark automatically replaces the null with 0 because the column is declared non-nullable"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 43 is direct about this: setting nullable=False does not make Spark validate every row and reject nulls on read. Spark mostly treats it as a hint for downstream optimizations \u2014 if the actual data contains a null in that column, Spark will generally still load it, and the mismatch shows up later as a bug, not an upfront error."
+    },
+    {
+      "id": "def-ch04-03",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Match each spark.read behavior to the reader it describes, per Lessons 40-42.",
+      "left": [
+        "spark.read.csv(..., header=True, inferSchema=True)",
+        "spark.read.csv(..., header=True) with no inferSchema",
+        "spark.read.json()",
+        "spark.read.parquet()"
+      ],
+      "right": [
+        "Requires no header or inferSchema flags at all, since the file already carries its own schema",
+        "Reads the file twice: once to guess types, once to load the data",
+        "Returns every column as a string type",
+        "Expects one JSON object per line so Spark can split the file across workers"
+      ],
+      "correctMap": [
+        1,
+        2,
+        3,
+        0
+      ],
+      "explain": "inferSchema=True costs a second read pass to guess types. Plain header=True with no inferSchema leaves every column as a string. spark.read.json() expects line-delimited JSON, one object per line, so each worker can parse its own chunk independently. spark.read.parquet() needs neither header nor inferSchema, because Parquet already stores its schema inside the file itself."
+    },
+    {
+      "id": "def-ch04-04",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Lesson 52's dropDuplicates() keeps an arbitrary row when duplicates tie. Put these steps in the correct order for Lesson 57's proper fix, ranking duplicates with a window function instead.",
+      "items": [
+        "Define a window with Window.partitionBy() on the columns that define a duplicate, and orderBy() the column that decides which row should survive",
+        "Add a new column with row_number().over(that window) to number each row within its duplicate group",
+        "Filter to keep only the rows where that row number equals 1",
+        "Drop the row-number column, since it was only needed to pick a survivor"
+      ],
+      "explain": "Lesson 57 solves Lesson 52's 'which row survives' problem directly: build a Window.partitionBy(...).orderBy(...) that defines the duplicate group and tiebreak order, add row_number().over(window) to rank each row within its group, filter to rn == 1 to keep only the winner, then drop the now-unneeded rn column."
+    },
+    {
+      "id": "def-ch04-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "trips.filter(\"trip_distance\" > 10)",
+      "prompt": "This filter call does not raise an error, but it also doesn't filter the DataFrame the way the developer intended. What actually happens?",
+      "options": [
+        "\"trip_distance\" > 10 is evaluated as plain Python first, comparing a string to an integer using Python's own rules \u2014 it never builds a Spark condition against the column at all",
+        "Spark automatically converts the string \"trip_distance\" into a column reference before comparing it to 10",
+        "The filter silently returns zero rows, since no column matches the literal string \"trip_distance\"",
+        "Spark raises a TypeError because a string can't be compared to an integer"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 45 calls this out as a real Python trap: \"trip_distance\" > 10 just compares a string to an integer using Python's own rules, with no connection to the DataFrame at all. col(\"trip_distance\") > 10 is what actually builds a Spark condition Spark can evaluate against every row."
+    },
+    {
+      "id": "def-ch04-06",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about combining conditions and columns in PySpark, per Lessons 45-46.",
+      "options": [
+        "Multiple filter conditions must be combined with & and |, not Python's and/or, because Column objects overload the bitwise operators for this purpose",
+        "Each individual condition needs its own parentheses when combined with & or |, because of how Python evaluates operator precedence",
+        "withColumn() modifies the DataFrame in place rather than returning a new one",
+        "Passing the name of a column that already exists to withColumn() replaces that column instead of adding a new one",
+        "Chaining several withColumn() calls in a row is not possible, since each one returns None"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Lesson 45 requires & and | (not and/or) with each condition parenthesized separately, because Spark's Column objects overload the bitwise operators and Python's own precedence rules would otherwise misparse the expression. Lesson 46 confirms withColumn() returns a new DataFrame rather than modifying in place (DataFrames are immutable), and that passing an existing column's name replaces it rather than adding a duplicate. Since each withColumn() returns a real DataFrame, not None, chaining several in a row is completely normal \u2014 the same pattern Lesson 27's Pandas ETL script used."
+    },
+    {
+      "id": "def-ch04-07",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: DataFrames in PySpark are ________, which is why withColumn() returns a brand-new DataFrame instead of modifying the original one in place.",
+      "acceptedAnswers": [
+        "immutable",
+        "immutability"
+      ],
+      "explain": "Lesson 46 ties withColumn() directly back to Lesson 37: DataFrames are immutable, so withColumn() doesn't modify trips in place \u2014 it returns a new DataFrame, which is exactly why the lesson's examples reassign trips = trips.withColumn(...)."
+    },
+    {
+      "id": "def-ch04-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "trips = trips.withColumn(\n    \"trip_size\",\n    when(col(\"trip_distance\") > 3, \"medium\")\n    .when(col(\"trip_distance\") > 10, \"long\")\n    .otherwise(\"short\"),\n)",
+      "prompt": "A developer wrote the medium/long order backwards from Lesson 47's example. What does trip_size show for a row where trip_distance is 15?",
+      "options": [
+        "\"medium\" \u2014 because chained when() conditions are checked top to bottom and the first match wins, and 15 > 3 is checked before 15 > 10",
+        "\"long\" \u2014 because Spark always evaluates the most specific (largest threshold) condition first, regardless of the order it's written in",
+        "null \u2014 because a single row can never satisfy more than one chained when() clause",
+        "An error \u2014 chained when() calls must be written in descending threshold order"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 47 warns about exactly this: each .when() is checked in order, top to bottom, and the first one that matches wins, like an if/elif chain. If the smaller threshold (\"medium\", > 3) is checked before the larger one (\"long\", > 10), every long trip also satisfies > 3 and gets mislabeled \"medium\" instead."
+    },
+    {
+      "id": "def-ch04-09",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about when() and .otherwise() in PySpark, per Lesson 47.",
+      "options": [
+        "If a row matches no when() condition and there's no .otherwise(), the result for that row is null, not an error",
+        "when(condition, value) returns value only for rows where condition is true",
+        ".otherwise(value) only applies to rows that didn't match any of the preceding when() conditions",
+        "Chained when() clauses are evaluated in reverse order, bottom to top",
+        "when()/.otherwise() can only be used inside filter(), never inside withColumn()"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Lesson 47 is explicit: a row matching no when() condition with no .otherwise() comes back null, not an error. when(condition, value) is the \"if\", returning value only where condition is true, and .otherwise(value) is the \"else\" covering everything else. Chained .when() calls are checked top to bottom, not bottom to top, and the lesson's own examples pair when()/.otherwise() directly with withColumn(), not filter()."
+    },
+    {
+      "id": "def-ch04-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "# fare_amount is a string column; one row actually contains \"N/A\"\ntrips.withColumn(\"fare_amount\", col(\"fare_amount\").cast(\"double\")).show()",
+      "prompt": "What happens to the row whose fare_amount is the text \"N/A\" after this cast?",
+      "options": [
+        "fare_amount becomes null for that row \u2014 PySpark favors turning a value that doesn't fit the target type into null rather than failing the whole job",
+        "The entire .cast() call raises an error and the job stops",
+        "fare_amount becomes 0 for that row automatically",
+        "The row is silently dropped from the result entirely"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 48 describes this exact scenario: casting \"N/A\" to double makes that row's fare_amount become null, not an error. PySpark generally favors turning \"this doesn't fit\" into null rather than crashing the whole job over one bad row \u2014 convenient for keeping a large job running, but a real way for bad data to hide in a pipeline undetected."
+    },
+    {
+      "id": "def-ch04-11",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of defining and using an explicit schema, per Lesson 43, in the correct order.",
+      "items": [
+        "Import the needed type classes from pyspark.sql.types, such as StructType, StructField, and StringType",
+        "Build a StructType listing a StructField (name, type, nullable) for every column",
+        "Pass that StructType to spark.read.csv(..., schema=taxi_schema), with header=True and no inferSchema",
+        "Call df.printSchema() and confirm it matches the schema exactly, with no guessing pass in between"
+      ],
+      "explain": "Lesson 43 walks through exactly this order: import the type classes, build a StructType out of StructFields (name, type, nullable each), pass it as schema= to spark.read.csv() instead of inferSchema=True, then printSchema() to confirm the result matches instantly, with no extra guessing read pass."
+    },
+    {
+      "id": "def-ch04-12",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the correct way to check whether a column is null in PySpark is col(\"x\").________() \u2014 not col(\"x\") == None.",
+      "acceptedAnswers": [
+        "isNull",
+        "isNull()"
+      ],
+      "explain": "Lesson 51 is direct about this: SQL-style null logic doesn't work with a plain == comparison against None, because of Spark's three-valued logic. .isNull() (and .isNotNull()) are the actual, correct methods for finding nulls."
+    },
+    {
+      "id": "def-ch04-13",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "What does calling .cache() on a PySpark DataFrame actually do?",
+      "options": [
+        "It keeps the DataFrame's computed result in memory after the first action runs, so later actions against the same DataFrame skip recomputing it from scratch",
+        "It immediately writes the DataFrame's data to disk as a permanent file",
+        "It converts the Spark DataFrame into a Pandas DataFrame for faster local processing",
+        "It forces every later operation on that DataFrame to run on a single partition",
+        "It disables lazy evaluation, so every transformation on that DataFrame runs immediately",
+        "It registers the DataFrame as a queryable table in the Hive metastore"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 62 ties .cache() straight back to Lesson 34's laziness: transformations are lazy, and every action normally re-runs the whole plan from scratch. If several actions run against the same DataFrame, .cache() keeps the result in memory after the first action, so later actions reuse it instead of redoing that same work.",
+      "distractorExplain": "Option B is the closest-sounding wrong answer because caching does involve persisting a computed result \u2014 but the guide specifically describes .cache() as keeping the result in memory for reuse by later actions, not writing it to disk as a permanent file. Durable, on-disk output is what df.write (Lesson 60) produces, which is a separate operation entirely from .cache()."
+    },
+    {
+      "id": "def-ch04-14",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about removing duplicate rows in PySpark, per Lessons 52 and 57.",
+      "options": [
+        ".distinct() only treats two rows as duplicates if every single column matches exactly",
+        ".dropDuplicates(subset) treats two rows as duplicates if they match on just the named columns, ignoring every other column",
+        "When multiple rows match on the subset columns, dropDuplicates() keeps an arbitrary one \u2014 there's no guaranteed 'keep the first' rule",
+        ".distinct() and .dropDuplicates([\"VendorID\"]) are guaranteed to return exactly the same row count on any dataset",
+        "Ranking duplicates with a window function and filtering row_number() == 1 lets you control which specific row survives, unlike plain dropDuplicates() alone"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "explain": "Lesson 52 defines .distinct() as requiring every column to match, while .dropDuplicates(subset) only compares the named columns \u2014 and when several rows match on those columns, dropDuplicates() keeps an arbitrary one with no guaranteed ordering rule. Since the two functions define \"duplicate\" differently, they are not guaranteed to return the same count on the same data. Lesson 57 shows the actual fix for controlling which row survives: rank with Window + row_number() and filter to rn == 1."
+    },
+    {
+      "id": "def-ch04-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "code": "trips.groupBy(\"VendorID\").show()",
+      "prompt": "This line raises an error. Why?",
+      "options": [
+        "groupBy() alone returns a GroupedData object, not a DataFrame \u2014 it needs an aggregation like .count() or .agg() chained onto it before it can be shown",
+        "VendorID doesn't exist as a column in the trips DataFrame",
+        "show() can only be called immediately after spark.read, never after another transformation",
+        "groupBy() requires at least two column names to be passed in"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 53 is explicit: groupBy() alone returns a GroupedData object, not a DataFrame. It's a statement of intent \u2014 \"group by this\" \u2014 waiting for an aggregation like .count() to turn it into an actual, showable DataFrame."
+    },
+    {
+      "id": "def-ch04-16",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about .agg() and aggregate functions in PySpark, per Lesson 54.",
+      "options": [
+        "count(\"*\") counts every row in the group, including rows with nulls",
+        "count(\"fare_amount\") counts only the rows in the group where fare_amount is not null",
+        "Calling .agg() with no groupBy() at all is invalid and always raises an error",
+        ".agg() can compute multiple statistics \u2014 sum, avg, max, min, count \u2014 in a single call",
+        "sum(), avg(), max(), and min() are only usable inside a .agg() call chained after groupBy(), never without it"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Lesson 54 distinguishes count(\"*\") (every row, nulls included) from count(\"some_column\") (only non-null rows for that column), and shows .agg() computing several statistics \u2014 count, sum, avg, max \u2014 in one call. It also shows .agg() working with no groupBy() at all, treating the whole DataFrame as one single group and returning exactly one row, so skipping groupBy() is not an error."
+    },
+    {
+      "id": "def-ch04-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "result = trips.join(zones, trips.PULocationID == zones.LocationID, \"left\")",
+      "prompt": "A trip's PULocationID has no matching row in zones. What happens to that trip in the result of this left join?",
+      "options": [
+        "The trip row is still kept, with Zone and Borough coming back as null",
+        "The trip row is dropped from the result entirely",
+        "The join raises an error because not every PULocationID has a match",
+        "The trip row is kept, but Zone and Borough are automatically filled with the string \"Unknown\""
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 55 is direct about this: a left join keeps every row from the left side no matter what. If a trip's PULocationID has no matching zone, the joined Zone and Borough columns come back null for that row, rather than the row disappearing."
+    },
+    {
+      "id": "def-ch04-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "code": "df_a = spark.createDataFrame([(1, \"x\")], [\"id\", \"name\"])\ndf_b = spark.createDataFrame([(\"y\", 2)], [\"name\", \"id\"])\n\ndf_a.union(df_b).show()",
+      "prompt": "df_b's columns are in a different order than df_a's. What actually happens when union() runs?",
+      "options": [
+        "union() matches columns by position, not by name, so id and name get silently swapped for df_b's rows \u2014 no error is raised",
+        "union() detects the column-name mismatch and raises an error before running",
+        "union() automatically reorders df_b's columns to match df_a's names first",
+        "union() only keeps the columns that appear in the same position in both DataFrames and drops the rest"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 56 warns about exactly this: union() matches columns purely by their position in the schema, not by name, so a different column order between files silently mixes up the data instead of raising any error. unionByName() looks up each column by its actual name instead, sidestepping this risk."
+    },
+    {
+      "id": "def-ch04-19",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each Spark SQL term to what it actually does or is, per Lessons 58-59.",
+      "left": [
+        "createOrReplaceTempView()",
+        "Temp view lifetime",
+        "spark.sql()",
+        "Catalyst"
+      ],
+      "right": [
+        "Registers a DataFrame under a name that Spark SQL can reference, without copying any data",
+        "Tied to the current SparkSession \u2014 not saved to disk, not shared with another Spark application",
+        "The shared execution plan that both the DataFrame API and SQL compile down to",
+        "Runs a plain SQL string against registered views and returns an ordinary DataFrame"
+      ],
+      "correctMap": [
+        0,
+        1,
+        3,
+        2
+      ],
+      "explain": "createOrReplaceTempView() registers a DataFrame under a queryable name without copying data. A temp view lives only as long as its SparkSession \u2014 not saved, not shared. spark.sql() runs a SQL string against registered views and returns an ordinary DataFrame supporting every DataFrame method. Catalyst is the shared execution plan both the DataFrame API and SQL compile down to, which is exactly why Lesson 59 says the choice between them is a style preference, not a performance difference."
+    },
+    {
+      "id": "def-ch04-20",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: without mode(\"________\"), writing a DataFrame to a path that already exists raises an error by default, since Spark refuses to silently clobber existing output.",
+      "acceptedAnswers": [
+        "overwrite",
+        "overwrite()"
+      ],
+      "explain": "Lesson 60 states this directly: without mode(\"overwrite\"), writing to a path that already exists raises an error by default. \"overwrite\" replaces it deliberately, while \"append\" adds new files alongside the existing ones instead."
+    }
+  ]
+}
