@@ -1,0 +1,590 @@
+{
+  "questions": [
+    {
+      "id": "awsde-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "In AWS data engineering, what is Amazon S3 fundamentally designed to store, and how does it store it?",
+      "options": [
+        "Objects identified by a key within a bucket, with no real underlying directory structure despite how prefixes display",
+        "Files organized in a true hierarchical directory tree, like a traditional network file share",
+        "Fixed-size blocks attached directly to EC2 instances as raw storage volumes",
+        "Relational tables with enforced schema-on-write for every object",
+        "A single global filesystem shared automatically with every AWS account",
+        "Compressed archives that must be unzipped before any service can read them"
+      ],
+      "correctIndex": 0,
+      "explain": "S3 stores immutable objects identified by a flat key string inside a bucket; prefixes like raw/orders/2024/ look like folders in the console but there is no real directory tree underneath, which matters for how partitioning works later.",
+      "distractorExplain": "Option B is the easy mistake — the console renders key prefixes as nested folders, but that's a display convenience only. There's no real directory tree underneath; what looks like raw/orders/2024/ is one flat string, which is exactly why Hive-style partitioning is a naming convention rather than an actual folder structure."
+    },
+    {
+      "id": "awsde-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a key layout like year=2024/month=01/day=15/ is called ________ partitioning, a naming convention that Athena and Glue crawlers both recognize automatically.",
+      "acceptedAnswers": ["Hive-style", "Hive-style partitioning", "Hive"],
+      "explain": "Hive-style partitioning encodes the partition column and value directly into the key prefix as column=value, and Glue crawlers and Athena both recognize that pattern automatically without extra configuration."
+    },
+    {
+      "id": "awsde-03",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each part of a data lake layout to its role in the raw / staged / curated pattern.",
+      "left": ["Raw zone", "Staged zone", "Curated zone", "Glue Data Catalog"],
+      "right": [
+        "Business-ready, modeled data joined or aggregated for a specific consumer",
+        "Data exactly as it arrived from the source, untouched so reprocessing is always possible",
+        "Cleaned, validated, deduplicated data, often converted to a columnar format",
+        "The metadata store that turns S3 files into a queryable table"
+      ],
+      "correctMap": [1, 2, 0, 3],
+      "explain": "The raw zone keeps data exactly as it arrived so reprocessing is always possible; the staged zone holds cleaned, validated, often-columnar data; the curated zone holds business-ready, modeled data for a specific consumer; and the Glue Data Catalog is the metadata layer that makes any of these zones queryable at all."
+    },
+    {
+      "id": "awsde-04",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about using S3 event notifications to trigger a pipeline when a partner's file lands at unpredictable times.",
+      "options": [
+        "An S3 event notification can be scoped to a specific key prefix and suffix, so only matching objects trigger it",
+        "S3 can route an event directly to SNS, SQS, or Lambda",
+        "Event notifications only fire on a fixed schedule, not on actual object creation",
+        "A polling job that checks the bucket every hour would react faster than an event notification",
+        "Nothing is running, or billed, between arrivals when the pipeline is event-driven rather than polling"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "Event notifications can be scoped by prefix/suffix and routed to SNS, SQS, or Lambda, and only run when an event actually happens — unlike a polling job, which runs (and costs something) on every check whether or not new data arrived, and which reacts only as fast as its polling interval, never faster than an immediate event."
+    },
+    {
+      "id": "awsde-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A Glue job's IAM role has a trust policy naming lambda.amazonaws.com as the only trusted principal, not glue.amazonaws.com. What happens when the Glue job tries to start, and why?",
+      "options": [
+        "The job fails to assume its own role, because Glue isn't a trusted principal in that trust policy — the service calling sts:AssumeRole has to match who the trust policy names",
+        "The job runs normally, because any AWS service can assume any role by default",
+        "The job runs but with no permissions at all, since the permissions policy is ignored when the trust policy is wrong",
+        "AWS automatically corrects the trust policy to match whichever service actually requests it"
+      ],
+      "correctIndex": 0,
+      "explain": "A trust policy names who may assume the role via sts:AssumeRole. If it names lambda.amazonaws.com instead of glue.amazonaws.com, Glue's own service identity doesn't match that principal, so the AssumeRole call is rejected and the job can't even start — regardless of what its permissions policy allows."
+    },
+    {
+      "id": "awsde-06",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about how permissions combine when an identity policy and a resource-based bucket policy both apply to the same S3 request.",
+      "options": [
+        "If any applicable policy contains an explicit Deny, the request is denied regardless of any Allow elsewhere",
+        "An Allow from either the identity policy or the bucket policy alone is enough to grant access — both don't need to say yes",
+        "A bucket policy is only evaluated if the identity policy doesn't mention the resource at all",
+        "If neither policy grants an explicit Allow, the request is denied by default",
+        "Scoping a policy's Resource field to specific ARNs instead of a wildcard has no effect on blast radius if credentials are ever compromised"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "AWS evaluates every applicable policy together: an explicit Deny anywhere wins no matter what else allows it; otherwise a single explicit Allow from either side is sufficient; and with neither, the request is implicitly denied. Scoping Resource to specific ARNs directly limits blast radius if credentials leak — the opposite of what the last statement claims."
+    },
+    {
+      "id": "awsde-07",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: granting a partner account access to assume a role safely requires a shared secret called an ________, passed alongside AssumeRole, which exists specifically to prevent the confused deputy problem.",
+      "acceptedAnswers": ["external ID", "External ID", "externalId", "external id"],
+      "explain": "The external ID is a shared secret known only to the two parties that set up the cross-account relationship. Requiring it alongside AssumeRole closes the confused deputy gap that a trust policy naming only an account ID would otherwise leave open."
+    },
+    {
+      "id": "awsde-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "A colleague says, 'I ran a Glue crawler and my data got transformed and loaded into a new S3 location.' What's actually wrong with that statement?",
+      "options": [
+        "A crawler only scans data and writes schema metadata into the Data Catalog — it never moves, transforms, or writes data anywhere; that's the job of a Glue ETL job",
+        "Nothing is wrong — crawlers and jobs do the exact same thing under different names",
+        "Crawlers do transform data, but only jobs can write schema metadata",
+        "A crawler can only run against JDBC sources, never against S3"
+      ],
+      "correctIndex": 0,
+      "explain": "Crawlers scan a source, infer schema, and register or update tables in the Data Catalog — nothing more. Moving or transforming data into a new location is what a Glue ETL job does; the two are independent components that have to be composed, often via a trigger or workflow, to get the end-to-end result the colleague described."
+    },
+    {
+      "id": "awsde-09",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Glue measures and bills ETL job compute capacity in ________, a unit providing a fixed amount of vCPU and memory.",
+      "acceptedAnswers": ["DPUs", "DPU", "Data Processing Units", "Data Processing Unit"],
+      "explain": "Glue measures compute capacity in DPUs (Data Processing Units), and billing is based on DPU-hours actually consumed while a job runs, not on a cluster sitting idle between runs."
+    },
+    {
+      "id": "awsde-10",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Glue job bookmarks and DynamicFrames.",
+      "options": [
+        "A job bookmark only advances when the job calls job.commit() at the end of a successful run",
+        "A failed run still advances the bookmark, so a retry skips the data that failed to process",
+        "Reading semi-structured JSON as a DynamicFrame first can avoid a job failing outright when a field's type is inconsistent across records",
+        "Bookmarks are automatic for every job and cannot be turned off",
+        "Most transform logic still happens on a DataFrame, converting from a DynamicFrame with .toDF() first"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "Bookmark state only advances on a successful job.commit() — a failed run does not advance it, so a retry safely reprocesses the same data rather than skipping it. DynamicFrames tolerate inconsistent types across records, which is why reading JSON through one first avoids an outright failure, but actual transform logic typically happens after converting to a DataFrame. Bookmarks are also an explicit per-job setting, not forced on for every job."
+    },
+    {
+      "id": "awsde-11",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Match each Glue component to the responsibility it actually has.",
+      "left": ["Crawler", "Data Catalog", "ETL job", "Trigger"],
+      "right": [
+        "Starts a job or crawler run on a schedule, on demand, or when another step succeeds",
+        "Scans a data source and writes or updates table metadata",
+        "The Spark script that reads, transforms, and writes data",
+        "The persistent, Hive Metastore-compatible metadata store shared across engines"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "The crawler scans and writes metadata; the Data Catalog is the shared, Hive Metastore-compatible metadata store; the ETL job is the actual Spark code doing the read/transform/write; and a trigger is what starts a job or crawler, whether on a schedule, on demand, or conditionally on another step's success."
+    },
+    {
+      "id": "awsde-12",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of a chained Glue workflow in the order a successful run executes them.",
+      "items": [
+        "A scheduled trigger starts a crawler against the raw S3 landing zone",
+        "The crawler finishes and registers the raw table in the Data Catalog",
+        "A conditional trigger starts an ETL job on the crawler's success",
+        "The ETL job transforms the raw data and writes cleaned output to staging",
+        "A second conditional trigger starts a crawler against the staging output on the job's success"
+      ],
+      "explain": "The workflow starts with a scheduled trigger running the raw-zone crawler; once it registers the raw table, a conditional trigger firing on crawler success starts the ETL job; once that job writes cleaned staging output, a second conditional trigger starts a crawler against staging so the transformed data becomes queryable without a manual step."
+    },
+    {
+      "id": "awsde-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Two teams run the exact same SQL query against the exact same S3 dataset. Team A's table is partitioned well and the query scans 500 MB; Team B's table isn't partitioned and the same query scans 50 GB. Do the two teams pay the same amount for that query?",
+      "options": [
+        "No — Athena bills per amount of data scanned, so Team B pays for roughly 100x more bytes scanned than Team A for the identical query",
+        "Yes — Athena charges a flat fee per query regardless of how much data it reads",
+        "No — Team A pays more, because partitioned tables cost extra to query",
+        "Yes — partitioning only affects query speed, never cost"
+      ],
+      "correctIndex": 0,
+      "explain": "Athena's pricing is based on bytes scanned per query, not query duration or a flat per-query fee. Partition pruning lets Team A's query skip the S3 objects outside the relevant partitions entirely, so since cost is directly tied to bytes scanned, Team B's unpruned 50 GB scan costs roughly 100x more for the identical logical query."
+    },
+    {
+      "id": "awsde-14",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: for a table with a predictable, well-known partition scheme, ________ lets Athena compute valid partition values from a defined range instead of scanning S3 to discover them, avoiding the slowdown MSCK REPAIR TABLE hits at large partition counts.",
+      "acceptedAnswers": ["partition projection", "Partition projection"],
+      "explain": "Partition projection is a table property that tells Athena to compute valid partition values from a defined range and pattern instead of scanning S3 to discover them, which scales to far more partitions than MSCK REPAIR TABLE's discovery scan without hitting a performance cliff."
+    },
+    {
+      "id": "awsde-15",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A table is already partitioned well but still stored as uncompressed CSV. Select every true statement about what's still available to reduce its Athena cost.",
+      "options": [
+        "Converting to columnar Parquet would let queries read only the columns they actually select, instead of every column in every row",
+        "Compressing the data, for example with Snappy, reduces the physical bytes read for a given scan, on top of any columnar savings",
+        "Partitioning alone already captures every cost-reduction lever available — nothing else is on the table",
+        "Columnar format, compression, and partitioning are independent levers that compound rather than substitute for each other",
+        "CSV and Parquet cost the same to scan as long as the table is partitioned identically"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Partitioning determines which files get opened; columnar format and compression determine how much of each opened file actually gets read. Converting from CSV to compressed, columnar Parquet is a separate, compounding saving on top of partition pruning, so a partitioned-but-uncompressed-CSV table still has real cost reduction available."
+    },
+    {
+      "id": "awsde-16",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A teammate asks, 'how long after my crawler finishes do I need to wait before Athena can see the new table?' What's the accurate answer?",
+      "options": [
+        "No wait at all — Athena resolves database.table by reading the Glue Data Catalog directly, with no separate metadata store or sync delay of its own",
+        "Roughly 15 minutes, matching Athena's internal cache refresh interval",
+        "Until the next scheduled Athena maintenance window",
+        "Only after manually running a REFRESH TABLE command in Athena"
+      ],
+      "correctIndex": 0,
+      "explain": "Athena has no metadata store of its own — it looks up database.table directly in the Glue Data Catalog on every query. The moment a crawler's table write completes, that table is immediately queryable; there's no cache to refresh or sync step to wait on."
+    },
+    {
+      "id": "awsde-17",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "In a Redshift cluster, what is the leader node's role?",
+      "options": [
+        "It receives and parses SQL, plans and optimizes the query, breaks it into pieces for compute nodes, and assembles the final result — but stores no table data itself",
+        "It stores one full copy of every table so queries never need the compute nodes",
+        "It runs the actual Spark engine underlying every Redshift query",
+        "It is the node Amazon Athena connects to when querying Redshift Spectrum",
+        "It exists only in multi-node clusters and has no equivalent in a single-node cluster",
+        "It handles bulk loading via the COPY command while compute nodes handle only SELECT queries"
+      ],
+      "correctIndex": 0,
+      "explain": "The leader node parses and plans incoming SQL, splits the work into pieces compute nodes can execute in parallel, and assembles the final result — it never stores table data itself. Compute nodes are where data actually lives and where query execution happens, even in a single-node cluster where the split exists internally.",
+      "distractorExplain": "Option B describes something closer to DISTSTYLE ALL applied to one specific table, not the leader node's general role — the leader node stores no table data at all, for any table; data lives on the compute nodes' slices."
+    },
+    {
+      "id": "awsde-18",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a table defined with SORTKEY (dt) lets Redshift's ________ — a per-block min/max value range — skip blocks that can't contain a matching row for a date-range filter.",
+      "acceptedAnswers": ["zone maps", "zone map", "Zone Maps", "Zone Map"],
+      "explain": "Redshift maintains zone maps, a min/max value range for each block of stored data. A query filtering on a sorted column can skip every block whose zone map proves it can't contain a matching row, without reading it at all."
+    },
+    {
+      "id": "awsde-19",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "A status column has only three possible values: open, shipped, closed. Select every true statement about choosing it as a table's DISTKEY.",
+      "options": [
+        "It would make a poor DISTKEY because it has low cardinality, so most rows would pile onto only a few slices",
+        "Overloaded slices become a bottleneck, and an MPP query's total time is dragged down to match its slowest slice",
+        "A good DISTKEY needs high cardinality and to be a common join column — status satisfies neither particularly well",
+        "Data skew from a low-cardinality DISTKEY only affects storage cost, never query time",
+        "Choosing DISTSTYLE ALL instead would sidestep this specific skew problem for a small table"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "status has only three distinct values, so hashing on it under DISTKEY would pile most rows onto just a few slices — classic data skew. Because an MPP query only finishes when its slowest slice finishes, that skew directly drags down query time, not just storage. A good DISTKEY needs high cardinality and to be a common join column, which status isn't; DISTSTYLE ALL, copying the whole table to every node, sidesteps the skew question entirely for a small table."
+    },
+    {
+      "id": "awsde-20",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each Redshift Workload Management feature to what it actually does.",
+      "left": ["Manual WLM", "Concurrency scaling", "Short query acceleration (SQA)", "Automatic WLM"],
+      "right": [
+        "Redshift manages queue count, memory, and concurrency itself based on workload patterns",
+        "Adds transient additional cluster capacity automatically to absorb a burst of read queries",
+        "Runs predicted-fast queries ahead of long-running ones already queued, using machine learning to estimate runtime",
+        "Lets you define separate queues yourself, for example one for dashboards and one for long ETL jobs"
+      ],
+      "correctMap": [3, 1, 2, 0],
+      "explain": "Manual WLM is defining your own queues (e.g. dashboards vs. ETL); concurrency scaling adds transient capacity for a burst of reads; SQA predicts and prioritizes fast queries ahead of long-running ones; and automatic WLM is Redshift managing queue count, memory, and concurrency itself."
+    },
+    {
+      "id": "awsde-21",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of loading an exact, known batch of files into Redshift in order.",
+      "items": [
+        "A Glue ETL job finishes writing a known batch of Parquet files to S3",
+        "A manifest file listing each file's exact S3 URL is created, with mandatory set to true",
+        "COPY is run with the MANIFEST keyword, pointing FROM at the manifest file's S3 location",
+        "Redshift's compute node slices load the listed files in parallel",
+        "The newly loaded rows become queryable in the target table"
+      ],
+      "explain": "After the ETL job produces a known batch of files, a manifest listing their exact URLs, with mandatory true so a missing file fails the whole load, is created; COPY then points at that manifest instead of a raw prefix, so it loads exactly that batch even if a new file starts landing in the same prefix mid-load, with the work spread in parallel across compute node slices, after which the rows are queryable."
+    },
+    {
+      "id": "awsde-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "A Lambda function finishes in under a second when invoked seconds after its last run, but takes noticeably longer the first time it runs after sitting idle for an hour. What's happening on that first, slower invocation?",
+      "options": [
+        "AWS has to initialize a fresh execution environment, downloading the code and starting the runtime, before the handler even starts — a cold start",
+        "The function's memory allocation automatically drops after an hour of inactivity",
+        "Lambda re-validates the function's IAM role from scratch on every cold invocation, which a warm one skips",
+        "AWS throttles any function that hasn't been invoked recently"
+      ],
+      "correctIndex": 0,
+      "explain": "After a period of no traffic, AWS has to spin up a fresh execution environment, downloading the code, starting the runtime, and running any outside-the-handler initialization, before the handler logic runs at all. That's a cold start, and it adds latency that a warm invocation, reusing an already-initialized environment, skips entirely."
+    },
+    {
+      "id": "awsde-23",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: every Lambda function has a hard maximum execution time of ________ minutes per invocation, a signal that Lambda is built for short, triggered work rather than long-running ETL.",
+      "acceptedAnswers": ["15", "fifteen", "15 minutes", "fifteen minutes"],
+      "explain": "Lambda's maximum execution time is a hard ceiling of 15 minutes (900 seconds) per invocation, configured per function up to that limit — a real transformation over a genuinely large dataset is a sign you want Glue or EMR instead."
+    },
+    {
+      "id": "awsde-24",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the event sources data engineers commonly wire Lambda to.",
+      "options": [
+        "An S3 PUT event can invoke a Lambda function the moment a new object lands, with no polling loop involved",
+        "An EventBridge scheduled rule is still push-based even though it fires on a cron-like schedule rather than reacting to a true one-off event",
+        "SQS messages can invoke a Lambda function to process them, which decouples a fast producer from a slower consumer",
+        "DynamoDB Streams can only be read by polling the table on a timer, never by directly invoking Lambda",
+        "Event-driven processing means the producer, like an S3 bucket, has to know which consumers exist before it can publish an event"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "S3 PUT and SQS are genuinely event-driven, invoking Lambda directly with no polling loop; an EventBridge scheduled rule is still push-based even though its trigger is time-based rather than a one-off occurrence. DynamoDB Streams can directly invoke Lambda with changed records, not just via polling, and the whole point of event-driven decoupling is that the producer doesn't need to know what, if anything, is subscribed."
+    },
+    {
+      "id": "awsde-25",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of an S3-triggered Lambda pipeline in the order they actually happen.",
+      "items": [
+        "A new .csv object lands under the raw/ prefix in the bucket",
+        "S3 matches the object against the configured prefix/suffix filter and fires an ObjectCreated event",
+        "S3 invokes the Lambda function named in the event notification, using its resource-based policy permission to do so",
+        "The function uses its execution role to fetch the object from S3",
+        "The function validates, transforms, or hands the object off to a downstream process like a Glue job"
+      ],
+      "explain": "The object lands and matches the notification's prefix/suffix filter, which fires the ObjectCreated event; S3 then invokes the target Lambda function, permitted by the function's resource-based policy allowing the S3 service principal to invoke it; the function's own execution role is what lets it then fetch the object back out of S3, before doing whatever processing or hand-off it's built for."
+    },
+    {
+      "id": "awsde-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "A Step Functions Task state's Resource is arn:aws:states:::glue:startJobRun.sync rather than the plain glue:startJobRun action. What would dropping the .sync suffix change about the state machine's behavior?",
+      "options": [
+        "Step Functions would move to the Next state as soon as the Glue job is merely started, instead of waiting for it to actually finish",
+        "The Glue job would run faster, since .sync only adds monitoring overhead with no functional effect",
+        "Without .sync, the job would run twice to guarantee completion",
+        "Dropping .sync would cause Step Functions to run the Glue job directly inside the state machine's own execution, bypassing Glue entirely"
+      ],
+      "correctIndex": 0,
+      "explain": "The .sync suffix is a service-integration detail that makes Step Functions block on that state until the underlying Glue job actually completes. Drop it, and Step Functions would move on to the next state the instant the StartJobRun API call is accepted, before the job has done any real work, which matters whenever a later state depends on the job having actually finished."
+    },
+    {
+      "id": "awsde-27",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "A Task state's Retry block specifies IntervalSeconds: 10, BackoffRate: 3.0, MaxAttempts: 3, and the state fails every single time it's attempted. Select every true statement about what happens.",
+      "options": [
+        "The first retry waits 10 seconds before trying again",
+        "The second retry waits 30 seconds, since BackoffRate multiplies the previous interval",
+        "The third retry waits 90 seconds",
+        "After 3 attempts are exhausted, the state's Catch block, if one exists, determines what happens next",
+        "BackoffRate only applies if ErrorEquals matches States.ALL specifically"
+      ],
+      "correctIndices": [0, 1, 2, 3],
+      "explain": "With IntervalSeconds 10 and BackoffRate 3.0, each retry's wait is the previous one multiplied by 3: 10s, then 30s, then 90s, for three total retry attempts. Once MaxAttempts is exhausted and the state still fails, control passes to that state's Catch block if one is defined — BackoffRate itself applies regardless of which specific ErrorEquals pattern matched, not only States.ALL."
+    },
+    {
+      "id": "awsde-28",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Put these states of the crawl-transform-notify state machine in the order a successful execution runs them.",
+      "items": [
+        "StartCrawler runs the Glue crawler and waits for it to finish",
+        "RunETLJob starts the Glue ETL job against the freshly-crawled data",
+        "RunETLJob waits for the job to actually complete, via the .sync integration",
+        "NotifyComplete invokes a Lambda function that posts a success message"
+      ],
+      "explain": "The crawler runs first so the Data Catalog is current before the ETL job reads from it; RunETLJob's .sync integration means Step Functions waits for the job to actually finish rather than just start; only once that completes does NotifyComplete fire — if either earlier stage had failed, execution would route to the shared NotifyFailure state instead."
+    },
+    {
+      "id": "awsde-29",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "foundational",
+      "prompt": "You need to migrate an on-premises Oracle database to Amazon Aurora PostgreSQL. What kind of migration is this, and what extra tool will you likely need before DMS moves any data?",
+      "options": [
+        "A heterogeneous migration, likely needing the AWS Schema Conversion Tool (SCT) to convert schema and code that don't map 1:1 between engines",
+        "A homogeneous migration, since both are relational databases, so DMS handles it with no extra tooling",
+        "A heterogeneous migration, but SCT is only needed if using CDC, not for a full load",
+        "This isn't a migration DMS supports at all"
+      ],
+      "correctIndex": 0,
+      "explain": "Oracle and PostgreSQL are different database engines, so this is a heterogeneous migration. Data types, stored procedures, and other schema constructs don't map 1:1 between them, which is exactly why heterogeneous migrations typically start with the Schema Conversion Tool to convert what it can and flag what needs manual rework, before DMS handles the actual data movement."
+    },
+    {
+      "id": "awsde-30",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: DMS implements CDC by reading the source database's own ________, the same mechanism the engine already uses for crash recovery, rather than polling and comparing query results.",
+      "acceptedAnswers": ["transaction log", "transaction logs", "transaction log(s)"],
+      "explain": "DMS reads the source database's transaction log, the same mechanism the engine uses for crash recovery and replication, to see every committed change in order with minimal load on the source, instead of repeatedly running SELECT queries against production tables."
+    },
+    {
+      "id": "awsde-31",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Match each DMS symptom to the cause and fix it most likely points to.",
+      "left": [
+        "Migration tasks involving VARCHAR(MAX) or BLOB columns run far longer than expected",
+        "CDC latency keeps climbing instead of staying near zero",
+        "Row counts or content don't match between source and target after a load",
+        "CDC works for the full load but later drops the connection to the source's transaction log"
+      ],
+      "right": [
+        "An undersized replication instance, fixed by a larger instance class or splitting the migration across tasks",
+        "Unhandled LOB columns, fixed by choosing the right LOB mode or excluding unneeded LOB columns",
+        "A security group or network link that allows short connections but can't sustain a long-lived one",
+        "Data type mismatches, timezone or collation differences, or rows that changed mid-load before CDC caught them"
+      ],
+      "correctMap": [1, 0, 3, 2],
+      "explain": "Oversized or unhandled LOB columns are a common cause of migrations taking far longer than expected; climbing CDC latency points to an undersized replication instance; mismatched row counts or content after a load usually trace back to type, timezone, or collation differences, or mid-load changes; and a connection that works for a one-time full load but can't sustain CDC's persistent log connection points to a network or security-group rule tuned only for short-lived connections."
+    },
+    {
+      "id": "awsde-32",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch09",
+      "difficulty": "foundational",
+      "prompt": "In an Amazon EMR cluster, what distinguishes a task node from a core node?",
+      "options": [
+        "A task node runs tasks only with no HDFS storage, so it can be added or removed freely, often on Spot, without risking data loss, while a core node runs tasks and stores HDFS data",
+        "A task node is the single node that manages the cluster and runs YARN's ResourceManager",
+        "A core node is always more expensive per hour than a task node, regardless of instance type",
+        "A task node can only run Hive queries, never Spark jobs",
+        "Every cluster must have at least as many task nodes as core nodes",
+        "A core node has no durable storage and exists purely to run tasks quickly"
+      ],
+      "correctIndex": 0,
+      "explain": "Core nodes run tasks and store HDFS data, so removing one risks losing that data. Task nodes run tasks only, with no HDFS storage, which is exactly why they're safe to scale up and down freely, including running them on discounted Spot Instances, without any data-loss risk.",
+      "distractorExplain": "Option B describes the master node, not the task node — every EMR cluster has exactly one master node that manages the cluster and runs YARN's ResourceManager; task and core are the two other node roles, distinguished by whether they hold HDFS data."
+    },
+    {
+      "id": "awsde-33",
+      "type": "multi-select",
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about optimizing the cost of a nightly EMR batch job that runs for about 40 minutes and otherwise sits idle.",
+      "options": [
+        "Running task nodes on Spot Instances is safe because they hold no HDFS data to lose if AWS reclaims them",
+        "Configuring the cluster to auto-terminate once its steps complete avoids paying for the idle time between runs",
+        "A transient cluster created just for this job, then torn down, is a standard cost-optimized shape for a scheduled batch job",
+        "Oversizing the cluster to be safe has no real cost consequence since EMR charges a flat rate regardless of instance count",
+        "Core and master nodes should also run on Spot for maximum savings, since all node types are equally safe to reclaim"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Task nodes hold no HDFS data, making Spot safe for them; auto-terminating the cluster once its steps finish, or using a transient, create-and-tear-down cluster for exactly this kind of scheduled job, avoids paying for the idle hours between runs. EMR bills by the actual instances running, so oversizing does have a real cost; master and core nodes are typically kept on-demand precisely because losing them to Spot reclamation risks cluster stability or HDFS data, unlike task nodes."
+    },
+    {
+      "id": "awsde-34",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "A team needs Hive and Presto running side by side on the same long-lived cluster, with custom instance types reserved for one specific nightly job. Which of Glue, EMR, or Databricks fits this requirement, and why do the other two fall short?",
+      "options": [
+        "EMR — it gives full control over instance types and lets multiple open-source tools like Hive and Presto run co-located on the same cluster, which Glue's fully managed, one-job-at-a-time serverless model doesn't expose, and Databricks is a separate, non-AWS-native platform centered on its own notebook and Delta Lake workflow rather than this kind of co-location",
+        "Glue — because it supports every open-source tool out of the box with no configuration",
+        "Databricks — because it is the only option that runs on EC2 instances at all",
+        "None of the three can run Hive and Presto on the same cluster"
+      ],
+      "correctIndex": 0,
+      "explain": "EMR is explicitly the choice for fine-grained cluster tuning, specific instance types, and running multiple open-source tools like Hive, Presto, and Spark co-located on one long-lived cluster. Glue's managed, serverless environment doesn't expose that level of cluster control, and Databricks is a different platform built around its own notebook-first, Delta Lake-centered workflow rather than this kind of direct multi-tool cluster co-location."
+    },
+    {
+      "id": "awsde-35",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "A team streams order events into Kinesis Data Streams, partitioning by customer_id. They need every event for a given customer processed in the exact order it happened. Does partitioning by customer_id guarantee that?",
+      "options": [
+        "Yes — hashing on customer_id routes every one of that customer's records to the same shard, and Kinesis guarantees strict ordering within a shard",
+        "No — Kinesis never guarantees ordering under any circumstances",
+        "Yes — Kinesis guarantees ordering across the entire stream regardless of partition key",
+        "No — ordering requires using the Kinesis Client Library, not just a partition key choice"
+      ],
+      "correctIndex": 0,
+      "explain": "Kinesis guarantees strict ordering within a shard, not across an entire stream. Choosing customer_id as the partition key means every record for one customer hashes to the same shard, which is exactly what makes same-customer ordering achievable — a property of the partition key choice working together with per-shard ordering, not a stream-wide guarantee."
+    },
+    {
+      "id": "awsde-36",
+      "type": "fill-in",
+      "chapter": "ch10",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: unlike Kinesis Data Streams, Firehose has no ________ to size or provision — AWS scales its own ingestion capacity automatically behind the scenes.",
+      "acceptedAnswers": ["shards", "shard count", "shard"],
+      "explain": "Data Streams makes you provision shard count or turn on on-demand scaling and write a consumer to read from them. Firehose has none of that — it's a managed delivery layer that scales its own ingestion capacity automatically, with no shard count to size."
+    },
+    {
+      "id": "awsde-37",
+      "type": "matching",
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "Match each streaming option to the trait that actually defines it.",
+      "left": ["Kinesis Data Streams", "Amazon MSK (Kafka)", "Fabric Eventstreams", "Kinesis Data Firehose"],
+      "right": [
+        "Microsoft's managed real-time ingestion service, routing natively into OneLake and Power BI",
+        "AWS-native and managed, with the smallest operational overhead but no portability off AWS",
+        "Portable, open-source, and the industry standard, at the cost of more operational complexity even when managed",
+        "Fully managed delivery to a destination like S3, with buffering but no replay window"
+      ],
+      "correctMap": [1, 2, 0, 3],
+      "explain": "Kinesis Data Streams is AWS-native and managed with the least operational overhead but no portability; Amazon MSK runs the portable, open-source Kafka standard at the cost of more operational complexity; Fabric Eventstreams is Microsoft's equivalent inside the Fabric ecosystem; and Firehose is a load-and-forget delivery service with buffering but no concept of replay."
+    },
+    {
+      "id": "awsde-38",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch11",
+      "difficulty": "intermediate",
+      "prompt": "A team sets a CloudWatch alarm on a Glue job's failure count, but never attaches an SNS action to it. The alarm correctly enters the ALARM state every time the job fails. Has this team actually built working monitoring?",
+      "options": [
+        "No — an alarm that fires but doesn't notify anyone is barely better than no alarm at all; the value of the OK/ALARM state machine comes from the action it drives, typically an SNS notification reaching someone who can respond",
+        "Yes — entering the ALARM state is itself sufficient; notification is an optional extra",
+        "Yes — CloudWatch automatically emails the account owner whenever any alarm fires, with no action required",
+        "No — the alarm needs a dashboard widget, not an SNS action, to be considered working monitoring"
+      ],
+      "correctIndex": 0,
+      "explain": "The alarm's state machine correctly detecting failures is only half the job. Without an action, typically an SNS notification, wired to that ALARM transition, nobody actually finds out, which makes it functionally equivalent to no monitoring at all when the job fails at 3 a.m. and no one is watching the console."
+    },
+    {
+      "id": "awsde-39",
+      "type": "multi-select",
+      "chapter": "ch11",
+      "difficulty": "foundational",
+      "prompt": "Select every true statement about how CloudWatch organizes metrics and logs.",
+      "options": [
+        "Every metric lives inside a namespace, usually grouped by AWS service, such as AWS/Lambda",
+        "Dimensions are name/value pairs that identify exactly which resource a metric describes, like a FunctionName on a Lambda Errors metric",
+        "Without dimensions, a namespace-level metric would be an undifferentiated total across every resource of that type",
+        "A log group is the individual sequence of log events for one execution, while a log stream is the top-level container",
+        "CloudWatch Logs Insights lets you search and aggregate logs across a log group without exporting them elsewhere first"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Metrics live inside a namespace, grouped by service, and dimensions narrow a metric down to a specific resource — without them, a metric would be an undifferentiated blob across every resource of that type. Logs Insights queries directly across a log group. The fourth statement has it backwards: the log group is the top-level container, and log streams are the individual sequences of events within it."
+    },
+    {
+      "id": "awsde-40",
+      "type": "fill-in",
+      "chapter": "ch11",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: the CloudWatch metric showing how far behind real-time a Kinesis consumer has fallen is called ________.",
+      "acceptedAnswers": ["IteratorAge", "Iterator Age", "iteratorage"],
+      "explain": "IteratorAge measures how far behind real-time a Kinesis consumer has fallen. A climbing IteratorAge with no alarm attached is exactly the kind of failure that goes unnoticed until someone eventually checks, since having the metric available isn't the same as being monitored."
+    }
+  ]
+}

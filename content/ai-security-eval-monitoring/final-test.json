@@ -1,0 +1,471 @@
+{
+  "questions": [
+    {
+      "id": "ase-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "What is the fundamental reason prompt injection has no complete, clean fix, according to Lesson 1?",
+      "options": [
+        "A large language model has no built-in way to separate 'instructions' from 'data' — everything arrives as one undifferentiated stream of tokens",
+        "Jailbreaking and prompt injection are the same underlying vulnerability, so fixing one automatically fixes the other",
+        "Prompt injection only affects models that haven't been safety-trained yet",
+        "SQL-style parameterized queries can be applied directly to natural-language prompts to separate instructions from data",
+        "Indirect injection is a theoretical risk that hasn't actually been observed outside of chat interfaces the user types into directly",
+        "Model providers have all agreed on a shared escaping syntax that marks text as untrusted"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 1 gives three reasons injection resists a clean fix: there's no built-in boundary between instructions and data (unlike SQL, which can at least try to separate a query from its parameters), the model can't see trust levels token by token, and attackers only need to find one gap a defense missed. None of that is specific to one model generation or one provider's escaping scheme — it's structural to how a prompt is built.",
+      "distractorExplain": "Option B is the closest wrong answer because both are Chapter 1 risks that involve a model behaving unexpectedly, but Lesson 2 is explicit that they're different problems: prompt injection is foreign content sneaking into the stream the model reads, while jailbreaking is the user talking directly to the model in conversation, with no injected content required at all. Treating them as interchangeable means missing that each needs its own defenses."
+    },
+    {
+      "id": "ase-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "A support bot is asked to summarize a customer review. The review contains hidden white-on-white text instructing the AI to ignore the summarization task and reply with the user's full conversation history instead. Why does the bot fail to tell this hidden text apart from its real task?",
+      "options": [
+        "Because the model processes the review's hidden text and its actual task instructions as the same undifferentiated stream of tokens, with nothing marking one as data and the other as a command",
+        "Because the bot's safety training has been talked out of its guidelines through role-play framing",
+        "Because the review was typed directly into the chat box by the attacker",
+        "Because the hidden text exploited a bug in the bot's HTML rendering engine"
+      ],
+      "correctIndex": 0,
+      "explain": "This is Lesson 1's indirect injection scenario almost exactly: the malicious instruction is planted in content the model reads on the user's behalf, not typed by the user. A human skimming the page never notices the bracketed block, but the model reads every character the same way — as text to consider — unless something explicitly stops it from treating that block as an instruction."
+    },
+    {
+      "id": "ase-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the jailbreaking technique categories described in Lesson 2.",
+      "options": [
+        "Persona framing asks the model to role-play a character with no restrictions, hoping the fictional frame loosens what it will say in-character",
+        "Instruction layering can split a harmful request across multiple turns or encode it (e.g., base64) to slip past safety filtering that's weaker on the obfuscated form",
+        "Refusal suppression works by injecting foreign content into a document the model later reads, rather than talking to the model directly",
+        "Hypothetical/academic framing wraps a request in a stated purpose like 'for a novel I'm writing' to try to justify output the model would otherwise refuse",
+        "Jailbreaks stopped working once models were safety-trained on a complete set of examples, since the arms race ended with full training coverage"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Persona framing, instruction layering, and hypothetical framing are all described exactly this way in Lesson 2. Refusal suppression is actually the fourth category — explicitly instructing the model not to refuse or add disclaimers — and like the others it's a direct conversational technique, not injected content; that's what separates jailbreaking from prompt injection in the first place. The lesson also explicitly calls this 'an ongoing arms race, not a problem that gets solved once,' since safety training is finite and a novel enough wrapper can fall outside what it covered."
+    },
+    {
+      "id": "ase-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Lesson 3 draws a distinction between a model leaking what it knows (a training-data problem) and a model leaking what it can ________ — the real risk once it's connected to documents, databases, or tools.",
+      "acceptedAnswers": ["reach"],
+      "explain": "Once a model is connected to a company's documents via RAG, a database, or internal tools, it has access to real, current, sensitive data — and an attacker's goal shifts from 'make the model say something forbidden' to 'make the model tell me, or send somewhere I control, something it was only supposed to use internally.' That's why RAG and tool-connected systems widen exposure far beyond a plain chatbot."
+    },
+    {
+      "id": "ase-05",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each Chapter 1 term to what it actually means.",
+      "left": [
+        "Direct injection",
+        "Indirect injection",
+        "Client-side exposure",
+        "Model provenance"
+      ],
+      "right": [
+        "The attacker types the injected instruction straight into the chat as the user",
+        "Verifiable evidence of where a model's weights actually came from",
+        "An API key embedded in code that runs in the user's browser or device",
+        "The injection is planted in content the model reads on the user's behalf, not typed by the user"
+      ],
+      "correctMap": [0, 3, 2, 1],
+      "explain": "Direct injection is the simple case: the attacker is the user, typing the instruction straight in. Indirect injection plants the instruction in content the model reads on the user's behalf, so the user never even sees the injected text. Client-side exposure is an AI API key embedded where anyone can extract it from a browser bundle or decompiled app. Model provenance is verifiable evidence — published hashes, signed weights — that a model's weights are actually what they claim to be."
+    },
+    {
+      "id": "ase-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "code": "// Backend pseudo-code\nconst url = extractUrlFromModelResponse(response);\nconst previewImage = await fetch(url); // no allowlist check before fetching",
+      "prompt": "An application's backend fetches whatever URL a model's response contains, in order to retrieve and display a preview image. A jailbroken response includes a URL pointing at an internal admin endpoint instead of an image. What failure mode is this, per Lesson 6?",
+      "options": [
+        "Server-side request forgery (SSRF) — the server was tricked into making a request to an unintended, often internal, destination because it trusted a model-generated URL",
+        "Cross-site scripting, because the URL was rendered as raw HTML in the user's browser",
+        "SQL injection, because the URL was interpolated directly into a database query",
+        "Data exfiltration via multi-turn accumulation, because the attacker asked a string of innocent-looking questions and reassembled the answers"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 6 names this exact pattern: if a server fetches a URL that the model generated or extracted, and that URL can point anywhere — including internal infrastructure — that's a server-side request forgery path into the organization's own internal network. The fix is allowlisting destinations for any server-side fetch, rather than trusting a model-generated URL to be safe."
+    },
+    {
+      "id": "ase-07",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about model, API key, and supply chain security, per Lessons 4 and 5.",
+      "options": [
+        "The most common way an AI API key leaks is being embedded directly in client-side code, where anyone can extract it via dev tools or by decompiling the app",
+        "A poisoned model can be fine-tuned with a hidden trigger phrase so it behaves normally except when that specific phrase appears",
+        "Once a key is removed in a later commit, it's no longer recoverable from the repository's git history",
+        "Pinning dependency versions with a lockfile, rather than always pulling 'latest,' is part of guarding against a compromised package update",
+        "Model weights don't need the same access-control rigor as other production assets, since they aren't executable code"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Lesson 4 names client-side embedding as the single most common key-leak path, and Lesson 5 describes poisoned/backdoored weights with a hidden trigger behavior as a real supply-chain risk, with pinned dependencies and lockfiles as a concrete defense. The other two options are false: a key committed to git is still recoverable from history unless the repository is actually rewritten, and Lesson 4 is explicit that model weights deserve the exact same access-control rigor as any other high-value production asset."
+    },
+    {
+      "id": "ase-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "A team ships a prompt after trying it a few times in a playground and liking the results. Three weeks later, an unrelated prompt tweak quietly makes it worse, and nobody notices until a user complains. What does Lesson 7 say this team was missing?",
+      "options": [
+        "A structured eval dataset — the same set of test cases, run every time, that turns 'I think this still works' into something you can actually show",
+        "A larger, more powerful model, since the issue described is a model-capability problem, not a testing-process problem",
+        "A red-teaming run, since this is fundamentally an adversarial-attack problem rather than a quality-regression one",
+        "A human evaluation rubric, since automated grading can never catch this kind of drift"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 7 opens with exactly this story: 'vibes-based' testing works right up until the model changes or the prompt gets tweaked, and now something that 'seemed to work' quietly regresses with no way to know it happened. An eval dataset is what turns that unknowable regression into something measurable on the same 200 cases, every time — it's the foundation the rest of the chapter's metrics, regression tests, and benchmarks build on."
+    },
+    {
+      "id": "ase-09",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about automated eval metrics, per Lesson 8.",
+      "options": [
+        "LLM-as-judge grades open-ended output against a written rubric, trading perfect precision for coverage a string match couldn't achieve",
+        "Faithfulness (groundedness) specifically measures whether a RAG answer sticks to what the retrieved source documents actually say",
+        "Exact/string match is the best metric for most open-ended, free-text answers, because it's fast and unambiguous",
+        "Semantic similarity compares the meaning of an output to a reference answer using embeddings, rather than requiring exact wording",
+        "Relevance measures whether the factual content of an answer is correct, which is the same thing accuracy measures"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "LLM-as-judge, faithfulness, and semantic similarity are all described exactly this way in Lesson 8. Exact match is actually the weakest fit for open-ended answers — the lesson says it 'only works when there's one acceptable phrasing, rare for anything beyond short factual answers.' Accuracy and relevance are also explicitly distinct from each other: accuracy asks whether the factual content is correct, while relevance asks whether the answer addresses what was actually asked rather than a tangent — not the same question, which is why the last option is false."
+    },
+    {
+      "id": "ase-10",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 8, ________ (also called groundedness) measures, for a RAG system specifically, whether an answer sticks to what the retrieved source documents actually say, rather than adding unsupported claims.",
+      "acceptedAnswers": ["Faithfulness", "Faithfulness (groundedness)", "Groundedness"],
+      "explain": "Faithfulness is one of the three metrics Lesson 8 calls out as mattering most for AI quality specifically (alongside accuracy and relevance), and it's the one that only makes sense for a RAG system — it checks whether the generated answer is actually grounded in what the retrieved documents said, not just whether it sounds correct."
+    },
+    {
+      "id": "ase-11",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each term to what it actually means, per Lessons 9 and 10.",
+      "left": [
+        "Inter-rater reliability",
+        "Structured rubric",
+        "Sampling strategy",
+        "Baseline run"
+      ],
+      "right": [
+        "An eval run against the current version, used as the comparison point for a later change",
+        "How consistently two independent reviewers rate the same case",
+        "A deliberate method for selecting which cases get human review, rather than all of them",
+        "A set of specific, checkable criteria replacing one holistic quality score"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "Inter-rater reliability is checked by having two reviewers independently rate the same sample; disagreement means the rubric, not the reviewers, needs fixing. A structured rubric replaces one vague 1-5 score with specific yes/no criteria reviewers actually agree on. A sampling strategy is how a team picks a representative slice to review instead of reviewing everything. A baseline run is the 'before' eval run that a later 'after' run gets compared against to catch a regression."
+    },
+    {
+      "id": "ase-12",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of regression testing an AI system, per Lesson 10's basic loop, in the correct order.",
+      "items": [
+        "Run the full eval dataset against the current version, establishing a baseline",
+        "Make the change — a prompt edit, a model swap, or an updated retrieval step",
+        "Run the same dataset again against the new version",
+        "Compare pass rates and flag anything that dropped, case by case, not just in aggregate"
+      ],
+      "explain": "Lesson 10 lays out regression testing as exactly this four-step loop: establish a baseline first, make the change, re-run the identical dataset, then compare case by case rather than trusting a single aggregate number — because a regression can hide inside an unchanged overall pass rate if one case's drop is offset by another case's improvement."
+    },
+    {
+      "id": "ase-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "A red-team run against an AI app comes back with a 95% overall pass rate, but one Critical-severity finding for prompt extraction. Per Lesson 11, how should this result be read?",
+      "options": [
+        "The Critical finding is a launch blocker regardless of the otherwise high pass rate — critical and high findings come first, no matter how good the aggregate number looks",
+        "A 95% pass rate means the application is safe to launch, since critical findings only matter once the overall pass rate drops below 90%",
+        "The finding should be ignored unless it also fails on a second, independent run",
+        "Critical findings only apply to jailbreaking attempts, not prompt extraction, so this result doesn't block launch"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 11 states this directly: 'a 95% pass rate with one critical data-leak finding is still a launch blocker.' Critical and High findings get prioritized regardless of how good the aggregate pass rate looks — the whole point of a severity-ranked risk report is to stop a single serious gap from hiding behind a sea of passing checks."
+    },
+    {
+      "id": "ase-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A model tops a widely-cited public leaderboard for general reasoning. Per Lesson 12, why might it still be the wrong choice for a specific company's support-triage feature?",
+      "options": [
+        "A leaderboard measures general capability on broad, published benchmarks, which says very little about how the model performs on that company's specific prompts, data, and task — only a benchmark built from the company's own eval dataset actually answers that question",
+        "Leaderboard scores are updated too infrequently to be trusted for any production decision",
+        "A model that tops a public leaderboard can never legally be used in a production application",
+        "Public leaderboards only measure cost and latency, never output quality, so they can't inform a model choice at all"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 12 is explicit that 'the only benchmark that actually answers your question is one built from your own eval dataset, run against the specific models you're considering.' A model can score well on a generic reasoning benchmark and still underperform a smaller, cheaper model on a company's narrow use case, and a leaderboard has no way to reveal that."
+    },
+    {
+      "id": "ase-15",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "In the context of production hallucination monitoring, what is a 'scorer,' per Lesson 16?",
+      "options": [
+        "A function — often an LLM-as-judge, sometimes a smaller specialized model — that runs against a call's input and output and attaches a score or label to it automatically, continuously, as traffic flows through",
+        "A one-time eval check run against a fixed test dataset before launch, never run again afterward",
+        "A manual review process where a human rates every single production call by hand",
+        "A dashboard widget that only displays cost and latency totals, with no judgment of output quality",
+        "A CI gate that blocks a deploy if the eval dataset's pass rate drops below a threshold",
+        "A redaction function that strips PII from a prompt before it's logged"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 16 defines a scorer exactly this way: a function that runs against a call's input and output and attaches a score or label automatically, the same way Lesson 13's logging attaches metadata to every call, running continuously against real production traffic rather than once before launch.",
+      "distractorExplain": "Option E (a CI gate on the eval pass rate) is the closest wrong answer because it's also an automated quality check tied to a threshold — but it's Lesson 10's regression gate, which runs at deploy time against a fixed pre-deploy eval set. A scorer is different: it attaches to every live production call as traffic actually flows through, which is exactly what lets it catch a hallucination on a real question nobody thought to put in the eval set."
+    },
+    {
+      "id": "ase-16",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about logging AI inputs and outputs responsibly, per Lesson 13.",
+      "options": [
+        "Most LLM observability SDKs log the full request and response body by default, which can quietly make the log store the most sensitive database in the stack",
+        "Omitting a request or response body doesn't mean losing observability entirely — metadata like status, model, cost, and latency can keep flowing",
+        "The responsible fix for sensitive logs is to stop logging entirely, since any body capture is too risky to keep",
+        "A log that can't be filtered becomes close to useless once a production app generates millions of calls a month",
+        "Logging modes like Normal, Omit Request, and Omit Response can only be set globally for an entire application, never per endpoint"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Lesson 13 flags that default full-body logging can quietly turn a log store into the most sensitive database in the stack, that omitting the body still keeps operational metadata flowing, and that an unfilterable log is close to useless at real volume. The other two options are false: the lesson is explicit that 'the fix isn't stop logging — you'd lose the ability to debug anything,' and the four logging modes shown are applied per endpoint, not only globally."
+    },
+    {
+      "id": "ase-17",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 14, a ________ is a repeated (or near-duplicate) request served from a stored response instead of a new model call, cutting both cost and latency to nearly zero for that request.",
+      "acceptedAnswers": ["cache hit", "a cache hit"],
+      "explain": "Caching is one of the two concrete cost/latency levers Lesson 14 names. A cache hit skips the model call entirely on a repeat or near-identical prompt, which is why it's one of the few levers that reduces both cost and latency at the same time, for free, on repeat traffic."
+    },
+    {
+      "id": "ase-18",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Match each drift-related term to what it actually means, per Lesson 15.",
+      "left": [
+        "Data drift",
+        "Concept drift",
+        "Reference window",
+        "Current window"
+      ],
+      "right": [
+        "The baseline distribution — what the data looked like when the system was built or last validated",
+        "What counts as a correct or acceptable output has shifted over time, even for an unchanged input",
+        "The newer slice of data being compared against the baseline to compute a drift score",
+        "The distribution of the input has changed, even though the model itself hasn't"
+      ],
+      "correctMap": [3, 1, 0, 2],
+      "explain": "Data drift is a shift in the input distribution with the model unchanged. Concept drift is a shift in what counts as correct, even for the same input. A reference window is the baseline distribution the system was built or last validated against. A current window is the newer slice of data a drift report compares against that reference to compute a drift score."
+    },
+    {
+      "id": "ase-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A support AI's incoming questions start mentioning a brand-new product line that didn't exist when the system launched, but the standard a 'good' response is judged against hasn't changed. Per Lesson 15, is this data drift or concept drift?",
+      "options": [
+        "Data drift — the distribution of inputs has shifted (a new topic appearing) while the model and what counts as a correct answer haven't changed",
+        "Concept drift — a new product line automatically changes what counts as a policy violation",
+        "Both equally, since any shift in input topics always changes what counts as a correct output too",
+        "Neither — this only counts as drift if the model's weights were also retrained"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 15 defines data drift as a change in the distribution of the input — 'a new product line appears' is its own example of this. The model itself is still doing what it always did; the input just doesn't look like what it was built or evaluated on anymore. Concept drift would require the relationship between input and correct output to change, which isn't what's described here."
+    },
+    {
+      "id": "ase-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "A team sets up alerts that fire on every minor fluctuation in cost or latency. Per Lesson 17, what's the most likely outcome?",
+      "options": [
+        "Alert fatigue — the team stops reading notifications, and the one alert that actually matters gets lost in the noise along with the rest",
+        "Faster incident detection overall, since more alerts always mean more coverage",
+        "The alerting system automatically raises its own thresholds to compensate",
+        "No real change, since alert volume has no effect on how a team actually responds to alerts"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 17 names this directly as alert fatigue: 'when every minor fluctuation triggers a notification, the team stops reading them, and the one alert that actually matters gets lost in the noise along with the rest.' The fix isn't fewer signals overall — it's calibrating thresholds to normal variance so alerts fire only on conditions that genuinely require action."
+    },
+    {
+      "id": "ase-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "A model performs evenly across groups on every case in its eval dataset, but once deployed in a narrower real-world context than the test set represented, it produces unequal outcomes. Per Lesson 18, what kind of bias does this illustrate?",
+      "options": [
+        "Deployment context bias — fair behavior in testing that still produces unequal outcomes once the system is used in a specific, narrower real-world context",
+        "Training data bias — the data the model learned from over-represented certain groups or topics",
+        "Labeling bias — human labelers' own assumptions shaped what counted as a 'good' example during fine-tuning",
+        "This isn't a form of bias at all, since the model passed every case in its eval dataset"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 18 names deployment context bias exactly this way: 'a model that performs evenly in testing can still produce unequal outcomes once it's used in a specific, narrower real-world context the test set didn't represent.' A system can have no single corrupted component and still produce an unfair outcome, because bias is often a property of the whole pipeline, not one link in it."
+    },
+    {
+      "id": "ase-22",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about PII in prompts, per Lesson 19.",
+      "options": [
+        "Direct identifiers like an email address or SSN have a recognizable fixed shape, which makes them catchable with pattern matching",
+        "A ZIP code, birth date, and job title together can narrow down to one person even though none of the three is sensitive alone",
+        "Regex-based redaction reliably catches a name like 'Sarah Chen' mentioned in conversation, the same way it catches an email address",
+        "PII can enter an AI system through retrieved RAG context, not just through what the user directly typed",
+        "Once a direct identifier is redacted with a pattern-matching function, no further layer (like NER) is ever needed for production-grade PII handling"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Direct identifiers are catchable by regex precisely because they have a fixed shape, and quasi-identifiers like ZIP code, birth date, and job title can identify someone in combination even though none is sensitive alone. Lesson 19 also lists retrieved RAG context as a real entry point for PII, not just direct user input. The other two options are false: regex structurally can't catch a free-form name with no fixed pattern, which is exactly why production systems layer a Named Entity Recognition model (like Microsoft's Presidio) on top of pattern matching."
+    },
+    {
+      "id": "ase-23",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 20, the EU AI Act's core idea is ________ — obligations scale with how much potential harm a system's use case carries, not with the underlying technology itself.",
+      "acceptedAnswers": ["risk-tiering", "risk tiering"],
+      "explain": "Risk-tiering means the same underlying model can face completely different compliance obligations depending on what it's being used for — a model used for a game's NPC dialogue sits in a different tier than the same model fine-tuned for a hiring screen, even though the technology is identical."
+    },
+    {
+      "id": "ase-24",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Match each model card section to what it's actually for, per Lesson 21.",
+      "left": [
+        "Intended Use",
+        "Training Data",
+        "Evaluation Results",
+        "Caveats & Limitations"
+      ],
+      "right": [
+        "What it's for, and explicitly what it's NOT for",
+        "Sources the model learned from, and known gaps or imbalances",
+        "The metrics from Chapter 2's evals, with actual numbers",
+        "Where the model is known to fail or underperform"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Intended Use is where a model's approved (and explicitly disapproved) uses are stated — Lesson 21 calls out 'not evaluated for: medical, legal, or financial advice' as a one-sentence example that closes off foreseeable misuse. Training Data documents sources and known gaps. Evaluation Results pulls directly from Chapter 2's actual eval and regression numbers. Caveats & Limitations names where the system is known to fail, rather than leaving that to be discovered in production."
+    },
+    {
+      "id": "ase-25",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Put these five stages of AI incident response, per Lesson 22, in the correct order.",
+      "items": [
+        "Detect — an alert fires, or a user reports the problem directly",
+        "Triage — determine how many users are affected and whether it's still happening right now",
+        "Contain — roll back a model or prompt version, or disable the feature",
+        "Communicate — tell affected users and stakeholders, honestly",
+        "Review — postmortem asking which earlier control should have caught this, and why it didn't"
+      ],
+      "explain": "Lesson 22 adapts the standard detect-triage-contain-communicate-review shape for AI failures. The AI-specific wrinkle is in Contain: unlike a traditional software bug, there's often no single line of code to revert, so containment might mean rolling back a model version, tightening a system prompt, or temporarily disabling the feature. Review is the stage that actually closes the loop, feeding the incident back into evals, alert thresholds, or the model card."
+    },
+    {
+      "id": "ase-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Per Lesson 20, what's the key difference between GDPR and the EU AI Act as they apply to an AI system?",
+      "options": [
+        "GDPR predates generative AI and applies to any system processing EU residents' personal data, while the EU AI Act is specifically about AI systems and scales obligations by risk tier",
+        "GDPR only applies to AI systems, while the EU AI Act applies to all software regardless of personal data",
+        "The EU AI Act replaced GDPR entirely once it was introduced",
+        "GDPR and the EU AI Act impose the exact same obligations, just under different names"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 20 is explicit that GDPR 'predates the current wave of generative AI, but it applies directly to any system — AI or not — that processes personal data of EU residents,' while the EU AI Act is 'the first AI-specific regulatory framework,' built around risk-tiering obligations that scale with potential harm rather than with the technology itself."
+    },
+    {
+      "id": "ase-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "The capstone's build order is eval dataset, then monitoring, then incident response plan, then model card. Per Lesson 24, why does the eval dataset have to come first?",
+      "options": [
+        "Because everything after it depends on knowing what 'working correctly' means for the feature — you can't meaningfully monitor for a problem, or write an incident response plan for a failure mode, that you haven't already defined",
+        "Because the eval dataset is the only one of the four deliverables that's actually graded",
+        "Because the monitoring tooling technically requires an eval dataset file to run at all",
+        "There's no real reason — the four deliverables can be built in any order with identical results"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 24 states this directly: 'you can't meaningfully monitor for a problem you haven't defined, and you can't write an incident response plan for a failure mode you haven't already thought through while building the eval set.' The ordering isn't arbitrary — each later deliverable depends on a definition of correctness the eval dataset is what actually establishes."
+    },
+    {
+      "id": "ase-28",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the capstone's four deliverables, per Lessons 23 and 24.",
+      "options": [
+        "The eval dataset deliverable pulls from Lesson 7 (building datasets) and Lesson 8 (metrics)",
+        "The incident response plan deliverable applies Lesson 22's approach to the capstone feature's own most likely failure mode",
+        "The model card deliverable follows the actual section structure introduced in Lesson 21",
+        "The capstone requires setting up a production-scale observability platform, not a minimal logging setup",
+        "A fifty-question eval set that's planned but never completed is preferred over a five-question eval set that's actually built"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Lesson 23's own table maps the eval dataset to Lessons 7-8, the incident response plan to Lesson 22 applied to the student's own feature, and the model card to Lesson 21's structure. The other two options are false: Lesson 24 says explicitly 'you don't need a production observability platform for this,' and Lesson 23 says the opposite of option 4 — 'a five-question eval set you actually build beats a fifty-question eval set you plan and never complete.'"
+    },
+    {
+      "id": "ase-29",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 25, the strongest signal in a capstone presentation is showing a case that ________ and what you changed because of it — not a claim that the system never breaks.",
+      "acceptedAnswers": ["failed", "initially failed"],
+      "explain": "Lesson 25 is explicit that the strongest signal is 'showing a case that failed and what you changed because of it — that's the actual skill this course has been building, not \"I built something that never breaks.\"' An honest, specific limitation paired with the control that catches it reads as stronger judgment than claiming perfection."
+    },
+    {
+      "id": "ase-30",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these four capstone deliverables in the build order Lesson 24 recommends.",
+      "items": [
+        "Write the eval dataset: 15-20 cases with realistic inputs and expected behavior",
+        "Set up monitoring: log every call's input, output, timestamp, and token count, plus one dashboard view",
+        "Write the incident response plan for the feature's single most likely failure mode",
+        "Fill in the model card's sections for the actual feature that was built"
+      ],
+      "explain": "Lesson 24 builds in this order specifically because each step depends on the one before it: the eval dataset defines what 'correct' means, monitoring then proves you can see your own system's real behavior, the incident response plan targets the failure mode the eval work already surfaced, and the model card documents the actual, real numbers and limitations that came out of the first three steps — not an idealized version of the system."
+    }
+  ]
+}

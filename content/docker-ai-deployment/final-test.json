@@ -1,0 +1,452 @@
+{
+  "questions": [
+    {
+      "id": "docker-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "What is the fundamental difference between a container and a virtual machine?",
+      "options": [
+        "A container is an isolated process that shares the host machine's kernel; a virtual machine boots its own full guest OS with its own kernel on top of a hypervisor",
+        "A container always runs faster because it uses more CPU cores than a virtual machine",
+        "A virtual machine shares the host's kernel, while a container boots its own independent kernel",
+        "A container can only run Linux applications, while a virtual machine can run any operating system",
+        "A virtual machine is just a container with a graphical interface attached",
+        "There is no real difference — the terms describe the same underlying technology"
+      ],
+      "correctIndex": 0,
+      "explain": "A container is an isolated process (or group of processes) that shares the host's kernel but has its own filesystem, process view, and network interface — which is why it starts in about a second and weighs megabytes. A VM virtualizes hardware itself, booting a full guest OS with its own kernel on a hypervisor, which is why it takes minutes to start and gigabytes to store.",
+      "distractorExplain": "Option C reverses the actual relationship — it's the container that shares the host's kernel (that's precisely what makes it lightweight), while the virtual machine is the one that boots its own independent kernel on top of a hypervisor."
+    },
+    {
+      "id": "docker-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "You run `docker run my-ai-app` three times in a row, without rebuilding in between. How many images and how many containers exist afterward?",
+      "options": [
+        "One image, three containers — each run starts a new, independent container from the same image",
+        "Three images, three containers — each `docker run` also builds a new image",
+        "One image, one container — `docker run` reuses the same container if it's already running",
+        "Three images, one container — the later runs overwrite the image but share one container"
+      ],
+      "correctIndex": 0,
+      "explain": "An image is a read-only template built once; `docker run` doesn't rebuild it. Each invocation starts a new, independent container with its own writable layer from that same image, so three runs produce one image and three containers."
+    },
+    {
+      "id": "docker-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the Dockerfile instruction ________ only documents which port a container listens on — it does not actually open that port. Opening it for real requires the `-p` flag on `docker run`.",
+      "acceptedAnswers": ["EXPOSE", "the EXPOSE instruction", "expose"],
+      "explain": "EXPOSE is documentation, not enforcement — it tells anyone reading the Dockerfile or inspecting the image what the app expects, but it's the `-p host:container` flag on `docker run` that actually publishes the port and lets traffic reach it."
+    },
+    {
+      "id": "docker-04",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these instructions in the order they appear in Lesson 3's small Python service Dockerfile — an order chosen so dependency installation stays cached separately from application code changes.",
+      "items": [
+        "FROM python:3.12-slim",
+        "WORKDIR /app",
+        "COPY requirements.txt .",
+        "RUN pip install -r requirements.txt",
+        "COPY . .",
+        "CMD [\"python\", \"server.py\"]"
+      ],
+      "explain": "FROM always comes first as the base layer. WORKDIR sets the path context. requirements.txt is copied and installed before the rest of the app code specifically so that a layer that rarely changes (dependencies) stays cached even when a frequently-changing layer (application code) is rebuilt. CMD is last, defining what runs at container start."
+    },
+    {
+      "id": "docker-05",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the `docker run` flags covered in Lesson 4.",
+      "options": [
+        "`-d` runs the container detached, returning your terminal immediately",
+        "`-p 8000:8000` is what actually opens a port for traffic, unlike the Dockerfile's `EXPOSE`",
+        "`-v $(pwd)/data:/app/data` mounts a host folder into the container so files survive a restart",
+        "`-e LOG_LEVEL=debug` bakes that environment variable permanently into the image",
+        "`--rm` keeps a stopped container around indefinitely for later inspection"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "`-d` detaches, `-p` is what truly publishes a port (EXPOSE only documents it), and `-v` mounts a host folder so data outside the container survives a restart. `-e` sets a variable only for that running container — it is never written into the image — and `--rm` does the opposite of keeping a container around: it deletes it the moment it exits."
+    },
+    {
+      "id": "docker-06",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each command from Lessons 4-5 to what it actually does.",
+      "left": ["docker ps", "docker logs -f ai-app", "docker exec -it ai-app sh", "docker compose down"],
+      "right": [
+        "Opens an interactive shell inside an already-running container",
+        "Lists currently running containers",
+        "Streams a container's stdout/stderr output",
+        "Stops and removes every container a compose file describes"
+      ],
+      "correctMap": [1, 2, 0, 3],
+      "explain": "docker ps lists running containers, docker logs -f streams stdout/stderr, docker exec -it opens a shell inside a running container without rebuilding anything, and docker compose down stops and removes every container the compose file describes, by name, in one command."
+    },
+    {
+      "id": "docker-07",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "What is the primary purpose of a `.dockerignore` file?",
+      "options": [
+        "It excludes specified files and directories from the build context sent to Docker, so things like virtual environments and checkpoints aren't silently uploaded on every build",
+        "It lists which base images are approved for use in Dockerfiles",
+        "It prevents a container from writing to specific paths on the host filesystem",
+        "It defines which environment variables are allowed to be set with `-e`",
+        "It tells `docker push` which image layers to skip uploading to a registry",
+        "It specifies which ports a container is allowed to expose"
+      ],
+      "correctIndex": 0,
+      "explain": "Everything in the project directory becomes the build context sent to Docker, whether or not the Dockerfile uses it. A .dockerignore file excludes files like virtual environments, downloaded checkpoints, and __pycache__ from that context, preventing them from silently bloating every build or accidentally ending up baked into an image layer.",
+      "distractorExplain": "Option E describes something Docker already does automatically during a push — layers already present in the registry are skipped regardless of any ignore file. .dockerignore only affects what gets sent into the build context in the first place, not what gets uploaded afterward."
+    },
+    {
+      "id": "docker-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A FastAPI container builds and starts successfully, but `curl localhost:8000/predict` from the host fails to connect. The app's code binds its server to `127.0.0.1`. Why does that specifically cause this failure?",
+      "options": [
+        "127.0.0.1 inside a container refers only to the container's own loopback interface, so it refuses connections arriving from outside the container — binding to 0.0.0.0 is what accepts them",
+        "127.0.0.1 is not a valid address inside any Docker container",
+        "The `-p` flag was used incorrectly and needs to specify a different host port",
+        "FastAPI requires a `-v` volume mount before it will accept any external connections"
+      ],
+      "correctIndex": 0,
+      "explain": "127.0.0.1 is the loopback address — inside a container, that only accepts connections that originate from within the same container's network namespace. Traffic arriving from the host through the published port looks like it's coming from outside, so the server has to bind to 0.0.0.0 to accept it."
+    },
+    {
+      "id": "docker-09",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: to confirm GPU passthrough is genuinely working rather than just assuming the `--gpus` flag was accepted, Lesson 11 runs the diagnostic command ________ from inside the container.",
+      "acceptedAnswers": ["nvidia-smi"],
+      "explain": "nvidia-smi is the same diagnostic tool you'd run directly on the host; successfully running it inside a container is proof the GPU passthrough actually worked, not just that the --gpus flag didn't error."
+    },
+    {
+      "id": "docker-10",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the three ways model weights can get into a running container, from Lesson 8.",
+      "options": [
+        "Baking weights into the image with `COPY` makes the image fully self-contained, but a multi-gigabyte checkpoint makes every build, push, and pull slower",
+        "Downloading weights at build time with `RUN curl` keeps the Dockerfile small, but ties every build to that URL being reachable",
+        "Mounting weights as a volume at runtime lets the same image swap to a different model version without a rebuild",
+        "Pinning dependency versions with `==` is one of the three ways weights get into a container",
+        "Baking weights into the image is the generally recommended default for any model, regardless of size or update frequency"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "The three real options are baking in (self-contained but slow to build/push/pull), downloading at build time (small Dockerfile but dependent on a reachable URL and re-downloaded on cache invalidation), and mounting as a volume (small, swappable image). Pinning dependency versions is a separate practice from the same lesson, not one of these three weight-delivery options, and baking in is only the right default for a small, rarely-updated model — not a universal default."
+    },
+    {
+      "id": "docker-11",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each way of supplying a value to a container to what Lesson 9 says actually happens to it.",
+      "left": ["Dockerfile `ENV LOG_LEVEL=info`", "`docker run -e OPENAI_API_KEY=sk-...`", "A value used inside a `RUN` instruction", "BuildKit `--mount=type=secret`"],
+      "right": [
+        "Baked into the image at build time, visible to anyone who pulls it",
+        "Supplied only for that running container, never written to the image",
+        "Written permanently into that layer's history, recoverable even after a later instruction deletes it",
+        "Available only for the duration of one RUN instruction, never committed to any layer"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "ENV becomes part of the image itself. The -e flag at `docker run` exists only for that running container. A secret used inside a RUN instruction is baked permanently into that layer's history, recoverable with `docker history` even if a later instruction deletes the file. BuildKit's --mount=type=secret is the safe exception — the secret exists only for that one instruction's filesystem and is never written to a layer."
+    },
+    {
+      "id": "docker-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "In Lesson 10's two-stage Dockerfile, you accidentally forget `--from=builder` on the `COPY` line in the runtime stage. What actually happens when you try to build it?",
+      "options": [
+        "The build fails, because without `--from=builder` Docker looks for `/install` in the current (runtime) stage's own filesystem, where it doesn't exist",
+        "The build succeeds silently, producing an image that's missing its dependencies with no warning",
+        "Docker automatically infers you meant `--from=builder` and copies the file anyway",
+        "The build fails because multi-stage builds require every COPY instruction to use `--from`"
+      ],
+      "correctIndex": 0,
+      "explain": "Without `--from=builder`, `COPY /install /usr/local` looks for /install inside the current stage's own filesystem — the slim runtime image that never had that path created in it — so the build fails with a clear \"not found\" error rather than silently producing a broken image."
+    },
+    {
+      "id": "docker-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "You're deploying an image you already built and pushed yourself to a managed cloud container service, skipping the build-configuration screen entirely. Why does the platform still ask you for the port number?",
+      "options": [
+        "The platform needs to know which port your container listens on so it can route incoming traffic to it, regardless of whether it built the image or you did",
+        "The port number is only used to generate the default domain's URL path",
+        "It isn't actually needed in this case — the field is a leftover from the build-configuration screen",
+        "The port determines which cloud region the service is deployed to"
+      ],
+      "correctIndex": 0,
+      "explain": "Whether the platform built your app from source or you handed it a pre-built image, it still has to route real traffic to a specific port inside the running container — that's information only you have, since it depends on what your application actually listens on."
+    },
+    {
+      "id": "docker-14",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a named, deployed version of an API — like `Prod` or `Dev` — that gets its own invoke URL and its own rate/burst limits is called a ________, in Lesson 13's API gateway walkthrough.",
+      "acceptedAnswers": ["stage"],
+      "explain": "After a resource has methods wired to a backend, you deploy it to a stage (Prod, Dev) and get a real invoke URL for that stage — and the stage screen is also where rate and burst limits, enforced at the gateway, actually live."
+    },
+    {
+      "id": "docker-15",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about blue-green deployment's cost and behavior, from Lesson 14.",
+      "options": [
+        "Blue and green run as two complete, independent environments at the same time, during the switch",
+        "The cutover itself is a routing change at the gateway/load balancer, not a redeploy, so it's effectively instant",
+        "For a GPU-backed inference service, running two full environments briefly is a real, visible cost, not a rounding error",
+        "Blue-green guarantees green's model produces outputs identical to blue's, with no extra verification needed",
+        "Blue-green is always cheaper than a rolling update because only one environment ever receives traffic"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Blue-green runs two full environments simultaneously during the overlap, and the cutover is just a routing change, so it's instant. That doubled capacity is a real cost, especially for GPU-backed workloads. It does NOT guarantee model equivalence on its own — Lesson 14 explicitly calls out that confirming equivalent outputs on known prompts is an extra verification step, not something blue-green does automatically. And running two full environments, even briefly, is inherently more expensive than a rolling update's gradual approach, not cheaper."
+    },
+    {
+      "id": "docker-16",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A rolling update replaces four running instances of an AI service, one at a time. Put these states in the order the rollout passes through them, from Lesson 15.",
+      "items": [
+        "All four instances are still running the old version",
+        "One instance has been replaced; three still serve the old version",
+        "Two instances have been replaced; two still serve the old version",
+        "Three instances have been replaced; one still serves the old version",
+        "All four instances are now running the new version"
+      ],
+      "explain": "A rolling update replaces instances a few at a time inside the same environment — there's never a moment with zero capacity, but there's also a window where old and new versions are genuinely serving traffic side by side, until every instance has been swapped."
+    },
+    {
+      "id": "docker-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Why does rolling back the application code sometimes fail to fix a bad release, when the actual problem was a newly-promoted model checkpoint?",
+      "options": [
+        "Because an AI app has two independent rollback targets — application code and model/weights — and redeploying the previous image only reverts the code, not whatever model version is still loaded",
+        "Because rollbacks are only possible for blue-green deployments, never for rolling updates",
+        "Because the previous image tag is always deleted from the registry once a new version deploys",
+        "Because rolling back code automatically rolls back the database schema at the same time"
+      ],
+      "correctIndex": 0,
+      "explain": "A plain web app only has code to roll back. An AI app can independently have bad code, a bad model checkpoint, or both — treating \"redeploy the previous image\" as the only rollback lever misses the case where the code was fine and a newly-promoted model was the real problem, which needs the model/weights rolled back on their own."
+    },
+    {
+      "id": "docker-18",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each rolling-update or rollback term to its definition from Lessons 15-16.",
+      "left": ["Max surge", "Max unavailable", "Blue-green rollback", "Rolling-update rollback"],
+      "right": [
+        "Flipping traffic back to the still-running old environment — as fast as the original cutover",
+        "Running the same rollout process in reverse, instance by instance",
+        "How many extra instances can temporarily exist above the normal count during rollout",
+        "How many instances can be down at once during rollout"
+      ],
+      "correctMap": [2, 3, 0, 1],
+      "explain": "Max surge caps extra instances allowed above normal during rollout; max unavailable caps how many can be down at once. Blue-green's rollback is just a routing flip back to the old environment that never stopped running, so it's fast; a rolling update's rollback runs the same gradual process in reverse."
+    },
+    {
+      "id": "docker-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "An AI inference service is falling behind on requests because its GPU is pegged at 100%, but its autoscaling policy is configured to scale out on CPU utilization. What happens?",
+      "options": [
+        "Autoscaling never triggers, because CPU can sit near-idle while the actual bottleneck — the GPU — is fully saturated",
+        "Autoscaling triggers immediately, because CPU and GPU utilization always rise together",
+        "The platform automatically switches the scaling signal to GPU utilization once it detects the mismatch",
+        "The service crashes, because CPU-based policies are incompatible with GPU-backed containers"
+      ],
+      "correctIndex": 0,
+      "explain": "An inference container's bottleneck is usually the GPU doing the actual model computation, not CPU. Scaling on CPU for a workload like that means the autoscaler is watching the wrong gauge entirely — it can report healthy CPU numbers while the service is genuinely saturated and falling behind."
+    },
+    {
+      "id": "docker-20",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: compressing a model's weights, trading some output quality for a smaller size and faster load time, is called ________.",
+      "acceptedAnswers": ["quantization"],
+      "explain": "Quantization is one of Lesson 18's three cold-start mitigations — unlike a min-instances floor or pre-warming, it's a real trade-off in the model itself, not just an infrastructure knob, which is why it's listed separately from the other two."
+    },
+    {
+      "id": "docker-21",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about caching strategies for AI apps, from Lesson 19.",
+      "options": [
+        "An exact-match cache only catches literal repeats of the same prompt and parameters",
+        "A semantic cache compares a new prompt's embedding against stored past prompts and can reuse a response for a similarly-worded question",
+        "A cache hit for an LLM call isn't just faster — it's a metered API call you simply don't pay for",
+        "Semantic caching is always safe to apply to anything grounded in live, frequently-changing data",
+        "A retrieval cache stores the final generated answer, not the retrieved context documents"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Exact-match catches only identical repeats; semantic caching catches similarly-worded questions by embedding similarity, which is where most real savings live. Because LLM calls cost real metered money, a cache hit is a call you don't pay for. Caching anything grounded in live data without a real invalidation plan is specifically called out as dangerous — it can quietly serve a stale, fluent-sounding, wrong answer. And a retrieval cache stores the retrieved context for a RAG query, separately from the generated answer, not the answer itself."
+    },
+    {
+      "id": "docker-22",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of an asynchronous, queue-based AI request in the order Lesson 20 describes them.",
+      "items": [
+        "Client sends the request and immediately receives a job ID",
+        "The job sits in a queue instead of holding the client's connection open",
+        "A worker picks up the job once it's free",
+        "The worker processes the job and the result becomes available",
+        "The client polls, or receives a webhook, for the final result"
+      ],
+      "explain": "The whole point of the asynchronous pattern is decoupling \"a request arrived\" from \"a worker is free to handle it right now\": the client gets a job ID immediately, the job waits briefly in a queue, a worker picks it up when free, processes it, and the client retrieves the result later instead of holding a connection open the entire time."
+    },
+    {
+      "id": "docker-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Why do spot/preemptible instances fit a queue-and-worker architecture better than a synchronous request a user is actively waiting on?",
+      "options": [
+        "If a spot instance is reclaimed mid-task, a queued job can simply be retried by another worker — but a reclaimed instance serving a live synchronous request just produces an error for that waiting user",
+        "Spot instances cannot be used for any workload that involves a queue",
+        "Synchronous requests are always cheaper than queued ones, so the discount doesn't matter there",
+        "Spot instances are only available for workloads that don't use GPUs"
+      ],
+      "correctIndex": 0,
+      "explain": "The discount comes with a real catch: the cloud provider can reclaim a spot instance with little warning. A queued job that loses its worker mid-task just gets picked up again by another worker — invisible to the end user. A synchronous request that loses its instance mid-flight produces a visible error for the person who was actively waiting on it."
+    },
+    {
+      "id": "docker-24",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 4 mechanism to what it specifically protects against or saves on.",
+      "left": ["Min instances", "Max instances", "A cache hit", "A dead-letter queue"],
+      "right": [
+        "Protects against cold starts and total unavailability when traffic drops to zero",
+        "The hard ceiling that protects your budget and GPU quota from a traffic spike or a bug",
+        "An inference call you don't have to pay for or wait on",
+        "Keeps one repeatedly-failing job from blocking every healthy job behind it"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Min instances is the floor that protects against cold starts; max instances is the ceiling protecting budget and GPU quota. A cache hit is simply an inference call avoided entirely. A dead-letter queue sets aside a job that keeps failing after retries, so it can't consume worker capacity or block the rest of the queue indefinitely."
+    },
+    {
+      "id": "docker-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Why does the FeedbackScope capstone deliberately scope itself to one model and one endpoint, rather than something more elaborate?",
+      "options": [
+        "Because the point of the capstone is proving you can take something real through the entire deployment pipeline and explain every decision, not build the most elaborate possible app",
+        "Because FastAPI cannot support more than one endpoint per service",
+        "Because a sentiment-analysis model is the only type of model that can run inside a container",
+        "Because cloud container services charge per additional endpoint deployed"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 22 is explicit that a small, finished, deployed project beats a bigger, half-built one for a portfolio — the capstone's value is demonstrating you can carry one real project through containerizing, deploying, and scaling it, with a stated reason for every configuration choice, not in how large the model or API surface is."
+    },
+    {
+      "id": "docker-26",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: FeedbackScope's image is pushed to the registry tagged ________ rather than `latest`, specifically so Lesson 16's rollback strategy has a real previous tag to target.",
+      "acceptedAnswers": ["v1"],
+      "explain": "`docker tag feedbackscope:v1 ...` uses a real, specific version tag. `latest` by itself doesn't give a rollback plan anything concrete to roll back to — a stable tag like v1 is exactly what a later rollback would need to reference."
+    },
+    {
+      "id": "docker-27",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about FeedbackScope's build and deploy, from Lessons 23-24.",
+      "options": [
+        "The model weights are downloaded and cached into the image at build time, trading a bigger image for avoiding a first-request download delay",
+        "The final image is built with a multi-stage Dockerfile so build tools used by pip never reach the runtime stage",
+        "FeedbackScope scales on concurrent requests per instance rather than CPU utilization",
+        "FeedbackScope's health check only confirms the process is running, without actually exercising the model",
+        "FeedbackScope's autoscaling policy uses the platform's default min and max instance counts, left untouched"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "The Dockerfile's RUN python -c line downloads and caches the model at build time. The builder stage installs packages (and any compiler tooling) but only the installed packages are copied into the slim runtime stage. And the capstone deliberately scales on concurrent requests per instance, not CPU, because that's a more direct measure of load for this service. The health check is specifically built to exercise the model (loading a test sentence through it), not just confirm the process is alive — and every min/max number is justified with a stated reason, not left at a framework default."
+    },
+    {
+      "id": "docker-28",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these stages of FeedbackScope's Dockerfile in the order they execute, from Lesson 23.",
+      "items": [
+        "FROM python:3.11-slim AS builder, then install all Python packages into the builder stage",
+        "FROM python:3.11-slim starts a fresh runtime stage",
+        "COPY --from=builder pulls only the installed site-packages into the runtime stage",
+        "COPY app.py and RUN the line that downloads and caches the model weights",
+        "EXPOSE 8080 and CMD starts uvicorn"
+      ],
+      "explain": "The builder stage installs every package first, including anything pip needs to compile. The runtime stage starts fresh and pulls in only the installed packages with COPY --from=builder — none of the builder's compiler tooling. Only then is the application code copied in and the model cached at build time, before the final EXPOSE and CMD define how the container actually starts."
+    },
+    {
+      "id": "docker-29",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Lesson 19 argues caching usually saves real money for AI apps, yet Lesson 24 deliberately skips semantic caching for FeedbackScope. Why is that the right call here specifically?",
+      "options": [
+        "FeedbackScope's inputs are short, highly varied customer feedback with a low repeat rate, so a semantic cache would rarely hit — the complexity wouldn't pay for itself the way it would for a FAQ bot's repetitive questions",
+        "Because semantic caching only works for image-generation models, not text classification",
+        "Because FeedbackScope runs on CPU instead of GPU, and semantic caching requires a GPU",
+        "Because caching is never worthwhile for any sentiment-analysis workload"
+      ],
+      "correctIndex": 0,
+      "explain": "Semantic caching earns its keep when the same handful of questions get reworded repeatedly, like a FAQ bot. FeedbackScope's traffic is short, highly varied customer feedback with low semantic overlap between requests, so a semantic cache would rarely find a match — skipping it here is a deliberate, traffic-pattern-driven decision, not a missing feature."
+    },
+    {
+      "id": "docker-30",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each number in FeedbackScope's autoscaling policy to the reason Lesson 24 gives for it.",
+      "left": ["min_instances: 1", "max_instances: 5", "target_concurrency: 10 requests/instance", "The /health endpoint"],
+      "right": [
+        "A short cold start on a CPU-only model is tolerable for a low-traffic demo service",
+        "A hard ceiling on cost, since this is a portfolio project without a real production budget",
+        "Measured from a local load test as the point where p95 latency started climbing past 500ms",
+        "Loads a real test sentence through the model, so a broken deploy fails health checks instead of serving errors"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Every number in FeedbackScope's policy is tied to a stated reason rather than a framework default: a low min because the cold start is genuinely short for a CPU model, a low max because of real cost constraints on a portfolio project, a concurrency target pulled from an actual load test, and a health check that exercises the model itself rather than just checking the process is alive."
+    }
+  ]
+}

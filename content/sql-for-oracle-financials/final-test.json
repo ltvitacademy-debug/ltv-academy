@@ -1,0 +1,455 @@
+{
+  "questions": [
+    {
+      "id": "sqlof-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "SELECT invoice_num, invoice_amount\nFROM ap_invoices_all AS i\nWHERE invoice_amount > 10000;",
+      "prompt": "This query fails in Oracle. Why?",
+      "options": [
+        "Oracle rejects AS before a table alias — table aliases must be written bare, even though column aliases can still use AS",
+        "FROM can only name a table by its exact name; aliases aren't allowed in FROM at all",
+        "WHERE can't reference invoice_amount unless it's also listed in SELECT with an alias",
+        "10000 must be written as '10000' in single quotes, since WHERE only compares text literals"
+      ],
+      "correctIndex": 0,
+      "explain": "Oracle enforces a strict rule most other databases don't: a table alias can never use the AS keyword — FROM ap_invoices_all AS i is a syntax error, while FROM ap_invoices_all i is correct. Column aliases, by contrast, can still use AS if you want. This course writes every table alias bare, the Oracle way, from Lesson 2 onward."
+    },
+    {
+      "id": "sqlof-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: ________(expr, replacement) is Oracle's own function that returns expr if it isn't NULL, and replacement otherwise — essential before summing a column that might contain NULLs.",
+      "acceptedAnswers": ["NVL", "NVL()"],
+      "explain": "NVL(expr, replacement) substitutes replacement only when expr is NULL. It matters because unguarded arithmetic across columns can let a single NULL silently wipe out a calculation (100 + NULL is NULL, not 100), even though SUM() on its own quietly skips NULLs."
+    },
+    {
+      "id": "sqlof-03",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each date term to what it actually does, per Lesson 4.",
+      "left": ["SYSDATE", "TRUNC(SYSDATE)", "date1 - date2", "ADD_MONTHS(date, n)"],
+      "right": [
+        "Shifts a date forward or backward by whole months, correctly handling month-end edge cases",
+        "Current date and time on the database server",
+        "The number of days between two dates, returned as a plain number",
+        "Midnight on today's date, with the time component stripped off"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "SYSDATE returns the current date and time on the server. TRUNC(SYSDATE) strips the time component, leaving midnight today. Subtracting one date from another returns the number of days between them as a plain number — the engine behind every aging calculation. ADD_MONTHS shifts a date by whole months, correctly handling month-end edge cases that plain day arithmetic can't."
+    },
+    {
+      "id": "sqlof-04",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about ORDER BY, FETCH FIRST, and ROWNUM, per Lesson 3.",
+      "options": [
+        "FETCH FIRST n ROWS ONLY is evaluated after ORDER BY, so it always returns the correct top n rows",
+        "ROWNUM is assigned to rows before ORDER BY runs in the same query block, so WHERE ROWNUM <= 10 ORDER BY ... in one block can return the wrong 10 rows",
+        "ORDER BY sorts descending by default when no direction keyword is given",
+        "OFFSET skips a number of rows before FETCH NEXT begins counting, which is useful for paging through results",
+        "Using ROWNUM to get the correct top N rows by some column never requires wrapping the sorted query in a subquery"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "FETCH FIRST runs after the sort, so it's always correct; ROWNUM is assigned before ORDER BY in the same block, so filtering on it directly can grab the wrong rows — which is why it needs to be wrapped around an already-sorted subquery. OFFSET skips rows before FETCH NEXT counts, enabling paging. ORDER BY's default direction is ascending (smallest/earliest first), not descending."
+    },
+    {
+      "id": "sqlof-05",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the legacy ROWNUM approach to finding the top 10 invoices by amount in the correct order.",
+      "items": [
+        "Write the inner query selecting invoice_num and invoice_amount, with ORDER BY invoice_amount DESC",
+        "Wrap that inner query in an outer SELECT * FROM (...)",
+        "Apply WHERE ROWNUM <= 10 in the outer query, against the already-sorted rows",
+        "Run the full statement, which now returns the correct top 10 by invoice_amount"
+      ],
+      "explain": "ROWNUM is assigned before ORDER BY would take effect in a single query block, so the sort has to happen first, inside an inner query. Only after that inner query is fully sorted does wrapping it in an outer query and applying WHERE ROWNUM <= 10 produce the genuinely correct top 10 — exactly why FETCH FIRST ROWS ONLY avoids this trap entirely."
+    },
+    {
+      "id": "sqlof-06",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A consultant needs every supplier in POZ_SUPPLIERS that has never had a single invoice in AP_INVOICES_ALL. Which query correctly returns that list?",
+      "options": [
+        "SELECT s.vendor_name FROM poz_suppliers s LEFT OUTER JOIN ap_invoices_all i ON s.vendor_id = i.vendor_id WHERE i.invoice_id IS NULL;",
+        "SELECT s.vendor_name FROM poz_suppliers s INNER JOIN ap_invoices_all i ON s.vendor_id = i.vendor_id WHERE i.invoice_id IS NULL;",
+        "SELECT s.vendor_name FROM poz_suppliers s LEFT OUTER JOIN ap_invoices_all i ON s.vendor_id = i.vendor_id WHERE s.vendor_id IS NULL;",
+        "SELECT s.vendor_name FROM poz_suppliers s, ap_invoices_all i WHERE s.vendor_id = i.vendor_id;",
+        "SELECT s.vendor_name FROM poz_suppliers s RIGHT OUTER JOIN ap_invoices_all i ON s.vendor_id = i.vendor_id WHERE i.invoice_id IS NULL;",
+        "SELECT s.vendor_name FROM poz_suppliers s LEFT OUTER JOIN ap_invoices_all i ON s.vendor_id = i.vendor_id;"
+      ],
+      "correctIndex": 0,
+      "explain": "The pattern for 'things that should exist but don't' is LEFT OUTER JOIN from the side you want every row from, then WHERE <right-side key> IS NULL. Only suppliers with zero matching invoices have i.invoice_id actually NULL after the join, so that filter isolates exactly the suppliers with no invoices at all.",
+      "distractorExplain": "Option B keeps the same WHERE i.invoice_id IS NULL filter, but switches LEFT OUTER JOIN to INNER JOIN. INNER JOIN already drops every supplier with zero matching invoices before WHERE ever runs, so there's no row left where i.invoice_id could be NULL — the query always returns zero rows, regardless of the actual data, which is the opposite of useful here."
+    },
+    {
+      "id": "sqlof-07",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the join column linking POZ_SUPPLIERS to AP_INVOICES_ALL is called ________, a naming leftover from Oracle E-Business Suite's original 'vendor' terminology, even though the supplier master table itself is named POZ_SUPPLIERS.",
+      "acceptedAnswers": ["VENDOR_ID", "vendor_id"],
+      "explain": "Oracle E-Business Suite originally called suppliers 'vendors' (PO_VENDORS), and when Fusion renamed the supplier master table to POZ_SUPPLIERS, the underlying VENDOR_ID column name stuck around for compatibility — you'll see VENDOR_ID used as the supplier key across the Payables schema for exactly this historical reason."
+    },
+    {
+      "id": "sqlof-08",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about AP_INVOICE_PAYMENTS_ALL and the related Payables tables, per Lesson 7.",
+      "options": [
+        "AP_INVOICE_PAYMENTS_ALL exists specifically because one invoice can be paid across more than one check",
+        "A single check run can pay multiple invoices for the same supplier",
+        "Joining AP_INVOICES_ALL to AP_INVOICE_PAYMENTS_ALL always returns exactly one row per invoice, regardless of how many checks paid it",
+        "AP_PAYMENT_SCHEDULES_ALL tracks due dates and amounts still remaining, independent of whether a check has actually been cut yet",
+        "AP_CHECKS_ALL is the table that tracks what's still owed before any payment happens"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "AP_INVOICE_PAYMENTS_ALL is a linking table precisely because an invoice can be split across multiple checks, and a check run can pay multiple invoices — so a join through it can return more than one row per invoice, not exactly one. AP_PAYMENT_SCHEDULES_ALL, not AP_CHECKS_ALL, is the table that tracks DUE_DATE and AMOUNT_REMAINING regardless of whether a check has been cut."
+    },
+    {
+      "id": "sqlof-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "SELECT s.vendor_name, i.invoice_num\nFROM poz_suppliers s, ap_invoices_all i\nWHERE s.vendor_id = i.vendor_id (+);",
+      "prompt": "What relationship does this legacy Oracle outer-join syntax actually express?",
+      "options": [
+        "Keep every supplier, even one with no matching invoice — the (+) marks the side of the join that may be missing a match",
+        "Keep every invoice, even one with no matching supplier",
+        "Keep only suppliers and invoices that both match on vendor_id",
+        "An error — (+) is never valid outside of a stored PL/SQL procedure"
+      ],
+      "correctIndex": 0,
+      "explain": "The (+) goes on the column of the side that may be missing a match — here, i.vendor_id — meaning every supplier is kept even without a matching invoice, exactly like poz_suppliers s LEFT OUTER JOIN ap_invoices_all i. It's pre-ANSI Oracle outer-join syntax: still valid, still appears in older code, but easier to get wrong than writing LEFT OUTER JOIN directly."
+    },
+    {
+      "id": "sqlof-10",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each table to what it actually is, per Lessons 9 and 10.",
+      "left": ["HZ_CUST_ACCOUNTS", "RA_CUSTOMER_TRX_ALL", "AR_RECEIVABLE_APPLICATIONS_ALL", "GL_CODE_COMBINATIONS"],
+      "right": [
+        "Links a payment schedule to the cash receipt that paid it",
+        "The chart-of-accounts combination a journal line actually hits",
+        "A customer invoice/transaction, keyed by CUSTOMER_TRX_ID",
+        "A customer's account record, keyed by CUST_ACCOUNT_ID"
+      ],
+      "correctMap": [3, 2, 0, 1],
+      "explain": "HZ_CUST_ACCOUNTS holds a customer's account record, keyed by CUST_ACCOUNT_ID. RA_CUSTOMER_TRX_ALL is a customer invoice/transaction, keyed by CUSTOMER_TRX_ID. AR_RECEIVABLE_APPLICATIONS_ALL links a payment schedule to the cash receipt that paid it. GL_CODE_COMBINATIONS is the actual chart-of-accounts combination a journal line hits."
+    },
+    {
+      "id": "sqlof-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "code": "SELECT vendor_id, invoice_num, SUM(invoice_amount)\nFROM ap_invoices_all\nGROUP BY vendor_id;",
+      "prompt": "What happens when this query runs, and why?",
+      "options": [
+        "It fails with an error, because invoice_num is neither wrapped in an aggregate function nor listed in GROUP BY",
+        "It runs fine, showing one arbitrary invoice_num per vendor_id group",
+        "It runs fine, listing every invoice_num in that vendor's group, comma-separated",
+        "It runs fine, but SUM(invoice_amount) is calculated incorrectly because invoice_num is present in SELECT"
+      ],
+      "correctIndex": 0,
+      "explain": "Once rows are grouped by vendor_id, invoice_num varies within each group — there's no single, unambiguous invoice_num to show per group. Every column in SELECT must be either wrapped in an aggregate function (like SUM) or listed in GROUP BY itself; Oracle rejects the query outright rather than guessing which invoice_num to display."
+    },
+    {
+      "id": "sqlof-12",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: in Oracle's logical order of clause evaluation, HAVING filters on a group's already-aggregated value, and runs immediately after ________, but before ORDER BY.",
+      "acceptedAnswers": ["GROUP BY", "group by"],
+      "explain": "The logical order is FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY. WHERE filters individual rows before any grouping happens; HAVING runs right after GROUP BY has produced its one-row-per-group result, which is exactly why HAVING — not WHERE — can filter on an aggregate like SUM(invoice_amount)."
+    },
+    {
+      "id": "sqlof-13",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about CASE and aging buckets, per Lesson 13.",
+      "options": [
+        "CASE evaluates each WHEN condition in order, top to bottom, and returns the result of the first one that's true",
+        "ELSE catches every row that didn't match any WHEN condition above it",
+        "GROUP BY can reference the CASE expression's alias instead of repeating the full CASE expression",
+        "Overlapping WHEN ranges can silently assign a row to the wrong bucket, since CASE stops at the first match",
+        "The five-bucket aging structure (Current, 1-30, 31-60, 61-90, 90+) is Oracle-specific syntax, not used by other databases' finance reports"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "CASE stops at the first matching WHEN, which is exactly why overlapping ranges are dangerous and why ELSE catches whatever's left. GROUP BY must repeat the entire CASE expression, not just its alias, because Oracle groups by the expression's result. The five-bucket aging structure is a standard finance-reporting convention used across the industry, not something specific to Oracle."
+    },
+    {
+      "id": "sqlof-14",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of building the per-supplier-per-month balance report in Lesson 14's correct order.",
+      "items": [
+        "Join ap_invoices_all to poz_suppliers to bring vendor_name into the result",
+        "Apply TO_CHAR(invoice_date, 'YYYY-MM') to collapse each invoice's date into a month bucket",
+        "GROUP BY vendor_name and the TO_CHAR month expression together, creating one group per supplier-per-month combination",
+        "Aggregate SUM(invoice_amount) within each group to get the total invoiced",
+        "ORDER BY vendor_name, then the month, so the report reads in a sensible order"
+      ],
+      "explain": "The join brings in a readable supplier name first; the date gets collapsed into a month bucket next; then GROUP BY on both the supplier and the month expression together creates one group per combination, which SUM aggregates within; ORDER BY only sorts the already-finished result, so it has to come last."
+    },
+    {
+      "id": "sqlof-15",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Match each window-function term to what it actually does, per Lesson 15.",
+      "left": ["PARTITION BY", "ROW_NUMBER()", "RANK()", "DENSE_RANK()"],
+      "right": [
+        "Gives tied rows the same rank, then continues numbering with no gap for the next rank",
+        "Restarts a window function's calculation for each group, without collapsing any rows the way GROUP BY does",
+        "Assigns a unique sequential number within each partition, even when values tie",
+        "Gives tied rows the same rank, then skips ahead in the numbering for the next rank"
+      ],
+      "correctMap": [1, 2, 3, 0],
+      "explain": "PARTITION BY restarts a window function per group but keeps every row, unlike GROUP BY. ROW_NUMBER() always assigns a unique number, even on ties. RANK() gives ties the same rank but then skips ahead for the next distinct value. DENSE_RANK() gives ties the same rank too, but doesn't leave a gap afterward."
+    },
+    {
+      "id": "sqlof-16",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "A subquery used with NOT IN might return a NULL in its result column — for example, checking which ap_invoices_all rows have no match in ap_invoice_payments_all.invoice_id. Which statement correctly describes what that NULL does, compared to using NOT EXISTS instead?",
+      "options": [
+        "NOT EXISTS only tests whether a matching row exists at all, so a NULL in the subquery's result has no effect on it; NOT IN compares values directly, so a single NULL anywhere in the subquery's results makes NOT IN silently return zero rows.",
+        "NOT IN only tests whether a matching row exists at all, so a NULL in the subquery's result has no effect on it; NOT EXISTS compares values directly, so a single NULL anywhere in the subquery's results makes NOT EXISTS silently return zero rows.",
+        "Both NOT IN and NOT EXISTS ignore NULLs in the subquery entirely, since both only check whether a matching row exists.",
+        "A NULL in the subquery's result column causes NOT IN to raise a runtime error, rather than silently returning zero rows.",
+        "NOT IN and NOT EXISTS always produce identical results in every case, so the choice between them is purely a style preference.",
+        "NOT EXISTS can only be used when the subquery selects a single column, while NOT IN works with subqueries returning multiple columns."
+      ],
+      "correctIndex": 0,
+      "explain": "NOT EXISTS never inspects individual values — it only asks whether any row matched — so a NULL in the subquery's results doesn't affect it. NOT IN does compare values directly against each item in the list, and 'is this NOT equal to unknown (NULL)' can never resolve to TRUE, so a single NULL anywhere in the subquery's results makes the entire NOT IN comparison silently return zero rows. This is exactly why Lesson 18 recommends NOT EXISTS over NOT IN whenever NULLs are possible.",
+      "distractorExplain": "Option B swaps which operator does what — it's NOT IN that compares each value directly and silently breaks on a single NULL, while NOT EXISTS only asks whether any row matched at all, which is exactly why it's immune to the NULL trap. Getting the two reversed is the specific mistake Lesson 18 warns against."
+    },
+    {
+      "id": "sqlof-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "code": "SELECT i1.invoice_num, i1.invoice_amount, i1.vendor_id\nFROM ap_invoices_all i1\nWHERE i1.invoice_amount > (\n    SELECT AVG(i2.invoice_amount)\n    FROM ap_invoices_all i2\n    WHERE i2.vendor_id = i1.vendor_id\n);",
+      "prompt": "What does this query actually find, and why is its subquery correlated rather than independent?",
+      "options": [
+        "Invoices priced above the average invoice amount for their own supplier — the subquery references i1.vendor_id from the outer query, so it's re-evaluated once per outer row",
+        "Invoices priced above the single overall average across every supplier — the subquery runs once, with no reference to the outer row",
+        "Every invoice in the table, because i1 and i2 refer to the same table and therefore always match every row",
+        "An error, because a subquery can never reference an alias from its outer query"
+      ],
+      "correctIndex": 0,
+      "explain": "The subquery references i1.vendor_id, a column from the outer query — that's what makes it correlated, forcing Oracle to recompute the average once per outer row, for that specific supplier. The result is invoices priced above average for their own supplier, a more useful question than comparing against one overall average across every supplier."
+    },
+    {
+      "id": "sqlof-18",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a CTE defined with WITH ... AS (...) is a named, temporary result set that only exists for the ________ statement immediately following it — unlike a VIEW, it isn't saved anywhere in the database.",
+      "acceptedAnswers": ["single", "one", "single statement", "one statement"],
+      "explain": "A CTE only exists for the single statement immediately following its WITH clause, then disappears the moment that statement finishes. A VIEW, by contrast, is genuinely saved in the database and persists across statements and sessions."
+    },
+    {
+      "id": "sqlof-19",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about finding duplicate invoices, per Lesson 19.",
+      "options": [
+        "GROUP BY vendor_id, invoice_num with HAVING COUNT(*) > 1 tells you which invoice numbers are duplicated and how many times, but not the individual row details",
+        "ROW_NUMBER() OVER (PARTITION BY vendor_id, invoice_num ORDER BY invoice_id) assigns rn = 1 to the first occurrence in each group and rn > 1 to every row after it",
+        "Grouping by invoice_num alone, without vendor_id, is the correct way to check for duplicates, since invoice numbers are globally unique across all suppliers",
+        "Filtering WHERE rn > 1 on the ROW_NUMBER() version returns the actual duplicate rows, with every column intact",
+        "The GROUP BY/HAVING approach and the ROW_NUMBER() approach can never both be used within the same investigation"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "GROUP BY/HAVING summarizes which key combinations repeat and how often; ROW_NUMBER() lists the actual duplicate rows beyond the first occurrence. Grouping must include vendor_id, since a different supplier can legitimately reuse the same invoice number — invoice numbers aren't globally unique. In practice, consultants often run the GROUP BY version first to size the problem, then the ROW_NUMBER() version to investigate — nothing stops using both together."
+    },
+    {
+      "id": "sqlof-20",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the ROW_NUMBER()-based duplicate-invoice check, per Lesson 19, in the correct order.",
+      "items": [
+        "Write a CTE selecting invoice columns plus ROW_NUMBER() OVER (PARTITION BY vendor_id, invoice_num ORDER BY invoice_id) AS rn",
+        "PARTITION BY restarts the numbering for every distinct vendor_id and invoice_num combination",
+        "The first occurrence by invoice_id within each partition receives rn = 1",
+        "Query the CTE with WHERE rn > 1 to return only the actual duplicate rows beyond the first occurrence"
+      ],
+      "explain": "The CTE computes ROW_NUMBER() once, partitioned by the columns that define 'the same invoice.' That partitioning restarts the count per supplier/invoice-number combination, giving the first occurrence rn = 1. Only after that numbering exists can the outer query filter to rn > 1 and return the genuine duplicate rows."
+    },
+    {
+      "id": "sqlof-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "SELECT i.invoice_num, i.invoice_amount,\n       NVL(SUM(ip.amount), 0) AS total_paid,\n       i.invoice_amount - NVL(SUM(ip.amount), 0) AS difference\nFROM ap_invoices_all i\nLEFT OUTER JOIN ap_invoice_payments_all ip\n    ON ip.invoice_id = i.invoice_id\nGROUP BY i.invoice_num, i.invoice_amount\nHAVING i.invoice_amount - NVL(SUM(ip.amount), 0) <> 0;",
+      "prompt": "Why does this reconciliation query use LEFT OUTER JOIN together with NVL, instead of a plain INNER JOIN with no NVL?",
+      "options": [
+        "LEFT OUTER JOIN keeps invoices with zero payments in the result, and NVL prevents SUM(ip.amount) from being NULL for those rows — without it, the subtraction in HAVING would return NULL instead of the full invoice amount",
+        "INNER JOIN would run faster, and Oracle requires LEFT OUTER JOIN specifically whenever a query also uses HAVING",
+        "NVL only affects how the result is displayed on screen; it has no effect on the subtraction's actual value",
+        "LEFT OUTER JOIN and NVL are used purely out of style preference here; an INNER JOIN with no NVL would return the identical result set"
+      ],
+      "correctIndex": 0,
+      "explain": "An unpaid invoice has no matching row in ap_invoice_payments_all, so INNER JOIN would drop it entirely before it could even be flagged as unreconciled. LEFT OUTER JOIN keeps it, but then SUM(ip.amount) for that invoice is NULL, and subtracting NULL from invoice_amount would itself return NULL rather than the full invoice amount — NVL guards against exactly that."
+    },
+    {
+      "id": "sqlof-22",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: Lesson 22's overpayment check uses HAVING SUM(ip.amount) > i.invoice_amount rather than HAVING SUM(ip.amount) <> i.invoice_amount, because it only cares about one direction of the discrepancy — paying ________ than was invoiced.",
+      "acceptedAnswers": ["more", "more than"],
+      "explain": "Using strict > instead of <> deliberately narrows the check to overpayments specifically. An underpayment (less than invoiced) is usually just 'not fully paid yet,' while an overpayment is the more operationally urgent exception, since it typically means money needs to be recovered from the supplier."
+    },
+    {
+      "id": "sqlof-23",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the complete unpaid-invoices-over-$10,000 challenge query from Lesson 23.",
+      "options": [
+        "The 'more than 30 days old' condition is filtered using AP_PAYMENT_SCHEDULES_ALL.DUE_DATE, not a column that lives on AP_INVOICES_ALL itself",
+        "The query filters on ps.amount_remaining rather than i.invoice_amount, because a partially-paid invoice's outstanding balance can differ from its original invoice amount",
+        "payment_status_flag <> 'Y' is checked against AP_PAYMENT_SCHEDULES_ALL, not AP_INVOICES_ALL",
+        "Joining to POZ_SUPPLIERS is required for the filtering logic itself, not merely to display a human-readable vendor name",
+        "days_overdue is computed as TRUNC(SYSDATE) - ps.due_date, the same date-subtraction pattern introduced in Chapter 1"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "AP_PAYMENT_SCHEDULES_ALL, not AP_INVOICES_ALL, tracks DUE_DATE, which is why the '30 days old' condition lives there; AMOUNT_REMAINING reflects what's actually still outstanding after partial payments, unlike the original INVOICE_AMOUNT. payment_status_flag lives on AP_INVOICES_ALL itself. The join to POZ_SUPPLIERS is only there to attach a readable vendor_name — none of the three filter conditions touch it at all."
+    },
+    {
+      "id": "sqlof-24",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of tracing check number '100542' back to the invoice(s) it paid, per Lesson 24, in the correct order.",
+      "items": [
+        "Start FROM ap_checks_all, filtered to WHERE check_number = '100542'",
+        "INNER JOIN to ap_invoice_payments_all on check_id, to find which invoice-payment rows this check touched",
+        "INNER JOIN to ap_invoices_all on invoice_id, to reach the actual invoice each payment applied to",
+        "INNER JOIN to poz_suppliers on vendor_id, to attach a human-readable supplier name to the result"
+      ],
+      "explain": "A trace query starts from one known record — here, the check itself — and walks backward through the same join keys Chapter 2 established, just in the opposite direction from the original invoice-to-payment join. Supplier is joined in last, purely to make the result readable, not because the trace logic needs it."
+    },
+    {
+      "id": "sqlof-25",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Match each reconciliation task from Chapter 5 to how it's actually built.",
+      "left": [
+        "Reconciling AP distributions to the GL",
+        "Reconciling AR transaction lines to the GL",
+        "Restricting to actual (non-budget) balances",
+        "Checking a cash receipt's amount vs. amount applied"
+      ],
+      "right": [
+        "AR_CUSTOMER_TRX_LINES_ALL joined to RA_CUSTOMER_TRX_ALL, grouped by period and account, compared to GL_BALANCES",
+        "AR_CASH_RECEIPTS_ALL LEFT OUTER JOINed to AR_RECEIVABLE_APPLICATIONS_ALL, with NVL guarding the SUM before subtracting",
+        "Filtering GL_BALANCES.ACTUAL_FLAG = 'A', excluding budget or encumbrance balances also stored in that table",
+        "AP_INVOICE_DISTRIBUTIONS_ALL grouped by period and account, compared to GL_BALANCES"
+      ],
+      "correctMap": [3, 0, 2, 1],
+      "explain": "AP-to-GL reconciliation groups AP_INVOICE_DISTRIBUTIONS_ALL by period and account and compares to GL_BALANCES. AR-to-GL mirrors that by joining RA_CUSTOMER_TRX_LINES_ALL to RA_CUSTOMER_TRX_ALL first. GL_BALANCES.ACTUAL_FLAG = 'A' restricts either comparison to actual balances, excluding budget/encumbrance rows. The cash-receipt check reuses Lesson 21's reconciliation pattern: LEFT OUTER JOIN plus an NVL-guarded SUM."
+    },
+    {
+      "id": "sqlof-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "code": "WHERE TRUNC(invoice_date) = DATE '2026-06-15'",
+      "prompt": "Why does this WHERE condition perform poorly against a large AP_INVOICES_ALL table, even with an index on invoice_date?",
+      "options": [
+        "Wrapping invoice_date in TRUNC() forces Oracle to compute that function for every row before it can check the condition, so an index on the raw column can't be used directly — a plain date-range comparison would be sargable instead",
+        "DATE '2026-06-15' is not valid Oracle date-literal syntax, so Oracle falls back to a full scan to interpret it",
+        "TRUNC() can only be applied to NUMBER columns in Oracle, never to DATE columns",
+        "Indexes in Oracle only ever speed up JOIN conditions, never a plain WHERE condition"
+      ],
+      "correctIndex": 0,
+      "explain": "A predicate is sargable when the database can use an index to jump straight to qualifying rows. An index on invoice_date stores the original, un-TRUNC-ed values, so wrapping the column in TRUNC() in WHERE defeats that index — Oracle has to compute TRUNC(invoice_date) for every row first. Rewriting it as invoice_date >= DATE '2026-06-15' AND invoice_date < DATE '2026-06-16' uses the column exactly as stored, so the index can be used directly."
+    },
+    {
+      "id": "sqlof-27",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a WHERE condition the database can use an index to satisfy directly, without first evaluating a function on every row, is called ________.",
+      "acceptedAnswers": ["sargable"],
+      "explain": "Sargable describes a predicate the database can use an index to jump straight to the qualifying rows for. Wrapping an indexed column in a function, like TRUNC(invoice_date), is the classic way to accidentally make a predicate non-sargable."
+    },
+    {
+      "id": "sqlof-28",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about CREATE OR REPLACE VIEW, per Lesson 30.",
+      "options": [
+        "OR REPLACE lets re-running the same CREATE VIEW statement update the view's definition instead of erroring out because it already exists",
+        "Once created, a view can be queried with a simple SELECT * FROM, with the underlying join and filter logic hidden inside its own definition",
+        "A view automatically becomes parameterized, so hardcoded thresholds like 10000 or 30 can be changed at query time without editing the view",
+        "A view lives in the database itself, so it's queryable from any tool that can connect, not just the script file where it was first written",
+        "A view and a saved script file are functionally identical in every respect, with no meaningful difference between them"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "OR REPLACE avoids an error on re-creation; once created, a view hides its complexity behind a simple SELECT; and because it lives in the database, any connected tool can query it, not just the original script. A view is not automatically parameterized — a hardcoded threshold like 10000 still has to be edited and re-created by hand, which is exactly why a view and a plain script aren't functionally identical."
+    },
+    {
+      "id": "sqlof-29",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of Lesson 26's Investigation 1 — 'the top 5 suppliers by outstanding balance' — in the correct order.",
+      "items": [
+        "Join poz_suppliers to ap_invoices_all, then to ap_payment_schedules_all, to reach each installment's amount_remaining",
+        "Filter WHERE ps.amount_remaining > 0 to keep only installments still actually owed",
+        "GROUP BY vendor_name and SUM(amount_remaining) to get one outstanding total per supplier",
+        "ORDER BY total_outstanding DESC, then FETCH FIRST 5 ROWS ONLY to cap the result at the top 5"
+      ],
+      "explain": "The joins from Chapter 2 reach the outstanding-amount column first; WHERE then narrows to installments that are actually still owed; GROUP BY/SUM from Chapter 3 collapses that down to one total per supplier; and FETCH FIRST from Chapter 1 caps the already-sorted result at the top 5 — three chapters' tools used in exactly that order."
+    },
+    {
+      "id": "sqlof-30",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Match each Chapter 6 investigation or technique to how it's actually implemented.",
+      "left": [
+        "\"Did we pay any invoice more than once?\" (Lesson 26)",
+        "\"Which customers have never made a payment?\" (Lesson 27)",
+        "\"Is every journal in this period balanced?\" (Lesson 28)",
+        "Writing a WHERE clause an index can actually use (Lesson 29)"
+      ],
+      "right": [
+        "A plain range comparison on the unmodified column, instead of wrapping it in a function",
+        "GROUP BY je_header_id with HAVING SUM(entered_dr) <> SUM(entered_cr), expected to return zero rows on clean data",
+        "EXISTS combined with NOT EXISTS in the same query, tested against two different tables",
+        "HAVING SUM(ip.amount) >= i.invoice_amount * 2, a tuned variant of the overpayment check"
+      ],
+      "correctMap": [3, 2, 1, 0],
+      "explain": "The duplicate-payment check tunes the overpayment pattern to a >= 2x threshold. The never-paid check combines EXISTS (has a transaction) with NOT EXISTS (never a receipt) in one query. The balanced-journal check expects HAVING SUM(entered_dr) <> SUM(entered_cr) to return zero rows, since real journals always balance. And a sargable WHERE clause compares the unmodified column directly, rather than wrapping it in a function like TRUNC()."
+    }
+  ]
+}

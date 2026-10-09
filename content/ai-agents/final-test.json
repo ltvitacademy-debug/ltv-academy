@@ -1,0 +1,470 @@
+{
+  "questions": [
+    {
+      "id": "aiagents-01",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of Lesson 2's \"weather in the city with the most open support tickets\" trace in the order they actually happened.",
+      "items": [
+        "Plan: the city isn't known yet, so call get_top_ticket_city() first",
+        "Act/Observe: get_top_ticket_city() runs and returns {\"city\": \"Austin, TX\", \"open_tickets\": 41}",
+        "Plan: now that the city is known, call get_weather(location=\"Austin, TX\")",
+        "Act/Observe: get_weather() runs and returns {\"temp_f\": 97, \"conditions\": \"sunny\"}",
+        "Plan: enough information is now available, so stop requesting tools and write the final answer"
+      ],
+      "explain": "Each iteration's plan depends on what the previous iteration observed — the model couldn't call get_weather with the right city on the first iteration, because it didn't know the city yet. That dependency is exactly why Lesson 2 argues this has to be a loop rather than one planning step followed by parallel actions."
+    },
+    {
+      "id": "aiagents-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "A system fetches this week's sales report, then always emails it to the same three people, in the same order, every single time, with no step depending on what the previous step discovered. Per Lesson 1's distinction between a workflow and an agent, what is this system?",
+      "options": [
+        "A workflow — your code controls the fixed path step by step, even though a model and tools are involved",
+        "An agent — because it calls tools, and any tool-calling system counts as an agent",
+        "An agent — because it runs more than one step",
+        "Neither — a system that uses tools and a model must be one or the other, and this fits no category at all"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 1 draws the line on who decides the path: a workflow is a multi-step system where your code, not the model, determines the fixed sequence. Since this sequence never varies based on what's discovered, it's a workflow, not an agent — Lesson 5 later gives this exact scenario as one of three cases that look like they need an agent but don't."
+    },
+    {
+      "id": "aiagents-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about what ends an agent loop, per Lesson 2.",
+      "options": [
+        "The model can decide it has enough information and stop requesting tools, which shows up as stop_reason: \"end_turn\"",
+        "Your code can enforce a hard limit, such as a maximum step count, a cost budget, or a wall-clock timeout",
+        "A human can intervene at a checkpoint before a consequential action runs",
+        "The agent loop automatically pauses itself after exactly three iterations by default, with no code required",
+        "stop_reason: \"tool_use\" means the model has finished and no further action is needed"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Lesson 2 names three real termination conditions: the model deciding it's done (end_turn), a code-enforced limit, or a human intervening. There is no built-in automatic three-iteration pause — Chapter 5 exists precisely because a model that never decides it's done will otherwise run forever without an external limit. stop_reason: \"tool_use\" means the opposite of finished — it signals Claude wants a tool run before it can continue."
+    },
+    {
+      "id": "aiagents-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the field in a model's API response that tells your code why it stopped — for example, whether it wants a tool run or is finished — is called ________.",
+      "acceptedAnswers": ["stop_reason", "stop reason"],
+      "explain": "stop_reason distinguishes \"tool_use\" (Claude wants a tool run before continuing) from \"end_turn\" (Claude is finished). Your application code branches on this field to decide whether to execute a tool and loop again, or treat the response as the final answer."
+    },
+    {
+      "id": "aiagents-05",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each agent framework to how Lesson 4 actually describes it.",
+      "left": [
+        "Claude Agent SDK",
+        "LangGraph",
+        "CrewAI",
+        "AG2 / Microsoft Agent Framework"
+      ],
+      "right": [
+        "Role-based multi-agent framework: agents defined by role, goal, and shared tasks, optimized for how fast you can stand up a working system",
+        "What carries forward AutoGen's \"agents as conversational participants\" idea now that Microsoft placed the original AutoGen project into maintenance mode",
+        "Anthropic's own library version of the loop that powers Claude Code, with built-in subagents, hooks, permissions, and native MCP support",
+        "Graph-based orchestration: you define nodes and edges explicitly, and the framework manages state across them"
+      ],
+      "correctMap": [2, 3, 0, 1],
+      "explain": "The Claude Agent SDK is Anthropic's own library wrapping Claude Code's loop with subagents and MCP support. LangGraph leans toward explicit, low-level graph control. CrewAI optimizes for quickly standing up a role-based multi-agent crew. AG2 and Microsoft Agent Framework are the two actively maintained successors to AutoGen's conversational-agents idea after AutoGen itself went into maintenance mode in October 2025."
+    },
+    {
+      "id": "aiagents-06",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Per Anthropic's own guidance covered in Lesson 6, what is the single most important factor in whether Claude calls a tool correctly?",
+      "options": [
+        "The length of the tool's name",
+        "A detailed description covering what the tool does, when to use it, when not to, and what each parameter means",
+        "The order in which tools appear in the tools array",
+        "Whether the tool's input_schema uses camelCase or snake_case parameter names",
+        "Minimizing every tool to exactly one required parameter, regardless of what the real API needs",
+        "Whether the tool's result is returned as JSON or as plain text"
+      ],
+      "correctIndex": 1,
+      "explain": "Anthropic's current guidance is explicit that detailed descriptions are by far the most important factor in tool-calling performance — covering what a tool does, when it should and shouldn't be used, each parameter's meaning, and caveats, aiming for at least 3-4 sentences. Lesson 6's good-vs-poor get_stock_price example makes the same schema syntactically valid in both cases; only the description quality differs, and only the detailed one reliably produces correct calls.",
+      "distractorExplain": "Option E sounds like good schema hygiene — tight, minimal parameters — but Lesson 6's self-review checklist asks whether parameter types and required fields are as tight as the real API allows, not whether every tool is forced down to one parameter regardless of what it actually needs. Over-minimizing parameters to hit an arbitrary count isn't the lesson's advice, and it doesn't address tool-calling accuracy the way a detailed description does."
+    },
+    {
+      "id": "aiagents-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "tool_choice: {\"type\": \"tool\", \"name\": \"get_weather\"}",
+      "prompt": "A request sets tool_choice to the value above and asks Claude, in the prompt, to explain its reasoning in a text block before calling the tool. What actually happens, per Lesson 7?",
+      "options": [
+        "Claude calls get_weather directly with no narration text first, because forcing a specific tool pre-fills the assistant turn",
+        "Claude writes a short reasoning paragraph, then calls get_weather, exactly as asked",
+        "The request fails with an error, because tool_choice: {\"type\": \"tool\", ...} can't be combined with any prompt instructions",
+        "Claude ignores the tool_choice setting entirely and decides for itself whether to call a tool"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 7 is explicit that \"any\" and \"tool\" settings for tool_choice force a tool call by pre-filling the assistant turn, which means Claude won't emit narration text first even if the prompt asks for it. Getting both a forced call and commentary requires tool_choice: {\"type\": \"auto\"} plus an explicit prompt instruction instead."
+    },
+    {
+      "id": "aiagents-08",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about tool error handling, per Lesson 8.",
+      "options": [
+        "A failed tool call is still sent back as a tool_result block, just with is_error: true added",
+        "Writing the error content as just \"failed\" gives Claude the same ability to recover as a detailed message like \"Rate limit exceeded. Retry after 60 seconds.\"",
+        "Claude will typically retry an invalid call 2-3 times with corrections before giving up and apologizing to the user",
+        "strict: true eliminates execution errors caused by a real backend API being down, not just malformed calls",
+        "A pattern of repeated invalid calls on one tool during development is usually a signal that the tool's description needs work, not that more error-handling code is needed"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "A failure doesn't break the tool_result shape — it's the same block with is_error: true. Claude typically self-corrects through 2-3 retries on a clear invalid-call error. A vague message like \"failed\" leaves Claude no better informed than before the call, unlike an instructive one naming what went wrong and what to try next. strict: true only guarantees schema-valid input at the call level; it does nothing for a tool that runs but fails because the real API itself is down — those are two different failure categories needing different defenses."
+    },
+    {
+      "id": "aiagents-09",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: when a real system has hundreds or thousands of tools — far more than any single request should carry in its tools array — Anthropic's own answer is the ________ tool, which lets Claude discover and load relevant tools on demand instead of being handed the entire catalog up front.",
+      "acceptedAnswers": ["tool search", "tool_search", "tool search tool", "the tool search tool"],
+      "explain": "The tool search tool moves tool selection into the platform itself for exactly the scale where manual organization (consolidation, namespacing, precise descriptions) stops being enough — Claude loads only the plausible subset of tools for the current task rather than seeing every definition on every request."
+    },
+    {
+      "id": "aiagents-10",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of handling a turn where Claude requests more than one tool call, per Lesson 10, in the correct order.",
+      "items": [
+        "Claude's response arrives with stop_reason: \"tool_use\" and more than one tool_use block in the content array",
+        "Your application code decides whether to run the calls concurrently or sequentially — the API doesn't prescribe this",
+        "Each call executes (or, if skipped, is marked is_error: true with a short explanation)",
+        "Your code returns one tool_result per tool_use block, all together in the next user message, every tool_result before any text content",
+        "Claude reads all the matched results together and decides its next action"
+      ],
+      "explain": "Parallel tool use still requires one tool_result per tool_use id, matched and returned together before any text, or Claude's next request errors on a missing match. Whether those calls actually run concurrently or sequentially is your application's own decision, based on whether the tools have side effects or ordering dependencies — the API itself is silent on that choice."
+    },
+    {
+      "id": "aiagents-11",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Match each tool_result content shape to what Lesson 11 says about it.",
+      "left": [
+        "A plain string",
+        "Text block(s) plus an image together",
+        "A document block",
+        "Empty content (no content field data at all)"
+      ],
+      "right": [
+        "A {\"type\": \"document\", \"source\": {...}} block carrying a full document's text",
+        "Still valid — useful for a side-effect tool, like mark_as_read, that genuinely has nothing to report back",
+        "The simplest shape the real API accepts for a tool_result",
+        "content: [{\"type\": \"text\", ...}, {\"type\": \"image\", \"source\": {...}}] in the same array"
+      ],
+      "correctMap": [2, 3, 0, 1],
+      "explain": "Lesson 11 lists the real accepted shapes: a plain string is the simplest case; text and image blocks can appear together in the same content array; a document block carries a full document's text via its own source object; and an empty tool_result (just the tool_use_id, no content) is valid for a side-effect tool with nothing to report."
+    },
+    {
+      "id": "aiagents-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "In Lesson 12's NVIDIA IPO trace, each Thought explicitly restates what the previous Observation revealed before deciding the next Action. What specifically breaks if the explicit \"Thought\" step is removed, while the Actions and Observations stay the same?",
+      "options": [
+        "There's no readable record of why the model chose that next action, which makes a wrong choice much harder to debug or correct mid-task",
+        "The Actions themselves can no longer be executed by your application code",
+        "The Observations stop being fed back into the model's context entirely",
+        "The loop from Lesson 2 can no longer run at all without an explicit Thought field"
+      ],
+      "correctIndex": 0,
+      "explain": "ReAct's whole point is interleaving visible reasoning with action so each step is both grounded in the latest real result and justified by reasoning you can actually read. Lesson 2's plan/act/observe loop already acts and observes without a labeled Thought step — what ReAct adds on top is exactly that readable justification, not the ability to act or observe at all."
+    },
+    {
+      "id": "aiagents-13",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about planning agents, per Lesson 13.",
+      "options": [
+        "A planning agent decomposes the goal into an ordered sequence of steps before execution starts",
+        "When one step in the plan fails, the entire plan is discarded and a brand-new one is generated from scratch",
+        "Planning earns its overhead most on goals with several sub-tasks whose relative order matters, especially when some can run independently",
+        "A purely reactive agent already builds an explicit multi-step plan before deciding its first action",
+        "Planning adds real latency overhead on top of whatever the reactive loop itself already costs"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "A planning agent decomposes the goal upfront, then executes and revises. Lesson 13's own worked example shows only the one invalidated step (South renamed to South-Central) gets replaced on a replan — the rest of the structure stays intact, not a from-scratch restart. A reactive agent, by definition, decides one next action at a time with no sense of the steps still ahead, which is exactly what distinguishes it from a planning agent. Planning adds the latency of the planning step itself on top of the reactive loop's own costs."
+    },
+    {
+      "id": "aiagents-14",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: unlike a planning agent's upfront fixed sequence, the orchestrator/worker pattern's defining feature, per Lesson 15, is that its sub-tasks are determined ________ based on the specific input, because the right breakdown genuinely can't be known in advance.",
+      "acceptedAnswers": ["dynamically", "dynamically determined", "dynamic"],
+      "explain": "Lesson 15 is explicit that the orchestrator's subtasks aren't predefined — the orchestrator decides them based on what's actually in the particular request, which is why a different competitor announcement (say, one with no pricing mentioned) would get a different number of workers rather than following a fixed template."
+    },
+    {
+      "id": "aiagents-15",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 3 pattern or mechanism to its defining idea.",
+      "left": [
+        "ReAct",
+        "Reflection (evaluator-optimizer)",
+        "Orchestrator/worker",
+        "Subagents (Claude Agent SDK)"
+      ],
+      "right": [
+        "A central agent decomposes a goal and delegates sub-tasks dynamically to specialized agents, then synthesizes their results",
+        "One LLM call generates a response while a second evaluates it and provides feedback, looping between the two until satisfied",
+        "Interleaves explicit reasoning (Thought) with tool calls (Action) and the results that come back (Observation)",
+        "Specialized agents a main agent can invoke for focused subtasks, each maintaining separate context from the main agent"
+      ],
+      "correctMap": [2, 1, 0, 3],
+      "explain": "ReAct interleaves Thought, Action, and Observation. Reflection's evaluator-optimizer shape generates, then evaluates and revises, until satisfied. Orchestrator/worker is the pattern name for dynamic decomposition and delegation. Subagents are the Claude Agent SDK's concrete mechanism for running those workers with their own separate context."
+    },
+    {
+      "id": "aiagents-16",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of Lesson 16's evaluator-optimizer (reflection) loop, as applied to the contract-clause example, in the correct order.",
+      "items": [
+        "Generate: a draft output is produced, e.g. \"Either party can cancel anytime with no penalty\"",
+        "Evaluate: a second pass checks the draft against the actual source clause, not just re-reading the draft on its own",
+        "The evaluator finds the draft dropped the notice period and the early-termination fee, and is not satisfied",
+        "The evaluator gives specific feedback naming exactly what was omitted",
+        "Generate again: the draft is revised to include both the notice period and the fee"
+      ],
+      "explain": "The evaluator role specifically has to re-check the draft against the source material, not just reread the draft in isolation — a plausible-sounding but wrong summary can look internally consistent while still contradicting the actual clause. That generate-evaluate-feedback-regenerate cycle is what Anthropic calls the evaluator-optimizer workflow, and it's what catches a confidently wrong first draft before it ships."
+    },
+    {
+      "id": "aiagents-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Given a tool called update_ticket_priority and one called issue_refund, which one needs a human-approval checkpoint per Lesson 18's rule of thumb, and why?",
+      "options": [
+        "issue_refund — it's costly and effectively irreversible once money moves, while update_ticket_priority is none of irreversible, costly, or low-confidence",
+        "update_ticket_priority — because any tool that modifies a database record automatically needs approval",
+        "Neither — Lesson 18's rule of thumb only applies to tools that delete data",
+        "Both — every tool call in an agent loop requires a human checkpoint by default"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 18's rule of thumb gates a tool call if it's irreversible, costly, or low-confidence. issue_refund moves real money and can't simply be undone, so it clears that bar; update_ticket_priority changes a record but isn't irreversible, costly, or inherently uncertain, so gating it would just slow the agent down for no safety benefit."
+    },
+    {
+      "id": "aiagents-18",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about designing a good approval checkpoint, per Lesson 19.",
+      "options": [
+        "A reviewer needs the tool's exact arguments, not a paraphrase of what the agent wants to do",
+        "A human rejection is sent back as a tool_result with is_error: true",
+        "The checkpoint should block the running process synchronously, polling in a tight loop until the human responds",
+        "A vague \"proceed? y/n\" prompt trains the reviewer to click yes without reading, which is worse than having no checkpoint at all",
+        "The reviewer only needs to see the tool's name — the arguments and the agent's reasoning aren't necessary"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "A reviewer needs the exact arguments, the reasoning behind the call, and the concrete effect of approving — not a name alone and not a paraphrase. A rejection maps onto a tool_result with is_error: true so Claude knows the action didn't happen. Lesson 19 explicitly warns against blocking synchronously in a tight spin; the correct design persists the pending request and stops the loop until a human responds out-of-band."
+    },
+    {
+      "id": "aiagents-19",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: an escalation pattern where, instead of waiting longer, an action automatically defaults to the conservative, reversible outcome if no human responds in time is called ________ to the safe default.",
+      "acceptedAnswers": ["fallback", "fallback to safe", "fallback to the safe default"],
+      "explain": "Fallback to the safe default only works when doing nothing, or doing the cheap/reversible thing, really is the safer option for that specific tool — Lesson 20's auto-renewal example defaults to not renewing after a timeout, because an unwanted renewal is harder to undo than a missed one."
+    },
+    {
+      "id": "aiagents-20",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each undo/rollback term to what Lesson 22 says it actually means.",
+      "left": [
+        "True reversal",
+        "Compensating action",
+        "Contain",
+        "Undo category"
+      ],
+      "right": [
+        "The response when an action truly can't be undone: notify affected people, document what happened, and prevent recurrence",
+        "A tool's classification — reversal, compensating, or contain — decided before deployment, not after the first incident",
+        "Restoring the exact prior state, usually by capturing it before the change was made",
+        "A second, different action that offsets an irreversible one without erasing the original, like a reversal transfer"
+      ],
+      "correctMap": [2, 3, 0, 1],
+      "explain": "True reversal restores the exact prior state by capturing it beforehand. A compensating action offsets an irreversible action with a second one, like a reversal transfer, rather than erasing the original. Contain is what's left when nothing can be undone: notify, document, prevent recurrence. And the undo category itself is the classification a tool should get before it's ever wired into the agent, not after an incident forces the question."
+    },
+    {
+      "id": "aiagents-21",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of where an approval checkpoint lives in the agent loop, per Lesson 19, in the correct order.",
+      "items": [
+        "The agent loop receives stop_reason: \"tool_use\" for a tool that requires approval",
+        "Your code checks whether this specific tool name requires approval",
+        "The pending request — tool name, input, reasoning, a generated request ID — is persisted and the loop stops, rather than polling in a tight spin",
+        "A human reviews it out-of-band, through a dashboard, Slack message, or ticket queue, and responds approve or reject",
+        "Your code resumes the loop, builds the resulting tool_result, and sends the next request to Claude"
+      ],
+      "explain": "The checkpoint sits structurally between receiving the tool_use block and constructing the tool_result. Persisting the pending request and stopping the loop — instead of blocking synchronously — is what makes this durable enough for production, where a human might not respond for minutes or hours."
+    },
+    {
+      "id": "aiagents-22",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Per Lesson 25, what does \"least privilege\" mean when applied to an agent's credentials?",
+      "options": [
+        "Granting exactly the access an agent's tools actually need, and nothing more",
+        "Giving the agent full account access so it never hits a permissions error mid-task",
+        "Rotating the agent's API key on a fixed schedule, regardless of what scopes it holds",
+        "Running the agent's tools with the same credentials as your production backend, for consistency",
+        "Requiring two separate credentials for every single tool call, regardless of that tool's risk level",
+        "Granting broad access up front and narrowing it only after an incident occurs"
+      ],
+      "correctIndex": 0,
+      "explain": "Least privilege means an agent's credentials should grant exactly the access its tools need and nothing more — a scoped key like refunds:write, orders:read rather than scopes: [\"*\"]. That way, even a tricked or buggy tool call is structurally limited in how much damage it can do, independent of how carefully the behavioral controls were designed.",
+      "distractorExplain": "Option D is the exact anti-pattern Lesson 25 opens with as a warning, not a definition of least privilege: it describes a run_python tool executing with the same credentials and network access as the main production backend. Sharing production-grade credentials for convenience or consistency is precisely what least privilege argues against — the fix is narrowing that shared credential down to a scope matching only what this agent's own tools require."
+    },
+    {
+      "id": "aiagents-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Lesson 23 argues that a single max-iteration counter isn't enough on its own. Which scenario is the max-wall-clock-time limit specifically designed to catch, that a max-iteration cap alone would miss?",
+      "options": [
+        "A loop that stays comfortably within its iteration budget, but each individual step is slow — a hanging API call or a huge result to process — so elapsed time blows up even though the step count never does",
+        "An agent retrying the exact same failing tool call with identical arguments, back to back",
+        "An agent that finishes the whole task in two iterations, well under any reasonable cap",
+        "An agent that calls a tool requiring human approval and is currently waiting on a reviewer"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 23 draws this distinction directly: max iterations catches a loop doing different things each time but never converging, while max wall-clock time specifically catches a loop that's technically within its step budget but where each individual step is slow. A hanging call or an oversized result to process is exactly the failure mode that a step counter alone wouldn't flag, since the count itself never gets large."
+    },
+    {
+      "id": "aiagents-24",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about cost and action-scope budgets, per Lesson 24.",
+      "options": [
+        "A max-iteration cap bounds elapsed time, but doesn't by itself bound cost or how much the agent is allowed to touch",
+        "Token/API cost can be tracked as real arithmetic, using the usage data already included in every Claude API response",
+        "Action-scope limits, like MAX_RECORDS_MODIFIED, should be enforced as an instruction in the system prompt rather than in application code",
+        "A single global daily cost cap shared by every task is the recommended approach, rather than a budget sized per task",
+        "Running out of budget mid-task is a defined stopping point, not a crash, and should be reported rather than silently truncating the result"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "Fifteen iterations of a cheap lookup costs little, while fifteen iterations invoking nested sub-agents can be expensive within the same iteration cap — cost and scope are separate risks from step count. Both token cost and action-scope limits are enforced in application code wrapping the loop, never as a prompt instruction the model might not follow under pressure. Lesson 24 recommends per-task budgets specifically because a simple lookup and an open-ended research task shouldn't share one ceiling. Exhausting a budget is a defined stop, surfaced for a human decision, not a silent truncation."
+    },
+    {
+      "id": "aiagents-25",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Anthropic's documentation distinguishes direct prompt injection, where the user themselves is the adversary, from ________ prompt injection, where a trusted user's agent processes third-party content containing hidden adversarial instructions.",
+      "acceptedAnswers": ["indirect"],
+      "explain": "Indirect prompt injection is the more relevant threat model for agents specifically, because the user did nothing wrong — the attack lives in the content the agent reads on the user's behalf (a web page, an email, a tool result), and tool access is what turns that embedded instruction from an embarrassing output into an operational risk."
+    },
+    {
+      "id": "aiagents-26",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each monitoring signal to what Lesson 27 says a rising value in it actually indicates.",
+      "left": [
+        "Rejection rate per tool",
+        "Limit-trip frequency",
+        "Injection-screen flags",
+        "Cost per task, trending"
+      ],
+      "right": [
+        "Drift here often means a prompt or tool regressed quietly",
+        "Any nonzero rate on a given content source warrants investigation",
+        "Rising values mean checkpoint design or tool design needs review",
+        "Rising values mean tasks are under-scoped or genuinely getting harder"
+      ],
+      "correctMap": [2, 3, 1, 0],
+      "explain": "A climbing rejection rate points back to the checkpoint or tool design itself. Limit trips becoming more frequent suggests tasks are under-scoped or have gotten genuinely harder. Any nonzero injection-screen flag rate on a source is worth investigating immediately, since it's not expected to be routine. Cost-per-task drift often signals a prompt or tool regressed quietly, even with no code changes visible."
+    },
+    {
+      "id": "aiagents-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Why does Lesson 28's capstone deliberately use only two tools — get_order and issue_refund — instead of five or six?",
+      "options": [
+        "To demonstrate that every control from Chapters 4 and 5 — approval checkpoint, audit log, budget — is fully wired up and actually working, rather than described in a paragraph on top of a flashier but half-finished build",
+        "Because the Claude API enforces a hard limit of two tools per request",
+        "Because get_order and issue_refund are the only two tools the Claude Agent SDK supports",
+        "Because adding more tools would require an entirely different, incompatible agent loop"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 28 is explicit that a five-tool agent with none of its safety controls fully working teaches less than a two-tool agent where every one of them actually does. The capstone's whole point is proving the checkpoint actually blocks execution and the audit log actually has entries — scope was kept small on purpose so every control could be real, not just described."
+    },
+    {
+      "id": "aiagents-28",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the capstone build, per Lessons 29 and 30.",
+      "options": [
+        "get_order never goes through the approval-hold path — only issue_refund does",
+        "Lesson 30 rewrites the tool schemas and the approval checkpoint logic from Lesson 29 to add audit logging and budgets",
+        "Lesson 30's task-specific limits, like MAX_ITERATIONS = 8 and budget_usd = 0.50, are deliberately smaller than the generic examples used earlier in Chapter 5",
+        "The capstone's audit log entry includes an \"approval\" field only for calls to issue_refund",
+        "The capstone's scoped credential grants refunds:write and orders:read, with no broader scopes"
+      ],
+      "correctIndices": [0, 2, 3, 4],
+      "explain": "get_order runs immediately with no approval hold; only issue_refund is gated. Lesson 30 explicitly wraps additively around the existing handle_tool_use logic rather than rewriting it — the schemas and checkpoint from Lesson 29 stay untouched. Its limits (8 iterations, a $0.50 budget) are intentionally smaller than Chapter 5's generic examples, because a refund-lookup task needs less than an open-ended research agent. The audit entry only sets an approval field when the call is issue_refund, and the one real credential is scoped to refunds:write and orders:read only, never scopes: [\"*\"]."
+    },
+    {
+      "id": "aiagents-29",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: an audit log kept only as an in-memory list will silently vanish the moment the service restarts, which is why Lesson 31's pre-deployment checklist requires the audit log be written to ________ storage instead.",
+      "acceptedAnswers": ["durable", "durable storage"],
+      "explain": "Lesson 31's checklist flags exactly this: an in-memory audit log disappears on restart, a hardcoded budget can't be adjusted without a code deploy, and a terminal-prompt approval flow has no reviewer watching it at 2 a.m. Writing the audit log to durable storage — a database, file, or log service that survives a restart — is what turns a working local build into something safe to run unattended."
+    },
+    {
+      "id": "aiagents-30",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the capstone's full round trip, per Lesson 29, in the correct order.",
+      "items": [
+        "A user asks the agent to refund a specific order because the item arrived damaged",
+        "Claude calls get_order, which runs immediately and returns the order's details",
+        "Claude calls issue_refund with the order ID and amount, and the response comes back with stop_reason: \"tool_use\"",
+        "Your code recognizes issue_refund requires approval, persists the pending request, and stops the loop",
+        "A human reviews the order ID, amount, and Claude's stated reason, and approves it",
+        "Your code executes the real refund, builds the tool_result, and resumes the loop so Claude can confirm it to the user"
+      ],
+      "explain": "get_order is the ungated lookup and runs at full speed the moment Claude requests it. issue_refund is the one consequential tool, so it's held for approval instead of executed immediately — exactly Lesson 18's rule of thumb applied in code. Only after a human approves does the real refund run and the loop resume, letting Claude report the outcome back to the user."
+    }
+  ]
+}
