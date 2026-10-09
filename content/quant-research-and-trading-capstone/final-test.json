@@ -1,0 +1,468 @@
+{
+  "questions": [
+    {
+      "id": "qrtc-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "XLRE launched on 2015-10-08 and XLC on 2018-06-19. SR-5's data loader filters each ticker to dates on or after its real launch date rather than backfilling history before it. What would backfilling have done, and why does the loader avoid it?",
+      "options": [
+        "It would have caused a SQL-style NULL propagation error when computing returns",
+        "It would have been harmless, since XLRE and XLC eventually did exist by 2025",
+        "It would have introduced survivorship bias by giving the backtest knowledge of sectors that didn't exist yet at that point in time",
+        "It would have made the panel's row count exceed Stooq's free API limit"
+      ],
+      "correctIndex": 2,
+      "explain": "Backfilling XLRE or XLC before their real launch dates would hand the backtest knowledge it couldn't actually have had at the time, since no fund existed to trade — exactly the survivorship-bias mistake Lesson 1 warns against. The correct approach is a point-in-time universe: nine sectors before 2015-10-08, ten through 2018-06-19, eleven after."
+    },
+    {
+      "id": "qrtc-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: SR-5's hypothesis states that the reversal effect is stronger when the VIX is elevated than when calm — this is an example of ________, where an effect's strength is allowed to depend on a separate state variable rather than being assumed constant through time.",
+      "acceptedAnswers": ["regime conditioning", "regime-conditioning"],
+      "explain": "Regime conditioning means the strength of the reversal effect is allowed to vary with the VIX level and term structure, rather than assuming the effect is constant through every market environment — exactly the design choice Lesson 2 builds the hypothesis around."
+    },
+    {
+      "id": "qrtc-03",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these four phases of the SR-5 capstone in the order Lesson 3's project plan lays them out.",
+      "items": [
+        "Data & statistical analysis — clean the Stooq data and run formal statistical tests on the reversal hypothesis",
+        "Features, model & signal — engineer features, train and validate a model, and turn model output into a tradable signal",
+        "Backtest & risk — build the backtest, add realistic transaction costs, and run risk analysis and historical stress tests",
+        "Report & presentation — write the findings up as a performance report and defend them to a skeptical audience"
+      ],
+      "explain": "The four phases run in this fixed order because each only starts once the previous one produced a clear answer — there's no point engineering features in Phase 2 if Phase 1's statistics say the hypothesis is dead on arrival, and no point backtesting before there's a signal to backtest."
+    },
+    {
+      "id": "qrtc-04",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about SR-5's data-cleaning and log-return choices, per Lesson 4.",
+      "options": [
+        "Log returns are used instead of simple percentage returns because they're additive across time",
+        "Every ticker is reindexed onto a shared trading-calendar index derived from SPY's dates",
+        "Missing days are forward-filled indefinitely until the next available price appears, however long the gap",
+        "A jump in adjusted close with no corresponding jump in raw close usually signals a correctly applied split or dividend",
+        "The sector correlation matrix shows pairwise correlations that are almost all negative"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Log returns are additive across time, which is why they're preferred for rolling-window statistics. Calendar alignment uses SPY's dates as the reference, since SPY has the longest clean history. Gaps are forward-filled for at most one session, never indefinitely — a real multi-day gap gets flagged rather than silently filled. A jump in adjusted close with no matching raw-price jump normally reflects a correctly applied split or dividend; an unexplained jump in both signals bad data instead. The correlation matrix is almost all positive and often high (0.6-0.9), not negative — which is exactly why the strategy is built dollar-neutral rather than simply long sectors."
+    },
+    {
+      "id": "qrtc-05",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "What problem do Newey-West (HAC) standard errors correct for when testing a correlation computed from overlapping return windows, like SR-5's 5-day reversal test?",
+      "options": [
+        "They inflate the standard error to account for the autocorrelation that overlapping windows induce, since a plain t-test would otherwise overstate confidence",
+        "They remove outlier observations from the sample before computing the correlation",
+        "They convert a Pearson correlation into a Spearman rank correlation automatically",
+        "They adjust for missing data by imputing values for any gaps in the panel",
+        "They increase the effective sample size by resampling overlapping windows into independent ones",
+        "They correct for survivorship bias by reweighting observations from before a ticker's launch date"
+      ],
+      "correctIndex": 0,
+      "explain": "Overlapping 5-day windows share days with their neighbors, which induces autocorrelation that a plain t-test formula doesn't account for. Newey-West (HAC — heteroskedasticity and autocorrelation consistent) standard errors correct for exactly this by inflating the standard error to reflect the real amount of independent information in the sample, which is why the -0.07 Spearman correlation's t-stat moves to a more honest -2.4 once the correction is applied.",
+      "distractorExplain": "Option E sounds plausible because the real underlying issue is that overlapping windows contain fewer independent observations than the raw day-count suggests — but Newey-West doesn't fix this by resampling data into new, independent windows. It leaves the sample exactly as it is and instead adjusts the standard error estimate itself to reflect how much genuinely independent information is actually present."
+    },
+    {
+      "id": "qrtc-06",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each statistical term from Lesson 5 to what it actually is.",
+      "left": [
+        "Spearman rank correlation",
+        "HAC / Newey-West standard errors",
+        "ADF test",
+        "Data snooping"
+      ],
+      "right": [
+        "Standard errors adjusted for autocorrelation in overlapping, non-independent observations",
+        "The risk of a result looking statistically significant from testing many related cuts of the same dataset",
+        "Correlation between two variables' rankings rather than their raw values",
+        "A test that, when it rejects a unit root, supports mean reversion over a random walk"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "Spearman rank correlation compares rankings rather than raw values, which is why it fit SR-5's past-rank-vs-forward-rank test. HAC/Newey-West standard errors correct for autocorrelation in overlapping observations. The ADF test, by rejecting a unit root, supports mean reversion over a random walk. Data snooping is the risk that testing several related cuts of one dataset (full sample, ADF, three VIX terciles) makes at least one look significant by luck."
+    },
+    {
+      "id": "qrtc-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "SR-5's target is the forward 5-day return, computed right next to the feature window in time. What does the 5-day embargo described in Lesson 7 actually do?",
+      "options": [
+        "It delays trade execution by 5 days after the signal is computed",
+        "It purges a 5-day gap between where the feature window ends and the target window begins, so no label leaks backward into a feature computed too close to it",
+        "It caps each sector's position weight at 5% of the book",
+        "It removes the first 5 days of data from the sample to avoid startup effects"
+      ],
+      "correctIndex": 1,
+      "explain": "Because the feature window and the forward-5-day target window sit right next to each other in time, a naive computation could let them overlap. The embargo purges a deliberate 5-day gap between the two, so no day's label can leak backward into a feature computed too close to it — a detail Lesson 8's purged walk-forward validation depends on getting right."
+    },
+    {
+      "id": "qrtc-08",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about how SR-5's features and model validation are built, per Lessons 7-8.",
+      "options": [
+        "ret_5d_z and several other features are z-scored across the 11 sectors on each day, not against each feature's own history",
+        "The prediction target is each sector's own forward 5-day return in absolute terms, not a cross-sectional rank",
+        "Purged walk-forward cross-validation uses an expanding window that only ever trains on the past",
+        "Random Forest was chosen as the production model because it captured nonlinear interaction effects that Ridge missed",
+        "A 5-day embargo purges labels that overlap the train/test boundary during validation"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "Cross-sectional z-scoring compares each sector to the other ten on the same day, which is what lets the feature set generalize across very different regimes. The target is actually the forward 5-day cross-sectional rank, not an absolute return — the model predicts how a sector ranks against the others, not whether it rises in isolation. The expanding window trains only on the past, with the 5-day embargo purging any label that overlaps a train/test boundary. Ridge, not Random Forest, was chosen as the production model, because Random Forest's extra flexibility overfit the 11-name cross-section instead of adding genuine out-of-sample skill."
+    },
+    {
+      "id": "qrtc-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Ridge's out-of-sample mean IC was ≈0.045 (t≈2.1) while Random Forest's was ≈0.018 (t≈0.9, not significant), despite Random Forest being the more flexible model. What does this result actually demonstrate?",
+      "options": [
+        "Random Forest's result proves the reversal effect itself isn't real, since a more powerful model found no edge",
+        "The two models were evaluated on different time periods, which explains the gap",
+        "Ridge wins only because it's faster to compute, not because of any difference in out-of-sample skill",
+        "With only 11 cross-sectional names, Random Forest's extra flexibility let it fit in-sample noise that didn't generalize, while Ridge's regularization was a better match for how little cross-sectional data exists"
+      ],
+      "correctIndex": 3,
+      "explain": "Both models were validated the same honest way — purged walk-forward CV with the same 5-day embargo — so the gap is a real finding, not an artifact of different evaluation setups or speed. With only 11 names in the cross-section at any one time, Random Forest's flexibility becomes a liability: it fits in-sample patterns that don't generalize, while Ridge's L2 regularization and linear structure match how little cross-sectional data there actually is. Ridge is chosen because the walk-forward evidence says it's the model that actually works, not because it's simpler to explain."
+    },
+    {
+      "id": "qrtc-10",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of turning Ridge's predicted scores into the actual SR-5 trading signal in the correct order, per Lesson 9.",
+      "items": [
+        "Rank every sector that week by its Ridge-predicted score",
+        "Sort into terciles: buy the bottom tercile long, sell the top tercile short, hold the middle flat",
+        "Weight each leg by inverse volatility, capped at 40% of a leg's weight per sector",
+        "Scale gross exposure to half-size if that week falls in the low-VIX tercile",
+        "Execute the resulting trades at Monday's session, one day after the Friday signal"
+      ],
+      "explain": "The signal pipeline ranks scores first, sorts the ranked sectors into terciles to decide long/short/flat, weights each leg by inverse volatility with a 40% per-name cap, applies the VIX-regime overlay that halves exposure in calm regimes where the edge is weak, and only then executes — deliberately lagged to Monday so the backtest never trades on a Friday price it couldn't actually have acted on."
+    },
+    {
+      "id": "qrtc-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "SR-5's backtest architecture keeps feature engineering and model fitting in pure Python, but pushes two specific loops into the C++ `sr5_fast` core. Which two loops, and why those two?",
+      "options": [
+        "The rolling cross-sectional z-score and the purged walk-forward retraining loop, because both run thousands of times across the full 2007-2025 history",
+        "The data-cleaning calendar alignment and the final report generation, because both involve file I/O",
+        "The tercile sort and the inverse-volatility weighting, because both run only once per week",
+        "The cost model and the stress-test windows, because both require floating-point precision Python can't provide"
+      ],
+      "correctIndex": 0,
+      "explain": "The research layer — feature engineering, model fitting, exploratory analysis — stays pure Python because it's fast to iterate on. But the rolling cross-sectional z-score (recomputed for every feature, every day, every sector) and the purged walk-forward retraining loop (re-fitting Ridge at every one of the ~180 OOS periods) each run thousands of times over 2007-2025, which is exactly the kind of workload worth pushing into the C++17 `sr5_fast` core, exposed back to Python via pybind11."
+    },
+    {
+      "id": "qrtc-12",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: SR-5's weekly gross turnover runs about 85% of notional, annualizing to roughly ________x per year — the main driver of the gap between its gross and net Sharpe ratio.",
+      "acceptedAnswers": ["44", "44x"],
+      "explain": "Weekly turnover of roughly 85% of notional annualizes to about 44x per year. A strategy that re-trades nearly its entire book every week accumulates small per-trade costs into a large annual drag, which is exactly why Lesson 11's cost model cuts the gross Sharpe of 0.76 down to a net 0.42."
+    },
+    {
+      "id": "qrtc-13",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "What is the key difference between Value at Risk (VaR) and Conditional Value at Risk (CVaR) at the same confidence level?",
+      "options": [
+        "VaR reports a percentile loss threshold; CVaR reports the average loss across all outcomes worse than that threshold",
+        "VaR and CVaR are two names for the exact same calculation, used interchangeably by convention",
+        "VaR measures upside volatility while CVaR measures downside volatility",
+        "CVaR is simply VaR multiplied by a fixed confidence-level adjustment factor",
+        "VaR requires a normal-distribution assumption while CVaR can only be computed from a Monte Carlo simulation",
+        "CVaR is the maximum possible loss in the historical sample, while VaR is the average loss"
+      ],
+      "correctIndex": 0,
+      "explain": "VaR95 is simply the 5th-percentile cutoff of the daily return distribution — a threshold. CVaR95 goes further, averaging every outcome worse than that cutoff. That distinction matters because VaR tells you where the bad tail starts, while CVaR tells you how bad it typically is once you're past it — which is why SR-5's report pairs VaR95 ≈ -0.62% with CVaR95 ≈ -0.95%, and VaR99 ≈ -1.15% with CVaR99 ≈ -1.6%.",
+      "distractorExplain": "Option F gets the two definitions backwards. CVaR is not the single maximum historical loss — it's the average across everything worse than the VaR cutoff, which will typically be less extreme than the single worst observation in the sample. And VaR is a percentile threshold, not an average. Swapping which one is 'the average' and which is 'the extreme' is exactly the mistake this distinction is meant to prevent."
+    },
+    {
+      "id": "qrtc-14",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about SR-5's net-of-cost risk profile and the four historical stress-test windows, per Lesson 12.",
+      "options": [
+        "SR-5's beta to SPY normally sits near 0.04 but spiked to roughly 0.25 during the COVID crash",
+        "SR-5 lost money in all four of the historical stress windows tested",
+        "During the COVID crash, SR-5 fell -6.1% while SPY fell -33.9%",
+        "A dollar-neutral book is automatically market-neutral in every market regime, including a panic",
+        "CVaR95 (≈-0.95%) represents the average daily loss on days worse than the VaR95 threshold"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "Beta to SPY is usually near 0.04 but spiked to about 0.25 during COVID's correlation-to-one breakdown. SR-5 fell -6.1% in that window against SPY's -33.9% — one of two windows (COVID and the 2022 bear market) where SR-5 was negative but still far better than SPY, and two others (the Q4 2018 selloff and the August 2024 VIX spike) where it was actually positive while SPY fell sharply — so it did not lose money in all four windows. Dollar-neutral construction reduces market exposure most of the time, not all of the time, which is exactly what the COVID beta spike demonstrates. CVaR95 is the average loss beyond the VaR95 cutoff, matching its definition."
+    },
+    {
+      "id": "qrtc-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Lesson 13 calls leading a strategy write-up's abstract with the gross Sharpe ratio \"the most common mistake.\" What does SR-5's own abstract do instead?",
+      "options": [
+        "It omits the Sharpe ratio entirely and leads only with the stress-test results",
+        "It reports only the gross Sharpe, since net figures belong in the appendix, not the abstract",
+        "It states the net Sharpe of 0.42 before a reader can anchor on the larger gross figure, and puts the key risk caveat in the closing sentence rather than an appendix",
+        "It presents gross and net Sharpe as a single blended average to avoid confusion"
+      ],
+      "correctIndex": 2,
+      "explain": "SR-5's abstract states the net Sharpe of 0.42 before the reader has a chance to anchor on the bigger 0.76 gross number, and puts the single most important risk caveat — the COVID beta spike — in the last sentence rather than hiding it in an appendix. Reporting gross and net separately, never blended, is the same discipline that runs through the entire results table in Lesson 13."
+    },
+    {
+      "id": "qrtc-16",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each section of SR-5's performance report to what it actually contains, per Lesson 13's standard structure.",
+      "left": ["Abstract", "Results", "Risk analysis", "Limitations"],
+      "right": [
+        "Gross and net performance, broken out clearly, never blended into one number",
+        "What could be wrong, what wasn't tested, what would break the result",
+        "The full risk-metric table and the four stress-test windows",
+        "Three to five sentences: hypothesis, method, headline net result, and the one caveat that matters most"
+      ],
+      "correctMap": [3, 0, 2, 1],
+      "explain": "The abstract is a tight three-to-five sentence summary of hypothesis, method, headline net result, and the one caveat that matters most. Results always show gross and net side by side, never blended. Risk analysis holds the full risk-metric table and the four stress-test windows. Limitations names what could be wrong and what wasn't tested — naming them plainly is what makes the research credible, per Lesson 13."
+    },
+    {
+      "id": "qrtc-17",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these sections of the 10-15 minute SR-5 presentation in the order Lesson 15's slide structure lays them out.",
+      "items": [
+        "Title & hypothesis — SR-5, the research question, the one-sentence hypothesis",
+        "Data & method — the universe, date range, Ridge regression, purged walk-forward validation",
+        "Headline result — gross Sharpe 0.76, net Sharpe 0.42, stated clearly",
+        "Risk profile and stress tests — Sortino, Calmar, VaR/CVaR, and the four historical windows",
+        "Limitations & next steps — what wasn't tested, and what you'd do with more time or capital"
+      ],
+      "explain": "The presentation opens with the hypothesis, covers data and method, states the headline net result early rather than building to it as a reveal, then spends the most combined time on risk and the four stress-test windows — deliberately more than the headline-result slide gets — before closing with limitations and a concrete ask, per Lesson 15's pacing table."
+    },
+    {
+      "id": "qrtc-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Lesson 16 contrasts a \"weak\" resume bullet (\"Built a profitable trading strategy using machine learning\") with a \"strong\" one describing the same SR-5 project. What actually makes the strong version stronger?",
+      "options": [
+        "It uses more technical jargon, which signals more effort regardless of whether the claims are specific",
+        "It names the specific method (Ridge regression, purged walk-forward validation), states a net-of-cost result, and doesn't claim the strategy is ready to trade with real money",
+        "It claims a higher Sharpe ratio than the strategy actually achieved, to stand out among other applicants",
+        "It omits numbers entirely, since specific numbers invite harder follow-up questions"
+      ],
+      "correctIndex": 1,
+      "explain": "The strong bullet names the method, states the net (not gross) Sharpe, and never claims more certainty than the research actually supports — it doesn't say the strategy is ready to trade, because it isn't. Quant hiring reads resumes skeptically specifically because the interviewer has built and broken strategies like it; a bullet that oversells a result is a liability, not an asset, in this field."
+    },
+    {
+      "id": "qrtc-19",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Put these stages of a quant recruiting process in the order Lesson 17 lists them.",
+      "items": [
+        "Resume/portfolio screen",
+        "Recruiter or HR screen",
+        "Math/probability screen",
+        "Coding/technical screen",
+        "Final/onsite loop",
+        "Offer and negotiation"
+      ],
+      "explain": "Lesson 17 lists the resume/portfolio screen as the highest-attrition first stage, followed by a non-technical recruiter screen, then the math/probability round, the coding/technical round, a condensed final/onsite loop (sometimes with senior researchers or traders), and finally an offer — though the exact mix and order of the stats/ML, market-knowledge, and case-study rounds in between varies by firm type."
+    },
+    {
+      "id": "qrtc-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "In the gambler's ruin problem from Lesson 18, a trader starts with $5, bets $1 on fair coin flips, and stops at $0 or $10. What is the probability of reaching $10 before $0, and why?",
+      "options": [
+        "0.6 — because starting above the midpoint always favors the upper barrier",
+        "1/e ≈ 0.368 — the same constant that governs the secretary problem",
+        "It cannot be determined without knowing how many total rounds will be played",
+        "0.5 — for a fair random walk between absorbing barriers at 0 and N, starting at k, the probability of reaching N first is simply k/N, and here 5/10 = 0.5"
+      ],
+      "correctIndex": 3,
+      "explain": "For a fair (p = 0.5) random walk between absorbing barriers at 0 and N, starting at k, the probability of reaching N before 0 is exactly k/N — the symmetric case collapses to a linear probability with no need to simulate rounds. Here k=5, N=10, so the answer is 5/10 = 0.5. The biased-coin version uses a different formula entirely, and the 1/e constant belongs to the separate secretary (optimal stopping) problem."
+    },
+    {
+      "id": "qrtc-21",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the five math/probability problems worked in Lesson 18.",
+      "options": [
+        "The expected number of flips to see two heads in a row (HH) is 6",
+        "In the disease-test Bayes' theorem example, a positive result on a 95%-sensitive test means the patient has roughly a 95% chance of actually having the disease",
+        "The secretary problem's optimal strategy succeeds with probability approaching 1/e as N grows large",
+        "The coupon-collector expected number of rolls to see all six die faces is exactly 6, since there are six faces",
+        "Interviewers score the reasoning process — defining the problem, breaking it into cases, sanity-checking — not just the final number"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "The state-based expectation for two heads in a row works out to exactly 6, confirmed by a 200,000-trial simulation averaging ≈5.99. The disease-test posterior is only about 8.8%, not 95% — the low 1% base rate dominates the result, which is the entire point of the Bayes' example. The secretary problem's optimal strategy succeeds with probability approaching 1/e ≈ 0.368, not a certainty. The coupon-collector expectation for six faces is about 14.7 rolls, not 6 — it uses the harmonic-number formula, not a flat count of faces. And across every problem type, the lesson is explicit that interviewers score the reasoning process, not just a correct final number."
+    },
+    {
+      "id": "qrtc-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "code": "def max_profit(prices):\n    min_price = float(\"inf\")\n    best = 0\n    for p in prices:\n        min_price = min(min_price, p)\n        best = max(best, p - min_price)\n    return best",
+      "prompt": "What does max_profit([7, 6, 4, 3, 1]) return, and why?",
+      "options": [
+        "0 — prices only fall throughout the sequence, so there's never a later price higher than the running minimum, and best never updates above its starting value",
+        "6 — the difference between the first and last price",
+        "-6 — the function returns a negative number when prices decline",
+        "An error — the function requires at least one price increase to return a value"
+      ],
+      "correctIndex": 0,
+      "explain": "This single-pass pattern tracks the minimum price seen so far and the best profit seen so far in one scan. With a strictly falling sequence, min_price keeps dropping to match each new low, and p - min_price is never positive after the first element, so best stays at its initial value of 0 — exactly the behavior Lesson 19 calls out explicitly for this input."
+    },
+    {
+      "id": "qrtc-23",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: tying a resource's lifetime to an object's scope, so it's released automatically when that scope ends, is the C++ idiom known as ________.",
+      "acceptedAnswers": ["RAII", "Resource Acquisition Is Initialization"],
+      "explain": "RAII (Resource Acquisition Is Initialization) ties a resource's lifetime to an object's scope — a std::vector frees its memory automatically when it goes out of scope, instead of relying on a manual free() call that's easy to forget or get wrong on an exception path."
+    },
+    {
+      "id": "qrtc-24",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Lesson 20 explains why SR-5 used Ridge regression rather than Lasso or plain OLS on its feature set. What's the actual reasoning?",
+      "options": [
+        "Ridge was chosen because it automatically selects the single best feature and discards the rest, exactly like Lasso",
+        "Ridge was chosen purely because it trains faster than Lasso or OLS on this dataset",
+        "The feature set is correlated across sectors, so Ridge's L2 penalty shrinks correlated coefficients together rather than arbitrarily zeroing some out the way Lasso's L1 penalty tends to, while plain OLS would overfit the noisy, collinear features badly",
+        "OLS was ruled out because it cannot be implemented in scikit-learn"
+      ],
+      "correctIndex": 2,
+      "explain": "SR-5's sector-level features are correlated across sectors. Ridge's L2 penalty shrinks correlated coefficients together rather than zeroing most of them out, which is what Lasso's L1 penalty tends to do instead. Plain OLS, with no penalty at all, would overfit the noisy, collinear feature set badly. The honest trade-off: Ridge keeps every feature with some nonzero weight, so it doesn't give automatic feature selection the way Lasso does — a deliberate choice given the correlation structure, not an oversight."
+    },
+    {
+      "id": "qrtc-25",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about Lesson 20's discussion of time-series statistics and machine-learning pitfalls.",
+      "options": [
+        "A random train/test split is invalid for financial time series because it can let the model train on data from after the test period",
+        "In the random-walk simulation, two completely independent 200-step random walks showed a mean absolute correlation of only about 0.05",
+        "Sharpe ratio is preferred over R² or accuracy as an evaluation metric because it directly measures risk-adjusted return rather than just fit to the data",
+        "Trying many features and models against the same backtest raises the odds that something looks good by chance alone, independent of whether it's real",
+        "Edge decay is best detected by looking at one aggregate Sharpe number across the entire sample, rather than rolling windows"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "A random split lets the model train on data from after the test period, leaking information that wasn't actually available in real deployment — exactly why SR-5 used purged walk-forward CV instead. The random-walk simulation actually showed a mean absolute correlation of about 0.43, not 0.05, and crossed 0.5 in roughly 43% of trials from pure chance — far higher than intuition expects, which is the whole point of the demonstration. Sharpe ratio measures risk-adjusted return directly, unlike R² or accuracy, which measure fit rather than economic value. The multiple-testing risk is real: trying many features and models against the same data raises the odds something looks good by chance. Edge decay is better detected with rolling out-of-sample windows (quarterly or annual), not one aggregate number across the whole sample."
+    },
+    {
+      "id": "qrtc-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "A market maker quotes a stock at 99.95 bid / 100.05 ask. A customer sells 1,000 shares into the bid, then a different customer buys 1,000 shares at the ask. What does the market maker actually capture, and from what?",
+      "options": [
+        "$100, captured only if the stock price later rises above 100.05",
+        "$100, captured from the bid-ask spread on the same 1,000 shares, with no directional view taken at all",
+        "Nothing — the two trades cancel out exactly, leaving zero P&L",
+        "A loss of $100, since the market maker bought high and sold low"
+      ],
+      "correctIndex": 1,
+      "explain": "The market maker bought at 99.95 and sold at 100.05 on the same 1,000 shares: (100.05 - 99.95) x 1,000 = $100 captured, with no directional view taken at all. A market maker profits by capturing the bid-ask spread repeatedly, not by predicting which way the price moves — the real risk being managed is inventory risk, not price direction."
+    },
+    {
+      "id": "qrtc-27",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: you are short 500 shares at $80, and the stock drops to $76.50. Your P&L is a profit of $________.",
+      "acceptedAnswers": ["1750", "1,750", "$1,750", "1750.00"],
+      "explain": "(80 - 76.50) x 500 = $1,750 profit. A short position gains when the price falls, so the entry price minus the exit price, times shares, gives the correct direction and magnitude of the P&L."
+    },
+    {
+      "id": "qrtc-28",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of Lesson 22's five-step framework for open-ended quant case questions in the correct order.",
+      "items": [
+        "Clarify the objective — what's actually being optimized",
+        "State assumptions explicitly — data available, universe, holding period",
+        "Propose a structure — a rough hypothesis and approach, named plainly",
+        "Reason about what could go wrong — data issues, overfitting risk, cost sensitivity",
+        "Conclude with a clear recommendation and its caveats"
+      ],
+      "explain": "The five-step framework runs: clarify what's actually being optimized, state assumptions out loud rather than silently picking them, propose a structure before diving into details, reason about what could go wrong using the same instincts from the Lesson 14 skeptical-audience exercise, and close with a specific stated recommendation rather than a monologue that trails off."
+    },
+    {
+      "id": "qrtc-29",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about how quant compensation structures vary by firm type, per Lesson 23.",
+      "options": [
+        "Prop trading firms often pay a lower base with a bonus or profit-share heavily tied to individual or desk trading performance",
+        "Bank quant desks (sell-side) bonuses are generally less individual-PnL-linked than a prop shop's",
+        "Two offers with the same headline base salary always carry the same expected total compensation and variance, regardless of firm type",
+        "Systematic hedge funds typically pay a base salary plus a bonus often tied to fund or team performance",
+        "This lesson provides a specific recommended salary figure to use as a benchmark"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Prop shops often pay a lower base with profit-share tied to individual or desk performance. Bank quant desks' bonuses are typically less individual-PnL-linked, tied more to overall bank and division performance. Systematic hedge funds typically pay base plus a bonus tied to fund or team performance. Two offers with the same base can have very different expected total compensation and variance depending on firm type, which is exactly why the lesson deliberately avoids quoting a specific salary number — figures go stale and vary too much by firm type, strategy, and city to state reliably."
+    },
+    {
+      "id": "qrtc-30",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each quant interview round type to what it actually tests, per Lessons 17-21.",
+      "left": [
+        "Math/probability screen",
+        "Coding/technical screen",
+        "Statistics/ML round",
+        "Market-knowledge round"
+      ],
+      "right": [
+        "Order types, market-making mechanics, and fast P&L arithmetic under pressure",
+        "Model evaluation, overfitting, and time-series pitfalls, for research-flavored roles",
+        "Live coding testing Python/pandas fluency or C++ fundamentals depending on the role",
+        "Brainteasers and probability puzzles scoring your reasoning process"
+      ],
+      "correctMap": [3, 2, 1, 0],
+      "explain": "The math/probability screen tests reasoning through brainteasers and probability puzzles. The coding screen tests Python/pandas fluency for research roles or C++ fundamentals for latency-sensitive ones. The statistics/ML round tests model evaluation and time-series pitfalls for research-flavored roles. The market-knowledge round tests order types, market-making mechanics, and fast P&L arithmetic — real-time intuition the other rounds don't cover."
+    }
+  ]
+}

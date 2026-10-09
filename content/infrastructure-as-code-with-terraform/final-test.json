@@ -1,0 +1,532 @@
+{
+  "questions": [
+    {
+      "id": "tf-01",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of how Terraform Core actually computes a plan, per Lesson 4, in the correct order.",
+      "items": [
+        "Core parses your .tf files into an internal representation and builds the dependency graph",
+        "For each resource, Core asks the relevant provider plugin what it looks like in the real world right now",
+        "Core compares that real-world answer against your desired configuration and state, and computes the plan",
+        "On apply, Core walks the graph in dependency order, asking each provider plugin to make the API calls"
+      ],
+      "explain": "Terraform Core first parses configuration into a dependency graph, then asks each provider plugin for the real-world state of every resource, compares that against desired configuration and state to compute the plan, and only on apply walks the graph asking providers to make the actual API calls. Core never talks to a cloud API directly — every one of those steps happens through a provider plugin."
+    },
+    {
+      "id": "tf-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: running terraform apply twice on an unchanged configuration reports \"No changes. Your infrastructure matches the configuration\" rather than creating duplicates — this property, where repeating an operation produces the same result with no unintended side effects, is called ________.",
+      "acceptedAnswers": [
+        "idempotent",
+        "idempotency"
+      ],
+      "explain": "Idempotent means running the same operation repeatedly produces the same result with no unintended side effects. terraform apply compares desired state against real infrastructure and only acts on genuine differences, so an unchanged configuration simply reports no changes instead of trying to recreate anything."
+    },
+    {
+      "id": "tf-03",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each tool or category from the IaC landscape to what it actually is, per Lesson 3.",
+      "left": [
+        "ARM / Bicep",
+        "CloudFormation",
+        "Pulumi",
+        "Ansible / Puppet / Chef"
+      ],
+      "right": [
+        "A declarative IaC tool configured in general-purpose languages instead of HCL",
+        "AWS's first-party, AWS-only IaC tool",
+        "Configuration management of software already running inside an existing server, not provisioning it",
+        "Azure's first-party, Azure-only IaC tools"
+      ],
+      "correctMap": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "explain": "ARM and Bicep are Azure's own, Azure-only tools; CloudFormation is AWS's equivalent, AWS-only. Pulumi is declarative like Terraform but configured in TypeScript, Python, Go, or similar general-purpose languages instead of HCL. Ansible, Puppet, and Chef manage software and settings inside a server that already exists, a different problem from provisioning the server itself."
+    },
+    {
+      "id": "tf-04",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "az group create --name rg-northbridge-dev --location eastus2\naz storage account create \\\n  --name northbridgedevimages \\\n  --resource-group rg-northbridge-dev \\\n  --location eastus2 \\\n  --sku Standard_LRS",
+      "prompt": "An engineer runs this imperative Azure CLI script once, then runs it again unmodified. What's the most likely outcome, compared to running an equivalent declarative Terraform file twice?",
+      "options": [
+        "The CLI script errors out or attempts to create a duplicate since it has no memory of what it already did, while rerunning terraform apply on the unchanged file reports \"No changes\"",
+        "Both behave identically, since both are simply a list of steps run from top to bottom",
+        "The CLI script is idempotent by default, while Terraform requires an explicit \"idempotent\" flag to avoid duplicating resources",
+        "Terraform treats the second apply as a destroy, because the resource group already exists"
+      ],
+      "correctIndex": 0,
+      "explain": "An imperative script has no record of what it already ran — rerunning it either errors (\"a resource group with this name already exists\") or tries to duplicate work, depending on the command. Terraform instead compares its desired state against real infrastructure and state, so a second apply with nothing changed reports no changes rather than acting again."
+    },
+    {
+      "id": "tf-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "resource \"azurerm_resource_group\" \"northbridge\" {\n  name     = \"rg-northbridge-prod\"\n  location = \"eastus2\"\n}\n\nresource \"azurerm_storage_account\" \"images\" {\n  name                     = \"northbridgeprodimages\"\n  resource_group_name      = azurerm_resource_group.northbridge.name\n  location                 = azurerm_resource_group.northbridge.location\n  account_tier             = \"Standard\"\n  account_replication_type = \"GRS\"\n}",
+      "prompt": "Terraform creates azurerm_resource_group.northbridge before azurerm_storage_account.images in the plan above, even though no explicit ordering was ever written. Why?",
+      "options": [
+        "The storage account block references azurerm_resource_group.northbridge.name and .location, and Terraform automatically builds a dependency graph from that reference",
+        "Resources are always created in the exact order they're typed in the file, top to bottom",
+        "azurerm_resource_group resources are hardcoded to always apply before azurerm_storage_account resources, regardless of references",
+        "Terraform asks the user to manually specify a depends_on argument for every pair of related resources"
+      ],
+      "correctIndex": 0,
+      "explain": "A reference like azurerm_resource_group.northbridge.name follows the <type>.<local name>.<attribute> pattern. Terraform scans every such reference across a configuration and builds a dependency graph from it automatically — it infers that the resource group must exist first because the storage account's own block reads a value produced by it, with no explicit ordering needed."
+    },
+    {
+      "id": "tf-06",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a variable block with no ________ argument makes Terraform require that value be supplied on every run, instead of making it optional.",
+      "acceptedAnswers": [
+        "default"
+      ],
+      "explain": "A variable block without a default forces the caller to supply a value every time — Terraform refuses to plan otherwise. Adding a default makes the variable optional, falling back to that value whenever it's omitted."
+    },
+    {
+      "id": "tf-07",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about data sources, per Lesson 9.",
+      "options": [
+        "A data block can read an existing resource's attributes without ever creating, modifying, or destroying it",
+        "Terraform refreshes a data source's result at plan time, so it reflects current reality rather than a value cached when the configuration was first written",
+        "A data source is required to declare the same create/update/destroy lifecycle arguments that a resource block does",
+        "data.aws_ami.ubuntu.id uses the same <type>.<name>.<attribute> reference pattern as a resource, just prefixed with data.",
+        "Once a data block is defined, Terraform takes over full management of that resource going forward"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "A data block only reads attributes of existing infrastructure — it never creates, updates, or destroys anything, and its lookup is re-evaluated at plan time, which is exactly why it's useful for something like the latest AMI instead of a value that could go stale. It uses the same <type>.<name>.<attribute> reference pattern as a resource, just prefixed with data. — but Terraform never takes over managing the resource it reads, and a data source has no create/update/destroy lifecycle at all."
+    },
+    {
+      "id": "tf-08",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Match each core Terraform command to what it actually does, per Lesson 11.",
+      "left": [
+        "terraform init",
+        "terraform plan",
+        "terraform apply",
+        "terraform destroy"
+      ],
+      "right": [
+        "Shows the plan, asks for confirmation, then creates/updates/destroys resources",
+        "Tears down every resource the configuration manages, in reverse dependency order",
+        "Downloads required providers and prepares the working directory",
+        "Shows what would change, without changing anything"
+      ],
+      "correctMap": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "explain": "init downloads providers and prepares the working directory; plan compares configuration against real infrastructure and shows what would change with nothing actually changed; apply runs that same comparison, asks for confirmation, and then performs the create/update/destroy; destroy tears down every managed resource in reverse dependency order from how it was created."
+    },
+    {
+      "id": "tf-09",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of provisioning Northbridge's resource group and storage account, per Lesson 11, in the correct order.",
+      "items": [
+        "Run terraform init to download the azurerm provider plugin",
+        "Run terraform plan and review exactly what Terraform will create",
+        "Run terraform apply and type yes to confirm the plan",
+        "Run terraform destroy only once the environment is no longer needed"
+      ],
+      "explain": "Every new configuration starts with init to download the declared providers. plan then shows the proposed changes with nothing yet touched, so it can be reviewed before anything happens. apply repeats that comparison and, after explicit confirmation, actually creates the resources. destroy is reached for separately and later, typically to tear down a temporary environment rather than production."
+    },
+    {
+      "id": "tf-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "{\n  \"resources\": [\n    {\n      \"type\": \"azurerm_resource_group\",\n      \"name\": \"northbridge\",\n      \"instances\": [\n        {\n          \"attributes\": {\n            \"id\": \"/subscriptions/0a1b2c3d-.../resourceGroups/rg-northbridge-prod\",\n            \"name\": \"rg-northbridge-prod\",\n            \"location\": \"eastus2\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+      "prompt": "The resource group's real Azure resource ID shown in this terraform.tfstate excerpt never appears anywhere in the .tf configuration file. Why does Terraform record it in state at all?",
+      "options": [
+        "Azure only returns that unique ID after creation, so Terraform has to persist it in state or it would have no way to find the already-created resource on a later run",
+        "The ID is stored only for human readability and plays no functional role in later plans or applies",
+        "Terraform regenerates the resource ID from the configuration file's name and location fields every time it runs",
+        "The ID is optional metadata that can be safely deleted from state without affecting future applies"
+      ],
+      "correctIndex": 0,
+      "explain": "Your .tf files describe what you want, but the real, unique resource ID only exists after the cloud provider actually creates the resource. Terraform has to record that ID in state, because without it, a later plan or apply has no way to find the resource it already created and risks creating a duplicate instead."
+    },
+    {
+      "id": "tf-11",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: when someone changes a resource outside of Terraform — for example resizing a VM directly in the Azure Portal — the resulting mismatch between real infrastructure and what state and configuration record is called ________.",
+      "acceptedAnswers": [
+        "drift"
+      ],
+      "explain": "Drift is what happens when real infrastructure no longer matches what state (and configuration) last recorded. Terraform can only notice it because it has a state file to compare reality against in the first place."
+    },
+    {
+      "id": "tf-12",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about remote backends and state locking, per Lessons 13 and 14.",
+      "options": [
+        "The azurerm backend locks state natively, using a lease on the state blob, with no extra resource required",
+        "The s3 backend locks state using a dynamodb_table that holds lock records",
+        "A second terraform apply that collides with an active lock silently overwrites the first run's changes",
+        "Remote state lets every engineer's plan and apply read and write the exact same file, instead of a private local copy",
+        "terraform state rm deletes the real resource from the cloud provider, in addition to removing it from state"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "azurerm locks natively via a blob lease; s3 locks via a dynamodb_table holding lock records — two different mechanisms, same guarantee. Remote state replaces five laptops' worth of private copies with one shared file. A locked second apply doesn't silently overwrite anything — it's refused outright with an \"Error acquiring the state lock\" message naming who already holds it. And state rm never touches real infrastructure at all; it only stops Terraform from tracking the resource."
+    },
+    {
+      "id": "tf-13",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A resource that Terraform created still exists and is running fine in Azure. Which statement correctly describes the difference between running terraform state rm on it versus running terraform destroy -target on it?",
+      "options": [
+        "terraform state rm stops Terraform from tracking the resource without touching the real infrastructure at all; terraform destroy -target calls the provider API to actually delete the real resource",
+        "terraform destroy -target only removes the resource from state, the same as terraform state rm, without calling any provider API",
+        "Both commands delete the real resource in the cloud provider; they differ only in whether they also remove it from state",
+        "terraform state rm deletes the real resource first, then removes it from state as a cleanup step",
+        "Neither command calls a provider API; both are purely state-only operations with no effect on real infrastructure",
+        "terraform state rm requires the resource to already be manually destroyed before it can be run"
+      ],
+      "correctIndex": 0,
+      "explain": "terraform state rm is a state-only operation, exactly like terraform state mv — it removes a resource from Terraform's tracking while leaving the real infrastructure running untouched. terraform destroy -target, by contrast, genuinely calls the provider API to delete the real resource. The two solve very different problems: one stops tracking something you still want running, the other actually tears it down.",
+      "distractorExplain": "Option B inverts which command is state-only — it's terraform state rm that never calls a cloud API, the same as terraform state mv, while terraform destroy -target genuinely calls the provider to delete the real resource. Mixing up which of the two actually touches real infrastructure is precisely the mistake the lesson's state-only commands are introduced to prevent."
+    },
+    {
+      "id": "tf-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "resource \"azurerm_linux_function_app\" \"pipeline\" {\n  name                       = \"func-nbretail-pipeline-dev\"\n  storage_account_name       = module.storage_dev.storage_account_name\n  storage_account_access_key = module.storage_dev.primary_access_key\n  service_plan_id            = azurerm_service_plan.dev.id\n}",
+      "prompt": "A terraform plan shows storage_account_name as (known after apply) for azurerm_linux_function_app.pipeline above. Why?",
+      "options": [
+        "The function app's attribute is a reference to the storage module's output, and that module's underlying storage account resource hasn't been created yet when the plan is computed",
+        "storage_account_name is a typo, so Terraform cannot resolve it at all",
+        "A module's output can never be used as an input to a resource outside that module",
+        "azurerm_linux_function_app doesn't actually support storage_account_name as an attribute"
+      ],
+      "correctIndex": 0,
+      "explain": "module.storage_dev.storage_account_name reads a value exposed by the storage module. Terraform knows the function app depends on that output, but since the module's own azurerm_storage_account resource doesn't exist until apply actually runs, the plan is honest that the exact value isn't known yet — hence (known after apply)."
+    },
+    {
+      "id": "tf-15",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Match each module-related term to what it actually is, per Lessons 17 and 20.",
+      "left": [
+        "Root module",
+        "Child module",
+        "A module block's source argument",
+        "Standard module layout"
+      ],
+      "right": [
+        "main.tf, variables.tf, outputs.tf, and README.md",
+        "A module called by another module via a module block",
+        "The required argument naming where a module's files live — a filesystem path or a registry address",
+        "The directory you run terraform apply from"
+      ],
+      "correctMap": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "explain": "The root module is simply the directory you run terraform apply from. A child module is called by the root (or another module) via a module block. The required source argument names where that module's files live, as a relative path or a registry address. And the community-standard folder layout for a reusable module is main.tf, variables.tf, outputs.tf, and a README.md."
+    },
+    {
+      "id": "tf-16",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A module block pins a registry module with version = \"~> 5.0\". Which statement correctly describes exactly which published versions that constraint allows Terraform to select?",
+      "options": [
+        "Any 5.x release — 5.1, 5.9, and so on — but never 6.0, since the pessimistic constraint lets the rightmost version segment increase while blocking the one to its left",
+        "Only the exact version 5.0 and no other release",
+        "Any version 5.0 or later, including 6.0, 7.0, and beyond",
+        "Any version earlier than 5.0, but nothing in the 5.x line itself",
+        "Only patch releases within 5.0.x, such as 5.0.1, but not 5.1 or later",
+        "Only local modules can use a version constraint at all; registry modules ignore it"
+      ],
+      "correctIndex": 0,
+      "explain": "~> is the pessimistic constraint operator: ~> 5.0 allows Terraform to pick up anything in the 5.x line (5.1, 5.9, and so on) but refuses to jump to 6.0 on its own, since a major version bump is the project's own signal of a possibly breaking change. The rightmost digit in the constraint is the one allowed to move; everything to its left is locked.",
+      "distractorExplain": "Option E describes the narrower ~> 5.8-style constraint — patch releases only, >= 5.8 and < 5.9 — not ~> 5.0, which allows the entire minor-version range from 5.0 up to (but not including) 6.0. Confusing where the constraint's boundary sits leads a team to believe a module is pinned tighter than it actually is."
+    },
+    {
+      "id": "tf-17",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the provider \"azurerm\" block requires an empty ________ {} block even when there's nothing to configure inside it, confirming intentional use of the provider's current version.",
+      "acceptedAnswers": [
+        "features",
+        "features {}"
+      ],
+      "explain": "features {} is required by the azurerm provider even when left empty. It's where you'd opt into provider-wide behaviors if Northbridge ever needed to override a default — leaving it empty keeps every default as-is, but Terraform refuses to initialize the provider without the block present at all."
+    },
+    {
+      "id": "tf-18",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Azure networking resources, per Lesson 22.",
+      "options": [
+        "A network security group's rules are evaluated in priority order, with lower numbers evaluated first",
+        "Defining an azurerm_network_security_group resource automatically attaches it to a subnet, with no further configuration needed",
+        "azurerm_subnet_network_security_group_association is what actually attaches an NSG to a subnet",
+        "network_interface_ids is what connects a virtual machine to a subnet and, through the NSG association, to its firewall rules",
+        "A virtual network's address_space is further divided into smaller address ranges called subnets"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        3,
+        4
+      ],
+      "explain": "NSG rules are evaluated by priority, lowest first. Defining an NSG alone doesn't attach it to anything — the separate _association resource is what actually does that. network_interface_ids wires a VM into a subnet and, through that subnet's NSG association, into the firewall rules controlling its traffic. And a VNet's address space is carved into smaller subnets, which is exactly the relationship used throughout the lesson."
+    },
+    {
+      "id": "tf-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "code": "resource \"azurerm_kubernetes_cluster\" \"checkout\" {\n  default_node_pool {\n    name       = \"default\"\n    node_count = 3\n    vm_size    = \"Standard_D4s_v5\"\n  }\n\n  identity {\n    type = \"SystemAssigned\"\n  }\n}",
+      "prompt": "Why does this azurerm_kubernetes_cluster resource need an identity { type = \"SystemAssigned\" } block?",
+      "options": [
+        "AKS uses that managed identity to create and manage supporting resources like load balancers and managed disks on your behalf, without a long-lived credential stored in configuration",
+        "The identity block is what authenticates the Terraform CLI itself to Azure before any apply can run",
+        "Without it, the default_node_pool block is not allowed to specify a vm_size",
+        "The identity block is optional metadata with no functional effect on the cluster"
+      ],
+      "correctIndex": 0,
+      "explain": "The identity block gives the AKS cluster its own managed identity in Azure Active Directory. AKS uses that identity to create and manage supporting resources — load balancers, managed disks for persistent volumes, the node pool's underlying VM scale set — on your behalf, without you granting it a long-lived credential anywhere in the configuration."
+    },
+    {
+      "id": "tf-20",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these Azure resources, per Lesson 22, in the order Terraform must create them given their dependency chain, from the resource group through to the running VM.",
+      "items": [
+        "azurerm_resource_group",
+        "azurerm_virtual_network",
+        "azurerm_subnet",
+        "azurerm_network_security_group with its subnet association",
+        "azurerm_network_interface",
+        "azurerm_linux_virtual_machine"
+      ],
+      "explain": "Each resource's block references the one before it: the VNet needs the resource group's location, the subnet needs the VNet's name, the NSG association needs the subnet's ID, the network interface needs the subnet's ID as well, and the VM needs the network interface's ID. Terraform resolves this entire chain automatically from those references, the same inference pattern used since Chapter 2."
+    },
+    {
+      "id": "tf-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "code": "resource \"aws_route_table\" \"public\" {\n  vpc_id = aws_vpc.northbridge.id\n\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway_id = aws_internet_gateway.northbridge.id\n  }\n}\n\nresource \"aws_route_table_association\" \"order_processing\" {\n  subnet_id      = aws_subnet.order_processing.id\n  route_table_id = aws_route_table.public.id\n}",
+      "prompt": "A Northbridge engineer removes the aws_route_table_association resource above, but leaves the internet gateway and route table in place. What happens to instances in the order_processing subnet?",
+      "options": [
+        "They lose public internet reachability, because associating the route table with the subnet is what actually makes that subnet's traffic route through the internet gateway",
+        "Nothing changes, since the internet gateway alone is sufficient regardless of any route table associations",
+        "The subnet itself is deleted automatically, since it now has no route table",
+        "The entire VPC becomes unreachable, not just the order_processing subnet"
+      ],
+      "correctIndex": 0,
+      "explain": "An internet gateway attached to a VPC does nothing on its own. The 0.0.0.0/0 route says traffic should go out through it, but a subnet only uses that route table once aws_route_table_association actually associates the two. Remove the association and the subnet falls back to the VPC's default routing, with no path to the internet gateway at all."
+    },
+    {
+      "id": "tf-22",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the IAM pattern used for the order-confirmation Lambda function, per Lesson 27.",
+      "options": [
+        "The Lambda function's assume_role_policy names which AWS service, not which person, is allowed to assume the role",
+        "Granting only s3:GetObject and ses:SendEmail instead of broader S3 or SES permissions is an example of least privilege",
+        "aws_iam_role_policy_attachment is what actually connects a policy's permissions to a role",
+        "Lambda functions should carry their own long-lived access keys instead of assuming an IAM role, for better auditability",
+        "An IAM role with no assume_role_policy can still be assumed by any AWS service by default"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "The assume_role_policy's Principal names the lambda.amazonaws.com service, not a person — that's who is allowed to assume the role. Scoping the policy to exactly s3:GetObject and ses:SendEmail, rather than broad access, is least privilege in practice. aws_iam_role_policy_attachment is the resource that actually connects a policy's permissions to a role. The whole point of the pattern is that Lambda assumes a role instead of holding long-lived credentials, and a role with no assume_role_policy grants nothing by default — it isn't open to any service that wants it."
+    },
+    {
+      "id": "tf-23",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each identity or role argument to what it actually governs, per Lessons 24 and 28.",
+      "left": [
+        "aws_eks_cluster's role_arn",
+        "aws_eks_node_group's node_role_arn",
+        "azurerm_kubernetes_cluster's identity block",
+        "aws_lambda_function's role argument"
+      ],
+      "right": [
+        "The IAM role the Lambda service assumes at invocation instead of using long-lived access keys",
+        "AKS's managed identity, used to manage supporting resources like load balancers and disks",
+        "The IAM role the EKS control plane itself assumes",
+        "A separate IAM role assumed by the worker nodes, distinct from the cluster's own role"
+      ],
+      "correctMap": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "explain": "aws_eks_cluster's role_arn is the role the EKS control plane itself assumes. aws_eks_node_group's node_role_arn is a separate role for the worker nodes — clusters and node groups assume different roles with different permissions. azurerm_kubernetes_cluster's identity block is AKS's own managed identity for managing supporting Azure resources. And a Lambda function's role argument is the role Lambda assumes at invocation instead of carrying long-lived access keys."
+    },
+    {
+      "id": "tf-24",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the expression terraform.________ returns the name of the currently selected workspace, usable inside a resource's name to vary it per environment.",
+      "acceptedAnswers": [
+        "workspace"
+      ],
+      "explain": "terraform.workspace returns the current workspace's name. A resource name like \"rg-northbridge-${terraform.workspace}\" creates rg-northbridge-dev under the dev workspace and rg-northbridge-staging after switching to staging, with the same .tf files unchanged."
+    },
+    {
+      "id": "tf-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "code": "jobs:\n  plan:\n    if: github.event_name == 'pull_request'\n    steps:\n      - run: terraform plan -no-color\n\n  apply:\n    if: github.ref == 'refs/heads/main'\n    steps:\n      - run: terraform apply -auto-approve",
+      "prompt": "Why does the apply job in this pipeline only run when github.ref == 'refs/heads/main', while the plan job runs on pull_request?",
+      "options": [
+        "So nothing is ever applied to real infrastructure without first being reviewed as a plan on the pull request that preceded the merge",
+        "Because terraform apply only technically works when run from the main branch",
+        "Running plan on a pull request is purely optional and done only for documentation purposes",
+        "GitHub Actions requires every workflow to define a separate job per branch name"
+      ],
+      "correctIndex": 0,
+      "explain": "Posting a plan on every pull request lets reviewers see exactly what would change before approving, the same review process used for application code. Gating apply behind a merge to main means nothing ever applies without first having been reviewed as a plan — that ordering is the entire point of the pipeline shape, not a technical restriction on where apply can run."
+    },
+    {
+      "id": "tf-26",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about drift detection, per Lesson 32.",
+      "options": [
+        "terraform plan never changes anything by itself — it only compares desired configuration and state against real infrastructure",
+        "-detailed-exitcode makes a plan step exit a non-zero code when there are pending changes, useful for alerting in a scheduled CI job",
+        "Once drift is detected, the only correct response is to always immediately re-apply and overwrite the manual change",
+        "A scheduled terraform plan can detect drift caused by a manual emergency change in the Portal, even with no pull request behind it",
+        "Drift can only be caused by bugs inside Terraform itself, never by a person making a manual change"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "plan only ever reports differences, never acts on them. -detailed-exitcode turns \"there are pending changes\" into a non-zero exit code a scheduled CI job can alert on. A scheduled plan catches exactly the kind of out-of-band 2 a.m. Portal change the lesson describes. But resolving drift has two honest paths, not one: either update the configuration to match a legitimate manual change, or re-apply to correct an unwanted one — always re-applying ignores the possibility that the manual change was the right call."
+    },
+    {
+      "id": "tf-27",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of a plan passing through a policy-as-code gate, per Lesson 31, in the correct order.",
+      "items": [
+        "Run terraform plan -out=tfplan to compute the plan",
+        "Run terraform show -json tfplan to convert it to machine-readable JSON",
+        "Run conftest test against that JSON with Rego policies",
+        "Allow terraform apply only if every policy check passes"
+      ],
+      "explain": "The plan is computed first and saved to a file, then converted to JSON since that's the format a policy engine like OPA can evaluate. conftest then runs the Rego rules against that JSON, and only a pipeline where every rule passes is allowed to proceed to apply — catching a problem like a public S3 bucket before it ever reaches real infrastructure."
+    },
+    {
+      "id": "tf-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "code": "✓ terraform init runs clean, with both azurerm and aws providers configured\n✓ terraform validate reports no errors\n✓ terraform plan shows a clean diff with no unexpected changes\n✓ every resource carries at least an \"environment\" and \"project\" tag\n✓ no secret or credential appears anywhere in a committed file\n✓ state is configured for a remote backend, not left local",
+      "prompt": "Per the capstone's acceptance criteria above, which specific criterion is violated if a resource group is created with no tags at all?",
+      "options": [
+        "\"every resource carries at least an environment and project tag\"",
+        "\"terraform init runs clean, with both azurerm and aws providers configured\"",
+        "\"state is configured for a remote backend, not left local\"",
+        "\"no secret or credential appears anywhere in a committed file\""
+      ],
+      "correctIndex": 0,
+      "explain": "The capstone's acceptance criteria explicitly requires every resource to carry at least an environment and project tag. A resource group with no tags fails that specific checkable condition, independent of whether init, validate, plan, secrets handling, or the backend are all otherwise fine."
+    },
+    {
+      "id": "tf-29",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about how the capstone's root configuration is structured, per Lessons 34 and 35.",
+      "options": [
+        "local.common_tags is defined once and reused across both the Azure and AWS resources to keep tagging consistent",
+        "module.azure_network and module.aws_network each return their own outputs, read by the root module the same way a resource attribute is read",
+        "The capstone's environments/dev folder is meant to be the only environment a real team would ever add",
+        "A clean terraform plan with the expected resource count is the signal to move forward before running apply",
+        "The root module in environments/dev/main.tf must hardcode every tag separately on each resource rather than referencing a shared local"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "local.common_tags is defined once and reused everywhere, which is exactly what keeps tagging consistent without repeating the same map by hand on every resource. Each module exposes its own outputs through outputs.tf, read with the same module.<name>.<output> syntax as any resource attribute. Reviewing a clean plan with the expected resource count before applying is the explicit workflow the lesson walks through. The folder structure mirrors directory-per-environment specifically so a real team would add environments/staging and environments/prod the same way, not stop at dev — and hardcoding tags on every resource is exactly what local.common_tags exists to avoid."
+    },
+    {
+      "id": "tf-30",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Put these capstone wrap-up steps, per Lesson 36, in the correct order.",
+      "items": [
+        "Review the clean terraform plan showing exactly what will be created",
+        "Run terraform apply and confirm the resource count matches the plan",
+        "Record the apply's outputs for teammates to use without digging through the Portal or Console",
+        "Run terraform destroy to tear down the dev environment once it's no longer needed"
+      ],
+      "explain": "The plan is reviewed first so applying holds no surprises. Apply then runs and its resource count should match the plan exactly. The outputs block at the end of a successful apply is worth recording deliberately, since it hands off practical values like a storefront URL without anyone digging through a console. Only once the capstone has proven its point is destroy run, both to avoid ongoing cloud costs and to prove the configuration can rebuild everything from nothing."
+    }
+  ]
+}

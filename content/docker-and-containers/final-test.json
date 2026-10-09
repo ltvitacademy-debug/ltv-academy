@@ -1,0 +1,479 @@
+{
+  "questions": [
+    {
+      "id": "docker-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Which statement correctly describes the core architectural difference between a container and a virtual machine?",
+      "options": [
+        "A container shares the host's OS kernel, while a VM runs its own full guest operating system on top of a hypervisor",
+        "A VM shares the host's OS kernel, while a container boots its own guest kernel on top of a hypervisor",
+        "Both a container and a VM boot their own independent kernel, but a container's kernel happens to be smaller",
+        "A container and a VM both run directly on hardware, with no host operating system involved at all",
+        "The only real difference is disk space -- a VM uses more of it, but both share the host's kernel the same way",
+        "A VM isolates only at the application level, while a container isolates at the hardware level"
+      ],
+      "correctIndex": 0,
+      "explain": "A virtual machine runs on a hypervisor and boots a complete guest operating system, including its own kernel, for every instance. A container virtualizes at the OS level instead: every container on a host shares that host's single kernel, and gets an isolated view of processes, the filesystem, and networking layered on top of it. That's why containers start in under a second while VMs take minutes.",
+      "distractorExplain": "Option B describes the exact reverse of reality -- it says a VM shares the kernel and a container boots its own guest kernel, when it's the other way around. This is the single most common mix-up when someone first learns the two technologies, which is exactly why getting the direction right matters: a container's speed and density advantage comes specifically from never booting a guest kernel at all."
+    },
+    {
+      "id": "docker-02",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each Linux namespace type to what it isolates for a container, per Lesson 3.",
+      "left": [
+        "PID namespace",
+        "NET namespace",
+        "MNT namespace",
+        "USER namespace"
+      ],
+      "right": [
+        "Mount points -- gives the container its own view of the filesystem",
+        "User and group IDs -- a container's root can map to an unprivileged host user",
+        "Network interfaces, IP addresses, routing tables, and ports",
+        "Process IDs -- a container sees only its own processes, starting from PID 1"
+      ],
+      "correctMap": [3, 2, 0, 1],
+      "explain": "The PID namespace isolates process IDs, so a container only sees its own process tree starting at PID 1. NET isolates network interfaces, IPs, routing, and ports. MNT isolates mount points, giving the container its own filesystem view. USER isolates user and group IDs, letting a container's 'root' map to an unprivileged host user. Together these namespaces are why a process inside a container believes it has its own machine."
+    },
+    {
+      "id": "docker-03",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "code": "winget install -e --id Docker.DockerDesktop",
+      "prompt": "A developer runs this command to install Docker on a Windows laptop, rather than installing Docker Engine directly the way a Linux server would. Why does Windows need Docker Desktop instead of just Docker Engine?",
+      "options": [
+        "Windows and macOS can't run Linux containers natively, so Docker Desktop adds a lightweight Linux VM under the hood to make that possible",
+        "Docker Desktop is required because Docker Engine only supports Windows-native containers, never Linux ones",
+        "Docker Engine doesn't exist as a product for any platform other than bare-metal Linux servers",
+        "Docker Desktop and Docker Engine are the same software with different installers; there is no functional difference between them"
+      ],
+      "correctIndex": 0,
+      "explain": "Docker Engine -- the daemon plus CLI -- is all Linux needs, because Linux runs containers natively. Windows and macOS can't do that, so Docker Desktop bundles Docker Engine inside a managed Linux VM along with a GUI, Compose, and Kubernetes support, making Linux containers possible on a non-Linux host without the developer having to manage that VM themselves."
+    },
+    {
+      "id": "docker-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "docker run -d --memory=\"512m\" --cpus=\"0.5\" northbridge/catalog:latest",
+      "prompt": "Fill in the blank: Linux ________ limit and account for the CPU, memory, disk I/O, and network bandwidth a group of processes -- such as a container -- is allowed to consume, which is exactly what the --memory and --cpus flags above configure.",
+      "acceptedAnswers": ["cgroups", "cgroup", "control groups", "control group"],
+      "explain": "Namespaces control what a container can see; cgroups (control groups) control what it can use. Without cgroups, one runaway container could consume all of a host's memory or CPU and starve every other container sharing it. Docker sets sensible cgroup limits automatically and lets you override them per container with flags like --memory and --cpus."
+    },
+    {
+      "id": "docker-05",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of what actually happens when you run `docker run hello-world` for the first time, per Lesson 5, in the correct order.",
+      "items": [
+        "Docker checks locally for the hello-world image and doesn't find it",
+        "Docker pulls the image from Docker Hub",
+        "Docker creates a container from the downloaded image",
+        "Docker runs the container's one task and prints the confirmation message",
+        "The container exits once its task is complete"
+      ],
+      "explain": "That whole lifecycle -- pull, create, run, exit -- happens every time you run an image you don't already have locally. Docker first checks for the image locally, pulls it from Docker Hub when it's missing, creates a container from it, runs the one thing that image does, and the container exits once that's finished."
+    },
+    {
+      "id": "docker-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "$ docker pull node@sha256:3e3c76c0b65447a1aa20e18d70d23b31d6bd5f7f3bec0e05a4b1e6f9a7e9a1c0",
+      "prompt": "Northbridge's production deploy pipeline pulls the checkout image by digest, as shown above, instead of by tag (node:20). What does pulling by digest guarantee that pulling by tag does not?",
+      "options": [
+        "The exact same image content every time, since a digest is a SHA-256 hash of the image's bytes and never changes, while a tag can be repointed to different bytes later",
+        "A faster download, since digests skip Docker Hub's normal pull process entirely",
+        "Automatic updates to the newest available build whenever one is pushed, unlike a tag which stays fixed forever",
+        "That the image came from a Docker Hub Official Image publisher rather than an unverified upload"
+      ],
+      "correctIndex": 0,
+      "explain": "A tag like node:20 is a movable, human-friendly label -- Docker Hub can repoint it to different bytes tomorrow. A digest is a SHA-256 hash of the exact image content, so it never changes. Pinning a production deploy to a digest means a tag repoint on Docker Hub can never silently change what's actually running."
+    },
+    {
+      "id": "docker-07",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the `docker run` flags covered in Lesson 6.",
+      "options": [
+        "`-d` runs the container in the background (detached) and returns control of the shell immediately",
+        "`--name` assigns a memorable name to a container so later commands can target it instead of a random ID",
+        "`-p 8080:3000` maps the container's internal port 8080 to port 3000 on the host",
+        "`-e NODE_ENV=production` sets an environment variable inside the container at startup",
+        "Whether an image carries Docker Hub's Official Image badge is controlled by the `-e` flag"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "-d detaches the container into the background; --name gives it a memorable, targetable name; -e sets an environment variable inside the container. The -p flag reads host:container, not container:host -- 8080:3000 maps host port 8080 to the container's port 3000, the reverse of option C. The Official Image badge is a Docker Hub publishing designation, unrelated to any docker run flag."
+    },
+    {
+      "id": "docker-08",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "code": "$ docker exec -it catalog sh\n/app # ls\nserver.js  package.json  node_modules  config/",
+      "prompt": "Fill in the blank: `docker ________ -it catalog sh` opens an interactive shell as a second process inside the already-running catalog container, without stopping its main process.",
+      "acceptedAnswers": ["exec", "docker exec"],
+      "explain": "docker exec runs a new process inside an already-running container -- it doesn't replace the container's main process, it adds a second one alongside it. Exiting that shell doesn't stop the container, because the main process is still running underneath it."
+    },
+    {
+      "id": "docker-09",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each container lifecycle command to what it actually does, per Lesson 7.",
+      "left": [
+        "docker create",
+        "docker stop",
+        "docker kill",
+        "docker pause"
+      ],
+      "right": [
+        "Freezes every process in the container using the host's cgroup freezer, without releasing memory",
+        "Sends SIGKILL immediately, with no grace period",
+        "Sets up a container's filesystem, config, and network without starting its main process",
+        "Sends SIGTERM, waits up to 10 seconds for a clean exit, then sends SIGKILL if it hasn't exited"
+      ],
+      "correctMap": [2, 3, 1, 0],
+      "explain": "docker create configures a container -- filesystem, config, network -- without running anything yet. docker stop sends SIGTERM and gives the process up to 10 seconds before forcing SIGKILL. docker kill skips the grace period entirely and sends SIGKILL right away. docker pause freezes every process in the container via the cgroup freezer, without releasing any memory, so it can be inspected mid-state and later unpaused exactly where it left off."
+    },
+    {
+      "id": "docker-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "$ docker images -f dangling=true\nREPOSITORY   TAG       IMAGE ID       SIZE\n<none>       <none>    9f3a1b2c4d5e   412MB",
+      "prompt": "This image shows up with both REPOSITORY and TAG listed as `<none>`. What is it, and how did it end up that way?",
+      "options": [
+        "A dangling image -- the previous build that held a tag like catalog:latest before a newer build with the same tag replaced it; its layers still exist on disk, just untagged",
+        "A corrupted image that failed to download completely and must be removed immediately before it causes problems",
+        "An image that was never actually pulled, only listed by docker images as a placeholder entry",
+        "The shared base layer underneath every container, deliberately left untagged for security reasons"
+      ],
+      "correctIndex": 0,
+      "explain": "A dangling image is one with no tag pointing to it anymore -- usually the previous version of an image after a rebuild reuses the same tag (catalog:latest, say). The old layers still exist on disk under a new, untagged ID; Docker just stopped calling them catalog:latest. They aren't corrupted or broken, just orphaned, and docker image prune is the targeted way to reclaim that space."
+    },
+    {
+      "id": "docker-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "$ docker build -t northbridge/catalog:1.4 .\n => CACHED [2/5] WORKDIR /app\n => CACHED [3/5] COPY package.json package-lock.json ./\n => CACHED [4/5] RUN npm install --production\n => [5/5] COPY . .",
+      "prompt": "Only server.js changed since the last build, not package.json. Why does this build reuse the cache for layers [2/5] through [4/5] but rebuild layer [5/5]?",
+      "options": [
+        "Docker caches each layer by its instruction plus its inputs; since package.json didn't change, the WORKDIR, COPY package.json, and RUN npm install layers replay from cache, and only COPY . . -- whose input, the app code, changed -- rebuilds",
+        "Docker always rebuilds exactly the final layer in a Dockerfile, no matter what actually changed",
+        "The build cache was manually disabled for the first four instructions in this particular run",
+        "Layers rebuild in a random order chosen fresh at each build to balance load across the host"
+      ],
+      "correctIndex": 0,
+      "explain": "Each RUN, COPY, and ADD produces its own cached layer, keyed by its instruction and its inputs. package.json didn't change, so the cache for COPY package.json and RUN npm install still matches and gets reused. COPY . . picks up the changed server.js, so its input differs and Docker rebuilds that layer -- and only that layer, since nothing comes after it in this Dockerfile."
+    },
+    {
+      "id": "docker-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "ENTRYPOINT [\"node\", \"server.js\"]\nCMD [\"--port=3000\"]",
+      "prompt": "Given these two Dockerfile lines, what does `docker run northbridge/catalog:1.4 --port=4000` actually run inside the container?",
+      "options": [
+        "`node server.js --port=4000` -- ENTRYPOINT is fixed and the docker run argument is appended to it, overriding CMD's default --port=3000",
+        "`node server.js --port=3000 --port=4000` -- both CMD's default argument and the docker run argument get passed together",
+        "`--port=4000` by itself, since ENTRYPOINT is completely replaced by any argument given on docker run",
+        "An error, because a Dockerfile can't set both ENTRYPOINT and CMD at the same time"
+      ],
+      "correctIndex": 0,
+      "explain": "ENTRYPOINT fixes the program that always runs; arguments given to docker run are appended to it rather than replacing it. CMD only supplies a default argument, which docker run's own argument overrides. So the fixed node server.js stays, and --port=4000 replaces the CMD-supplied --port=3000 default."
+    },
+    {
+      "id": "docker-13",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "code": "FROM node:20 AS build\n...\nFROM nginx:1.27-alpine\nCOPY --from=build /app/dist /usr/share/nginx/html",
+      "prompt": "Fill in the blank: in `FROM node:20 AS build`, the keyword ________ gives this build stage the name build, which a later stage can then reference with COPY --from=build to pull out only the compiled artifacts.",
+      "acceptedAnswers": ["AS", "as"],
+      "explain": "FROM ... AS <name> names a build stage so a later stage can reach back into it with COPY --from=<name> and copy out specific files -- here, just the compiled dist/ output -- without carrying along the rest of that stage's toolchain."
+    },
+    {
+      "id": "docker-14",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of building the catalog frontend's multi-stage Dockerfile, per Lesson 14, in the correct order.",
+      "items": [
+        "FROM node:20 AS build sets up the first stage with the full Node toolchain",
+        "COPY package.json package-lock.json ./ and RUN npm install install dependencies inside the build stage",
+        "COPY . . and RUN npm run build compile the app into /app/dist inside the build stage",
+        "FROM nginx:1.27-alpine starts a brand-new, minimal runtime stage",
+        "COPY --from=build /app/dist /usr/share/nginx/html pulls only the compiled output into the final image"
+      ],
+      "explain": "A multi-stage build runs the full toolchain in a named build stage, then starts a completely fresh, minimal image for the runtime stage and copies in only the finished artifacts with COPY --from=<stage>. Everything else from the build stage -- the Node toolchain, dev dependencies, unbuilt source -- never makes it into the final, much smaller image."
+    },
+    {
+      "id": "docker-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Northbridge pushes the image northbridgeretail/catalog:1.4 to Docker Hub. In registry terminology, what is northbridgeretail/catalog itself, as distinct from the 1.4 part?",
+      "options": [
+        "A repository -- a named collection of tagged versions of one image, where 1.4 is just one tag living inside it",
+        "A registry -- the server that stores every image Northbridge has ever pushed",
+        "A digest -- the fixed SHA-256 hash identifying this exact build",
+        "A namespace reserved exclusively for private images, never usable for a public one"
+      ],
+      "correctIndex": 0,
+      "explain": "A registry (Docker Hub) is the server that stores and serves images. Inside it, a name like northbridgeretail/catalog is a repository, and every tag pushed to it -- 1.4, 1.5, latest -- is a version living inside that one repository."
+    },
+    {
+      "id": "docker-16",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about image tagging and versioning, per Lesson 17.",
+      "options": [
+        "`docker tag` creates a new label pointing at an image ID that already exists locally; it doesn't copy or move any image data",
+        "Once a semver or git-sha tag has been pushed to production, Northbridge's rule is to treat it as immutable rather than overwrite it",
+        "`latest` is safe to deploy by in production because Docker Hub guarantees it always points at a stable, fully tested build",
+        "A git-SHA tag is generated automatically by CI and traces a build back to the exact commit that produced it",
+        "One image can only ever carry a single tag at a time"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "docker tag just points a new name at an existing local image ID, with no data copied. Northbridge's rule treats a pushed semver or git-sha tag as immutable -- fixing a bug means cutting a new version, not re-pushing the same one. A git-SHA tag is CI-generated and traceable to source. latest is the one tag allowed to move precisely because nothing in production is deployed by it alone -- it's convenient for local development, not a safe production pin. And one image can carry several tags at once, as northbridgeretail/catalog:1.5, :latest, and :a1b2c3d all pointing at the same build demonstrate."
+    },
+    {
+      "id": "docker-17",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "$ aws ecr get-login-password --region us-east-1 | \\\n  docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-east-1.amazonaws.com",
+      "prompt": "Fill in the blank: before Docker can push an image to Amazon ECR, the AWS CLI's get-login-password output must be piped into `docker ________`, authenticating with a short-lived 12-hour token instead of a typed password.",
+      "acceptedAnswers": ["login", "docker login"],
+      "explain": "ECR authentication is a two-step dance: aws ecr get-login-password fetches a short-lived token from AWS, then that token is piped straight into docker login instead of typing a password. It's the same underlying docker login command used for Docker Hub, just fed a token sourced from AWS IAM rather than a Hub account password."
+    },
+    {
+      "id": "docker-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "$ docker run -d --name catalog-db -v catalog-db-data:/var/lib/postgresql/data postgres:16\n$ docker rm -f catalog-db\n$ docker run -d --name catalog-db -v catalog-db-data:/var/lib/postgresql/data postgres:16",
+      "prompt": "catalog-db is removed and then recreated with the exact same `-v catalog-db-data:/var/lib/postgresql/data` flag shown above. What happens to the data Postgres had already written?",
+      "options": [
+        "It's still there -- catalog-db-data is a named volume Docker manages independently of any single container's lifecycle, so the new container mounts the same durable storage",
+        "It's gone -- removing a container with docker rm always deletes any volume it was using",
+        "It's preserved only because docker rm was run without the -f flag",
+        "It's automatically copied into a new bind mount at the same path"
+      ],
+      "correctIndex": 0,
+      "explain": "A named volume is storage Docker creates and manages outside any single container's lifecycle. The container is disposable -- removing and recreating it is fine -- but catalog-db-data isn't, and the new container mounting the same volume name sees exactly what the previous container's Postgres wrote."
+    },
+    {
+      "id": "docker-19",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Docker's default bridge network, per Lesson 20.",
+      "options": [
+        "Every container joins the default bridge network automatically unless it's started with --network naming something else",
+        "Two containers on the default bridge network can reach each other by IP address",
+        "Two containers on the default bridge network can resolve each other by container name out of the box",
+        "The host network mode gives a container its own fully isolated network stack, separate from the host's",
+        "The none network mode means a container has no networking at all"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "Containers land on the default bridge network automatically unless told otherwise, and it does route traffic between them by IP. What it can't do is resolve a container by name -- that name resolution only works on a user-defined network, per Lesson 21. host mode is the opposite of isolated: it shares the host's network stack directly with no separation at all. none means exactly what it says -- no networking."
+    },
+    {
+      "id": "docker-20",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "$ docker network create northbridge-net\n$ docker exec catalog ping -c 1 catalog-db\nPING catalog-db (172.18.0.2): 56 data bytes",
+      "prompt": "Fill in the blank: Docker only runs its embedded DNS server, which resolves container names like catalog-db to their current IP address automatically, on ________ networks -- never on the default bridge network.",
+      "acceptedAnswers": ["user-defined", "user defined", "a user-defined network", "user-defined networks"],
+      "explain": "The default bridge network routes traffic between containers by IP but has no name resolution. A user-defined network, created with docker network create, gets Docker's embedded DNS server, which maps each container's name to whatever IP it currently has -- so a recreated container with a new IP still resolves correctly under its old name."
+    },
+    {
+      "id": "docker-21",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Match each networking term or command to what it actually does, per Lessons 21-22.",
+      "left": [
+        "docker network create",
+        "docker network connect",
+        "Embedded DNS",
+        "A DATABASE_URL pointing at a container name instead of an IP"
+      ],
+      "right": [
+        "Attaches an already-running container to a network without restarting it",
+        "Creates a new bridge network that, unlike the default bridge, gets Docker's name-resolution service",
+        "Docker's built-in service that maps each container's name to its current IP on a user-defined network",
+        "An example of service discovery -- configuration that relies on a stable name rather than a hardcoded address"
+      ],
+      "correctMap": [1, 0, 2, 3],
+      "explain": "docker network create makes a user-defined bridge network, which is what actually enables name-based resolution. docker network connect attaches a running container to a network live, without a restart. Embedded DNS is the specific mechanism that resolves container names to IPs on that network. And pointing an app's DATABASE_URL at a container name like checkout-db instead of an IP is exactly what service discovery means in practice -- the pattern Chapter 6's Compose stacks build on directly."
+    },
+    {
+      "id": "docker-22",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "After running `docker compose up -d` for a service that has a named volume declared in compose.yaml, which command correctly removes the containers and network Compose created, while leaving the named volume's data intact?",
+      "options": [
+        "docker compose down",
+        "docker compose down -v",
+        "docker compose rm -v",
+        "docker compose stop && docker volume prune",
+        "docker compose down --volumes",
+        "docker system prune -a --volumes"
+      ],
+      "correctIndex": 0,
+      "explain": "docker compose down stops and removes the containers and the network Compose created, but it does not touch named volumes -- those survive until -v (or its long form --volumes) is added to the same command. Plain docker compose down is exactly the command that tears down the stack while keeping a named volume's data.",
+      "distractorExplain": "Option B adds the -v flag to the same command, which looks like a small, cautious addition but does the opposite of what's being asked: -v explicitly tells docker compose down to also remove any named volumes declared in the compose file. That flag is for a full teardown including data, not for the 'keep the data intact' case this question describes -- a mistake worth catching before it deletes a database volume in a real environment."
+    },
+    {
+      "id": "docker-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "code": "services:\n  api:\n    depends_on:\n      - db\n  db:\n    image: postgres:16",
+      "prompt": "With this compose.yaml, Compose starts db, then api, in that order. Why might api still fail to connect to db immediately after both containers report as started?",
+      "options": [
+        "depends_on only guarantees start order, not readiness -- Postgres can still be initializing its data directory for several seconds after the db container has technically started",
+        "depends_on actually starts both containers at the exact same instant, so the ordering shown here is misleading",
+        "api and db are never placed on the same Compose network unless a healthcheck is also configured",
+        "depends_on silently retries api's connection internally until it succeeds, so this failure can't actually happen"
+      ],
+      "correctIndex": 0,
+      "explain": "depends_on without a health condition promises start order and nothing more. The db container being started doesn't mean Postgres inside it has finished initializing and is ready to accept connections -- if api connects immediately, it can fail even though depends_on was respected exactly as written. Lesson 25's condition: service_healthy is what actually closes that gap."
+    },
+    {
+      "id": "docker-24",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Docker restart policies, per Lesson 25.",
+      "options": [
+        "unless-stopped restarts a container automatically after a crash, but a container stopped manually stays stopped even across a daemon restart",
+        "always restarts a container after a crash, and restarts it again when the daemon restarts, even after a manual stop",
+        "on-failure restarts a container regardless of its exit code, including a clean, intentional exit",
+        "no is the default restart policy -- a container does not restart automatically unless a policy says otherwise",
+        "A restart policy and a Dockerfile HEALTHCHECK are the same mechanism, just configured in two different places"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "unless-stopped behaves like always except a manually-stopped container stays stopped. always restarts on crash and even after a daemon restart, regardless of a manual stop. no, the default, never restarts automatically. on-failure only restarts on a non-zero exit status, not a clean exit -- that's the false option. And a restart policy and a HEALTHCHECK are related but distinct: one reacts to a container exiting, the other actively probes whether a running container is actually working."
+    },
+    {
+      "id": "docker-25",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each environment-configuration mechanism to what it actually does, per Lesson 26.",
+      "left": [
+        "environment:",
+        "env_file:",
+        "secrets:",
+        ".env.example"
+      ],
+      "right": [
+        "Mounts a sensitive value as a file under /run/secrets/ instead of as an environment variable",
+        "A committed template file documenting required variables without any real values",
+        "Lists variables directly inside compose.yaml, fine for non-sensitive config like DB_HOST",
+        "Points a service at a separate file of KEY=value lines to load as environment variables"
+      ],
+      "correctMap": [2, 3, 0, 1],
+      "explain": "environment: lists variables straight in compose.yaml, acceptable for non-sensitive config since anyone with repo access already sees it. env_file: points at a separate file of KEY=value lines, typically a gitignored .env holding real secrets. secrets: mounts a value as a file under /run/secrets/ rather than an environment variable, keeping it out of docker inspect output. .env.example is the committed, values-stripped template that documents what variables the app expects."
+    },
+    {
+      "id": "docker-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "code": "docker run -d --memory=\"512m\" --cpus=\"0.5\" northbridge/storefront-api:2.1",
+      "prompt": "The api container started with this command is later found to have exited with code 137. What does that exit code most likely indicate?",
+      "options": [
+        "The kernel's out-of-memory killer terminated the container for exceeding its 512m memory limit",
+        "The container exceeded its 0.5 CPU limit, which forces an immediate stop",
+        "The container's HEALTHCHECK failed three times in a row",
+        "The process exited cleanly with status 137 as part of its normal shutdown routine"
+      ],
+      "correctIndex": 0,
+      "explain": "--memory is a hard cap -- if a container tries to exceed it, the kernel's out-of-memory killer terminates the offending process, and the container typically exits with code 137. --cpus throttles usage rather than killing the container, and a failed HEALTHCHECK marks a container unhealthy without necessarily stopping it, so exit code 137 specifically points to the memory limit."
+    },
+    {
+      "id": "docker-27",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the hardening techniques covered in Lesson 29.",
+      "options": [
+        "USER node in a Dockerfile switches the container's running process off root for the rest of the Dockerfile and at runtime",
+        "--cap-drop=ALL followed by --cap-add=NET_BIND_SERVICE removes every Linux capability and then restores only the one actually needed",
+        "--read-only makes the entire container filesystem permanently unwritable, including any mounted volumes or tmpfs paths",
+        "A distroless or scratch-based image has no shell and no package manager, which shrinks what an attacker can do after gaining code execution",
+        "Running as root inside a container is exactly as safe as running as a non-root user, since namespaces fully isolate the process either way"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "USER node switches off root for the rest of the Dockerfile and the running container. --cap-drop=ALL plus a targeted --cap-add applies least privilege, restoring only the specific capability needed. A distroless or scratch image strips away the shell and package manager an attacker could otherwise use after breaking in. --read-only leaves mounted volumes and tmpfs paths writable by design, so it doesn't make the filesystem unwritable -- that's the false statement. Running as root inside a container is riskier than running as non-root: a break-out from a root process is a much shorter path to compromising the host."
+    },
+    {
+      "id": "docker-28",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Docker's logging drivers and monitoring tools, per Lesson 28.",
+      "options": [
+        "The default json-file driver has no size cap unless max-size and max-file are explicitly configured",
+        "The local driver uses a more compact binary format and enables log rotation by default",
+        "docker logs -f --tail 50 shows only the 50 oldest log lines ever written, ignoring anything recent",
+        "docker stats reports live CPU and memory usage, which can be checked directly against a container's --memory limit"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "json-file is unbounded by default -- a noisy container can genuinely fill host disk unless max-size/max-file are set. local uses a more compact binary format with rotation already enabled. docker stats shows live MEM USAGE / LIMIT, which is exactly Lesson 27's --memory cap reflected back in real time. --tail 50 shows the last (most recent) 50 lines, not the oldest, so that statement is false."
+    },
+    {
+      "id": "docker-29",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "code": "checkout:\n  depends_on:\n    catalog-db:\n      condition: service_healthy\n    catalog:\n      condition: service_started",
+      "prompt": "In the capstone's compose.yaml, checkout depends on catalog-db with condition: service_healthy and on catalog with condition: service_started. What's the practical difference between those two conditions for checkout's startup?",
+      "options": [
+        "checkout waits for catalog-db to actually pass its health check before starting, but only waits for catalog to have started -- not necessarily be ready to serve requests",
+        "Both conditions behave identically; service_started and service_healthy are just two names for the same wait",
+        "service_started means checkout waits for catalog's health check, while service_healthy only waits for catalog-db's container to exist",
+        "Neither condition affects startup order at all; depends_on is purely documentation with no runtime effect"
+      ],
+      "correctIndex": 0,
+      "explain": "condition: service_healthy makes Compose wait for that service's own HEALTHCHECK to report healthy, not just started -- exactly what the capstone needs so checkout never queries catalog-db before Postgres can actually accept connections. condition: service_started is weaker: it only waits for the catalog container to have started, since catalog itself has no HEALTHCHECK defined in this stack."
+    },
+    {
+      "id": "docker-30",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: per the capstone wrap-up's interview talking points, multi-stage builds are worth highlighting because the build toolchain -- compilers and dev dependencies -- never ships in the image that actually runs, producing a smaller image and a smaller ________.",
+      "acceptedAnswers": ["attack surface", "attack-surface"],
+      "explain": "The wrap-up lesson frames this as a real interview talking point: multi-stage builds matter not just for image size but for security, since the build tools that never make it into the final runtime image are also tools an attacker can't use if they ever get code execution inside the shipped container."
+    }
+  ]
+}

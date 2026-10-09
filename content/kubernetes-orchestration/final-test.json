@@ -1,0 +1,547 @@
+{
+  "questions": [
+    {
+      "id": "k8s-01",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of how a `kubectl apply -f checkout-deployment.yaml` command actually flows through the cluster's architecture, in the correct order.",
+      "items": [
+        "kube-apiserver validates the YAML and writes the desired state to etcd",
+        "kube-controller-manager notices the Deployment wants Pods that don't exist yet and creates Pod objects",
+        "kube-scheduler sees the unscheduled Pods and assigns each one to a node",
+        "kubelet on the assigned node tells the container runtime to pull the image and start the container"
+      ],
+      "explain": "Every `kubectl apply` travels through the control plane in this exact order: the API server validates and persists the desired state to etcd first; the controller manager then notices a gap between desired and actual Pods and creates them; the scheduler assigns each unscheduled Pod to a node; and finally the kubelet on that node tells the container runtime to actually start the container. No component skips a layer or talks directly to one it isn't supposed to."
+    },
+    {
+      "id": "k8s-02",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each control-plane or node component to what it actually does.",
+      "left": [
+        "kube-apiserver",
+        "etcd",
+        "kube-scheduler",
+        "kubelet"
+      ],
+      "right": [
+        "Watches for unscheduled Pods and assigns each one to a node",
+        "The only component that talks to etcd directly, serving every kubectl command through its REST API",
+        "The per-node agent that makes sure its assigned Pods are actually running",
+        "The distributed key-value store holding the cluster's entire state"
+      ],
+      "correctMap": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "explain": "kube-apiserver is the single front door to the cluster and the only component that touches etcd directly. etcd is the distributed key-value store holding all cluster state — lose it without a backup and the cluster's state is gone with it. kube-scheduler watches for Pods with no node assigned and picks one. kubelet is the per-node agent that receives Pod specs and keeps their containers actually running."
+    },
+    {
+      "id": "k8s-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a Kubernetes object's `spec` field describes the state you want; its ________ field is what the cluster reports back as actually happening, and you never write it by hand.",
+      "acceptedAnswers": [
+        "status"
+      ],
+      "explain": "spec is what you declare you want; status is the cluster's own observation of what's actually true, reported back by controllers. The controller manager's whole job, for every object type, is narrowing the gap between those two fields — you never author status yourself."
+    },
+    {
+      "id": "k8s-04",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "kubectl config get-contexts\nkubectl config current-context\nkubectl config use-context kind-northbridge-dev",
+      "prompt": "Northbridge's platform team now has a local kind cluster, an AKS cluster, and an EKS cluster all listed in the same kubeconfig file. Before running a command that could delete objects, what should they check first, and why?",
+      "options": [
+        "kubectl config current-context, to confirm which cluster kubectl is about to act against, since every command runs against whichever context is currently active",
+        "kubectl get nodes, since that always lists every cluster's nodes together in one combined result",
+        "Nothing — kubectl always prompts for confirmation before an operation that deletes anything",
+        "kubectl cluster-info, since it specifically reports which of the listed contexts is the production one"
+      ],
+      "correctIndex": 0,
+      "explain": "A kubeconfig file can hold connection details for several clusters at once, each a named context, and kubectl always talks to whichever context is current. Checking current-context before a risky command is exactly how a team with multiple clusters avoids accidentally running something against the wrong one. kubectl has no built-in confirmation prompt for deletes, cluster-info doesn't identify a 'production' context, and get nodes only shows the current context's nodes, not every cluster's."
+    },
+    {
+      "id": "k8s-05",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Which Kubernetes object guarantees exactly one Pod runs on every matching node in the cluster, automatically scheduling onto any node added later, with no `replicas` field to set at all?",
+      "options": [
+        "DaemonSet",
+        "ReplicaSet",
+        "Deployment",
+        "StatefulSet",
+        "Job",
+        "CronJob"
+      ],
+      "correctIndex": 0,
+      "explain": "A DaemonSet asks a different question than a ReplicaSet-backed Deployment: not 'how many Pods total' but 'one Pod on every node.' It has no replicas field because there's nothing to count — when a new node joins the cluster, the DaemonSet controller schedules a matching Pod onto it automatically, with no YAML change. This is the standard pattern for node-level agents like log collectors and CNI plugins.",
+      "distractorExplain": "ReplicaSet looks like the closest match because it also keeps a set of Pods running, but it tracks a fixed total replica count across the cluster, not one Pod per node — adding a new node doesn't give a ReplicaSet any new Pods, while a DaemonSet schedules onto that new node automatically with no replicas field involved at all."
+    },
+    {
+      "id": "k8s-06",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "spec:\n  replicas: 10\n  strategy:\n    type: RollingUpdate\n    rollingUpdate:\n      maxUnavailable: 1\n      maxSurge: 1",
+      "prompt": "With `replicas: 10`, `maxUnavailable: 1`, and `maxSurge: 1`, select every true statement about this Deployment's rollout.",
+      "options": [
+        "The rollout can run up to 11 total Pods at once (10 desired + 1 surge)",
+        "The number of ready Pods never drops below 9 during the rollout",
+        "Kubernetes brings up all new Pods simultaneously, then deletes all old Pods at once",
+        "A new Pod must pass its readiness probe before an old Pod is retired",
+        "Checkout stays reachable throughout the rollout because it is never down to zero Pods"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3,
+        4
+      ],
+      "explain": "maxSurge: 1 permits one extra Pod above the desired count (11 total max); maxUnavailable: 1 permits dropping at most one Pod below desired (9 ready minimum). Kubernetes brings up one new Pod, waits for it to pass its readiness probe, then retires one old Pod, repeating — never all at once. Because it never drops to zero, checkout stays reachable the entire time."
+    },
+    {
+      "id": "k8s-07",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a bare ReplicaSet counts and replaces failed Pods, but has no concept of rolling out a new version gradually — that gap is exactly what ________ was built to close.",
+      "acceptedAnswers": [
+        "Deployment",
+        "a Deployment"
+      ],
+      "explain": "Changing a ReplicaSet's template does nothing to Pods already running — it has no rollout logic. A Deployment manages ReplicaSets on your behalf and handles exactly that: creating a new ReplicaSet when the template changes, scaling it up, and scaling the old one down."
+    },
+    {
+      "id": "k8s-08",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each workload object to what it actually guarantees.",
+      "left": [
+        "DaemonSet",
+        "Job",
+        "CronJob",
+        "StatefulSet"
+      ],
+      "right": [
+        "Ensures exactly one Pod runs on every matching node in the cluster",
+        "Creates a new Job on a recurring schedule using cron syntax",
+        "Runs Pods to completion and tracks successful completions, not a standing replica count",
+        "Gives Pods stable, predictable names and per-replica persistent storage via volumeClaimTemplates"
+      ],
+      "correctMap": [
+        0,
+        2,
+        1,
+        3
+      ],
+      "explain": "DaemonSet runs one Pod per matching node. Job tracks completions and never restarts a Pod that already succeeded. CronJob wraps a Job on a schedule, creating a fresh Job each time it fires. StatefulSet gives Pods stable names (catalog-db-0, -1, -2) and per-replica storage via volumeClaimTemplates, which Deployments can't replicate."
+    },
+    {
+      "id": "k8s-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A Pod in the `analytics` namespace tries to reach the checkout Service running in the `default` namespace by calling `http://checkout/`. What happens, and why?",
+      "options": [
+        "It fails to resolve the Service correctly, because the short name `checkout` only resolves within the same namespace the Service lives in — a cross-namespace caller needs at least `checkout.default`",
+        "It resolves correctly, because CoreDNS always searches every namespace for a matching Service name",
+        "It resolves, but routes to a random Pod across every namespace, not just default's checkout Pods",
+        "It fails with an error, because Services can never be reached across namespaces, even using the fully qualified name"
+      ],
+      "correctIndex": 0,
+      "explain": "Each namespace is a DNS search domain, so the short name `checkout` only resolves automatically for callers inside the same namespace the Service lives in. A caller in a different namespace needs at least `checkout.default`, or the fully qualified `checkout.default.svc.cluster.local`, which always works from anywhere."
+    },
+    {
+      "id": "k8s-10",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Ingress and Ingress Controllers, per this chapter.",
+      "options": [
+        "The Ingress resource by itself does nothing — something must still read its rules and actually proxy traffic",
+        "An Ingress Controller is usually fronted by one LoadBalancer Service, even when many Ingress resources and hostnames are routed behind it",
+        "pathType: Exact matches any URL that begins with the given path, the same as Prefix",
+        "ingressClassName is needed to disambiguate which controller should act on a set of rules when more than one is installed",
+        "TLS certificates referenced from an Ingress's tls block are stored as ConfigMaps, not Secrets"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "An Ingress is just a declared rulebook; an Ingress Controller like ingress-nginx is the Pod that actually reads those rules and configures a real proxy, usually fronted by exactly one LoadBalancer Service no matter how many hostnames route behind it. ingressClassName ties a rule set to a specific controller when more than one is installed. pathType: Exact requires a precise match, unlike Prefix which matches anything beginning with the path. TLS certificates for Ingress are stored as Secrets, referenced by secretName, not ConfigMaps."
+    },
+    {
+      "id": "k8s-11",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: default-deny-all\n  namespace: payments\nspec:\n  podSelector: {}\n  policyTypes:\n    - Ingress\n    - Egress",
+      "prompt": "Fill in the blank: this policy's empty `podSelector: {}` matches every Pod in the `payments` namespace, and with no ingress or egress rules listed, it blocks ________ traffic for all of them until a separate policy explicitly allows exceptions.",
+      "acceptedAnswers": [
+        "all",
+        "all traffic",
+        "all inbound and outbound",
+        "all inbound and outbound traffic"
+      ],
+      "explain": "An empty podSelector selects every Pod in the namespace. With no ingress or egress rules listed but both policyTypes declared, this is the default-deny-all pattern: it blocks all inbound and outbound traffic for every Pod in payments until a second, narrower policy opens a specific exception, such as checkout talking to payment-processing."
+    },
+    {
+      "id": "k8s-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "envFrom:\n  - configMapRef:\n      name: catalog-config",
+      "prompt": "Northbridge updates `catalog-config`'s `LOG_LEVEL` value and reapplies it. The product-catalog Pods consume this ConfigMap via `envFrom`, as shown above, and are already running. What happens to those already-running Pods?",
+      "options": [
+        "Nothing — environment variables from envFrom are captured once at container start, so the already-running Pods keep the old value until they're restarted",
+        "Each container immediately re-reads the new value and updates its environment variable live",
+        "The Pods crash, because a ConfigMap update invalidates any container currently consuming it",
+        "Only the first replica picks up the new value; the rest keep the old one indefinitely"
+      ],
+      "correctIndex": 0,
+      "explain": "Updating a ConfigMap's data doesn't restart Pods already using it. Environment variables set via envFrom/env are captured once at container start and never refresh — unlike a mounted ConfigMap volume, which does eventually sync new file contents. Making the change take effect for env-var consumers requires restarting the Pods, commonly via a rolling restart of the Deployment."
+    },
+    {
+      "id": "k8s-13",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Kubernetes Secrets, per this chapter.",
+      "options": [
+        "Base64 encoding is reversible with a single command, so a Secret's value isn't encrypted just because it's a Secret",
+        "Secrets are encrypted at rest in etcd by default, with no extra cluster configuration required",
+        "stringData accepts plain text and lets Kubernetes base64-encode it automatically; data expects values that are already base64-encoded",
+        "type: kubernetes.io/tls holds a TLS certificate and private key, the same type an Ingress's tls block references by secretName",
+        "Mounting a Secret as a file is never preferred over environment variables, since files are always considered less secure"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        3
+      ],
+      "explain": "Base64 is trivially reversible, not encryption — anyone with read access to the Secret object can recover the real value instantly, and Kubernetes doesn't encrypt Secrets at rest by default; that requires explicit encryption-at-rest configuration. stringData is plain text that gets auto-encoded; data expects values already base64-encoded. kubernetes.io/tls holds a cert and key, exactly what an Ingress's tls.secretName points at. Mounting as a volume is often preferred over environment variables for genuinely sensitive values, not the reverse — env vars can leak through crash dumps or child-process inheritance."
+    },
+    {
+      "id": "k8s-14",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Match each storage term to what it actually is or controls.",
+      "left": [
+        "PersistentVolume (PV)",
+        "PersistentVolumeClaim (PVC)",
+        "StorageClass",
+        "volumeBindingMode: WaitForFirstConsumer"
+      ],
+      "right": [
+        "Delays provisioning until a Pod using the PVC is actually scheduled, so the disk lands in the right availability zone",
+        "A namespaced request for storage that binds to a matching PV",
+        "A cluster-level resource representing an actual piece of storage",
+        "A named template describing how a provisioner should create storage on demand"
+      ],
+      "correctMap": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "explain": "A PersistentVolume is a cluster-level resource representing real storage. A PersistentVolumeClaim is a namespaced request that binds to a matching PV. A StorageClass is a template telling a provisioner how to create storage on demand, triggered by a PVC naming it. WaitForFirstConsumer delays provisioning until a consuming Pod is scheduled, so the disk can be created in that Pod's own zone."
+    },
+    {
+      "id": "k8s-15",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Which Quality of Service (QoS) class does Kubernetes assign to a Pod whose containers have no resource requests or limits set at all, making it the first to be evicted under node resource pressure?",
+      "options": [
+        "BestEffort",
+        "Guaranteed",
+        "Burstable",
+        "Reserved",
+        "Standard",
+        "LimitedPriority"
+      ],
+      "correctIndex": 0,
+      "explain": "Kubernetes assigns BestEffort when a Pod has no requests or limits set for any container — it's evicted first under node pressure. Guaranteed requires requests equal to limits for every container; Burstable covers everything in between, with at least one request set but requests not equal to limits.",
+      "distractorExplain": "Burstable looks like it could fit 'no guarantees at all,' but Burstable specifically means at least one request is set while requests and limits differ — it's a step above BestEffort, not the same thing. A Pod with literally no requests or limits set anywhere is BestEffort, and BestEffort is specifically the class evicted first, ahead of Burstable."
+    },
+    {
+      "id": "k8s-16",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "code": "livenessProbe:\n  httpGet:\n    path: /healthz\n    port: 8080\n  initialDelaySeconds: 10\n  periodSeconds: 10\n  failureThreshold: 3",
+      "prompt": "A checkout container takes 15 seconds on startup to warm its cache before it can serve requests. A developer configures only the livenessProbe shown above, pointed at `/healthz`, assuming it will keep checkout out of traffic until it's ready. What actually happens?",
+      "options": [
+        "If /healthz doesn't succeed until the cache is warm, the liveness probe fails repeatedly during startup and the kubelet keeps killing and restarting the container instead of just withholding traffic from it",
+        "Nothing goes wrong — a liveness probe and a readiness probe behave identically during Pod startup",
+        "The Pod is removed from the Service's Endpoints automatically, with no restarts, exactly as intended",
+        "Kubernetes automatically converts the livenessProbe into a readinessProbe once it detects the container is still starting"
+      ],
+      "correctIndex": 0,
+      "explain": "A liveness probe answers 'should this container be restarted?' — it has nothing to do with removing a Pod from Service Endpoints. If the liveness check fails during the cache warm-up, the kubelet restarts the container repeatedly instead of just withholding traffic, which is exactly the costly mix-up this chapter warns about: a readinessProbe is what should guard the startup window, since its failure only pulls the Pod from Endpoints without killing it."
+    },
+    {
+      "id": "k8s-17",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about how HorizontalPodAutoscaler (HPA) and Cluster Autoscaler work together, per this chapter.",
+      "options": [
+        "The HPA requires the metrics-server add-on to read CPU/memory utilization at all",
+        "If the HPA scales a Deployment up but every existing node is full, the new Pods go Pending until the Cluster Autoscaler adds a node",
+        "The Cluster Autoscaler adjusts Pod replica counts directly, the same way the HPA does",
+        "'70% utilization' in an HPA's target is measured against each Pod's requested CPU, which is why resource requests matter for CPU-based autoscaling",
+        "The Cluster Autoscaler will remove any underutilized node immediately, regardless of what Pods are running on it"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "metrics-server is the prerequisite add-on the HPA reads CPU/memory usage from. When the HPA scales up and no node has room, those Pods sit Pending until the Cluster Autoscaler adds capacity — two different controllers scaling two different things (Pod count versus node count). averageUtilization is measured against a Pod's requested CPU, which is exactly why requests matter for this kind of autoscaling. The Cluster Autoscaler is deliberately cautious about scale-down — it won't remove a node running Pods that can't be safely evicted, such as ones using local storage."
+    },
+    {
+      "id": "k8s-18",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: node affinity's `requiredDuringSchedulingIgnoredDuringExecution` strength behaves like a hard rule, while `preferredDuringSchedulingIgnoredDuringExecution` is only a ________ — the scheduler tries to honor it, but will still place the Pod elsewhere if no matching node exists.",
+      "acceptedAnswers": [
+        "soft preference",
+        "preference",
+        "soft rule"
+      ],
+      "explain": "requiredDuringSchedulingIgnoredDuringExecution is a hard requirement, behaving like nodeSelector. preferredDuringSchedulingIgnoredDuringExecution is only a soft preference — the scheduler tries to honor it but still places the Pod somewhere else if no node matches, rather than leaving it unscheduled."
+    },
+    {
+      "id": "k8s-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "code": "kubectl auth can-i delete secrets --namespace checkout --as priya@northbridgeretail.com",
+      "prompt": "Priya has a RoleBinding granting her the pod-reader Role (get/list/watch on pods) inside the `analytics` namespace only. What does the command above return, and why?",
+      "options": [
+        "no — her RoleBinding only grants permissions inside analytics, and it only grants get/list/watch on pods, not delete on secrets anywhere",
+        "yes — RBAC permissions granted in one namespace automatically extend to every other namespace too",
+        "yes — every Role automatically includes delete access on Secrets, since Secrets are considered low-risk objects",
+        "no — but only because kubectl auth can-i can't evaluate permissions for another user, regardless of RBAC rules"
+      ],
+      "correctIndex": 0,
+      "explain": "A RoleBinding only grants what its Role lists, and only inside the namespace the RoleBinding itself lives in. Priya's RoleBinding grants get/list/watch on pods inside analytics — nothing about secrets, and nothing about checkout. kubectl auth can-i --as genuinely evaluates permissions for another identity, which is exactly how this check correctly returns no."
+    },
+    {
+      "id": "k8s-20",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about securityContext and Pod Security Standards, per this chapter.",
+      "options": [
+        "runAsNonRoot: true refuses to start the container at all if its image tries to run as UID 0",
+        "capabilities.drop: [\"ALL\"] strips every Linux capability the container doesn't explicitly need back",
+        "Pod Security Admission enforces a chosen standard by labeling individual Pods, not namespaces",
+        "The restricted profile is the loosest of the three built-in Pod Security Standards",
+        "readOnlyRootFilesystem: true blocks the container from writing to its filesystem outside of volumes it's explicitly given"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        4
+      ],
+      "explain": "runAsNonRoot: true refuses to start a container whose image tries to run as root. capabilities.drop: [\"ALL\"] strips every Linux capability not explicitly added back. readOnlyRootFilesystem: true blocks writes outside explicitly mounted volumes. Pod Security Admission enforces a standard via labels on the namespace, not on individual Pods. The three built-in standards from loosest to strictest are privileged, baseline, restricted — restricted is the strictest, not the loosest."
+    },
+    {
+      "id": "k8s-21",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: any Pod that doesn't specify a ServiceAccount is automatically assigned the ________ ServiceAccount of its namespace, which typically has no RBAC permissions bound to it.",
+      "acceptedAnswers": [
+        "default",
+        "the default"
+      ],
+      "explain": "Every Pod has an identity even if nobody configured one: it's automatically assigned the default ServiceAccount of its namespace, with a token mounted at /var/run/secrets/kubernetes.io/serviceaccount/. That default account typically carries no RBAC permissions, which is why a Pod that genuinely needs API access should get its own dedicated ServiceAccount instead of relying on default."
+    },
+    {
+      "id": "k8s-22",
+      "type": "matching",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Match each managed-Kubernetes term to what it actually is.",
+      "left": [
+        "AKS node pool",
+        "EKS managed node group",
+        "AWS Fargate profile",
+        "Azure Workload Identity"
+      ],
+      "right": [
+        "A group of nodes in an AKS cluster sharing the same VM size and configuration",
+        "A set of EC2 instances AWS provisions, with Northbridge still choosing the instance type and count",
+        "A serverless option that runs each matching Pod on its own right-sized compute, with no EC2 instances to manage",
+        "Lets an AKS ServiceAccount act as an Azure AD identity with no stored secret, via a federated token"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "An AKS node pool is a group of nodes sharing the same VM size/configuration. An EKS managed node group is EC2 instances AWS provisions, with instance type and count still chosen by the team. A Fargate profile removes node management entirely, running each matching Pod on its own serverless compute. Azure Workload Identity federates a Kubernetes ServiceAccount with an Azure AD application using the ServiceAccount's own token, with no client secret stored anywhere."
+    },
+    {
+      "id": "k8s-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Northbridge's fulfillment Pods on EKS run only a few times a day for short bursts, while a steady-traffic service like checkout runs continuously. Which statement about choosing Fargate profiles versus managed node groups is correct?",
+      "options": [
+        "Fargate fits the infrequent, bursty fulfillment Pods well, since there's no EC2 instance sitting idle between runs; a steady-traffic service is usually cheaper on a managed node group",
+        "Managed node groups are always cheaper than Fargate regardless of traffic pattern, so Northbridge should use node groups for every workload",
+        "Fargate still requires Northbridge to manage its own EC2 instances, just with a different billing model",
+        "EKS's control plane is free either way, so the Fargate-versus-node-group choice has no cost implications at all"
+      ],
+      "correctIndex": 0,
+      "explain": "Fargate removes EC2 instance management entirely, running each Pod on its own right-sized compute — a good fit for fulfillment Pods that only run a few times a day, since nothing sits idle between runs. A steady-traffic service is usually cheaper on a managed node group, where instances run continuously anyway. EKS's control plane isn't free either — it's billed hourly, on top of whichever compute option is chosen for Pods."
+    },
+    {
+      "id": "k8s-24",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of an AKS node-pool upgrade (via `az aks upgrade`) in the correct order, per this chapter.",
+      "items": [
+        "The control plane is upgraded first, independently of any node pool",
+        "A node is cordoned so no new Pods are scheduled to it",
+        "The node's existing Pods are drained and gracefully evicted so they reschedule onto an already-upgraded node",
+        "The old node is replaced with an upgraded one",
+        "The process repeats node by node until the entire node pool is upgraded"
+      ],
+      "explain": "az aks upgrade runs on the control plane first, then on each node pool. Nodes are replaced one at a time by default: cordon the old node, drain its Pods so they reschedule onto an already-upgraded node, replace the node, then move to the next one — a staged rollout rather than an all-at-once cutover, which is exactly what keeps checkout from going down during the upgrade."
+    },
+    {
+      "id": "k8s-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "A checkout Pod shows CrashLoopBackOff. Per this chapter's troubleshooting playbook, what's the right next command to run, and why?",
+      "options": [
+        "kubectl logs <pod> --previous, since CrashLoopBackOff almost always points to an application-level failure on startup, and --previous reads the already-crashed container's own output",
+        "kubectl cordon <node>, since CrashLoopBackOff always indicates a node-level problem, not a Pod-level one",
+        "kubectl rollout undo, since CrashLoopBackOff can only ever be caused by a bad rollout",
+        "kubectl top pod, since CrashLoopBackOff is always caused specifically by exceeding a memory limit"
+      ],
+      "correctIndex": 0,
+      "explain": "CrashLoopBackOff means the container starts, exits, and Kubernetes keeps restarting it with increasing backoff — almost always an application-level failure on startup. kubectl logs --previous reads the output from the container's last failed attempt, which is the standard next step after get/describe narrow the problem down to this state. It isn't automatically a node problem, a bad rollout, or specifically a memory issue — those have their own distinct states (Pending, a failed rollout, OOMKilled)."
+    },
+    {
+      "id": "k8s-26",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about GitOps, per this chapter.",
+      "options": [
+        "GitOps is pull-based: a controller running inside the cluster watches the Git repository and pulls changes when it detects them",
+        "In GitOps, cluster credentials are typically held by an external CI/CD pipeline, not the in-cluster controller",
+        "If someone manually edits a Deployment with kubectl edit outside the GitOps flow, the next reconciliation pass can detect and revert that drift",
+        "A traditional push-based CI/CD pipeline pushes changes directly into the cluster using credentials the pipeline itself holds",
+        "Argo CD's syncPolicy.automated.selfHeal: true is what makes drift correction automatic rather than just a dashboard warning"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        3,
+        4
+      ],
+      "explain": "GitOps is pull-based — an in-cluster controller watches Git and pulls changes, so cluster credentials stay inside the cluster rather than with an external pipeline, which is the opposite of what option B claims. A manual kubectl edit outside the Git flow is detected as drift on the next reconciliation pass and can be auto-corrected. A push-based pipeline, by contrast, pushes changes in directly using credentials it holds itself. selfHeal: true is specifically what turns drift detection into automatic correction instead of just a warning."
+    },
+    {
+      "id": "k8s-27",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in a Helm Chart.yaml, ________ changes when the chart's own templates or structure change, while appVersion changes when a new image of the application ships, even if the chart itself is untouched.",
+      "acceptedAnswers": [
+        "version",
+        "the version field",
+        "chart version"
+      ],
+      "explain": "version and appVersion are tracked separately on purpose: version reflects changes to the chart's templates/structure, while appVersion reflects which version of the application image the chart currently points at — the two can change independently of each other."
+    },
+    {
+      "id": "k8s-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Per the capstone's defined scope, which of these is explicitly listed as out of scope for 'done'?",
+      "options": [
+        "Setting up a live GitOps controller end to end with a real Git webhook — the Argo CD Application manifest is a deliverable, but wiring up the live controller isn't required",
+        "Writing a Deployment for each service with sensible resource requests and limits",
+        "Packaging both services as Helm charts with environment-specific values files",
+        "Writing a short runbook documenting at least three realistic failure scenarios"
+      ],
+      "correctIndex": 0,
+      "explain": "The kickoff lesson explicitly scopes out setting up a live GitOps controller end to end — the Argo CD Application manifest is a required deliverable, but a real Git webhook wired to a live cluster is optional. Deployments with sensible requests/limits, Helm-packaged charts with per-environment values, and a runbook documenting at least three failure scenarios are all explicitly in scope for 'done.'"
+    },
+    {
+      "id": "k8s-29",
+      "type": "matching",
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Match each capstone artifact to what it's actually for.",
+      "left": [
+        "README.md",
+        "RUNBOOK.md",
+        "Argo CD Application manifest",
+        "PodDisruptionBudget"
+      ],
+      "right": [
+        "Explains what the project is, its architecture, and how to run it",
+        "Documents how to diagnose and respond to specific operational failures",
+        "Declares what Git repo/path/values file to watch and where to deploy it, ready for GitOps even if not yet live",
+        "A guardrail capping how many replicas can be down at once during a voluntary disruption — named as a logical next step, not required for this capstone"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "README.md explains what the project is, its architecture, and how to run it. RUNBOOK.md is the operational document for diagnosing real failures. The Argo CD Application manifest declares what to watch and where to deploy it, ready for GitOps even without a live webhook. A PodDisruptionBudget is explicitly named as a reasonable next step beyond the capstone's scope, not a required deliverable."
+    },
+    {
+      "id": "k8s-30",
+      "type": "sequencing",
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Put these capstone build steps for installing and exercising the checkout Helm release in the correct order, per lesson 37.",
+      "items": [
+        "helm lint the chart to catch structural mistakes before ever installing it",
+        "helm install checkout, pointed at the production values file, into the target namespace",
+        "kubectl get pods/ingress/hpa to confirm the release actually came up healthy",
+        "helm upgrade checkout --set image.tag=1.6.0 to exercise a real version change",
+        "helm rollback checkout 1 to confirm the previous revision can be restored on demand"
+      ],
+      "explain": "The build proceeds lint first (catch structural mistakes before touching a cluster), then install, then verify the release actually came up healthy with kubectl get, then exercise a real upgrade, and finally prove the rollback path works by reverting to the prior revision — exactly the sequence lesson 37 walks through to produce a release that's been genuinely tested, not just installed once."
+    }
+  ]
+}

@@ -1,0 +1,471 @@
+{
+  "questions": [
+    {
+      "id": "cicd-01",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these stages of the software delivery lifecycle, as Northbridge Retail's 'save for later' change moves through them, in the correct order.",
+      "items": [
+        "Plan — the team decides what to build, writing a one-paragraph spec for the change",
+        "Code — a developer writes the change on a feature branch and opens a pull request",
+        "Build — merging the pull request triggers a pipeline that builds a new container image",
+        "Test — automated unit and integration tests run against the new build",
+        "Release — the tested image is tagged and pushed to the container registry",
+        "Deploy / Operate — the release rolls out to the cluster and the team monitors it in production"
+      ],
+      "explain": "The SDLC always runs Plan, Code, Build, Test, Release, Deploy/Operate in that order. CI/CD automates the last four stages (build, test, release, deploy) — plan and code stay fundamentally human."
+    },
+    {
+      "id": "cicd-02",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each CI/CD term to its actual definition.",
+      "left": [
+        "Continuous Integration",
+        "Continuous Delivery",
+        "Continuous Deployment",
+        "Release-ready"
+      ],
+      "right": [
+        "CI plus guaranteeing every passing build could be deployed, but a human decides when",
+        "A build that has passed every automated check and could be deployed with no further work",
+        "Merging code frequently with every merge automatically built and tested, keeping main always releasable",
+        "Continuous Delivery with the human approval step removed — every passing change reaches production automatically"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "Continuous Integration means frequent merges with automatic build+test and an always-releasable main. Continuous Delivery adds the guarantee that every passing build is release-ready, with a human choosing when to release. Continuous Deployment removes that human click entirely. Release-ready describes the state of a build that has passed every check."
+    },
+    {
+      "id": "cicd-03",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly distinguishes Continuous Delivery from Continuous Deployment?",
+      "options": [
+        "Both automatically build and test every change and keep it release-ready; Continuous Delivery still requires a human to approve the actual release to production, while Continuous Deployment removes that approval step entirely.",
+        "Continuous Delivery automatically deploys to production, while Continuous Deployment requires a human approval before production.",
+        "Continuous Delivery only runs on a schedule, while Continuous Deployment only runs on every commit.",
+        "Continuous Delivery and Continuous Deployment are two names for the identical practice, with no practical difference.",
+        "Continuous Delivery means tests run manually, while Continuous Deployment means tests run automatically.",
+        "Continuous Deployment applies only to infrastructure changes, while Continuous Delivery applies only to application code."
+      ],
+      "correctIndex": 0,
+      "explain": "Both practices build on CI and guarantee every passing change is release-ready. The one remaining difference is whether a human clicks 'deploy' (Continuous Delivery) or whether the pipeline deploys automatically with no gate (Continuous Deployment).",
+      "distractorExplain": "Option B states the exact same true distinction but swaps which practice does which — it's Continuous Deployment that deploys automatically, and Continuous Delivery that keeps the human approval gate. Getting the two backwards is the single most common mix-up with these terms."
+    },
+    {
+      "id": "cicd-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: DORA's four metrics split into two pairs — Deployment Frequency and Lead Time for Changes measure ________, while Change Failure Rate and Time to Restore Service measure stability.",
+      "acceptedAnswers": ["throughput"],
+      "explain": "DORA groups Deployment Frequency and Lead Time for Changes as throughput (how fast a team moves) and Change Failure Rate and Time to Restore Service as stability (how safely it moves). High-performing teams improve both together rather than trading one off against the other."
+    },
+    {
+      "id": "cicd-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "code": "jobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Check out code\n        uses: actions/checkout@v4\n      - name: Set up Node.js\n        uses: actions/setup-node@v4\n        with:\n          node-version: \"20\"\n      - name: Install dependencies\n        run: npm ci",
+      "prompt": "In storefront's workflow above, why must 'Check out code' run before 'Install dependencies'?",
+      "options": [
+        "A fresh runner starts as an empty machine with no code on it at all, so npm ci would have nothing to install dependencies against without checkout running first",
+        "actions/setup-node@v4 requires the repository to already be checked out before it can install Node.js itself",
+        "Steps run in alphabetical order by their uses: value, and checkout happens to come first alphabetically",
+        "GitHub Actions requires every workflow's first step to be actions/checkout@v4 by convention enforced by the platform"
+      ],
+      "correctIndex": 0,
+      "explain": "Steps in a job run in order, top to bottom, on a runner that starts completely empty. actions/checkout@v4 is what actually puts the repository's files on disk — without it, npm ci has no package.json or lockfile to read."
+    },
+    {
+      "id": "cicd-06",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "on:\n  push:\n    branches: [main]\n    paths-ignore:\n      - \"**.md\"\n      - \"docs/**\"\n  pull_request:\n    branches: [main]\n    types: [opened, synchronize, reopened]\n  schedule:\n    - cron: \"0 6 * * 1-5\"\n  workflow_dispatch:\n    inputs:\n      environment:\n        description: \"Target environment\"\n        required: true\n        default: \"staging\"",
+      "prompt": "Select every true statement about this workflow's on: block.",
+      "options": [
+        "A push to main that only changes a file under docs/ will not trigger this workflow, because paths-ignore excludes it",
+        "The schedule trigger runs this workflow at 6 AM UTC, Monday through Friday",
+        "An engineer can start this workflow manually from the Actions tab and choose a target environment via the workflow_dispatch input",
+        "Leaving types off the pull_request trigger would mean it never fires for a reopened pull request",
+        "The schedule trigger's cron time is evaluated in the runner's local time zone, not UTC"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "paths-ignore skips a run when only matching files (like docs/**) changed. schedule's cron syntax is always evaluated in UTC, so '0 6 * * 1-5' is 6 AM UTC on weekdays. workflow_dispatch adds a manual 'Run workflow' button with an input form. Leaving types off pull_request actually defaults to exactly opened, synchronize, and reopened — it does not exclude reopened."
+    },
+    {
+      "id": "cicd-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "jobs:\n  lint:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: npm run lint\n  test:\n    runs-on: ubuntu-latest\n    needs: lint\n    steps:\n      - uses: actions/checkout@v4\n      - run: npm test",
+      "prompt": "If the lint job fails, what happens to the test job?",
+      "options": [
+        "test is skipped entirely, because needs: lint requires lint to finish successfully before test starts",
+        "test still runs, but its results are marked as inconclusive",
+        "test runs first as a fallback, then lint re-runs afterward",
+        "Both jobs run simultaneously regardless of needs, since GitHub Actions ignores needs for same-runner jobs"
+      ],
+      "correctIndex": 0,
+      "explain": "needs: lint makes test wait for lint to succeed before starting. If lint fails, test is skipped entirely rather than running anyway — the fail-fast behavior the course uses to avoid wasting time on code that doesn't even pass a linter."
+    },
+    {
+      "id": "cicd-08",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: inside a workflow file, a stored secret named DOCKERHUB_TOKEN is referenced as ${{ secrets.________ }}.",
+      "acceptedAnswers": ["DOCKERHUB_TOKEN"],
+      "explain": "The secrets.NAME expression pulls a stored repository secret into a workflow at run time — here that's secrets.DOCKERHUB_TOKEN, matching the exact name the secret was saved under in repository settings."
+    },
+    {
+      "id": "cicd-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "- name: Cache node_modules\n  uses: actions/cache@v4\n  with:\n    path: ~/.npm\n    key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}\n    restore-keys: |\n      ${{ runner.os }}-npm-",
+      "prompt": "A developer bumps a dependency version in package.json and regenerates package-lock.json. What happens to this cache step on the next run?",
+      "options": [
+        "The cache key no longer matches the old entry, because the hash of package-lock.json changed, so npm ci rebuilds the cache from a clean download instead of reusing stale dependencies",
+        "The cache is reused unchanged, since key only checks runner.os, not the lockfile's contents",
+        "The workflow fails, because changing package-lock.json after a cache key was set is not allowed",
+        "GitHub automatically updates the existing cache entry in place to match the new lockfile"
+      ],
+      "correctIndex": 0,
+      "explain": "The cache key includes hashFiles('package-lock.json'). The moment the lockfile changes, its hash changes, the key no longer matches any existing cache entry, and npm ci rebuilds the cache from a clean download — correctness wins over speed."
+    },
+    {
+      "id": "cicd-10",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each matrix-build or reusable-workflow term to what it actually does.",
+      "left": [
+        "strategy.matrix",
+        "fail-fast",
+        "workflow_call",
+        "Caller workflow"
+      ],
+      "right": [
+        "The trigger that makes a workflow callable by another workflow",
+        "Runs one job definition once per combination of listed values",
+        "The workflow that invokes a reusable workflow with uses:",
+        "Whether GitHub cancels remaining matrix jobs after one combination fails (default true)"
+      ],
+      "correctMap": [1, 3, 0, 2],
+      "explain": "strategy.matrix multiplies one job definition across every combination of listed values. fail-fast (default true) controls whether the rest of the matrix cancels after one failure. workflow_call is the trigger marking a workflow reusable. A caller workflow is whatever other workflow invokes it with uses:."
+    },
+    {
+      "id": "cicd-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Why does this course use YAML pipelines in Azure Pipelines instead of the Classic designer?",
+      "options": [
+        "A YAML pipeline's definition is a file checked into the same repo as the code, so it can be version-controlled, code-reviewed, diffed, and rolled back like the application code it ships",
+        "Classic pipelines are being removed from Azure DevOps entirely and no longer function",
+        "YAML pipelines run faster than Classic pipelines because they skip the agent pool entirely",
+        "Classic pipelines cannot deploy to Kubernetes, only to virtual machines"
+      ],
+      "correctIndex": 0,
+      "explain": "YAML pipelines live as a file in source control, so they can be reviewed in a pull request, diffed, and rolled back exactly like application code. Classic pipelines are built through a visual designer with no file in source control at all."
+    },
+    {
+      "id": "cicd-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "- task: Docker@2\n  inputs:\n    containerRegistry: \"northbridgeRetailACR\"\n    repository: \"storefront-api\"\n    command: \"buildAndPush\"\n    Dockerfile: \"**/Dockerfile\"\n    tags: |\n      $(Build.BuildId)",
+      "prompt": "Why does this step tag the image with $(Build.BuildId) instead of leaving the tag unset?",
+      "options": [
+        "Build.BuildId is a built-in pipeline variable holding the run's unique numeric ID, so every build gets a unique, traceable tag instead of silently overwriting latest",
+        "$(Build.BuildId) is required syntax for every Docker@2 task and has no effect on the actual tag applied",
+        "Using Build.BuildId makes the push step run faster because Azure Pipelines skips the registry authentication step",
+        "latest tags are rejected outright by Azure Container Registry, so a numeric placeholder is mandatory"
+      ],
+      "correctIndex": 0,
+      "explain": "$(Build.BuildId) is a built-in Azure Pipelines variable holding the current run's unique numeric ID. Tagging with it gives every build a distinct, traceable identity instead of overwriting a mutable latest tag."
+    },
+    {
+      "id": "cicd-13",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put storefront-api's multi-stage Azure Pipeline in the order its stages actually run, given dependsOn: Build on DeployStaging and dependsOn: DeployStaging on DeployProduction.",
+      "items": [
+        "Build — install dependencies, run tests, then build and push the container image",
+        "DeployStaging — a deployment job targeting the storefront-staging environment",
+        "DeployProduction — a deployment job targeting storefront-production, gated by a pre-deployment approval"
+      ],
+      "explain": "dependsOn chains the stages so each one waits for the previous to succeed: Build must finish before DeployStaging starts, and DeployStaging must finish before DeployProduction starts — there's no path that skips a step."
+    },
+    {
+      "id": "cicd-14",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: the modern, secretless way to authenticate an Azure Resource Manager service connection, replacing a stored service principal, is called ________.",
+      "acceptedAnswers": ["Workload Identity Federation", "Workload Identity Federation (WIF)", "WIF"],
+      "explain": "Workload Identity Federation lets a service connection authenticate without Azure DevOps ever storing a long-lived credential — it's the preferred approach over a traditional stored service principal."
+    },
+    {
+      "id": "cicd-15",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Match each Azure Repos, Boards, or Artifacts term to what it actually is.",
+      "left": [
+        "Branch policy",
+        "Work item",
+        "Pipeline artifact",
+        "Azure Artifacts feed"
+      ],
+      "right": [
+        "Build output passed between stages or jobs within a single pipeline run",
+        "A trackable unit of work in Azure Boards such as a story, bug, or task",
+        "A longer-lived package registry (npm, NuGet, Maven, universal) shared across pipelines and developers",
+        "A rule on a branch requiring reviewers and/or a passing pipeline before a pull request can merge"
+      ],
+      "correctMap": [3, 1, 0, 2],
+      "explain": "A branch policy gates merging on reviewers and/or a passing pipeline. A work item is Boards' trackable unit of work. A pipeline artifact is build output scoped to one pipeline run. An Azure Artifacts feed is a longer-lived, shared package registry — a different, longer-lived kind of 'artifact' than a pipeline artifact."
+    },
+    {
+      "id": "cicd-16",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly explains why a well-built pipeline runs unit tests before integration and end-to-end tests, per the test pyramid?",
+      "options": [
+        "Unit tests are the fastest and cheapest to run, so running them first lets the pipeline fail fast on a broken change before spending time on slower, more expensive integration and end-to-end tests that were always going to fail for the same reason",
+        "Running all three test types in parallel instead of in order is just as good, since the pipeline will eventually catch any failure regardless of which test type finds it first",
+        "Integration tests cannot technically run at all until unit tests have passed at least once in the pipeline's history",
+        "End-to-end tests must run before unit tests because they cover more of the application's real behavior",
+        "The order tests run in only affects which report appears first in the log, never how long the pipeline takes",
+        "Unit tests are run last because they require production data that only becomes available after a deployment"
+      ],
+      "correctIndex": 0,
+      "explain": "The test pyramid runs cheap, fast unit tests first and stops at the first failure, so a pipeline doesn't spend ten minutes on a slow end-to-end suite when a ten-second unit test already proved the change is broken.",
+      "distractorExplain": "Option B sounds reasonable since every test type does eventually run either way, but running them in parallel throws away the entire point of ordering: a pipeline that fans out a ten-minute end-to-end suite at the same time as a ten-second unit suite still burns those ten minutes even when the unit tests were already failing for the same root cause. Running cheap tests first and stopping at the first failure is what actually saves time — simply running everything eventually is not the same thing."
+    },
+    {
+      "id": "cicd-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "code": "- name: Lint with ruff\n  run: ruff check src/",
+      "prompt": "This ruff check src/ step runs as its own job, separate from storefront-api's test job. What does it fail on, and what kind of problem is it looking for?",
+      "options": [
+        "It exits non-zero the moment it finds a style or consistency violation — unused imports, inconsistent formatting — the same way a failing pytest call fails the test job, but checking the shape of the code rather than its behavior",
+        "It fails only when the application crashes at runtime, since linting requires actually executing the code",
+        "It looks for security vulnerabilities like SQL injection, which is actually CodeQL's job, not ruff's",
+        "It fails the build only if code coverage drops below a configured threshold"
+      ],
+      "correctIndex": 0,
+      "explain": "A linter like ruff reads source code without running it, checking style and consistency, and exits non-zero on a violation — failing the job the same way a failing test does, just for a different category of problem than static analysis or test failures."
+    },
+    {
+      "id": "cicd-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "- name: Run tests with coverage\n  run: pytest --cov=src --cov-report=xml --cov-fail-under=80",
+      "prompt": "Total coverage for this run comes out to 76%. What happens to this step?",
+      "options": [
+        "The step exits non-zero and the job fails, exactly like a broken test would, because --cov-fail-under=80 requires at least 80% coverage",
+        "The step passes, but a warning is printed; --cov-fail-under only affects the XML report's formatting",
+        "pytest automatically re-runs the suite a second time to try to raise coverage above 80%",
+        "The step fails only if a human reviewer manually rejects the coverage number afterward"
+      ],
+      "correctIndex": 0,
+      "explain": "--cov-fail-under=80 is a quality gate built directly into the test command. If total coverage drops below 80%, the step exits non-zero and fails the job immediately, with no human review step required."
+    },
+    {
+      "id": "cicd-19",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "code": "FROM python:3.12 AS builder\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir --target=/deps -r requirements.txt\n\nFROM python:3.12-slim\nWORKDIR /app\nCOPY --from=builder /deps /usr/local/lib/python3.12/site-packages\nCOPY src/ ./src/\nCMD [\"python\", \"src/main.py\"]",
+      "prompt": "Select every true statement about why this Dockerfile is written as two FROM stages instead of one.",
+      "options": [
+        "Only the second stage's contents actually ship in the final image, so compilers and build tools from the builder stage never reach production",
+        "The final image is smaller to store and pull, and has a meaningfully smaller attack surface than if everything from the builder stage were kept",
+        "Both stages are included in the final image, doubling its size but ensuring nothing is missing",
+        "Multi-stage builds exist only to allow using two different Python versions at once",
+        "COPY --from=builder lets the second stage pull in just the installed dependencies without re-running pip install"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "A multi-stage build keeps only the final stage's contents in the shipped image — the builder stage's compilers and build cache never reach production, making the final image smaller with a smaller attack surface. COPY --from=builder pulls in just the already-installed dependencies, not the whole builder environment, and both stages are never both included in the final image."
+    },
+    {
+      "id": "cicd-20",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a Kubernetes manifest that always references an image tag of ________ will silently start running a different image the next time a pod restarts, with no corresponding code change or pull request.",
+      "acceptedAnswers": ["latest", "the latest tag", "latest tag"],
+      "explain": "latest is a mutable pointer, not a fixed version. Referencing it means a pod restart can pull a newer image with no code change or review — pinning to an immutable tag like a commit SHA is what makes 'what's running right now' an answerable question."
+    },
+    {
+      "id": "cicd-21",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each deployment-strategy term to what it actually describes.",
+      "left": [
+        "Rolling update",
+        "Blue-green deployment",
+        "Canary deployment",
+        "Blast radius"
+      ],
+      "right": [
+        "Runs two complete environments and switches all traffic over in one atomic cutover",
+        "How much of real traffic or users is exposed to a new version if it turns out to be broken",
+        "Replaces old pods with new ones a few at a time, controlled by maxUnavailable/maxSurge",
+        "Sends a small percentage of real traffic to the new version before trusting it fully"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "A rolling update replaces pods gradually, bounded by maxUnavailable/maxSurge. Blue-green runs two full environments and cuts traffic over in one atomic switch. Canary sends a small slice of real traffic to the new version first. Blast radius describes how much traffic or how many users a broken release would affect."
+    },
+    {
+      "id": "cicd-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A pipeline run targeting storefront's production environment reaches a deploy job that requires a named approver. What state does the job enter, and what does it take to move past it?",
+      "options": [
+        "The job pauses in a pending state, distinct from running or failed, and only resumes once the named approver explicitly approves it — it never times out into a silent yes",
+        "The job fails immediately, and the pipeline must be re-run from the start once approval is granted",
+        "The job continues running normally, and the approval is only logged afterward for audit purposes",
+        "The job automatically approves itself after a fixed timeout if no one responds"
+      ],
+      "correctIndex": 0,
+      "explain": "A required approval pauses the job in a pending state — visibly distinct from running or failed — until the named approver explicitly approves it. It never silently times out into an automatic yes."
+    },
+    {
+      "id": "cicd-23",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about feature flags.",
+      "options": [
+        "A feature's code can be merged and deployed to production while its flag stays off, so the deploy itself changes nothing customer-visible",
+        "A broken feature behind a flag can be turned off instantly by flipping the flag, without a rollback or a new pipeline run",
+        "Enabling a feature flag always requires a new deployment, the same as removing one",
+        "A flag's context dictionary can target a subset of users, such as internal staff, before rolling out to everyone",
+        "Feature flags have no ongoing cost once added, since the old code path can be left in place indefinitely for free"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "A flag lets code ship dark (deployed but off), and flipping it is a config change, not a new deployment — true for turning a flag on or off. The context dictionary supports targeting a subset of users first. Flags do carry an ongoing cost: unused flags and the dead code paths behind them accumulate as flag debt if never cleaned up."
+    },
+    {
+      "id": "cicd-24",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these kubectl commands in the correct order for diagnosing and rolling back a bad storefront-api deployment.",
+      "items": [
+        "kubectl rollout history deployment/storefront-api — review the revision history",
+        "kubectl rollout undo deployment/storefront-api — roll back to the immediately previous revision",
+        "kubectl rollout status deployment/storefront-api — watch the rollback happen and confirm it completes"
+      ],
+      "explain": "First review the revision history to understand what's available, then run rollout undo to revert to the previous (or a specific) revision, then watch rollout status to confirm the rollback actually completes successfully."
+    },
+    {
+      "id": "cicd-25",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Northbridge Retail's default incident response is to ________ first and investigate second, restoring service before root-causing the bug.",
+      "acceptedAnswers": ["roll back", "rollback"],
+      "explain": "Rolling back first prioritizes restoring service immediately; the investigation into what actually happened follows afterward, without customers still experiencing the bug while that investigation happens."
+    },
+    {
+      "id": "cicd-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "code": "jobs:\n  plan:\n    runs-on: ubuntu-latest\n    steps:\n      - run: terraform fmt -check\n      - run: terraform init\n      - run: terraform validate\n      - run: terraform plan -out=tfplan\n  apply:\n    needs: plan\n    if: github.ref == 'refs/heads/main'\n    environment: production\n    steps:\n      - run: terraform apply -auto-approve tfplan",
+      "prompt": "Why can a pull request that modifies infra/ safely run the plan job, while the apply job only runs on main behind a required-reviewer environment?",
+      "options": [
+        "terraform plan is read-only and only previews what would change, so it's safe to run on every PR; terraform apply actually changes real infrastructure, so it's gated to main and requires a human approval before running",
+        "plan and apply are functionally identical; the split only exists to make the YAML file shorter",
+        "plan requires AWS credentials but apply does not, since apply only reads the already-generated plan file",
+        "apply is restricted to main because Terraform cannot authenticate to AWS from a pull request at all"
+      ],
+      "correctIndex": 0,
+      "explain": "terraform plan is read-only — it shows what would change without changing anything. terraform apply is the step that actually modifies real infrastructure, which is exactly why it's isolated into its own job, restricted to main, and gated behind a required-reviewer environment."
+    },
+    {
+      "id": "cicd-27",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the GitOps pattern (Argo CD or Flux) versus the push-based pipelines earlier in this chapter.",
+      "options": [
+        "In a GitOps model, a controller like Argo CD runs inside the cluster and pulls its desired state from Git, rather than CI pushing changes in with credentials to the cluster",
+        "With GitOps, CI's deploy step shrinks to committing an updated image tag to a manifest repository, instead of running kubectl or helm directly against the cluster",
+        "GitOps eliminates the need for CI to build or push container images at all",
+        "An Argo CD Application configured with selfHeal: true automatically reverts a manual, out-of-band change made directly in the cluster, so it matches Git again",
+        "Synced and Healthy are the same signal in Argo CD — a resource can't be one without the other"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "GitOps flips deployment from push to pull: a controller inside the cluster watches Git and reconciles state, so CI's job shrinks to updating a manifest repository rather than running kubectl/helm against the cluster directly. selfHeal automatically reverts drift from manual changes. CI still builds and pushes the container image exactly as before — only the final deploy step changes. Synced and Healthy are two independent signals: a resource can be Synced but not yet Healthy while new pods start."
+    },
+    {
+      "id": "cicd-28",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: GitHub Actions can request short-lived AWS credentials via OIDC federation instead of storing a long-lived access key, by setting permissions: id-token: ________ in the workflow.",
+      "acceptedAnswers": ["write"],
+      "explain": "permissions: id-token: write, combined with an action like aws-actions/configure-aws-credentials, lets GitHub Actions request a short-lived AWS credential through OIDC federation, with no long-lived key stored as a repository secret."
+    },
+    {
+      "id": "cicd-29",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "If the Chapter 7 capstone project is short on time, which single step should be cut first, and which should never be cut under any circumstance?",
+      "options": [
+        "Cut the production approval gate first (deploy straight to staging only); never cut the automated test step, since a CI/CD pipeline with no tests isn't demonstrating the course's core skill",
+        "Cut the automated test step first, since tests take the longest to write; never cut the container registry push",
+        "Cut the build-and-test job first; never cut the GitOps manifest repository setup",
+        "Cut the staging deployment first; never cut the production approval gate"
+      ],
+      "correctIndex": 0,
+      "explain": "The suggested cutting order is least damaging first: the production approval gate, then GitOps in favor of direct manifest application, then the registry push last. Automated tests are never cut — a pipeline with no tests isn't demonstrating the thing the whole course taught."
+    },
+    {
+      "id": "cicd-30",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Select every item on the capstone's 'before calling it done' checklist that is actually true per the plan.",
+      "options": [
+        "A broken test actually blocks the merge from proceeding to the build-image job",
+        "A passing merge to main produces a real container image in the registry, tagged correctly",
+        "Production does not update until someone explicitly approves it",
+        "Staging requires the same named-approver sign-off as production before it updates",
+        "The README is optional, since the YAML workflow file alone fully demonstrates the project to an interviewer"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "The capstone checklist requires a broken test to block downstream jobs, a passing merge to produce a correctly tagged image, and production to wait for explicit approval. Staging deploys automatically with no approval (Continuous Deployment), unlike production, and the README matters — a YAML file alone only proves you can copy a tutorial, not that you understand the decisions behind it."
+    }
+  ]
+}

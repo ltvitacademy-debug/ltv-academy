@@ -1,0 +1,554 @@
+{
+  "questions": [
+    {
+      "id": "pba-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "code": "#!/usr/bin/env bash\nset -euo pipefail\n\nif [[ ! -d \"$RELEASE_DIR\" ]]; then\n  echo \"ERROR: release directory not found: $RELEASE_DIR\" >&2\n  exit 1\nfi\n\ncp \"${RELEASE_DIR}/app.conf\" /etc/northbridge/app.conf\nsystemctl restart northbridge-api\necho \"Deployed ${RELEASE_TAG} successfully.\"",
+      "prompt": "This deploy script runs under set -euo pipefail. If the cp command on the second-to-last line fails (bad path or permissions), what happens next?",
+      "options": [
+        "The script stops immediately at that line; it never reaches systemctl restart or prints the \"Deployed successfully\" message",
+        "bash prints a warning but continues on to systemctl restart anyway, since cp failures aren't fatal by default",
+        "The script restarts the service first and only then reports the cp failure in its final message",
+        "set -euo pipefail only affects piped commands, so a plain cp failure like this one is ignored entirely"
+      ],
+      "correctIndex": 0,
+      "explain": "The -e flag in set -euo pipefail makes bash exit immediately the moment any command exits non-zero. A failed cp never reaches systemctl restart and never prints the false success message — this is exactly the silent-failure incident the lesson opens with, fixed by adding the flag."
+    },
+    {
+      "id": "pba-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: ________ registers a function to run automatically when a bash script exits — whether it exits normally, hits an error under set -e, or is killed by a signal — which is how Northbridge guarantees a deploy lock file always gets released.",
+      "acceptedAnswers": [
+        "trap",
+        "trap EXIT",
+        "trap cleanup EXIT"
+      ],
+      "explain": "trap cleanup EXIT registers the cleanup function to run no matter how the script exits. Without it, a failed deploy would leave the lock file behind forever, and every future deploy would refuse to run until someone manually deleted it."
+    },
+    {
+      "id": "pba-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about bash functions, per Lesson 2.",
+      "options": [
+        "Without local, a variable assigned inside a function becomes global and can overwrite a variable of the same name in whatever called it",
+        "A bash function's return statement can send back an arbitrary string value directly to the caller",
+        "A function with no explicit return statement reports the exit code of the last command it ran",
+        "To pass a string value back out of a function, the standard pattern is to echo it and capture it with command substitution $(...)",
+        "Collecting shared functions into one sourced file like lib/common.sh means fixing a bug there requires updating each script that sourced it separately"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        3
+      ],
+      "explain": "Variables inside a function leak into the caller's scope unless declared local. return can only send back a number 0-255, never a string — that's why returning actual data goes through echo plus command substitution instead. A function's exit code defaults to its last command's exit code when there's no explicit return. And the entire point of a shared lib/common.sh is that fixing a bug there fixes it everywhere it's sourced, with no per-script updates needed."
+    },
+    {
+      "id": "pba-04",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each text-processing tool from Lesson 3 to what it actually does.",
+      "left": [
+        "grep -E",
+        "awk '{print $9}'",
+        "sed -E 's/pattern/replacement/'",
+        "sort | uniq -c"
+      ],
+      "right": [
+        "Splits each line into whitespace-separated fields and prints the one requested",
+        "Groups adjacent identical lines and prefixes each with its occurrence count, requiring sorted input first",
+        "Filters lines matching an extended regular expression",
+        "Finds text matching a pattern and substitutes a replacement, line by line"
+      ],
+      "correctMap": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "explain": "grep -E filters lines by extended regex. awk splits lines into fields and prints the requested one. sed performs find-and-replace substitutions line by line. sort piped into uniq -c is the standard combo for turning repeated values into frequency counts, since uniq -c only works correctly on already-sorted input."
+    },
+    {
+      "id": "pba-05",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps in the correct order for starting a long-running job over SSH that needs to keep running after you disconnect, per Lesson 4.",
+      "items": [
+        "Kick off the job with nohup command > logfile 2>&1 & so it ignores SIGHUP and runs in the background",
+        "Run disown to remove the job from the current shell's job table",
+        "Disconnect the SSH session",
+        "Reconnect later and check the log file to confirm the job finished"
+      ],
+      "explain": "nohup makes the process immune to the SIGHUP signal a closing SSH session would otherwise send, and the trailing & backgrounds it. disown then fully detaches it from the shell's job table. Only after both of those is it safe to disconnect — and because output was redirected to a log file, checking on the job later doesn't require it to still be attached to a terminal."
+    },
+    {
+      "id": "pba-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "alert_threshold = 90\n\nfor server, usage in disk_usage.items():\n    if usage >= alert_threshold:\n        print(f\"ALERT: {server} is at {usage}% disk usage\")\n    elif usage >= 75:\n        print(f\"WARNING: {server} is at {usage}%\")\n    else:\n        print(f\"OK: {server} is at {usage}%\")",
+      "prompt": "Given this branching logic, what prints for a server whose usage is exactly 80%?",
+      "options": [
+        "ALERT: ... is at 80% disk usage",
+        "WARNING: ... is at 80%",
+        "OK: ... is at 80%",
+        "Nothing prints, because 80 doesn't exactly match any condition"
+      ],
+      "correctIndex": 1,
+      "explain": "80 is less than alert_threshold (90), so the first condition is False. The elif checks usage >= 75, which 80 satisfies, so the WARNING branch runs and the else is never reached. elif/else chains stop at the first True condition from top to bottom."
+    },
+    {
+      "id": "pba-07",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly distinguishes Python's pathlib.Path from the older os.path module, per Lesson 6?",
+      "options": [
+        "pathlib represents a path as an object with methods like .exists() and .glob(), while os.path represents paths as plain strings joined with functions like os.path.join() — both are still valid, but pathlib is the newer, more readable style",
+        "os.path is newer than pathlib and is now the recommended module for all new code",
+        "pathlib can only read files, while os.path is required for writing files",
+        "os.path.join() returns a Path object, while pathlib.Path() returns a plain string",
+        "pathlib and os.path are two names for the exact same module, imported differently",
+        "Only os.path supports recursive directory search; pathlib has no equivalent to rglob"
+      ],
+      "correctIndex": 0,
+      "explain": "os.path is the original, string-based way to work with filesystem paths; pathlib.Path is the newer, object-oriented style where paths carry their own methods. Both still show up in real code, but the lesson recommends pathlib for anything new because the / operator and methods like .name and .exists() read more clearly than the equivalent os.path function calls.",
+      "distractorExplain": "Option F claims pathlib has no equivalent for recursive directory search, but pathlib.Path.rglob() is exactly that — the recursive counterpart to glob() that walks every subdirectory, covered directly in Lesson 6. The plain os module has no single built-in equivalent; getting the same recursive search out of os requires manually walking with os.walk() instead."
+    },
+    {
+      "id": "pba-08",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Path.glob() searches for pattern matches in a single directory, while Path.________() performs the same pattern search recursively through every subdirectory underneath it.",
+      "acceptedAnswers": [
+        "rglob",
+        "rglob()"
+      ],
+      "explain": "rglob (\"recursive glob\") walks every subdirectory under the starting path, unlike glob, which only searches one directory level by default — exactly what's needed to find every log file scattered across Northbridge's log directories."
+    },
+    {
+      "id": "pba-09",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about subprocess.run, per Lesson 7.",
+      "options": [
+        "Passing shell=False with a list of arguments is safer than shell=True, because no shell is involved to misinterpret special characters a user might have typed",
+        "subprocess.run(..., check=True) raises subprocess.CalledProcessError automatically when the command's return code is nonzero",
+        "A returncode of 0 always means the command printed no output at all",
+        "Passing timeout=10 causes Python to raise subprocess.TimeoutExpired if the command hasn't finished within 10 seconds",
+        "capture_output=True sends the subprocess's stdout and stderr directly to the terminal instead of capturing them"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "shell=False with a list skips shell interpretation entirely, closing off a whole class of injection risk. check=True raises CalledProcessError on a nonzero return code instead of making you check it yourself. timeout guards against a hung command by raising TimeoutExpired once the limit passes. returncode has nothing to do with how much output was printed — 0 just means the command succeeded. capture_output=True does the opposite of letting output print directly: it grabs stdout and stderr into the CompletedProcess object instead."
+    },
+    {
+      "id": "pba-10",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Match each argparse-related term from Lesson 8 to what it actually controls.",
+      "left": [
+        "Positional argument",
+        "add_argument(\"--verbose\", action=\"store_true\")",
+        "sys.exit(exit_code)",
+        "--help"
+      ],
+      "right": [
+        "Reports the script's outcome back to whatever called it, by convention 0 for success",
+        "A required argument identified only by its position on the command line, not a flag name",
+        "Generated automatically from your argument definitions, with no need to write it by hand",
+        "Defines a flag whose mere presence sets a boolean to True, with no value expected after it"
+      ],
+      "correctMap": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "explain": "A positional argument is required and identified purely by its position. action=\"store_true\" defines a flag that needs no value — its presence alone sets the attribute True. sys.exit(exit_code) is how a script communicates its outcome to whatever ran it. --help is generated for free from the descriptions passed to add_argument and ArgumentParser."
+    },
+    {
+      "id": "pba-11",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of the check_server retry pattern in the correct order, per Lesson 9.",
+      "items": [
+        "Enter the loop and attempt connect_and_check(server) for the current attempt number",
+        "If it raises ConnectionError, log a warning for that attempt and continue to the next one",
+        "Repeat until either a check succeeds, returning True, or max_attempts attempts have all failed",
+        "Once attempts are exhausted, raise the custom HealthCheckError instead of letting the last ConnectionError speak for the whole situation"
+      ],
+      "explain": "The loop tries connect_and_check up to max_attempts times, logging a warning on each ConnectionError along the way. If a connection succeeds, the function returns True immediately. Only after every attempt has failed does it raise HealthCheckError — a clear, specific exception rather than whatever exception happened to be raised on the final attempt."
+    },
+    {
+      "id": "pba-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "tracking_url = response.get(\"tracking_url\", \"not available\")",
+      "prompt": "A shipment record from the carrier's JSON feed is missing the tracking_url key entirely. What does response.get(\"tracking_url\", \"not available\") return for that record, and what would response[\"tracking_url\"] have done instead?",
+      "options": [
+        ".get() returns the string \"not available\" with no error; response[\"tracking_url\"] would have raised a KeyError and crashed the batch job on that one record",
+        "Both expressions raise a KeyError, since the key is missing either way",
+        ".get() returns None silently, while response[\"tracking_url\"] returns \"not available\"",
+        "Both expressions return \"not available\", since Python treats a missing dict key as that default automatically"
+      ],
+      "correctIndex": 0,
+      "explain": "dict.get(key, default) returns the default instead of raising when the key isn't present, which is exactly why it's used on messy real-world feeds. Direct bracket lookup, response[\"tracking_url\"], raises KeyError the moment the key is missing — enough to crash a whole batch job over one malformed record if you're not using .get()."
+    },
+    {
+      "id": "pba-13",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: PyYAML's yaml.________() function parses YAML into plain Python types only (str, int, dict, list, bool, None) and should always be used instead of the unsafe yaml.load(), which can be tricked into constructing arbitrary, even code-executing, Python objects from crafted input.",
+      "acceptedAnswers": [
+        "safe_load",
+        "safe_load()"
+      ],
+      "explain": "yaml.safe_load() restricts parsing to plain data types and nothing else, closing off the real code-execution risk that the unsafe yaml.load() carries on any file you didn't write yourself. The lesson is direct about this: there is essentially never a good reason to reach for the unsafe version."
+    },
+    {
+      "id": "pba-14",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about environment variables and secrets, per Lesson 12.",
+      "options": [
+        "os.environ[\"CARRIER_API_KEY\"] raises a KeyError if the variable isn't set, while os.environ.get(\"CARRIER_API_KEY\") returns None instead",
+        "A secret committed to git and later deleted in a follow-up commit is no longer considered compromised, since the current file no longer contains it",
+        "A .env file is intended for local development only; production systems should pull real secrets from a dedicated secrets manager or vault instead",
+        "load_dotenv() reads a .env file and injects its contents into os.environ, so the rest of the code can keep calling os.environ normally",
+        "If a secret does leak, simply removing it from the file in a new commit is a sufficient fix, with no need to rotate it"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        3
+      ],
+      "explain": "Bracket access raises when a key is missing; .get() returns None (or a supplied default) instead. A .env file is a local-development convenience — production should use a real secrets manager or vault for encryption at rest, auditing, and rotation. load_dotenv() exists precisely so the rest of the code never has to know whether a value came from a real environment variable or a local .env file. A secret committed to git is compromised the instant it's pushed, even if deleted later — it still sits in git history — so the actual fix is always rotating it, not just removing it from the current file."
+    },
+    {
+      "id": "pba-15",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Match each piece of Jinja2 syntax or object from Lesson 13 to what it actually does.",
+      "left": [
+        "{{ port }}",
+        "{% if environment == \"production\" %}",
+        "{% for server in backend_servers %}",
+        "FileSystemLoader(\"templates\")"
+      ],
+      "right": [
+        "Loops over a list, rendering its enclosed content once per item",
+        "Inserts a value directly into the rendered output",
+        "Tells the Jinja2 Environment where to find template files on disk",
+        "Renders its enclosed content only when the condition evaluates true"
+      ],
+      "correctMap": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "explain": "{{ }} inserts a value into the rendered text. {% if %} only renders its block when the condition is true. {% for %} loops over a list, rendering its block once per item. FileSystemLoader tells the Environment which directory holds the template files it should load."
+    },
+    {
+      "id": "pba-16",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps in the correct order for generating all three Northbridge environment configs from one Jinja2 template, per Lesson 13.",
+      "items": [
+        "Load the Jinja2 Environment with a FileSystemLoader pointed at the templates directory",
+        "Get the nginx.conf.j2 template with env.get_template()",
+        "Loop over the list of per-environment config dicts (dev, staging, production)",
+        "Call template.render() with that environment's port, domain, and name",
+        "Write the rendered output to that environment's own config file"
+      ],
+      "explain": "The Environment and loader are set up once, the template is fetched once, and then a simple loop over the per-environment data list calls render() and writes a file for each entry. One template plus one short list of data produces three correct config files, with no risk of one environment's config silently drifting from another."
+    },
+    {
+      "id": "pba-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "code": "def fetch_all_shipments(service):\n    shipments = []\n    url = \"https://api.shipfast-carrier.com/v2/shipments\"\n    params = {\"service\": service, \"page_size\": 100}\n\n    while url:\n        response = requests.get(url, params=params, timeout=10)\n        response.raise_for_status()\n        page = response.json()\n\n        shipments.extend(page[\"results\"])\n        url = page.get(\"next\")\n        params = None\n\n    return shipments",
+      "prompt": "In fetch_all_shipments, what would likely go wrong if the line params = None were removed, leaving the original params dict in place on every loop iteration?",
+      "options": [
+        "The original service/page_size params would get appended again to the already-complete next URL on every page after the first, which could send a malformed or incorrect request instead of simply following the link as given",
+        "Nothing would change, since next URLs never contain their own query string",
+        "The loop would immediately exit after the first page",
+        "response.json() would raise an exception because of the stale params"
+      ],
+      "correctIndex": 0,
+      "explain": "The comment in the lesson's own code is explicit about this: the next URL already carries its own query string, so params is set to None after the first request specifically to avoid appending the original service/page_size params on top of a URL that doesn't need them anymore."
+    },
+    {
+      "id": "pba-18",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a Bearer token is sent in the Authorization header using the ________ scheme, written as Authorization: ________ <token>.",
+      "acceptedAnswers": [
+        "Bearer"
+      ],
+      "explain": "The Authorization header's Bearer scheme is how a bearer token gets sent, as in Authorization: Bearer <access_token> — distinct from a static API key, which is usually sent under its own custom header name instead."
+    },
+    {
+      "id": "pba-19",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about using boto3 instead of raw REST calls, per Lesson 16.",
+      "options": [
+        "boto3 automatically finds AWS credentials from environment variables, a shared credentials file, or an IAM role, without manual request signing",
+        "boto3 retries throttled or transient failures automatically, with backoff",
+        "Every boto3 list-style API requires you to write your own custom \"follow the next token\" loop, the same as calling the raw REST API directly would",
+        "A boto3 paginator's .paginate() call handles a provider-specific pagination token internally, letting your code just loop over pages",
+        "Filters passed to describe_volumes makes AWS do the filtering client-side, after everything has already been downloaded into Python"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "boto3 resolves credentials and signs requests for you, retries throttled calls with backoff automatically, and a paginator handles each provider-specific pagination token internally so your code just loops over pages — no custom \"follow the next token\" loop needed, unlike the manual loop written against the raw carrier API in Lesson 14. Filters are passed to AWS and filtered server-side, not downloaded in full and filtered afterward in Python."
+    },
+    {
+      "id": "pba-20",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each webhook-related term from Lesson 17 to what it actually is.",
+      "left": [
+        "Webhook",
+        "HMAC",
+        "hmac.compare_digest()",
+        "request.data"
+      ],
+      "right": [
+        "An inbound HTTP callback a provider sends to your server when an event happens, rather than you polling for it",
+        "A keyed hash proving a message came from someone who knows a shared secret",
+        "A constant-time comparison that avoids leaking timing information to an attacker",
+        "The raw request bytes a signature must be computed over, not the re-parsed JSON"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "A webhook is the provider calling you, unprompted, when something happens. An HMAC is a keyed hash proving the message came from someone holding the shared secret. hmac.compare_digest() compares in constant time so a mismatch doesn't leak timing information an attacker could exploit. The signature must be computed over request.data, the raw bytes, since re-serializing parsed JSON can produce a different byte string than what was actually signed."
+    },
+    {
+      "id": "pba-21",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Which statement correctly distinguishes a static API key from an OAuth2 client-credentials access token, as covered in Lesson 15?",
+      "options": [
+        "An API key is typically a long-lived secret assigned once and sent with every request, while an OAuth2 client-credentials flow trades a client ID and secret for a short-lived access token that must be requested and refreshed periodically",
+        "An API key is short-lived and must be refreshed constantly, while an OAuth2 access token is permanent once issued",
+        "Both are functionally identical — the only real difference is which HTTP header name is used to send them",
+        "An OAuth2 access token can only be used once and then must be discarded, unlike an API key, which can be reused indefinitely",
+        "A client ID and client secret are sent with every single API request directly, the same way an API key is, with no separate token-request step",
+        "API keys are always sent in the request body, while OAuth2 tokens are always sent as a URL query parameter"
+      ],
+      "correctIndex": 0,
+      "explain": "An API key is a long-lived secret assigned once and sent on every call. The OAuth2 client-credentials flow is different: a client ID and secret are traded for a short-lived access token, which gets cached and refreshed shortly before it expires — exactly the pattern the lesson's get_access_token() function implements.",
+      "distractorExplain": "Option B swaps the two lifetimes: it's the API key that's long-lived and assigned once, while the OAuth2 access token is the short-lived one that needs periodic refreshing — getting this backwards is exactly the mistake the lesson is written to prevent."
+    },
+    {
+      "id": "pba-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "if ! grep -qF -- \"$(cat \"$PUBKEY_FILE\")\" \"$AUTHORIZED_KEYS\"; then\n    cat \"$PUBKEY_FILE\" >> \"$AUTHORIZED_KEYS\"\n    echo \"Added public key for $USERNAME\"\nelse\n    echo \"Public key already present for $USERNAME\"\nfi",
+      "prompt": "This user-setup script is run a second time against the same server, with the same arguments. What happens to authorized_keys this time, and why?",
+      "options": [
+        "The key is not duplicated — grep -qF finds the key already present on this run, so the cat >> append line is skipped and only the \"already present\" message prints",
+        "The same public key gets appended a second time, since >> always adds a new line regardless of what's already there",
+        "The script fails outright the second time, because useradd refuses to run against an existing user",
+        "The .ssh directory's permissions get reset to unsafe defaults on the second run"
+      ],
+      "correctIndex": 0,
+      "explain": "grep -qF -- \"$(cat \"$PUBKEY_FILE\")\" \"$AUTHORIZED_KEYS\" is exactly the idempotency check that prevents a duplicate: on the second run it finds the key already there, so the if branch that appends it is skipped entirely, and only the else branch's \"already present\" message runs."
+    },
+    {
+      "id": "pba-23",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in the regex (?P<order>\\S+), the ?P<order> part defines a ________ — it lets you retrieve that piece of the match by name, via match.group(\"order\"), instead of counting parentheses.",
+      "acceptedAnswers": [
+        "named capture group",
+        "named group",
+        "capture group"
+      ],
+      "explain": "(?P<name>...) is a named capture group — a far more readable way to pull a specific piece out of a regex match than relying on positional group numbers, especially once a pattern has several groups like order, status, and reason."
+    },
+    {
+      "id": "pba-24",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the backup job from Lesson 20.",
+      "options": [
+        "Piping pg_dump into gzip without set -o pipefail risks the script reporting success even if pg_dump itself failed, because gzip can still succeed on empty input",
+        "Uploading a backup to S3 with boto3 means the backup survives even if the server that created it is lost",
+        "A retention policy that never deletes old backups is safer than one that does, since more backups are always better regardless of disk space",
+        "Path.glob() combined with .stat().st_mtime is how the retention script finds backup files older than the cutoff date",
+        "A backup script should silently continue on failure rather than exit non-zero, so a single bad night doesn't interrupt the schedule"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Without pipefail, a failing pg_dump can be masked by gzip succeeding on empty input, so the script would report success on a backup that's actually empty — exactly why pipefail matters more here than in most scripts. Shipping a copy to S3 is what makes it a real backup, surviving even if the server is lost. Path.glob() finds matching backup files and .stat().st_mtime reads each one's last-modified time to compare against the retention cutoff. Keeping every backup forever eventually fills the disk, and the lesson is explicit that a backup job should fail loudly with a non-zero exit code, not silently skip a bad night."
+    },
+    {
+      "id": "pba-25",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Match each health-check and alerting term from Lesson 21 to what it actually does.",
+      "left": [
+        "timeout=5 passed to requests.get()",
+        "shutil.disk_usage(path)",
+        "Incoming webhook",
+        "Alert on change"
+      ],
+      "right": [
+        "Limits how long a health check waits for a response before giving up, so a hung server doesn't hang the checker too",
+        "Returns total/used/free bytes for a path, with no network call involved",
+        "Posts a message into a Slack channel when sent a JSON payload, with no login needed",
+        "Sends a notification only when status flips between healthy and unhealthy, not on every single check"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "A timeout keeps a hung server from hanging the health check itself. shutil.disk_usage checks a local resource with no network call. A Slack incoming webhook posts into a channel from a plain JSON payload. Alerting only on a state change, not on every single check, is what keeps a monitoring script something people keep paying attention to instead of tuning out."
+    },
+    {
+      "id": "pba-26",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the idempotent user-setup script in the correct order, per Lesson 18.",
+      "items": [
+        "Check with id -u \"$USERNAME\" whether the user already exists",
+        "Create the user with useradd -m -s /bin/bash only if that check failed",
+        "Add the user to the developers group with usermod -aG",
+        "Create the .ssh directory and check with grep -qF whether the public key is already in authorized_keys",
+        "Append the key only if it wasn't already present, then unconditionally fix ownership and permissions with chown and chmod"
+      ],
+      "explain": "The script checks state before changing it at each step: id -u decides whether to create the user, and grep -qF decides whether to append the key. Group membership and the final chown/chmod run unconditionally every time, since re-adding an existing group membership or fixing already-correct permissions is harmless — exactly what makes the whole script safe to run more than once."
+    },
+    {
+      "id": "pba-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "code": "def setup_store_admin(store_id):\n    username = f\"store-admin-{store_id}\"\n    result = subprocess.run(\n        [\"sudo\", \"/opt/northbridge/scripts/setup-user.sh\",\n         username, \"/opt/northbridge/keys/store-admin.pub\"],\n        capture_output=True, text=True,\n    )\n    if result.returncode != 0:\n        raise RuntimeError(f\"User setup failed for {username}: {result.stderr.strip()}\")\n    logger.info(f\"Admin user {username} ready\")",
+      "prompt": "setup_store_admin() raises a RuntimeError when the setup script's returncode is nonzero, instead of just logging the failure and letting main() continue on to fetch_inventory_baseline(). Why does that matter?",
+      "options": [
+        "The inventory-baseline step depends on the admin account actually existing, so the whole run needs to stop rather than press on as if setup had succeeded",
+        "fetch_inventory_baseline() would otherwise automatically retry the user setup step itself before continuing",
+        "Raising an exception here is purely a style preference with no effect on which steps actually run",
+        "RuntimeError is required because response.raise_for_status() cannot be used anywhere else in the same script"
+      ],
+      "correctIndex": 0,
+      "explain": "The capstone guide is explicit about this: raising RuntimeError on a nonzero returncode, instead of logging and continuing, matters because the next step depends on this one having actually worked — so the whole run needs to stop, rather than proceed with no admin account in place."
+    },
+    {
+      "id": "pba-28",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the finished launch_store.py from Lesson 24.",
+      "options": [
+        "main() is written so that exactly one Slack alert is sent per run — either the success message or the failure message, never both and never neither",
+        "Catching RuntimeError and requests.exceptions.RequestException as separate except blocks lets the alert message tell whoever's on call whether to look at the store's server or at the warehouse API first",
+        "Since launch_store.py runs on demand rather than on a schedule, redirecting its stdout/stderr to a log file provides no benefit",
+        "The capstone's README should describe only what the code does, not the reasoning behind design choices like reusing an idempotent bash script via subprocess",
+        "sys.exit(1) inside the except block reports failure back to whatever called the script, the same exit-code convention covered earlier in the course"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        4
+      ],
+      "explain": "try/except around the whole workflow ensures exactly one alert fires per run, success or failure. Splitting RuntimeError from RequestException into separate except blocks lets the alert point at the right place to look first — the store's server versus the warehouse API. Redirecting output still benefits an on-demand script, the same habit as lesson 4's scheduled jobs, leaving a trail either way. And the lesson explicitly recommends documenting the reasoning behind design choices in the README, not just narrating what the code does. sys.exit(1) is the same success/failure exit-code convention used throughout the course."
+    },
+    {
+      "id": "pba-29",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each launch_store.py capstone piece to the earlier lesson it reuses, per Lesson 22's mapping.",
+      "left": [
+        "The launch_store.py CLI entry point (--store-id, --store-name, --region)",
+        "Rendering the per-store YAML config",
+        "The inventory API token",
+        "The idempotent admin-account step"
+      ],
+      "right": [
+        "Lesson 8: argparse",
+        "Lesson 12: environment variables & secrets",
+        "Lesson 13: Jinja2 templating",
+        "Lesson 18: user & server setup"
+      ],
+      "correctMap": [
+        0,
+        2,
+        1,
+        3
+      ],
+      "explain": "The CLI entry point reuses argparse from Lesson 8. Rendering a per-store config reuses the Jinja2 templating pattern from Lesson 13. The inventory API token is read from an environment variable, never hardcoded, following Lesson 12's rule. The admin-account step reuses Lesson 18's idempotent setup script rather than rewriting its logic from scratch."
+    },
+    {
+      "id": "pba-30",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of launch_store.py's main() in the correct order, per Lessons 23 and 24.",
+      "items": [
+        "parse_args() reads --store-id, --store-name, and --region from the command line",
+        "render_config() writes the store's rendered YAML config to disk and logs the path",
+        "setup_store_admin() creates the store's admin user, raising RuntimeError if it fails",
+        "fetch_inventory_baseline() calls the authenticated warehouse API and saves the result as JSON",
+        "On success, log completion and send a success alert to Slack; on any exception, log the failure, send a failure alert, and exit with sys.exit(1)"
+      ],
+      "explain": "main() parses arguments first, then runs the three workflow steps in order inside one try block — render the config, set up the admin account, pull the inventory baseline — and finally reports the outcome: a success log and Slack alert if every step completed, or a logged failure, a failure alert, and a nonzero exit code the instant any step raises."
+    }
+  ]
+}
