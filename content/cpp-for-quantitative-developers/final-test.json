@@ -1,0 +1,539 @@
+{
+  "questions": [
+    {
+      "id": "quantcpp-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "struct Order {\n    int id;\n    double price;\n    long quantity;\n    std::string symbol;\n};\n\nvoid log_order(Order o) {\n    std::cout << o.symbol << \"\\n\";\n}",
+      "prompt": "log_order(Order o) looks like it just prints a symbol. What hidden cost does every call actually pay, and why?",
+      "options": [
+        "It copies the entire Order, including the std::string symbol's own heap-allocated character data, because the parameter is passed by value",
+        "It copies only the int and double members; std::string members are passed by reference automatically regardless of the parameter type",
+        "It heap-allocates a new Order and frees it when the function returns, instead of using the stack",
+        "It causes no extra cost at all, since structs are passed as a single machine word no matter their size"
+      ],
+      "correctIndex": 0,
+      "explain": "Order is taken by value, so log_order receives a brand-new copy of the whole struct \u2014 including a full copy of the std::string's heap-allocated character data, not just the small fixed-size fields. For a function called on every order in a hot path, that's real, avoidable cost; passing const Order& instead would give read-only access with no copy at all."
+    },
+    {
+      "id": "quantcpp-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a ________ must be bound to something at the moment it's created, can never be rebound to refer to a different object afterward, and can never be null \u2014 unlike a pointer, which can be reassigned or null.",
+      "acceptedAnswers": [
+        "reference",
+        "a reference"
+      ],
+      "explain": "Lesson 4 introduces this as the key difference from a pointer: a reference (double& ref = price;) is bound immediately and permanently to one object, while a pointer (double* ptr = &price;) can be reassigned to point elsewhere or set to null. That permanence is exactly why const Order& is such a safe default for a read-only function parameter."
+    },
+    {
+      "id": "quantcpp-03",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each compilation/linking term to what it actually means, per Lesson 5.",
+      "left": [
+        "Declaration",
+        "Definition",
+        "#pragma once",
+        "\"undefined reference\" linker error"
+      ],
+      "right": [
+        "Provides the actual implementation or storage for a name",
+        "The linker found a call to a function but no definition of it in any object file being linked",
+        "Tells the compiler a name and its type/signature exist, without providing an implementation",
+        "Preprocessor directive that skips a header's contents if they've already been processed once in this translation unit"
+      ],
+      "correctMap": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "explain": "A declaration only tells the compiler a name exists; a definition actually provides the implementation or storage. #pragma once stops a header's contents from being processed twice in the same translation unit. An \"undefined reference\" error means the linker found a call site but never found a matching definition in any object file it linked \u2014 commonly because the defining .cpp file was never compiled/linked, or the signature doesn't match exactly."
+    },
+    {
+      "id": "quantcpp-04",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these four stages of turning pricer.cpp into a running executable in the correct order, per Lesson 2.",
+      "items": [
+        "Preprocessing: #include pastes in header contents and #define expands macros",
+        "Compilation: the preprocessed C++ is translated into assembly for the target CPU",
+        "Assembly: the assembler turns that assembly code into an object file",
+        "Linking: the linker combines one or more object files and libraries into a final executable"
+      ],
+      "explain": "Every .cpp file passes through these four stages in this exact order: preprocessing handles everything starting with #, compilation turns the result into assembly, assembly turns that into an object file (machine code, but not yet runnable), and linking stitches object files and libraries together into the final executable. Running g++ pricer.cpp -o pricer invokes all four automatically, but knowing the order matters once a cryptic error needs to be traced to a specific stage."
+    },
+    {
+      "id": "quantcpp-05",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly distinguishes std::unique_ptr from std::shared_ptr, per Lesson 8?",
+      "options": [
+        "std::unique_ptr owns its object exclusively and cannot be copied, only moved; std::shared_ptr allows multiple owners via reference counting and destroys the object only once the last owning shared_ptr is destroyed or reset",
+        "std::unique_ptr allows multiple simultaneous owners via reference counting; std::shared_ptr owns its object exclusively and cannot be copied",
+        "Both std::unique_ptr and std::shared_ptr allow multiple simultaneous owners of the same object, differing only in naming convention",
+        "std::unique_ptr requires the programmer to call delete manually when it goes out of scope, while std::shared_ptr deletes automatically",
+        "std::shared_ptr has exactly zero runtime overhead compared to a raw pointer, identical to std::unique_ptr in cost",
+        "std::unique_ptr can be freely copied as long as the object was originally created with std::make_unique"
+      ],
+      "correctIndex": 0,
+      "explain": "std::unique_ptr<T> owns a heap object exclusively \u2014 exactly one unique_ptr can own it at a time, so it can't be copied, only moved. std::shared_ptr<T> allows multiple owners tracked by an internal reference count, and the object is destroyed only when the last shared_ptr referring to it is destroyed or reset. unique_ptr has zero overhead versus a raw pointer; shared_ptr costs a reference count and atomic increment/decrement operations, which is why the lesson says to default to unique_ptr and reach for shared_ptr only when shared ownership is a genuine requirement.",
+      "distractorExplain": "Option B simply swaps which type does what \u2014 it's std::unique_ptr that's exclusive and non-copyable, and std::shared_ptr that's the reference-counted, multi-owner one. Getting the two backwards is exactly the mistake this lesson's terminology is designed to prevent, since the two types solve opposite ownership problems."
+    },
+    {
+      "id": "quantcpp-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "double* make_price() {\n    double price = 182.35;\n    return &price;\n}\n\nint main() {\n    double* p = make_price();\n    std::cout << *p << \"\\n\";\n}",
+      "prompt": "What happens when main dereferences p here, and why, per Lesson 6?",
+      "options": [
+        "Undefined behavior \u2014 price's stack frame is popped the instant make_price returns, so p points at memory that is no longer guaranteed to hold that value",
+        "It reliably prints 182.35 every time, because stack memory is never reused until the program calls another function that needs it",
+        "A compile error, because returning the address of a local variable is forbidden by the C++ grammar",
+        "It always prints 0.0, because freed stack memory is automatically zero-initialized before reuse"
+      ],
+      "correctIndex": 0,
+      "explain": "price is a local, stack-allocated variable. The moment make_price returns, its stack frame is popped and price ceases to exist, so the pointer returned now refers to memory that could be reused by anything else the program does next. Reading through it is undefined behavior \u2014 it might print the old value, garbage, or crash, unpredictably \u2014 which is exactly why this pattern is a classic, common C++ bug rather than a reliable one."
+    },
+    {
+      "id": "quantcpp-07",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about memory bugs and the tools that catch them, per Lesson 9.",
+      "options": [
+        "A memory leak, a use-after-free, a double-free, and a buffer overrun can all compile without any warning in most configurations",
+        "std::unique_ptr and std::shared_ptr make leaks, use-after-free, and double-free entirely impossible in every case, with no remaining way to trigger them",
+        "AddressSanitizer is enabled by compiling with -fsanitize=address, and reports the specific line that misused freed or out-of-bounds memory",
+        "Valgrind requires recompiling the program with special compiler flags before it can detect any memory errors at all",
+        "Valgrind's memcheck runs noticeably slower than AddressSanitizer because it emulates the program inside a virtual CPU rather than using compiler instrumentation"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        4
+      ],
+      "explain": "All four classic bugs compile cleanly in most configurations and can appear to \"work\" for a long time, which is exactly why they're dangerous. AddressSanitizer is turned on with -fsanitize=address and reports detailed, line-accurate errors. Valgrind runs an already-compiled binary inside an emulated CPU rather than requiring special compile flags (though -g still helps produce useful line numbers), and that emulation is exactly why it's slower than ASan's compiler instrumentation. Smart pointers make these bugs dramatically less likely, not impossible \u2014 a use-after-free is still possible via a raw pointer or reference into an object after its owning smart pointer is destroyed, and a buffer overrun is still possible on a vector or array indexed past .size() without bounds-checked access."
+    },
+    {
+      "id": "quantcpp-08",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: std::move does nothing at runtime \u2014 it is purely a ________ that tells the compiler to treat an lvalue as an rvalue, making the move constructor or move assignment eligible to run instead of the copy version.",
+      "acceptedAnswers": [
+        "cast",
+        "a cast"
+      ],
+      "explain": "Lesson 10 is explicit that std::move is a cast, not an action: it performs no work itself, it simply changes how the compiler treats the expression, making a move operation eligible where a copy would otherwise have been chosen. After std::move(a), a still exists and is safe to destroy or reassign, but its contents should be treated as unspecified."
+    },
+    {
+      "id": "quantcpp-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "class Instrument {\npublic:\n    ~Instrument() {}   // NOT virtual\n};\n\nclass Future : public Instrument {\npublic:\n    Future() { data_ = new int[1000]; }\n    ~Future() { delete[] data_; }\nprivate:\n    int* data_;\n};\n\nInstrument* instr = new Future();\ndelete instr;",
+      "prompt": "delete instr runs through a base Instrument* pointer here. What actually happens, and why, per Lesson 12?",
+      "options": [
+        "Only ~Instrument() runs, not ~Future() \u2014 because Instrument's destructor isn't virtual, so Future's data_ array is leaked",
+        "Both destructors run in the correct derived-to-base order, exactly as if Instrument's destructor had been declared virtual",
+        "The program fails to compile, because deleting a derived object through a base-class pointer is illegal in C++",
+        "Only ~Future() runs, since C++ always calls the most-derived destructor regardless of whether the base destructor is virtual"
+      ],
+      "correctIndex": 0,
+      "explain": "When you delete an object through a base-class pointer, C++ only calls the derived class's destructor if the base class's destructor is virtual. Here ~Instrument() is not virtual, so delete instr only ever runs ~Instrument() \u2014 ~Future() never executes, and the heap array data_ points to is leaked. This is exactly why the lesson treats a missing virtual destructor as a real memory-safety bug, not a style nitpick, once any class is going to be derived from."
+    },
+    {
+      "id": "quantcpp-10",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about templates and C++20 concepts, per Lesson 14.",
+      "options": [
+        "Every distinct set of template arguments, like FixedBuffer<double, 1024> versus FixedBuffer<int, 64>, generates a completely separate type with separately compiled code",
+        "Calling weightedAverage(101.25, 0.6, 102.75, 0.4) almost never requires writing weightedAverage<double>(...) explicitly, because the compiler deduces T from the arguments",
+        "A non-type template parameter, like N in FixedBuffer<T, N>, must itself be a type, never a compile-time constant value",
+        "A C++20 concept like Numeric lets a template reject an unsupported type immediately with a clear \"constraints not satisfied\" message, instead of a deep, unreadable error from inside the function body",
+        "Templates introduce the same kind of runtime dispatch overhead as virtual functions, since the compiler must choose the right instantiation while the program is running"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Templates generate a fully separate type and separately compiled code per distinct set of arguments, and argument deduction is exactly why you rarely spell out the template argument explicitly. Concepts turn a deep, confusing instantiation error into an immediate, readable \"constraints not satisfied\" message. A non-type template parameter is the opposite of what option C claims \u2014 it's a compile-time value (like the array size N), not a type. And templates have zero runtime dispatch cost; every instantiation is fully resolved at compile time, unlike virtual functions' dynamic dispatch."
+    },
+    {
+      "id": "quantcpp-11",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Match each term from Chapter 3 to what it actually is.",
+      "left": [
+        "Pure virtual function (= 0)",
+        "override keyword",
+        "Non-type template parameter",
+        "friend"
+      ],
+      "right": [
+        "Grants a free function access to a class's private members",
+        "A compile-time constant value passed to a template, not a type",
+        "A virtual function with no base implementation, which makes the class abstract",
+        "Compiler-checked keyword confirming a derived function actually matches a virtual function in the base"
+      ],
+      "correctMap": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "explain": "A pure virtual function (= 0) has no base implementation, making the class abstract. override is checked by the compiler against an actual base virtual function, catching typos that would otherwise silently create an unrelated new function. A non-type template parameter, like N in FixedBuffer<T, N>, is a compile-time value, not a type. friend grants a free function (like operator<<) access to a class's private members."
+    },
+    {
+      "id": "quantcpp-12",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: operator<< for printing a custom type with std::cout must be written as a ________ function (optionally declared friend), because the left-hand operand is std::ostream, not the programmer's own type.",
+      "acceptedAnswers": [
+        "free",
+        "non-member",
+        "free function",
+        "non-member function"
+      ],
+      "explain": "Lesson 13 is explicit about this: you can't add a member function to std::ostream itself, so operator<< has to be a free (non-member) function, made a friend only when it needs access to the type's private data \u2014 exactly the pattern used for Money's operator<<."
+    },
+    {
+      "id": "quantcpp-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A developer needs a set of currently-held instrument symbols with a fast \"do we hold this?\" check and no requirement on iteration order. Per Lesson 20's decision framework, which container fits, and why?",
+      "options": [
+        "std::unordered_set<std::string> \u2014 hashing gives average O(1) lookup, and since no ordering is required here, there's nothing to give up by choosing it",
+        "std::set<std::string> \u2014 a tree-based set is always the right choice for storing unique values, regardless of ordering needs",
+        "std::vector<std::string> \u2014 vector is the right default for every collection, including membership checks",
+        "std::map<std::string, bool> \u2014 map guarantees the single fastest lookup of any standard container"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 20 maps this exact scenario to std::unordered_set<std::string>: the requirement is a fast membership check with no ordering need, which is precisely what a hash-based container is for. std::set would pay O(log n) and maintain an ordering nobody asked for; std::vector would need a linear scan to check membership; std::map's O(log n) key lookup is slower on average than an unordered container's average O(1)."
+    },
+    {
+      "id": "quantcpp-14",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about iterators and algorithms, per Lesson 17.",
+      "options": [
+        "end() returns an iterator to one position past the last valid element, so an empty range satisfies begin() == end()",
+        "std::sort can be called directly on a std::list, because every standard container's iterators support random access",
+        "std::accumulate's initial-value argument should be given as the correct type (0.0 for a double sum), or the result can be silently truncated",
+        "A range-based for loop is a fundamentally separate mechanism from begin()/end(), unrelated to iterators",
+        "std::forward_list's iterators are classified as the forward category, supporting ++it but not --it"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        4
+      ],
+      "explain": "begin()/end() form a deliberate half-open range, so an empty range is simply begin() == end(). std::accumulate folds using the initial value's type, so passing 0 instead of 0.0 for a double sum can silently truncate. std::forward_list's iterators are forward-only (++it, no --it). std::list's iterators are only bidirectional, not random-access, which is exactly why std::sort can't be called on it directly \u2014 std::list provides its own sort() member instead. A range-based for loop is generated from exactly the begin()/end()/++it pattern, not a separate mechanism."
+    },
+    {
+      "id": "quantcpp-15",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Match each lambda/functional-style term to what it actually does, per Lesson 19.",
+      "left": [
+        "[x]",
+        "[&x]",
+        "std::function<bool(double)>",
+        "Generic lambda (auto parameter)"
+      ],
+      "right": [
+        "A type-erased wrapper that can store any callable matching a given signature",
+        "Captures a reference to x, so a later change to x is visible inside the lambda",
+        "Uses auto in place of a concrete parameter type, letting one lambda work across multiple types",
+        "Captures a copy of x as it was at the moment the lambda was created"
+      ],
+      "correctMap": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "explain": "[x] captures x by value, as a snapshot at creation time; [&x] captures a reference, so later mutations are visible inside the lambda. std::function<bool(double)> is the type-erased way to store any callable with that signature, useful as a class member or a parameter. A generic lambda uses auto for its parameter type, working much like a template across multiple argument types."
+    },
+    {
+      "id": "quantcpp-16",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of parsing a comma-separated price line with getline + stringstream in the correct order, per Lesson 18.",
+      "items": [
+        "Wrap the raw CSV line in a std::stringstream",
+        "Call std::getline(ss, symbol, ',') to extract the first field up to the first comma",
+        "Call std::getline(ss, field, ',') to extract the price field as text, then convert it with std::stod",
+        "Extract the remaining field (such as size) the same way to finish parsing the line"
+      ],
+      "explain": "The standard pattern wraps the line in a stringstream, then repeatedly calls getline with a ',' delimiter to pull out one field at a time, converting each numeric field's text with a function like std::stod or std::stol \u2014 exactly the sequence Lesson 18's parseTick example follows field by field."
+    },
+    {
+      "id": "quantcpp-17",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly defines a C++ data race, per Lesson 21?",
+      "options": [
+        "Two or more threads access the same memory location at the same time, at least one of those accesses is a write, and there is no synchronization establishing an order between them \u2014 the C++ standard treats this as undefined behavior, not merely \"probably wrong\"",
+        "Any time two threads run at the same time at all, regardless of what memory they touch, the program has a data race",
+        "A data race only occurs when both conflicting accesses are writes; a read happening concurrently with an unsynchronized write is always safe",
+        "A data race is a compile-time error that the compiler always detects and rejects before producing an executable",
+        "A data race is safe to ignore as long as the shared variable is declared const",
+        "A data race only happens when more threads are created than the CPU has physical cores"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 21 defines a data race precisely: unsynchronized concurrent access to the same memory location, where at least one access is a write. The C++ standard doesn't call this \"probably buggy\" \u2014 it's undefined behavior, meaning the compiler is allowed to assume it never happens and optimize accordingly. Nothing about thread count relative to core count, const-ness, or compile-time detection has any bearing on whether a race exists.",
+      "distractorExplain": "Option C gets the trigger condition wrong: a data race only requires that at least one of the conflicting accesses is a write \u2014 it does not require both to be writes. A read running concurrently with an unsynchronized write to the same location is exactly the scenario the lesson's trade_count example demonstrates as unsafe, since the reader can observe a value mid-update."
+    },
+    {
+      "id": "quantcpp-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "code": "long trade_count = 0;\n\nvoid record_trades(int n) {\n    for (int i = 0; i < n; ++i) {\n        trade_count = trade_count + 1;\n    }\n}\n\nstd::thread a(record_trades, 100000);\nstd::thread b(record_trades, 100000);\na.join();\nb.join();\nstd::cout << trade_count << '\\n';",
+      "prompt": "Run many times, what does this program actually print, and why, per Lesson 21?",
+      "options": [
+        "Usually something less than 200000, and a different number on different runs, because trade_count = trade_count + 1 is really a read-then-write that two threads can interleave, losing increments",
+        "Always exactly 200000, because each thread runs the same fixed number of loop iterations regardless of how the OS schedules them",
+        "A compile error, because two separate std::thread objects can't both call the same function",
+        "Always 0, because the second thread's constructor resets trade_count back to its initial value"
+      ],
+      "correctIndex": 0,
+      "explain": "trade_count = trade_count + 1 is really three steps: read the current value, add one, write the result back. If thread A reads, then thread B reads that same stale value before A writes back, both compute the same \"next\" value and one increment is lost. Because the OS scheduler decides unpredictably when each thread runs, the exact total varies run to run and is almost never the full 200000 \u2014 this is precisely why the lesson calls testing racy code \"not proof\" of correctness."
+    },
+    {
+      "id": "quantcpp-19",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about std::atomic and memory ordering, per Lesson 23.",
+      "options": [
+        "memory_order_relaxed guarantees the operation itself is atomic, but places no ordering constraint on surrounding non-atomic memory",
+        "memory_order_seq_cst is the ordering used by default when none is specified, and all threads agree on one single global order of every seq_cst operation",
+        "A release store by one thread guarantees that a matching acquire load by another thread will see every write that happened before the release, in the publishing thread",
+        "compare_exchange_weak always succeeds on its first call, regardless of what any other thread has done to the atomic in the meantime",
+        "Replacing a plain long counter with std::atomic<long> still requires wrapping every increment in a std::mutex to be free of data races"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "memory_order_relaxed guarantees only atomicity, with no constraint on reordering around it \u2014 correct for a counter where only the final value matters. seq_cst is the implicit default and the strongest ordering, giving every thread one agreed-upon global order. A release store makes every prior write by that thread visible to a thread that performs the matching acquire load and observes the stored value \u2014 the publish pattern in Lesson 23's latest-price example. compare_exchange_weak can fail if another thread changed the value first, which is exactly why it's used in a retry loop rather than assumed to succeed. And std::atomic<long>.fetch_add already makes the increment itself indivisible with no mutex needed at all \u2014 that's the whole point of reaching for atomics instead of a mutex for a simple counter."
+    },
+    {
+      "id": "quantcpp-20",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the single-producer/single-consumer order-queue pattern in the order they actually happen, per Lesson 22.",
+      "items": [
+        "The producer locks the mutex with a lock_guard, pushes an order id onto the queue, and releases the lock as the lock_guard's scope ends",
+        "The producer calls cv.notify_one() to wake a waiting consumer",
+        "The consumer's cv.wait(lk, predicate) unlocks lk, sleeps, and re-locks lk once notified",
+        "The consumer rechecks the predicate (queue not empty) before proceeding, guarding against spurious wakeups and missed notifications",
+        "The consumer pops the order id and processes it outside the lock"
+      ],
+      "explain": "The producer pushes under the lock, then notifies after releasing it. The consumer's wait call unlocks while sleeping and re-locks on waking, but always rechecks the predicate in a loop \u2014 guarding against both a spurious OS wakeup with no real notification, and a notify_one() that arrived before the consumer started waiting. Only after the predicate is confirmed true does the consumer pop and process the order, outside the lock, exactly as Lesson 22's worked example shows."
+    },
+    {
+      "id": "quantcpp-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "code": "for (int i = 0; i < 1000000; ++i) {\n    double r = price_option(100.0, 105.0);\n}",
+      "prompt": "A developer times this loop and gets a suspiciously fast result for price_option. What's actually wrong with the benchmark, per Lesson 26?",
+      "options": [
+        "r is never used after being computed, so an optimizing compiler is allowed to delete the entire loop \u2014 the benchmark may be timing an empty loop, not price_option",
+        "This is a correct, reliable way to benchmark price_option exactly as written",
+        "The loop is missing a discarded warm-up pass, and that alone fully explains a suspiciously fast result",
+        "price_option cannot legally be called more than 100,000 times inside a single for loop"
+      ],
+      "correctIndex": 0,
+      "explain": "If a computed result is never actually used, an optimizing compiler is free to prove the whole loop has no observable effect and delete it entirely \u2014 so a benchmark built this way may be timing nothing at all. The fix is to consume the result, for example accumulating it into a variable that's printed afterward, or using something like benchmark::DoNotOptimize to force the compiler to keep the work."
+    },
+    {
+      "id": "quantcpp-22",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about CPU caches and data layout, per Lesson 27.",
+      "options": [
+        "A cache line is typically 64 bytes on modern x86/ARM CPUs, so reading one double can bring several neighboring doubles into cache for free",
+        "Struct-of-arrays beats array-of-structs specifically when you process one field across many elements at a time, like summing just the prices of a million orders",
+        "std::list's theoretically O(1) middle-insertion complexity typically makes it faster than std::vector for most quant workloads, even once cache effects are accounted for",
+        "L1 cache is the largest but slowest on-chip cache layer, with L3 being the smallest and fastest",
+        "Main memory (RAM) access can take roughly 100 nanoseconds or more \u2014 around two orders of magnitude slower than a roughly 1-nanosecond CPU instruction"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        4
+      ],
+      "explain": "A 64-byte cache line means fetching one double brings its contiguous neighbors along for free, which is exactly why sequential access is so much faster than scattered access. Struct-of-arrays wins precisely when scanning one field across many records, since every fetched byte is actually used. L1 is the smallest and fastest cache, not the largest \u2014 that description is backwards; L3 is the largest and slowest of the on-chip caches. RAM access at roughly 100ns versus a roughly 1ns instruction is the two-orders-of-magnitude gap caches exist to hide. And despite std::list's better asymptotic complexity for middle insertion, std::vector usually wins in practice for most quant workloads because of cache locality \u2014 the lesson states vector beats list \"more often than intuition suggests.\""
+    },
+    {
+      "id": "quantcpp-23",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: calling prices.________(100000) before a loop of push_back calls turns repeated reallocate-and-copy growth into a single upfront allocation, per Lesson 28.",
+      "acceptedAnswers": [
+        "reserve",
+        "reserve()"
+      ],
+      "explain": "std::vector::reserve(n) pre-allocates capacity for n elements, so if you know (or can estimate) the final size in advance, it costs one allocation instead of the handful of reallocate-and-copy cycles push_back would otherwise trigger as the vector repeatedly outgrows its current capacity."
+    },
+    {
+      "id": "quantcpp-24",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Match each profiling tool to what it actually measures, per Lesson 30.",
+      "left": [
+        "perf",
+        "callgrind",
+        "cachegrind",
+        "Flame graph"
+      ],
+      "right": [
+        "Simulates the cache hierarchy and reports real cache-miss counts per line of code",
+        "A visualization where each bar's width shows total time spent in a function across all samples",
+        "Linux's standard low-overhead sampling CPU profiler",
+        "Counts exact instructions executed per function via software CPU emulation"
+      ],
+      "correctMap": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "explain": "perf is Linux's standard sampling profiler, interrupting the program periodically to record where time goes, at very low overhead. callgrind (a Valgrind tool) gives exact instruction counts and call graphs via emulation, at a real speed cost. cachegrind simulates the cache hierarchy to report actual cache-miss counts, confirming whether a data-layout change really reduced misses. A flame graph visualizes stacked samples, with bar width proportional to total time on the stack \u2014 the widest bars are where time actually went."
+    },
+    {
+      "id": "quantcpp-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "code": "py::array_t<double> vectorizedPayoff(py::array_t<double> spots, double strike) {\n    py::buffer_info buf = spots.request();\n    auto result = py::array_t<double>(buf.shape);\n    // ... fill result from buf.ptr ...\n    return result;\n}",
+      "prompt": "Why does this function take spots as py::array_t<double> and call .request() instead of accepting a std::vector<double>, per Lesson 32?",
+      "options": [
+        "py::array_t gives direct access to NumPy's existing memory via the buffer protocol with zero copies; converting to std::vector<double> would copy every element in, and copy the result back out",
+        "py::array_t is required because std::vector<double> is incapable of storing floating-point numbers",
+        "py::array_t and std::vector<double> are just two spellings of the identical conversion, with identical copying behavior either way",
+        "pybind11 rejects any function parameter declared as std::vector<double> at compile time"
+      ],
+      "correctIndex": 0,
+      "explain": "pybind11 can convert a NumPy array to std::vector<double> automatically, but that conversion copies every element in and copies the result back out \u2014 fine for 10 elements, wasteful for a 10-million-row array. py::array_t<double>'s buffer protocol (.request() returning a py::buffer_info with a raw pointer, shape, and strides) lets C++ read and write NumPy's underlying memory directly, with zero copies in either direction."
+    },
+    {
+      "id": "quantcpp-26",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: pybind11's macro that defines the entry point a compiled extension exposes to Python's import statement is ________.",
+      "acceptedAnswers": [
+        "PYBIND11_MODULE",
+        "PYBIND11_MODULE(name, m)"
+      ],
+      "explain": "PYBIND11_MODULE(name, m) defines the module entry point the Python interpreter loads on import \u2014 its first argument names the module Python will import, and the second is the py::module_ object that m.def(...) and py::class_<T>(m, ...) attach functions and classes to."
+    },
+    {
+      "id": "quantcpp-27",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of building and distributing a pybind11 extension in the order Lesson 33 walks through them.",
+      "items": [
+        "Write the pybind11 source file and a CMakeLists.txt that calls pybind11_add_module",
+        "Build locally with cmake -S . -B build followed by cmake --build build, confirming the extension compiles and imports",
+        "Add a pyproject.toml declaring scikit-build-core as the build backend",
+        "Run pip install . (or python -m build --wheel) to produce an installable, platform- and Python-version-tagged package"
+      ],
+      "explain": "CMake with pybind11_add_module is the right tool while actively developing \u2014 fast rebuilds, full control over flags, easy to debug. Once the extension works, wrapping that same CMake build behind pyproject.toml with scikit-build-core is what lets pip install . (or building a wheel) hand the extension to a teammate, understanding that the resulting wheel is tied to one OS and Python version."
+    },
+    {
+      "id": "quantcpp-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "QuantPricer's pricing core (pricing_core.hpp, monte_carlo_engine.hpp) deliberately never includes a pybind11 header. Per Lesson 35, why does this specific design decision matter?",
+      "options": [
+        "It keeps the core independently unit-testable with a plain C++ test framework like doctest, with no Python interpreter anywhere in that test run",
+        "pybind11 headers are not compatible with the C++17 language standard the capstone targets",
+        "pybind11 can only be used inside .cpp files, never inside a header, as a hard language restriction",
+        "It allows the pricing core to avoid linking against the C++ standard library entirely"
+      ],
+      "correctIndex": 0,
+      "explain": "The critical design decision in Lesson 35 is that the C++ pricing core is a plain C++ library usable with or without Python, with the pybind11 module as a thin translation layer on top. That separation is exactly what lets Lesson 37 unit test the core with doctest in pure C++, with no Python interpreter involved in that test run at all \u2014 independent testability, not a language or linking restriction, is the stated reason."
+    },
+    {
+      "id": "quantcpp-29",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Match each QuantPricer requirement category to its concrete, written target, per Lesson 35.",
+      "left": [
+        "Correctness",
+        "Performance",
+        "Usability (packaging)",
+        "Usability (API)"
+      ],
+      "right": [
+        "Pricing 100,000 options via the vectorized C++ path must be at least 20x faster than an equivalent pure-Python loop, measured with timeit",
+        "European call/put prices must match published Black-Scholes reference values within 1e-6 absolute error for at least 5 textbook test cases",
+        "pip install . must produce a working package",
+        "The public API exposes price_european(spots, strikes, rates, vols, expiries) and price_bond(face_value, coupon_rate, years, yield)"
+      ],
+      "correctMap": [
+        1,
+        0,
+        2,
+        3
+      ],
+      "explain": "Lesson 35's requirements document states each category as a checkable number or pass/fail condition rather than an adjective: correctness is the 1e-6 Black-Scholes accuracy target across 5 test cases, performance is the 20x-faster-than-pure-Python target measured with timeit, and usability covers both the pip install . packaging requirement and the two named public API functions."
+    },
+    {
+      "id": "quantcpp-30",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of validating and presenting QuantPricer in the order Lesson 37 performs them.",
+      "items": [
+        "Unit test the pybind11-free pricing core in pure C++ with doctest, with no Python interpreter involved",
+        "Test the Python-facing bindings with pytest, including a correctness check against a known Black-Scholes reference value",
+        "Benchmark the vectorized C++ path against a fair pure-Python baseline with timeit, reporting the actual measured speedup",
+        "Prepare the portfolio narrative: the architecture, the concurrency design, the measured result, and the deliberate scope boundary"
+      ],
+      "explain": "Lesson 37 moves from the innermost layer outward: first the pybind11-free core is tested directly in C++ with doctest, then the Python-facing bindings are tested with pytest against known reference values, then the vectorized C++ path is benchmarked against a fair pure-Python baseline with timeit to produce a real, reproducible speedup number, and finally that evidence is turned into the specific story \u2014 architecture, concurrency design, measured result, and scope judgment \u2014 worth telling in a portfolio or interview."
+    }
+  ]
+}

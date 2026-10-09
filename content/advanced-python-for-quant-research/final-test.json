@@ -1,0 +1,526 @@
+{
+  "questions": [
+    {
+      "id": "quantpy-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Which statement correctly describes NumPy's broadcasting rule?",
+      "options": [
+        "It compares two array shapes element by element starting from the trailing (rightmost) dimension; any missing leading dimension is treated as 1, and two dimensions are compatible only if they're equal or if one of them is 1",
+        "It compares two array shapes element by element starting from the leading (leftmost) dimension; any missing trailing dimension is treated as 1",
+        "It requires both arrays to already have the exact same shape before any arithmetic is allowed",
+        "It physically duplicates the smaller array's data in memory so both arrays end up the same shape",
+        "It only applies when one of the two operands is a plain Python scalar, never between two multi-dimensional arrays",
+        "It is a pandas-only feature that NumPy arrays themselves don't support"
+      ],
+      "correctIndex": 0,
+      "explain": "NumPy's broadcasting rule compares shapes from the trailing dimension inward, treating any missing leading dimension as 1, and lets a dimension stretch only when it's already 1 or already equal to the other array's. That's exactly what lets a shape-(4,) array stretch to match a shape-(3,4) array by being treated as (1,4), with nothing physically duplicated in memory.",
+      "distractorExplain": "Option B gets the direction backwards. NumPy's rule explicitly starts comparing from the trailing (rightmost) dimension, not the leading one \u2014 a missing dimension is implicitly added on the left, not the right. Getting this reversed would predict broadcasting failures (or successes) exactly opposite to NumPy's real behavior."
+    },
+    {
+      "id": "quantpy-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "code": "arr = np.arange(10)\nview = arr[2:5]\nview[0] = 999\nfancy = arr[[2, 3, 4]]\nfancy[0] = -1\nprint(arr[2])",
+      "prompt": "This mixes a slice (view) and fancy indexing (copy) on the same array. What does it print, and why?",
+      "options": [
+        "999 \u2014 slicing returns a view, so view[0] = 999 mutates arr itself, but fancy indexing always returns a copy, so fancy[0] = -1 never touches arr",
+        "-1 \u2014 both view and fancy share memory with arr, so the last assignment wins",
+        "0 \u2014 arr is reset to its original values once fancy indexing is used",
+        "An error, because you can't slice and fancy-index the same array in sequence"
+      ],
+      "correctIndex": 0,
+      "explain": "Slicing (arr[2:5]) returns a view sharing memory with arr, so view[0] = 999 really does set arr[2] to 999. Fancy indexing with a list of integers (arr[[2, 3, 4]]) always returns an independent copy, so fancy[0] = -1 only changes the copy \u2014 arr[2] stays at 999, the value the view assignment actually wrote."
+    },
+    {
+      "id": "quantpy-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: converting a column of repeated string values, like ticker symbols, from object dtype to the ________ dtype stores each unique value once plus a small integer code per row, typically shrinking memory by 90%+ for a column like that.",
+      "acceptedAnswers": [
+        "category",
+        "category dtype",
+        "categorical"
+      ],
+      "explain": "The category dtype stores each distinct value (e.g. three tickers) exactly once and represents every row as a small integer code pointing at it, instead of storing a full Python string per row \u2014 Lesson 4 measured savings typically above 90% versus an object column with the same repeated values, and it's also faster to group by, since comparisons become integer comparisons."
+    },
+    {
+      "id": "quantpy-04",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about MultiIndex slicing and time-series tools from Lesson 3.",
+      "options": [
+        "resample changes a time series' frequency via an aggregation, while rolling computes a statistic over a sliding window at the existing frequency",
+        ".xs selects on a named index level and can drop that level from the result, without needing a full tuple for the outer levels",
+        "swaplevel changes the underlying data values, not just the order of the index levels",
+        "Mixing a naive timestamp with a timezone-aware timestamp raises an error rather than silently guessing which zone was meant",
+        "groupby(level=...) requires resetting a MultiIndex to flat columns first, the same as a plain column-based groupby"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "resample reshapes to a coarser frequency via an aggregation; rolling keeps the same frequency and computes trailing-window statistics \u2014 genuinely different jobs. .xs selects on an inner level and can drop it from the result. pandas deliberately raises rather than guess when naive and tz-aware timestamps are compared, since '9:30' means something different in different zones. swaplevel only reorders index levels \u2014 it never touches the data values. groupby(level=...) aggregates directly off the MultiIndex, with no column reset required at all."
+    },
+    {
+      "id": "quantpy-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "m = np.arange(6, dtype=np.int64).reshape(2, 3)\nprint(m.strides)\nprint(m.T.strides)",
+      "prompt": "What do these two print statements output, and why does transposing produce that result?",
+      "options": [
+        "(24, 8) then (8, 24) \u2014 transposing swaps the strides without copying any data, since each int64 is 8 bytes and a row of 3 of them is 24 bytes",
+        "(24, 8) then (24, 8) \u2014 .T makes a full copy, so the strides describing the new shape stay identical to the original",
+        "(8, 24) then (24, 8) \u2014 int64 arrays default to column-major (F-order) layout",
+        "An error \u2014 .strides can't be read on an array produced by .reshape()"
+      ],
+      "correctIndex": 0,
+      "explain": "With 8-byte int64 elements stored C-order (row-major), moving one column over costs 8 bytes and moving one row over costs 24 bytes (three columns' worth) \u2014 giving strides (24, 8). Transposing doesn't move any data in memory; it just swaps the stride metadata to (8, 24), which is exactly why .T is instant even on huge arrays."
+    },
+    {
+      "id": "quantpy-06",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of shrinking a large DataFrame's memory footprint, per Lesson 4, in the order the lesson recommends trying them.",
+      "items": [
+        "Measure the DataFrame's real memory footprint with .memory_usage(deep=True), not the default shallow count",
+        "If loading from a file, read it in chunks with read_csv(chunksize=...) instead of loading it all at once",
+        "Downcast numeric columns with pd.to_numeric(..., downcast=...) to the smallest dtype that still holds every value",
+        "Convert low-cardinality string columns (tickers, exchange codes) to the category dtype",
+        "If the data still doesn't fit, move to an out-of-core engine like Polars' lazy engine or DuckDB"
+      ],
+      "explain": "Lesson 4's recommended order starts with measuring honestly (deep=True, since the shallow count understates object columns), then tries the nearly-free wins in order: chunked reading when loading from a file, numeric downcasting, and the category dtype for repeated strings. Only once those combined techniques (often a 3-10x reduction) still aren't enough does the lesson recommend reaching for an out-of-core engine."
+    },
+    {
+      "id": "quantpy-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "values = [1e16, 1.0, -1e16]\nprint(sum(values))\nprint(math.fsum(values))",
+      "prompt": "What do these two lines print, and why do the built-in sum() and math.fsum() disagree on the same list?",
+      "options": [
+        "0.0, then 1.0 \u2014 plain sum() adds left to right and the 1.0 gets rounded away when combined with the much larger magnitudes, while fsum tracks the error at each step and returns the correctly-rounded total",
+        "1.0, then 1.0 \u2014 both functions compute the mathematically correct total for this list",
+        "0.0, then 0.0 \u2014 once precision is lost to cancellation, no function can recover it",
+        "A TypeError, because the list mixes very large and very small floating-point magnitudes"
+      ],
+      "correctIndex": 0,
+      "explain": "Floating-point addition isn't associative: adding 1.0 to 1e16 left-to-right rounds the 1.0 away entirely before -1e16 is added back, leaving sum() at 0.0. math.fsum tracks the rounding error at each intermediate step using extended internal precision and corrects for it, which is exactly why it recovers the correct answer of 1.0 regardless of the order the values arrived in."
+    },
+    {
+      "id": "quantpy-08",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: numpy.linalg.________(A, b) solves the linear system Ax = b directly, and is both faster and more numerically stable than computing A's inverse explicitly and then multiplying by b.",
+      "acceptedAnswers": [
+        "solve",
+        "linalg.solve",
+        "np.linalg.solve"
+      ],
+      "explain": "solve(A, b) is the correct, stable way to answer Ax = b. Computing np.linalg.inv(A) @ b does unnecessary extra work and amplifies rounding error along the way \u2014 the gap matters most on larger or less well-behaved systems, exactly where numerical stability counts most."
+    },
+    {
+      "id": "quantpy-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A developer needs to solve for an option's implied volatility and wants the most robust default approach. Per Lesson 10, why is scipy.optimize.brentq generally preferred over scipy.optimize.newton for this?",
+      "options": [
+        "brentq only needs a bracketing interval where the function changes sign and is guaranteed to converge within it, while newton needs a good starting guess and no bracket, so it can fail to converge or converge to the wrong root",
+        "newton cannot be used for implied volatility at all, because it structurally requires a bracketing interval that brentq does not",
+        "brentq is always faster in wall-clock time than newton, regardless of the problem being solved",
+        "newton has been removed from current versions of SciPy in favor of brentq"
+      ],
+      "correctIndex": 0,
+      "explain": "brentq is guaranteed to converge as long as its bracket [a, b] genuinely contains a sign change, which makes it the robust default \u2014 for implied volatility specifically, a bracket like [0.001, 5.0] is natural since volatility is always positive. newton (Newton-Raphson or secant) only needs a starting guess, trading that safety for speed, but a bad guess can make it fail to converge or land on the wrong root entirely."
+    },
+    {
+      "id": "quantpy-10",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about NumPy's modern random number API from Lesson 11.",
+      "options": [
+        "np.random.default_rng returns an explicit Generator object, rather than mutating a single hidden global state the way the legacy np.random.seed API does",
+        "default_rng uses the PCG64 bit generator by default",
+        "Two Generator instances created with the same seed will silently interfere with each other's state the way two parts of code sharing the legacy global state could",
+        "SeedSequence.spawn() derives multiple statistically independent child seeds from one parent seed, which is the correct way to parallelize a simulation while staying reproducible",
+        "Omitting the seed argument to default_rng() makes the generator's output reproducible across separate runs"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "default_rng's Generator is explicit and passed around, unlike the legacy global-state API, and it's backed by PCG64 by default. SeedSequence.spawn() is exactly the documented pattern for safe parallel Monte Carlo. Two Generator instances do NOT silently interfere with each other even with the same seed \u2014 that's precisely the problem the explicit-object design solves. Omitting the seed pulls fresh, unpredictable OS entropy, which is the opposite of reproducible."
+    },
+    {
+      "id": "quantpy-11",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each linear algebra term from Lesson 9 to what it actually is.",
+      "left": [
+        "solve(A, b)",
+        "eigh",
+        "SVD (A = U \u03a3 V^T)",
+        "Condition number"
+      ],
+      "right": [
+        "Measures how much a matrix amplifies small input errors when solving a linear system",
+        "Decomposition specialized for symmetric matrices, like a covariance matrix; faster and more reliable than the general-purpose eig",
+        "Solves a linear system directly, preferred over computing an explicit matrix inverse",
+        "Generalizes eigendecomposition to any matrix, square or not; underlies PCA on a centered data matrix"
+      ],
+      "correctMap": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "explain": "solve(A, b) answers Ax = b directly, avoiding the extra error an explicit inverse would introduce. eigh is eigendecomposition specialized for symmetric matrices like covariance matrices. SVD generalizes eigendecomposition to any matrix and is the numerically preferred route to PCA on a centered data matrix. The condition number measures how much a matrix amplifies small input errors, including ordinary floating-point rounding, when solving a linear system."
+    },
+    {
+      "id": "quantpy-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "         798951 function calls in 0.263 seconds\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        1    0.000    0.000    0.263    0.263 profiling_demo.py:33(run)\n        1    0.023    0.023    0.220    0.220 profiling_demo.py:23(rolling_vol)\n    39939    0.076    0.000    0.195    0.000 {built-in method builtins.sum}",
+      "prompt": "In this cProfile output, rolling_vol shows tottime=0.023 but cumtime=0.220 out of a 0.263s total run. What does that gap between tottime and cumtime indicate?",
+      "options": [
+        "Most of rolling_vol's 0.220s is spent inside functions it calls (like the sum() builtin), not in rolling_vol's own code directly \u2014 which is exactly why line_profiler, not cProfile, is needed to find the specific slow line inside it",
+        "rolling_vol contains a bug that cProfile is unable to measure accurately",
+        "tottime and cumtime should always be equal for a correctly profiled function, so this indicates a profiler error",
+        "The gap means rolling_vol was called a fractional number of times on average"
+      ],
+      "correctIndex": 0,
+      "explain": "tottime is time spent in a function's own code; cumtime adds in everything it calls. rolling_vol's small tottime (0.023) next to its large cumtime (0.220) means almost all of its time is actually spent inside sum() and the generator expression it calls \u2014 cProfile can tell you it's this function, but only line_profiler can pinpoint which specific line inside it is the real cost."
+    },
+    {
+      "id": "quantpy-13",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a computation that compares every pair among n assets requires n\u00b2 comparisons no matter how it's implemented, which is described as having ________ time complexity.",
+      "acceptedAnswers": [
+        "O(n^2)",
+        "O(n\u00b2)",
+        "quadratic",
+        "n^2",
+        "O(n2)"
+      ],
+      "explain": "Big-O describes growth rate, not implementation speed: an all-pairs comparison is inherently O(n\u00b2) because there are n\u00b2 pairs, full stop. Vectorizing or compiling that same comparison shrinks the constant factor dramatically (Lesson 13 measured 15-22x), but it never changes the underlying quadratic growth rate itself."
+    },
+    {
+      "id": "quantpy-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "@njit\ndef add_one(a):\n    return a + 1\n\nadd_one(np.arange(10))   # call 1: 332.19 ms\nadd_one(np.arange(10))   # call 2: 0.0136 ms",
+      "prompt": "Lesson 14 measured call 1 of this @njit function at 332.19 ms and call 2 at 0.0136 ms, a difference of over 24,000x. Why?",
+      "options": [
+        "The first call triggers Numba's compilation of the function to machine code for that argument type; the second call reuses the already-cached compiled version instead of recompiling",
+        "The second call happens to process a smaller array than the first call",
+        "@njit automatically switches to running on multiple CPU cores starting from the second call onward",
+        "The first call failed and silently fell back to Numba's slow object mode, while the second call succeeded in nopython mode"
+      ],
+      "correctIndex": 0,
+      "explain": "Numba compiles lazily: the first call with a given set of argument types pays the real, measurable cost of compilation (332.19 ms here, almost entirely compile time). Every later call with the same argument types skips straight to the cached compiled machine code, which is why the second call is essentially just the computation itself (0.0136 ms) \u2014 this is also why you always warm up a Numba function with a throwaway call before timing it for real."
+    },
+    {
+      "id": "quantpy-15",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the GIL and multiprocessing from Lesson 16.",
+      "options": [
+        "CPython's GIL allows only one thread to execute Python bytecode at a time, even on a multi-core machine",
+        "Threads remain useful for I/O-bound work, because waiting on a network or disk read releases the GIL while waiting",
+        "ProcessPoolExecutor gets around the GIL's limitation because each worker process has its own interpreter and its own GIL",
+        "Sending a huge DataFrame to every worker process has no serialization cost, because multiprocessing shares memory directly between processes",
+        "Handing a trivially cheap task to a worker process is always faster than running it serially, since more cores always win"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "The GIL really does limit CPython to one thread executing bytecode at a time, which is exactly why CPU-bound work needs processes, not threads, while I/O-bound work can still use threads since waiting releases the GIL. ProcessPoolExecutor works around this because each process has its own interpreter and GIL. Arguments and return values sent to/from worker processes DO have to be pickled across a pipe \u2014 that cost is real, and the lesson's own measured example showed a trivially cheap task running over 12,000x slower in parallel than serial because pickling and process overhead dwarfed the actual work."
+    },
+    {
+      "id": "quantpy-16",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of Chapter 3's decision framework, from Lesson 17, in the order of operations it recommends.",
+      "items": [
+        "Profile with cProfile, then line_profiler, to find the actual bottleneck rather than guessing",
+        "Check whether the bottleneck is a constant-factor problem or a Big-O (algorithmic complexity) problem",
+        "Try vectorizing the hot code first, since it's usually the highest payoff for the lowest effort",
+        "If a genuine loop remains that doesn't vectorize cleanly, compile it with Numba's @njit",
+        "If the work splits into independent, sufficiently large chunks, try multiprocessing",
+        "Reach for Cython only once Numba's restrictions, not just its speed, are the actual blocker"
+      ],
+      "explain": "Lesson 17 lays out a deliberate effort-vs-payoff order: always profile first (never guess), distinguish a fixable constant-factor problem from an inherent Big-O one, then try vectorization, Numba, multiprocessing, and Cython roughly in that order of increasing effort and narrowing applicability \u2014 a compiled O(n\u00b2) loop is still O(n\u00b2), and reaching for Cython before confirming Numba's restrictions are actually the blocker wastes the highest-effort tool on a problem a lower-effort one could have solved."
+    },
+    {
+      "id": "quantpy-17",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "What is the actual purpose of Python type hints combined with a static checker like mypy?",
+      "options": [
+        "They let mypy catch type-mismatch bugs \u2014 such as treating an Optional[int] as a guaranteed int \u2014 by reading function signatures before the code ever runs, without changing Python's own runtime behavior",
+        "They make Python enforce types at runtime, automatically raising a TypeError the instant a value doesn't match its declared hint",
+        "They convert the annotated functions into compiled, statically-typed machine code for a speed boost",
+        "They eliminate the need for a test suite like pytest, since mypy already verifies that computed values are numerically correct",
+        "They only work inside a Jupyter notebook cell, not in a plain .py module",
+        "mypy automatically rewrites the offending code to fix any type error it finds"
+      ],
+      "correctIndex": 0,
+      "explain": "Type hints document intent, and mypy checks that intent statically, before the code runs \u2014 the real example in Lesson 19 caught a genuine Optional[int] misuse this way, going from a reported error to 'Success: no issues found' once the None case was handled, with Python's actual runtime behavior never changing at all.",
+      "distractorExplain": "Option B describes what a statically-typed language's compiler enforces, not what Python type hints do. Type hints never change Python's own runtime behavior \u2014 a value that violates its declared hint still runs exactly as it would unhinted, and the real crash in Lesson 19's example (TypeError on None + 1) still only happens at runtime if mypy was never actually run against the file first."
+    },
+    {
+      "id": "quantpy-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "from dataclasses import dataclass, field\n\n@dataclass\nclass PositionBook:\n    positions: dict = field(default_factory=dict)",
+      "prompt": "Why does this use field(default_factory=dict) instead of writing positions: dict = {} directly?",
+      "options": [
+        "A bare mutable literal default would be shared across every instance of PositionBook, since Python only evaluates it once; default_factory=dict gives each instance its own fresh empty dict, and @dataclass actively raises an error if you try the bare mutable literal",
+        "positions: dict = {} is invalid Python syntax inside a class body and would fail to even import",
+        "default_factory is mandatory for every dataclass field, including immutable ones like str or int",
+        "field(default_factory=dict) makes the positions attribute read-only after construction"
+      ],
+      "correctIndex": 0,
+      "explain": "Mutable default arguments in Python are evaluated once and shared across every call or instance that uses the default \u2014 a bare positions: dict = {} would mean every PositionBook secretly shares the same dict. default_factory=dict calls dict() fresh for each new instance instead, and @dataclass is strict enough to raise an error if you try the bare mutable literal rather than let the bug through silently."
+    },
+    {
+      "id": "quantpy-19",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: declaring ________ on a class, as a tuple of attribute names, tells Python to skip the per-instance __dict__ and allocate fixed storage for only those named attributes \u2014 a real, measured memory saving for objects created in large numbers, like one Position per fill in a long backtest.",
+      "acceptedAnswers": [
+        "__slots__",
+        "slots"
+      ],
+      "explain": "__slots__ removes the flexible but costly per-instance __dict__. Lesson 18 measured roughly a 2.7x smaller footprint once the regular dataclass object's separate __dict__ was correctly accounted for \u2014 a real saving that matters once you're instantiating millions of small objects, and a non-issue for a handful of long-lived objects like a Strategy or PositionBook itself."
+    },
+    {
+      "id": "quantpy-20",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about testing numerical code, per Lesson 20.",
+      "options": [
+        "Comparing two floats with == is usually the wrong assertion, because floating-point arithmetic rarely produces bit-exact results across different but mathematically equivalent computation paths",
+        "pytest.approx and np.testing.assert_allclose both perform tolerance-based comparisons instead of exact equality",
+        "hypothesis generates many random inputs matching a specification and checks that a general property holds across all of them, rather than relying only on hand-picked example inputs",
+        "A numerical function that returns NaN for an empty-array input always indicates a bug that must be fixed before shipping",
+        "Property-based tests with hypothesis make writing explicit edge-case tests (empty arrays, NaN propagation) unnecessary"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "The lesson's real failure (0.10000000000000009 == 0.1) demonstrates exactly why == is the wrong assertion for floats, and both pytest.approx and assert_allclose fix that with tolerance-based comparison. hypothesis checks a rule across many generated inputs rather than a few examples. The lesson explicitly treats NaN from an empty-array input as correct, deliberate behavior ('empty input is undefined, not zero'), not a bug \u2014 and it presents property-based tests and hand-written edge-case tests as complementary, not a replacement for one another."
+    },
+    {
+      "id": "quantpy-21",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each packaging term from Lesson 21 to what it actually is.",
+      "left": [
+        "src/ layout",
+        "pyproject.toml",
+        "pip install -e .",
+        "Lockfile"
+      ],
+      "right": [
+        "Pins exact dependency versions actually used in a run, for reproducing a specific result later",
+        "Installs a package in editable mode, pointing Python's import machinery at the source directory directly",
+        "Standard, tool-agnostic file for project metadata, dependencies, and build configuration",
+        "Prevents a script run from the repo root from accidentally importing an uninstalled local package directly off the filesystem"
+      ],
+      "correctMap": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "explain": "The src/ layout forces every import to go through the actually-installed package rather than an accidental filesystem-path import. pyproject.toml is the standard file for metadata, dependencies, and build config. pip install -e . installs in editable mode, pointing imports at the source directly so edits take effect without reinstalling. A lockfile pins the exact dependency versions a specific run actually used, which pyproject.toml's loosely-versioned dependencies list deliberately does not do."
+    },
+    {
+      "id": "quantpy-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A notebook cell defines adj_factor = 1.0025 in cell 3. That cell is later deleted, but the kernel is never restarted, and every cell below still runs fine. Per Lesson 23, what's the actual risk here?",
+      "options": [
+        "The variable is still sitting in the kernel's memory from when the deleted cell ran, so the notebook keeps working in the current session, but it will not reproduce if someone restarts the kernel and runs the notebook top to bottom, since the saved file no longer shows where the value came from",
+        "Jupyter automatically regenerates the deleted cell's code the next time the notebook file is saved to disk",
+        "Every cell below the deleted one fails immediately with a NameError the next time it's run",
+        "Jupyter silently writes the deleted cell's code to a hidden backup file that reproduces it automatically"
+      ],
+      "correctIndex": 0,
+      "explain": "A notebook's visible cell order and its actual execution order are two different things, and only the kernel remembers the second one. A value defined by a since-deleted cell keeps working for the rest of the current kernel session, which is exactly why 'Kernel \u2192 Restart & Run All' is the standard check \u2014 a notebook that can't survive that restart is not actually reproducible, regardless of how well it appears to work right now."
+    },
+    {
+      "id": "quantpy-23",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: hashing a dataset's exact bytes with the ________ algorithm (via Python's hashlib) and storing that hash alongside a run's parameters and metrics is a minimal but effective form of data versioning \u2014 any change to the data, however small, produces a completely different hash.",
+      "acceptedAnswers": [
+        "SHA-256",
+        "SHA256",
+        "sha-256",
+        "sha256"
+      ],
+      "explain": "Lesson 24's fingerprint function hashes a DataFrame's exact byte representation with SHA-256. Changing a single value in one cell of the dataset produced a completely different hash in the lesson's real example, which is exactly the property that catches a silent vendor restatement nobody told you about."
+    },
+    {
+      "id": "quantpy-24",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about vendor data pitfalls from Lesson 26.",
+      "options": [
+        "Using unadjusted closing prices to compute returns across a stock split produces a nonsensical, enormous or negative 'return' that has nothing to do with the stock's actual performance",
+        "Backtesting against today's S&P 500 constituent list, projected backward, silently excludes companies that were delisted or dropped, which inflates the backtest's apparent returns (survivorship bias)",
+        "Exponential backoff retries a failed vendor call immediately, at full speed, every single time",
+        "Using a vendor's latest restated fundamentals as if they were known on the original filing date leaks future information into a backtest, a form of lookahead bias",
+        "Adjusted and unadjusted closing prices are always identical, regardless of any corporate actions that occurred"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Unadjusted prices across a split or dividend date produce a nonsensical 'return,' which is exactly why return calculations should use adjusted prices. Survivorship bias and lookahead-biased restated fundamentals both leak information into a backtest that a real-time strategy never actually had. Exponential backoff specifically doubles the wait between retry attempts rather than retrying instantly every time, and adjusted vs. unadjusted prices diverge precisely around corporate actions like splits and dividends \u2014 they are not always identical."
+    },
+    {
+      "id": "quantpy-25",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of the retry-with-exponential-backoff pattern from Lesson 26's fetch_with_retry into the correct order.",
+      "items": [
+        "Call the vendor function and return its result immediately if it succeeds",
+        "If it raises an exception and the retry limit hasn't been reached yet, compute a delay that doubles with each failed attempt",
+        "Sleep for that computed delay",
+        "Retry the call",
+        "If the final attempt still fails, raise the exception instead of retrying again"
+      ],
+      "explain": "fetch_with_retry tries the call and returns immediately on success. On failure, as long as the retry limit hasn't been hit, it computes a delay that doubles each attempt (base_delay * 2**(attempt-1)), sleeps for that delay, and retries. Only once the final allowed attempt also fails does it give up and re-raise the exception, rather than retrying forever or hammering the vendor at full speed."
+    },
+    {
+      "id": "quantpy-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "code": "SELECT r.req_ts, p.ts AS as_of_ts, p.price AS last_known_price\nFROM requests r\nASOF JOIN prices p\n  ON r.symbol = p.symbol AND r.req_ts >= p.ts",
+      "prompt": "For a request timestamped 09:32:30, with price ticks available at 09:32:00 and 09:33:00, which row does this ASOF JOIN match it to, and why?",
+      "options": [
+        "The 09:32:00 row \u2014 ASOF JOIN matches each left row to the single best-matching right row at or before its timestamp, never a later one, which would introduce lookahead bias",
+        "The 09:33:00 row, because ASOF JOIN always rounds a request up to the next available timestamp",
+        "Both rows, since ASOF JOIN behaves exactly like a regular JOIN and returns every matching row",
+        "Neither row \u2014 ASOF JOIN requires the timestamps to match exactly"
+      ],
+      "correctIndex": 0,
+      "explain": "ASOF JOIN finds, for each left row, the most recent right row at or before the left row's timestamp. Matching the request at 09:32:30 to the 09:33:00 tick would mean using a price that didn't exist yet at request time \u2014 exactly the lookahead-biased mistake ASOF JOIN is built to avoid, which is why it correctly lands on 09:32:00 instead."
+    },
+    {
+      "id": "quantpy-27",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a traditional relational database built to fetch and update one record at a time is called ________-oriented storage (the OLTP access pattern) \u2014 the opposite of the columnar layout that Parquet and DuckDB use for analytical queries.",
+      "acceptedAnswers": [
+        "row",
+        "row-oriented",
+        "row oriented"
+      ],
+      "explain": "Row-oriented storage keeps all of one row's columns together on disk, matching a transactional 'fetch this one record' access pattern. Columnar storage keeps all of one column's values together instead, matching the analytical 'aggregate this column across millions of rows' pattern that quant research actually needs \u2014 which is exactly why Parquet and DuckDB outperform a row store for this kind of work."
+    },
+    {
+      "id": "quantpy-28",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each caching or specialized-database term to what it actually is.",
+      "left": [
+        "functools.lru_cache",
+        "diskcache",
+        "Cache invalidation",
+        "kdb+/q"
+      ],
+      "right": [
+        "Persists cached results to disk, surviving across process restarts",
+        "The problem of keeping a cache key accurate to everything that actually determines the output",
+        "In-memory caching keyed on function arguments, lost the moment the process exits",
+        "Column-oriented, in-memory database with a terse, vector-first native language, dominant in tick-data financial infrastructure"
+      ],
+      "correctMap": [
+        2,
+        0,
+        1,
+        3
+      ],
+      "explain": "lru_cache caches in the current process's memory only, gone once the process exits. diskcache persists results to disk so they survive across restarts. Cache invalidation is the discipline of making sure the cache key captures every argument that actually affects the result, no more and no less \u2014 get it wrong and a cache either misses too often or returns a stale wrong answer. kdb+ with its q language is the dominant specialized time-series database in tick-data-heavy financial infrastructure."
+    },
+    {
+      "id": "quantpy-29",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "code": "def backtest_returns(weights: pd.DataFrame, returns: pd.DataFrame, lag: int = 1) -> pd.Series:\n    pnl = (weights.shift(lag) * returns).sum(axis=1)\n    return pnl.rename(\"strategy_return\")",
+      "prompt": "Why does this capstone function apply weights.shift(lag) instead of multiplying weights directly by the same day's returns?",
+      "options": [
+        "Shifting the weights forward by lag days means today's return gets multiplied by yesterday's already-known weights, so the backtest never trades on information it couldn't actually have had at the time",
+        "shift(lag) fills in missing values with zero, which pandas requires before any multiplication between two DataFrames",
+        "Without shift, multiplying weights by returns would raise a shape-mismatch error between the two DataFrames",
+        "shift(lag) converts the daily return series into an annualized return series"
+      ],
+      "correctIndex": 0,
+      "explain": "Portfolio weights are ranked cross-sectionally each day, but applying today's weights to today's return would mean the backtest 'knew' the ranking before the day's return was actually realized. Lagging the weights by one day (the default lag=1) means each day's return is multiplied by the previous day's already-known weights \u2014 exactly the lookahead-safe design the capstone brief requires."
+    },
+    {
+      "id": "quantpy-30",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the capstone's three required properties, per the kickoff lesson, are fast, testable, and ________ \u2014 meaning every run is driven by a config file, any randomness uses a seeded NumPy Generator, and each run's parameters and key results are logged.",
+      "acceptedAnswers": [
+        "reproducible",
+        "reproducibility"
+      ],
+      "explain": "The kickoff lesson names three non-negotiable requirements for the capstone: fast (vectorized, with Numba only on a profiler-confirmed hot path), testable (a real pytest suite checking actual numbers), and reproducible \u2014 a config-driven run, seeded randomness, and logged parameters and results, so a run from last week can be explained today."
+    }
+  ]
+}

@@ -1,0 +1,538 @@
+{
+  "questions": [
+    {
+      "id": "devcap-01",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of Northbridge's trunk-based feature workflow, per Lesson 2, in the correct order.",
+      "items": [
+        "Check out and pull an up-to-date main, then create a branch named feature/<ticket>-<short-desc>",
+        "Commit work on the feature branch and push it to GitHub with git push -u origin feature/...",
+        "Open a pull request against main",
+        "Branch protection on main requires at least one reviewer approval and a green CI run before merge is allowed",
+        "Once both are satisfied, the PR is squash merged into main as one clean commit"
+      ],
+      "explain": "Lesson 2 walks this exact flow: start every change from an up-to-date main, branch with the feature/<ticket>-<desc> naming convention, push and open a PR, satisfy main's two non-negotiable branch protection rules \u2014 one approval and green CI \u2014 and only then squash merge, collapsing the branch's commits into one clean commit on main."
+    },
+    {
+      "id": "devcap-02",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each deployment trigger to the environment it automatically promotes a build to, per Lesson 2's promotion table.",
+      "left": [
+        "Merge to main",
+        "Semver tag pushed (e.g. v1.4.0)",
+        "Staging deploy succeeds + reviewer approval",
+        "A feature branch pushed with no PR opened"
+      ],
+      "right": [
+        "northbridge-prod namespace (after a manual approval gate)",
+        "No deploy happens at all",
+        "northbridge-dev namespace, automatically",
+        "northbridge-staging namespace, automatically"
+      ],
+      "correctMap": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "explain": "Merging to main deploys to northbridge-dev automatically on every merge. Pushing a semver tag deploys to northbridge-staging automatically. Only after staging succeeds and a reviewer approves the GitHub Environments gate does the build reach northbridge-prod. Pushing a branch with no PR triggers no deploy at all \u2014 only a PR's CI runs, and only main or a tag triggers a deploy."
+    },
+    {
+      "id": "devcap-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the capstone's four-phase project plan and definition of done, per Lesson 3.",
+      "options": [
+        "Phase 2 (Infrastructure) must exist before Phase 3 (Pipeline & Deployment) can automate a deploy to it",
+        "The definition of done requires Trivy, gitleaks, and Checkov to actually block a bad merge, not just report on one",
+        "Documentation is optional once the system itself is working correctly",
+        "The checkout SLO referenced in the definition of done is defined during Phase 4, not Phase 2",
+        "A capstone item counts as done even while you're still explaining why it's 'mostly done'"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "The four phases build strictly on each other, so Phase 3's automated deploys need Phase 2's infrastructure to already exist. The definition of done is explicit that the security scanners must actually block a bad merge. The checkout SLO is part of Phase 4 (Monitoring & Security), built in Chapter 5. Documentation is one of the six checklist items, not optional, and Lesson 3 explicitly says an item you're still explaining as 'mostly done' isn't done yet."
+    },
+    {
+      "id": "devcap-04",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Northbridge's pipeline deploys every merge to main into northbridge-dev automatically, but reaching northbridge-prod requires both a tag push and a reviewer's manual approval. Why does the pipeline treat these two environments so differently?",
+      "options": [
+        "northbridge-dev simply has no branch protection rules at all, which is why it deploys so much faster than prod",
+        "Tags and manual approval exist only because northbridge-aks-prod has slower hardware than northbridge-aks-dev",
+        "Trunk-based development treats every merge to main as safe because required CI already vetted it, while only a deliberate, versioned tag push should ever reach customers, and even that needs a human check before production",
+        "Production deploys require a tag and approval because Helm cannot deploy directly to a namespace named northbridge-prod without one"
+      ],
+      "correctIndex": 2,
+      "explain": "Lesson 2's whole point is the distinction between 'every merge is fine for dev' and 'only a tagged, reviewed release goes further.' Dev deploys dozens of times a day because required CI (lint, tests, build, Trivy, gitleaks) already vetted main. Staging and prod only move on a deliberate, versioned decision \u2014 a tag \u2014 and prod adds one more deliberate check, a human reviewer, before customers are affected."
+    },
+    {
+      "id": "devcap-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "@app.post(\"/checkout\")\nasync def checkout(order: OrderRequest):\n    async with httpx.AsyncClient() as client:\n        stock = await client.get(f\"{INVENTORY_URL}/stock/{order.product_id}\")\n        if stock.json()[\"available\"] < order.quantity:\n            raise HTTPException(status_code=409, detail=\"out_of_stock\")\n\n        token = await get_paymentpro_token()\n        payment = await client.post(\n            f\"{PAYMENTPRO_URL}/charges\",\n            headers={\"Authorization\": f\"Bearer {token}\"},\n            json={\"amount_cents\": order.total_cents, \"currency\": \"usd\"},\n        )",
+      "prompt": "In checkout's POST /checkout handler, what happens to the PaymentPro charge if the legacy inventory service reports insufficient stock?",
+      "options": [
+        "PaymentPro is charged first, then refunded automatically if stock turns out to be insufficient",
+        "It never runs \u2014 the function raises an HTTPException and returns before the PaymentPro call is ever reached",
+        "The charge still runs, but for $0, as a placeholder",
+        "The order is queued and PaymentPro is charged once stock is replenished"
+      ],
+      "correctIndex": 1,
+      "explain": "The stock check against the legacy inventory service happens first, and on insufficient stock the handler raises HTTPException(409) immediately \u2014 execution never reaches the PaymentPro token request or the charges call below it. The ordering of these calls in Lesson 4's code is deliberate: never charge a customer for an order that can't actually be fulfilled."
+    },
+    {
+      "id": "devcap-06",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the Dockerfiles and .dockerignore from Lesson 5.",
+      "options": [
+        "Both product-catalog's and checkout's runtime stage switches to a non-root app user before CMD runs",
+        "The build stage's npm/pip dependencies and caches never reach the final runtime image in a multi-stage build",
+        ".dockerignore keeps .env out of the build context, which matters because that's where the local PaymentPro sandbox key lives",
+        "Without a .dockerignore, Docker only ignores .git automatically \u2014 every other file still enters the build context",
+        "Both services' runtime stage starts fresh from the same slim base image rather than continuing from the build stage"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "explain": "Both Dockerfiles create and switch to USER app before CMD. Multi-stage builds keep build-only artifacts (dependencies, caches, dev tooling) out of the final image, since the runtime stage only copies specific, needed files from the build stage. .dockerignore excludes .env specifically because that's where the local PaymentPro sandbox key lives. Without any .dockerignore at all, Docker doesn't auto-exclude .git either \u2014 everything in the project directory goes into the build context unless explicitly excluded. And each runtime stage really is a fresh FROM of the slim base image, not a continuation of the build stage \u2014 that's exactly what keeps build tooling out of it."
+    },
+    {
+      "id": "devcap-07",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: every image this capstone builds is tagged with the git SHA of the commit that produced it \u2014 never ________, and never a hand-picked version number at build time.",
+      "acceptedAnswers": [
+        "latest",
+        "\"latest\"",
+        "the tag latest"
+      ],
+      "explain": "SHA tagging makes every image traceable back to the exact commit that built it. Tagging with latest would make that traceability impossible, since latest keeps moving and tells you nothing about which commit actually produced the image running right now."
+    },
+    {
+      "id": "devcap-08",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "What is the primary purpose of writing a Dockerfile as a multi-stage build, the way product-catalog's and checkout's Dockerfiles are written?",
+      "options": [
+        "To let a single container run two different applications at once",
+        "To allow the image to be pulled from two different registries simultaneously",
+        "To automatically scan the image for vulnerabilities during the build",
+        "To keep build-only tools, dependencies, and caches out of the final runtime image, so it stays small and has a smaller attack surface",
+        "To let the container run as root in one stage and as a different user in a separate, unrelated container",
+        "To avoid needing a .dockerignore file, since multi-stage builds ignore the build context entirely"
+      ],
+      "correctIndex": 3,
+      "explain": "A multi-stage Dockerfile has more than one FROM, and later stages selectively COPY --from= only the specific artifacts they need from earlier stages. That's exactly how product-catalog's and checkout's Dockerfiles work: a build stage installs dependencies, and a fresh runtime stage copies over only the installed output, leaving build tools, caches, and dev dependencies behind \u2014 a smaller, more secure final image.",
+      "distractorExplain": "Option E confuses multi-stage builds with the non-root USER directive used inside a single image \u2014 both Dockerfiles do run their runtime stage as a non-root app user, but that's a separate concern (least privilege) from why there's more than one FROM in the file (keeping build tooling out of the shipped image). A multi-stage build still produces one image with one running process, not two containers."
+    },
+    {
+      "id": "devcap-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "$ terraform apply\nAcquiring state lock. This may take a few moments...\n\nError: Error acquiring the state lock\n\nError message: state blob is already locked\nLock Info:\n  ID:        3f2a9e7c-...\n  Path:      tfstate/dev.terraform.tfstate\n  Operation: OperationTypeApply\n  Who:       priya@NORTHBRIDGE-DEV01\n  Created:   2026-08-14 14:22:03 UTC",
+      "prompt": "Two Northbridge engineers each run terraform apply against rg-northbridge-dev within a few minutes of each other, and the second one sees the error above. What actually happens next, and why doesn't this corrupt the Terraform state?",
+      "options": [
+        "The second apply is refused outright because the azurerm backend's blob lease is already held by the first apply; the second engineer simply waits and reruns once it releases",
+        "The second apply proceeds anyway, and Terraform automatically merges both engineers' changes into one state file",
+        "The first apply is automatically cancelled so the second one can proceed instead",
+        "Both applies run successfully, and whichever one finishes last silently overwrites the other's state"
+      ],
+      "correctIndex": 0,
+      "explain": "The azurerm backend uses an Azure Storage blob lease as a distributed lock. The first apply acquires the lease the instant it starts; the second can't acquire it, so Terraform refuses to proceed and prints exactly who holds the lock. That refusal is the whole point \u2014 the second engineer waits and reruns, with no state corruption. Without locking, option D is actually what would happen instead: both would read the same stale state and one would silently overwrite the other's changes."
+    },
+    {
+      "id": "devcap-10",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Northbridge's azurerm Terraform backend stores state as a blob in Azure Storage, and uses that blob's ________ as the distributed lock that prevents two concurrent apply runs from colliding.",
+      "acceptedAnswers": [
+        "lease",
+        "blob lease",
+        "lease on the blob"
+      ],
+      "explain": "The azurerm backend implements state locking with an Azure Storage blob lease \u2014 whichever apply starts first leases the state blob, and any other apply attempted before that lease releases is refused with a clear 'state is locked' error instead of silently racing it."
+    },
+    {
+      "id": "devcap-11",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 3 mechanism to the no-stored-secret trust relationship it actually establishes.",
+      "left": [
+        "Azure AD Workload Identity federation",
+        "GitHub Actions OIDC federated credential",
+        "AcrPull role assignment on the kubelet identity",
+        "External Secrets Operator"
+      ],
+      "right": [
+        "Lets a GitHub Actions workflow run exchange a short-lived token for an Azure AD token, with no stored client secret",
+        "Syncs secrets already sitting in Key Vault into native Kubernetes Secret objects on a refresh interval",
+        "Lets a Kubernetes service account exchange its own token for an Azure AD token that can read Key Vault, with no client secret stored",
+        "Lets an AKS node pull images from ACR with no imagePullSecrets stored anywhere"
+      ],
+      "correctMap": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "explain": "Workload Identity federation lets a pod's service account get an Azure AD token with no stored secret. GitHub's OIDC federated credential does the same for CI runs authenticating to Azure. The AcrPull role assignment on the cluster's kubelet identity lets nodes pull from ACR without any stored registry credential. External Secrets Operator's job is different \u2014 once a workload already has access, it syncs Key Vault's actual secret values into native Kubernetes Secrets on a timer."
+    },
+    {
+      "id": "devcap-12",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about why northbridge-aks-prod is provisioned as a separate cluster from northbridge-aks-dev, per Lessons 7-9.",
+      "options": [
+        "A noisy or misbehaving dev workload can't starve prod of node capacity, because they don't share a node pool at all",
+        "Separating the clusters means prod's OIDC issuer URL, and therefore its federated identity trust bindings, are entirely independent of dev's",
+        "Isolating prod removes the need for cert-manager or an Ingress controller in that cluster",
+        "A prod outage investigation never has to rule out 'was this actually a dev pod' as a variable",
+        "northbridge-aks-prod is the only one of the two clusters that gets a system node pool"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "The whole justification for a separate prod cluster is blast-radius isolation: no shared node capacity, no risk of a dev workload affecting prod, and no ambiguity during an incident about whether a dev pod was involved. Because each AKS cluster has its own OIDC issuer URL, federated identity trust bindings (the subject in an azurerm_federated_identity_credential) are also cluster-specific, not shared. Both clusters still run their own Ingress controller, cert-manager, and a system node pool \u2014 isolation duplicates that setup, it doesn't remove it."
+    },
+    {
+      "id": "devcap-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "A pull request only changes files under services/checkout/. What happens to product-catalog-ci.yml, and why?",
+      "options": [
+        "It triggers anyway, because both workflows run on every PR regardless of path",
+        "It never triggers \u2014 its paths filter is scoped to services/product-catalog/**, which this PR doesn't touch",
+        "It triggers, but skips straight to the deploy job without running build-test-scan",
+        "It triggers only the Trivy and gitleaks steps, skipping lint and test"
+      ],
+      "correctIndex": 1,
+      "explain": "Each service's workflow is scoped with a paths filter to its own folder specifically so a monorepo doesn't rebuild and rescan both services on every commit. A PR touching only services/checkout/** never matches product-catalog-ci.yml's paths filter, so that workflow simply doesn't run at all \u2014 not even partially."
+    },
+    {
+      "id": "devcap-14",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the five CI stages (lint/test, build, Trivy scan, gitleaks scan, push to ACR) from Lesson 10.",
+      "options": [
+        "A failing unit test stops the pipeline before an image is ever built",
+        "A CRITICAL Trivy finding with no available fix yet still fails the pipeline the same way a fixable one does",
+        "gitleaks scans the diff for things that look like credentials, while Trivy scans the built image for vulnerable packages",
+        "The image is pushed to ACR before the Trivy and gitleaks scans run, so a bad image can be caught and deleted afterward",
+        "Each stage acts as a gate \u2014 any one of them failing stops the pipeline before the image reaches ACR"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        4
+      ],
+      "explain": "Lint/test failing stops things before build even starts. gitleaks scans the diff for credential-shaped strings; Trivy scans the built image for vulnerable packages \u2014 different targets entirely. Every stage really is a gate, and the push to ACR is the last step, only reached if everything before it passed. Trivy's config specifically sets ignore-unfixed: true, meaning it only blocks on CRITICAL findings that DO have an available fix \u2014 one with no fix yet is intentionally not blocked on, the opposite of option B's claim."
+    },
+    {
+      "id": "devcap-15",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of the CHK-108 ticket's journey from feature branch to production, per Lesson 13's demo walkthrough, in order.",
+      "items": [
+        "A developer pushes feature/CHK-108-retry-paymentpro-timeout and opens a PR against main",
+        "checkout-ci.yml runs lint, pytest, the image build, Trivy, and gitleaks on the PR",
+        "A teammate approves the PR and it squash-merges into main",
+        "The merge triggers deploy-dev, putting the fix live in northbridge-dev automatically",
+        "A maintainer pushes the tag v1.5.0, triggering an automatic deploy to northbridge-staging",
+        "deploy-prod pauses on the production GitHub Environment's pending-deployment gate",
+        "A reviewer approves the pending deployment, and the fix goes live at shop.northbridgeretail.com"
+      ],
+      "explain": "Lesson 13 walks this exact sequence: open the PR, let checkout-ci.yml run its five stages, get the approval and squash merge, watch the automatic dev deploy fire, have a maintainer cut the release tag to auto-promote to staging, hit the production approval gate, and only then does the fix reach customers \u2014 a human is in the loop exactly once, at that final approval."
+    },
+    {
+      "id": "devcap-16",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: to revert a Helm release to exactly what was running immediately before a bad promotion \u2014 both its values and its image together \u2014 a maintainer runs helm ________ <release> <revision> --namespace <ns>.",
+      "acceptedAnswers": [
+        "rollback",
+        "helm rollback"
+      ],
+      "explain": "helm rollback reverts a release to a previous revision in its history in one command, bringing back both the image tag and the values that were in effect at that revision \u2014 the fastest way to undo a bad promotion."
+    },
+    {
+      "id": "devcap-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "After a bad promotion to northbridge-prod, a maintainer wants to revert to exactly the release that was running immediately beforehand \u2014 same image, same values, in one step. Which of Lesson 12's two rollback strategies fits best?",
+      "options": [
+        "helm upgrade --install checkout ./charts/checkout --set image.tag=<sha>, since it's the more deliberate of the two options",
+        "git revert the merge commit and wait for CI to redeploy it to prod automatically",
+        "Delete the northbridge-prod namespace and let Terraform recreate it from scratch",
+        "helm rollback checkout <previous-revision> --namespace northbridge-prod, since it reverts the whole release, values and image together, to exactly what was running before"
+      ],
+      "correctIndex": 3,
+      "explain": "helm rollback is specifically the faster, all-at-once option \u2014 it reverts the entire release, values and image together, to exactly what was running at a prior revision. Redeploying a specific prior SHA with --set image.tag is more deliberate and useful when you want that exact image with a changed value, which isn't what 'exactly what was running before' calls for here. Reverting the merge commit would need a brand-new CI run and still wouldn't act on the already-deployed Helm release directly, and prod never promotes from a direct main merge in the first place \u2014 only a tag does."
+    },
+    {
+      "id": "devcap-18",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "What does the RED method stand for as a dashboard convention for a service like checkout or product-catalog?",
+      "options": [
+        "Utilization, Saturation, Errors \u2014 three signals used to diagnose a resource bottleneck",
+        "Recovery, Escalation, Diagnosis \u2014 the three stages of an incident response",
+        "Redundancy, Elasticity, Durability \u2014 three properties of a resilient architecture",
+        "Requests, Events, Downtime \u2014 three metrics tracked by an SLO",
+        "Rate, Errors, Duration \u2014 three panels read together to characterize a service's health",
+        "Retries, Errors, Degradation \u2014 three signals tracked by a circuit breaker"
+      ],
+      "correctIndex": 4,
+      "explain": "RED stands for Rate, Errors, and Duration \u2014 the three panels Lesson 14 builds into every service's Grafana dashboard: request rate, the ratio of 5xx errors to total requests, and p99 request duration. Reading all three together is what lets an on-call engineer read any Northbridge service the same way at 2 a.m.",
+      "distractorExplain": "Option A is the USE method (Utilization, Saturation, Errors) from Lesson 16's incident drill, not the RED method. The two frameworks are easy to swap in conversation, but they answer different questions: RED characterizes a service from the outside (rate/errors/duration of its own requests), while USE diagnoses whether a specific resource \u2014 like a connection pool \u2014 is the bottleneck behind a RED-method symptom."
+    },
+    {
+      "id": "devcap-19",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the three security scanners from Lesson 15's table.",
+      "options": [
+        "Trivy scans the built container image and blocks on a CRITICAL vulnerability that already has a fix available",
+        "Checkov scans Terraform configuration in infra/terraform/ for misconfigured Azure resources",
+        "gitleaks scans the diff of every commit and PR for strings matching a secret pattern",
+        "Checkov runs inside the same workflow file as the Trivy and gitleaks steps, right after the image build",
+        "gitleaks only runs in CI \u2014 it has no local pre-commit equivalent at Northbridge"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Trivy targets the built image and blocks on fixable CRITICAL findings; Checkov targets Terraform and flags misconfigured infrastructure; gitleaks targets the diff for secret-shaped strings. Checkov actually runs in a separate IaC pipeline (terraform-ci.yml), right after terraform plan \u2014 not in the same workflow as the image build. And gitleaks runs in two places, not one: a local pre-commit hook and a CI step, specifically so a developer who skipped installing the hook is still caught by CI."
+    },
+    {
+      "id": "devcap-20",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Northbridge defines checkout's SLO as 99.5% of requests under ________ p99, measured against a rolling 30-day error budget.",
+      "acceptedAnswers": [
+        "800ms",
+        "800 ms",
+        "0.8 seconds",
+        "800 milliseconds"
+      ],
+      "explain": "The checkout SLO turns a vague 'checkout feels slow' into a number Prometheus can alert on: 99.5% of requests completing under 800ms at the p99 percentile, tracked against a rolling 30-day error budget \u2014 exactly the threshold the CheckoutSLOBurnRateFast alert in Lesson 14 fires against."
+    },
+    {
+      "id": "devcap-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Which single step of Lesson 17's live demo script is specifically what proves Northbridge's monitoring actually responds to a real problem, rather than just proving the pipeline ships code?",
+      "options": [
+        "Opening a PR against storefront with a small checkout change and showing CI go green",
+        "Cutting a semver tag and showing the automatic staging deploy",
+        "Replaying 60 seconds of the flash-sale drill and showing the saturation alert fire with a runbook link in the alert itself",
+        "Approving the pending production deployment and showing the deploy complete"
+      ],
+      "correctIndex": 2,
+      "explain": "The first steps of the demo script all prove the pipeline ships code safely from a PR to production. Only the flash-sale drill replay demonstrates that the monitoring built in this chapter actually catches and surfaces a real problem \u2014 watching the new saturation alert fire, with its runbook link attached, rather than the old full-exhaustion alert that fired too late in the original incident."
+    },
+    {
+      "id": "devcap-22",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Put these events of the flash-sale incident drill, per Lesson 16's timeline, in the order they actually occurred.",
+      "items": [
+        "Flash-sale traffic begins and checkout's p99 latency starts climbing",
+        "checkout p99 crosses the 2-second SLO burn threshold, but no alert fires yet",
+        "The inventory service's DB connection pool becomes fully exhausted, and the full-exhaustion alert finally fires",
+        "On-call finishes live trace discovery and identifies the inventory connection pool as the root cause",
+        "The pool size is increased and a circuit breaker sheds inventory calls, returning checkout p99 to baseline"
+      ],
+      "explain": "The timeline runs 14:02 (traffic begins) to 14:04 (SLO threshold crossed with no alert, because only a full-exhaustion alert existed) to 14:09 (that alert finally fires once the pool is fully exhausted) to 14:21 (root cause identified after 12 minutes of live tracing) to 14:36 (the actual fix lands and latency recovers) \u2014 a 34-minute window the postmortem's action items exist specifically to shrink next time."
+    },
+    {
+      "id": "devcap-23",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the resume-bullet formula from Lesson 18 is action verb + what you built or did + a ________ outcome.",
+      "acceptedAnswers": [
+        "quantified",
+        "quantified or specific",
+        "specific"
+      ],
+      "explain": "A bullet like 'worked on CI/CD' is a tutorial sentence. Naming a real mechanism and a quantified or specific outcome \u2014 pod counts, latency numbers, environment counts, percentages \u2014 is what makes a hiring manager take a bullet seriously, and the capstone already has real numbers to use without inflating anything."
+    },
+    {
+      "id": "devcap-24",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "An engineer removes a hardcoded Key Vault name from the current version of charts/checkout/values.yaml before making the storefront repo public. Per Lesson 19, is the repo now safe to open-source?",
+      "options": [
+        "Yes \u2014 removing a value from the current file is sufficient, since Git only tracks the latest version of each file by default",
+        "Yes, as long as .gitignore is updated afterward to list values.yaml",
+        "Not necessarily \u2014 the value may still exist in an earlier commit, so git history itself needs to be checked (and rewritten if needed), not just the current working tree",
+        "No \u2014 once any secret-shaped value has ever existed in a repo, that repo can never be made public under any circumstances"
+      ],
+      "correctIndex": 2,
+      "explain": "Lesson 19 is explicit on this point: confirm secrets were never committed by checking git history, not just the current tree \u2014 a secret removed in a later commit still lives in history unless the history itself is rewritten. Updating .gitignore going forward doesn't retroactively remove anything already committed, and the situation is recoverable (history rewrite plus key rotation), not permanently disqualifying."
+    },
+    {
+      "id": "devcap-25",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Match each stage of the DevOps interview process to its primary focus, per Lesson 20.",
+      "left": [
+        "Recruiter / phone screen",
+        "Technical screen",
+        "System design / whiteboarding",
+        "Behavioral interview"
+      ],
+      "right": [
+        "Reasoning under ambiguity and trade-off awareness, not memorized facts",
+        "Fit and logistics \u2014 a filter for whether to spend engineer time on you next",
+        "How you work with people and handle pressure, using the STAR method",
+        "Whether you actually did the work your resume claims"
+      ],
+      "correctMap": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "explain": "The recruiter screen checks fit and logistics, not depth. The technical screen tests whether your resume's claims hold up to real questions. System design tests reasoning and trade-off awareness under ambiguity, not recall. Behavioral tests how you work with people and under pressure, using STAR \u2014 exactly the stage the incident drill and the secrets near-miss were built for."
+    },
+    {
+      "id": "devcap-26",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about SIGTERM/SIGKILL and Kubernetes probes, per Lesson 21.",
+      "options": [
+        "SIGTERM lets a process shut down gracefully, finishing in-flight work before it exits on its own",
+        "SIGKILL terminates a process immediately, with no chance for it to clean up",
+        "Kubernetes sends SIGKILL to a pod's containers first, falling back to SIGTERM only if SIGKILL is ignored",
+        "A pod that fails its readinessProbe is removed from a Service's traffic without being restarted",
+        "A pod that fails its livenessProbe is removed from traffic but is never restarted"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "SIGTERM is the graceful request; SIGKILL can't be caught or cleaned up after. Kubernetes actually does the opposite of option C: it sends SIGTERM first and waits out terminationGracePeriodSeconds before escalating to SIGKILL. A failed readinessProbe pulls a pod out of a Service's endpoints without killing it \u2014 that's different from a failed livenessProbe, which restarts the container rather than just removing it from traffic."
+    },
+    {
+      "id": "devcap-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Per Lesson 22's model answer, why would a canary deployment specifically suit checkout better than a blue-green cutover, given what Northbridge already built for it?",
+      "options": [
+        "Canary requires no traffic-splitting infrastructure, unlike blue-green",
+        "Canary shifts a small percentage of real traffic first and can be watched against checkout's existing Prometheus/Grafana SLO dashboards, catching a regression before it reaches 100% of flash-sale traffic",
+        "Blue-green is incompatible with Helm, which checkout's deploys already depend on",
+        "Canary deployments don't require any monitoring at all, which simplifies checkout's rollout"
+      ],
+      "correctIndex": 1,
+      "explain": "The model answer in Lesson 22 ties canary specifically to checkout's existing SLO dashboards: shifting a small percentage of traffic first and watching error rates and latency against metrics already being collected would catch a regression before it hits every flash-sale customer. Canary actually needs more traffic-splitting infrastructure than blue-green, not less, and neither strategy has anything to do with Helm compatibility."
+    },
+    {
+      "id": "devcap-28",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: per Lesson 23, both product-catalog and checkout run as Kubernetes ________ rather than StatefulSets, because all of their persistent state lives outside the cluster in Azure Database for PostgreSQL.",
+      "acceptedAnswers": [
+        "Deployments",
+        "Deployment",
+        "a Deployment"
+      ],
+      "explain": "A Deployment manages interchangeable, stateless pod replicas that can be freely killed and replaced. Because both services push all persistent state out to Postgres Flexible Server rather than keeping any of it in the pod, neither needs a StatefulSet's stable identity or per-replica storage."
+    },
+    {
+      "id": "devcap-29",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "In the STAR answer for the PaymentPro secrets near-miss, per Lesson 24, what specifically made catching the key at commit time better than catching it after it reached git history?",
+      "options": [
+        "It meant the engineer never had to write a postmortem for the incident",
+        "It meant gitleaks could be removed from CI afterward, since the pre-commit hook alone was proven sufficient",
+        "It meant the key never needed to be stored in Key Vault at all",
+        "It meant there was no need to rotate the key or scrub git history afterward \u2014 a much bigger job than catching it at the source"
+      ],
+      "correctIndex": 3,
+      "explain": "Lesson 24's Result beat is specific: because gitleaks's pre-commit hook flagged the key before it was ever pushed, there was no need to rotate the key or scrub git history after the fact. That's the entire 'shift security left' point \u2014 catching a leak before it becomes an incident is cheaper than cleaning one up, which is also exactly why gitleaks still runs in both pre-commit and CI rather than relying on just one."
+    },
+    {
+      "id": "devcap-30",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each certification from Lesson 25 to the capstone skill that maps directly onto it.",
+      "left": [
+        "AZ-400",
+        "AWS Certified DevOps Engineer - Professional",
+        "CKA (Certified Kubernetes Administrator)",
+        "Terraform Associate"
+      ],
+      "right": [
+        "Remote state, blob-lease locking, and the state-collision incident itself",
+        "AKS cluster setup, Helm per-environment values, debugging readiness probes",
+        "The full GitHub Actions promotion pipeline, dev to staging to prod",
+        "OIDC-based secrets handling and incident response via golden signals"
+      ],
+      "correctMap": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "explain": "AZ-400 maps onto the full promotion pipeline built across Chapter 4. AWS DevOps Pro maps onto OIDC-based secrets handling and golden-signal incident response, even though the capstone used Azure rather than AWS. CKA is hands-on and maps onto AKS setup, Helm values, and debugging \u2014 exactly the kubectl fluency the capstone builds. Terraform Associate maps onto remote state and the locking incident from Chapter 3, almost exam material directly."
+    }
+  ]
+}
