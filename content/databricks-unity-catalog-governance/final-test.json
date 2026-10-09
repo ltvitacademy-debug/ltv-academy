@@ -1,0 +1,449 @@
+{
+  "questions": [
+    {
+      "id": "ducg-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "What is the single question that determines whether a Unity Catalog table is managed or external?",
+      "options": [
+        "Whether Unity Catalog or the user specifies the storage location where the table's data actually gets written",
+        "Whether the table was created with CREATE TABLE or a separate CREATE EXTERNAL TABLE statement",
+        "Whether the table contains PII data requiring stricter governance controls",
+        "Whether the table is partitioned or left unpartitioned",
+        "Whether the table lives in the workspace's auto-created catalog or a custom catalog",
+        "Whether the table is stored in Delta format rather than plain Parquet"
+      ],
+      "correctIndex": 0,
+      "explain": "A managed table lets Unity Catalog choose and control the storage location, inside a configured managed storage location; an external table points at a path the user specifies, already registered as an external location. That one question — who picks the path — is also exactly why dropping a managed table deletes its data files while dropping an external table only removes the registration.",
+      "distractorExplain": "Option B sounds plausible because other SQL systems do distinguish CREATE TABLE from CREATE EXTERNAL TABLE as separate statements — but Unity Catalog doesn't work that way. Both managed and external tables use the exact same CREATE TABLE statement; the only syntactic difference is whether a LOCATION clause is present, not a different keyword."
+    },
+    {
+      "id": "ducg-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "A company has workspaces in us-east-1 and us-west-2, each attached to its own region's metastore. An engineer in the us-east-1 workspace tries to query a catalog that only exists on the us-west-2 metastore. What happens, and why?",
+      "options": [
+        "The query fails — the engineer's workspace is assigned to a different metastore, and a workspace can only see catalogs registered on the metastore it's attached to",
+        "The query succeeds automatically, because every metastore on the same account shares catalogs transparently",
+        "The query succeeds, but only returns a read-only cached copy of the catalog from several hours ago",
+        "The query fails because catalogs can only ever be queried from the account console, never from inside a workspace"
+      ],
+      "correctIndex": 0,
+      "explain": "Databricks provisions one metastore per region, and a workspace can be assigned to exactly one metastore at a time. Catalogs on a different region's metastore simply aren't visible from a workspace attached elsewhere — cross-region access to that data has to go through a separate mechanism like Delta Sharing, not a shared metastore."
+    },
+    {
+      "id": "ducg-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the object types that live inside a Unity Catalog schema, per Lesson 4.",
+      "options": [
+        "A volume is addressed with the same three-level namespace pattern as a table: catalog.schema.volume_name",
+        "A view is a saved query over one or more tables",
+        "A registered model is tracked as a governed, versioned object, the same way a table is",
+        "A volume requires the same rows-and-columns structure as a table — only the underlying file format differs",
+        "Governed tags can only be assigned to tables, not to volumes, schemas, or columns"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Volumes use the same catalog.schema.volume_name addressing as tables, views are saved queries, and registered models are governed, versioned objects just like tables. A volume is specifically for non-tabular files — it has no rows-and-columns requirement at all — and governed tags apply across tables, volumes, schemas, and columns alike, not tables only."
+    },
+    {
+      "id": "ducg-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: before Unity Catalog's current catalog.schema.table terminology, Databricks referred to the schema level as a ________.",
+      "acceptedAnswers": ["database", "a database", "databases"],
+      "explain": "A Unity Catalog schema is the same concept as a database in SQL Server or PostgreSQL — Databricks itself used to call this level 'database' before adopting the current catalog.schema.table three-level terminology."
+    },
+    {
+      "id": "ducg-05",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each Unity Catalog object to what it actually is, per Chapter 1.",
+      "left": ["Metastore", "Catalog", "Schema", "Volume"],
+      "right": [
+        "Groups related tables, views, and functions inside a catalog — the same concept as a 'database' in older terminology",
+        "The top-level container for Unity Catalog metadata, created per region by an account admin",
+        "A governed pointer to a directory of non-tabular files, addressed with the same three-level namespace as a table",
+        "The top level of the three-level namespace, typically organized by environment or business unit"
+      ],
+      "correctMap": [1, 3, 0, 2],
+      "explain": "A metastore is the top-level metadata container, created per region. A catalog is the top namespace level, typically organized by environment or business unit. A schema groups related tables/views/functions inside a catalog — the old 'database' concept. A volume is a governed pointer to non-tabular files, using the same three-level namespace pattern as a table."
+    },
+    {
+      "id": "ducg-06",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of building a new, fully governed table hierarchy from scratch in the correct order, per Chapter 1.",
+      "items": [
+        "CREATE CATALOG IF NOT EXISTS finance;",
+        "CREATE SCHEMA IF NOT EXISTS finance.accounts_payable;",
+        "USE CATALOG finance; USE SCHEMA accounts_payable;",
+        "CREATE TABLE invoices (invoice_id BIGINT, amount_due DECIMAL(10,2));",
+        "CREATE VOLUME IF NOT EXISTS finance.accounts_payable.invoice_pdfs;"
+      ],
+      "explain": "The catalog is created first, since the schema has to live inside it; the schema is created next, since the table and volume live inside that. Setting the session default with USE CATALOG / USE SCHEMA then lets later statements reference objects without the full three-level name. Finally, the table and the volume are both created as governed objects inside that schema — siblings, not a hierarchy between them."
+    },
+    {
+      "id": "ducg-07",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A principal has been granted SELECT on finance.accounts_payable.invoices and nothing else. Which additional privileges, if any, are required before that principal can actually query the table?",
+      "options": [
+        "USE CATALOG on finance and USE SCHEMA on finance.accounts_payable — both are usage privileges required to reach anything inside those containers",
+        "Nothing else — SELECT on the table is sufficient by itself",
+        "MODIFY on the table, since read access implicitly requires write access to be granted first",
+        "USE SCHEMA on finance.accounts_payable only — USE CATALOG isn't required once the schema-level grant is in place",
+        "MANAGE on the table, since MANAGE automatically subsumes SELECT",
+        "ALL PRIVILEGES on the catalog, since nothing narrower actually works for reading a single table"
+      ],
+      "correctIndex": 0,
+      "explain": "Reading a table always requires the full chain: USE CATALOG on the catalog, USE SCHEMA on the schema, and SELECT on the table itself. USE CATALOG and USE SCHEMA are usage privileges — prerequisites for reaching anything inside that container at all, regardless of what object-level privilege is held.",
+      "distractorExplain": "Option D is the closest wrong answer because it keeps one real usage privilege (USE SCHEMA) and drops the other — but the chain requires usage privileges at every level above the object, not just the immediate parent. Without USE CATALOG on finance, the principal still can't reach finance.accounts_payable at all, no matter what's granted on the schema or table beneath it."
+    },
+    {
+      "id": "ducg-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "A data engineer runs GRANT ALL PRIVILEGES ON TABLE finance.accounts_payable.invoices TO `data-engineers`; expecting the group to now be able to transfer ownership of the table. Why does this not actually grant that ability?",
+      "options": [
+        "ALL PRIVILEGES deliberately excludes MANAGE (along with READ METADATA and the two EXTERNAL USE privileges) to avoid accidental privilege escalation, and MANAGE is one of the privileges that governs who can transfer ownership",
+        "ALL PRIVILEGES only applies to catalogs and schemas, never to individual tables",
+        "Ownership can never be transferred by anyone except the object's original creator, regardless of privileges granted",
+        "ALL PRIVILEGES requires a metastore admin's separate co-signature before it takes effect"
+      ],
+      "correctIndex": 0,
+      "explain": "ALL PRIVILEGES expands to every privilege applicable to that object type at the time it's checked, but deliberately does not include MANAGE, READ METADATA, EXTERNAL USE SCHEMA, or EXTERNAL USE LOCATION — those must be granted explicitly, by name. ALTER ... OWNER TO can be run by the current owner, a metastore admin, the containing catalog/schema's owner, or a principal with MANAGE — and ALL PRIVILEGES on the table itself gives none of those."
+    },
+    {
+      "id": "ducg-09",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about ownership in Unity Catalog, per Lesson 8.",
+      "options": [
+        "Every securable object has exactly one owner, who by default is whoever created it",
+        "An object's owner automatically has all privileges on it without needing an explicit GRANT",
+        "Owning a catalog automatically grants management rights over every schema and table inside it, even ones you didn't create",
+        "Any owner can transfer ownership of a view to any other user in the account, exactly like they could transfer a table",
+        "Transferring ownership of a view to a group is a common pattern because it enables collaborative editing of the view's definition"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Every object has exactly one owner — by default, its creator — who automatically holds all privileges on it, including on child objects inside a container they own. Views, functions, and models carry a deliberate exception: only a metastore admin can transfer their ownership to an arbitrary third party; a regular owner can only transfer to themselves or a group they already belong to — which is exactly why handing a view's ownership to a group for collaborative editing is a common pattern."
+    },
+    {
+      "id": "ducg-10",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: holding the ________ privilege at a given level removes the usage-privilege requirement at that same level, though usage privileges are still required on the levels above it.",
+      "acceptedAnswers": ["MANAGE", "MANAGE privilege", "the MANAGE privilege"],
+      "explain": "MANAGE is the one exception to 'you always need usage privileges at every level.' Holding MANAGE at a given level removes the usage-privilege requirement at that same level — though usage privileges are still required on the levels above it, since MANAGE doesn't retroactively unlock a parent container someone else controls."
+    },
+    {
+      "id": "ducg-11",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Match each kind of principal to what it actually is, per Lesson 6.",
+      "left": ["User", "Group", "Service principal", "account users"],
+      "right": [
+        "A non-human identity for automated workloads, identified by its applicationId (a UUID) rather than an email address",
+        "A human principal, identified by their account email address",
+        "A named collection of users (and often service principals), managed at the account level",
+        "The built-in group representing every user on the account — the broadest possible grant target"
+      ],
+      "correctMap": [1, 2, 0, 3],
+      "explain": "A user is a human identified by email. A group is a named collection of users managed at the account level. A service principal is a non-human identity, identified by its applicationId UUID rather than an email. account users is the built-in group covering literally everyone on the account — the broadest possible grant."
+    },
+    {
+      "id": "ducg-12",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of approving a realistic new-analyst access request in the correct order, per Lesson 10's synthesis of the chapter.",
+      "items": [
+        "Identify the principal — the data-analysts group the new hire is being added to",
+        "Grant USE CATALOG on the catalog containing the needed data",
+        "Grant USE SCHEMA on the specific schema containing the needed table",
+        "Grant SELECT on the specific table, following least privilege rather than granting at the catalog level",
+        "Run SHOW GRANTS on the schema or table to confirm the new access looks correct"
+      ],
+      "explain": "A realistic access request starts with the principal (Lesson 6), works through the usage-privilege chain of USE CATALOG and USE SCHEMA (Lessons 7 and 9) before the narrowest object-level grant that satisfies least privilege (Lesson 10), and finishes by auditing the result with SHOW GRANTS rather than assuming it worked."
+    },
+    {
+      "id": "ducg-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A table has SELECT granted to everyone in the analysts group, plus a row filter restricting non-admins to their own region's rows. What does an analyst's SELECT * FROM table actually return, and why?",
+      "options": [
+        "Only the rows matching their region — the row filter silently excludes other rows at query time, while the SELECT grant itself is unaffected",
+        "Every row in the table — SELECT on a table always overrides any attached row filter",
+        "An error, because SELECT and a row filter cannot coexist on the same table",
+        "Zero rows — attaching any row filter blocks all access until the analyst is also granted MANAGE"
+      ],
+      "correctIndex": 0,
+      "explain": "A row filter is a SQL function Databricks evaluates against every row at query time; rows where it returns false are silently excluded. The analyst still has SELECT — the filter just narrows what comes back, with no error and no change required in the querying application."
+    },
+    {
+      "id": "ducg-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A developer writes a Python UDF to mask an email column and tries to attach it directly with ALTER TABLE ... ALTER COLUMN email SET MASK email_mask_python;. What happens, and why?",
+      "options": [
+        "It fails with a ROUTINE_NOT_FOUND-style error — SET MASK only accepts a SQL function, so a Python masking UDF needs a SQL wrapper function that calls it",
+        "It works exactly the same as a SQL masking function, since SET MASK accepts a function in any supported language",
+        "It works, but only for users already in the admin group",
+        "It fails because column masks can only ever be attached to STRING-typed columns"
+      ],
+      "correctIndex": 0,
+      "explain": "Column masks can use Python logic underneath, but the function applied with SET MASK must itself be a SQL function. The fix is a two-step wrapper: a Python UDF doing the real work, and a thin SQL function that calls it — SET MASK only ever points at the SQL wrapper."
+    },
+    {
+      "id": "ducg-15",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about dynamic views, per Lesson 13.",
+      "options": [
+        "is_account_group_member() is the recommended function for dynamic views checking access to Unity Catalog data",
+        "is_member() checks account-level group membership and is the newer, preferred function for Unity Catalog data",
+        "A dynamic view's access-control logic lives inside its own SELECT statement, as CASE or WHERE logic",
+        "Databricks recommends granting users direct SELECT access to the raw tables a dynamic view is built on, in addition to the view itself",
+        "Row filters and column masks are generally preferred over dynamic views for governing real tables going forward, since they protect every consumer automatically"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "is_account_group_member() is the recommended, account-level-aware function for Unity Catalog data; is_member() is the older, workspace-level equivalent kept only for legacy Hive-metastore compatibility — using it against Unity Catalog data is specifically discouraged. A dynamic view's logic lives in its own SELECT statement. Databricks recommends NOT granting direct access to the underlying raw tables, since the protection lives entirely in the view's logic. Row filters and column masks are generally preferred going forward because they attach to the table directly, protecting every consumer automatically."
+    },
+    {
+      "id": "ducg-16",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: an ABAC policy's MATCH COLUMNS has_tag('PII') AS pii_col clause only matches columns that already carry a governed ________.",
+      "acceptedAnswers": ["tag", "governed tag", "a governed tag"],
+      "explain": "has_tag() and has_tag_value() are the built-in functions ABAC policies use to match objects or columns by governed tag — the clause has nothing to match against until the relevant columns have already been tagged, whether manually or by Data Classification's auto-tagging."
+    },
+    {
+      "id": "ducg-17",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 3 mechanism to what it actually is.",
+      "left": ["Row filter", "Column mask", "Dynamic view", "ABAC policy"],
+      "right": [
+        "A UDF attached to a table with ALTER TABLE ... SET ROW FILTER; rows where it returns false are excluded",
+        "A single CREATE POLICY statement that automatically covers every table or column matching its tag conditions, including ones created later",
+        "A UDF attached to a column with SET MASK, substituting a redacted value for the real one",
+        "An ordinary view whose own SELECT statement contains the CASE/WHERE access-control logic"
+      ],
+      "correctMap": [0, 2, 3, 1],
+      "explain": "A row filter excludes rows via a function attached with SET ROW FILTER. A column mask substitutes a redacted value via a function attached with SET MASK. A dynamic view carries its access logic inside its own SELECT statement. An ABAC policy is a single CREATE POLICY statement that covers every matching tagged object automatically, present and future."
+    },
+    {
+      "id": "ducg-18",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of turning a Data Classification detection into an enforced protection in the correct order, per Lesson 15.",
+      "items": [
+        "Enable Data Classification on the catalog or schema, starting the background scan job",
+        "The scan detects a sensitive column and applies a governed class.* tag, such as class.email_address",
+        "Review the detection on the results page, checking sample values and the percentage of unmasked access",
+        "Write an ABAC policy with CREATE POLICY that masks every column matching that class.* tag",
+        "Confirm protection by checking that the classification's unmasked-access percentage drops over time"
+      ],
+      "explain": "Classification has to be turned on before anything is scanned; the scan then detects and tags a sensitive column; a reviewer confirms the detection is genuine before acting on it; only then does an ABAC policy turn that tag into real enforcement; and the unmasked-access percentage is the ongoing signal that the policy is actually working, not just written."
+    },
+    {
+      "id": "ducg-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A user searches Catalog Explorer for a table they know exists but don't have SELECT or BROWSE on. What do the search results show, and why?",
+      "options": [
+        "The table simply doesn't appear — search never becomes a backdoor around Unity Catalog's privilege model",
+        "The table appears with its name hidden, but its description text is still shown",
+        "The table appears normally, but querying it afterward fails with a permissions error",
+        "The table appears only in semantic search results, never in exact keyword search results"
+      ],
+      "correctIndex": 0,
+      "explain": "Search only returns objects the querying user has permission to see. A table without SELECT or BROWSE granted simply won't appear in results, no matter how exact the search term — search respects the same privilege model as every other access path, it doesn't bypass it."
+    },
+    {
+      "id": "ducg-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A governance team clicks an edge, not a node, in a Unity Catalog lineage graph connecting two tables. What does the resulting details panel show?",
+      "options": [
+        "Details describing that specific connection — its source, its target, and which notebook, job, or query actually produced it",
+        "The full upstream and downstream graph for both connected tables at once",
+        "A list of every column in both tables, regardless of whether it participated in that specific connection",
+        "An option to permanently delete that lineage relationship"
+      ],
+      "correctIndex": 0,
+      "explain": "Clicking a node expands the graph further; clicking an edge opens a Lineage details panel describing that one specific connection — its source, its target, and exactly which notebook, job, or query produced it, rather than the broader graph."
+    },
+    {
+      "id": "ducg-21",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the system catalog, per Lesson 18.",
+      "options": [
+        "System tables are read-only, and you're only billed for the compute used to query them, not for the data itself",
+        "Every user on the account can query any system table by default, with no grant required",
+        "system.billing, system.compute, and system.lakeflow are all real schemas inside the system catalog",
+        "An unfiltered query against a large system table can fail outright with a 'too much data' error rather than just running slowly",
+        "System table schemas are permanently frozen and will never gain new columns, so a hardcoded downstream schema is always safe"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "System tables are read-only and free to query (compute cost only), but access to them isn't automatic — only account and metastore admins have it by default, everyone else needs an explicit GRANT. system.billing, system.compute, and system.lakeflow are real schemas with real tables. An unfiltered query against a large system table can fail outright rather than just run slowly. And schemas evolve — new columns can be added at any time, so a job should tolerate it rather than assume stability."
+    },
+    {
+      "id": "ducg-22",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Databricks recommends filtering system.access.audit queries on the ________ column rather than event_time, since that's what the table's performance optimizations are actually built around.",
+      "acceptedAnswers": ["event_date", "the event_date column"],
+      "explain": "event_date is a date column while event_time is a full timestamp; Databricks specifically recommends filtering on event_date for performance, since that's the column the table's own optimizations are built around."
+    },
+    {
+      "id": "ducg-23",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each system catalog schema to what it actually holds, per Lesson 18.",
+      "left": ["system.access", "system.billing", "system.compute", "system.lakeflow"],
+      "right": [
+        "Usage records and SKU pricing history",
+        "Jobs, job runs, and pipeline metadata",
+        "Audit events, lineage, and network access",
+        "Cluster, warehouse, and node configuration history"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "system.access holds audit events, lineage, and network-access data. system.billing holds usage records and SKU pricing history. system.compute holds cluster, warehouse, and node configuration history. system.lakeflow holds jobs, job runs, and pipeline metadata."
+    },
+    {
+      "id": "ducg-24",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of answering 'are we GDPR compliant' as a standing, repeatable query in the correct order, per Lesson 20.",
+      "items": [
+        "Data Classification detects and tags which columns fall under the GDPR compliance framework",
+        "system.access.audit shows who has queried those classified columns, and when",
+        "The lineage graph, or system.access.column_lineage, shows where that classified data actually flows downstream",
+        "Lakehouse Monitoring's dashboard shows whether unmasked access to that data is shrinking or growing over time"
+      ],
+      "explain": "Classification has to identify which columns are even in scope for GDPR before anything else can be asked about them; the audit log then answers who has actually touched that data; lineage shows where it flows once it leaves its source table; and monitoring turns the whole question into an ongoing trend instead of a one-time snapshot."
+    },
+    {
+      "id": "ducg-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A provider wants a partner to be able to run time-travel queries against a shared table. Which clause on ALTER SHARE ... ADD TABLE makes that possible?",
+      "options": [
+        "WITH HISTORY",
+        "PARTITION",
+        "USING ID",
+        "COMMENT"
+      ],
+      "correctIndex": 0,
+      "explain": "WITH HISTORY enables the recipient to run time-travel queries and streaming reads against a shared table. PARTITION instead limits a share to a slice of a table, USING ID identifies a Databricks-to-Databricks recipient by metastore ID, and COMMENT is just descriptive metadata."
+    },
+    {
+      "id": "ducg-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A team wants serving code to always load whichever model version is currently in production, without hardcoding a version number every time a new version is promoted. What Unity Catalog Model Registry feature solves this?",
+      "options": [
+        "A mutable alias, such as Champion, moved to point at a new version with one set_registered_model_alias call",
+        "A fixed lifecycle stage, such as Production, set once when the model is first registered",
+        "A separate registered model name for every version, incremented manually",
+        "A row filter attached to the model's lineage table"
+      ],
+      "correctIndex": 0,
+      "explain": "Aliases replace MLflow's legacy fixed stages. An alias like Champion is a mutable, named pointer — promoting a new version becomes one set_registered_model_alias call, with no change needed to serving code, since it always asks for whatever version is currently @Champion."
+    },
+    {
+      "id": "ducg-27",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about migrating from the legacy Hive metastore to Unity Catalog, per Lesson 23.",
+      "options": [
+        "SYNC with DRY RUN previews what would happen without changing anything",
+        "SYNC deletes the original Hive table once the Unity Catalog equivalent has been created",
+        "CLONE physically copies data into a Unity Catalog managed table, and is suited to managed Hive tables",
+        "UCX automates assessment and migration across an entire workspace, not just one table at a time",
+        "Once a table is upgraded, Databricks notebooks offer no way to detect that old code still queries the hive_metastore path"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "DRY RUN previews a SYNC without making any change. SYNC itself is non-destructive and leaves the original Hive table untouched — it doesn't delete anything. CLONE physically copies data and suits managed Hive tables. UCX coordinates migration across an entire workspace. And Databricks notebooks actively flag stale hive_metastore references with a strikethrough and a Quick Fix once the Unity Catalog equivalent exists — they don't silently allow it."
+    },
+    {
+      "id": "ducg-28",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in the Driftwood Trail Outfitters case study, the monthly CSV-over-email process to the logistics partner was replaced with a real ________, giving the company a revocable, logged grant instead of an unaudited email attachment.",
+      "acceptedAnswers": ["Delta Share", "delta share", "share"],
+      "explain": "The case study replaces the CSV-over-email process with a real Delta Share: CREATE SHARE, a table added with a column mask already applied, and a recipient scoped to the partner's own metastore ID — a revocable, logged grant instead of an unaudited email attachment."
+    },
+    {
+      "id": "ducg-29",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Match each Hive-to-Unity-Catalog migration path to what it actually is, per Lesson 23.",
+      "left": ["SYNC", "CLONE", "CTAS", "UCX"],
+      "right": [
+        "A Databricks Labs toolkit automating assessment and migration across an entire workspace",
+        "A manual rewrite, useful when you also want to reshape the table during the move",
+        "Physically copies data into a Unity Catalog managed table; suited to managed Hive tables",
+        "The standard, non-destructive, re-runnable path for external tables in supported formats"
+      ],
+      "correctMap": [3, 2, 1, 0],
+      "explain": "SYNC is the standard, non-destructive, re-runnable path for supported external tables. CLONE physically copies managed Hive table data into a Unity Catalog managed table. CTAS (CREATE TABLE ... AS SELECT) is a manual rewrite, useful when reshaping the table during migration. UCX is the Databricks Labs toolkit automating migration across an entire workspace."
+    },
+    {
+      "id": "ducg-30",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the Chapter 5 practice lab in the correct order, per Lesson 25.",
+      "items": [
+        "Create a catalog and schema, then create the customers table with signup_region and email columns",
+        "Grant schema-level USE CATALOG, USE SCHEMA, and SELECT to the analysts group, relying on inheritance",
+        "Attach a column mask on email and a row filter on signup_region, then confirm each behaves as intended",
+        "Add descriptive comments to the table and its email column, then confirm a CREATE TABLE or GRANT shows up in system.access.audit",
+        "Create a share and a summary view, create a recipient, and grant then revoke SELECT ON SHARE"
+      ],
+      "explain": "The lab follows the course's own chapter order: foundations (catalog and schema and the table itself), permissions (schema-level grants relying on inheritance), fine-grained security (the column mask and row filter), discovery and auditing (comments plus a real audit-log entry), and finally lakehouse governance (a share, a recipient, and practicing both granting and revoking access)."
+    }
+  ]
+}

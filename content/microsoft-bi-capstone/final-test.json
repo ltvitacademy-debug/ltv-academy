@@ -1,0 +1,474 @@
+{
+  "questions": [
+    {
+      "id": "mbicap-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "SSIS Development's capstone modeled Sales, and Data Modeling & Data Warehousing's capstone modeled Procurement. Why did this capstone pick manufacturing work orders instead of reusing either business process?",
+      "options": [
+        "Because a work order has a planned quantity, an actual quantity, and a due date that may or may not be met — a genuinely different fact-table shape that proves you can make modeling decisions on a process you haven't already memorized the answer for",
+        "Because AdventureWorksDW2014 has no manufacturing fact table, so there was no other option available",
+        "Because manufacturing work orders require no dimensional modeling at all, simplifying the capstone",
+        "Because Sales and Procurement data no longer exist in AdventureWorks2012"
+      ],
+      "correctIndex": 0,
+      "explain": "A work order is a genuinely different kind of business event from a sales order or a purchase order — it has a planned quantity, an actual quantity produced, a scrapped quantity, and a due date that may or may not be met. That different shape is exactly the point: it proves you can make dimensional modeling decisions on a business process you haven't already memorized the answer for, instead of repeating a scenario this catalog already solved."
+    },
+    {
+      "id": "mbicap-02",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each stage of this capstone's pipeline to the real object Lesson 2 names for it.",
+      "left": [
+        "Staging",
+        "ETL",
+        "Warehouse fact table",
+        "Reporting"
+      ],
+      "right": [
+        "WorkOrderProductionSummary.rdl, grouped by product",
+        "stg.WorkOrder, the raw landing copy",
+        "dw.FactWorkOrder, the accumulating snapshot at the model's center",
+        "WorkOrderETL.dtsx, the package moving data from staging into the warehouse"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "Staging lands raw data in stg.WorkOrder. The SSIS package WorkOrderETL.dtsx moves it from staging into the warehouse. dw.FactWorkOrder is the accumulating-snapshot fact table at the center of the model. WorkOrderProductionSummary.rdl is the SSRS report, grouped by product, that reads the finished warehouse."
+    },
+    {
+      "id": "mbicap-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a single physical dimension table referenced by more than one foreign key on the same fact table, with each key representing a different role, is called a ________ dimension.",
+      "acceptedAnswers": ["role-playing", "role playing", "role-playing dimension", "role playing dimension"],
+      "explain": "StartDateKey, EndDateKey, and DueDateKey all point at the same physical dw.DimDate table, each aliased to its own role at query time. Building three separate date dimensions would triple the maintenance cost of a table that never actually changes shape — that's exactly what a role-playing dimension avoids."
+    },
+    {
+      "id": "mbicap-04",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "stg.WorkOrder defines every business column as a wide VARCHAR with no constraints, instead of matching Production.WorkOrder's real data types. What specific problem does that choice protect against?",
+      "options": [
+        "It guarantees the load never fails because of a data type mismatch, giving a bad row somewhere safe to land instead of failing against the OLTP source or the warehouse",
+        "It makes stg.WorkOrder queryable by SSRS and Power BI directly, without going through the warehouse",
+        "It automatically converts every value to the correct warehouse data type during the load",
+        "It prevents duplicate rows from ever landing in the staging table"
+      ],
+      "correctIndex": 0,
+      "explain": "Wide, forgiving VARCHAR columns with no constraints mean a load never fails on a data type mismatch — if Production.WorkOrder sends a row SSIS can't handle downstream, it fails against a table you can inspect and fix, not against the warehouse tables SSRS and Power BI are already reading from."
+    },
+    {
+      "id": "mbicap-05",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: WorkOrderETL.dtsx is one SSIS package, but it uses ________ separate Data Flow Tasks — one to land raw rows into staging, one to resolve surrogate keys into the warehouse.",
+      "acceptedAnswers": ["two", "2"],
+      "explain": "DFT Load Staging moves Production.WorkOrder into stg.WorkOrder unchanged. DFT Load Warehouse reads from stg.WorkOrder, resolves ProductKey and ScrapReasonKey through Lookup transformations, and writes into dw.FactWorkOrder — two genuinely different jobs, separated the same way Lesson 3 argued for staging in the first place."
+    },
+    {
+      "id": "mbicap-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "The ScrapReason Lookup transformation in DFT Load Warehouse is configured to redirect rows to no match output, rather than fail, on an unmatched ScrapReasonID. Why?",
+      "options": [
+        "Because a work order that scrapped nothing legitimately has no ScrapReasonID at all, and that has to flow through as a genuine NULL on ScrapReasonKey, not an error",
+        "Because the Product Lookup already fails on any unmatched row, so ScrapReason doesn't need to",
+        "Because dw.DimScrapReason is expected to be incomplete at load time",
+        "Because SSIS Lookup transformations always default to redirecting unmatched rows unless configured otherwise"
+      ],
+      "correctIndex": 0,
+      "explain": "Unlike the Product Lookup, which fails on no match, the ScrapReason Lookup redirects unmatched rows — because most work orders scrap nothing at all, so a real, valid row can legitimately arrive with no scrap reason, and that has to land as a genuine NULL on dw.FactWorkOrder.ScrapReasonKey rather than being treated as an error."
+    },
+    {
+      "id": "mbicap-07",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each property of the dw schema to what Lesson 5 says about it.",
+      "left": [
+        "Column types in dw schema",
+        "Keys in dw schema",
+        "Lifespan of dw tables",
+        "Who reads dw tables"
+      ],
+      "right": [
+        "Persistent — the durable version of the data",
+        "Strict, narrow types like INT, NVARCHAR(50), DATE",
+        "SSRS, Power BI, and anyone querying the warehouse",
+        "Surrogate keys, resolved during ETL"
+      ],
+      "correctMap": [1, 3, 0, 2],
+      "explain": "The dw schema is allowed to guarantee strictness: narrow, strict types; surrogate keys resolved during ETL; a persistent, durable lifespan; and it's the schema SSRS, Power BI, and any warehouse query actually reads — the opposite of stg's wide types, natural keys, disposable lifespan, and ETL-only readership."
+    },
+    {
+      "id": "mbicap-08",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly defines an accumulating snapshot fact table, as this capstone's dw.FactWorkOrder is classified?",
+      "options": [
+        "A fact table row that gets inserted once when a process starts, then updated in place as the process moves through its lifecycle, until it completes",
+        "A fact table that captures a single event once, at one moment, and never changes after that",
+        "A fact table that stores one row per fixed time period, like one row per day, regardless of how many business events occurred",
+        "A fact table that contains only aggregated totals, with no row-level detail at all",
+        "A fact table whose rows are deleted and reinserted every time any measure changes",
+        "A fact table that exists purely to resolve surrogate keys for other fact tables"
+      ],
+      "correctIndex": 0,
+      "explain": "An accumulating snapshot fact table's row gets revisited and updated as a business process moves through its lifecycle, rather than inserted once and left alone. dw.FactWorkOrder follows exactly this pattern: inserted when a work order starts, updated as StockedQty and ScrappedQty change, and completed when EndDateKey is finally filled in.",
+      "distractorExplain": "Option B describes a transaction fact table, the type dw.FactWorkOrder is explicitly NOT classified as. A transaction fact captures a single event once and never changes — a single sale, a single scan — but a work order's measures (StockedQty, ScrappedQty) are revisited and updated as production progresses, which is exactly why this fact table needed the accumulating-snapshot classification instead."
+    },
+    {
+      "id": "mbicap-09",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put these three stages of dw.FactWorkOrder's accumulating-snapshot load pattern in the correct order.",
+      "items": [
+        "Insert a row the moment a work order starts, with StartDateKey and DueDateKey known but EndDateKey NULL and StockedQty/ScrappedQty both 0",
+        "Update that same row as production progresses, increasing StockedQty and ScrappedQty on that exact row",
+        "Complete the row once the work order ends, filling in EndDateKey with the real completion date and the quantities reaching their final values"
+      ],
+      "explain": "Insert happens the moment a work order starts, before anything has actually been produced. Update happens repeatedly as production runs, changing the same row rather than inserting a new one. Complete happens once, when the work order actually finishes — the defining three-step lifecycle of an accumulating snapshot."
+    },
+    {
+      "id": "mbicap-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "=Sum(Fields!ScrappedQty.Value) / Sum(Fields!OrderQty.Value)",
+      "prompt": "WorkOrderProductionSummary.rdl's scrap-rate expression wraps both ScrappedQty and OrderQty in Sum() before dividing. What would happen if Sum() were removed, dividing the raw fields directly instead?",
+      "options": [
+        "It would divide one detail row's values instead of the group's totals — producing a number that looks plausible but is wrong for every group except one with exactly one row",
+        "The report would fail to render at all, since Sum() is required syntax for any expression in SSRS",
+        "It would produce the exact same result, since Sum() has no effect inside a group total row",
+        "It would compute the scrap rate correctly, but only for the first product in the matrix"
+      ],
+      "correctIndex": 0,
+      "explain": "Without Sum() wrapping both fields, the expression divides one detail row's raw values instead of the group's totals — a mistake that produces a number that looks plausible and is wrong for every group except a group with exactly one row. The expression has to be written at the group-total level, since the report is grouped by Product and the scrap rate that matters is the product's overall rate."
+    },
+    {
+      "id": "mbicap-11",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about why the Power BI dashboard connects to dw.FactWorkOrder using Import instead of DirectQuery.",
+      "options": [
+        "The warehouse is a nightly-refreshed batch target fed by the SSIS package, not a live operational system, so there's no reason to pay DirectQuery's per-click query cost",
+        "Import unlocks the full DAX surface, including functions like DIVIDE() that the scrap-rate measure depends on",
+        "DirectQuery is not supported at all for SQL Server data sources",
+        "Import means the dashboard always shows live, unrefreshed data with zero lag",
+        "The Import decision should be documented, the same way every decision in this capstone is documented"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "The warehouse refreshes nightly after the SSIS load, so there's no live-operational reason to pay DirectQuery's per-click cost, and Import also unlocks the full DAX surface the Scrap Rate measure's DIVIDE() depends on. DirectQuery is a real, supported Power BI connection mode for SQL Server, not an unsupported one, and Import is the opposite of always-live — it's a scheduled, in-memory copy, which is exactly why it needs documenting: \"FactWorkOrder and its dimensions: Import, refreshed nightly after the SSIS load completes.\""
+    },
+    {
+      "id": "mbicap-12",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the principle that a business number like scrap rate is defined once, in one place, and every consuming tool inherits that same definition, is called ________.",
+      "acceptedAnswers": ["single source of truth", "a single source of truth"],
+      "explain": "Single source of truth means a business number is never redefined by a second tool — scrap rate is ScrappedQty/OrderQty, computed identically in both the SSRS expression and the Power BI DIVIDE() measure, not recomputed a third way in a spreadsheet macro."
+    },
+    {
+      "id": "mbicap-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "ALTER TABLE Production.WorkOrder\nADD ShiftCode CHAR(1) NULL;",
+      "prompt": "After this ALTER TABLE lands in the source system, ShiftCode is modeled as a new dw.DimShift dimension with a ShiftKey foreign key on dw.FactWorkOrder, rather than as a raw ShiftCode column added directly to the fact table. Why?",
+      "options": [
+        "ShiftCode is a low-cardinality descriptive attribute, the same shape as ScrapReason — storing it raw on the fact table would mean updating every historical row if the business ever renamed a shift value, instead of updating one dimension row once",
+        "SQL Server doesn't allow CHAR columns on fact tables",
+        "A raw ShiftCode column would break every existing foreign key already on dw.FactWorkOrder",
+        "dw.DimShift is required because Production.WorkOrder can never have nullable columns added to it"
+      ],
+      "correctIndex": 0,
+      "explain": "ShiftCode is a low-cardinality descriptive attribute — three or four fixed values — the same shape Production.ScrapReason already took as dw.DimScrapReason. A new dw.DimShift dimension avoids duplicating the descriptive-text problem a bare fact-table column would create: if the business later renames a shift, a dimension gets updated once instead of rewriting every historical fact row."
+    },
+    {
+      "id": "mbicap-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "WorkOrderETL.dtsx isn't deployed by itself — the whole project it lives in is built into a single .ispac and deployed as one unit into SSISDB. Why does SSIS deploy at the project level instead of per package?",
+      "options": [
+        "Because the project deployment model, the default since SQL Server 2012, packages every package and parameter in the project together as one deployment unit",
+        "Because individual .dtsx files cannot be stored inside SSISDB under any circumstances",
+        "Because SSMS cannot browse to a single package, only to an entire project",
+        "Because a single package deployed alone would lose its control flow logic"
+      ],
+      "correctIndex": 0,
+      "explain": "The project deployment model, the default since SQL Server 2012, is what turns an entire project — every package and parameter in it — into one .ispac deployment file, deployed as a single unit into the SSISDB catalog by the Integration Services Deployment Wizard."
+    },
+    {
+      "id": "mbicap-15",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a SQL Server Agent job step that runs an SSIS package should run as a dedicated ________ account, scoped to exactly what the package needs, rather than as the SQL Server Agent service account itself.",
+      "acceptedAnswers": ["proxy", "proxy account", "a proxy account"],
+      "explain": "A package that runs perfectly inside SSDT as you, with your own permissions, can fail the moment an unattended job runs it as the Agent service account, which doesn't have the same access. A proxy account scoped to exactly what the package needs avoids that gap."
+    },
+    {
+      "id": "mbicap-16",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "The WorkOrderETL SQL Server Agent job usually finishes by 5 AM. The Power BI dashboard's scheduled refresh is set for 4:30 AM. What's wrong with this schedule?",
+      "options": [
+        "The Power BI refresh would run before the warehouse finishes loading, so the dashboard would refresh against yesterday's — or half-loaded — data",
+        "Nothing — Power BI Service always queues a scheduled refresh until the source data is confirmed ready",
+        "Power BI Service doesn't allow scheduled refreshes before 5 AM",
+        "The SSIS job and the Power BI refresh schedule have no relationship to each other at all"
+      ],
+      "correctIndex": 0,
+      "explain": "The Power BI refresh has to run after the SSIS job has finished populating the warehouse. Scheduling it at 4:30, before the job's usual 5 AM finish, means the dashboard refreshes against yesterday's — or half-loaded — data instead of the night's actual run."
+    },
+    {
+      "id": "mbicap-17",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each documentation artifact to the question it answers, per Lesson 14.",
+      "left": [
+        "Data dictionary",
+        "ETL runbook",
+        "Source-to-target mapping",
+        "Extended property (sp_addextendedproperty)"
+      ],
+      "right": [
+        "Answers 'where did this number actually come from?' by tracing a warehouse column back to its exact source column",
+        "Describes every column in the warehouse's fact and dimension tables in plain language — what it holds and its grain",
+        "Attaches a description directly to the schema as metadata, so it travels with the schema and can't go stale",
+        "Answers what to check first if the package fails overnight, and what order its major steps run in"
+      ],
+      "correctMap": [1, 3, 0, 2],
+      "explain": "A data dictionary describes every warehouse column in plain language. An ETL runbook is operational — what order steps run in, and what to check first on failure. Source-to-target mapping traces a warehouse column back to its exact source. An extended property attaches a description directly to the schema itself, so it can't quietly go stale the way a separate wiki page can."
+    },
+    {
+      "id": "mbicap-18",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about monitoring this pipeline, per Lesson 15.",
+      "options": [
+        "The SSIS Integration Services catalog's Dashboard report in SSISDB shows a summary of the last 24 hours, with drill-down into Overview and Messages for one run",
+        "SQL Server Agent's job history is identical to the SSIS package's own execution log, so checking one always tells you everything about the other",
+        "Job Activity Monitor, or View History on a specific job, is the first place to check if a job didn't fire at all",
+        "Power BI's refresh history grid shows status, duration, and the exact error message for any failed refresh attempt",
+        "A pipeline counts as healthy only once a separate, dedicated observability platform confirms all three tools agree"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "SSISDB's Dashboard report, Job Activity Monitor/View History, and Power BI's refresh history grid are each a real, separate built-in history worth checking. The Agent job keeps its own history separate from the package's own execution log — they aren't identical, which is exactly why a job that didn't fire at all looks different from a job that fired but whose package failed. And this lesson is explicit that it's a practical, BI-developer-scoped check using each tool's own history, not a case for standing up a separate observability platform."
+    },
+    {
+      "id": "mbicap-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Which resume bullet below correctly follows the action-verb + tool + outcome structure Lesson 16 teaches?",
+      "options": [
+        "\"Designed and built an SSIS ETL package to move manufacturing work order data from AdventureWorks2012 into a staging and warehouse environment, eliminating manual CSV handoffs between production and reporting.\"",
+        "\"Worked on a BI project using Microsoft tools, which was helpful for the team.\"",
+        "\"Completed a BI capstone project.\"",
+        "\"Helped with some database and reporting stuff during the course.\""
+      ],
+      "correctIndex": 0,
+      "explain": "A strong bullet names a specific action verb (\"designed and built\"), a specific tool (\"SSIS ETL package\"), and a concrete outcome (\"eliminating manual CSV handoffs\"). The other options use vague verbs like \"worked on\" or \"helped with,\" name no specific tool, or state no outcome at all — exactly the weak patterns Lesson 16 warns against."
+    },
+    {
+      "id": "mbicap-20",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: for a career changer without years of BI experience, this capstone belongs in its own ________ section on the resume, positioned above older, unrelated work history.",
+      "acceptedAnswers": ["Projects", "a Projects section", "projects"],
+      "explain": "A dedicated Projects section, placed right under the summary or skills section and above older unrelated work history, tells the reader where to look first — you're not asking them to dig for evidence you can do the job."
+    },
+    {
+      "id": "mbicap-21",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every artifact Lesson 17 says actually belongs in this capstone's portfolio repo.",
+      "options": [
+        "The SSIS package, WorkOrderETL.dtsx, committed as readable XML so a reviewer can open the actual ETL logic without installing anything",
+        "The T-SQL DDL for the staging and warehouse tables, showing the real schema design decisions",
+        "Screenshots or a short recorded walkthrough of the SSRS report and Power BI dashboard, since .rdl and .pbix files aren't viewable in a browser",
+        "A live, publicly hosted version of the on-prem SQL Server instance so a reviewer can query it themselves",
+        "A README.md tying every other file together with the architecture explanation"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "The .dtsx package, the T-SQL DDL, screenshots or a short walkthrough, and a README are exactly what Lesson 17 lists as belonging in the repo. Hosting a live, publicly queryable copy of the SQL Server instance isn't one of them — the lesson is explicit that nobody is going to spin up your SQL Server instance from a browser; the repo's job is to make the files legible, not clickable."
+    },
+    {
+      "id": "mbicap-22",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Put these four parts of a strong capstone README in the order Lesson 17 recommends writing them.",
+      "items": [
+        "The business problem, in one or two sentences — what question couldn't be answered before this pipeline existed",
+        "The architecture, as a short diagram or ordered list, from SQL Server through SSIS, the warehouse, and SSRS/Power BI",
+        "The design decisions worth explaining — why an accumulating snapshot fact, why role-playing date dimensions, why SSIS",
+        "What it looks like, with screenshots embedded directly in the README"
+      ],
+      "explain": "A strong README opens with the business problem, then the architecture that solves it, then the specific design decisions worth explaining, and finally the embedded screenshots proving it's real — doing the work of connecting the pieces for the reader instead of making them reverse-engineer a bare file list."
+    },
+    {
+      "id": "mbicap-23",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each interview question to what it's actually testing, per Lesson 18.",
+      "left": [
+        "\"What's the difference between a star schema and a snowflake schema, and when would you pick one over the other?\"",
+        "\"Walk me through the slowly changing dimension types — what's the difference between Type 1 and Type 2?\"",
+        "\"How does a Lookup transformation work in SSIS, and what happens on a no-match row?\"",
+        "\"What's the difference between a calculated column and a measure in Power BI?\""
+      ],
+      "right": [
+        "Whether you know a calculated column is computed row-by-row and stored, while a measure is computed at query time based on filter context",
+        "Whether you understand normalization tradeoffs between flat and further-normalized dimensions",
+        "Whether you've actually configured a Lookup, including the error-output path for rows that don't match — not just the happy path",
+        "Whether you know Type 1 overwrites history and Type 2 preserves it with new rows, and which a given business question requires"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "Star-versus-snowflake tests normalization tradeoffs. SCD types tests whether you know Type 1 overwrites and Type 2 preserves history. The Lookup question tests hands-on configuration, including the no-match path, not a textbook description. Calculated column versus measure tests whether you know one is stored per row and the other evaluated at query time under filter context."
+    },
+    {
+      "id": "mbicap-24",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Put these four steps of a strong technical-interview answer, per Lesson 19's structure, in the correct order.",
+      "items": [
+        "Clarify scope — confirm what's actually being asked before answering it",
+        "State the design decision — name the concrete choice made, without justifying it yet",
+        "Justify it — explain why that choice fits the business problem",
+        "Name a tradeoff — show what was given up, not just what was gained"
+      ],
+      "explain": "Clarifying scope first avoids guessing at the question. Stating the decision gives the interviewer a map before detail fills in. Justifying it is where tool-specific knowledge actually gets deployed. Naming a tradeoff last shows the decision was actually weighed, not just memorized — skipping any of the four is what separates a strong answer from a weak one."
+    },
+    {
+      "id": "mbicap-25",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly defines the STAR method for answering a behavioral interview question?",
+      "options": [
+        "A four-part structure — Situation, Task, Action, Result — for describing a past experience without letting the answer wander",
+        "A scoring rubric interviewers use to rate a candidate's technical skills on a scale from one to five",
+        "A three-part structure — Situation, Action, Result — that skips naming a specific task",
+        "A negotiation framework for countering a salary offer",
+        "A checklist for formatting a resume's Projects section",
+        "A method for prioritizing must-have versus nice-to-have job requirements"
+      ],
+      "correctIndex": 0,
+      "explain": "STAR keeps a behavioral answer from turning into a five-minute story with no point: Situation sets the context, Task states what you were specifically responsible for, Action is the bulk of the answer, and Result states what actually happened — ideally with a number or concrete outcome.",
+      "distractorExplain": "Option C is close — it keeps Situation, Action, and Result — but drops Task, the beat that states specifically what you were responsible for. STAR is explicitly a four-part structure, not three; skipping Task is a real, common way candidates weaken an otherwise well-structured answer, not a harmless shortcut."
+    },
+    {
+      "id": "mbicap-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Why does Lesson 21 recommend avoiding naming a salary number first whenever possible, when asked 'what are your salary expectations'?",
+      "options": [
+        "Whoever names a number first gives away information — a number too low caps the offer, and a number too high risks getting screened out before your resume gets a fair look",
+        "Most companies are legally required to name their budgeted range first",
+        "Naming a number first always results in a higher final offer",
+        "It has no real effect on the outcome — it's purely a matter of politeness"
+      ],
+      "correctIndex": 0,
+      "explain": "Naming a number first gives away information in both directions: too low caps what the company will ever offer, since they were never going to volunteer more than you asked for, and too high risks screening you out before you've made your case. The safer move is letting the employer name a number first, or answering with a researched range instead of a single figure."
+    },
+    {
+      "id": "mbicap-27",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about reading a job posting's requirements, per Lesson 22.",
+      "options": [
+        "Phrasing like 'required,' 'must have,' or a specific years-of-experience threshold tied to a core skill usually signals a must-have requirement",
+        "Phrasing like 'preferred,' 'a plus,' or 'nice to have' usually signals a requirement that's helpful but not disqualifying",
+        "A posting titled 'BI Developer' that's actually heavy on Python, cloud pipeline tools, and data-engineering language is really a data engineering role wearing a BI title",
+        "Every requirement in a posting should be treated as an equally hard pass/fail gate, regardless of how it's phrased",
+        "A posting listing no salary range at all is always a sign of a generously funded, well-scoped role"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Required/must-have phrasing signals a real bar; preferred/nice-to-have phrasing signals helpful but not disqualifying; and a 'BI Developer' title whose body is actually data-engineering language is a different role wearing that title. Treating every bullet as an equally hard gate ignores that most postings list more than any real candidate has. And Lesson 22 names an unlisted salary range as an increasingly common red flag, not a sign of generous funding."
+    },
+    {
+      "id": "mbicap-28",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these five parts of this capstone's project walkthrough, per Lesson 24, in the order they should be presented.",
+      "items": [
+        "Business problem — track manufacturing work orders end to end, planned versus actual output, and why units get scrapped",
+        "Architecture — stg.WorkOrder, then WorkOrderETL.dtsx, then dw.FactWorkOrder and its dimensions, then the SSRS report and Power BI dashboard",
+        "Design decisions — the accumulating snapshot fact, the role-playing date keys, the scoped-out Location table",
+        "The finished result — the SSRS report's grouped scrap-rate view, the Power BI dashboard's trend and on-time visuals",
+        "What you'd improve next — slowly changing dimension tracking on DimProduct, incremental loads, alerting on scrap-rate spikes"
+      ],
+      "explain": "Every strong walkthrough opens on the business problem before naming a single tool, lays out the architecture next, explains the design decisions that shaped it, shows the finished result those decisions produced, and closes with an honest next iteration — the same five-part shape whether it's a live interview, a recorded video, or a written case study."
+    },
+    {
+      "id": "mbicap-29",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Which of these two explanations of leaving Production.Location out of the dimensional model is the one Lesson 24 says an interviewer is actually listening for?",
+      "options": [
+        "\"Location lives at the WorkOrderRouting grain, one level finer than the work-order grain I chose — modeling it would mean fanning the fact table out past its intended grain, or picking one location arbitrarily, so I scoped it out and documented why.\"",
+        "\"I didn't get to Location — I ran out of time before I could add it.\"",
+        "\"Location isn't a real table in AdventureWorks2012, so there was nothing to model.\"",
+        "\"Location was too difficult to understand, so I left it out to keep the project simple.\""
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 24 is explicit that the right way to describe this decision names the actual grain mismatch and the reasoning behind leaving it out — a sentence about a modeling decision. The wrong way treats it as an apology for something unfinished, which is exactly what the other options do; Location is a real, related AdventureWorks2012 table, and the reason it's excluded is grain, not difficulty or time."
+    },
+    {
+      "id": "mbicap-30",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each earlier course in the Microsoft Data & BI Developer program to what it contributed to this capstone, per Lesson 25.",
+      "left": [
+        "T-SQL Development",
+        "SSIS Development",
+        "SSRS Development",
+        "Data Modeling & Data Warehousing"
+      ],
+      "right": [
+        "WorkOrderETL.dtsx, the package that moves work order data into the warehouse",
+        "dw.FactWorkOrder as an accumulating snapshot, its role-playing date keys, its conformed and static dimensions",
+        "Every query against AdventureWorks2012, and the shape of stg.WorkOrder",
+        "WorkOrderProductionSummary.rdl, grouped by product with a computed scrap rate"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "T-SQL Development shows up in every query against AdventureWorks2012 and the shape of stg.WorkOrder. SSIS Development shows up as WorkOrderETL.dtsx itself. SSRS Development shows up as the paginated report. Data Modeling & Data Warehousing shows up as the accumulating snapshot fact, its role-playing dates, and its dimensions — five separate skills becoming one finished pipeline."
+    }
+  ]
+}

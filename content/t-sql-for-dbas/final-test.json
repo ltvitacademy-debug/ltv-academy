@@ -1,0 +1,594 @@
+{
+  "questions": [
+    {
+      "id": "tsqldba-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "tempdb is rebuilt from scratch every time the SQL Server service restarts. Why does this mean tempdb is never backed up, while master, msdb, and model are?",
+      "options": [
+        "tempdb holds nothing that survives a restart, so there's nothing in it worth preserving across a backup cycle",
+        "tempdb is too large to fit in a normal backup window",
+        "SQL Server blocks any BACKUP DATABASE statement targeted at tempdb for licensing reasons",
+        "tempdb is automatically included inside every backup of master, so a separate backup would be redundant"
+      ],
+      "correctIndex": 0,
+      "explain": "Because tempdb is recreated empty on every service restart, nothing stored in it persists across a restart anyway — backing it up would preserve data that's already guaranteed to be gone and rebuilt from scratch the next time the service starts. master, msdb, and model are real, persistent databases whose loss without a backup means rebuilding system databases from installation media."
+    },
+    {
+      "id": "tsqldba-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: sys.databases is an ________-wide catalog view — querying it from any database on the server shows every database on that instance — while sys.tables, sys.columns, and sys.indexes are scoped only to the database you're currently connected to.",
+      "acceptedAnswers": ["instance", "instance-wide"],
+      "explain": "sys.databases lives at the instance level: query it from any database and you see every database on the server. sys.tables, sys.columns, and sys.indexes are database-scoped — they only ever describe the single database you're connected to, which is exactly why object_id-based joins between them never cross database boundaries."
+    },
+    {
+      "id": "tsqldba-03",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each sys.dm_* prefix to the category of information it covers.",
+      "left": ["sys.dm_exec_*", "sys.dm_os_*", "sys.dm_db_*", "sys.dm_io_*"],
+      "right": [
+        "Operating-system-level activity: wait stats, memory, schedulers, performance counters",
+        "Query execution: requests, sessions, connections, SQL text, query plans",
+        "I/O activity: virtual file stats such as per-file read/write latency",
+        "Database-level activity: index physical stats, missing indexes, file space usage"
+      ],
+      "correctMap": [1, 0, 3, 2],
+      "explain": "sys.dm_exec_* covers query execution — requests, sessions, connections, text, and plans. sys.dm_os_* covers operating-system-level activity like wait stats, memory, and schedulers. sys.dm_db_* covers database-level activity such as index stats and file space usage. sys.dm_io_* covers I/O activity specifically, like per-file virtual file stats."
+    },
+    {
+      "id": "tsqldba-04",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about sys.dm_exec_sessions and sys.dm_exec_connections, per Lesson 5.",
+      "options": [
+        "sys.dm_exec_sessions is about the logical login session; sys.dm_exec_connections is about the underlying network-level link",
+        "is_user_process = 1 filters sys.dm_exec_sessions down to real client connections, excluding SQL Server's own internal background sessions",
+        "A session with nothing currently executing has no matching row in sys.dm_exec_requests, so joining to it should use an INNER JOIN to keep the output clean",
+        "status in sys.dm_exec_sessions can show a session as logged in and idle (sleeping or dormant) even when nothing is running",
+        "sys.dm_exec_connections and sys.dm_exec_sessions always return exactly the same columns, since they describe the same thing"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Sessions and connections answer two different questions — logical login versus network-level link — and is_user_process=1 is specifically what filters out SQL Server's own internal sessions. A session can be logged in and idle (sleeping/dormant) with nothing executing. Because a session without an active request has no matching sys.dm_exec_requests row, the correct join is a LEFT JOIN, not an INNER JOIN, or that session would silently disappear from the results. The two DMVs also have different column sets, since they describe different things."
+    },
+    {
+      "id": "tsqldba-05",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of turning sys.dm_exec_requests into a full triage query — ranked by cost, with text and plan attached — in the correct order, per Lesson 7.",
+      "items": [
+        "Query sys.dm_exec_requests, ordering by cpu_time or logical_reads to surface the most expensive currently running request",
+        "CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) to turn the request's sql_handle into readable query text",
+        "CROSS APPLY sys.dm_exec_query_plan(r.plan_handle) to turn the request's plan_handle into the actual execution plan",
+        "Click the returned query_plan XML cell in SSMS to view it as a graphical execution plan"
+      ],
+      "explain": "The triage query starts by ranking active requests by cost. sys.dm_exec_requests only carries handles, not the text or plan themselves, so sys.dm_exec_sql_text resolves the sql_handle into text and sys.dm_exec_query_plan resolves the plan_handle into the XML plan — both via CROSS APPLY, the standard pattern for combining a DMV with a DMF. Clicking the resulting XML in SSMS renders it graphically, without ever having to re-run the query."
+    },
+    {
+      "id": "tsqldba-06",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: on sys.dm_os_wait_stats, subtracting signal_wait_time_ms from wait_time_ms gives the ________ wait — time actually spent waiting on the named resource rather than waiting afterward for a CPU to become available.",
+      "acceptedAnswers": ["resource", "resource wait"],
+      "explain": "wait_time_ms is the total time spent waiting; signal_wait_time_ms is the portion of that spent waiting for a CPU after the wait was already satisfied. Subtracting the two isolates the genuine resource wait time — a high signal-wait share instead points at CPU pressure, not the resource the wait type names."
+    },
+    {
+      "id": "tsqldba-07",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about blocking chains, per Lesson 9.",
+      "options": [
+        "blocking_session_id on sys.dm_exec_requests is 0 for a session that isn't waiting on another session",
+        "The session at the root of a blocking chain always itself has a non-zero blocking_session_id",
+        "wait_resource identifies the specific key, page, or object a blocked request is waiting to acquire a lock on",
+        "Killing the session in the middle of a three-session blocking chain typically fixes the problem for the session at the front of the chain",
+        "A recursive query that follows blocking_session_id back through sys.dm_exec_requests can find the root of a chain several sessions deep"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "blocking_session_id is 0 exactly when a request isn't waiting on anyone, and wait_resource names the specific contended resource. The root of a chain is often not blocked by anyone itself (blocking_session_id = 0) — it's simply running a long operation that's holding locks. Killing a middle session does nothing for the front of the chain, since the front is still waiting on whoever is actually holding the lock further up. Following blocking_session_id recursively is exactly how you walk a multi-session chain back to its root."
+    },
+    {
+      "id": "tsqldba-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "A tempdb space report shows version_store_mb far larger than either user_objects_mb or internal_objects_mb. What does this pattern usually point to?",
+      "options": [
+        "One long-running transaction under snapshot or read-committed snapshot isolation is preventing old row versions from being cleaned up",
+        "Too many developers are creating temp tables in their sessions",
+        "tempdb's data file is undersized and needs to grow",
+        "The optimizer is building an unusually large number of sort and hash spill worktables"
+      ],
+      "correctIndex": 0,
+      "explain": "The version store holds old row versions for snapshot isolation / RCSI. A disproportionately large version_store_mb, compared to the user- and internal-object categories, almost always traces back to one long-running transaction that's preventing SQL Server from cleaning up old versions it would otherwise discard — not to temp table volume or worktable spills, which show up in the other two categories instead."
+    },
+    {
+      "id": "tsqldba-09",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "An index shows 45% fragmentation and 12,000 pages. Following the documented fragmentation thresholds and the operational tradeoffs covered in this chapter, what is the most appropriate first action?",
+      "options": [
+        "ALTER INDEX ... REBUILD, since 45% is over the 30% threshold where Microsoft's guidance recommends a rebuild",
+        "ALTER INDEX ... REORGANIZE, since REORGANIZE is always the safer choice regardless of fragmentation level",
+        "Do nothing, since page_count only matters below 1,000 pages and this index is well above that floor, which makes the fragmentation irrelevant",
+        "DBCC CHECKDB, since fragmentation is itself a sign of corruption that needs to be verified first",
+        "DROP and recreate the index from scratch, since REBUILD and REORGANIZE are functionally identical for an index this large",
+        "UPDATE STATISTICS WITH FULLSCAN, since fragmentation is actually a statistics problem, not an index-structure problem"
+      ],
+      "correctIndex": 0,
+      "explain": "Microsoft's documented thresholds tie avg_fragmentation_in_percent to action: under 10% do nothing, 10-30% REORGANIZE, over 30% REBUILD. At 45% fragmentation with page_count well above the roughly 1,000-page floor where fragmentation is considered to matter, this index clears both conditions for a REBUILD being the appropriate documented action.",
+      "distractorExplain": "Option B is the right general instinct — REORGANIZE is lower-risk and often the safer default during business hours — but it's documented specifically for the 10-30% range. At 45%, over the 30% line, REORGANIZE alone doesn't address fragmentation as thoroughly as a REBUILD does; REORGANIZE being 'usually safer' doesn't mean it is always the correct choice regardless of how fragmented the index actually is."
+    },
+    {
+      "id": "tsqldba-10",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about sys.dm_db_missing_index_details, per Lesson 12.",
+      "options": [
+        "It only reflects queries that have actually run since the last restart",
+        "It automatically accounts for the write cost a new index would add on INSERT/UPDATE/DELETE",
+        "Two different suggestions for the same table, overlapping heavily, are common because the DMV doesn't consider column order optimally",
+        "avg_user_impact is the optimizer's estimated percentage improvement for affected queries, not a guarantee",
+        "A suggestion from this DMV is safe to script and create unattended, since the optimizer has already validated it"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "The missing-index DMV only logs suggestions from queries that have actually executed since the last restart, never considers column order optimally (producing overlapping suggestions), and avg_user_impact is only an estimate of improvement — not a validated guarantee. It never factors in the write-side cost of maintaining a new index, which is exactly why a suggestion needs investigation, not blind scripting, especially on a heavily-written table."
+    },
+    {
+      "id": "tsqldba-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "UPDATE STATISTICS dbo.Orders IX_Orders_CustomerID WITH FULLSCAN;",
+      "prompt": "A DBA runs this after a large bulk load, instead of the default sampled UPDATE STATISTICS. Why might this produce a noticeably different, more accurate plan on a large or skewed table?",
+      "options": [
+        "A sampled update only reads a subset of rows, which may not capture the table's true distribution, while FULLSCAN reads every row for the most accurate possible histogram",
+        "FULLSCAN rebuilds the index itself, which is what actually changes the plan",
+        "Sampled updates only work correctly on tables under 1,000 rows",
+        "WITH FULLSCAN forces the optimizer to ignore statistics entirely and use a generic plan"
+      ],
+      "correctIndex": 0,
+      "explain": "Without options, UPDATE STATISTICS samples a subset of rows — fast, but the sample may miss the true distribution on a large or skewed table. WITH FULLSCAN reads every row, producing the most accurate histogram possible, at the cost of scanning the whole table. It doesn't touch the index structure itself or disable statistics — it just makes the statistics themselves more accurate."
+    },
+    {
+      "id": "tsqldba-12",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: even with REBUILD WITH (ONLINE = ON), SQL Server still takes a brief ________ lock at the very start and end of the operation — 'online' describes concurrency during the rebuild, not that no locking happens at all.",
+      "acceptedAnswers": ["schema-modification", "schema modification", "schema modification lock", "schema-modification lock"],
+      "explain": "ONLINE = ON lets reads and writes continue through most of the rebuild, but it still needs a brief schema-modification lock at the very start and end of the operation, and it adds its own tempdb/log overhead from row versioning. 'Online' is a statement about concurrency during the bulk of the operation, not a claim that zero locking occurs at any point."
+    },
+    {
+      "id": "tsqldba-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "DBCC OPENTRAN and the pair sys.dm_tran_active_transactions / sys.dm_tran_session_transactions both report on open transactions. What is the key difference in what each gives you?",
+      "options": [
+        "DBCC OPENTRAN reports only the oldest open transaction in the current database; the DMVs give a server-wide view of every active transaction",
+        "DBCC OPENTRAN works server-wide across every database; the DMVs are limited to the current database only",
+        "The DMVs only work in SIMPLE recovery model; DBCC OPENTRAN only works in FULL recovery model",
+        "DBCC OPENTRAN shows every open transaction on the instance; the DMVs show only the single oldest one"
+      ],
+      "correctIndex": 0,
+      "explain": "DBCC OPENTRAN is the fast, single-database check — it reports only the oldest active transaction in the current database. sys.dm_tran_active_transactions joined to sys.dm_tran_session_transactions gives the full, server-wide picture of every open transaction on the instance, which is what you need once DBCC OPENTRAN's single answer isn't enough."
+    },
+    {
+      "id": "tsqldba-14",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each lock mode to what it actually represents, per Lesson 16.",
+      "left": ["S (Shared)", "X (Exclusive)", "U (Update)", "IS / IX (Intent Shared / Intent Exclusive)"],
+      "right": [
+        "Held while deciding whether to escalate to an exclusive lock; prevents deadlock between two readers both about to write",
+        "Read lock, compatible with other locks of the same mode, but blocks writers",
+        "Write lock, incompatible with every other lock mode",
+        "Placed at a higher level to signal a lock exists at a lower level, avoiding a full scan to check for conflicts"
+      ],
+      "correctMap": [1, 2, 0, 3],
+      "explain": "S is the shared read lock, compatible with other S locks but blocking writers. X is the exclusive write lock, incompatible with everything. U is the update lock, held while deciding whether to escalate to X, specifically to prevent two readers from deadlocking each other on the way to writing. IS/IX are intent locks placed at a higher level (like the table) to signal a lower-level lock exists, without SQL Server needing to scan every row."
+    },
+    {
+      "id": "tsqldba-15",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about SQL Server's isolation levels, per Lesson 17.",
+      "options": [
+        "READ UNCOMMITTED can produce dirty reads, since it reads whatever is on the page right now regardless of commit status",
+        "The default READ COMMITTED level prevents dirty reads but can still allow non-repeatable reads and phantom reads",
+        "Turning on READ_COMMITTED_SNAPSHOT (RCSI) requires every application to add its own SET TRANSACTION ISOLATION LEVEL statement",
+        "SERIALIZABLE locks the range a query touched, which can prevent a second transaction from inserting a new row into that range",
+        "SNAPSHOT isolation uses ordinary shared and exclusive locks, the same as REPEATABLE READ, just held for longer"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "READ UNCOMMITTED allows dirty reads by design. The default READ COMMITTED prevents dirty reads but still allows non-repeatable and phantom reads. SERIALIZABLE's range locks are strict enough to block a second transaction from inserting into the locked range. RCSI changes the default behavior of READ COMMITTED itself at the database level — no application code changes or SET statements are needed. SNAPSHOT isolation uses tempdb's version store instead of locks entirely, not ordinary S/X locks held longer."
+    },
+    {
+      "id": "tsqldba-16",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Put these events of a deadlock, from formation to resolution, in the correct order, per Lesson 18.",
+      "items": [
+        "Two transactions each acquire a lock that the other transaction needs next",
+        "SQL Server detects the resulting circular wait automatically",
+        "SQL Server picks a deadlock victim, by default whichever transaction is cheapest to roll back, or by DEADLOCK_PRIORITY if set",
+        "The victim transaction is rolled back and receives an error",
+        "The surviving transaction proceeds, and the deadlock graph is captured in the system_health Extended Events session for later review"
+      ],
+      "explain": "A deadlock forms the moment two transactions each hold a lock the other one needs. SQL Server detects that circular wait automatically, picks a victim (by rollback cost by default, or DEADLOCK_PRIORITY if explicitly set), rolls that transaction back with an error, and lets the survivor continue — with the whole event captured automatically in system_health for the DBA to review afterward, without any monitoring having to be set up in advance."
+    },
+    {
+      "id": "tsqldba-17",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a differential backup captures every extent changed since the last ________ backup, not since the last differential — which is why differentials grow larger the further out they are from that reference point.",
+      "acceptedAnswers": ["full", "full backup"],
+      "explain": "A differential always measures change against the last full backup, never against the last differential. That's exactly why differentials grow progressively larger the further removed they are from the full backup they reference, regardless of how many differentials ran in between."
+    },
+    {
+      "id": "tsqldba-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "RESTORE DATABASE AdventureWorks2012\nFROM DISK = 'D:\\Backups\\AdventureWorks2012_Full.bak'\nWITH ________;\n\nRESTORE DATABASE AdventureWorks2012\nFROM DISK = 'D:\\Backups\\AdventureWorks2012_Diff.bak'\nWITH ________;",
+      "prompt": "You're restoring a full backup followed immediately by a differential backup, with nothing else to apply afterward. Which RESTORE options belong on each step, in order?",
+      "options": [
+        "WITH NORECOVERY on the full backup restore, WITH RECOVERY on the differential restore",
+        "WITH RECOVERY on the full backup restore, WITH NORECOVERY on the differential restore",
+        "WITH RECOVERY on both restores",
+        "WITH NORECOVERY on both restores"
+      ],
+      "correctIndex": 0,
+      "explain": "Every restore step except the very last one uses NORECOVERY, which leaves the database in the RESTORING state so more backups can be applied on top. The differential here is the last step, so it gets RECOVERY, which rolls back uncommitted transactions and brings the database online. Using RECOVERY on the full backup step would end the sequence early and make the differential impossible to apply without starting over."
+    },
+    {
+      "id": "tsqldba-19",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Match each restore-related term to what it actually does or means, per Lessons 20-21.",
+      "left": ["RESTORE FILELISTONLY", "WITH MOVE", "LSN (Log Sequence Number)", "WITH STOPAT"],
+      "right": [
+        "Restores log records only up to a specified date/time instead of the whole log file",
+        "Reads a backup's header to list its logical/physical file names, without restoring any data",
+        "Relocates a restored file to a different physical path than the one recorded in the backup",
+        "A number identifying each log record's position, which SQL Server uses to validate restore order"
+      ],
+      "correctMap": [1, 2, 3, 0],
+      "explain": "RESTORE FILELISTONLY reads just the backup header for file names, restoring nothing. WITH MOVE relocates a file to a new path. LSN is the positional identifier SQL Server uses to confirm a backup picks up exactly where the database left off. WITH STOPAT restores a log backup only up to a specific point in time instead of applying the whole file."
+    },
+    {
+      "id": "tsqldba-20",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about RESTORE VERIFYONLY, per Lesson 22.",
+      "options": [
+        "It confirms the backup set is complete and readable without writing any data or log files",
+        "Passing it against a backup taken WITH CHECKSUM lets it also verify stored page checksums",
+        "A clean VERIFYONLY result guarantees the backup will restore successfully in a real disaster",
+        "It confirms the destination server has enough disk space for an actual restore",
+        "It is a substitute for periodically performing an actual test restore"
+      ],
+      "correctIndices": [0, 1],
+      "explain": "VERIFYONLY reads through the backup to confirm it's structurally complete and readable, and checking page checksums (when the backup was taken WITH CHECKSUM) is part of that. It does not confirm destination disk space, does not guarantee an actual restore will succeed, and is explicitly not a substitute for a real test restore — only an actual restore proves a backup truly works."
+    },
+    {
+      "id": "tsqldba-21",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "code": "GRANT SELECT ON dbo.Employee TO db_datareader;   -- role-level grant\nDENY SELECT ON dbo.Employee TO ReportingUser;    -- explicit user-level deny",
+      "prompt": "ReportingUser is a member of db_datareader, which has GRANT SELECT on dbo.Employee. ReportingUser also has an explicit DENY SELECT on that same table, applied directly. Can ReportingUser run a SELECT against dbo.Employee?",
+      "options": [
+        "No — DENY always overrides a GRANT on the same permission, regardless of which source the GRANT came from",
+        "Yes — a direct grant to the role always outranks a deny applied to an individual user",
+        "Yes — DENY only applies to statements run outside of a transaction",
+        "It depends on which statement, GRANT or DENY, was issued more recently",
+        "No — but only because REVOKE was never run to clear the earlier GRANT first",
+        "Yes — DENY only blocks DELETE and UPDATE, never SELECT"
+      ],
+      "correctIndex": 0,
+      "explain": "SQL Server's permission model has one firm rule here: if a principal has both a GRANT and a DENY on the same permission, from any source including role membership, DENY wins every time. ReportingUser's role membership granting SELECT does not override the explicit DENY SELECT targeted at that user — ReportingUser cannot run the SELECT.",
+      "distractorExplain": "Option D sounds plausible because many systems resolve conflicting rules by recency, but SQL Server's permission model doesn't work that way at all — DENY's precedence has nothing to do with statement order or timing. A GRANT issued after the DENY still loses to that DENY; the override is unconditional, not a last-statement-wins rule."
+    },
+    {
+      "id": "tsqldba-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Why does a permission grant like GRANT SELECT ON dbo.Employee target a database user, rather than a server login, directly?",
+      "options": [
+        "A login only authenticates to the instance; it's the user it maps to inside a specific database that permissions are actually granted against",
+        "Logins can't hold any permissions at all, by a hard technical limitation of SQL Server",
+        "Granting to a login would apply the permission to every database on the instance at once, which is never desired",
+        "GRANT only accepts Windows-authenticated principals, and most logins are SQL logins"
+      ],
+      "correctIndex": 0,
+      "explain": "A login is a server-level principal — it gets you onto the instance, nothing more. A user is the database-level principal that login maps to inside a specific database, and it's that user, not the login directly, that object-level permissions like SELECT are actually granted against."
+    },
+    {
+      "id": "tsqldba-23",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: the modern, supported way to fix an orphaned user is ALTER USER ReportingUser WITH ________ = ReportingUser;, which remaps the existing database user to a server login.",
+      "acceptedAnswers": ["LOGIN"],
+      "explain": "ALTER USER ... WITH LOGIN is the modern, Microsoft-supported statement for relinking an orphaned database user to a server login. sp_change_users_login performed the same job on older versions but is now documented as legacy."
+    },
+    {
+      "id": "tsqldba-24",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about ad hoc security queries and SQL Server Audit, per Lesson 27.",
+      "options": [
+        "sys.database_permissions shows who can do what right now, but not who actually did something in the past",
+        "A SQL Server Audit with no audit specification attached records nothing",
+        "sys.fn_get_audit_file reads the binary .sqlaudit files back into a queryable result set",
+        "CREATE SERVER AUDIT alone, without any specification, is enough to capture SELECT/UPDATE activity on a table",
+        "state_desc on sys.database_permissions can only ever show GRANT, never DENY"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "sys.database_permissions is a point-in-time view of current grants/denies, not a history of actions taken — for that you need an actual audit trail. An audit object with no specification attached captures nothing, since the specification is what defines which events get recorded. sys.fn_get_audit_file is exactly how the resulting .sqlaudit files get read back as queryable rows. state_desc can show GRANT, DENY, or GRANT_WITH_GRANT_OPTION, not just GRANT."
+    },
+    {
+      "id": "tsqldba-25",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of building a SQL Server Agent job end to end with msdb stored procedures in the correct order, per Lesson 30.",
+      "items": [
+        "sp_add_job creates the job shell — a name and metadata, with no steps yet",
+        "sp_add_jobstep attaches a command and subsystem (such as TSQL) to the job as a step",
+        "sp_add_schedule creates a reusable schedule, independent of any job",
+        "sp_attach_schedule attaches that schedule to the job",
+        "sp_add_jobserver targets the job at a server so it will actually run"
+      ],
+      "explain": "A job starts as an empty shell from sp_add_job, then gets its actual work attached via sp_add_jobstep. A schedule is created independently with sp_add_schedule and only then attached to the job with sp_attach_schedule. The job still won't run anywhere until sp_add_jobserver targets it at a server — skipping that last step is a common reason a job appears fully configured but never fires."
+    },
+    {
+      "id": "tsqldba-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Filtering msdb.dbo.sysjobhistory on step_id = 0 tells you a multi-step job failed overall, but not which step caused it. Why not?",
+      "options": [
+        "step_id = 0 is only the summary row for the entire job run; the individual step failures live on the step-level rows underneath it",
+        "step_id = 0 only exists for jobs with exactly one step",
+        "Agent doesn't record which specific step failed anywhere in msdb",
+        "step_id = 0 always reports Succeeded, regardless of what actually happened in the job"
+      ],
+      "correctIndex": 0,
+      "explain": "sysjobhistory stores one row per job step execution, plus a single step_id = 0 summary row per overall run. The summary row tells you that something failed, but finding which specific step failed — and the error message explaining why — means dropping the step_id = 0 filter and looking at the actual step-level rows instead."
+    },
+    {
+      "id": "tsqldba-27",
+      "type": "matching",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Match each Agent term to what it actually does, per Lesson 31.",
+      "left": ["sp_add_operator", "sp_add_alert", "sp_add_notification", "Severity 19-25"],
+      "right": [
+        "Links an existing alert to an existing operator and a notification method",
+        "SQL Server's range of fatal errors — the ones most worth alerting on",
+        "Creates a named notification target, typically an email address",
+        "Creates a rule that fires on a specific error number or severity level"
+      ],
+      "correctMap": [2, 3, 0, 1],
+      "explain": "sp_add_operator creates the named notification target (who gets told). sp_add_alert creates the rule that fires on an error number or severity level (what triggers telling them). sp_add_notification is the step that actually wires an alert to an operator — skipping it means the alert fires internally but nobody gets emailed. Severity 19-25 is SQL Server's fatal-error range, the one most worth alerting on."
+    },
+    {
+      "id": "tsqldba-28",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: msdb ships a function called ________() that converts Agent's packed run_date and run_time integers into a proper datetime value, so filtering and sorting on job run times behaves the way you'd expect.",
+      "acceptedAnswers": ["agent_datetime", "agent_datetime()"],
+      "explain": "Agent stores run_date as an integer like 20260919 and run_time unpadded, like 91530 for 9:15:30 AM — not a usable datetime. msdb.dbo.agent_datetime(run_date, run_time) converts that pair into a real datetime value instead of requiring hand-rolled string parsing."
+    },
+    {
+      "id": "tsqldba-29",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "DBCC CHECKDB reports consistency errors on a specific table, and a clean full backup from before the corruption started exists. Following the order of operations this chapter recommends, what is the correct first response?",
+      "options": [
+        "Restore the affected database (or the damaged pages) from the clean backup, since that recovers the data with zero loss",
+        "Immediately run DBCC CHECKDB with REPAIR_ALLOW_DATA_LOSS to fix the error right away",
+        "Drop and recreate the affected table from an export of its current, corrupted data",
+        "Ignore the error, since consistency errors are purely cosmetic and don't affect query results",
+        "Run sp_add_alert to generate a severity 21 notification before taking any other action",
+        "Switch the database to SIMPLE recovery model so the error stops appearing in future CHECKDB runs"
+      ],
+      "correctIndex": 0,
+      "explain": "The honest order of operations is to note the error details, then check for a clean, recent backup before touching any repair option. When one exists, restoring from it recovers the data with zero loss — a strictly better outcome than REPAIR_ALLOW_DATA_LOSS, which can delete corrupted rows or pages to reach structural consistency but does not recover what was on them.",
+      "distractorExplain": "Option B jumps straight to REPAIR_ALLOW_DATA_LOSS, which the chapter is explicit is a last resort reached only when no usable backup exists. It fixes the structural error but by deleting the corrupted rows or deallocating the damaged pages — it does not recover the actual data, which a restore from a clean backup does for free when one is available."
+    },
+    {
+      "id": "tsqldba-30",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about DBCC CHECKDB's error output, per Lessons 32-33.",
+      "options": [
+        "WITH NO_INFOMSGS suppresses routine informational output, so a clean overnight run produces no output at all",
+        "Allocation errors mean a page's ownership bookkeeping is wrong; consistency errors mean the data or structure on a page contradicts expectations",
+        "DATA_PURITY only needs to be requested once on a pre-2005 database, after which SQL Server runs it automatically on every subsequent CHECKDB",
+        "A CHECKDB summary line reporting '0 allocation errors and 2 consistency errors' means the run found no real problems",
+        "Consistency errors are always easier to repair without data loss than allocation errors"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "NO_INFOMSGS is exactly what makes a clean unattended run silent. Allocation errors are page-ownership mismatches; consistency errors are actual data/structure problems. DATA_PURITY, once requested on an old database, gets flagged and runs automatically afterward. A summary line showing any non-zero count — like '2 consistency errors' — means real problems were found, not a clean run; and consistency errors on data pages are generally the ones most likely to mean data loss if repair is the only option, not the easier case."
+    },
+    {
+      "id": "tsqldba-31",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Why does percentage-based autogrowth (SQL Server's 10% default) get worse, not stay constant, as a data or log file grows larger over time?",
+      "options": [
+        "The size of each growth event scales with the file's current size, so a 500 GB file's 10% growth event is far larger and more disruptive than a 10 GB file's",
+        "SQL Server increases the percentage itself as a file ages, regardless of configuration",
+        "Percentage-based growth only affects data files, so log files are unaffected no matter how large they get",
+        "Growth events become less frequent as a file grows, which is why they feel worse each time"
+      ],
+      "correctIndex": 0,
+      "explain": "A 10 GB file growing 10% adds 1 GB; the same 10% on a 500 GB file adds 50 GB in one growth event — a large, unpredictable I/O spike, and for a log file, growth events are also serialized, blocking other log activity while they happen. The growth percentage itself doesn't change; it's that the same percentage produces an ever-larger absolute increment as the file grows, which is exactly why a fixed-size growth increment is the documented fix."
+    },
+    {
+      "id": "tsqldba-32",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: ________() takes a database_id and file_id and returns the underlying Windows volume's actual total and free space, queryable directly in T-SQL without leaving SQL Server at all.",
+      "acceptedAnswers": ["sys.dm_os_volume_stats", "dm_os_volume_stats"],
+      "explain": "sys.dm_os_volume_stats is a DMF that, given a database_id and file_id (typically from sys.master_files via CROSS APPLY), returns the real Windows volume capacity and free space — the same number Explorer or dir would show, but joinable against every database file on the instance in one T-SQL query."
+    },
+    {
+      "id": "tsqldba-33",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Why does Query Store's history survive a SQL Server restart, while the plan cache does not?",
+      "options": [
+        "Query Store persists its query text, plans, and runtime stats to disk; the plan cache lives entirely in memory and is cleared on restart",
+        "The plan cache only stores plans for stored procedures, while Query Store stores plans for every type of query",
+        "Query Store is backed up as part of every transaction log backup, while the plan cache is not",
+        "Restarting the service only clears sys.dm_exec_query_stats, not the underlying plan cache itself"
+      ],
+      "correctIndex": 0,
+      "explain": "Query Store writes its data to disk as part of the database itself, which is exactly why it survives a restart and can answer 'did this query's performance change last week.' The plan cache is purely an in-memory structure, evicted on restart, under memory pressure, or on certain schema changes — it only ever reflects what's currently compiled and cached, not history."
+    },
+    {
+      "id": "tsqldba-34",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "A stored procedure runs 100,000 times a day at 5 milliseconds of CPU each. A separate report runs once a day and takes 30 seconds. When triaging 'the server is slow' by sorting sys.dm_exec_query_stats by total_worker_time, why can the first query outrank the second?",
+      "options": [
+        "Total resource consumption multiplies by execution count, so 100,000 executions at 5ms each (500 seconds total) can exceed a single 30-second execution",
+        "sys.dm_exec_query_stats ignores execution_count entirely when computing total_worker_time",
+        "A report that runs once a day is automatically excluded from sys.dm_exec_query_stats",
+        "30 seconds is actually faster than 5 milliseconds once converted to the same unit"
+      ],
+      "correctIndex": 0,
+      "explain": "Total sums cost across every execution a cached plan has seen: 100,000 executions at 5ms each is 500 seconds of aggregate CPU, which dwarfs one 30-second report. First-pass triage sorts by total specifically because it finds the biggest aggregate cost to the server, not just the single worst individual execution — that distinction is exactly why total, not average, is the usual starting column."
+    },
+    {
+      "id": "tsqldba-35",
+      "type": "multi-select",
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the parameter-sniffing symptom pattern, per Lesson 39.",
+      "options": [
+        "The same stored procedure runs fast for days, then suddenly runs slow, with no code change and no data change",
+        "sys.dm_exec_query_stats for the affected plan shows a large gap between min_elapsed_time and max_elapsed_time for the same cached plan",
+        "Running the query manually with the slow parameter value, using a fresh plan, is also slow — proving the query itself is the problem",
+        "OPTION (RECOMPILE) forces a fresh plan sniffed for that call's actual parameter value on every execution",
+        "Parameter Sensitive Plan optimization requires the 2022+ database compatibility level to be eligible"
+      ],
+      "correctIndices": [0, 1, 3, 4],
+      "explain": "The classic signature is a sudden, codeless, dataless slowdown, with a wide min/max elapsed-time gap on the same cached plan. Running the same slow parameter value manually with a fresh plan being fast — not slow — is exactly what proves it's the cached plan, not the query itself, that's wrong for that value. OPTION (RECOMPILE) forces a fresh, freshly-sniffed plan every time, and Parameter Sensitive Plan optimization is specifically a SQL Server 2022+/newer-compatibility-level feature."
+    },
+    {
+      "id": "tsqldba-36",
+      "type": "fill-in",
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: sys.dm_exec_query_stats includes a counter called ________, which increments each time a specific cached plan is recompiled, as opposed to a brand-new plan getting an entirely fresh plan_handle.",
+      "acceptedAnswers": ["plan_generation_num"],
+      "explain": "plan_generation_num tracks recompilation of the same cached plan. A high value for a query expected to be stable is worth investigating — common triggers include frequent statistics updates on a volatile table, schema changes, or an explicit sp_recompile call somewhere in a maintenance script."
+    },
+    {
+      "id": "tsqldba-37",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "A toolkit script's @DryRun flag defaults to 1 (print only) rather than 0 (actually run), per Lesson 41. Why default to the safer value?",
+      "options": [
+        "Defaulting to print-only means the dangerous branch never fires by accident — someone has to deliberately flip it to 0 after reading what the script intends to do",
+        "SQL Server refuses to execute any script where @DryRun defaults to 0",
+        "A default of 1 is required for the script to pass DBCC CHECKDB validation",
+        "@DryRun only matters for read-only SELECT queries, which never need a guard in the first place"
+      ],
+      "correctIndex": 0,
+      "explain": "A script that only reads data with SELECT is always safe to run and never needs a guard. The moment a script writes — UPDATE, DELETE, KILL, disabling a job — @DryRun defaulting to 1 means the destructive branch requires a deliberate, informed choice to flip it to 0, rather than firing the first time the script happens to run."
+    },
+    {
+      "id": "tsqldba-38",
+      "type": "matching",
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "Match each toolkit script (or document) to what it actually combines, per Lessons 42-45.",
+      "left": ["server-health-check.sql", "backup-status-and-failed-jobs.sql", "blocking-and-long-running-queries.sql", "README.md"],
+      "right": [
+        "Blocking chain detection plus a ranking of currently expensive active requests",
+        "Server/instance identity, top wait stats, and per-database file space in one run",
+        "A one-line, plain-language index of what each script does and when to run it",
+        "Backup history from msdb.dbo.backupset plus failed Agent job steps within a lookback window"
+      ],
+      "correctMap": [1, 3, 0, 2],
+      "explain": "server-health-check.sql combines server identity, top waits, and file space into one story. backup-status-and-failed-jobs.sql combines backup history with failed job steps bounded to a lookback window. blocking-and-long-running-queries.sql combines blocking-chain detection with a ranking of expensive active requests. README.md is the plain-language index a DBA actually reads during an incident, rather than re-reading every script's contents."
+    },
+    {
+      "id": "tsqldba-39",
+      "type": "sequencing",
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of adopting and maintaining the DBA toolkit in a new role in the correct order, per Lesson 45.",
+      "items": [
+        "On day one, run the health check script as-is to get a baseline for this specific server",
+        "On day two, start tuning thresholds like @FullBackupThresholdHours and the benign-wait exclusion list to match what's actually normal here",
+        "Commit each script change to source control with a message explaining why it changed, not just what changed",
+        "After any SQL Server upgrade, re-verify each script still works and update its Last verified line, then commit that too"
+      ],
+      "explain": "The toolkit is adopted, not just copied: day one establishes a baseline by running it unmodified, day two begins adjusting its thresholds to this specific environment, every change afterward gets committed with a reasoned message, and after any version upgrade the scripts get re-tested and their Last verified line updated and committed — turning that line from aspirational into an honest, provable record."
+    },
+    {
+      "id": "tsqldba-40",
+      "type": "multi-select",
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the blocking-and-long-running-queries.sql script's Section 2 (finding the head of a blocking chain), per Lesson 44.",
+      "options": [
+        "The head of a chain is a session that appears in blocked_by but never appears in blocked_session",
+        "An empty result set from Section 1 means nothing is currently blocked on the instance",
+        "Killing the session at the end of a five-session chain typically resolves the problem for the front of the chain",
+        "Section 3's expensive-query ranking ignores blocking_session_id entirely, since it's a separate concern from blocking",
+        "A row in Section 3 with a non-zero blocking_session_id is both expensive and currently blocked"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "The head of a chain is identified exactly as the session that blocks others without itself being blocked — present in blocked_by but absent from blocked_session. An empty Section 1 result genuinely means nothing is blocked right now. Section 3 carries blocking_session_id along specifically so a row can be flagged as both expensive and blocked at once — it's not excluded. Killing the session at the end of a chain does nothing for the front of the chain, since everyone there is still waiting on the actual head, not on each other."
+    }
+  ]
+}

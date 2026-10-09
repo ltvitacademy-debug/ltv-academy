@@ -1,0 +1,438 @@
+{
+  "questions": [
+    {
+      "id": "btd-01",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these testing disciplines from Chapter 1 in the order the course actually builds them, from a single call to a non-functional regression check.",
+      "items": [
+        "A happy-path test that calls a function once with valid input and checks the result",
+        "A fuzz test that calls one function repeatedly with hundreds of random inputs",
+        "An invariant test that calls a handler through random sequences of many functions, checking a property after every call",
+        "A fork test that runs the suite against real mainnet state at a pinned block",
+        "A gas snapshot check that fails CI if a test's gas usage increases versus the committed baseline"
+      ],
+      "explain": "Lesson 1 opens with the happy-path test and its blind spots. Lesson 2's fuzz test automates boundary-value coverage for one function at a time. Lesson 3's invariant test goes further, fuzzing sequences of calls across a handler contract. Lesson 4's fork test checks behavior against real chain state instead of a fresh empty deployment. Lesson 5's gas snapshot catches a cost regression that a functionally correct contract can still introduce."
+    },
+    {
+      "id": "btd-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "function testFuzz_Withdraw(uint256 amount) public {\n    vm.assume(amount > 0 && amount <= 1000 ether);\n    vault.deposit{value: amount}();\n    vault.withdraw(amount);\n}",
+      "prompt": "This fuzz test constrains `amount` with vm.assume. Per Lesson 2, what's the practical drawback of vm.assume compared to bound(), and when does Forge actually give up on a fuzz run entirely?",
+      "options": [
+        "vm.assume discards any run that fails the condition instead of counting it, and Forge aborts once too many runs get rejected, past foundry.toml's max_test_rejects",
+        "vm.assume clamps the value into range automatically, so it behaves identically to bound() but with worse gas reporting",
+        "vm.assume only works on uint256 parameters, so address or bytes parameters silently skip the constraint entirely",
+        "vm.assume permanently lowers foundry.toml's runs value for every subsequent test in the same file"
+      ],
+      "correctIndex": 0,
+      "explain": "vm.assume rejects (doesn't count) any run that fails the condition, so a tightly constrained condition can throw away most of the fuzzer's runs. If too many runs get rejected, Forge gives up on the campaign entirely, per foundry.toml's max_test_rejects setting. bound() avoids this by clamping the value into range instead, so every run counts — which is exactly why Lesson 2 calls bound() usually the better choice."
+    },
+    {
+      "id": "btd-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about invariant testing, per Lesson 3.",
+      "options": [
+        "targetContract() tells Forge which contract's functions to generate random call sequences against",
+        "Forge checks the invariant function only once, after the entire random call sequence has finished",
+        "A handler contract wraps the real contract's functions to constrain inputs and track cumulative ghost state",
+        "Ghost variables exist on the real deployed contract so users can query cumulative deposit totals on-chain",
+        "When an invariant fails, Forge reports the exact call sequence that broke it"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "targetContract() points Forge at whichever contract it should fuzz-call. Forge actually checks the invariant after every single call in the sequence, not just once at the end. A handler wraps the real contract, constraining inputs the way bound() did in Lesson 2 and tracking ghost variables — state that doesn't exist on the real contract, kept purely off-chain for the invariant check to compare against. When an invariant fails, Forge prints the exact sequence so the failure is reproducible."
+    },
+    {
+      "id": "btd-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Foundry's ________ cheatcode makes the very next call originate from a specific address, which is how Lesson 1's tests simulate an unauthorized caller without actually controlling their private key.",
+      "acceptedAnswers": ["vm.prank", "prank", "vm.prank()"],
+      "explain": "vm.prank(address) makes the next call originate from a chosen address. Paired with vm.expectRevert, it's how Lesson 1's test_RevertWhen_UnauthorizedCaller proves an attacker's call actually reverts, without the test needing that attacker's real key."
+    },
+    {
+      "id": "btd-05",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 1 term to what it actually is.",
+      "left": ["Ghost variable", "Handler", "Fork cache", ".gas-snapshot"],
+      "right": [
+        "A wrapper contract that constrains fuzzed inputs and tracks cumulative state",
+        "The committed file recording each test's baseline gas usage",
+        "Off-chain tracking state a handler keeps purely for invariant checks",
+        "Local cache of fetched RPC state, keyed by chain and block number"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "A ghost variable is off-chain state a handler keeps purely to support an invariant check. A handler is the wrapper contract that constrains inputs and tracks that state. A fork cache stores fetched RPC state locally, keyed by chain and block, so repeated fork runs don't re-query the RPC provider. .gas-snapshot is the committed file recording each test's baseline gas usage from forge snapshot."
+    },
+    {
+      "id": "btd-06",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "What does forge coverage actually measure when it reports a line, statement, branch, or function as covered?",
+      "options": [
+        "Whether at least one test executed that line, statement, branch, or function during the test run",
+        "Whether at least one test both executed and correctly asserted the expected outcome for that line",
+        "Whether the line is reachable from an unauthorized caller without reverting",
+        "Whether the line has been fuzz-tested with boundary values like zero and type(uint256).max",
+        "Whether the line has ever been included in a committed .gas-snapshot baseline",
+        "Whether Slither flagged the line as a known vulnerability pattern"
+      ],
+      "correctIndex": 0,
+      "explain": "forge coverage answers exactly one question: did any test execute this line, statement, branch, or function. It says nothing about whether the test that executed it asserted the right thing — which is exactly why Lesson 6 calls 100% coverage a floor, not proof of correctness.",
+      "distractorExplain": "Option B describes what coverage feels like it should mean, and is the natural wrong guess — but Lesson 6 is explicit that a test calling withdraw() and asserting nothing at all still counts as 'covering' every line inside it. Coverage measures that code ran, not that it was checked; confirming the assertion was correct is a separate question coverage structurally cannot answer."
+    },
+    {
+      "id": "btd-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "jobs:\n  lint:\n    runs-on: ubuntu-latest\n    steps:\n      - run: forge fmt --check\n      - run: npx solhint 'src/**/*.sol'\n\n  test:\n    needs: lint\n    runs-on: ubuntu-latest\n    steps:\n      - run: forge test -vvv",
+      "prompt": "Given `needs: lint` on the test job, what actually happens if the lint job fails?",
+      "options": [
+        "The test job never starts at all — the expensive test run is skipped entirely once the cheap lint job fails",
+        "The test job still runs, but its results are marked as skipped in the Actions UI afterward",
+        "Both jobs run in parallel regardless of needs:, since GitHub Actions only treats it as documentation",
+        "The lint failure is automatically retried up to three times before the test job is allowed to start"
+      ],
+      "correctIndex": 0,
+      "explain": "needs: lint is a real job dependency, not a comment — the test job doesn't even start until the lint job passes. Lesson 9's point is exactly this: ordering cheap, fast checks ahead of expensive ones and gating the expensive job behind them saves CI minutes by failing fast."
+    },
+    {
+      "id": "btd-08",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Slither and Mythril, per Lesson 10.",
+      "options": [
+        "Slither analyzes Solidity source without executing it, using a control-flow graph and pattern-matching",
+        "Mythril uses symbolic execution to explore actual paths through the bytecode with unconstrained inputs",
+        "Both tools guarantee a contract has no exploitable bugs once it passes clean",
+        "Each tool's findings cite a standardized SWC ID, so a finding is cross-referenceable across tools and audits",
+        "Mythril is faster than Slither, since symbolic execution skips most code paths by default"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Slither pattern-matches against known vulnerability classes without executing code, which is why it's fast enough for every PR. Mythril is slower because symbolic execution actually explores paths through the bytecode. Both tools cite a standardized SWC ID per finding. Neither tool is a guarantee — Lesson 10 is explicit that a logic bug that's 'secure' by every known pattern can still pass both clean."
+    },
+    {
+      "id": "btd-09",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a Slither or Mythril finding cites a standardized ________ ID — the Smart Contract Weakness Classification — so the finding is cross-referenceable across tools and audits instead of being tool-specific jargon.",
+      "acceptedAnswers": ["SWC", "SWC ID"],
+      "explain": "SWC ID (Smart Contract Weakness Classification) is the standardized registry both Slither and Mythril findings reference, per Lesson 10."
+    },
+    {
+      "id": "btd-10",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Match each Chapter 2 term or tool to what it actually does.",
+      "left": ["forge fmt --check", "Solhint", "crytic/slither-action", "Branch protection rule"],
+      "right": [
+        "A repo setting that blocks the merge button until required checks pass",
+        "The standard Solidity linter, with separate security and style rule categories",
+        "The official GitHub Actions integration for running Slither in CI",
+        "Fails the build on unformatted Solidity code without rewriting it"
+      ],
+      "correctMap": [3, 1, 2, 0],
+      "explain": "forge fmt --check fails CI on unformatted code without silently rewriting it. Solhint is the standard Solidity linter, split into security and style rule categories. crytic/slither-action is the official GitHub Actions integration for Slither, with a fail-on severity threshold. A branch protection rule is what turns a passing status check into an actual, enforced merge gate."
+    },
+    {
+      "id": "btd-11",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of Lesson 8's real GitHub Actions CI workflow in the order they run.",
+      "items": [
+        "actions/checkout@v6 pulls the repo onto the runner, including submodules",
+        "foundry-rs/foundry-toolchain@v1 installs Foundry on the runner",
+        "forge fmt --check fails the build on unformatted code",
+        "forge build --sizes compiles and reports bytecode size against the 24KB limit",
+        "forge test -vvv runs the full test suite"
+      ],
+      "explain": "Lesson 8's workflow runs in exactly this order: checkout the repo (with submodules, since Foundry dependencies are usually git submodules), install Foundry, check formatting, build and check contract size, then run the test suite."
+    },
+    {
+      "id": "btd-12",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Per Lesson 12, which testnet is Ethereum's current recommended testnet for application and smart contract testing — the one Chapter 1's fork testing and Chapter 3's deployment scripts target by default?",
+      "options": ["Sepolia", "Goerli", "Hoodi", "Holesky", "Rinkeby", "Kovan"],
+      "correctIndex": 0,
+      "explain": "Sepolia is Ethereum's current recommended testnet for application and smart contract testing, per Lesson 12. Goerli was deprecated in 2024. Rinkeby and Kovan are older, long-deprecated Ethereum testnets not used for this purpose today.",
+      "distractorExplain": "Hoodi is the closest wrong answer because it's also a real, current testnet discussed in the same lesson — but it replaced Holesky specifically for staking, validator, and protocol-level testing, not for application or smart contract testing, which is what Sepolia is for."
+    },
+    {
+      "id": "btd-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "forge script script/Deploy.s.sol --broadcast --chain 11155111 --rpc-url mainnet",
+      "prompt": "This command sets --chain to Sepolia's chain ID (11155111) but --rpc-url to the 'mainnet' alias. Per Lesson 13, what actually happens?",
+      "options": [
+        "The transaction broadcasts to whatever network the 'mainnet' alias points to — --chain only sets block.chainid inside the simulation, it doesn't select the broadcast destination",
+        "Forge refuses to run at all, since --chain and --rpc-url must always reference the same network",
+        "The transaction broadcasts to Sepolia, since --chain always overrides --rpc-url when the two conflict",
+        "Forge silently ignores the --chain flag entirely whenever --rpc-url is also provided"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 13 flags this exact gotcha: --chain only sets the EVM's block.chainid value inside the simulation. --rpc-url is what actually controls which network the transaction broadcasts to. Mixing the two up — as this command does — is how a script ends up aimed at the wrong network despite --chain looking correct."
+    },
+    {
+      "id": "btd-14",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about proxy patterns, per Lesson 15.",
+      "options": [
+        "All three major proxy patterns (Transparent, UUPS, Beacon) use delegatecall under the hood",
+        "In UUPS, the upgrade authorization logic lives in the implementation contract itself, via _authorizeUpgrade",
+        "A Beacon proxy upgrade only affects the single proxy that triggered it, leaving other proxies on the same beacon unchanged",
+        "Upgradeable contracts typically use an initialize() function with an initializer modifier instead of a constructor",
+        "In a Transparent proxy, the implementation contract itself checks whether the caller is the admin"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "All three patterns share delegatecall underneath. UUPS puts the upgrade-authorization check in the implementation via _authorizeUpgrade. Upgradeable contracts use initialize() with an initializer modifier, since a constructor's state changes never apply to the proxy's storage. A Beacon upgrade affects every proxy pointed at that beacon simultaneously, not just one. In a Transparent proxy, the proxy itself — not the implementation — checks whether the caller is the admin."
+    },
+    {
+      "id": "btd-15",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: ________ derives a contract's deployment address from the deployer, a salt, and the init code instead of the deployer's transaction nonce, so the same deployer, salt, and bytecode produce the same address on every chain.",
+      "acceptedAnswers": ["CREATE2", "CREATE 2"],
+      "explain": "CREATE2 is the opcode Lesson 17 covers for deterministic, nonce-independent addresses — the fix for the same contract landing at different addresses on different chains under plain CREATE."
+    },
+    {
+      "id": "btd-16",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 3 deployment term to what it actually is.",
+      "left": ["Transparent Proxy", "UUPS", "Beacon Proxy", "Safe"],
+      "right": [
+        "Upgrade logic lives in the implementation via _authorizeUpgrade, with cheaper proxy calls",
+        "A smart-contract account requiring M-of-N owner signatures before a transaction executes",
+        "The proxy itself checks whether the caller is the admin before delegating the call",
+        "Many proxies point at one shared contract — upgrading it upgrades every proxy at once"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "Transparent proxies check admin status in the proxy itself. UUPS moves that check into the implementation via _authorizeUpgrade. A Beacon proxy upgrades every proxy pointed at the shared beacon simultaneously. Safe is the M-of-N multisig smart-contract account from Lesson 16."
+    },
+    {
+      "id": "btd-17",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of a Safe-controlled deployment transaction, per Lesson 16, in the correct order.",
+      "items": [
+        "A deploy or upgrade transaction is proposed to the Safe, often by a CI job or a single team member",
+        "The transaction sits in the Safe's queue, showing how many confirmations it still needs",
+        "Each remaining owner reviews the transaction and clicks Confirm to add their signature",
+        "Once the M-of-N threshold is met, the transaction actually executes on-chain"
+      ],
+      "explain": "Lesson 16's propose-and-confirm flow runs in exactly this order: propose, queue with a visible confirmation count, owners confirm one at a time, and only once the threshold is met does the transaction execute — nothing runs early no matter how many signatures are almost there."
+    },
+    {
+      "id": "btd-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Per Lesson 20, why is a leaked deployer private key treated as a more severe incident than a leaked Alchemy or Infura RPC API key?",
+      "options": [
+        "A leaked deployer key lets an attacker deploy new contracts or call upgrade functions as the team, while a leaked RPC key typically only causes rate-limit abuse or an unexpected bill",
+        "RPC keys are always stored unencrypted on disk, while deployer keys are always stored in a hardware wallet by default",
+        "A leaked RPC key automatically grants multisig signing rights on the project's Safe account",
+        "There's no real difference — both should be rotated on the exact same schedule and reacted to identically"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 20 explicitly ranks secret severity by what the secret can do: an RPC/API key leak means rate-limit abuse or an unexpected bill — annoying, not catastrophic. A deployer private key leak means an attacker can deploy contracts or call upgrade functions as the team, which is exactly why Lesson 16's multisig discipline exists for that key specifically."
+    },
+    {
+      "id": "btd-19",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the Dockerfile discipline described in Lesson 19.",
+      "options": [
+        "Pinning a base image tag like node:20-slim instead of node:latest makes the build reproducible",
+        "npm ci installs exactly what the lockfile specifies, instead of potentially drifting the way npm install can",
+        "Running the container's process as root is recommended so it can install dependencies at runtime",
+        "Scanning an image for known vulnerabilities before shipping is the container-world equivalent of running Slither in CI",
+        "A pinned base image guarantees zero known CVEs, so scanning it afterward is redundant"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Pinning the base image tag, using npm ci, and scanning the image before it ships are all real habits Lesson 19 recommends — the last one explicitly compared to running Slither in CI. The Dockerfile example runs as a non-root USER node, not root. A pinned image still isn't automatically safe — it can ship with known CVEs in its own dependencies, which is exactly why scanning still matters."
+    },
+    {
+      "id": "btd-20",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a(n) ________ node retains the entire historical chain state back to genesis, which Lesson 21 says is required for fork testing at a specific historical block or for an indexer backfilling events from before it started running.",
+      "acceptedAnswers": ["archive", "archive node"],
+      "explain": "An archive node holds full historical state back to genesis, unlike a full node, which only holds recent state. Lesson 21 ties this directly back to Chapter 1's fork testing needing that historical state to exist."
+    },
+    {
+      "id": "btd-21",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Match each Chapter 4 infrastructure term to what it actually is.",
+      "left": ["Full node", "Archive node", "Fallback provider", ".env.example"],
+      "right": [
+        "Holds recent chain state only — cheaper and faster, enough for most reads and sending transactions",
+        "Holds the entire historical chain state back to genesis",
+        "A client configuration that automatically switches to a backup RPC provider if the primary is slow or down",
+        "A committed file listing expected environment variable names with no real values attached"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "A full node holds recent state and is cheaper to run; an archive node holds full historical state, required for fork testing and backfilling. A fallback provider configuration automatically switches to a backup RPC provider on an outage. .env.example documents expected variable names safely, without real secret values."
+    },
+    {
+      "id": "btd-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Per Lesson 22, a lending pool's utilization just climbed to 81.8%. What does that number indicate, and which of the lesson's four numbers should be checked first for a lending protocol specifically?",
+      "options": [
+        "Utilization is the share of supplied liquidity that's been borrowed out; at 81.8%, withdrawals are increasingly competing for a shrinking pool, and utilization is the number to check first for a lending protocol",
+        "Utilization measures total value locked against the protocol's all-time-high TVL, and TVL trend should be checked first for a lending protocol",
+        "Utilization measures how far a pool's price has deviated from the broader market, and price deviation should be checked first",
+        "Utilization is irrelevant to lending protocols specifically and only matters for monitoring DEX pools"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 22 uses exactly this 81.8% example: utilization is the share of a lending pool's supplied liquidity that's currently borrowed out, and it's the single number the lesson says to watch first for a lending protocol, since high utilization strains withdrawals and signals liquidity stress."
+    },
+    {
+      "id": "btd-23",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about calibrating an alert, per Lesson 23.",
+      "options": [
+        "An alert that fires on routine activity trains the team to start ignoring it within a week",
+        "An alert scoped to one exact transaction or address is well-calibrated because it never produces false positives",
+        "A calibrated alert ties a named condition directly to a monitored number, like utilization crossing 90%",
+        "Alert destinations should route by severity — a routine check can land in email, while something urgent should reach PagerDuty or an on-call rotation",
+        "A muted alert channel is better than having no alert at all, since partial information still beats none"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "Too-broad alerts train teams to ignore them within a week. Too-narrow alerts (scoped to one exact transaction or address) never fire again and catch nothing new — that's a failure mode, not good calibration. A calibrated alert ties to a real monitored number, like utilization crossing 90%. Destinations should route by severity. Lesson 23 is explicit that a muted alert channel is worse than no alert at all, not better."
+    },
+    {
+      "id": "btd-24",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a ________ mechanism — a circuit breaker modifier that blocks new deposits, withdrawals, or specific functions — buys a team time to investigate during an incident, but doesn't undo funds that already moved before it was triggered.",
+      "acceptedAnswers": ["pause", "pause mechanism", "circuit breaker"],
+      "explain": "Lesson 24 is explicit that a pause mechanism buys time, not a fix: it stops new activity, but funds already moved before the pause stay moved."
+    },
+    {
+      "id": "btd-25",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Match each Chapter 5 term to what it actually is.",
+      "left": ["TVL", "Alert fatigue", "Circuit breaker / pause mechanism", "Blameless postmortem"],
+      "right": [
+        "The tendency for a team to start ignoring alerts once too many fire on routine activity",
+        "A postmortem process focused on systemic causes rather than individual fault",
+        "Total Value Locked — the aggregate value held in a protocol's contracts",
+        "A contract modifier that blocks specified functions while a team investigates an incident"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "TVL is total value locked. Alert fatigue is a team tuning out alerts after too many routine firings. A circuit breaker/pause mechanism blocks specified functions during an investigation. A blameless postmortem focuses on systemic causes, not individual fault — while still assigning owned, dated remediation items."
+    },
+    {
+      "id": "btd-26",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of Lesson 29's 'if something does go wrong' incident sequence in the correct order.",
+      "items": [
+        "Confirm the alert is a real incident, not a false positive",
+        "Pause the affected function via the multisig",
+        "Acknowledge the incident publicly within the hour",
+        "Investigate using the alert history",
+        "Publish a postmortem before reopening"
+      ],
+      "explain": "Lesson 29's closing runbook lists this exact sequence: confirm it's real, pause via the multisig, acknowledge publicly within the hour, investigate using the alert history built up in Lesson 24, and publish a postmortem before reopening — every step pulled directly from a lesson the course already covered."
+    },
+    {
+      "id": "btd-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Per Lesson 27, why does relying on only a security audit, or only a bug bounty, leave a coverage gap?",
+      "options": [
+        "An audit is a fixed-duration engagement that ends with a report and provides no coverage after launch, while a bug bounty is open-ended but depends on someone actually finding the bug first — neither alone covers both a deep pre-launch review and ongoing post-launch scrutiny",
+        "An audit and a bug bounty check exactly the same vulnerabilities, so running both is purely redundant and wastes budget",
+        "A bug bounty program replaces the need for any human-reviewed audit once it's active",
+        "An audit continues monitoring the code indefinitely after the engagement ends, which makes a bounty unnecessary"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 27 is explicit: an audit is a fixed engagement that delivers a report and then is over — no coverage after that window closes. A bounty is open-ended but only finds what a researcher actually stumbles onto. Relying on just one leaves either no post-launch coverage or no guaranteed deep pre-launch review."
+    },
+    {
+      "id": "btd-28",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about phased rollouts, per Lesson 28.",
+      "options": [
+        "A deposit cap is enforced directly in the contract itself, not as an off-chain policy or dashboard setting",
+        "Raising a deposit cap should be triggered by a calendar date arriving, not by evidence of clean usage",
+        "Allowlisting early users opens the protocol to a smaller, known set of wallets before general public access",
+        "Feature flags let a team ship a narrower surface first, like enabling deposits before withdrawals",
+        "Raising a deposit cap should go through the same multisig approval path as other sensitive actions"
+      ],
+      "correctIndices": [0, 2, 3, 4],
+      "explain": "Lesson 28's deposit cap example is enforced with a require() inside the contract, not a dashboard toggle. Allowlisting and feature flags are both named phasing techniques. Raising the cap should go through the multisig, and should be evidence-based — real usage running cleanly — not just a calendar date arriving, which is the opposite of what the lesson recommends."
+    },
+    {
+      "id": "btd-29",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Lesson 27 showed competitive, time-boxed audit contests on platforms like Code4rena, and an open-ended bug bounty market on platforms like ________, which ranks active programs by vault TVL and maximum payout.",
+      "acceptedAnswers": ["Immunefi"],
+      "explain": "Immunefi is the bug bounty platform Lesson 27 shows, ranking active programs by vault size and maximum payout — distinct from Code4rena's time-boxed audit contests."
+    },
+    {
+      "id": "btd-30",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of Lesson 29's launch-day runbook in the correct order.",
+      "items": [
+        "Re-run the pre-launch checklist live, that morning, instead of trusting memory from last week",
+        "Deploy with the cap from Lesson 28 set deliberately low",
+        "Verify the deployed bytecode matches the published source on the block explorer",
+        "Announce the launch publicly only after verification is confirmed",
+        "Watch whether the calibrated alerts fire, or don't, against real activity"
+      ],
+      "explain": "Lesson 29 sequences launch day as: re-confirm the checklist live that morning, deploy with a deliberately low cap, verify on the block explorer before telling anyone, announce only after that verification is confirmed, then watch the alerts against real activity in the first hours — resisting the urge to raise the cap or declare victory early."
+    }
+  ]
+}

@@ -1,0 +1,452 @@
+{
+  "questions": [
+    {
+      "id": "bab-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "What does an RPC endpoint URL from a provider like Infura or Alchemy actually represent, per Lesson 2?",
+      "options": [
+        "A single node, run by that provider, that answers your JSON-RPC requests on your behalf",
+        "A live directory of every public node for a chain, automatically load-balanced for you",
+        "A smart contract address deployed specifically to answer your account's queries",
+        "A cached snapshot of chain data that only refreshes once per day",
+        "A direct peer-to-peer link straight into the network's mempool with no intermediary",
+        "A GraphQL endpoint that answers queries instead of raw JSON-RPC calls"
+      ],
+      "correctIndex": 0,
+      "explain": "Ethereum has no single 'the blockchain' server to call — it's thousands of independently run nodes, each answering JSON-RPC requests. A provider like Infura or Alchemy runs nodes for you and hands you an RPC endpoint URL, with your API key baked into the path, that points at one of theirs, so you don't have to run your own.",
+      "distractorExplain": "Option B describes Chainlist.org, the community-maintained directory of public RPC endpoints used to compare latency and block height across many different providers and nodes — it is not what a paid provider's own endpoint URL is. A provider's endpoint is a specific node (or pool) it operates for you, not an aggregator of everyone else's nodes."
+    },
+    {
+      "id": "bab-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "const nonce = await provider.getTransactionCount(address, \"latest\");\n// fires two transactions back-to-back, each re-querying \"latest\" first",
+      "prompt": "A backend fires two transactions back-to-back for the same account, re-querying getTransactionCount(address, \"latest\") before each send instead of tracking its own nonce. What actually goes wrong?",
+      "options": [
+        "Both calls can return the same nonce, because \"latest\" only counts mined transactions and ignores the first transaction still sitting in the mempool — one send then fails with a nonce collision",
+        "Nothing — \"latest\" always includes whatever is still pending in the mempool",
+        "The second transaction automatically waits for the first to confirm before it is even built",
+        "getTransactionCount throws immediately if it is called twice within the same second"
+      ],
+      "correctIndex": 0,
+      "explain": "latest only counts mined transactions; pending also counts what's sitting in the mempool. Firing two sends back-to-back and re-querying latest each time means both calls can see the same count, since the first transaction isn't mined yet — so both try to use the same nonce and one fails outright. A backend sending more than one transaction per account should track and increment its own nonce locally instead of re-querying for every send."
+    },
+    {
+      "id": "bab-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about reading versus writing chain data, per Lessons 3 and 4.",
+      "options": [
+        "Calling a view/pure function is a free eth_call — no gas, no signature, no state change",
+        "Sending a real transaction requires something that can sign — a Wallet (ethers) or an account (viem) built from a private key",
+        "tx.wait() (or waitForTransactionReceipt) resolving successfully is guaranteed the instant sendTransaction() resolves, with nothing left to wait for",
+        "viem's simulateContract performs a dry run that can catch a revert before you actually spend gas",
+        "Reading a contract's view function still needs a private key, the same as sending a transaction does"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "A view/pure function call costs no gas and needs no signature. Sending a transaction is different — it needs a signer holding a private key. sendTransaction() resolving only means the transaction was submitted, not mined; tx.wait() is what actually blocks until it's confirmed. viem's simulateContract dry-runs a contract call first specifically to catch a revert before gas is spent. Reading data only ever needs a provider/public client, never a private key."
+    },
+    {
+      "id": "bab-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a company like Infura or Alchemy that runs nodes for you and resells RPC access over an API key is called a node ________, per Lesson 2.",
+      "acceptedAnswers": ["provider", "node provider"],
+      "explain": "Running a full node yourself is real infrastructure — hundreds of gigabytes, hours of sync time, constant upkeep. A node provider runs that infrastructure and sells RPC access over an API key instead, which is what Infura and Alchemy both are."
+    },
+    {
+      "id": "bab-05",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each term from Lesson 2 to what it actually is.",
+      "left": ["Node", "JSON-RPC", "RPC endpoint", "Node provider"],
+      "right": [
+        "The request/response protocol every node speaks, like eth_getBalance",
+        "A company such as Infura or Alchemy that runs nodes for you and resells access",
+        "A single machine holding a full copy of chain state, able to answer requests",
+        "The URL, often with an embedded API key, your code sends requests to"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "A node is a machine holding full chain state. JSON-RPC is the protocol every node speaks. An RPC endpoint is the URL your code actually calls. A node provider is a company, like Infura or Alchemy, that runs nodes for you and sells access to them."
+    },
+    {
+      "id": "bab-06",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of sending a real transaction and confirming it, per Lesson 4, in the correct order.",
+      "items": [
+        "Build a Wallet or account object from a private key so something can sign",
+        "Call sendTransaction (or writeContract) to submit the transaction",
+        "Wait for tx.wait() (or waitForTransactionReceipt) to resolve",
+        "Read the receipt's status, gas used, and nonce to confirm what actually happened"
+      ],
+      "explain": "Writing needs a signer first, built from a private key — that's the one new ingredient reading didn't need. Only after that can the transaction actually be submitted. Submitting it does not mean it succeeded, so the next step is waiting for the receipt, and only once that resolves can you read the real outcome: status, gas used, and the nonce it consumed."
+    },
+    {
+      "id": "bab-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "A developer sets a transaction's gas limit too low for the computation a contract call actually needs. What happens, and what does it cost?",
+      "options": [
+        "The transaction reverts with an out-of-gas error partway through, and the sender still pays for the gas consumed before it failed",
+        "The transaction simply waits unconfirmed until the developer raises the limit",
+        "The provider automatically raises the gas limit to whatever the call actually needs",
+        "The transaction is rejected before being submitted, so nothing is ever paid"
+      ],
+      "correctIndex": 0,
+      "explain": "Setting the gas limit too low causes an out-of-gas revert partway through execution — and the gas consumed up to that failure point is still paid for. That's different from setting the gas price too low, which doesn't fail outright; it just sits unconfirmed because no miner has a reason to include it over transactions offering more."
+    },
+    {
+      "id": "bab-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "const httpProvider = new ethers.JsonRpcProvider(HTTPS_URL);\ncontract.on(\"Transfer\", handler);",
+      "prompt": "This contract.on() call is attached to a provider built from a plain HTTPS URL, not a WebSocketProvider. What mechanism is actually detecting new events underneath?",
+      "options": [
+        "Polling — the code repeatedly asks the provider \"anything new since block N?\" on a timer, because the transport is HTTP, not a WebSocket",
+        "A WebSocket subscription, because .on() always pushes new events regardless of which provider type is used",
+        "A one-time queryFilter call that runs once and never checks again",
+        "The provider silently upgrades the connection to wss:// the first time an event is emitted"
+      ],
+      "correctIndex": 0,
+      "explain": "Which mode you get is decided entirely by the transport: an http()/JsonRpcProvider polls on an interval (eth_getLogs under the hood), while a webSocket()/WebSocketProvider gets logs pushed to it via eth_subscribe. Both end up calling the same handler — the difference is purely in how the new event is discovered."
+    },
+    {
+      "id": "bab-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "An event listener triggers an irreversible payout the instant it sees a Transfer event with only 1 confirmation. Six blocks later, a reorg discards the block that event was in. What is the real risk this illustrates?",
+      "options": [
+        "The payout already happened based on an event that, as far as the winning chain is concerned, never occurred — \"confirmed\" at 1 block was a probability, not a guarantee",
+        "Nothing — reorgs only affect pending transactions, never events a listener already reacted to",
+        "The chain automatically reverses the payout transaction when a reorg occurs",
+        "This can only happen on testnets, never on Ethereum mainnet"
+      ],
+      "correctIndex": 0,
+      "explain": "A reorg replaces previously accepted blocks with a different set — any event that existed only in the discarded blocks never happened, as far as the winning chain is concerned. Acting on something irreversible, like a payout, at only 1 confirmation accepts real reorg risk; the standard fix is waiting for more confirmations (5-12 is a common range) before treating an event as final."
+    },
+    {
+      "id": "bab-10",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about chain reorgs, per Lesson 9.",
+      "options": [
+        "A reorg is the chain replacing a set of previously-accepted blocks with a different set",
+        "On Ethereum mainnet post-Merge, reorgs are common and typically many blocks deep",
+        "A higher confirmations count is safer but makes a listener slower to treat something as final",
+        "Tracking the block hash at each height you've already processed is a direct way to detect a reorg happened",
+        "A reorg can only ever affect transactions that haven't been sent yet, never events a listener already processed"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "A reorg replaces previously-accepted blocks with a different set. Post-Merge, reorgs are rare and usually just one block deep, not common or many blocks deep. A higher confirmations count is safer but slower. Comparing a block's hash at a height you've already seen against what you see next is the direct way to detect a reorg — and a reorg can absolutely erase an event a listener already fired on, not just affect future transactions."
+    },
+    {
+      "id": "bab-11",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: retrying a rate-limited (429) request with a growing delay — 250ms, then 500ms, then 1s, and so on — instead of hammering it instantly, is called exponential ________, per Lesson 6.",
+      "acceptedAnswers": ["backoff", "exponential backoff"],
+      "explain": "Exponential backoff waits a little after the first failure, then progressively longer after each subsequent failure, instead of retrying instantly in a loop — which would just make a rate-limited provider's problem worse."
+    },
+    {
+      "id": "bab-12",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put these four jobs of a real, production event listener service, per Lesson 10, in the correct order.",
+      "items": [
+        "Connect through a resilient, failover-capable provider",
+        "Catch up by backfilling events missed since the service last ran",
+        "Listen and react to new events as they happen",
+        "Confirm — wait until an event is N blocks deep before treating it as final"
+      ],
+      "explain": "A production listener connects through a resilient provider first, then backfills whatever it missed while it was offline, then starts reacting to new events live, and only treats any given event as final once it has cleared enough confirmations — skipping catch-up silently drops missed events, and skipping confirm means acting on events a reorg might still erase."
+    },
+    {
+      "id": "bab-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Why can't an RPC node directly answer a question like \"show me every trade this wallet has ever made on this exchange\"?",
+      "options": [
+        "Because that's an aggregate, historical question spanning many events, and RPC nodes are built for single point lookups like balanceOf, not aggregate queries",
+        "Because eth_getLogs calls are rate-limited by providers, which makes answering it technically impossible",
+        "Because nodes only ever store the most recent 256 blocks of chain history",
+        "Because wallets never emit Transfer events in the first place"
+      ],
+      "correctIndex": 0,
+      "explain": "A point lookup like balanceOf is one call, one answer, bounded work. 'Every trade this wallet ever made' is an aggregate, historical question with no single storage slot to read — nodes were never built to answer that quickly, no matter how fast the provider is. Rate limits make brute-forcing it worse, but they aren't the root reason it doesn't scale; the root reason is the question's shape."
+    },
+    {
+      "id": "bab-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Lesson 13's schema marks Transfer as @entity(immutable: true) but leaves Account as a plain, mutable @entity. What would actually break if those two flags were swapped?",
+      "options": [
+        "Account could no longer be updated as new transfers arrive, defeating its load-mutate-save pattern, while Transfer would needlessly carry mutable-entity overhead for data that never changes after it's indexed",
+        "Nothing — immutable is a purely cosmetic flag with no effect on indexing",
+        "The subgraph would fail to compile entirely regardless of which entity gets which flag",
+        "Transfer would automatically gain a @derivedFrom relationship it didn't have before"
+      ],
+      "correctIndex": 0,
+      "explain": "Transfer is immutable because a historical event never changes once indexed — The Graph stores it more efficiently knowing that. Account is mutable because every new Transfer updates its running balance and transferCount via load-mutate-save, which only a mutable entity supports. Swapping the flags breaks exactly those two properties."
+    },
+    {
+      "id": "bab-15",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about subgraph mapping handlers, per Lesson 14.",
+      "options": [
+        "A mapping handler must be deterministic, because every indexer syncing the subgraph has to compute the same entities from the same event",
+        "mapping.ts looks like TypeScript but actually compiles to WebAssembly through AssemblyScript",
+        "Account.load() returning null on the very first transfer to an address is an error that needs to be caught",
+        "A mapping handler is allowed to call fetch() to pull extra context from a third-party REST API",
+        "event.params holds the fields the contract actually emitted, typed exactly as declared in the event signature"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "Determinism is required so every indexer agrees on the result. mapping.ts compiles to WebAssembly via AssemblyScript. Account.load() returning null on a first touch is the normal case, not an error — every handler touching a mutable entity needs that load-or-create branch. A handler can never call fetch() or anything else non-deterministic. event.params gives the typed fields the contract actually emitted."
+    },
+    {
+      "id": "bab-16",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the GraphQL directive that defines a virtual, computed relationship field — instead of one stored directly on the entity — is called ________, per Lesson 13.",
+      "acceptedAnswers": ["@derivedFrom", "derivedFrom"],
+      "explain": "@derivedFrom tells The Graph to compute a field, like an Account's sentTransfers, by finding every entity on the other side of the relationship whose field points back at it — so you never maintain that list by hand."
+    },
+    {
+      "id": "bab-17",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Match each part of a subgraph to what it actually is, per Lessons 12 and 14.",
+      "left": ["subgraph.yaml", "schema.graphql", "mapping.ts", "Subgraph Studio"],
+      "right": [
+        "The code that turns a raw contract event into an entity",
+        "The manifest: which contract, which events, which network, which start block",
+        "The dashboard for building, testing, and deploying a subgraph before it's public",
+        "The entities you want queryable, defined with the @entity directive"
+      ],
+      "correctMap": [1, 3, 0, 2],
+      "explain": "subgraph.yaml is the manifest naming the contract, events, network, and start block. schema.graphql declares the queryable entities. mapping.ts is the AssemblyScript code turning raw events into those entities. Subgraph Studio is the dashboard for building and testing a subgraph before it's published."
+    },
+    {
+      "id": "bab-18",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of taking a subgraph from nothing to a live, publicly queryable endpoint, per Lessons 12 and 15, in the correct order.",
+      "items": [
+        "Run graph init to scaffold the manifest, schema, and mapping files",
+        "Run graph deploy to push the subgraph to Subgraph Studio",
+        "Click Publish to make the subgraph live on The Graph Network",
+        "Query the subgraph's gateway.thegraph.com endpoint with a GraphQL request"
+      ],
+      "explain": "graph init scaffolds the three subgraph files from your contract's ABI. graph deploy pushes it to Studio — free, rate-limited, visible only to you. Publishing is the deliberate, on-chain step that makes it indexed by the network and publicly queryable. Only after that does the real gateway query endpoint actually work."
+    },
+    {
+      "id": "bab-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A team's indexing logic needs to call a third-party KYC API mid-handler, before deciding how to update an entity. Why doesn't this fit inside a subgraph's mapping handler?",
+      "options": [
+        "Mapping handlers must be pure and deterministic, and a third-party API call is exactly the kind of non-deterministic input AssemblyScript mapping code is forbidden from using",
+        "Subgraphs can only index ERC-20 token contracts, never arbitrary business logic",
+        "Subgraph Studio bills separately for every outbound API call a handler makes",
+        "GraphQL's schema language has no way to express conditional field values"
+      ],
+      "correctIndex": 0,
+      "explain": "Every indexer syncing a subgraph must compute the exact same entities from the exact same events — that's only possible if handlers are pure and deterministic, with no third-party API calls, randomness, or system clock reads. That's precisely the kind of business logic Lesson 16 names as a real reason to reach for a custom indexer instead."
+    },
+    {
+      "id": "bab-20",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "What specifically is \"the oracle problem,\" per Lesson 17?",
+      "options": [
+        "The gap between smart contracts needing real-world data and the fact that trusting one source to deliver it recreates exactly the centralization blockchains exist to avoid",
+        "The high gas cost of storing price data permanently on-chain",
+        "The fact that Chainlink's own token has volatile pricing",
+        "The total impossibility of ever getting any external data onto a blockchain",
+        "A specific bug in Solidity's compiler that silently blocks any attempt at an HTTP call",
+        "The lack of a standard for naming oracle smart contracts across different chains"
+      ],
+      "correctIndex": 0,
+      "explain": "A smart contract can't make an HTTP call — consensus requires determinism, and an API call isn't deterministic. Something has to get real-world data on-chain, but a naive fix, one trusted server pushing a value, just recreates a single point of trust, functionally identical to the centralization smart contracts are meant to avoid. That gap is the oracle problem Chainlink exists to solve.",
+      "distractorExplain": "Option B (gas cost) describes a real, separate on-chain cost concern, but it isn't what 'the oracle problem' refers to — a naive, cheap single-server oracle has no gas cost issue at all, yet still recreates the exact single-point-of-trust problem Lesson 17 describes. The oracle problem is about trust and centralization, not storage cost."
+    },
+    {
+      "id": "bab-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "const [, answer] = await feed.latestRoundData();\nconst decimals = await feed.decimals(); // returns 8\n// answer = 305000000000",
+      "prompt": "Given this feed's decimals() returns 8 and latestRoundData() returns the answer shown above, what real-world price does this represent, and why must decimals() actually be called rather than just assuming 8 every time?",
+      "options": [
+        "$3,050.00 — the raw integer must be divided by 10**decimals, and not every Chainlink feed uses the same number of decimals",
+        "$305,000,000,000, because Chainlink feeds already return a human-readable price with no scaling needed",
+        "$30.50, because the answer is always divided by a fixed 10,000",
+        "$3,050.00, but calling decimals() is only a style preference since every feed uses 8 decimals"
+      ],
+      "correctIndex": 0,
+      "explain": "305000000000 divided by 10**8 is 3050.00. Most USD feeds happen to use 8 decimals, but not all of them do — hardcoding 8 is exactly the kind of assumption that silently breaks the moment this code gets pointed at a different feed, which is why every consumer should call decimals() rather than assume it."
+    },
+    {
+      "id": "bab-22",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about Chainlink Automation, Functions, and CRE, per Lesson 19.",
+      "options": [
+        "Chainlink Automation and Chainlink Functions were both deprecated as of mid-2026, with Chainlink pointing new builders toward the Chainlink Runtime Environment (CRE) instead",
+        "checkUpkeep executes on-chain and costs real gas every single time Chainlink's network checks it",
+        "performUpkeep re-checks its own condition on-chain instead of blindly trusting the off-chain checkUpkeep simulation",
+        "Chainlink Functions let a contract have JavaScript source code executed by a decentralized oracle network, with results aggregated across independent nodes",
+        "CRE replaces the independent-node, aggregated model with a single trusted server for speed"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "Both Automation and Functions carry real mid-2026 deprecation notices in favor of CRE. checkUpkeep is a view function simulated off-chain at no gas cost — only performUpkeep executes on-chain, and it re-checks its own condition since chain state can shift between the check and execution. Functions runs source code across a decentralized oracle network and aggregates the results, the same independent-nodes-plus-aggregation shape as price feeds. CRE builds on that same foundation; it does not replace it with a single trusted server."
+    },
+    {
+      "id": "bab-23",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in a price-triggered polling service, tracking whether the price was already above a threshold on the previous check and only acting when that boolean actually flips is called ________ detection, per Lesson 20.",
+      "acceptedAnswers": ["crossing", "crossing detection"],
+      "explain": "A naive loop fires on every single poll the price happens to be above the threshold. Tracking the previous state and only acting the moment it flips — crossing detection — is what stops the service from re-triggering every minute while the price just sits above the line."
+    },
+    {
+      "id": "bab-24",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of compiling, deploying, and calling the AggregatorV3Interface consumer contract in Remix, per Lesson 18, in the correct order.",
+      "items": [
+        "Select the Solidity compiler version matching the contract's pragma",
+        "Compile the contract",
+        "Connect a wallet through Remix's Injected Provider environment",
+        "Deploy the compiled contract, confirming the gas fee in the connected wallet",
+        "Call the deployed function to read the live price from the feed"
+      ],
+      "explain": "The compiler version has to match the pragma before compiling will succeed. Deploying needs a connected, signing wallet, which Injected Provider hands off to — that's the step before Deploy actually sends a real, gas-paying transaction. Only once that's mined can the deployed contract's function actually be called to read a live value."
+    },
+    {
+      "id": "bab-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A malicious site copies the exact text of a real SIWE message a user signed for service.org, and gets the user's wallet to sign that same text again on the malicious site. What in EIP-4361 is specifically supposed to stop the resulting signature from working against service.org's real backend?",
+      "options": [
+        "A compliant wallet is required to check that the message's domain field matches the site actually requesting the signature, so a mismatched request is supposed to be caught before signing",
+        "The nonce automatically regenerates itself every time the message is displayed on screen",
+        "EIP-4361 signatures are hardcoded to expire exactly 60 seconds after being created",
+        "The chain-id field alone is sufficient to block any cross-site replay attempt"
+      ],
+      "correctIndex": 0,
+      "explain": "Domain binding is EIP-4361's defense against exactly this: wallets are required to check that the domain in the message matches where the signing request actually came from. A user signing on the malicious site's own origin should see that mismatch flagged before signing — and the server's own domain check inside verify() is what catches it if a captured signature is replayed against the real backend instead."
+    },
+    {
+      "id": "bab-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "const { success, data, error } = await siweMessage.verify({\n  signature,\n  // nonce intentionally left out\n});",
+      "prompt": "This /login handler calls verify() with a signature but never passes the nonce the server itself issued. What specific attack does skipping that check leave open?",
+      "options": [
+        "A signed message captured once — through a log file, browser history, or a compromised script — can be replayed to log in again later, since nothing ever expires or gets consumed",
+        "Every login attempt will now fail, because verify() requires a nonce argument to run at all",
+        "The user's wallet will refuse to produce a signature without a nonce present",
+        "Verification becomes cryptographically impossible without a nonce to hash"
+      ],
+      "correctIndex": 0,
+      "explain": "The nonce check is what confirms the signature is valid for this specific login attempt, not just valid in general. Skip it, and verify() only confirms the signature recovers to the claimed address — a message signed once and captured anywhere can be replayed indefinitely, since nothing ties it to a single, consumed attempt."
+    },
+    {
+      "id": "bab-27",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about session management for Web3 apps, per Lesson 23.",
+      "options": [
+        "A server-side session allows real, immediate revocation by deleting the session from the store",
+        "A JWT can be revoked instantly at any time without any extra infrastructure beyond the token itself",
+        "A SIWE signature automatically expires 24 hours after it's signed, with no extra configuration needed",
+        "When a user switches accounts in their wallet, the old session should be invalidated and the user should sign in again as the new address",
+        "Sessions should still have an expiry even though a SIWE signature itself doesn't expire unless the message included an expirationTime field"
+      ],
+      "correctIndices": [0, 3, 4],
+      "explain": "A server-side session is revoked by deleting its record from the store. A JWT is valid until it expires, full stop, unless a separate revocation list is added back in — which erases most of what made it simple. A SIWE signature itself only expires if the message's expirationTime field was set; it is not automatic. Switching wallet accounts must invalidate the old session and force a fresh SIWE sign-in, and sessions should expire regardless, to bound how long a leaked cookie or token stays useful."
+    },
+    {
+      "id": "bab-28",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: ERC-2771 lets a contract recover a relayed call's real user address through a function called ________(), instead of trusting raw msg.sender, per Lesson 24.",
+      "acceptedAnswers": ["_msgSender", "_msgSender()"],
+      "explain": "Inside a relayed meta-transaction, msg.sender is the relayer's address, not the user's. ERC2771Context overrides _msgSender() so it extracts and returns the original user's address instead, once a contract adopts the trusted-forwarder pattern."
+    },
+    {
+      "id": "bab-29",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Match each SIWE message field to what it actually does, per Lesson 21.",
+      "left": ["domain", "nonce", "chain-id", "issued-at"],
+      "right": [
+        "Scopes the signature to a specific window in time",
+        "Scopes the signature to a specific network",
+        "Lets a wallet detect phishing by checking it matches the actual requesting site",
+        "A fresh, server-issued value that stops a captured signature from being replayed"
+      ],
+      "correctMap": [2, 3, 1, 0],
+      "explain": "domain is what lets a wallet catch a phishing site claiming to be someone else. nonce is the server-issued, one-time value that prevents replay. chain-id scopes the signature to a specific network. issued-at scopes it to a specific window of time — every field in a SIWE message is load-bearing."
+    },
+    {
+      "id": "bab-30",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of a full Sign-In With Ethereum flow, per Lesson 21, in the correct order.",
+      "items": [
+        "Frontend asks the backend for a nonce",
+        "Backend generates one and stores it against the pending login",
+        "Frontend builds the SIWE message with that nonce and asks the wallet to sign it",
+        "The wallet displays the message to the user and signs it",
+        "Frontend sends the message and signature back to the backend",
+        "Backend verifies both and starts a session"
+      ],
+      "explain": "The nonce has to exist on the server before the message can even be built, since the message embeds it. The wallet's own display-then-sign step is part of the security model, not just UX. Only once the backend has both the message and signature can it run verification and, on success, establish a session."
+    }
+  ]
+}
