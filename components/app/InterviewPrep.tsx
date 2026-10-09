@@ -21,6 +21,21 @@ type Decision = "got-it" | "needs-review" | null;
 
 const LENGTH_OPTIONS = [10, 20, 30, 50];
 
+const SHORT_CATEGORY_LABELS: Record<InterviewCategory, string> = {
+  "technical-knowledge": "Technical",
+  "hands-on": "Hands-On",
+  troubleshooting: "Troubleshooting",
+  architecture: "Architecture",
+  behavioral: "Behavioral",
+};
+
+const SHORT_DIFFICULTY_LABELS: Record<InterviewDifficulty, string> = {
+  beginner: "Beginner",
+  intermediate: "Intermediate",
+  advanced: "Advanced",
+  expert: "Expert",
+};
+
 function historyKey(pathSlug: string) {
   return `interviewPrep:${pathSlug}:history`;
 }
@@ -336,6 +351,16 @@ export default function InterviewPrep({
       difficulty !== "all" ? matchingPool({ ignoreDifficulty: true }) : exactPool;
     const withBothExpanded = matchingPool({ ignoreSkill: true, ignoreDifficulty: true });
 
+    // A short, natural description of the active filters causing the shortfall,
+    // e.g. "Advanced DAX Technical" — built only from filters actually narrowing
+    // the pool, so an unfiltered mixed interview just says "questions".
+    const qualifierParts = [
+      difficulty !== "all" ? SHORT_DIFFICULTY_LABELS[difficulty] : null,
+      skillFilter,
+      category !== "mixed" ? SHORT_CATEGORY_LABELS[category] : null,
+    ].filter((p): p is string => Boolean(p));
+    const qualifier = qualifierParts.length > 0 ? qualifierParts.join(" ") + " " : "";
+
     if (exactPool.length >= length) {
       return (
         <div className="border-2 border-ink/15 bg-parchment p-6 sm:p-8">
@@ -370,9 +395,12 @@ export default function InterviewPrep({
       <div className="border-2 border-gold bg-gold/10 p-6 sm:p-8">
         <p className="eyebrow mb-2">Question availability</p>
         <p className="display text-2xl">
-          {exactPool.length} of {length} questions available
+          We only have {exactPool.length} {qualifier}question{exactPool.length === 1 ? "" : "s"}.
         </p>
-        <p className="mt-2 text-sm text-stone">Choose how you&apos;d like to proceed.</p>
+        <p className="mt-2 text-sm text-stone">
+          Go ahead with the {exactPool.length} question{exactPool.length === 1 ? "" : "s"}, or
+          widen the search below.
+        </p>
 
         <div className="mt-5 space-y-3">
           <button
@@ -381,7 +409,7 @@ export default function InterviewPrep({
             className="block w-full rounded-[2px] border border-ink/20 bg-white/60 p-4 text-left hover:border-crimson"
           >
             <span className="font-semibold text-ink">
-              Practice the {exactPool.length} available question{exactPool.length === 1 ? "" : "s"}
+              Yes — go ahead with the {exactPool.length} question{exactPool.length === 1 ? "" : "s"}
             </span>
             <span className="block text-sm text-stone">Exact match only, no substitutions.</span>
           </button>
