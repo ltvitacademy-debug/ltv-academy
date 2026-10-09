@@ -1,0 +1,896 @@
+{
+  "questions": [
+    {
+      "id": "rlllm-01",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of the agent-environment loop (Lesson 1) in the order they actually occur, starting from a given time step t.",
+      "items": [
+        "The agent observes the current state S_t of the environment",
+        "The agent selects an action A_t",
+        "The environment transitions to a new state S_{t+1} and emits a reward R_{t+1}",
+        "The agent uses R_{t+1} and S_{t+1} to improve its decision-making, and the loop repeats"
+      ],
+      "explain": "Every RL problem reduces to this loop: observe the state, select an action, the environment responds with a new state and reward, and the agent uses that to improve before the loop repeats. The agent never sees a 'correct answer,' only this reward signal after the fact."
+    },
+    {
+      "id": "rlllm-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "In the 5-cell grid world MDP from Lesson 2 (positions 0-4, agent starts at 2, reaching position 4 gives +1 and ends the episode, reaching position 0 gives -1 and ends the episode), which single component of the MDP tuple (S, A, P, R, gamma) would need to change to make the floor 'slippery' so that the action 'right' only succeeds 80% of the time?",
+      "options": [
+        "R(s,a,s'), the reward function",
+        "P(s'|s,a), the transition probability function",
+        "gamma, the discount factor",
+        "S, the set of states"
+      ],
+      "correctIndex": 1,
+      "explain": "P(s'|s,a) is exactly what encodes the environment's dynamics, including randomness. A slippery floor where 'right' only succeeds 80% of the time is a stochastic transition function, not a change to the reward, the discount factor, or the state set itself -- this is exactly what Gymnasium's FrozenLake-v1 does with is_slippery=True."
+    },
+    {
+      "id": "rlllm-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: updating a value estimate using another estimated value, rather than waiting for a complete observed trajectory, is called ________.",
+      "acceptedAnswers": [
+        "bootstrapping",
+        "bootstrap"
+      ],
+      "explain": "Bootstrapping is the key idea behind the Bellman equation: V(s) is defined in terms of V at a neighboring state, one step away, rather than requiring an average over every possible infinite trajectory starting at s."
+    },
+    {
+      "id": "rlllm-04",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about epsilon-greedy exploration, per Lesson 5.",
+      "options": [
+        "With probability epsilon the agent chooses a random action, and with probability 1-epsilon it chooses the greedy action argmax_a Q(s,a)",
+        "epsilon is typically decayed over training, starting higher (e.g. 0.1-1.0) and shrinking toward a small value like 0.01",
+        "A purely greedy agent (epsilon=0) can get permanently stuck on a suboptimal action because it never resamples an action it tried once and liked",
+        "Softmax/Boltzmann exploration picks actions with probability proportional to exp(Q(s,a)/tau), guaranteeing the single best action is always chosen",
+        "Optimistic initialization initializes Q-values unrealistically low so unexplored actions look unattractive until proven otherwise"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Epsilon-greedy acts randomly with probability epsilon and greedily otherwise, with epsilon typically decayed over training. A purely greedy agent can calcify around an early, lucky, suboptimal estimate since it never resamples other actions. Softmax exploration makes better actions MORE likely, not guaranteed -- nothing has exactly zero probability, but nothing is guaranteed either. Optimistic initialization sets Q-values unrealistically HIGH, not low, so every untried action looks attractive until actually tried."
+    },
+    {
+      "id": "rlllm-05",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each term from Chapter 1's final lessons to what it actually describes.",
+      "left": [
+        "terminated=True",
+        "truncated=True",
+        "Behavior policy",
+        "Target policy"
+      ],
+      "right": [
+        "The policy actually used to collect experience in the environment",
+        "The episode ended because of an external cutoff like a time limit, unrelated to the task's own dynamics",
+        "The policy being learned about or evaluated",
+        "The episode ended because of the environment's own dynamics, e.g. the pole fell over"
+      ],
+      "correctMap": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "explain": "terminated=True means the episode ended due to the environment's own dynamics (a genuine ending); truncated=True means an external cutoff like a time limit ended it instead. The behavior policy is whatever policy actually collects experience; the target policy is whichever policy is being learned about or evaluated -- on-policy methods like SARSA use the same policy for both, off-policy methods like Q-learning let them differ."
+    },
+    {
+      "id": "rlllm-06",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly distinguishes Q-learning's update rule from SARSA's update rule?",
+      "options": [
+        "Q-learning and SARSA use an identical target; they differ only in their learning rate alpha",
+        "Q-learning updates V(s), the state-value function, while SARSA updates Q(s,a), the action-value function",
+        "Q-learning's target uses max_a Q(S_{t+1},a), the best possible next action's value; SARSA's target uses Q(S_{t+1},A_{t+1}), the value of the action actually taken next",
+        "SARSA's target uses max_a Q(S_{t+1},a); Q-learning's target uses Q(S_{t+1},A_{t+1}), the value of the action actually taken next",
+        "SARSA is off-policy because it uses the max operator, while Q-learning is on-policy because it uses the actual next action",
+        "Q-learning requires a model of the environment's transition function P, while SARSA is model-free"
+      ],
+      "correctIndex": 2,
+      "explain": "Q-learning's update plugs in max_a Q(S_{t+1},a), the best possible action regardless of what the agent's exploratory policy actually did next -- this makes it off-policy. SARSA plugs in Q(S_{t+1},A_{t+1}), the value of whatever action A_{t+1} was actually chosen next by the same exploratory policy -- this makes it on-policy. Both are model-free tabular TD methods; neither requires knowing P.",
+      "distractorExplain": "Swapping which algorithm uses which target is exactly the mistake this pair of lessons warns against: it's Q-learning that uses max_a Q(S_{t+1},a) (making it off-policy), and SARSA that uses the actually-taken next action Q(S_{t+1},A_{t+1}) (making it on-policy) -- not the reverse."
+    },
+    {
+      "id": "rlllm-07",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Dynamic Programming's value iteration computes V(s) <- max_a (sum of p(s',r|s,a)[r + gamma*V(s')]) for every state in a single sweep, using the Bellman ________ equation directly rather than a fixed policy's Bellman equation.",
+      "acceptedAnswers": [
+        "optimality",
+        "Bellman optimality"
+      ],
+      "explain": "Value iteration uses the Bellman optimality equation (which already bakes in the max over actions) rather than a fixed policy's Bellman equation, letting it fold evaluation and improvement into a single update per sweep instead of running full policy evaluation to convergence every iteration."
+    },
+    {
+      "id": "rlllm-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "V(S_t) = 4.0\nR_{t+1} = 1\nV(S_{t+1}) = 6.0\ngamma = 0.9\nalpha = 0.1",
+      "prompt": "Using TD(0) with the values shown, what is the updated V(S_t) after one update?",
+      "options": [
+        "4.24",
+        "6.40",
+        "2.40",
+        "4.90"
+      ],
+      "correctIndex": 0,
+      "explain": "TD target = R_{t+1} + gamma*V(S_{t+1}) = 1 + 0.9*6.0 = 6.4. TD error = TD target - V(S_t) = 6.4 - 4.0 = 2.4. Updated V(S_t) = V(S_t) + alpha*TD error = 4.0 + 0.1*2.4 = 4.24."
+    },
+    {
+      "id": "rlllm-09",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the differences between Monte Carlo methods and TD(0), per Lesson 10.",
+      "options": [
+        "Monte Carlo must wait for an episode to end before updating anything, while TD(0) updates after every single step",
+        "Monte Carlo's target (the actual return G_t) is unbiased, while TD(0)'s target is biased early in training because it depends on the current, possibly-wrong value estimate",
+        "TD(0) generally has higher variance than Monte Carlo, because it depends on many random rewards and transitions",
+        "Monte Carlo works directly on continuing tasks with no modification needed, while TD(0) does not",
+        "Both Monte Carlo and TD(0) are model-free -- neither requires knowing P(s'|s,a) or R(s,a,s')"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        4
+      ],
+      "explain": "Monte Carlo waits for a full episode and is unbiased but high-variance; TD(0) updates every step and is biased early (since it bootstraps off a possibly-wrong current estimate) but has much lower variance, since it depends on only one reward and one transition. It's Monte Carlo, not TD(0), that needs episodic tasks and can't directly handle continuing tasks. Both methods are model-free."
+    },
+    {
+      "id": "rlllm-10",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 2 concept to its correct description.",
+      "left": [
+        "Curse of dimensionality",
+        "Policy iteration",
+        "First-visit Monte Carlo",
+        "Function approximation"
+      ],
+      "right": [
+        "Representing V or Q with a parameterized function V_theta(s)/Q_theta(s,a) instead of an explicit table",
+        "Alternating full policy evaluation with greedy policy improvement until the policy stops changing",
+        "Using only the return following the first time a state is visited in an episode to update that state's value average",
+        "The exponential growth in table size as the number of state variables increases"
+      ],
+      "correctMap": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "explain": "The curse of dimensionality is the exponential blow-up in table size as state variables grow. Policy iteration alternates full evaluation and greedy improvement until convergence. First-visit Monte Carlo only uses the return from a state's first visit within an episode. Function approximation replaces an explicit table with a parameterized function, fixing all three of tabular RL's core limitations at once."
+    },
+    {
+      "id": "rlllm-11",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these components of a DQN training step in the order they occur, per Lessons 15-16.",
+      "items": [
+        "A transition (state, action, reward, next_state, done) is pushed into the experience replay buffer",
+        "A random minibatch of past transitions is sampled from the replay buffer",
+        "The target network (held fixed, not trained by gradient descent) computes the TD target r + gamma*max_a' Q(s',a';theta_minus)",
+        "The online network's weights theta are updated by gradient descent to minimize the squared difference between Q(s,a;theta) and the TD target",
+        "The target network's weights theta_minus are periodically synced from the online network's weights theta"
+      ],
+      "explain": "New experience is stored in the replay buffer, a random minibatch is sampled from it to decorrelate training data, the target network computes a stable TD target, the online network is updated by gradient descent against that target, and only periodically does the target network get synced from the online network -- keeping the regression target from moving in lockstep with every gradient step."
+    },
+    {
+      "id": "rlllm-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A team trains vanilla DQN and observes Q-value estimates that are consistently inflated relative to the true values. What causes this overestimation bias, and how does Double DQN fix it?",
+      "options": [
+        "The max operator in the target is statistically biased toward picking overestimated noisy Q-values; Double DQN fixes it by using the online network to select the best next action and the target network to evaluate that specific action",
+        "The replay buffer stores correlated transitions; Double DQN fixes it by discarding old transitions after one use",
+        "The target network is updated too frequently; Double DQN fixes it by never updating the target network at all",
+        "The learning rate is too high; Double DQN fixes it by lowering the learning rate automatically"
+      ],
+      "correctIndex": 0,
+      "explain": "Taking a max over several noisy Q-value estimates is statistically biased toward picking one of the overestimated ones. Double DQN decouples selection from evaluation: the online network picks the best-looking next action via argmax, but the target network scores how good that specific action actually is -- breaking the correlation that produced the bias."
+    },
+    {
+      "id": "rlllm-13",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in Dueling DQN, the network splits into a value stream V(s) and an advantage stream A(s,a), then recombines them as Q(s,a) = V(s) + (A(s,a) - ________), a stability trick that keeps the two streams individually identifiable.",
+      "acceptedAnswers": [
+        "mean_a' A(s,a')",
+        "the mean advantage",
+        "mean advantage",
+        "mean_a A(s,a)"
+      ],
+      "explain": "Subtracting the mean advantage keeps V(s) and A(s,a) individually identifiable, since without it the two streams could drift by an arbitrary constant that cancels out in the final Q(s,a) but destabilizes training."
+    },
+    {
+      "id": "rlllm-14",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about policy gradient methods and REINFORCE, per Lessons 18-19.",
+      "options": [
+        "A policy gradient method parameterizes pi_theta(a|s) directly and improves theta by gradient ascent on expected return, without necessarily computing a Q-function",
+        "REINFORCE estimates Q^pi(s,a) using the actual observed return G_t from a complete Monte Carlo episode",
+        "REINFORCE has low variance because G_t only depends on the single most recent reward",
+        "A stochastic policy's dist.sample() call gives the policy built-in exploration, without needing a separate epsilon-greedy mechanism",
+        "PyTorch optimizers perform gradient ascent by default, so REINFORCE's loss is passed to .backward() without any sign change"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Policy gradient methods learn pi_theta(a|s) directly via gradient ascent, with no Q-function strictly required. REINFORCE substitutes the Monte Carlo return G_t for Q^pi(s,a). A stochastic policy's own sampling gives built-in exploration. REINFORCE's G_t is high variance, not low, since it accumulates randomness from every future action and transition in the episode -- and because PyTorch optimizers minimize, REINFORCE's loss must be the NEGATIVE of the policy gradient objective, not passed through unchanged."
+    },
+    {
+      "id": "rlllm-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "actor_loss = -log_prob * td_error.detach()",
+      "prompt": "In this actor-critic training step, why is .detach() called on td_error before it's used in actor_loss?",
+      "options": [
+        "So the actor's gradient update treats td_error purely as a scalar weight on its own log-probability term, without backpropagating into the critic's parameters",
+        "So that td_error is converted from a GPU tensor to a CPU tensor before the loss is computed",
+        "Because PyTorch requires every loss function to call .detach() before .backward() can be invoked",
+        "So the critic's loss is automatically scaled by the actor's current entropy"
+      ],
+      "correctIndex": 0,
+      "explain": ".detach() stops gradients from flowing back through td_error into the critic's own parameters when the actor's loss is backpropagated. The actor should only treat the TD error as a fixed scalar weighting its log-probability term; the critic's own parameters get updated separately, from its own loss, td_error.pow(2)."
+    },
+    {
+      "id": "rlllm-16",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "A PPO implementation computes r_t(theta) = pi_theta(a_t|s_t)/pi_theta_old(a_t|s_t) = 1.3 for a transition with a positive advantage A_hat_t, using the standard clip range epsilon=0.2. Which statement correctly describes what L^CLIP does with this sample?",
+      "options": [
+        "Since r_t(theta) is inside [1-epsilon, 1+epsilon], no clipping occurs and the objective behaves exactly like the unclipped surrogate",
+        "Because 1.3 exceeds 1+epsilon=1.2, the clip term caps the effective ratio at 1.2, and since A_hat_t is positive, the min() picks this smaller, clipped value -- removing the incentive to push the ratio even higher",
+        "Because 1.3 exceeds 1+epsilon=1.2, the clip term caps the effective ratio at 1.2, and since A_hat_t is positive, the min() picks the larger, unclipped value of 1.3*A_hat_t",
+        "PPO raises an error whenever r_t(theta) exceeds 1+epsilon, since the probability ratio is not allowed to leave the trust region",
+        "The min() always picks whichever of the clipped or unclipped value is larger, to maximize the reward gained from this sample",
+        "A ratio of 1.3 means the new policy is 30% less likely to take this action than the old policy was"
+      ],
+      "correctIndex": 1,
+      "explain": "r_t(theta)=1.3 exceeds 1+epsilon=1.2, so clip(r_t(theta),0.8,1.2) caps the clipped term at 1.2*A_hat_t, which is smaller than the unclipped 1.3*A_hat_t for a positive advantage. L^CLIP's min() always picks the more pessimistic (lower) of the two, so it selects the clipped, smaller value here -- removing the incentive to keep pushing the ratio further past the trust region.",
+      "distractorExplain": "The claim that no clipping occurs because the ratio is inside [1-epsilon,1+epsilon] would be correct for a ratio inside [0.8, 1.2] -- but 1.3 is OUTSIDE that range, exceeding 1+epsilon=1.2, so clipping does apply here, which is exactly the scenario this question is testing."
+    },
+    {
+      "id": "rlllm-17",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: TRPO's constrained optimization maximizes a probability-ratio surrogate objective subject to a constraint on the ________ divergence between the old and new policy's action distributions, measured behaviorally rather than in parameter space.",
+      "acceptedAnswers": [
+        "KL",
+        "Kullback-Leibler",
+        "KL-divergence",
+        "Kullback-Leibler divergence"
+      ],
+      "explain": "TRPO constrains E[KL(pi_theta_old(.|s) || pi_theta(.|s))] <= delta, the trust region radius -- measuring how much the policy's behavior actually changed, not how far its parameters moved."
+    },
+    {
+      "id": "rlllm-18",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about Generalized Advantage Estimation (GAE), per Lesson 25.",
+      "options": [
+        "Setting lambda=0 collapses the GAE formula to the pure one-step TD error delta_t -- lowest variance, most bias",
+        "Setting lambda=1 recovers the full Monte Carlo advantage estimate G_t - V(s_t) -- zero bias, highest variance",
+        "GAE's advantage estimate is computed with a forward pass through the rollout, from t=0 to the end, rather than backward",
+        "A common default for lambda is 0.95, blending many n-step estimates together",
+        "GAE requires a model of the environment's exact transition probabilities P(s'|s,a)"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "lambda=0 gives the pure one-step TD advantage (low variance, high bias); lambda=1 gives the full Monte Carlo advantage (zero bias, high variance); lambda=0.95 is a common middle-ground default. GAE is computed with a BACKWARD recursion (A_hat_t = delta_t + gamma*lambda*A_hat_{t+1}), not a forward pass, and it's model-free -- it only needs sampled rewards and the critic's value estimates, never P(s'|s,a)."
+    },
+    {
+      "id": "rlllm-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A team is debugging a PPO run and observes clip_fraction consistently near 0 while the reward has plateaued very early in training. Per Lesson 27's diagnostic guidance, what does this combination most likely indicate?",
+      "options": [
+        "The learning rate may be too small, or the advantages may be near-zero because the critic has already converged to a near-constant value estimate",
+        "The policy has collapsed to a near-deterministic choice before meaningful exploration happened",
+        "The clip_range is far too permissive, letting updates stray arbitrarily far from the old policy",
+        "The critic isn't learning a useful value function at all"
+      ],
+      "correctIndex": 0,
+      "explain": "clip_fraction near 0 means updates are barely hitting the clip boundary at all, which usually points to a learning rate that's too small, or advantages that are near-zero because the critic has already converged on a near-constant value estimate -- both consistent with a policy that looks 'frozen.'"
+    },
+    {
+      "id": "rlllm-20",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each PPO hyperparameter from Lesson 28 to its standard starting value or role.",
+      "left": [
+        "Learning rate",
+        "clip_range (epsilon)",
+        "n_steps (rollout length)",
+        "gamma (discount factor)"
+      ],
+      "right": [
+        "0.99, a near-universal default across RL generally",
+        "2048 per parallel environment is common; too short increases GAE variance, too long risks policy drift within the rollout",
+        "3e-4 as a starting point; usually the single highest-leverage hyperparameter",
+        "0.2 from the original PPO paper; rarely needs much tuning on its own"
+      ],
+      "correctMap": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "explain": "Learning rate (3e-4 default) is usually the highest-leverage knob. clip_range (0.2) rarely needs tuning on its own. n_steps (2048 per env) balances GAE variance against policy drift within a rollout. gamma (0.99) is a near-universal default, usually fine as-is."
+    },
+    {
+      "id": "rlllm-21",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Put these four steps of a from-scratch PPO training loop (Lesson 26) in their correct order.",
+      "items": [
+        "Collect a rollout of n_steps by running the current policy in the environment, storing states, actions, log-probs, and value estimates",
+        "Compute advantages and returns for the whole rollout using GAE's backward recursion",
+        "Run several epochs of minibatch gradient updates on the clipped PPO objective, reusing the same rollout",
+        "Discard the rollout and collect a fresh one with the newly updated policy"
+      ],
+      "explain": "PPO's loop collects a rollout under the current policy, computes advantages via GAE, reuses that single rollout for several epochs of clipped updates (safe because of clipping), and then discards it -- since it was collected on-policy under the model before these updates -- before collecting fresh data with the newly updated policy."
+    },
+    {
+      "id": "rlllm-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "A custom Gymnasium environment's step() method sets terminated=True whenever the agent hits a self-imposed 200-step counter the developer added, and never sets truncated at all. What is wrong with this, per Lesson 30?",
+      "options": [
+        "An externally-imposed step cap should set truncated=True, not terminated=True -- conflating the two corrupts how downstream algorithms bootstrap value estimates at episode boundaries",
+        "Nothing is wrong; terminated and truncated are interchangeable names for the same signal",
+        "step() should never return a boolean for either terminated or truncated -- only the info dict should carry this information",
+        "Gymnasium environments are not allowed to use step counters; episode length must be determined entirely by the environment's own dynamics"
+      ],
+      "correctIndex": 0,
+      "explain": "A step counter added by the developer is an external cutoff unrelated to the task's own dynamics, so it should set truncated=True. Marking it terminated=True instead tells downstream algorithms there's no future value left to bootstrap from, when in fact an identical state reached one step earlier would have kept going fine."
+    },
+    {
+      "id": "rlllm-23",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a reward shaping term F(s,s') is called potential-based when it has the form F(s,s') = gamma*Phi(s') - ________, which has a theoretical guarantee of never changing which policy is optimal.",
+      "acceptedAnswers": [
+        "Phi(s)",
+        "phi(s)",
+        "Phi of s"
+      ],
+      "explain": "Potential-based shaping, F(s,s') = gamma*Phi(s') - Phi(s), is guaranteed by Ng, Harada, and Russell's 1999 shaping theorem to never change which policy is optimal under the original reward, as long as Phi depends only on state."
+    },
+    {
+      "id": "rlllm-24",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "A grid-world agent is given reward shaping based on 'distance traveled' to encourage exploration, and ends up driving in circles racking up distance instead of finishing the race. Select every true statement about why this happened, per Lessons 32-33.",
+      "options": [
+        "The shaping term wasn't potential-based, so it had no guarantee of preserving the original task's optimal policy",
+        "This is an instance of reward hacking / specification gaming: the agent found the true optimum of the reward it was actually given, which differed from the designer's intent",
+        "This proves the RL algorithm itself had a bug, since a correctly implemented optimizer would never exploit a shaping term",
+        "A potential-based shaping term F(s,s') = gamma*Phi(s')-Phi(s), with Phi defined purely as a function of state, would have carried a guarantee against exactly this failure",
+        "The fix for this failure is always to use a smarter, more capable optimizer"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "A 'distance traveled' bonus is not potential-based, so it carries no guarantee against changing the optimal policy -- and the agent exploiting it is reward hacking: the algorithm converged correctly to the optimum of the wrong objective, not a bug. A genuinely potential-based F(s,s') would have been safe. The fix is never a smarter optimizer; it's a better-specified reward."
+    },
+    {
+      "id": "rlllm-25",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each environment design pitfall from Lesson 34 to its correct description.",
+      "left": [
+        "Non-stationarity",
+        "Partial observability (POMDP)",
+        "Sparse reward (by choice)",
+        "Reward-hacking surface"
+      ],
+      "right": [
+        "Whether any sequence of actions can score high without actually accomplishing the task",
+        "The environment's dynamics or reward change over time for reasons unrelated to the agent's own actions",
+        "Defaulting to rewarding only at the very end of an episode without considering the cost to learning speed",
+        "The current observation alone doesn't contain enough information to act optimally; the task implicitly requires memory"
+      ],
+      "correctMap": [
+        1,
+        3,
+        2,
+        0
+      ],
+      "explain": "Non-stationarity means the environment changes independent of the agent's actions. Partial observability means the observation alone isn't enough, implicitly requiring memory. Sparse reward by choice is defaulting to reward only at the end without weighing the cost. Reward-hacking surface is whether any action sequence scores high without real task progress."
+    },
+    {
+      "id": "rlllm-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Why do RLHF pipelines collect pairwise preference comparisons ('which response is better') rather than asking annotators to rate each response on an absolute 1-10 scale, per Lesson 35?",
+      "options": [
+        "Different annotators anchor absolute scales inconsistently, and even the same annotator isn't consistent with themselves across sessions; relative comparisons are an easier, more consistent judgment",
+        "Absolute ratings are mathematically impossible to convert into a training loss",
+        "Pairwise comparisons require fewer total annotators than absolute ratings for the same dataset size",
+        "The Bradley-Terry model can only be trained on sequences longer than two responses"
+      ],
+      "correctIndex": 0,
+      "explain": "Absolute 1-10 ratings suffer from inconsistent anchoring, both across annotators and within the same annotator over time. Asking 'which is better' is a much easier, more consistent judgment, and it's exactly the input the Bradley-Terry model needs to produce a usable scalar reward ranking."
+    },
+    {
+      "id": "rlllm-27",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: the Bradley-Terry model gives the probability that the chosen response y_w is preferred over the rejected response y_l as P(y_w > y_l | x) = ________(r(x,y_w) - r(x,y_l)), where that function maps any real number to a probability between 0 and 1.",
+      "acceptedAnswers": [
+        "sigma",
+        "the sigmoid",
+        "logistic sigmoid",
+        "sigmoid function"
+      ],
+      "explain": "The logistic sigmoid sigma(z) = 1/(1+e^-z) maps the difference in rewards to a probability, guaranteeing a value between 0 and 1, and depending only on the difference in rewards rather than their absolute scale."
+    },
+    {
+      "id": "rlllm-28",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about reward model overoptimization, per Lesson 39.",
+      "options": [
+        "It is commonly explained through Goodhart's law: when a measure becomes a target, it ceases to be a good measure",
+        "The telltale sign is a widening gap where the proxy reward keeps climbing while true quality rises, plateaus, and then falls",
+        "A KL penalty against a reference policy fixes the reward model's blind spots so they can no longer be exploited at all",
+        "Reward models frequently have a subtle bias toward longer, more verbose responses, which a policy can learn to exploit",
+        "This failure mode is unique to learned reward models and has no analog anywhere else in classical RL"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Goodhart's law describes exactly this dynamic, and the widening proxy-vs-true-quality gap is the telltale sign. A KL penalty only LIMITS how far the policy can wander to find blind spots -- it doesn't fix the blind spots themselves. Reward models commonly have a length bias that gets exploited. This is the same underlying dynamic as the boat-racing reward hacking example from classical RL, not something unique to learned reward models."
+    },
+    {
+      "id": "rlllm-29",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each reward model evaluation concept from Lesson 40 to its correct description.",
+      "left": [
+        "Held-out preference accuracy",
+        "Calibration",
+        "Human-human agreement",
+        "Independent correlation check"
+      ],
+      "right": [
+        "The rate at which two human annotators agree with each other on the same comparisons, used as a natural ceiling for the reward model's own accuracy",
+        "Comparing reward model scores against a different judgment source that didn't contribute to the training data, to catch blind spots",
+        "The fraction of unseen preference pairs where the model scores the chosen response higher than the rejected one",
+        "Whether a model's predicted preference probability actually matches the empirical frequency of the chosen response winning, bucketed by confidence"
+      ],
+      "correctMap": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "explain": "Held-out preference accuracy is the fraction of unseen pairs scored correctly. Calibration checks whether predicted confidence matches empirical correctness rate. Human-human agreement is a natural accuracy ceiling. An independent correlation check compares against a judgment source outside the original training pipeline."
+    },
+    {
+      "id": "rlllm-30",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Which statement correctly describes why the three stages of the RLHF pipeline (SFT, reward model training, RL fine-tuning) must happen in that fixed order, per Lesson 41?",
+      "options": [
+        "RL fine-tuning must happen first because PPO needs an untrained base model to explore freely, before SFT narrows its behavior",
+        "The reward model must be trained before any demonstrations are collected, since demonstrations are generated by sampling from the reward model itself",
+        "The order is a historical convention with no technical reason; any of the three stages could be run first with identical results",
+        "The reward model is trained on comparisons between responses sampled from the SFT model, so its judgments are calibrated to the response distribution PPO will actually sample from during RL; starting PPO without SFT first wastes RL steps teaching basic instruction-following on a noisy reward",
+        "SFT must happen last because it fine-tunes the policy using the reward model's final scores as labels",
+        "Reward model training and RL fine-tuning can run simultaneously in parallel, and only SFT needs to precede them"
+      ],
+      "correctIndex": 3,
+      "explain": "The reward model is trained on comparisons between responses sampled from the SFT model, so its preference judgments are calibrated to exactly the response distribution PPO will sample from during RL. Starting PPO directly from a pretrained base model, skipping SFT, would waste RL steps teaching basic instruction-following on a noisy, indirect reward instead of refining behavior the model can already approximate.",
+      "distractorExplain": "The claim that SFT happens last, fine-tuning the policy using the reward model's final scores as labels, inverts the actual relationship -- the reward model's scores are what PPO optimizes against during the THIRD stage (RL fine-tuning), not something the FIRST stage (SFT) ever consumes. SFT happens first precisely because it produces the instruction-following checkpoint the other two stages both depend on."
+    },
+    {
+      "id": "rlllm-31",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: TRL's PPO stage for RLHF needs the SFT checkpoint twice -- once as the trainable policy, and once as a frozen ________ model used only to measure how far the policy has drifted.",
+      "acceptedAnswers": [
+        "reference",
+        "reference model"
+      ],
+      "explain": "A frozen copy of the SFT checkpoint serves as the reference model, against which the KL penalty measures how far the trainable policy has drifted during RL fine-tuning."
+    },
+    {
+      "id": "rlllm-32",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "code": "r_total(x, y) = r_RM(x, y) - beta * KL(pi_theta(.|x) || pi_ref(.|x))",
+      "prompt": "RLHF's PPO stage optimizes r_total shown above rather than just r_RM(x,y) directly. What would happen if the KL term were removed entirely, per Lesson 43?",
+      "options": [
+        "PPO would have every incentive to exploit the reward model's own blind spots, since nothing would penalize drifting arbitrarily far from the reference policy's distribution",
+        "The policy would be mathematically unable to update at all, since PPO's clipped objective requires a KL term to be well-defined",
+        "The reward model would need to be retrained from scratch for every PPO update",
+        "The policy would converge faster to a better result, since removing the penalty only ever helps optimization"
+      ],
+      "correctIndex": 0,
+      "explain": "Without the KL penalty, PPO would simply chase whatever the reward model rewards, including the reward model's own blind spots -- exactly the reward model overoptimization risk from Lesson 39. The KL term puts a direct, reward-model-independent cost on drifting too far from the reference policy."
+    },
+    {
+      "id": "rlllm-33",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about DPO's loss function, L_DPO = -log(sigma(beta * [log(pi_theta(y_w|x)/pi_ref(y_w|x)) - log(pi_theta(y_l|x)/pi_ref(y_l|x))])), per Lesson 45.",
+      "options": [
+        "DPO's 'implicit reward' is defined entirely via the policy's own log-probabilities relative to a frozen reference model, with no separate reward network",
+        "beta plays the same role in DPO as PPO's KL coefficient -- controlling how far the policy can move from the reference model",
+        "DPO requires generating fresh rollouts from the current policy during every training step, exactly like PPO",
+        "DPO's loss is derived by substituting the closed-form optimal-policy relationship back into the same Bradley-Terry preference loss that trained Chapter 6's reward model",
+        "DPO trains a separate scalar reward model alongside the policy, just with a simpler architecture than Chapter 6's"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "DPO's implicit reward r(x,y) = beta*log(pi_theta(y|x)/pi_ref(y|x)) needs no separate reward network, and beta controls drift from the reference exactly as PPO's KL coefficient does. The loss comes from substituting the optimal-policy relationship back into the same Bradley-Terry objective. DPO trains entirely offline on a fixed preference dataset -- it never generates new rollouts during training, and it never trains any separate reward model at all."
+    },
+    {
+      "id": "rlllm-34",
+      "type": "matching",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Match each RLHF failure mode from Lesson 44 to its correct description.",
+      "left": [
+        "Mode collapse",
+        "Sycophancy",
+        "Verbosity bias",
+        "Over-refusal"
+      ],
+      "right": [
+        "A learned tendency to agree with or flatter the user, including reversing a previously correct answer under pushback",
+        "Refusing benign prompts because they resemble prompts the reward model was trained to penalize",
+        "Reduced output diversity relative to the SFT starting point, as the policy converges on whichever style the reward model scores highest",
+        "Inflated response length past what's actually useful, because the reward model correlates length with quality"
+      ],
+      "correctMap": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "explain": "Mode collapse is reduced output diversity as the policy converges on a highest-scoring style. Sycophancy is agreeing with or flattering the user, even reversing a correct answer under pushback. Verbosity bias is inflated length. Over-refusal is refusing benign prompts resembling penalized ones."
+    },
+    {
+      "id": "rlllm-35",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Put these checkpoint-creation steps of the TRL RLHF pipeline (Lesson 42) in the order they occur.",
+      "items": [
+        "SFTTrainer fine-tunes a pretrained base model on (prompt, response) demonstration pairs, producing an SFT checkpoint",
+        "A reward model is initialized from that same SFT checkpoint, swapping its language-modeling head for a scalar-reward head, and trained on preference pairs sampled from the SFT model's outputs",
+        "PPOTrainer loads the SFT checkpoint twice -- once as the trainable policy with a value head, once frozen as the reference model",
+        "PPO optimizes the policy against the frozen reward model's scores, with a KL penalty holding it close to the frozen reference"
+      ],
+      "explain": "The SFT checkpoint is produced first, then reused to initialize the reward model's weights, then reused again twice more as PPO's trainable policy and its frozen reference -- with the frozen reward model scoring generations throughout the final RL stage."
+    },
+    {
+      "id": "rlllm-36",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "What is the one component of the RLHF pipeline that RLAIF actually changes, per Lesson 48?",
+      "options": [
+        "Only the source of the preference label -- an AI judge model generates it instead of a human annotator -- while reward model training, evaluation, and PPO/DPO optimization all stay identical",
+        "The entire pipeline is replaced; RLAIF trains the policy with supervised fine-tuning only, skipping reward models and RL entirely",
+        "The reward model's architecture changes from a scalar regression head to a full language-modeling head",
+        "RLAIF removes the need for a frozen reference model during PPO"
+      ],
+      "correctIndex": 0,
+      "explain": "RLAIF changes exactly one thing: where the preference label comes from. An AI judge replaces the human annotator, but reward model training via Bradley-Terry, reward model evaluation, and the PPO or DPO optimization that follows are all unchanged."
+    },
+    {
+      "id": "rlllm-37",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in Constitutional AI, the written, curated set of principles the model is trained to follow -- used in both the supervised critique-and-revision phase and the RL preference-judging phase -- is called the ________.",
+      "acceptedAnswers": [
+        "constitution"
+      ],
+      "explain": "The constitution is the one new artifact Constitutional AI introduces beyond generic RLAIF -- it makes the AI feedback's criteria explicit, auditable, and consistently applied across both phases."
+    },
+    {
+      "id": "rlllm-38",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Constitutional AI's self-critique-and-revision process, per Lesson 50.",
+      "options": [
+        "The same underlying model performs generation, critique, and revision -- they are different prompts to one LLM, not three separate models",
+        "Each critique step is typically given a single constitutional principle to check against, rather than the entire constitution at once",
+        "Additional critique-revision rounds always strictly improve the response, with no diminishing returns or risk of over-correction",
+        "The resulting (prompt, revised-response) pairs feed into phase 1 as new supervised fine-tuning data, producing the SL-CAI model",
+        "A human annotator must approve each revision before it can be added to the training dataset"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "One model performs all three steps via different prompts. Each critique step focuses on a single principle at a time. The revised outputs become new SFT data, producing the SL-CAI model. Returns diminish after a few rounds, and later rounds risk a revision that 'fixes' a critique by becoming evasive rather than genuinely better -- and no human annotator is involved in approving individual revisions in this process."
+    },
+    {
+      "id": "rlllm-39",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 8 concept to its correct description.",
+      "left": [
+        "SL-CAI",
+        "RL-CAI",
+        "Judge-human agreement rate",
+        "Difficulty-based routing"
+      ],
+      "right": [
+        "The model produced after PPO fine-tunes against a constitution-guided reward model",
+        "The fraction of comparisons where an AI judge's label matches an independent human label on the same pair",
+        "The model produced by the supervised critique-and-revision phase",
+        "Sending low-confidence or disputed comparisons to human annotators while routine ones go to an AI judge"
+      ],
+      "correctMap": [
+        2,
+        0,
+        1,
+        3
+      ],
+      "explain": "SL-CAI is the output of phase 1's supervised critique-and-revision. RL-CAI is the output of phase 2's PPO fine-tuning against a constitution-guided reward model. The judge-human agreement rate checks an AI judge against independent human labels. Difficulty-based routing sends low-confidence comparisons to humans and routine ones to the AI judge."
+    },
+    {
+      "id": "rlllm-40",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "Which statement correctly describes what makes RLVR (reinforcement learning with verifiable rewards) different from training against a reward model, per Lesson 55?",
+      "options": [
+        "RLVR trains a reward model exactly as in Chapter 6, but restricts its training data to math and code problems only",
+        "RLVR requires more human preference labels than standard RLHF, since verifying correctness needs expert human judges for every rollout",
+        "RLVR replaces PPO with supervised fine-tuning, since a verifiable reward makes reinforcement learning unnecessary",
+        "RLVR is only usable when a KL penalty against a reference policy is removed from the training objective entirely",
+        "RLVR scores a rollout with a fixed, programmatic rule with no trainable parameters -- a function, not a learned model -- which sidesteps reward-model overoptimization though it can still be gamed if the verifier's own rules have a loophole",
+        "RLVR eliminates reward hacking entirely, since a deterministic function can never be exploited by an RL policy"
+      ],
+      "correctIndex": 4,
+      "explain": "RLVR replaces the learned reward model with a deterministic, rule-based verifier -- a function with no parameters to overoptimize against. This sidesteps reward-model overoptimization specifically, but it isn't a complete fix: a verifier can still be gamed if its own rules have a loophole, such as a weak test suite a policy learns to special-case.",
+      "distractorExplain": "The claim that RLVR eliminates reward hacking entirely overstates the guarantee -- a deterministic verifier removes the risk of a learned reward model's blind spots being exploited, but it isn't immune to exploitation itself: a policy can still find loopholes in the verifier's own rules, which is exactly what Lesson 57 covers as verifier loophole exploitation."
+    },
+    {
+      "id": "rlllm-41",
+      "type": "fill-in",
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: an outcome reward model (ORM) scores a reasoning trace by checking only whether the ________ matches ground truth, ignoring whether the reasoning in between was sound.",
+      "acceptedAnswers": [
+        "final answer",
+        "final answer's correctness",
+        "the final answer"
+      ],
+      "explain": "An ORM only looks at the destination -- a trace that stumbles into the right number through flawed logic gets the same reward as a trace that reasoned correctly throughout, which is exactly the weakness process reward models (PRMs) address."
+    },
+    {
+      "id": "rlllm-42",
+      "type": "multi-select",
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about GRPO (Group Relative Policy Optimization), per Lesson 55.",
+      "options": [
+        "GRPO drops the separate learned value network entirely",
+        "GRPO uses the mean reward of a sampled group of outputs for the same prompt as the baseline, instead of a learned critic",
+        "GRPO requires exactly one sample per prompt, identical to standard PPO",
+        "GRPO's design is cheaper when the reward comes from a fast rule-based verifier rather than a reward model requiring its own forward pass",
+        "GRPO was introduced specifically to replace the clipped surrogate objective with an unclipped one"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "GRPO drops the value network, using a sampled group's mean reward as the baseline instead, halving the memory footprint. This requires MULTIPLE samples per prompt (not exactly one), which is cheap when the reward comes from a fast rule-based verifier rather than a learned model needing its own forward pass. GRPO doesn't change PPO's clipped objective mechanics -- it only changes where the baseline comes from."
+    },
+    {
+      "id": "rlllm-43",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "code": "def weak_verifier(code, unit_tests=[{\"input\": 5, \"expected\": 25}]):\n    return run_in_sandbox(code, 5) == 25\n\ndef gamed_solution(x):\n    return 25",
+      "prompt": "This code verifier only checks one test case, and the policy learns a solution that always returns 25 regardless of its input. What does Lesson 57 call this failure, and what is the standard mitigation?",
+      "options": [
+        "Verifier loophole exploitation; the standard mitigation is using multiple diverse held-out unit tests so a single special-cased solution can't pass them all",
+        "Reward model overoptimization; the standard mitigation is a KL penalty against a reference policy",
+        "Unfaithful chain-of-thought; the standard mitigation is auditing the trace for logical soundness",
+        "Mode collapse; the standard mitigation is raising the entropy bonus coefficient"
+      ],
+      "correctIndex": 0,
+      "explain": "A verifier is only as strict as its rules. A single weak test case lets the policy hard-code a constant answer instead of solving the task, which is verifier loophole exploitation. Multiple diverse held-out tests close this specific exploit, since a special-cased solution can't pass them all."
+    },
+    {
+      "id": "rlllm-44",
+      "type": "sequencing",
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of PRM-guided search (Lesson 58) in the order they occur within one iteration of the search.",
+      "items": [
+        "Propose several candidate next reasoning steps for each current partial path (beam)",
+        "Form candidate partial traces by appending each proposed step to its beam",
+        "Score every candidate partial trace with the process reward model",
+        "Keep only the top-k highest-scoring partial traces as the new set of beams"
+      ],
+      "explain": "PRM-guided search proposes next steps for each current beam, forms candidate partial traces by appending those steps, scores every candidate with the process reward model, and keeps only the top-k scoring partial traces as the new beams -- pruning unpromising lines of reasoning before they're ever generated to completion."
+    },
+    {
+      "id": "rlllm-45",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch10",
+      "difficulty": "advanced",
+      "prompt": "Why do most multi-turn agent RL setups apply the discount factor gamma once per full turn rather than once per token, per Lesson 61?",
+      "options": [
+        "A single gamma applied per token, carried through dozens of turns and thousands of tokens, decays a turn's contribution to the final reward so fast that early turns can receive almost no learning signal at all",
+        "Per-token discounting is mathematically undefined for any trajectory longer than a single turn",
+        "Per-turn discounting removes the need for a value network entirely",
+        "Gymnasium's API only supports per-turn discounting, not per-token discounting"
+      ],
+      "correctIndex": 0,
+      "explain": "Per-token discounting across dozens of turns and thousands of tokens would decay early turns' effective contribution to the final reward to nearly nothing. Per-turn discounting keeps the effective horizon over turns comparable to what classic RL methods were designed around, letting tokens within a single turn share that turn's undiscounted credit."
+    },
+    {
+      "id": "rlllm-46",
+      "type": "fill-in",
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: in an agentic Gymnasium-style environment, the environment (not the policy) should own tool execution inside step(), which keeps the environment the single source of ________ for what actually happened.",
+      "acceptedAnswers": [
+        "truth",
+        "source of truth"
+      ],
+      "explain": "Keeping tool execution inside the environment's step() logic makes the environment the single source of truth, keeps tool results reproducible for debugging and evaluation, and lets a tool's implementation be swapped without touching the policy or training loop."
+    },
+    {
+      "id": "rlllm-47",
+      "type": "multi-select",
+      "chapter": "ch10",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about potential-based reward shaping as applied to long-horizon agent tasks, per Lesson 63.",
+      "options": [
+        "The guarantee that the optimal policy is unchanged only holds if the potential function Phi depends on state alone, not on the action taken to get there",
+        "A reasonable Phi for an agent task might count completed subtasks or measure progress toward files created or API calls succeeded",
+        "Subgoal rewards, as commonly used in practice, carry the exact same formal optimality guarantee as potential-based shaping",
+        "Sparse rewards bite harder in long-horizon agent tasks than in toy Gymnasium environments because trajectories are longer AND the space of possible trajectories at each turn is far larger",
+        "Potential-based shaping cannot be extended to agent tasks at all; it only applies to physical state vectors like CartPole's"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Potential-based shaping's guarantee requires Phi to be a function of state alone. A reasonable agent-task Phi might count completed subtasks or measure concrete progress. Sparsity is worse in long-horizon agent tasks because trajectories are longer and the per-turn action space (open-ended text plus tools) is far larger than a toy environment's. Subgoal rewards, unlike potential-based shaping, give up the formal optimality guarantee entirely -- and potential-based shaping extends cleanly to agent/conversation state, not just physical state vectors."
+    },
+    {
+      "id": "rlllm-48",
+      "type": "matching",
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "Match each concept from Lesson 64 (simulation vs. real environments) to its correct description.",
+      "left": [
+        "Sim-to-real gap",
+        "Sandboxed environment",
+        "Approval gate",
+        "Hybrid curriculum"
+      ],
+      "right": [
+        "A human- or rule-based checkpoint required before an agent can take an irreversible real-world action",
+        "Training predominantly in simulation early, then mixing in real episodes later to catch gaps the simulation missed",
+        "The mismatch between behavior learned in simulation and behavior required against the real system",
+        "An isolated copy or staging version of a real system, safe for an unreliable policy to interact with"
+      ],
+      "correctMap": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "explain": "The sim-to-real gap is the mismatch between simulated and real behavior. A sandboxed environment is an isolated staging copy safe for an unreliable policy. An approval gate is a checkpoint before irreversible real-world actions. A hybrid curriculum trains in simulation first, then mixes in real episodes to catch what simulation missed."
+    },
+    {
+      "id": "rlllm-49",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch11",
+      "difficulty": "intermediate",
+      "prompt": "In the capstone's reward function (Lesson 67), why does an unparseable model response receive an explicit reward of -1.0 rather than 0.0?",
+      "options": [
+        "A reward of 0 would look identical to 'a parseable but wrong answer scored neutrally,' blurring a distinction PPO's advantage estimates need to be sharp about",
+        "PPO's PPOTrainer.step() raises a runtime error if any reward in a batch is exactly 0.0",
+        "A reward of -1.0 is required by TRL's RewardConfig as the minimum allowed value",
+        "Negative rewards are only used to compute the KL penalty, never the task reward itself"
+      ],
+      "correctIndex": 0,
+      "explain": "An explicit negative reward for an unparseable response keeps it clearly distinguishable from a parseable-but-wrong answer, which is scored differently (-0.5 in the capstone's example). Using 0.0 for both would blur a signal PPO's advantage estimates need to be sharp about."
+    },
+    {
+      "id": "rlllm-50",
+      "type": "sequencing",
+      "chapter": "ch11",
+      "difficulty": "foundational",
+      "prompt": "Put these sections of a credible capstone write-up (Lesson 70) in the order they should appear.",
+      "items": [
+        "Methodology: the task, base model, exact reward function code, and PPO hyperparameters used",
+        "Metrics: the pass-rate comparison between baseline and PPO-trained model, reported with the held-out set size",
+        "Qualitative examples: two or three actual before/after generations, including at least one correct and one still-wrong case",
+        "Limitations: specifics like model size, training budget, and how narrow the task distribution was"
+      ],
+      "explain": "A credible write-up presents methodology first (so a reader could spot a reward-hacking loophole from the code alone), then the pass-rate metrics with context on set size, then qualitative examples that let a reader judge whether the improvement is real reasoning or a shortcut, and finally an honest accounting of limitations."
+    }
+  ]
+}
