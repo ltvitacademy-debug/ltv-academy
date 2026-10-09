@@ -1,0 +1,441 @@
+{
+  "questions": [
+    {
+      "id": "dti-01",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each term from Lesson 1's introduction to solara-train with what it actually is.",
+      "left": ["NVLink", "InfiniBand NDR", "PyTorchJob", "torch.distributed.checkpoint (DCP)"],
+      "right": [
+        "PyTorch's API for saving and loading sharded training state across many ranks",
+        "The Kubeflow Training Operator's custom resource for launching a distributed PyTorch job on Kubernetes",
+        "The 400 Gb/s fabric connecting solara-train's 64 nodes to each other",
+        "The interconnect giving each H100 in a node up to 900 GB/s of bandwidth to its neighbors"
+      ],
+      "correctMap": [3, 2, 1, 0],
+      "explain": "NVLink is the intra-node interconnect giving each H100 up to 900 GB/s to its neighbors. InfiniBand NDR is the 400 Gb/s fabric between solara-train's 64 nodes. PyTorchJob is the Kubeflow Training Operator's CRD for launching a distributed PyTorch job. DCP is PyTorch's API for saving and loading sharded training state across ranks."
+    },
+    {
+      "id": "dti-02",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about failure modes in a 512-GPU Solara-70B training run, per Lesson 2.",
+      "options": [
+        "A straggler GPU can silently cut the whole job's throughput even though no error is ever raised",
+        "NCCL's watchdog timeout exists specifically to turn a hung collective into an explicit error instead of an infinite hang",
+        "Silent data corruption always crashes the job immediately, which is what makes it easy to catch",
+        "An Xid error is the NVIDIA driver's log entry for a GPU-level hardware fault",
+        "A degraded NIC that silently drops to a lower link speed will cause NCCL to immediately abort the job"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "A straggler slows every rank without raising any error at all, since collectives are synchronous. NCCL's watchdog turns a hung collective into an explicit timeout error rather than an infinite hang. An Xid error is specifically the driver's log entry for a GPU hardware fault. Silent data corruption is dangerous precisely because it does NOT crash anything, and a degraded NIC quietly slows traffic rather than aborting the job outright."
+    },
+    {
+      "id": "dti-03",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Solara AI is considering swapping solara-train's inter-node fabric from InfiniBand to a hypothetical faster interconnect, with no change to FSDP, the optimizer, or the data mixture. Using Lesson 3's test, which kind of decision is this?",
+      "options": [
+        "Infrastructure, because the model's final numerical weights come out identical either way — only speed changes",
+        "Algorithm, because changing the network changes how gradients are computed",
+        "Both equally, because any hardware change affects the model mathematically",
+        "Neither — network fabric choice isn't a decision the course's test applies to"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 3's test asks whether changing a decision would change the model's final numerical weights given the same hardware. Swapping the fabric only changes how fast gradients move, not what they are, so the same weights come out either way — a textbook infrastructure decision."
+    },
+    {
+      "id": "dti-04",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of Lesson 5's capacity-planning estimate for Solara-70B in the correct order.",
+      "items": [
+        "Estimate total training FLOPs using C ≈ 6 × N × D",
+        "Compute each H100's effective throughput as peak FLOPs/s × MFU",
+        "Divide total FLOPs by per-GPU effective throughput, then by 3600, to get GPU-hours",
+        "Divide GPU-hours by the number of GPUs running in parallel to get wall-clock time"
+      ],
+      "explain": "Capacity planning starts with the total compute estimate (C ≈ 6ND), then derates peak GPU throughput by realistic MFU, converts the resulting GPU-seconds into GPU-hours, and finally divides by cluster size to get wall-clock days — exactly the chain Lesson 5 walks through to land on roughly 413,000 GPU-hours, or about 33.6 days, for Solara-70B."
+    },
+    {
+      "id": "dti-05",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 4, how much of the cluster a single component failure takes down — a switch failure taking out one rail across every node, or a node failure taking out 8 GPUs at once — is called that failure's ________.",
+      "acceptedAnswers": ["blast radius"],
+      "explain": "Blast radius is Lesson 4's term for how much of the cluster a single failure takes down — a key question to ask of any topology diagram, alongside the fastest path and the bottleneck path."
+    },
+    {
+      "id": "dti-06",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Which NCCL collective operation has every GPU contribute data, applies a reduction to it, but leaves each GPU holding only its own shard of the result rather than the full reduced result?",
+      "options": [
+        "ReduceScatter",
+        "AllReduce",
+        "AllGather",
+        "Broadcast",
+        "All-to-all",
+        "Barrier"
+      ],
+      "correctIndex": 0,
+      "explain": "ReduceScatter reduces contributions from every GPU but leaves each GPU holding only its own shard of the result — exactly the operation FSDP uses to shard gradients.",
+      "distractorExplain": "AllReduce also reduces across every GPU, but it finishes by giving every GPU the complete, identical reduced result, not just one shard. That full-result behavior is exactly what ReduceScatter deliberately skips, which is why FSDP pairs ReduceScatter (shard the gradients) with a later AllGather (reconstruct full parameters) instead of using AllReduce directly."
+    },
+    {
+      "id": "dti-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "T_comm ≈ 2 × (N - 1) / N × (S / β)",
+      "prompt": "As more GPUs join a ring AllReduce, per-GPU communication time in this formula stays roughly flat rather than shrinking. Why doesn't adding more GPUs reduce the per-GPU share of T_comm?",
+      "options": [
+        "Because (N-1)/N approaches 1 as N grows, so the formula converges toward a constant rather than shrinking toward zero",
+        "Because adding more GPUs increases S, the total payload, proportionally",
+        "Because NCCL deliberately throttles bandwidth once more than 64 GPUs are involved",
+        "Because β, the per-link bandwidth, decreases as more GPUs are added to the ring"
+      ],
+      "correctIndex": 0,
+      "explain": "As N grows large, (N-1)/N approaches 1, so the per-GPU communication time stays roughly constant regardless of cluster size — which is exactly why compute-to-communication ratio gets worse, not better, as you scale out: per-GPU compute time shrinks with more GPUs, but per-GPU communication time doesn't."
+    },
+    {
+      "id": "dti-08",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about why solara-train uses InfiniBand NDR rather than plain Ethernet for its inter-node fabric, per Lesson 9.",
+      "options": [
+        "InfiniBand's credit-based flow control makes it natively lossless, so a sender only transmits once the receiver has confirmed buffer space",
+        "The headline advantage is raw bandwidth — Ethernet simply cannot reach 400 Gb/s per port",
+        "GPUDirect RDMA lets a NIC write directly into GPU memory, skipping a copy through host RAM",
+        "RoCEv2 gives Ethernet the exact same lossless guarantee as InfiniBand with zero extra switch configuration",
+        "A single dropped packet mid-collective on plain TCP/IP Ethernet can stall every GPU in the ring until it's retransmitted"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "InfiniBand's credit-based flow control makes it natively lossless, and GPUDirect RDMA skips the host-RAM copy entirely. A dropped packet on plain TCP/IP Ethernet stalls a ring collective until retransmission finishes. Modern Ethernet can actually match InfiniBand's 400 Gb/s port speed, so bandwidth isn't the real headline difference, and RoCEv2 only approximates losslessness after careful PFC/ECN tuning — it isn't automatic."
+    },
+    {
+      "id": "dti-09",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: nccl-tests reports two bandwidth numbers, algbw and busbw. The one that should be compared against a fabric's real hardware bandwidth limit is ________, because it accounts for the ring AllReduce factor 2(N-1)/N that algbw's simple message-size-over-time calculation ignores.",
+      "acceptedAnswers": ["busbw", "bus bandwidth"],
+      "explain": "busbw is algbw multiplied by the ring AllReduce factor 2(N-1)/N, which is what makes it the number to trust when comparing against hardware limits like InfiniBand NDR's 400 Gb/s per port — algbw alone understates how much data actually moved across the wire."
+    },
+    {
+      "id": "dti-10",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of diagnosing a network bottleneck, per Lesson 11, in the order the Solara ML Platform team actually runs them.",
+      "items": [
+        "Benchmark the fabric directly with nccl-tests, independent of the training job",
+        "Compare busbw, not algbw, against the fabric's rated hardware bandwidth",
+        "Check InfiniBand port counters with ibstat and perfquery for degraded links or climbing CRC errors",
+        "Watch GPU utilization during the collective to confirm the GPUs are actually idle, not just slow"
+      ],
+      "explain": "The team first isolates the fabric with nccl-tests, reads busbw (not algbw) against hardware limits, checks InfiniBand's own port counters for packet-level problems, and finally confirms with GPU utilization that the GPUs are genuinely idle during the slow phase before blaming the network."
+    },
+    {
+      "id": "dti-11",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Match each fat-tree/leaf-spine term from Lesson 10 to what it actually is.",
+      "left": ["Leaf switch", "Spine switch", "Bisection bandwidth", "Oversubscription ratio"],
+      "right": [
+        "Ratio of a leaf switch's downlink capacity to its uplink capacity; 1:1 is non-blocking",
+        "Total bandwidth available between the two halves of a cluster in a worst-case split",
+        "Connects a group of compute nodes directly",
+        "Connects leaf switches to each other; all cross-leaf traffic transits here"
+      ],
+      "correctMap": [2, 3, 1, 0],
+      "explain": "A leaf switch connects directly to a group of compute nodes; a spine switch connects leaf switches to each other. Bisection bandwidth is the total bandwidth available between the two halves of a worst-case split. Oversubscription ratio is a leaf switch's downlink-to-uplink capacity ratio, with 1:1 being non-blocking — the target for training fabrics."
+    },
+    {
+      "id": "dti-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A plain Kubernetes Job runs pods to completion with retries via backoffLimit. Per Lesson 12, why isn't a plain Job enough for launching Solara-70B's 64-pod training run?",
+      "options": [
+        "A Job can only run a single pod, never 64 at once",
+        "A Job has no concept of pods that must start together, discover each other's addresses, and fail together mid-collective",
+        "A Job cannot use container images that include PyTorch",
+        "A Job always restarts every pod in the group whenever any single pod fails, which wastes GPU time"
+      ],
+      "correctIndex": 1,
+      "explain": "A Job runs pods to completion with retry, but it has no concept of a group of pods that must start together, discover each other's network addresses, and fail together mid-collective — exactly the gap the Kubeflow Training Operator's PyTorchJob closes with a Master/Worker split and injected rendezvous env vars."
+    },
+    {
+      "id": "dti-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "In the sbatch script Solara AI uses to submit a training job to Slurm, what specifically does srun do that sbatch by itself does not?",
+      "options": [
+        "It launches the actual parallel step — one copy of torchrun per node — across the nodes Slurm has already allocated to the job",
+        "It submits the batch script to Slurm's queue and returns immediately",
+        "It sets the job's wall-clock time limit",
+        "It selects which partition the job runs on"
+      ],
+      "correctIndex": 0,
+      "explain": "sbatch submits the whole script as a job and returns immediately, running whenever Slurm schedules it. srun is what actually launches a parallel step — one copy of the command per node or task — once that allocation already exists, which is why the sbatch script calls srun torchrun rather than torchrun directly."
+    },
+    {
+      "id": "dti-14",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about gang scheduling and Volcano's PodGroup, per Lesson 15.",
+      "options": [
+        "Gang scheduling places a job's pods only once there is enough free capacity for all of them at once",
+        "minMember sets the minimum number of pods that must be schedulable together before any of them are placed",
+        "Kubernetes' default scheduler already provides this all-or-nothing guarantee without Volcano",
+        "Partial scheduling is harmless for a PyTorchJob because torchrun's rendezvous can start training with whichever ranks happen to be ready",
+        "Two large jobs both allowed to partially schedule at once can deadlock, each holding GPUs the other needs"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "Gang scheduling's all-or-nothing rule, expressed through minMember, only places a job's pods once the whole group can fit at once — and without it, two large jobs partially scheduled at the same time can deadlock, each holding GPUs the other needs. Kubernetes' default scheduler places pods one at a time with no such guarantee, and torchrun's rendezvous blocks on every rank joining — it can't start training with only some ranks present."
+    },
+    {
+      "id": "dti-15",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in a Volcano Queue object, the ________ field sets a queue's relative share of the cluster when multiple queues want capacity at once, while the capability field caps the absolute amount that queue can ever use.",
+      "acceptedAnswers": ["weight"],
+      "explain": "weight sets the relative share a queue gets when multiple queues compete for the cluster at once (language-modeling's weight: 2 versus multimodal's weight: 1), while capability is a separate, absolute GPU cap so no queue can be starved entirely even by a higher-weight neighbor."
+    },
+    {
+      "id": "dti-16",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these events in order for a gang-scheduled job that needs more nodes than currently exist, per Lesson 17.",
+      "items": [
+        "A gang-scheduled PodGroup needs 64 nodes, but only 40 currently exist, so Volcano holds every pod Pending",
+        "Karpenter sees the Pending pods and provisions the missing 24 nodes to match the NodePool's requirements",
+        "Once all 64 nodes are Ready, Volcano releases the gang's pods to be scheduled together",
+        "The job starts running with its full 512-GPU allocation"
+      ],
+      "explain": "Gang scheduling controls when pods are placed (all 64 together or none), while autoscaling controls how many nodes exist to place them on. Pending pods signal Karpenter to provision the shortfall, and only once every node is Ready does Volcano release the gang to actually start — the two systems compose without any special integration between them."
+    },
+    {
+      "id": "dti-17",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "What does torch.distributed.checkpoint (DCP) do differently from a plain torch.save when saving Solara-70B's sharded FSDP state?",
+      "options": [
+        "Each rank saves only the shard of state it already holds, in parallel, with metadata that lets it reload onto a different number of ranks later",
+        "It gathers the full model onto a single rank first, then writes one complete file",
+        "It saves checkpoints only to each node's local disk for lower latency",
+        "It skips saving optimizer state entirely to reduce checkpoint size",
+        "It compresses the checkpoint using a lossy quantization pass before writing",
+        "It requires the exact same number of ranks at load time as were used to save it"
+      ],
+      "correctIndex": 0,
+      "explain": "DCP has every rank save only the shard it already holds, directly and in parallel, with metadata describing how the shards reassemble — which is also what lets a later dcp.load reshard onto a different number of ranks than the run that saved it.",
+      "distractorExplain": "Option B — gather everything onto one rank, then write one file — is the naive approach Lesson 19 explicitly rejects: it would force a single rank's memory to momentarily hold the entire 70B-parameter model plus optimizer state and turn the save into a single-rank serialization bottleneck while every other GPU sits idle. DCP's entire design point is avoiding that gather step."
+    },
+    {
+      "id": "dti-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "At a conservative 2% annualized GPU failure rate across solara-train's 512 GPUs, Lesson 18 estimates roughly 10 fleet-wide GPU failures per year. Why is that number so much higher than the 2% per-GPU rate might suggest on its own?",
+      "options": [
+        "2% is actually the hourly failure rate, not the annual one, and the lesson converts it incorrectly",
+        "H100s fail at a much higher rate than other GPU generations, independent of fleet size",
+        "The probability that at least one of many GPUs fails compounds across the whole fleet, the same logic as a shared-birthday problem in a large room",
+        "The number includes software bugs, which are unrelated to hardware failure rate"
+      ],
+      "correctIndex": 2,
+      "explain": "An individually small per-GPU failure probability compounds once you have 512 GPUs running simultaneously — the same logic as the probability that at least one person in a large room shares your birthday. That compounding, not a higher underlying rate, is why 512 × 0.02 ≈ 10 expected failures a year is a reasonable estimate to plan around rather than a surprise."
+    },
+    {
+      "id": "dti-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Per Lesson 21, why does Solara AI keep a PyTorchJob's Master (rank 0) on an on-demand node instead of spot, while Worker replicas run on spot capacity?",
+      "options": [
+        "On-demand nodes are required for any node running NCCL",
+        "Losing the Master loses the job's whole coordination point — the rendezvous address and checkpoint writes — not just one worker's GPUs",
+        "Spot instances cannot run rank 0 for a technical reason enforced by torchrun",
+        "The Master needs more GPU memory than a spot instance can provide"
+      ],
+      "correctIndex": 1,
+      "explain": "The Master anchors the rendezvous address and drives checkpoint writes. If its node is reclaimed, the entire job loses its coordination point, not just one worker's worth of GPUs — which is why only Workers, individually replaceable and covered by elastic training, run on the discounted but reclaimable spot capacity."
+    },
+    {
+      "id": "dti-20",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about torch.distributed.elastic's real limits, per Lesson 22.",
+      "options": [
+        "--max-restarts caps how many times the elastic agent retries re-forming the group before failing the job for real",
+        "--nnodes=1:64 means the job prefers to run with as few nodes as possible",
+        "Elastic training can resume the exact in-flight step that was running when a Worker disappeared",
+        "Solara AI sets the floor of the nnodes range well above 1, because training at a handful of nodes would be too slow to be worth continuing",
+        "A Worker that keeps flapping — reclaimed, rejoined, reclaimed again — can eventually exhaust the restart budget and fail the job"
+      ],
+      "correctIndices": [0, 3, 4],
+      "explain": "max-restarts caps retries before the job fails for real, and a repeatedly-flapping Worker can exhaust that budget. Solara AI sets the nnodes floor well above 1 because training at a handful of nodes isn't worth continuing versus waiting for full capacity. --nnodes=1:64 is a permitted range, not a preference for fewer nodes, and the in-flight step running when a Worker disappears is lost — training resumes from the last checkpoint, not the exact interrupted step."
+    },
+    {
+      "id": "dti-21",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: kubectl cordon marks a node unschedulable without touching what's running on it, while kubectl ________ additionally evicts the node's existing pods so hardware diagnostics can proceed.",
+      "acceptedAnswers": ["drain"],
+      "explain": "kubectl drain evicts a node's existing pods on top of what cordon already does, so a repair ticket or hardware diagnostics can proceed without any workload still depending on that node."
+    },
+    {
+      "id": "dti-22",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Match each term from Lesson 23's node-failure response to what it actually is.",
+      "left": ["Cordon", "Drain", "Node-level health check", "Failure-to-recovery timeline"],
+      "right": [
+        "Evicting a node's existing pods so it can be safely removed or repaired",
+        "Marking a node unschedulable for new pods without evicting what's already running",
+        "Detecting hardware degradation independent of any specific running job",
+        "The full sequence from detecting a bad node through resuming training at full scale"
+      ],
+      "correctMap": [1, 0, 2, 3],
+      "explain": "Cordon marks a node unschedulable without evicting anything already running. Drain additionally evicts existing pods. A node-level health check detects hardware degradation independent of any specific job. The failure-to-recovery timeline is the full sequence tying detection, cordon/drain, elastic re-formation, and checkpoint resume together."
+    },
+    {
+      "id": "dti-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Solara-70B's data loader on a node can only sustain half the throughput the batch-size/step-time math in Lesson 24 requires. What actually happens to the training job?",
+      "options": [
+        "torchrun immediately fails the job with an out-of-memory error",
+        "NCCL automatically reduces the batch size to match the slower loader",
+        "The job's loss curve diverges within a few steps",
+        "The job doesn't crash — it just quietly trains at half speed while GPUs sit partially idle waiting for data"
+      ],
+      "correctIndex": 3,
+      "explain": "Data loading throughput is a hard requirement derived from batch size and step time, not something defaults guarantee. A loader that only sustains half the required rate doesn't crash the job — it just leaves GPUs idling part of every step, training at half speed in a way that's invisible to a casual glance at nvidia-smi."
+    },
+    {
+      "id": "dti-24",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about object, block, and parallel-filesystem storage for training data, per Lesson 26.",
+      "options": [
+        "Block storage (EBS) attaches to a single instance, so it can't serve as shared training-data storage across 64 nodes at once",
+        "S3's throughput scales horizontally with more prefixes, but each individual request still carries real latency, typically tens of milliseconds",
+        "FSx for Lustre's S3 data repository association lazily loads objects the first time a job reads them, then serves later reads from FSx's own storage",
+        "Local NVMe is used as the shared dataset store across all 64 nodes at Solara AI",
+        "Object storage is the right choice for shared, concurrent, low-latency access across many nodes, which is why Solara AI skips FSx entirely"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "EBS-style block storage attaches to one instance and can't serve as shared storage across 64 nodes. S3's throughput scales horizontally with more prefixes, but per-request latency remains real. FSx for Lustre's data repository association lazily loads from S3 on first read, then serves from its own SSD storage after. Local NVMe handles OS scratch and temp files, never the shared dataset, and Solara AI layers FSx on top of S3 rather than skipping it."
+    },
+    {
+      "id": "dti-25",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 25, the Solara ML Platform team's rule is that the number of shards should significantly ________ the total worker count across the job, so every worker can move to a fresh shard without the whole job waiting on stragglers.",
+      "acceptedAnswers": ["outnumber", "exceed"],
+      "explain": "With 64 nodes × 8 workers per node (512 concurrent readers), shard count needs to significantly outnumber that worker count — roughly 1,000+ shards — so no worker ever has to wait on a shard someone else is still streaming through."
+    },
+    {
+      "id": "dti-26",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each data-loader bottleneck cause from Lesson 27 to its telltale symptom.",
+      "left": ["Too few num_workers", "CPU-bound preprocessing", "pin_memory=False or missing", "Storage throughput, not CPU"],
+      "right": [
+        "Node-level CPU utilization pegged near 100% while GPU utilization dips",
+        "CPU and GPU both under-utilized at once, with time clearly spent waiting on I/O",
+        "Step time improves roughly linearly as the setting increases, up to a point",
+        "A visible gap between batch-ready-on-CPU and batch-visible-to-GPU in a profiler trace"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "Too few num_workers shows up as step time improving roughly linearly as the worker count increases, up to a ceiling. CPU-bound preprocessing pegs node CPU near 100% while GPU utilization dips. Missing pin_memory shows a visible gap between a batch being ready on CPU and visible to the GPU in a profiler trace. Storage-throughput limits leave CPU and GPU both under-utilized at once, with time clearly spent waiting on I/O."
+    },
+    {
+      "id": "dti-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "A solara-train node shows high DCGM_FI_DEV_GPU_UTIL but unusually low DCGM_FI_PROF_PIPE_TENSOR_ACTIVE during a training step. What does that combination actually indicate, per Lesson 29?",
+      "options": [
+        "The GPU is at 100% of its theoretical peak FLOPs, the best possible state",
+        "DCGM is misconfigured and the two metrics should always be identical",
+        "The GPU is busy running some kernel, but not doing much useful tensor-core compute — likely data loading, communication, or kernel inefficiency upstream",
+        "The GPU has overheated and throttled itself"
+      ],
+      "correctIndex": 2,
+      "explain": "GPU_UTIL only answers whether a kernel was running at all; PIPE_TENSOR_ACTIVE is the closer proxy for real tensor-core compute efficiency. High GPU_UTIL paired with low PIPE_TENSOR_ACTIVE is a specific signal that the GPU 'looks' busy without doing much useful FLOPs — pointing at data loading, communication, or inefficient kernels, not peak performance or overheating."
+    },
+    {
+      "id": "dti-28",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about cost attribution on solara-train, per Lesson 30.",
+      "options": [
+        "Kubecost can attribute cost by namespace close to for free here, because training-lm and training-mm are already separate namespaces",
+        "GPU cost is attributed to whichever pods actually request GPU resources on a node, proportional to how many GPUs each pod requested",
+        "Shared overhead like the Kubernetes control plane and monitoring stack is always split exactly 50/50 between the two teams regardless of usage",
+        "On a single-tenant cluster, cost attribution would be trivial because the bill and the team are the same thing",
+        "A team keeping its GPUs at only 40% utilization while paying for 64 of them is a cost problem as well as a throughput problem"
+      ],
+      "correctIndices": [0, 1, 3, 4],
+      "explain": "Because training-lm and training-mm are already separate namespaces, Kubecost's default namespace view answers cost close to for free, and GPU cost specifically is attributed proportional to each pod's GPU request. A single-tenant cluster's bill and team are trivially the same thing. Underutilized GPUs are a cost problem, not just a throughput one. Shared overhead is split proportional to resource consumption, not an automatic 50/50."
+    },
+    {
+      "id": "dti-29",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a Prometheus Alertmanager rule for a stalled training run uses a sustained-duration clause like for: 15m rather than firing instantly, specifically to filter out a brief, normal dip such as the one that happens during routine ________.",
+      "acceptedAnswers": ["checkpointing", "checkpoint saves", "a checkpoint"],
+      "explain": "A brief GPU dip during checkpointing is normal and shouldn't page anyone — the sustained for: 15m duration requirement is exactly what filters that kind of normal, short-lived dip out while still catching a genuinely stalled run."
+    },
+    {
+      "id": "dti-30",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of the Lesson 33 capstone — standing up a small training cluster — in the correct order.",
+      "items": [
+        "Install the Kubeflow Training Operator onto the cluster",
+        "Write and apply a PyTorchJob manifest defining Master and Worker replicas",
+        "Confirm torchrun's env vars (MASTER_ADDR, RANK, WORLD_SIZE) were injected automatically rather than setting them by hand",
+        "Wrap the model in FSDP and checkpoint it with torch.distributed.checkpoint"
+      ],
+      "explain": "The capstone installs the Training Operator first so it can watch for PyTorchJob objects, applies the manifest defining Master and Worker replicas, confirms the operator injected the rendezvous env vars automatically rather than setting them by hand, and only then wraps the model in FSDP with DCP checkpointing — the same sequence solara-train itself runs, just at a much smaller scale."
+    }
+  ]
+}

@@ -1,0 +1,598 @@
+{
+  "questions": [
+    {
+      "id": "dbt-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Lesson 1 places analytics engineering 'between' two other roles on a data team. Which pair, and what is each one actually responsible for?",
+      "options": [
+        "A data engineer gets data into the warehouse; a data analyst pulls data out for dashboards and ad hoc queries — analytics engineering is the modeling layer in between",
+        "A data engineer writes dashboards; a data analyst manages infrastructure — analytics engineering replaces both roles entirely",
+        "A data engineer and a data analyst do the same job under different titles — analytics engineering is just a third name for the same work",
+        "A data engineer builds BI dashboards; a data analyst loads raw data — analytics engineering reverses their order"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 1 is explicit: a data engineer gets data into the warehouse (ingestion, pipelines), a data analyst pulls data out (dashboards, ad hoc queries), and analytics engineering is the middle layer — transforming loaded data into clean, tested, documented models analysts and BI tools can trust."
+    },
+    {
+      "id": "dbt-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in a real `dbt run` terminal output, a model that fails shows an ________ line instead of OK, and dbt prints the actual SQL error underneath it.",
+      "acceptedAnswers": ["ERROR", "ERROR line", "an ERROR line"],
+      "explain": "Per Lesson 6, each model's line in dbt run output reports OK on success or ERROR on failure, with the real SQL error printed underneath — and anything downstream of a failed model gets SKIPped rather than built on top of broken data."
+    },
+    {
+      "id": "dbt-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about what changes when a hand-run SQL script (Lesson 2's 'before dbt' example) becomes a dbt model.",
+      "options": [
+        "The hardcoded table name becomes a ref() call that dbt resolves to the right table in whatever environment it's building into",
+        "dbt computes the entire dependency order automatically from every ref() in the project, instead of a person remembering the right run order",
+        "The file becomes testable and documentable through a separate schema.yml, without changing the SQL logic itself",
+        "The underlying SQL logic has to be rewritten using dbt-specific syntax before it can become a model",
+        "A single command (dbt run) replaces 'someone remembers to run the script by hand'"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Lesson 2 is direct that the SQL logic itself doesn't change at all — what changes is everything around it: ref() replaces the hardcoded name, dbt computes run order from ref() calls, tests/docs live in a companion YAML file, and dbt run replaces manual script execution."
+    },
+    {
+      "id": "dbt-04",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each item to whether it's a dbt Cloud feature or a dbt Core feature, per Lesson 3's comparison.",
+      "left": [
+        "Browser-based Studio IDE with no local install",
+        "pip install dbt-core dbt-<adapter>",
+        "Built-in Jobs UI for scheduling",
+        "Your own CI runner (e.g. GitHub Actions) wired up by hand"
+      ],
+      "right": [
+        "dbt Core — you install and configure it yourself",
+        "dbt Cloud — hosted, nothing to install",
+        "dbt Core — always free and open-source, runs wherever you run it",
+        "dbt Cloud — scheduling is built into the platform"
+      ],
+      "correctMap": [1, 0, 3, 2],
+      "explain": "The hosted Studio IDE and built-in Jobs UI are dbt Cloud features; installing via pip and wiring your own CI runner are dbt Core's DIY equivalents — Lesson 3's table lays out exactly this split, even though a .sql file with a ref() call means the same thing in either tool."
+    },
+    {
+      "id": "dbt-05",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these lines from a real `dbt run` terminal session (Lesson 6) in the order they actually appear.",
+      "items": [
+        "Found 2 models, 4 tests, ... 0 sources",
+        "Concurrency: 1 threads (target='dev')",
+        "1 of 2 START table model ... [RUN]",
+        "1 of 2 OK created table model ... [CREATE TABLE (2) in 3.79s]",
+        "Completed successfully",
+        "Done. PASS=2 WARN=0 ERROR=0 SKIP=0 TOTAL=2"
+      ],
+      "explain": "dbt's run output always follows this order: a parse/discovery summary (Found N models...), the concurrency and target line, then a START/OK (or ERROR) pair per model in dependency order, a run-level 'Completed successfully' line, and finally the PASS/WARN/ERROR/SKIP tally — the line to check first."
+    },
+    {
+      "id": "dbt-06",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "What is the primary function of dbt's `ref()` function inside a model's SQL?",
+      "options": [
+        "It resolves, at compile time, to the fully-qualified name of another dbt model in whatever environment is being built, and its calls are what build the project's dependency graph",
+        "It declares a new raw table to dbt so other models can query it",
+        "It aggregates rows across every model that shares the same materialization",
+        "It triggers that model's generic and singular tests to run immediately after compiling",
+        "It loads a CSV file from the seeds folder into the warehouse as a table",
+        "It schedules the model to rebuild on a cron trigger inside dbt Cloud"
+      ],
+      "correctIndex": 0,
+      "explain": "ref() is a Jinja function that dbt replaces, at compile time, with a model's real, fully-qualified table name in the current environment — and because every ref() call is a dependency edge, dbt reads them across the whole project to build the DAG and decide build order automatically.",
+      "distractorExplain": "Option B describes source(), not ref() — declaring a raw table dbt didn't build happens in sources.yml and is queried with source(), a fundamentally different kind of dependency edge than a ref() call to another model."
+    },
+    {
+      "id": "dbt-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A model needs to query `raw.jaffle_shop.orders`, a table loaded by an external process that dbt never built. Per Lesson 7, which function should it use, and why would `ref()` be the wrong choice here even though it also resolves to a table name?",
+      "options": [
+        "source() — because ref() only resolves to other dbt models, and this table was never built by dbt; declaring it as a source instead makes it a real starting node in the lineage graph",
+        "ref() — because ref() and source() are interchangeable once a table physically exists in the warehouse",
+        "source() — because ref() is reserved exclusively for seed-loaded tables",
+        "Neither — raw tables must be queried with a hardcoded table name, since dbt can't resolve external tables at all"
+      ],
+      "correctIndex": 0,
+      "explain": "ref() only ever points at another dbt model; a raw table dbt didn't build is declared as a source and queried with source(). Both are dependency functions, but source() is what makes raw data show up as a real, testable starting (green) node in the DAG instead of an invisible hardcoded reference."
+    },
+    {
+      "id": "dbt-08",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about what belongs inside a staging model, per Lessons 8 and 13.",
+      "options": [
+        "Renaming a source system's cryptic column names to clear, consistent ones",
+        "Casting a string timestamp column to a real timestamp type",
+        "Joining to a second staging model to attach related attributes",
+        "Grouping and aggregating rows to produce summary totals",
+        "A simple, local computation like converting cents to dollars"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "Renaming, type casting, and simple local computations (cents to dollars) are exactly what a staging model is allowed to do. Joins and aggregations are explicitly off-limits at this layer — either one breaks the 1-to-1, atomic-building-block guarantee every downstream model relies on."
+    },
+    {
+      "id": "dbt-09",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a model configured with `{{ config(materialized='________') }}` never becomes its own object in the warehouse at all — dbt inlines it as a CTE into whatever references it.",
+      "acceptedAnswers": ["ephemeral", "ephemeral materialization"],
+      "explain": "Per Lesson 11, ephemeral is the one materialization that produces no real database object — view, table, and incremental all create something queryable on their own; ephemeral is interpolated directly into the referencing query instead."
+    },
+    {
+      "id": "dbt-10",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each materialization to what dbt actually runs against the warehouse for it, per Lesson 11.",
+      "left": ["View", "Table", "Incremental", "Ephemeral"],
+      "right": [
+        "Not a database object at all — inlined as a CTE wherever it's referenced",
+        "CREATE TABLE AS SELECT, fully rebuilt on every dbt run",
+        "Builds once, then only processes new or changed rows on later runs",
+        "CREATE VIEW — no data stored, query re-runs on every select"
+      ],
+      "correctMap": [3, 1, 2, 0],
+      "explain": "View issues CREATE VIEW with nothing stored; table issues a full CREATE TABLE AS SELECT rebuild every run; incremental builds once and only processes new/changed rows after that; ephemeral never becomes a warehouse object at all, just a CTE spliced into the referencing query."
+    },
+    {
+      "id": "dbt-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Staging models are named with a plural entity, like `stg_orders` rather than `stg_order`. Per Lesson 13, why does that pluralization matter?",
+      "options": [
+        "A staging model represents a table of many rows — the plural name reflects the grain it preserves, not a single record",
+        "dbt's compiler rejects singular model names as a reserved-word conflict",
+        "Pluralizing is required so the Lineage graph can distinguish sources from models",
+        "It has no real meaning — it's purely a stylistic preference with no documented reason"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 13 states the convention directly: the plural name reflects that a staging model represents many rows at the source table's grain, not one — consistent with the broader naming-as-a-promise idea Lesson 16 builds on."
+    },
+    {
+      "id": "dbt-12",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: Lesson 14's design principle for the intermediate layer is to narrow the ________, widen the tables — many staging models flowing into one intermediate model, not the other way around.",
+      "acceptedAnswers": ["DAG", "the DAG"],
+      "explain": "'Narrow the DAG, widen the tables' is dbt Labs' stated principle: an intermediate model with several staging models flowing into it is the right shape, while one intermediate model feeding many unrelated downstream models is the warning sign Lesson 14 flags."
+    },
+    {
+      "id": "dbt-13",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the marts layer, per Lesson 15.",
+      "options": [
+        "Marts are deliberately wide and denormalized, packing in precomputed columns like boolean flags so downstream users don't re-derive them",
+        "Naming a mart `orders_per_day` is a documented anti-pattern — that name describes a metric, not an entity",
+        "Creating both `finance_orders` and `marketing_orders` as separate marts for the same entity is the kind of drift the marts layer is designed to prevent",
+        "Every mart must be materialized as an incremental model from the day it's created",
+        "A mart can reference another mart via ref(), as long as the result stays readable"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Marts are intentionally wide/denormalized, time-rollup names and departmental duplicates are both explicit anti-patterns, and marts can build on other marts. Materialization instead starts as a view and only grows to table, then incremental, as real usage demands it — not incremental by default."
+    },
+    {
+      "id": "dbt-14",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each layer to how it's organized into folders, per Lesson 16.",
+      "left": [
+        "Staging models",
+        "Intermediate models",
+        "Marts (plain-noun convention)",
+        "Marts (Kimball-style alternative)"
+      ],
+      "right": [
+        "Grouped by business area once a project has grown past roughly ten marts",
+        "Organized by source system, one subfolder per source",
+        "fct_ for an event/transaction, dim_ for a descriptive entity",
+        "Organized by business grouping, like intermediate/finance/"
+      ],
+      "correctMap": [1, 3, 0, 2],
+      "explain": "Staging is organized by source system; intermediate by business grouping; plain-noun marts get grouped by business area once a project has enough of them; the fct_/dim_ alternative applies Kimball's fact-vs-dimension split to marts naming specifically."
+    },
+    {
+      "id": "dbt-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A twelve-model project is split across five separate layers instead of the usual three. Per Lesson 17, what specifically makes this an 'over-layering' failure rather than extra safety?",
+      "options": [
+        "The extra layers add hops between a question and its answer without each one doing one of the three genuine jobs (simplifying structure, re-graining, or isolating complex logic)",
+        "dbt technically refuses to build a project with more than three layers",
+        "Five layers always cost more in warehouse compute than three layers, regardless of what each layer does",
+        "Over-layering is only a risk in projects with more than a hundred models, not twelve"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 17's layer test is whether a model does a job the layer above or below it can't do as well. A layer added just because 'more structure sounds safer' doesn't pass that test — it adds files to open without adding clarity, the same failure mode as one-big-model, just in the opposite direction."
+    },
+    {
+      "id": "dbt-16",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Which of dbt's four built-in generic tests asserts referential integrity — that every value in a column actually exists in another model's column?",
+      "options": [
+        "relationships",
+        "not_null",
+        "unique",
+        "accepted_values",
+        "source freshness",
+        "singular test"
+      ],
+      "correctIndex": 0,
+      "explain": "relationships is the generic test that checks a foreign key actually resolves — every value in the column exists somewhere in the referenced model's column, per Lesson 18's four built-in generic tests.",
+      "distractorExplain": "accepted_values checks that every value in a column comes from a fixed list you supply, which is a plausible-sounding mix-up — but it has nothing to do with checking a value against another model's column. That cross-table check is specifically what relationships does."
+    },
+    {
+      "id": "dbt-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "A singular test file in `tests/` is run and returns 2 rows. Per Lesson 19, what does that actually mean?",
+      "options": [
+        "The test fails, and those 2 rows are the specific records that violate the assertion the query encodes",
+        "The test passes, because returning any rows at all confirms the assertion ran successfully",
+        "The test is inconclusive until it's run a second time",
+        "dbt automatically deletes those 2 rows from the underlying model to fix the violation"
+      ],
+      "correctIndex": 0,
+      "explain": "Every test — generic or singular — follows the same rule: the underlying select should return zero rows to pass. Any returned rows are failures, and for a singular test those exact rows are handed back for debugging, which is why the payments-never-negative example returns the offending order_id directly."
+    },
+    {
+      "id": "dbt-18",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about writing descriptions in schema.yml, per Lesson 20.",
+      "options": [
+        "A folded block (>) collapses interior line breaks into one continuous paragraph",
+        "A literal block (|) preserves interior line breaks, useful when a description needs its own structure",
+        "Every single column in a model must have a written description, or the docs site won't generate",
+        "Descriptions and data_tests can live on the exact same column, in the same YAML block",
+        "A docs block lets a long description reference a separate Markdown file instead of inlining everything"
+      ],
+      "correctIndices": [0, 1, 3, 4],
+      "explain": "> folds lines into a paragraph, | preserves them, docs blocks reference external Markdown for long descriptions, and descriptions sit right next to data_tests on the same column. Undocumented columns still appear in the generated docs site with warehouse-introspected metadata — documentation isn't actually required for the site to build."
+    },
+    {
+      "id": "dbt-19",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: an exposure's `depends_on` list can reference a ref(), a source(), or a ________() call — letting an exposure declare that a dashboard depends on a defined metric too.",
+      "acceptedAnswers": ["metric", "metric()"],
+      "explain": "Lesson 22's real YAML example lists `metric('count_orders')` alongside ref() and source() calls inside depends_on — an exposure can depend on any of the three kinds of dbt resource."
+    },
+    {
+      "id": "dbt-20",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 4 concept to the question it specifically answers about a model.",
+      "left": ["A generic or singular test", "A column description", "An exposure", "dbt docs generate"],
+      "right": [
+        "Compiles everything into one browsable, always-current site",
+        "Is this data actually correct?",
+        "What does this column mean?",
+        "Who downstream actually depends on this, and would they notice if it broke?"
+      ],
+      "correctMap": [1, 2, 3, 0],
+      "explain": "Tests answer whether the data is trustworthy; descriptions answer what it means; exposures answer who depends on it; dbt docs generate is the command that compiles all of that — tests, descriptions, exposures, lineage — into one real site, per Lesson 21."
+    },
+    {
+      "id": "dbt-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "A team keeps hand-editing a seed CSV every week because the reference data it holds keeps changing. Per Lesson 23, what is that a sign of?",
+      "options": [
+        "The data should be a real source loaded by an ingestion pipeline and declared with source(), not a seed",
+        "The CSV just needs to be converted to a larger file format before being reseeded",
+        "Seeds are specifically designed for frequently-changing data, so this is the correct use of the pattern",
+        "The team should switch from dbt seed to dbt run to load it faster"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 23's own test for 'should this be a seed' is that the data changes rarely and nobody else owns it. A seed someone is editing every week has failed that test — it belongs in a real source, loaded by an ingestion pipeline, not a hand-typed CSV committed to Git."
+    },
+    {
+      "id": "dbt-22",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a dbt snapshot marks a captured row as still the current version when its ________ column is null.",
+      "acceptedAnswers": ["dbt_valid_to", "dbt valid to"],
+      "explain": "dbt_valid_to records when a version was superseded; a null value means nothing has superseded it yet, which is exactly how Lesson 24 defines 'still current' for a snapshot row."
+    },
+    {
+      "id": "dbt-23",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the three incremental strategies from Lesson 26.",
+      "options": [
+        "merge updates matched rows and inserts new ones in a single statement, keyed on unique_key",
+        "delete+insert is a better fit than merge when a whole batch naturally replaces a whole prior batch",
+        "append is the cheapest strategy, but it's only safe for genuinely immutable, append-only data",
+        "append requires a unique_key just like merge does, so it can tell updates from new rows",
+        "On a warehouse where MERGE is unsupported or slow, delete+insert is the documented fallback"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "merge matches on unique_key to update or insert; delete+insert replaces whole batches and is the fallback where MERGE isn't supported; append is cheapest but produces duplicates on mutable data because it does no matching at all — which is exactly why it needs no unique_key in the first place, unlike option D claims."
+    },
+    {
+      "id": "dbt-24",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Match each incremental-model gotcha (or its fix) from Lesson 27 to the correct description.",
+      "left": ["Schema drift", "Late-arriving data", "dbt run --full-refresh", "A lookback window"],
+      "right": [
+        "Re-checks a few recent days every run, trading some redundant work for catching rows that arrive after the watermark",
+        "A row reaches the source after the watermark already advanced past its timestamp, so it's silently never picked up",
+        "Drops and rebuilds the target table from scratch, ignoring is_incremental() entirely",
+        "A new or changed source column is invisible in rows already built before the change"
+      ],
+      "correctMap": [3, 1, 2, 0],
+      "explain": "Schema drift leaves old rows unaware of a new column; late-arriving data gets silently skipped once the watermark has passed its timestamp; --full-refresh fixes both by rebuilding everything from scratch; a lookback window is the cheaper ongoing mitigation for late arrivals specifically."
+    },
+    {
+      "id": "dbt-25",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "What does configuring a model as `materialized='incremental'` actually change, compared to `materialized='table'`?",
+      "options": [
+        "After the first build, it processes only new or changed rows on later runs, instead of rebuilding the entire table every time",
+        "It stores no data at all, re-running the full query every time the model is selected from",
+        "It becomes inlined as a CTE into whatever model references it, instead of a real table",
+        "It automatically loads a CSV file from the seeds directory into the model",
+        "It runs the model's generic tests on a shorter schedule than a plain table model",
+        "It changes the model's folder location from marts/ to a dedicated incremental/ folder"
+      ],
+      "correctIndex": 0,
+      "explain": "Per Lesson 25, a table materialization drops and rebuilds everything from scratch on every dbt run; incremental builds the table once and, on every run after that, only processes rows identified as new or changed — avoiding a full reprocessing of history every time.",
+      "distractorExplain": "Option B describes a view, not incremental — a view stores nothing and recomputes on every select. An incremental model is the opposite: it does store data, specifically so it doesn't have to recompute everything on every run."
+    },
+    {
+      "id": "dbt-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Inside a dbt model's SQL, `{{ ref('stg_orders') }}` and `{% if is_incremental() %}` use two different Jinja delimiters. What's the actual difference between them, per Lesson 28?",
+      "options": [
+        "{{ }} is an expression that renders to a value dropped into the SQL; {% %} is a statement for control flow that renders to nothing itself",
+        "{{ }} is for control flow like if/for; {% %} is for values like table references",
+        "Both delimiters do exactly the same thing — the choice is purely stylistic",
+        "{{ }} only works inside models; {% %} only works inside macros"
+      ],
+      "correctIndex": 0,
+      "explain": "{{ }} always renders to something — a table reference, a string, a number — while {% %} is a statement that controls whether the SQL inside it appears at all, producing no value of its own. ref() and config() use {{ }}; if and for use {% %}."
+    },
+    {
+      "id": "dbt-27",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a macro that needs to hand back a real Python value, like a list, instead of just rendered text, uses `{{ ________(value) }}` inside its body.",
+      "acceptedAnswers": ["return", "return()"],
+      "explain": "Per Lesson 29, {{ return(value) }} is what lets a macro hand back an actual Python list or dict for use elsewhere in Jinja (like a {% for %} loop), instead of the macro's rendered text being the output, which is the default behavior when return() isn't used."
+    },
+    {
+      "id": "dbt-28",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about dbt_utils macros, per Lesson 31.",
+      "options": [
+        "generate_surrogate_key() compiles to whatever hashing function the target warehouse actually supports, unlike a hand-written Snowflake HASH() call",
+        "date_spine() generates a full date range as rows with no source table required",
+        "star() selects every column from a relation except the ones you explicitly list",
+        "union_relations() requires every input table to have an identical set of columns, or it raises an error",
+        "pivot() turns distinct row values into columns, the same shape as a hand-written for-loop generating one CASE WHEN per status"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "generate_surrogate_key is cross-warehouse, date_spine needs no source table, star() excludes named columns, and pivot() is the generalized version of the manual status-column loop from Lesson 28. union_relations is actually built for the opposite case — tables with overlapping but not identical columns, filling missing ones with null instead of erroring."
+    },
+    {
+      "id": "dbt-29",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each dbt_utils macro to the job it does, per Lesson 31.",
+      "left": ["generate_surrogate_key()", "date_spine()", "star()", "union_relations()"],
+      "right": [
+        "Combines tables with overlapping but not identical columns, filling gaps with null",
+        "Selects all columns from a relation except the ones listed",
+        "Produces a cross-warehouse surrogate key from one or more columns",
+        "Generates a full calendar of dates as rows, with no source table needed"
+      ],
+      "correctMap": [2, 3, 1, 0],
+      "explain": "generate_surrogate_key replaces a hand-rolled, warehouse-specific HASH() call; date_spine produces a date range with no source table; star() selects everything except named exclusions; union_relations combines mismatched-but-overlapping tables, null-filling any missing column."
+    },
+    {
+      "id": "dbt-30",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "A dbt Cloud CI job builds a pull request's changes into a temporary, PR-scoped schema instead of the shared dev or prod schema. Per Lesson 33, why does that specific isolation matter?",
+      "options": [
+        "So a CI run can never write to the tables a real dashboard queries, and the temp schema gets cleaned up regardless of whether the PR passes or fails",
+        "Because dbt Cloud physically cannot connect to the production schema from a CI job",
+        "So that two different pull requests are forced to build in the exact same schema and catch conflicts early",
+        "Because temporary schemas run queries faster than the production schema for any workload"
+      ],
+      "correctIndex": 0,
+      "explain": "The whole point of a PR-scoped temp schema is that a CI run — however many models it builds — never touches dev or prod. It's created fresh for that PR, torn down afterward, and nothing it does can break a dashboard someone is actually relying on."
+    },
+    {
+      "id": "dbt-31",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: the node-selection syntax `state:modified________` selects not just the resources that changed, but everything downstream of each one too.",
+      "acceptedAnswers": ["+"],
+      "explain": "state:modified alone selects only resources that differ from a comparison manifest; adding the + per Lesson 35 extends the selection to everything built on top of those changes, since a downstream model still needs re-testing even if its own SQL didn't change."
+    },
+    {
+      "id": "dbt-32",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about Slim CI and deferral, per Lesson 35.",
+      "options": [
+        "state:modified selects only resources that differ from a known comparison manifest",
+        "Deferral resolves ref() calls for unselected models against a prior run's state, typically production, instead of requiring them to exist in the current partial run",
+        "state:modified+ alone is enough to guarantee every ref() in a partial run resolves correctly, with no deferral needed",
+        "dbt Cloud's CI job applies state:modified+ and deferral automatically once enabled, without you hand-writing the --state path",
+        "A manifest.json is the compiled representation of a project that state: selectors diff against"
+      ],
+      "correctIndices": [0, 1, 3, 4],
+      "explain": "state:modified+ only decides which nodes to build — it's deferral that lets an unselected, downstream dependency's ref() still resolve, by reading it from a prior run instead of requiring it in the current partial build. Without deferral, a partial run's ref() calls to unselected models would fail."
+    },
+    {
+      "id": "dbt-33",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Per Lesson 36, put the environments a single pull request touches in the order it actually moves through them, from first development to a production run.",
+      "items": [
+        "Developed in the engineer's personal Development environment, scoped to their own branch",
+        "CI builds and tests the change in a temp schema, deferring to Production's last known-good state",
+        "The pull request is reviewed and merged into the main branch",
+        "A scheduled job runs the merged change for real in the Production environment"
+      ],
+      "explain": "A change starts in a developer's own Development environment, gets validated by a Slim CI run deferring to Production's last good state, merges once approved, and only then runs for real in Production via a scheduled job — exactly the chain Lesson 36 traces end to end."
+    },
+    {
+      "id": "dbt-34",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Three BI tools all query the same clean, tested `fct_orders` mart, but each computes a 'revenue' number that disagrees with the other two. Per Lesson 37, what's actually wrong here, given that the underlying mart itself is correct?",
+      "options": [
+        "Each tool independently defines what 'revenue' means (include cancellations or not, subtract discounts or not), and that definition lives scattered across BI tools instead of in one reviewed place",
+        "fct_orders itself must contain duplicate rows, since three correct tools couldn't otherwise disagree",
+        "At least one of the three BI tools has a bug in its SQL connector",
+        "The mart needs an additional generic test to force all three numbers to match automatically"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 37's whole point is that the mart being clean and tested doesn't fix this — the disagreement comes from the metric's definition living separately in each tool instead of in one version-controlled place. A semantic layer fixes this by moving that definition upstream of every tool, not by adding a test to the mart."
+    },
+    {
+      "id": "dbt-35",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: joining a fact table to a snapshot on a key alone, with no effective-dating condition, causes every fact row to ________ once per historical version the snapshot has captured for that key.",
+      "acceptedAnswers": ["duplicate", "multiply", "fan out"],
+      "explain": "Per Lesson 39, a snapshot holds multiple rows per key — one per captured version. Without a condition matching the snapshot's valid window to the fact row's own timestamp, the join matches every historical version at once, multiplying (fanning out) every fact row instead of returning exactly one match."
+    },
+    {
+      "id": "dbt-36",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about test severity and freshness checks, per Lesson 40.",
+      "options": [
+        "Every test's severity defaults to error, which stops the build on failure, unless explicitly downgraded",
+        "severity: warn reports a failing test without stopping the build",
+        "dbt_utils.equal_rowcount asserts that two models have the same number of rows",
+        "A not_null test will also catch a source table that simply stopped receiving new rows",
+        "Source freshness checks how old the newest row is, independent of whether the existing rows are individually valid"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Severity defaults to error and warn downgrades a failure to a report-only status; equal_rowcount checks row-count parity; freshness checks staleness regardless of whether existing rows pass their own checks. A not_null test says nothing about data that stopped arriving — the rows that are there are still perfectly valid non-null rows, which is exactly the gap freshness checks exist to close."
+    },
+    {
+      "id": "dbt-37",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Match each dbt Semantic Layer / MetricFlow term to its definition, per Lesson 38.",
+      "left": ["Entity", "Dimension", "Measure", "Metric"],
+      "right": [
+        "A column you'd group or filter by, categorical or time-based",
+        "A named, reusable calculation built on top of one or more measures",
+        "A key column in a semantic model, primary or foreign",
+        "A column you'd aggregate — the raw input a metric is built from"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "Entities are key columns (primary/foreign); dimensions are what you'd group or filter by; measures are the raw aggregatable input; a metric is the named, reusable calculation (like revenue) built on top of one or more measures, per Lesson 38's semantic_models/metrics YAML."
+    },
+    {
+      "id": "dbt-38",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "The capstone builds a separate `rpt_orders_by_customer` view instead of connecting Power BI directly to `fct_orders` and `dim_customers`. Per Lesson 44, why?",
+      "options": [
+        "fct_orders and dim_customers are built for other dbt models to ref() — full grain, surrogate keys included — while a reporting view is shaped specifically for what a report author actually needs",
+        "Power BI is technically incapable of connecting to a materialized table, only to views",
+        "Marts models can't be queried directly by any external tool under any circumstances",
+        "A reporting view runs faster than a mart purely because it has a different materialization setting"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 44 extends the Snowflake capstone's own 'don't hand BI tools raw tables' principle one layer up: marts are the right foundation but still carry surrogate keys and full grain meant for other models to ref(), not for a report author to filter and group by directly."
+    },
+    {
+      "id": "dbt-39",
+      "type": "fill-in",
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: Lesson 45's recommended portfolio-presentation order is lineage graph, then docs site, then test coverage, then a passing CI run, then the snapshot's history, and finally the ________.",
+      "acceptedAnswers": ["Power BI report", "the Power BI report", "Power BI connection", "Power BI"],
+      "explain": "The six-step walkthrough Lesson 45 recommends ends with the connected Power BI report, after proving the lineage, documentation, tests, CI, and snapshot history are all real and working — the report is the payoff the whole pipeline was built toward."
+    },
+    {
+      "id": "dbt-40",
+      "type": "multi-select",
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about what the capstone (Lesson 41) actually requires as 'done.'",
+      "options": [
+        "At least one intermediate model combining two or more staging models before anything reaches the marts layer",
+        "At least one mart materialized as incremental instead of a full rebuild every run",
+        "A snapshot capturing slowly changing history on at least one dimension",
+        "Power BI connected directly to the marts layer, since the reporting-layer step is optional for 'done'",
+        "Generic tests on key columns, plus at least one singular test encoding a business rule generic tests can't express"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Lesson 41's deliverable list requires an intermediate model, an incremental mart, a snapshot for history, and both generic and singular tests. Lesson 44 is explicit that Power BI should connect through a reporting layer, not directly to the marts tables — skipping that isn't an accepted shortcut for 'done.'"
+    }
+  ]
+}

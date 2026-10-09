@@ -1,0 +1,532 @@
+{
+  "questions": [
+    {
+      "id": "dscap-01",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these five scoping questions in the order Lesson 2 says to ask them when turning the retention head's vague request into a precise prediction problem.",
+      "items": [
+        "What decision will the prediction change? (a ranked list for outreach, not a yes/no verdict on every customer)",
+        "What is the unit of prediction? (one row per customer)",
+        "When is the prediction made? (a fixed snapshot date, 2025-06-30)",
+        "What is the label, and over what window? (cancels between 2025-07-01 and 2025-08-29)",
+        "Who is in scope? (only customers still active at the snapshot)"
+      ],
+      "explain": "Lesson 2 lists these five questions in this exact order, because each later answer depends on the one before it: you can't fix a label window until you've fixed the snapshot date, and you can't define the population until you know what decision the output serves."
+    },
+    {
+      "id": "dscap-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the churn label is defined as a customer whose cancel_date falls after the 2025-06-30 snapshot and on or before ________.",
+      "acceptedAnswers": [
+        "2025-08-29",
+        "2025-08-29."
+      ],
+      "explain": "Lesson 2's SQL computes date('2025-06-30', '+60 days'), which prints 2025-08-29. The label window is therefore 2025-07-01 through 2025-08-29 inclusive, exactly 60 days after the snapshot."
+    },
+    {
+      "id": "dscap-03",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "SELECT COUNT(*), MAX(order_date)\nFROM orders WHERE order_date > ?",
+      "prompt": "Running this check with the 2025-06-30 snapshot against harvest_table.db returns 371 orders, with the latest dated 2025-07-02. What does this tell the pipeline, and what must every later feature query do about it?",
+      "options": [
+        "Orders can be scheduled a day or two ahead of the snapshot in this data, so every feature query must filter order_date <= snapshot or it would use information from the future",
+        "The database's internal clock is wrong and the 371 rows should be deleted before anything else happens",
+        "This proves the extraction pipeline from Lesson 4 has a bug that must be rolled back",
+        "It means the churn label itself needs to be recomputed with a different window"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 2 uses exactly this check to demonstrate the leakage risk: 371 orders are dated up to two days after the snapshot, which happens when boxes are scheduled ahead or extraction runs late. Every feature query in later lessons filters order_date <= snapshot specifically to exclude these rows, rather than treating them as a bug to fix at the source."
+    },
+    {
+      "id": "dscap-04",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every statement that correctly reflects the acceptance criteria and economics Lesson 3 set before any modeling began.",
+      "options": [
+        "The break-even precision, where contacting a customer neither gains nor loses expected value, works out to about 20.8% under the lesson's illustrative cost assumptions",
+        "Contacting every active customer would lose money, because the 15.4% base churn rate sits below the 20.8% break-even",
+        "The ambition target was fixed at the start, before any baseline had been measured",
+        "Accuracy was chosen as the primary metric, since predicting 'nobody cancels' would be a strong result to beat",
+        "Minimum viable success requires precision at k above break-even, with the lower end of a bootstrap confidence interval also above it"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        4
+      ],
+      "explain": "Lesson 3 computes a break-even precision of 15/72, about 20.8%, and shows contacting everyone nets about -14,454 because the 15.4% base rate sits below it. The ambition target was deliberately left unset until baselines existed, because a target invented before seeing the data is a guess. Accuracy is deliberately absent from the metric list, since predicting 'nobody cancels' would be 84.6% accurate and worthless."
+    },
+    {
+      "id": "dscap-05",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly describes a genuine difference between T-SQL and SQLite, as Lesson 4's dialect-comparison table lays out?",
+      "options": [
+        "T-SQL adds days to a date with DATEADD(day, n, @d); SQLite does the equivalent with date(:d, '+n days')",
+        "T-SQL uses LIMIT to return the first N rows, while SQLite uses TOP N",
+        "SQLite enforces strict column types, while T-SQL uses dynamic typing with only a type 'affinity'",
+        "GETDATE() is SQLite's function for the current time, while date('now') is T-SQL's",
+        "SQLite requires a CASE expression to use a comparison as a value, while T-SQL evaluates a comparison directly as 1 or 0",
+        "Named parameters like @snap are SQLite syntax, and SQLite requires positional ? parameters exclusively"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 4's table pairs T-SQL's DATEADD(day, 60, @d) with SQLite's date(:d, '+60 days') for adding days to a date — exactly option A. Every other option takes a real row from that same table and swaps which dialect does which, which is backwards in each case.",
+      "distractorExplain": "Option B reverses the actual pairing: T-SQL uses TOP N to return the first N rows, and SQLite uses LIMIT N — the opposite of what the option claims. Swapping TOP and LIMIT between the two dialects is one of the most common mix-ups for someone moving from T-SQL to SQLite."
+    },
+    {
+      "id": "dscap-06",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: SQLite silently converts the text '$119.8' to a number by reading up to the first non-numeric character, which produces ________ rather than raising an error.",
+      "acceptedAnswers": [
+        "0",
+        "zero"
+      ],
+      "explain": "Lesson 4 shows that casting a dollar-sign string like '$119.8' directly to a number in SQLite reads nothing before the first non-numeric character ('$'), so it silently becomes 0 — no error, no warning, just a wrong number for all 1,406 affected rows."
+    },
+    {
+      "id": "dscap-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "SELECT ROUND(AVG(amount), 4),\n       ROUND(AVG(CAST(REPLACE(amount, '$', '') AS REAL)), 4)\nFROM orders;",
+      "prompt": "This query prints 64.9212 for the first column and 65.5572 for the second. Why do the two averages differ?",
+      "options": [
+        "SQLite casts each '$'-prefixed string to 0 when used directly as a number, so those 1,406 rows pull the naive average down instead of contributing their real amount",
+        "The REPLACE version excludes the 1,406 dollar-sign rows from the average entirely",
+        "ROUND() behaves differently depending on whether CAST is present in the expression",
+        "AVG() automatically ignores text values, so the two queries should have returned the same number"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 4 traces this exact pair of numbers: the naive AVG(amount) treats every '$'-prefixed row as 0, dragging the average down to 64.9212, while stripping the '$' and casting first gives the true average of 65.5572. Both queries use every row; the dollar-sign rows aren't excluded, they're just miscounted as zero in the naive version."
+    },
+    {
+      "id": "dscap-08",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about which Harvest Table signals carried a meaningful association with churn in Lesson 6's exploratory analysis.",
+      "options": [
+        "Customers ordering fewer than 0.5 boxes per week churned at 23.6%, versus 6.0% for those ordering more than 0.9 boxes per week",
+        "Region's churn rate stayed within a tight band (14.2% to 16.0%), with every bar overlapping the overall average, so region carried almost no signal",
+        "Longer tenure protected customers from churn, with customers of 18 months or more churning the least",
+        "Premium-plan customers churned at 21.4%, higher than Family's 11.5%, with non-overlapping error bars",
+        "Age was the single strongest predictor of churn in the exploratory analysis"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Order consistency showed the steepest gradient (23.6% down to 6.0%), region stayed flat around the base rate, and Premium churned clearly higher than Family with non-overlapping error bars. Tenure ran the opposite direction from the claim: 18+ month customers churned MORE (24.9%), not less, which Lesson 6 calls an unexpected finding worth testing rather than assuming. Age had the weakest Spearman correlation of any numeric column (0.017), nowhere near order_rate's -0.173."
+    },
+    {
+      "id": "dscap-09",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each data quirk from the Lesson 7 checkpoint's quirks log to its count and handling.",
+      "left": [
+        "Duplicate customer rows",
+        "Region spellings",
+        "Impossible ages",
+        "Dollar-sign amounts",
+        "Customers who never ordered"
+      ],
+      "right": [
+        "27 customers — kept, with missing behavior features",
+        "1,406 values — stripped of the $ and cast to float",
+        "40 rows — deduplicated on customer_id",
+        "12 values — set missing, then median-imputed",
+        "16 spellings collapsed to 4 — stripped and title-cased"
+      ],
+      "correctMap": [
+        2,
+        4,
+        3,
+        1,
+        0
+      ],
+      "explain": "The Lesson 7 quirks log records: 40 duplicate customer rows deduplicated on customer_id; 16 region spellings collapsed to 4 via strip and title-case; 12 impossible ages set missing then median-imputed; 1,406 dollar-sign amounts stripped and cast; and 27 customers who never ordered kept in the population with missing behavior features rather than dropped."
+    },
+    {
+      "id": "dscap-10",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these Phase 2 steps from Lessons 8 and 9 in the order the capstone actually performs them.",
+      "items": [
+        "Build the modeling table with features computed only from on-or-before-snapshot data",
+        "Split the data into train and test sets before fitting anything, sealing the test set",
+        "Score baselines — the churn-rate dummy, two rule-based rankings, and logistic regression — with cross-validation",
+        "Set the ambition target using evidence from the baselines, now that they exist",
+        "Compare more flexible models, random forest and gradient boosting, against logistic regression with repeated cross-validation"
+      ],
+      "explain": "Lesson 8 builds the feature table, splits before any fitting, scores the baselines, and only then sets an evidence-based ambition target (0.32) rather than guessing one upfront. Lesson 9 picks up from there and compares the more flexible models against that same baseline using repeated cross-validation."
+    },
+    {
+      "id": "dscap-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "random forest - logistic AP: +0.003 | wins 9 of 15 folds\nhist boosting - logistic AP: -0.012 | wins 6 of 15 folds",
+      "prompt": "The random forest's average precision beats logistic regression's by 0.003 on average, winning 9 of 15 cross-validation folds. What does Lesson 9 conclude from this?",
+      "options": [
+        "The gap is small next to the fold-to-fold standard deviation (0.03 to 0.06), so it's a coin flip rather than a real difference — not a case of 'highest number wins'",
+        "The random forest is conclusively the better model and should be the only finalist carried forward",
+        "Winning more folds than it loses proves statistical significance regardless of how small the gap is",
+        "Gradient boosting should be preferred instead, since it's the most flexible of the three models"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 9 explicitly calls the forest's lead 'a coin flip' because 0.003 is tiny next to a 0.03-0.06 fold-to-fold standard deviation. Rather than crowning a single winner, it carries two finalists, logistic regression and the random forest, into tuning — and gradient boosting, which actually trailed both, drops out."
+    },
+    {
+      "id": "dscap-12",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about Lesson 10's tuning process and its outcome.",
+      "options": [
+        "The tuning rule was written before seeing results: ship logistic regression unless the tuned random forest's cross-validated average precision beats it by more than 0.02",
+        "The tuned forest beat logistic regression's best score by 0.010 average precision, which was below the 0.02 bar, so logistic regression was selected",
+        "The sealed test set was opened multiple times during tuning to track progress against each candidate",
+        "Calibration matters here because the retention team acts on the predicted probabilities directly, not just the ranking, when applying the 0.208 break-even cutoff",
+        "Logistic regression's hyperparameter search showed no plateau — every value of C tested produced a meaningfully different score"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Lesson 10 writes the selection rule before running any search, then reports the forest beating logistic's best C value by only 0.010 average precision, below the 0.02 bar, so logistic regression ships. The test set is opened exactly once, at evaluation time, not repeatedly during tuning. Logistic regression's grid plateaus from C=0.03 upward, with C=3's score only 0.002 above C=0.1's — the opposite of 'no plateau.'"
+    },
+    {
+      "id": "dscap-13",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: on the sealed test set, the final logistic regression model reached a precision of 0.405 among the top 10% of scored customers, clearing the 20.8% break-even by a lift of about ________ times the base churn rate.",
+      "acceptedAnswers": [
+        "2.62",
+        "2.6",
+        "2.62x",
+        "2.6x"
+      ],
+      "explain": "Lesson 10's test-set evaluation reports 'top 10% = 74 customers: precision 0.405, lift 2.62x, recall 0.263' — the model's top decile churns at 2.62 times the overall rate."
+    },
+    {
+      "id": "dscap-14",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Match each explanation method from Lesson 11 to what it actually reveals about the churn model.",
+      "left": [
+        "Standardized logistic coefficients",
+        "Permutation importance",
+        "SHAP",
+        "The bad_orders follow-up experiment"
+      ],
+      "right": [
+        "Ranks order_rate and tenure_days as the two biggest drops in average precision when a column is shuffled on held-out data",
+        "Shows the change in log-odds of churn per one-standard-deviation increase in a feature, e.g. -0.48 for order_rate",
+        "Assigns each feature a log-odds contribution to one specific customer's prediction, on top of a base value",
+        "Shows that tenure correlates 0.70 with the cumulative late-or-refunded order count, and that adding that count pushes tenure out of the top coefficients"
+      ],
+      "correctMap": [
+        1,
+        0,
+        2,
+        3
+      ],
+      "explain": "Coefficients give a standardized per-feature log-odds change (-0.48 for order_rate). Permutation importance shuffles held-out columns and finds order_rate and tenure_days cost the most average precision when scrambled. SHAP attributes a log-odds contribution to one customer's specific prediction. The bad_orders experiment tests the tenure puzzle directly, finding a 0.70 correlation that explains tenure's effect as a stand-in for accumulated delivery problems."
+    },
+    {
+      "id": "dscap-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "The churn model's break-even probability (0.208) lives in the model card, but the 10% capacity limit is applied only inside the batch job, never inside the single-customer /score API. Why does Lesson 12 split responsibility this way?",
+      "options": [
+        "A capacity limit like 'the top 10% of the list' is a property of a whole list of customers; a single-customer API call has no list to rank against, so it can only report a probability against the fixed break-even",
+        "The API is not allowed to see the break-even probability at all",
+        "Capacity limits can only be computed inside a Docker container, never inside Python directly",
+        "The model card only stores the break-even value for documentation; it has no actual effect on scoring"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 12 states this directly: the capacity limit 'can only be applied to a whole list, so it belongs to the batch job, not to an API that sees one customer at a time.' The break-even probability, by contrast, is a property of the model itself and travels with every single prediction, API or batch."
+    },
+    {
+      "id": "dscap-16",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the packaging and deployment work in Lesson 12.",
+      "options": [
+        "The scoring function raises an error if a required feature column is missing from the input",
+        "The Pydantic-based API contract returns a 422 response for an unknown plan value, rather than scoring it silently",
+        "A joblib-saved pipeline can safely be loaded with any version of scikit-learn, regardless of what version trained it",
+        "The batch job applied the capacity limit and found 899 customers above break-even but wrote only 369 to the final contact list",
+        "Golden examples exist so the deployment can be tested against expected outputs after reloading the model in a fresh process"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3,
+        4
+      ],
+      "explain": "score_customers() raises ValueError on missing columns, and the strict Literal plan field returns a 422 on an unknown value, as the lesson's own test output shows. A joblib file must be loaded with the exact scikit-learn version that saved it; mismatches are explicitly called out as a caution, not a safety guarantee. The batch job found 899 customers above break-even but the capacity limit cut the final list to 369. Golden examples exist precisely to verify reproduced predictions after a fresh reload."
+    },
+    {
+      "id": "dscap-17",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in Lesson 13's monitoring plan, a Population Stability Index at or above ________ is treated as an ALERT, signaling a significant distribution shift rather than something merely worth watching.",
+      "acceptedAnswers": [
+        "0.25"
+      ],
+      "explain": "Lesson 13's status() function and threshold table both set the ALERT cutoff at PSI >= 0.25, with 0.10 to 0.25 treated as 'watch' and below 0.10 as stable."
+    },
+    {
+      "id": "dscap-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "code": "feature         psi_control  psi_shifted\norder_rate            0.016        0.607\nbad_share             0.014        0.227\nplan                  0.008        0.136\nage                   0.025        0.025\ndiscount_share        0.019        0.019",
+      "prompt": "In Lesson 13's simulated 'next quarter' shift, order rate down 15%, late-or-refunded share up 30%, a quarter of customers moved to Premium, order_rate is flagged ALERT (0.607) but age and discount_share stay near their unshifted control values (around 0.02-0.025). What does this pattern show?",
+      "options": [
+        "The drift metric is correctly sensitive: it lights up exactly the three features that were actually edited, and stays quiet on features nothing was done to",
+        "PSI is unreliable, since it should have flagged every feature once any part of the data changed",
+        "The control group's PSI values prove the model itself has already degraded",
+        "Age and discount_share were shifted just as much as order_rate, but PSI simply failed to detect it"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 13 edits only order_rate, bad_share, and plan to build the simulated shift, and the PSI report flags exactly those three (ALERT, watch, watch) while every untouched feature, including age and discount_share, stays at the same low level as the unshifted control. That selectivity is the point: the control's own max PSI of 0.025 shows the thresholds don't trip on ordinary sampling noise."
+    },
+    {
+      "id": "dscap-19",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Put the four parts of Lesson 15's structure for answering any interview pushback in the order they're delivered.",
+      "items": [
+        "State the answer in one sentence",
+        "Give the evidence — a specific number from your own work",
+        "Concede what is actually true in the objection",
+        "Name the next step"
+      ],
+      "explain": "Lesson 15 structures every one of its six pushback answers the same way: answer, evidence, concede, next step. Conceding what's true in the challenge isn't weakness — it shows you saw the problem before the interviewer raised it."
+    },
+    {
+      "id": "dscap-20",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Which of the following is the correct definition of a p-value, as Lesson 19 explains it?",
+      "options": [
+        "The probability of observing a result at least as extreme as the one found, assuming the null hypothesis is true",
+        "The probability that the null hypothesis is true, given the observed data",
+        "The probability that the alternative hypothesis is true",
+        "The size of the effect being tested, expressed as a probability",
+        "The chance that the exact result would replicate in a second, independent experiment",
+        "The share of variance in the outcome explained by the tested variable"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 19 defines a p-value exactly this way: the probability of seeing a result at least as extreme as the one observed, assuming the null hypothesis is true. It explicitly adds that a small p-value says the data would be surprising under 'no effect' — it says nothing about whether the effect is large or valuable, which is why effect size and a confidence interval should be reported alongside it.",
+      "distractorExplain": "Option B is the classic p-value misinterpretation that Lesson 19 explicitly warns against: 'it is not the probability that the null is true.' A p-value is a statement about how surprising the data would be under the null hypothesis, not a probability assigned to the null hypothesis itself — flipping those two is the single most common misreading of this concept."
+    },
+    {
+      "id": "dscap-21",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about leakage and class imbalance from Lesson 19's interview question set.",
+      "options": [
+        "Fitting SelectKBest feature selection on all of X and y before cross-validation, instead of inside the pipeline, leaked enough signal that pure noise scored 0.83 instead of the expected ~0.5",
+        "With a 2% cancel rate, a model that scores 98.6% accuracy is automatically a strong model",
+        "Using class_weight='balanced' on a 2% imbalance raised recall from 0.40 to 0.74 while precision fell from 0.833 to 0.128 — the trade-off moved, but no new information was created",
+        "Random forests are inherently immune to leakage because they are an ensemble method",
+        "A proper pipeline that fits SelectKBest inside each cross-validation fold scored about 0.49 on pure noise, close to the random floor"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        4
+      ],
+      "explain": "Lesson 19 runs exactly this leakage demo: fitting SelectKBest outside the pipeline on pure noise scores 0.83, while fitting it inside the pipeline scores 0.49, near the random floor of 0.5. The class-weight example shows recall rising from 0.40 to 0.74 while precision falls from 0.833 to 0.128 — weighting moved the trade-off, it didn't create information. Accuracy is called out as misleading precisely because 98.6% sounds strong but reflects the base rate, not model skill, and leakage is a pipeline-construction problem that no model family is immune to."
+    },
+    {
+      "id": "dscap-22",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a simulation of an A/A test (no true difference) that peeks at results after each of five looks, stopping the first time a result looks significant at the 5% level, produced a false-positive rate of ________% instead of the intended 5%.",
+      "acceptedAnswers": [
+        "14.2",
+        "14.2%"
+      ],
+      "explain": "Lesson 19's peeking simulation found a 14.2% false-positive rate when stopping at the first significant-looking result across five looks, versus 5.1% with one planned look — illustrating why sample size and duration must be fixed in advance."
+    },
+    {
+      "id": "dscap-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "SELECT c.cohort_month, COUNT(*) AS customers,\n       COUNT(a.customer_id) AS ordered_next_month\nFROM cohort c\nLEFT JOIN active a\n  ON a.customer_id = c.customer_id\n AND a.m = strftime('%Y-%m', c.cohort_month || '-01', '+1 month')\nGROUP BY c.cohort_month;",
+      "prompt": "In Lesson 20's cohort-retention query, a customer who signed up but never ordered the following month still needs to appear in the result with a 0 contribution, not disappear from it. Why does the query use a LEFT JOIN from cohort to active rather than an INNER JOIN?",
+      "options": [
+        "An INNER JOIN would silently drop any customer who did not return the following month, undercounting the cohort instead of showing their true non-retention",
+        "LEFT JOIN is required any time strftime() appears anywhere in a query",
+        "INNER JOIN cannot be combined with GROUP BY in SQLite",
+        "LEFT JOIN guarantees the results come back sorted by cohort_month automatically"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 20 states this directly: 'The LEFT JOIN matters, because an inner join would silently drop customers who did not return.' Keeping every cohort member via LEFT JOIN, even those with no matching row in active, is what lets COUNT(*) correctly reflect the full cohort size in the denominator of the retention rate."
+    },
+    {
+      "id": "dscap-24",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each SQL interview pattern from Lesson 20 to the technique that solves it.",
+      "left": [
+        "Top-N per group",
+        "Deduplicate, keeping the latest record",
+        "Cohort retention",
+        "Days since the previous order"
+      ],
+      "right": [
+        "LAG() combined with julianday() to compute the gap to the previous row",
+        "ROW_NUMBER() PARTITION BY region ORDER BY total DESC, keeping rn <= 2",
+        "A LEFT JOIN from a signup cohort to an activity table, matched to the following calendar month",
+        "ROW_NUMBER() PARTITION BY email ORDER BY updated_at DESC, keeping rn = 1"
+      ],
+      "correctMap": [
+        1,
+        3,
+        2,
+        0
+      ],
+      "explain": "Lesson 20 solves top-N per group with ROW_NUMBER partitioned by region ordered by spend, deduplication with ROW_NUMBER partitioned by email ordered by the most recent update, cohort retention with a LEFT JOIN matched one month forward, and the gap-to-previous-order problem with LAG() and julianday()."
+    },
+    {
+      "id": "dscap-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "code": "print(net_value(0.20, 0.50))   # contact top 20%, capture 50% of cancellers -> -400.0\nprint(net_value(0.10, 0.30))   # contact top 10%, capture 30% of cancellers -> 760.0",
+      "prompt": "Lesson 21's worked case study shows that contacting the top 20% of customers (capturing half of all cancellers) nets -400, while contacting a sharper top 10% list (capturing only 30% of cancellers) nets +760. What point is the lesson making by contrasting these two numbers?",
+      "options": [
+        "A bigger, less precise contact list can lose money even though it reaches more cancellers overall — the threshold has to be chosen by weighing cost, benefit, and precision, not by contacting as many people as possible",
+        "Contacting more customers always produces a larger net value, so the 20% list's negative result must be a calculation error",
+        "Capture rate has no effect on net value; only the raw number of people contacted matters",
+        "The case study proves the save_rate assumption should always be set to 50% in practice"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 21 uses this exact contrast to make the point that a model scoring well on reach alone can still lose money if the contacted group isn't precise enough — the 20% list reaches more cancellers in absolute terms but at a cost-to-benefit ratio that loses money, while the sharper 10% list turns a profit despite reaching fewer."
+    },
+    {
+      "id": "dscap-26",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Lesson 17's GitHub pre-publish checklist.",
+      "options": [
+        "If a secret was ever committed, deleting it in a later commit removes the risk, since only the latest commit is visible to the public",
+        "The README should disclose that the Harvest Table dataset is fictional, rather than presenting results as if they came from a real business",
+        "A portfolio of three well-documented, pinned projects typically reads better to a reviewer than twenty half-finished ones",
+        "Large datasets and model files should be committed directly to the repository so reviewers can access them without extra setup",
+        "Clearing or reviewing notebook output cells before publishing matters because outputs can leak file paths, usernames, or sample rows"
+      ],
+      "correctIndices": [
+        1,
+        2,
+        4
+      ],
+      "explain": "Lesson 17 explicitly warns that deleting a committed secret in a later commit is NOT enough, because it stays in git history — the key must be revoked or rotated instead. It also says to disclose synthetic or fictional data in the README, favors a small set of well-documented pinned projects over many half-finished ones, and warns against committing large files directly, recommending a link or small sample instead. Clearing notebook outputs is listed specifically because they can leak paths, usernames, or sample rows."
+    },
+    {
+      "id": "dscap-27",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a strong resume bullet follows the action + metric + ________ pattern — naming what you did, how you know it mattered, and what you used to do it.",
+      "acceptedAnswers": [
+        "tool",
+        "the tool"
+      ],
+      "explain": "Lesson 16 calls this the 'action + metric + tool pattern': a bullet should answer what you did, how you know it mattered (a metric with a baseline), and what tool you used, as in 'Built a gradient boosting model in Python (scikit-learn)... caught 70% of cancellations... versus 30% by random.'"
+    },
+    {
+      "id": "dscap-28",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Put these stages of a typical data science hiring process, per Lesson 18, in the order they commonly occur.",
+      "items": [
+        "Recruiter screen covering fit, logistics, and salary expectations",
+        "Hiring manager or team conversation about your background and projects",
+        "SQL and/or coding screen",
+        "Statistics and machine learning questions",
+        "Case study or take-home assignment",
+        "Presentation or onsite loop",
+        "Offer and negotiation"
+      ],
+      "explain": "Lesson 18 lists this exact rough order as the common rounds: a recruiter screen first, then a hiring-manager conversation, then SQL/coding, then statistics and machine learning, then a case study or take-home, then a presentation or onsite loop, and finally an offer. It notes not every company uses every round, and behavioral questions are often woven throughout rather than fixed at one point."
+    },
+    {
+      "id": "dscap-29",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A candidate telling a STAR story about the Harvest Table capstone spends most of two minutes describing the business background, then says 'we decided to check for leakage' throughout, without ever saying what they personally did. What is wrong with this story, per Lesson 22?",
+      "options": [
+        "Too much time went to situation and task instead of action, which should get about 60% of the time, and saying 'we' throughout hides what the candidate specifically did",
+        "STAR stories should never reference a specific project like a capstone",
+        "The story is too short — STAR stories should run at least ten minutes to be credible",
+        "Using the word 'we' is always required, since data science is inherently a team activity"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 22 names exactly these two errors: spending the whole time on background instead of the roughly 15/60/25 split across situation-task, action, and result, and saying 'we' throughout so the interviewer can't tell what the candidate actually did."
+    },
+    {
+      "id": "dscap-30",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about total compensation and offer negotiation from Lesson 23.",
+      "options": [
+        "In the lesson's illustrative comparison, Offer B had the highest base salary but the lowest total compensation once bonus and retirement match were included",
+        "A bonus described as a 'target' is functionally the same as a guaranteed payment",
+        "Asking for time to review an offer, such as 'until Thursday,' before accepting or declining is a reasonable, commonly expected step",
+        "Stating a false competing offer is an acceptable negotiating tactic as long as it secures a better number",
+        "Total compensation includes more than base pay: bonus, equity, benefits, and one-time items like a signing bonus"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        4
+      ],
+      "explain": "Lesson 23's total_comp() example gives Offer B the highest base (100,000) but the lowest total (100,000, versus 102,600 and 107,880 for A and C), precisely because it lacks bonus and match. The lesson explicitly lists 'do not state a false salary history or invent a competing offer' and warns that bonuses are 'often targets rather than guarantees.' Asking for time before deciding is one of its suggested scripts, and its total-compensation table explicitly includes base, bonus, equity, benefits, and one-time items."
+    }
+  ]
+}

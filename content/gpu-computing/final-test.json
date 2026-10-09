@@ -1,0 +1,472 @@
+{
+  "questions": [
+    {
+      "id": "gpu-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "A CPU with 64 large cores and a GPU with 6,912 small CUDA cores run at roughly comparable clock speeds, yet the GPU dominates neural network training. Per Lesson 1, where does that advantage actually come from?",
+      "options": [
+        "Sheer parallel core count applied to data-parallel work like matrix multiplication, not a faster clock speed",
+        "GPU cores run at a much higher clock speed than CPU cores",
+        "The GPU's branch prediction resolves conditional logic faster than a CPU's",
+        "GPUs use fewer transistors per core, so each core finishes its work sooner"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 1 is explicit that GPU cores actually run at a lower clock than CPU cores — the 100x-plus core-count difference, applied to the data-parallel shape of matrix multiplication and convolution, is the entire source of the advantage, not clock speed or branch prediction (which GPU cores are bad at)."
+    },
+    {
+      "id": "gpu-02",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Streaming Multiprocessors (SMs) and warps, per Lesson 2.",
+      "options": [
+        "An SM contains its own CUDA cores, registers, shared memory, and schedulers",
+        "A warp is a group of 32 threads that execute the same instruction at the same time on their own data",
+        "Launching a block of 100 threads wastes nothing on the hardware, because warps resize to exactly match any block size",
+        "Warp divergence happens when threads within the same warp take different branches, forcing the warp to execute both paths serially",
+        "A single thread block can be split across two different SMs if it needs more resources than one SM provides"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "An SM bundles its own cores, registers, shared memory, and schedulers, and a warp is exactly 32 threads executing in lockstep (SIMT). A 100-thread block is still processed in four 32-thread warps, with the last one running 28 idle lanes — nothing resizes to fit evenly. Warp divergence forces serialized execution of both branch paths with threads masked off. A block always runs entirely on one SM; it is never split across two."
+    },
+    {
+      "id": "gpu-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the large, slowest memory tier on a GPU — implemented as HBM and the pool most people mean when they say \"GPU memory\" — is called ________ memory.",
+      "acceptedAnswers": ["global", "global memory"],
+      "explain": "Lesson 3's memory hierarchy lists global memory (HBM) as the large, slowest tier relative to registers or shared memory, even though its raw bandwidth (~2TB/s on an A100) sounds enormous compared to a CPU's RAM."
+    },
+    {
+      "id": "gpu-04",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "with torch.autocast(device_type=\"cuda\", dtype=torch.float16):\n    outputs = model(inputs)\n    loss = loss_fn(outputs, targets)\n\nloss.backward()\noptimizer.step()",
+      "prompt": "This training step uses `torch.autocast` with `dtype=torch.float16` but never creates or uses a `GradScaler`. Per Lesson 4, what's the actual risk?",
+      "options": [
+        "Small gradient values can underflow to exactly zero in float16 during backpropagation, silently killing learning for those parameters",
+        "`torch.autocast` raises a runtime error the moment `backward()` is called without a `GradScaler`",
+        "Nothing — PyTorch automatically runs the entire backward pass in FP32 whenever no `GradScaler` is present",
+        "The model's weights are automatically cast to BF16 instead, sidestepping the issue entirely"
+      ],
+      "correctIndex": 0,
+      "explain": "FP16's small exponent range means gradients can underflow to zero during backward, silently killing learning for those parameters — exactly the problem `GradScaler` exists to prevent by scaling the loss up before `backward()` and unscaling before the optimizer step. Skipping it doesn't raise an error or change precision automatically; it just leaves the underflow risk unmitigated."
+    },
+    {
+      "id": "gpu-05",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "In CUDA terminology, what is a kernel?",
+      "options": [
+        "A function marked `__global__` that is callable from host code but executes on the device across many threads at once",
+        "Any function that runs on the CPU host and calls `cudaMalloc`",
+        "The compiled binary `nvcc` produces that bundles host and device code together",
+        "A synonym for a CUDA stream used to order asynchronous operations",
+        "The driver-level component that translates CUDA Toolkit calls into GPU instructions",
+        "A block of shared memory declared with `__shared__` inside a device function"
+      ],
+      "correctIndex": 0,
+      "explain": "A kernel is specifically a `__global__`-marked function: callable from the host, but executed on the device across many threads at once, with `threadIdx`/`blockIdx` giving each thread a different value to work on.",
+      "distractorExplain": "Option C is the closest wrong answer — it's tempting to think of \"kernel\" as the whole compiled `.cu` output, but `nvcc`'s compiled binary contains ordinary host C++ alongside one or more kernels, plus the host-side setup code (`cudaMalloc`, `cudaMemcpy`, the `<<<...>>>` launch). The kernel is specifically the `__global__` function itself, not the binary that contains it."
+    },
+    {
+      "id": "gpu-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "__global__ void addOne(int *data, int n) {\n    int i = blockIdx.x * blockDim.x + threadIdx.x;\n    data[i] += 1;   // no bounds check\n}\n\n// launched as:\naddOne<<<3, 256>>>(d_data, 700);",
+      "prompt": "This kernel launches 3 blocks of 256 threads (768 threads total) against an array of only 700 elements, and the kernel body has no `if (i < n)` bounds check. What actually happens?",
+      "options": [
+        "The 68 threads with `i` >= 700 write past the end of the allocated array, which is undefined behavior",
+        "CUDA automatically skips any thread whose computed index exceeds `n`, even with no explicit check",
+        "The kernel processes only the first 700 threads and silently exits the rest early on its own",
+        "`nvcc` refuses to compile the kernel because `blockDim.x * gridDim.x` doesn't evenly divide 700"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 7 is explicit that the `if (i < n)` bounds check exists precisely to stop the extra threads in an over-provisioned last block from writing out of bounds. Without it, those 68 threads write past the allocation — CUDA has no automatic bounds enforcement, and this compiles and runs with undefined behavior, not a compile error."
+    },
+    {
+      "id": "gpu-07",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about global, shared, and local memory in CUDA, per Lesson 8.",
+      "options": [
+        "Shared memory declared with `__shared__` is scoped to one block, and each block gets its own separate copy",
+        "Local memory is fast per-thread storage, physically separate from global memory",
+        "`__syncthreads()` is a barrier that forces every thread in a block to reach that line before any of them proceeds",
+        "Any thread in any block can read or write any location in global memory, with no built-in coordination between them",
+        "A kernel that spills heavily to local memory runs faster, since local memory is reserved exclusively for that one thread"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "Shared memory is block-scoped with one copy per block, and `__syncthreads()` is exactly the barrier that makes a later read of another thread's write safe. Global memory has no built-in coordination, which is why uncoordinated writes are a race condition. Local memory is private per thread but, confusingly, is physically stored in the same slow global-memory space — a kernel spilling to it is doing extra global-memory-speed traffic, not getting a speed benefit."
+    },
+    {
+      "id": "gpu-08",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: because a CUDA kernel launch doesn't return an error value directly, the standard way to check whether it failed is to call ________() and compare the result against `cudaSuccess`.",
+      "acceptedAnswers": ["cudaGetLastError", "cudaGetLastError()"],
+      "explain": "CUDA calls don't throw exceptions — `cudaGetLastError()` retrieves the most recent error so it can be compared against `cudaSuccess`, since a kernel launch itself doesn't block or return a value you can inspect directly."
+    },
+    {
+      "id": "gpu-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "y = torch.relu(x)\ny = y * scale\ny = y + bias",
+      "prompt": "Per Lesson 10, why would a team write a custom fused CUDA (or Triton) kernel to replace this three-step chain, instead of leaving it as three separate PyTorch calls?",
+      "options": [
+        "Because each step round-trips its result to and from global memory, and fusing all three into one kernel pass removes two of those round-trips",
+        "Because cuBLAS doesn't support elementwise operations like `relu` at all",
+        "Because a hand-written kernel always outperforms cuBLAS, even for ordinary matrix multiplication",
+        "Because PyTorch cannot execute more than one elementwise operation per training step without a custom kernel"
+      ],
+      "correctIndex": 0,
+      "explain": "This chain of small, memory-bound elementwise operations is exactly the pattern Lesson 10 identifies as worth fusing: three separate kernel launches each write their result to global memory and read it back for the next step, and fusing them into one kernel keeps the data in registers/shared memory between steps instead. Writing a custom kernel to replace standard GEMM operations, by contrast, would almost certainly be slower than cuBLAS."
+    },
+    {
+      "id": "gpu-10",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each term from Lesson 11 to what it actually is.",
+      "left": [
+        "NVIDIA driver",
+        "CUDA Toolkit",
+        "CUDA runtime bundled with PyTorch",
+        "nvidia-smi's \"CUDA Version\" field"
+      ],
+      "right": [
+        "The maximum CUDA version the installed driver supports, not necessarily anything actually installed",
+        "Kernel-level software letting the OS talk to the GPU; sets the ceiling on supported CUDA versions",
+        "The full development kit, including `nvcc`, libraries, and the Nsight profiling tools",
+        "The CUDA runtime libraries a specific PyTorch wheel ships with, independent of any system-installed Toolkit"
+      ],
+      "correctMap": [1, 2, 3, 0],
+      "explain": "The driver is the kernel-level software setting the supported-CUDA-version ceiling. The Toolkit is the full dev kit (`nvcc`, libraries, Nsight). PyTorch's bundled CUDA runtime is independent of any system Toolkit. And `nvidia-smi`'s \"CUDA Version\" field reports only the driver's maximum supported version, not what's actually installed."
+    },
+    {
+      "id": "gpu-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "An elementwise ReLU kernel reads one value, applies one comparison, and writes one value back, for every element. Per Lesson 12's roofline model, where does this operation typically fall, and why?",
+      "options": [
+        "Memory-bound — its arithmetic intensity is near 1, so it spends most of its time waiting on the memory bus rather than computing",
+        "Compute-bound — the branching comparison inside ReLU is expensive enough to saturate the CUDA cores",
+        "Neither — elementwise operations sit exactly on the roofline's ridge point by definition",
+        "Compute-bound — because ReLU runs on Tensor Cores the same way matrix multiplication does"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 12 names elementwise operations like ReLU specifically as having arithmetic intensity near 1 — one read, one or two operations, one write — which puts them on the memory-bound side of the roofline, not the compute-bound side where GEMM-heavy operations (and Tensor Cores) live."
+    },
+    {
+      "id": "gpu-12",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about memory coalescing, per Lesson 13.",
+      "options": [
+        "A warp whose 32 threads read 32 consecutive, aligned addresses can be satisfied with a small number of wide memory transactions",
+        "An array-of-structures layout can break coalescing for a kernel that only touches one field of each record",
+        "Coalescing depends only on how many total bytes a warp requests, not the pattern in which it requests them",
+        "A strided access pattern like `in[i * stride]` can require close to one memory transaction per thread instead of one per warp",
+        "A structure-of-arrays layout favors coalescing because each field lives in its own contiguous array"
+      ],
+      "correctIndices": [0, 1, 3, 4],
+      "explain": "Coalescing is entirely about the access pattern, not the byte volume — two kernels requesting identical bytes can have wildly different throughput depending on whether addresses are consecutive or scattered. AoS layouts space a single field's accesses apart (breaking coalescing), while SoA keeps each field contiguous (favoring it), and a strided pattern can force up to one transaction per thread instead of one wide transaction per warp."
+    },
+    {
+      "id": "gpu-13",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Occupancy = Active Warps per SM / ________ Warps per SM.",
+      "acceptedAnswers": ["Maximum", "maximum", "Max", "max"],
+      "explain": "Lesson 14 defines occupancy exactly as this ratio: however many warps are actually resident on an SM, divided by the maximum number of warps that SM supports — capped by whichever of registers, shared memory, or threads-per-block runs out first."
+    },
+    {
+      "id": "gpu-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "$ nvidia-smi dmon -s mu\n# gpu    sm   mem\n    0    97    21\n    0    96    19",
+      "prompt": "`nvidia-smi dmon` shows sustained `sm` utilization near 97% and `mem` utilization near 21% for an entire training run. Per Lesson 15, what can you actually conclude from this alone?",
+      "options": [
+        "Only that some kernel was running on the GPU almost continuously — not whether that kernel was compute-bound, memory-bound, or running efficiently at the instruction level",
+        "That the kernel is definitely compute-bound, confirmed down to the instruction level",
+        "That the kernel is definitely memory-bound, since the `mem` number is the lower of the two",
+        "That the training job has no bottleneck anywhere in its pipeline"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 15 is direct about this: nvidia-smi reports device-wide, time-sampled utilization, not per-kernel detail — a GPU can show high utilization while running a badly memory-bound kernel the entire time. The number means \"something was running,\" not \"something was running efficiently\" or which resource is the actual limiter; that requires Nsight Compute."
+    },
+    {
+      "id": "gpu-15",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these profiling steps in the order Lesson 16 recommends when you don't yet know why a training job is slow.",
+      "items": [
+        "Run nsys profile to capture a system-wide timeline of CPU, GPU, and memory activity",
+        "Inspect the timeline for idle gaps, poor overlap, or unnecessary host-device synchronization",
+        "Identify the specific kernel (or small set of kernels) accounting for the bulk of the time",
+        "Run ncu --set full on just that kernel for detailed hardware-counter metrics"
+      ],
+      "explain": "Lesson 16's triage workflow starts broad and cheap with Nsight Systems' timeline, uses it to spot idle gaps or serialized work and narrow down to specific kernels, and only then reaches for Nsight Compute's deep, per-kernel instrumentation — which is too expensive to run on every kernel in a large model."
+    },
+    {
+      "id": "gpu-16",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Match each diagnostic signal from Lesson 17's bottleneck workflow to the fix that actually matches it.",
+      "left": [
+        "GPU utilization bouncing between near-zero and spikes, repeatedly",
+        "Unnecessary host-device synchronization inside the training loop",
+        "Nsight Compute reports high DRAM throughput, low compute throughput",
+        "Nsight Compute reports achieved occupancy far below the theoretical max"
+      ],
+      "right": [
+        "Check whether registers, shared memory, or block size is the stated limiter",
+        "Add more DataLoader workers, enable pin_memory, or prefetch batches",
+        "Fix the memory access pattern or fuse elementwise ops to cut global-memory round-trips",
+        "Remove `.item()`/`.cpu()` calls from the hot loop, or use `non_blocking=True` transfers"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "A starved, spiky GPU points to the CPU-side data pipeline. Unnecessary sync calls are fixed by removing them or going non-blocking. High DRAM throughput with low compute throughput is the fingerprint of a memory-bound kernel, fixed by cutting memory traffic. Low occupancy means checking which specific resource (registers, shared memory, block size) Nsight Compute names as the limiter."
+    },
+    {
+      "id": "gpu-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "code": "x = torch.zeros(4, 4)\nmodel = MyModel().to(\"cuda\")\noutput = model(x)",
+      "prompt": "What happens when this runs?",
+      "options": [
+        "A `RuntimeError` at the `model(x)` call, because `x` defaults to the CPU and was never moved to the same device as the model's parameters",
+        "It runs fine; PyTorch automatically moves `x` to whichever device the model is on",
+        "It runs fine, but `output` is silently computed on the CPU instead of the GPU",
+        "It raises an error immediately at `torch.zeros(4, 4)` because no device was specified"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 18 shows exactly this error shape: `torch.zeros(...)` with no `device=` argument defaults to CPU, and combining it with a CUDA model raises a clear `RuntimeError` about mismatched devices at the first operation that touches both — PyTorch never silently moves tensors for you."
+    },
+    {
+      "id": "gpu-18",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about pinned memory and `non_blocking=True`, per Lesson 19.",
+      "options": [
+        "Pinned (page-locked) memory is guaranteed to stay at a fixed physical address, letting the GPU's DMA engine transfer it directly",
+        "`.to(device, non_blocking=True)` behaves asynchronously even when the source tensor is ordinary pageable memory",
+        "`DataLoader(pin_memory=True)` allocates each batch tensor in page-locked memory before it reaches the training loop",
+        "Pinning memory has no system cost, so it's safe to pin every tensor in a program",
+        "Overlapping the next batch's transfer with the current batch's GPU compute requires both pinned memory and an asynchronous copy"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "Pinned memory skips the driver's staging-buffer copy because its physical address is fixed. `non_blocking=True` on a pageable (unpinned) source silently becomes synchronous anyway, since the driver must still stage it through a pinned buffer first. `pin_memory=True` does pre-pin each DataLoader batch. Pinning is a real system cost (locking physical pages) and isn't free to apply everywhere. The transfer/compute overlap payoff specifically requires both pinning and the async copy together."
+    },
+    {
+      "id": "gpu-19",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: bfloat16 has the same ________ range as float32, which is why training in bfloat16 generally doesn't need a GradScaler the way float16 does.",
+      "acceptedAnswers": ["exponent", "exponent range"],
+      "explain": "Lesson 20 explains that bfloat16's exponent range matches float32's exactly (it only loses mantissa precision), which is why it avoids float16's underflow problem and skips `GradScaler` entirely."
+    },
+    {
+      "id": "gpu-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "code": "g = torch.cuda.CUDAGraph()\nwith torch.cuda.graph(g):\n    static_y = model(static_input)\n    static_loss = loss_fn(static_y, static_target)\n    static_loss.backward()\n    optimizer.step()\n\n# later, mid-training:\nstatic_input = new_batch_tensor   # reassigned instead of copied in-place\ng.replay()",
+      "prompt": "Per Lesson 21, what goes wrong with reassigning `static_input` to a brand-new tensor like this, instead of using `static_input.copy_(new_batch_tensor)`?",
+      "options": [
+        "The captured graph replays against the exact memory addresses recorded at capture time, so pointing the Python variable at a new tensor doesn't feed the graph new data at all",
+        "Nothing — CUDA Graphs automatically re-capture whenever the input tensor's identity changes",
+        "The graph silently falls back to eager execution for just that one replay",
+        "CUDA Graphs don't support reassignment syntax, so this raises a Python-level syntax error"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 21's static-shape constraint is really a static-memory-address constraint: a captured graph replays the exact same kernels against the exact same memory addresses every time. The pattern it shows is copying new data *into* `static_input` with `.copy_()`; reassigning the Python name to a different tensor leaves the graph still pointed at the old (now stale) memory, silently feeding it nothing new."
+    },
+    {
+      "id": "gpu-21",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of what happens the first time a `torch.compile`-wrapped model is actually called, in the order Lesson 22 describes.",
+      "items": [
+        "TorchDynamo traces the executing Python/PyTorch code into an intermediate graph",
+        "AOTAutograd derives the corresponding backward-pass graph ahead of time from that forward graph",
+        "TorchInductor compiles both graphs into optimized, fused kernels (Triton, on GPU)",
+        "The compiled kernels are cached, so later calls with the same input shapes reuse them instead of recompiling"
+      ],
+      "explain": "Lesson 22's three-stage pipeline runs in exactly this order on the first real forward pass — TorchDynamo traces, AOTAutograd derives the backward graph ahead of time, and TorchInductor compiles and fuses both into optimized kernels. That compilation is cached, which is why only the first call is slow and every later call with matching shapes is fast."
+    },
+    {
+      "id": "gpu-22",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Match each out-of-memory cause from Lesson 23 to the fix that specifically addresses it.",
+      "left": [
+        "Activations dominate memory — the common OOM cause",
+        "Need a larger effective batch size without more memory",
+        "Optimizer state is the biggest memory consumer",
+        "Repeated alloc/free of varying tensor sizes fragments the allocator's cache"
+      ],
+      "right": [
+        "Gradient checkpointing — recompute activations in backward instead of storing them",
+        "Gradient accumulation — several smaller forward/backward passes before one optimizer step",
+        "Switch to an optimizer with less per-parameter state, like SGD instead of Adam",
+        "Set `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Lesson 23 matches each cause to a specific fix: activations dominating memory calls for gradient checkpointing (trading compute for memory); wanting a bigger effective batch size without more memory calls for gradient accumulation; heavy optimizer state calls for a lighter optimizer like SGD; and allocator fragmentation from varying tensor sizes is specifically what `expandable_segments:True` addresses — none of these are interchangeable with each other."
+    },
+    {
+      "id": "gpu-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "NVLink 4 provides roughly 900GB/s of bidirectional bandwidth per GPU, versus about 32GB/s for a single PCIe Gen4 x16 link. Per Lesson 24, why does that gap matter specifically for multi-GPU training?",
+      "options": [
+        "Gradients must be exchanged across GPUs after every backward pass, and if that traffic crosses the slower PCIe path, communication time can dominate over compute time regardless of how fast each GPU is",
+        "PCIe can't be used for GPU-to-CPU traffic at all — only NVLink can move data off a GPU",
+        "A GPU can't execute any CUDA kernel until an NVLink connection is established",
+        "PCIe bandwidth determines how much HBM memory a single GPU is allowed to have"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 24 ties this directly to training throughput: multi-GPU training requires constant gradient communication, and if that traffic has to cross PCIe (and the CPU's root complex) for every batch, communication time — not compute — can end up dominating, no matter how fast the GPUs themselves are."
+    },
+    {
+      "id": "gpu-24",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "What is the key architectural difference between `torch.nn.DataParallel` and `DistributedDataParallel` (DDP)?",
+      "options": [
+        "DataParallel runs as a single process that splits batches across GPUs and gathers gradients on one GPU, while DDP runs one process per GPU with synchronized gradients and no single gathering bottleneck",
+        "DataParallel supports training across multiple nodes, while DDP is limited to a single node",
+        "DDP requires a CPU-only fallback mode that DataParallel does not need",
+        "DataParallel is the newer of the two and is the currently recommended approach",
+        "DDP only works with models small enough to fit on a single GPU, while DataParallel supports arbitrarily large models",
+        "DataParallel and DDP are two names for the exact same underlying implementation"
+      ],
+      "correctIndex": 0,
+      "explain": "DataParallel is single-process, splitting a batch across GPUs and funneling gradient-gathering through one GPU — a real bottleneck. DDP runs one process per GPU, synchronizing gradients via NCCL with no single gathering point, which is exactly why PyTorch's own documentation recommends DDP for essentially all cases.",
+      "distractorExplain": "Option B inverts the real limitation: it's DataParallel that's confined to a single process on one machine, while DDP is the one that scales across multiple nodes (covered directly in Lesson 28). Getting this backwards is a common mix-up, since both names sound equally \"distributed.\""
+    },
+    {
+      "id": "gpu-25",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about all-reduce and NCCL, per Lesson 26.",
+      "options": [
+        "An all-reduce combines a value from every participant and returns the combined result to all of them",
+        "A naive all-reduce where one GPU collects everything and broadcasts it back creates the same kind of bottleneck DataParallel has",
+        "Ring all-reduce has each GPU exchange data only with its immediate neighbors, avoiding a single bottleneck node",
+        "NCCL is part of the CUDA Toolkit itself, not a separate library",
+        "Setting `NCCL_DEBUG=INFO` shows which transport (such as NVLink) NCCL actually chose for each communication channel"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "All-reduce is exactly \"combine from everyone, return to everyone.\" A naive one-GPU-collects-and-broadcasts approach reproduces DataParallel's single-point bottleneck, which is why NCCL commonly uses ring all-reduce instead, where each GPU only talks to its immediate neighbors. NCCL is explicitly a separate library from the CUDA Toolkit, solving a different problem (cross-GPU communication rather than single-GPU kernel execution). `NCCL_DEBUG=INFO` does log the chosen transport per channel."
+    },
+    {
+      "id": "gpu-26",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in `nvidia-smi topo -m` output, ________ marks the slowest connection type between two GPUs — one that crosses a NUMA/CPU socket boundary.",
+      "acceptedAnswers": ["SYS"],
+      "explain": "Lesson 27 lists the connection types from fastest to slowest, ending with `SYS` — a path crossing a NUMA/CPU socket boundary, often also crossing the CPU interconnect, making it the slowest type in the table."
+    },
+    {
+      "id": "gpu-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "code": "$ torchrun --nproc_per_node=8 --nnodes=4 --node_rank=0 \\\n    --master_addr=10.0.0.1 --master_port=29500 train.py",
+      "prompt": "This launches 8 processes on this one node, one of 4 nodes total. Per Lesson 28, what is the job's world size, and what distinguishes a process's global rank from its `LOCAL_RANK`?",
+      "options": [
+        "World size is 32; global rank is the process's unique ID across the whole job (0-31), while `LOCAL_RANK` is just its GPU index on its own node (0-7)",
+        "World size is 4, one per node; `LOCAL_RANK` and global rank are always identical values",
+        "World size is 8; global rank counts nodes, not GPU processes",
+        "World size is 32; `LOCAL_RANK` and global rank are two names for the exact same value"
+      ],
+      "correctIndex": 0,
+      "explain": "World size is the total process count across every node combined: 8 GPUs x 4 nodes = 32. Lesson 28 is explicit that global rank is a process's unique ID across the entire job, while `LOCAL_RANK` is only its GPU index on its own node — the two are deliberately distinct values, not interchangeable."
+    },
+    {
+      "id": "gpu-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "code": "resources:\n  limits:\n    nvidia.com/gpu: 1",
+      "prompt": "A pod spec requests this, but no node in the cluster currently has a free GPU. Per Lesson 29, what happens to the pod?",
+      "options": [
+        "It stays in `Pending` status indefinitely — Kubernetes treats the GPU request as a hard requirement, the same as an unsatisfiable CPU or memory request",
+        "It gets scheduled anyway and runs without a GPU until one frees up",
+        "Kubernetes automatically falls back to time-slicing an already-occupied GPU for it",
+        "The pod is permanently rejected with a scheduling error that can't be resolved even after a GPU frees up"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 29 shows exactly this `FailedScheduling` event: the pod stays `Pending` rather than running degraded or without a GPU, because Kubernetes treats `nvidia.com/gpu: 1` as a hard requirement. Once a GPU does free up, the scheduler can place the still-pending pod — nothing about the rejection is permanent."
+    },
+    {
+      "id": "gpu-29",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about MIG and time-slicing, per Lesson 30.",
+      "options": [
+        "MIG partitions a physical GPU into fully isolated instances at the hardware level, each with its own dedicated SMs and memory",
+        "Time-slicing gives every workload sharing a GPU real memory isolation, the same guarantee MIG provides",
+        "MIG is available on any NVIDIA GPU, including older consumer cards",
+        "Time-slicing works by having the GPU's scheduler rapidly switch which workload runs, with each still getting the full GPU's resources when it's its turn",
+        "A workload running on one MIG instance cannot be slowed down or crashed by a workload on a different MIG instance on the same physical card"
+      ],
+      "correctIndices": [0, 3, 4],
+      "explain": "MIG's isolation is real and hardware-level — one instance's workload can't affect another's. Time-slicing has no such guarantee: it just rotates full-GPU access between workloads in time, with no memory isolation, so one workload can still exhaust shared memory and slow the others. MIG is also restricted to A100, H100, and similar data-center GPUs, not every NVIDIA card."
+    },
+    {
+      "id": "gpu-30",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "A 4-GPU DDP job is suddenly taking twice as long per epoch, with no changes to the model code. Put these diagnostic steps in the order the Lesson 32 capstone recommends.",
+      "items": [
+        "Check nvidia-smi dmon for overall GPU utilization across all 4 GPUs",
+        "Time the gap between batches to check whether the data pipeline is CPU-bound and starving the GPU",
+        "Check NCCL_DEBUG=INFO logs to confirm the all-reduce is still using NVLink, not a slower fallback",
+        "Profile the specific kernel with Nsight Systems and Nsight Compute if everything above is clean"
+      ],
+      "explain": "The capstone's diagnostic order goes cheapest-and-broadest first: an `nvidia-smi dmon` check costs nothing and rules out a straggler GPU; a batch-timing print rules out a CPU-bound dataloader; an NCCL transport log rules out a communication fallback; and only once all of that is clean does it make sense to reach for the most expensive tools, Nsight Systems and Nsight Compute, to check the model's own kernels."
+    }
+  ]
+}
