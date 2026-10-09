@@ -1,0 +1,461 @@
+{
+  "questions": [
+    {
+      "id": "mlops-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "cents = X_test.assign(monthly_spend=X_test[\"monthly_spend\"] * 100)\np = model.predict_proba(cents)[:, 1]\nprint(p.mean(), model.score(cents, y_test))",
+      "prompt": "Lesson 1's pipeline was trained on monthly_spend in dollars. A production feed starts sending monthly_spend in cents instead, with no other code change. Per the lesson's real numbers, what happens when this reaches the pipeline, and why is it dangerous?",
+      "options": [
+        "An error, because scikit-learn validates that input units match training units at predict time",
+        "Accuracy stays near 0.768, because logistic regression is scale-invariant to unit changes in a single feature",
+        "The pipeline keeps running and returns valid-looking probabilities for every row, but mean predicted churn jumps from 0.234 to 0.950 and accuracy collapses to 0.260 — nothing crashes or warns",
+        "The pipeline silently clips monthly_spend back to a plausible dollar range before scoring, so predictions stay accurate"
+      ],
+      "correctIndex": 2,
+      "explain": "This is Lesson 1's real training-serving skew demonstration: feeding the model monthly_spend in cents instead of dollars pushes mean predicted churn from 0.234 to 0.950 and drops accuracy from 0.768 to 0.260, with no error and no warning raised. The model returns a valid-looking probability for every row, which is exactly what makes a silent failure dangerous."
+    },
+    {
+      "id": "mlops-02",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about loud, silent, and slow failures, per Lesson 1.",
+      "options": [
+        "A loud failure, like a KeyError from a missing column, is actually the easier case because someone notices immediately",
+        "A silent failure can return a valid-looking probability for every row while being badly wrong, with no error or warning raised",
+        "A slow failure (drift) typically produces one clear alarm on the day customer behavior starts to change",
+        "Training-serving skew means the data a model sees in production differs from what it saw in training",
+        "Silent and slow failures are cheaper to deal with than loud failures, since nothing crashes and no one needs to investigate"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Loud failures are the easy ones because a crash is the model telling you something is wrong. Silent failures run without any error, returning valid-looking but wrong probabilities (training-serving skew). Drift, the slow failure, happens gradually in real life — the lesson specifically says there is no single day when an alarm goes off. Silent and slow failures are the costly ones precisely because nothing tells you they are happening, the opposite of 'cheaper to deal with'."
+    },
+    {
+      "id": "mlops-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 2, a team where a data scientist runs every lifecycle stage by hand in a notebook and hands over a model file, with no automated pipeline and nothing monitored, sits at MLOps maturity level ________.",
+      "acceptedAnswers": ["0", "level 0", "zero"],
+      "explain": "Google's maturity model, as described in Lesson 2, defines level 0 as the manual process: a data scientist runs each step by hand, usually in a notebook, then hands over a model file, with rare releases and nothing monitored."
+    },
+    {
+      "id": "mlops-04",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Lesson 2's lifecycle.py script runs four named stages with a validation gate at the end. Put them in the order main() actually executes them.",
+      "items": [
+        "prepare(): split the data into train and test sets",
+        "train(): fit the pipeline on the training split",
+        "evaluate(): score the fitted model on the test split",
+        "validate: save the model only if accuracy clears the 0.75 threshold, otherwise report FAILED"
+      ],
+      "explain": "main() calls prepare() to get the train/test split, then train() to fit the pipeline on the training rows, then evaluate() to score it on the held-out test rows, and finally checks the accuracy against the 0.75 threshold before deciding whether to save the model or report a failed validation — exactly the real output the lesson shows: 'prepare : 750 train / 250 test rows', 'evaluate: {\\'accuracy\\': 0.768}', 'validate: passed, model saved'."
+    },
+    {
+      "id": "mlops-05",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each Lesson 4 Git-for-data-science practice to what it actually does.",
+      "left": [
+        "nbstripout",
+        ".gitignore entries for data/ and models/*.joblib",
+        "Treating an experiment as a branch",
+        "GitHub pull-request template checklist"
+      ],
+      "right": [
+        "Keeps large, binary, constantly-changing files out of Git's history entirely, since Git stores every version forever",
+        "Registers a Git filter that strips notebook outputs and execution counters before they're committed, so diffs show only real changes",
+        "Gives a one-line settings change in params.yaml its own branch, so the diff between branches shows the setting and the resulting metric together",
+        "Standardizes what a reviewer checks on an ML pull request, such as whether notebooks were committed without outputs and no data/model files were added"
+      ],
+      "correctMap": [1, 0, 2, 3],
+      "explain": "nbstripout installs a Git filter that strips notebook outputs and execution counters before committing, so a re-run that only bumps execution_count produces no diff. .gitignore keeps the CSV and the joblib model out of Git's history, since both are versioned separately with DVC instead. An experiment-as-branch pattern (switch -c tune-C, edit params.yaml, retrain, commit) ties a one-line setting change directly to its resulting metric in the diff. The PR template checklist standardizes what a reviewer checks: metrics before/after, data version used, notebooks committed without outputs, and no data or model files added."
+    },
+    {
+      "id": "mlops-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "code": "$ python -m churn.train\nValueError: numpy.dtype size changed, may indicate binary incompatibility.\n$ pip check\nNo broken requirements found",
+      "prompt": "requirements.txt pins scikit-learn, pandas, joblib and pyyaml to exact versions, but training crashes with a NumPy binary-incompatibility error, and pip check reports no broken requirements. What actually went wrong, per Lesson 5?",
+      "options": [
+        "pip check only verifies that package names exist, so it cannot ever catch a real installation problem",
+        "NumPy itself was never pinned; scikit-learn and pandas only declare a minimum NumPy version, so pip installed a newer NumPy release that is incompatible with the pinned, compiled pandas code — pinning direct imports isn't enough, transitive dependencies need pinning too",
+        "The requirements.txt file was corrupted, since pinned exact versions always guarantee a reproducible install",
+        "scikit-learn 1.1.2 does not support NumPy at all, so any NumPy version will raise this exact error"
+      ],
+      "correctIndex": 1,
+      "explain": "This is Lesson 5's real failure. NumPy was never listed in requirements.txt; scikit-learn and pandas only declare a minimum NumPy version, so pip resolved the newest NumPy release, which was too new for the compiled pandas code pinned alongside it. pip check passed because every declared version range was technically satisfied — the lesson's conclusion is that pinning what you import directly is not enough; you must also pin the libraries your libraries install (the transitive dependencies), which is exactly what a lock file does."
+    },
+    {
+      "id": "mlops-07",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly describes the difference between an MLflow registered model's alias (such as champion) and its deprecated stage mechanism (such as Production), per Lesson 9?",
+      "options": [
+        "An alias is a named pointer that can be moved to any version with one call, and MLflow's docs mark the older stage mechanism as deprecated in favor of aliases and tags; one version can carry several aliases",
+        "A stage is a named pointer that can be moved to any version with one call, while an alias is the older, deprecated mechanism being phased out",
+        "Aliases and stages are two names for the exact same mechanism, introduced in the same MLflow release, with no deprecation involved",
+        "An alias can only ever point to the single most recently registered version, so it cannot be used for rollback",
+        "A stage must be unique per registered model, but an alias can be attached to every version simultaneously with no way to tell which one is 'live'",
+        "Aliases are used only in local file-store registries; a server-backed MLflow registry supports stages exclusively"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 9 is explicit: an alias is a movable, named pointer (set_registered_model_alias) that serving code asks for instead of hard-coding a version number, and promotion or rollback is a single call that moves the alias to a different version. The older stage mechanism (transition_model_version_stage, Staging/Production) still works in the MLflow version used but prints a deprecation warning, since MLflow's documentation says stages will be removed in a future major release. A single version can carry more than one alias at a time.",
+      "distractorExplain": "Option B simply swaps which term is which — it's the alias that's the modern, movable named pointer (champion, challenger), while stage (Staging/Production) is the mechanism MLflow's own documentation says is deprecated since 2.9.0 and will be removed in a future major release. Getting the two backwards is exactly the mix-up the lesson warns against."
+    },
+    {
+      "id": "mlops-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "$ dvc status\ndata\\raw\\customers.csv.dvc:\n    changed outs:\n        modified:           data\\raw\\customers.csv",
+      "prompt": "A teammate appended 200 new rows to customers.csv but forgot to run dvc add again afterward. What does dvc status report, and what does Git show at that point, per Lesson 6?",
+      "options": [
+        "DVC reports no change at all, since dvc status only compares against the last dvc push, not the working file",
+        "Git shows the CSV as a new untracked file, since .gitignore only applies after the first dvc add",
+        "DVC automatically updates the pointer file the next time anyone runs any dvc command, so dvc status always reports clean",
+        "DVC reports the tracked output as modified, because the file's content no longer matches the hash recorded in customers.csv.dvc, while Git shows nothing, since the CSV itself is gitignored"
+      ],
+      "correctIndex": 3,
+      "explain": "DVC compares the working file's content against the md5 hash recorded in its .dvc pointer, so appending rows immediately shows up as 'modified: data\\raw\\customers.csv' under dvc status — even before anyone runs dvc add again. Git itself shows nothing, because the CSV is listed in .gitignore and only the small .dvc pointer file is tracked by Git."
+    },
+    {
+      "id": "mlops-09",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about fingerprinting and versioning a model file, per Lesson 7.",
+      "options": [
+        "A model's SHA-256 hash alone is not a version; the sidecar also needs to record the training data's hash, the settings, the metrics, and the library versions",
+        "Training with the exact same code, data, settings and library versions is guaranteed to always produce a byte-identical model file in every case",
+        "load_verified recomputes the model file's hash and compares it against the sidecar, which can catch a corrupted or substituted file before it's loaded",
+        "Because pickles run code when loaded, a model whose hash doesn't match its recorded metadata should not be loaded without investigating",
+        "Git tags such as model-v1 and model-v2 replace the need for a metadata sidecar entirely, since the tag name alone fully describes the model"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "A version is the file plus a fingerprint, the data hash, the settings, the library versions, and the metrics — the hash alone identifies a file, not a version. load_verified recomputes the hash and compares it with the sidecar, catching tampering or corruption (it raised ValueError when a byte was appended to the file). Because a .joblib file is a pickle that runs code on load, a hash mismatch is a real reason not to load it. The lesson explicitly warns not to count on byte-identical reproducibility in general (randomness, multi-threading, or library-version differences can change the bytes), and a Git tag is only a human-readable label — the actual record lives in the JSON sidecar."
+    },
+    {
+      "id": "mlops-10",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: in Lesson 8, calling mlflow.log_params with the same parameter key twice but a different value raises an MlflowException, because logged params are ________ — a recorded setting cannot silently change within a run.",
+      "acceptedAnswers": ["immutable", "immutable once logged"],
+      "explain": "Lesson 8 notes that params are immutable: logging the same key twice with a different value raises an MlflowException ('Changing param values is not allowed'), which is a deliberate feature so a recorded setting cannot silently change."
+    },
+    {
+      "id": "mlops-11",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Match each model registry term to what it actually is, per Lesson 9.",
+      "left": [
+        "Registered model",
+        "Version",
+        "Alias",
+        "Tag"
+      ],
+      "right": [
+        "An editable label such as validation_status=pending, used for information that can legitimately change over time",
+        "A name, such as cancel-risk-model, under which every registered copy of a model is grouped",
+        "A movable, named pointer like champion that serving code asks for instead of a hard-coded number",
+        "A fixed, numbered snapshot (1, 2, 3...) that always traces back to the exact run that produced it"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "A registered model is the name every version is grouped under. Each registration creates the next numbered version, which always traces back to the run that produced it. An alias is a movable pointer serving code asks for by name instead of hard-coding a version number. A tag is an editable label, unlike a version's fixed files, used for information such as validation status that can legitimately change."
+    },
+    {
+      "id": "mlops-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "code": "class Customer(BaseModel):\n    tenure_months: int = Field(ge=0, le=120)\n    monthly_charge: float = Field(gt=0)\n    contract: Literal[\"month-to-month\", \"one-year\", \"two-year\"]\n    support_tickets: int = Field(ge=0)\n    autopay: Literal[\"yes\", \"no\"]",
+      "prompt": "A POST to /predict omits the autopay field entirely. Per Lesson 10, what does the API return, and why?",
+      "options": [
+        "HTTP 200, with autopay defaulted to \"no\" automatically, since Literal fields always have an implicit default",
+        "HTTP 500, because the model's predict_proba call crashes on the missing column",
+        "HTTP 422, with a message listing autopay as a missing field — Pydantic validates the request against the Customer model before any code reaches the loaded model",
+        "HTTP 200, with churn_probability returned as null, since missing fields are simply ignored"
+      ],
+      "correctIndex": 2,
+      "explain": "Lesson 10 reports exactly this: omitting fields returned HTTP 422 listing each missing field. FastAPI runs Pydantic validation against the Customer model before the request body ever reaches predict(), so a missing required field never gets anywhere near the loaded model."
+    },
+    {
+      "id": "mlops-13",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about building a safe, maintainable prediction API, per Lessons 10 and 11.",
+      "options": [
+        "The model should be loaded once at startup rather than on every request, because loading is far slower than predicting",
+        "A health endpoint matters because container platforms and load balancers poll it to decide whether to send traffic",
+        "Response fields can be freely renamed or removed at any time, as long as the model's predictions stay accurate",
+        "Copying requirements.txt into the Dockerfile before copying the application code lets code edits rebuild in seconds instead of reinstalling every library",
+        "The container should run the service as root so it has unrestricted access to install anything the model might need at runtime"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Lesson 10 loads the model once in the FastAPI lifespan handler because loading is far slower than predicting, and it keeps a /health endpoint for exactly the probing purpose container platforms need. Lesson 11's Dockerfile copies requirements.txt and installs before copying app.py so Docker's layer cache avoids reinstalling libraries on every code edit, and it explicitly creates and switches to a non-root appuser, since serving predictions does not need elevated privileges. Both lessons warn against changing a response shape silently — add fields, don't rename or remove them, or version the API instead."
+    },
+    {
+      "id": "mlops-14",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of Lesson 13's safe cloud rollout pattern in the correct order.",
+      "items": [
+        "Deploy the new model version alongside the old one, instead of replacing it outright",
+        "Run a smoke test against the new version, such as confirming a known golden customer still scores the expected probability",
+        "Send a small share of traffic to the new version (or mirror it) while watching errors, latency and prediction distributions",
+        "Promote the new version gradually, or shift traffic back instantly if something looks wrong"
+      ],
+      "explain": "Lesson 13's rollout pattern is: deploy the new version alongside the old one, verify it with a smoke test, send a small share of traffic to it while watching errors, latency, and prediction distributions, then promote it gradually or roll back instantly by shifting traffic back — never replace a working model with a new one all at once."
+    },
+    {
+      "id": "mlops-15",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: ordering a Dockerfile so that requirements.txt is copied and installed before the application code is copied takes advantage of Docker's layer ________, so an app-code-only change rebuilds in seconds instead of reinstalling every library, per Lesson 11.",
+      "acceptedAnswers": ["caching", "cache", "layer caching"],
+      "explain": "Lesson 11 explains that Docker caches each layer; installing libraries is slow and rarely changes, while application code changes constantly, so copying requirements.txt first means edits to app.py rebuild in seconds instead of reinstalling scikit-learn and the rest of the stack."
+    },
+    {
+      "id": "mlops-16",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "batch: 0.063 s total, 0.6 microseconds per row\nAPI latency ms  p50: 8.4  p95: 12.6",
+      "prompt": "Lesson 12 measured batch scoring at 0.6 microseconds per row and a single HTTP /predict request at a median of 8.4 milliseconds (8,400 microseconds) per customer. Roughly how much cheaper per prediction was the batch approach, and why?",
+      "options": [
+        "Roughly 14 times cheaper, because batch scoring simply skips input validation",
+        "Roughly 14,000 times cheaper, because a single vectorized batch call amortizes the fixed per-request overhead across every row, while each HTTP request pays that overhead on its own",
+        "Roughly 140 times cheaper, because the batch job ran on different hardware than the API",
+        "About the same cost per prediction, because both approaches ultimately call the same predict_proba method under the hood"
+      ],
+      "correctIndex": 1,
+      "explain": "8,400 microseconds divided by 0.6 microseconds is about 14,000 — batch scoring was thousands of times cheaper per prediction in Lesson 12's measurement. The lesson's point is that one vectorized call amortizes all the fixed overhead (network, request parsing, model call) across every row, while real-time scoring pays that overhead on every single request, which is why per-request overhead dominates real-time cost."
+    },
+    {
+      "id": "mlops-17",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Lesson 16's validation gate uses several rules (an absolute AUC floor, a comparison against production, per-slice floors, and a calibration check) instead of just one absolute floor. Which statement correctly explains why a single absolute floor is not enough?",
+      "options": [
+        "A candidate can clear the absolute floor by a slim margin while still being meaningfully worse than the model already in production — only a direct comparison against production on the same holdout catches that regression",
+        "An absolute floor is unnecessary and can be removed once a production-comparison rule exists, since the comparison rule alone always catches every bad candidate",
+        "Multiple rules exist purely to generate more rows in the validation report; any one of the four rules alone would catch exactly the same failures",
+        "A single absolute floor is actually sufficient, and Lesson 16's candidate B only failed because of a coding bug in the validate() function",
+        "The absolute floor is the only rule that matters; the slice and calibration checks exist solely for cosmetic dashboards, not for blocking a promotion",
+        "Comparing against production is redundant with the absolute floor, since any model below the floor is automatically also worse than production"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 16's candidate B, built by dropping the contract column, scored AUC 0.752 — it cleared the 0.75 absolute floor by only 0.002, so that check alone passed it. It was the separate vs_production rule, comparing against the champion's 0.802, that caught the regression and rejected it. The lesson's explicit conclusion is 'that is why a gate uses several rules': a floor stops a broken model, the production comparison stops a model that is acceptable alone but worse than what it replaces, the slice check catches weakness in one customer group, and calibration catches scores that rank well but sit systematically off.",
+      "distractorExplain": "Option F's claim that falling below the floor automatically means a model is worse than production sounds plausible but gets the actual failure backwards: candidate B scored 0.752, which cleared the 0.75 floor and so passed that specific check — it was only the separate vs_production comparison against the 0.802 champion that caught it and triggered the rejection. A model can pass the floor and still fail the comparison; the two checks catch genuinely different problems, which is the opposite of redundant."
+    },
+    {
+      "id": "mlops-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "def test_training_runs_on_a_small_sample():\n    df = make_data(n=600, seed=1)\n    X, y = df.drop(columns=\"churned\"), df[\"churned\"]\n    pipe.fit(X, y)\n    assert roc_auc_score(y, pipe.predict_proba(X)[:, 1]) > 0.6",
+      "prompt": "This pytest test from Lesson 14 passes. What does that actually prove about the model, and what does it deliberately NOT prove?",
+      "options": [
+        "It proves the model is production-ready, since any AUC above 0.6 is considered a shippable model by this course's standards",
+        "It proves the model generalizes well to real production traffic, since the sample was drawn with a fixed random seed",
+        "It proves nothing useful at all, since a threshold of 0.6 is too weak to ever fail",
+        "It proves the training code path runs end to end without error on a small, fast, fixed-seed sample and beats chance — it says nothing about whether the model is good enough to replace production, which is a separate validation-gate question"
+      ],
+      "correctIndex": 3,
+      "explain": "Lesson 14 calls this a training smoke test and says the weak 0.6 threshold is deliberate: it only proves the code is not broken, and the tiny fixed-seed sample keeps the run under a second. The lesson is explicit elsewhere that passing tests do not prove the model is good — they prove it is intact, sane, and consistent. Whether a new model is better than production is Lesson 16's validation-gate question, not something this test answers."
+    },
+    {
+      "id": "mlops-19",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about adapting GitHub Actions to an ML project, per Lesson 15.",
+      "options": [
+        "The workflow's Python version should match the version actually used for training and for the Docker image, not simply \"the latest available\"",
+        "Setting cache: pip for setup-python restores pip's download cache between runs, so reinstalling heavy libraries like scikit-learn is far faster on repeat runs",
+        "CI should always pull the team's full production dataset on every pull request so tests run against completely realistic data",
+        "An artifact such as upload-artifact can pass a trained model from one job to a later job, since each job starts on a clean machine with no shared files",
+        "Pinning dependency versions in CI is optional, since GitHub's runners always match whatever versions were used in local development automatically"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Lesson 15's workflow pins Python to \"3.10\" specifically because scikit-learn 1.1.2's builds stop there and the Dockerfile uses the same base image — CI should run the same stack as production. cache: pip restores the download cache keyed on the requirements files, so heavy libraries reinstall in seconds instead of minutes. Because each job starts on a clean machine, upload-artifact/download-artifact is how a trained model is passed from the test job to the package job. The lesson explicitly recommends a small committed sample or synthetic data for CI, not the real production dataset, to keep pull-request runs cheap — full retraining on large data belongs in a separate workflow."
+    },
+    {
+      "id": "mlops-20",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: per Lesson 17, promote() refuses to move the production alias if the model file's SHA-256 hash no longer matches the hash recorded when the version was first ________, since that mismatch means the artifact changed after it passed validation.",
+      "acceptedAnswers": ["registered", "registration"],
+      "explain": "Lesson 17's promote() function checks sha256(model_file) against the hash stored in versions[vid][\"sha256\"] from when register() first copied the file into the registry, and raises PromotionError(\"artifact changed since registration\") on a mismatch. The lesson demonstrates this for real: overwriting the registered v2 file after it reached staging caused exactly this refusal."
+    },
+    {
+      "id": "mlops-21",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of Lesson 17's promotion path, from a freshly registered candidate to a live production rollback plan, in the correct order.",
+      "items": [
+        "register() copies the model file into the registry and records its SHA-256 hash and author",
+        "promote(to=\"staging\") runs the Lesson 16 validation gate against the current production model before moving the staging alias",
+        "promote(to=\"production\") checks that the version is already in staging, that its hash still matches registration, and that the approver is not its own author",
+        "aliases[\"previous_production\"] is saved as the move completes, so a bad release can be rolled back with a single pointer move"
+      ],
+      "explain": "register() creates the versioned, hashed copy first. Promotion to staging is gated by the validation comparison against the current champion. Promotion to production then layers on three more checks: the version must already be in staging, its hash must be unchanged since registration, and the approver must be someone other than its own author. The final step of a successful production promotion saves the prior production version as previous_production, which is exactly what makes rollback a one-line pointer move rather than a rebuild."
+    },
+    {
+      "id": "mlops-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "In Lesson 18's concept-drift batch, every feature's PSI is at most 0.005 — a quiet drift report by any threshold — yet the model's AUC collapses to 0.474, worse than a coin flip. What does this demonstrate?",
+      "options": [
+        "The PSI calculation in Lesson 18 has a bug, since a model that collapses to 0.474 AUC should always show elevated PSI",
+        "Data drift and concept drift are different problems: PSI and KS only detect that the inputs' distribution has shifted, so they can completely miss a change in the relationship between inputs and the true outcome, which needs labels to detect",
+        "An AUC of 0.474 proves the input features were corrupted, contradicting the PSI numbers, so the PSI numbers must be wrong",
+        "Concept drift and data drift are two names for the same phenomenon, and this result is simply a coincidence specific to one random seed"
+      ],
+      "correctIndex": 1,
+      "explain": "Lesson 18 built the concept-drift batch to keep the same input distribution as a fresh same-distribution batch and only rewrite the labels under a different, simulated relationship. PSI and KS compare feature distributions and need no labels, so they stayed quiet (PSI at most 0.005). AUC collapsed to 0.474 because the input-to-outcome relationship itself changed — exactly the lesson's conclusion that a quiet drift report does not guarantee a healthy model, and that concept drift needs labelled outcomes to detect."
+    },
+    {
+      "id": "mlops-23",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Lesson 19's weekly monitoring and alerting design.",
+      "options": [
+        "Because churn labels arrive weeks late, input-drift checks can fire before any outcome metric is even available",
+        "Requiring two consecutive weekly AUC breaches before paging, instead of paging on the first breach, reduces false alarms caused by normal week-to-week noise",
+        "Warnings and critical alerts should be routed the same way, since severity only matters for the message text, not for who receives it",
+        "A single week's AUC number can be noisy enough that a true breach and a harmless dip are hard to tell apart without a confidence interval or a persistence rule",
+        "Calibration (mean predicted risk vs. actual outcome rate) is monitored because a model can keep ranking customers correctly while its probabilities drift away from the true rate"
+      ],
+      "correctIndices": [0, 1, 3, 4],
+      "explain": "Lesson 19 runs input drift checks first because they need no labels, with outcome metrics following only once labels land. It requires two consecutive AUC breaches before paging, which removed a shaky week-5 alert that fell within the bootstrap noise band (roughly 0.64 to 0.72). The lesson explicitly says to route warnings to a dashboard or channel and page people only for critical alerts — not the same routing for both. Calibration is tracked separately from ranking metrics because a model can rank well while its mean predicted risk drifts away from the true rate, as the weeks 7-8 data showed."
+    },
+    {
+      "id": "mlops-24",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: in Lesson 20's retrain_decision function, the 14-day cooldown check runs before every other rule specifically so that a freshly trained model is never ________ in a loop.",
+      "acceptedAnswers": ["retrained", "re-trained"],
+      "explain": "Lesson 20 notes the ordering deliberately: the cooldown comes first so a fresh model is never retrained in a loop, before volume gates the expensive action and drift alone only triggers an investigation."
+    },
+    {
+      "id": "mlops-25",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Match each automated retraining trigger to what it actually does, per Lesson 20.",
+      "left": [
+        "Schedule trigger",
+        "Performance trigger",
+        "Drift trigger",
+        "Data volume trigger"
+      ],
+      "right": [
+        "Blocks an otherwise-justified retrain until enough new labelled rows exist, so the new model doesn't learn from noise",
+        "Fires when live AUC stays below its floor for a sustained stretch — the strongest signal, but it lags because it needs labels",
+        "Retrains on a fixed calendar interval regardless of whether anything actually changed",
+        "Fires when input distributions shift, which on its own usually only justifies an investigation rather than an automatic retrain"
+      ],
+      "correctMap": [2, 1, 3, 0],
+      "explain": "The schedule trigger retrains every N days regardless of what actually changed. The performance trigger, the strongest signal, fires when live AUC stays below its floor but lags because it needs labels. The drift trigger fires on input shift, but Lesson 18 showed drift alone often doesn't hurt accuracy, so it usually only earns an 'investigate' rather than an automatic retrain. The data volume trigger gates retraining until enough new labelled rows exist, so the model doesn't learn from noise."
+    },
+    {
+      "id": "mlops-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Lesson 21's subgroup report shows the premium segment (201 rows, roughly 11 cancellations) at AUC 0.664, compared with basic's AUC 0.732 on 569 rows. What is the responsible way to read this, per the lesson?",
+      "options": [
+        "Conclude immediately that the model is biased against premium customers and must be retrained before it can be used at all",
+        "Ignore the premium segment entirely, since any segment under 500 rows should never appear in a governance report",
+        "Report the premium number alongside its tiny sample size as a caveat rather than declaring a verdict, since a group with about 11 positive events produces a highly uncertain AUC estimate",
+        "Treat 0.664 as just as statistically reliable as basic's 0.732, since both numbers come from the same held-out test set"
+      ],
+      "correctIndex": 2,
+      "explain": "Lesson 21 walks through this exact table and says to look at n: premium has 201 rows and only about 11 cancellations, so its AUC is very uncertain, and the lesson's instruction is to document small-group results with that caveat rather than declaring a verdict — not to treat every group's AUC as equally reliable, and not to drop the segment from the report or jump to a bias conclusion without further review."
+    },
+    {
+      "id": "mlops-27",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Per Lesson 22, the capstone's per-candidate pipeline runs four stages in order before a model can be promoted. Put them in the correct order.",
+      "items": [
+        "Train and track: fit the pipeline and log parameters, metrics and the model",
+        "Validation gate: compare the candidate against fixed floors and against the current champion",
+        "Register: create a new model version, without yet moving the champion alias",
+        "Serve and contract-test: load the registered version behind an API and test its contract before promoting it"
+      ],
+      "explain": "Lesson 22 lists the six lifecycle stages and notes that stages 1 to 4 run as one function each time a candidate model appears. Lesson 23's run_cycle confirms the order: train and log the candidate, run it through the validation gate, register a version only if the gate passes, contract-test the registered version, and only then promote it by moving the champion alias."
+    },
+    {
+      "id": "mlops-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "In Lesson 24's cycle 2, the retrained candidate beat the previous champion on newer weeks (AUC 0.593 vs 0.529), yet the pipeline still reported 'blocked at gate.' Why?",
+      "options": [
+        "The pipeline has a bug: any candidate that beats the champion should always be promoted automatically, so this result is a mistake",
+        "Beating the champion on a comparison rule does not override the gate's absolute floors; 0.593 AUC and 0.103 average precision both still fell below the configured floors of 0.70 and 0.25",
+        "The candidate was blocked only because it was trained on too much data, not because of its score",
+        "vs_production and min_auc are mutually exclusive checks, so passing one automatically disables the other"
+      ],
+      "correctIndex": 1,
+      "explain": "Lesson 24's actual output lists both reasons: 'AUC 0.593 below floor 0.70' and 'AP 0.103 below floor 0.25'. Beating the previous champion is a relative improvement, but the gate's absolute floors still apply independently — exactly the multi-rule design from Lesson 16. The lesson reads this honestly as the pipeline working correctly: retraining helped, but not enough to actually fix the problem, which is why it refuses to ship and flags it for a human to investigate the features."
+    },
+    {
+      "id": "mlops-29",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the two fault-injection drills Lesson 24 ran against the capstone pipeline.",
+      "options": [
+        "Drill 1 shuffled the training labels, driving AUC down to coin-flip territory (0.456), and the validation gate correctly blocked that candidate on multiple rules at once",
+        "Drill 2 simulated a serving bug where probabilities came back multiplied by 100, and it was the contract check — not the validation gate — that caught the out-of-range probability",
+        "Both drills succeeded in promoting a bad model to champion, proving the gates don't actually work",
+        "Running these drills on purpose, rather than only seeing checks pass, is how the lesson confirms the safety checks actually fire when something is genuinely wrong",
+        "Drill 1's shuffled-label model failed only the vs_production check; every other gate rule reported a pass"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Drill 1 shuffled y_tr and produced an AUC of 0.456, and the gate listed all three reasons: below the AUC floor, below the AP floor, and worse than champion — not just one rule. Drill 2's PercentModel multiplied probabilities by 100, and it was the contract check that flagged 'probability outside [0, 1]', not the validation gate. In both drills, the champion stayed at version 2 — neither bad model was promoted. The lesson's own framing is that a safety check you have never seen fail is a guess, which is exactly why it deliberately broke the pipeline to confirm the checks bite."
+    },
+    {
+      "id": "mlops-30",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: Lesson 24's drill 2 fed probabilities multiplied by 100 into the contract test, and it was caught because a valid probability must fall inside ________.",
+      "acceptedAnswers": ["[0, 1]", "0 and 1", "0 to 1", "between 0 and 1", "[0,1]"],
+      "explain": "Drill 2's PercentModel multiplied every predicted probability by 100 before it reached the contract check, and the check flagged it with 'probability outside [0, 1]', since a probability must always fall between 0 and 1."
+    }
+  ]
+}

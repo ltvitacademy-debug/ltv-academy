@@ -1,0 +1,468 @@
+{
+  "questions": [
+    {
+      "id": "mlip-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Per Lesson 2's build-vs-buy framework, what is the single most useful question to ask about an ML infrastructure component before deciding whether to build it yourself?",
+      "options": [
+        "Whether the data science team has time available this quarter",
+        "Whether it costs less to build than to buy over a five-year horizon",
+        "Whether building it well would differentiate the company, or merely let the team say 'we built it'",
+        "Whether an open-source implementation already exists at all",
+        "Whether a fully managed platform already bundles it with other components",
+        "Whether the component can be fully outsourced to a point-solution vendor"
+      ],
+      "correctIndex": 2,
+      "explain": "Lesson 2 frames the deciding question as differentiation, not cost: 'if we build this well, does it make our models better, or does it just make our team able to say we built it?' Most ML infrastructure is commodity that every team needs in roughly the same shape, which is why open source and managed platforms dominate — building is defensible only when a component encodes something specific to how the business actually works.",
+      "distractorExplain": "Option B (a five-year cost comparison) is the instinct most teams reach for first, but the lesson is explicit that cost is not the deciding factor — a cheap-to-build component can still be the wrong thing to build if it's commodity infrastructure, and an expensive one can still be worth building if it's genuinely where the company's advantage lives. Differentiation, not a cost spreadsheet, is the framework's actual test."
+    },
+    {
+      "id": "mlip-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "A data scientist at a company with a platform team wants to deploy a new model. Per Lesson 1's 'paved road' idea, which of the following is the clearest sign the paved road is actually working?",
+      "options": [
+        "The platform team reviews and manually approves every single training run before it starts",
+        "Each team has written its own custom deployment script tailored to its own model",
+        "The data scientist can register a feature, kick off training, and deploy without filing a ticket for a platform engineer to do it by hand",
+        "The platform team is paged every time a model is deployed, to confirm it went well"
+      ],
+      "correctIndex": 2,
+      "explain": "Lesson 1 names self-service as one of the three things that make a paved road real: a data scientist can register a feature, kick off a training run, or deploy a model without filing a ticket and waiting on a platform engineer to do it by hand. Manual review on every run, bespoke scripts per team, and pager-driven oversight are all signs the paved road hasn't actually replaced the old, unscalable way of working."
+    },
+    {
+      "id": "mlip-03",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these ML platform maturity stages from Lesson 4 in the order a growing company actually passes through them.",
+      "items": [
+        "One model, one notebook — a single data scientist owns everything end to end with no shared tooling",
+        "A few models, with the same manual steps copy-pasted and repeated by hand for each one",
+        "Dozens of models, where investing in shared tooling like a real feature store finally pays off",
+        "Hundreds of models, where a self-serve platform team builds the system so teams ship without help"
+      ],
+      "explain": "Lesson 4 walks through four recognizable stages: a single notebook with no platform needed yet; a few models where the same steps get copy-pasted per model; dozens of models where shared tooling starts paying for itself because the same fix now applies everywhere at once; and hundreds of models where the platform team's job shifts from helping each team ship to building the self-service system so teams ship without help."
+    },
+    {
+      "id": "mlip-04",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A fraud model's offline evaluation metrics look strong, but it performs noticeably worse once deployed. Investigating, the team finds that the batch SQL query used to build training data and the latency-sensitive function used at serving time compute 'average trip rating over 7 days' with two different null-handling branches. What is this an example of, per Lesson 5?",
+      "options": [
+        "A point-in-time join failure, because the training query used a future value of the feature",
+        "Training/serving skew caused by code duplication between two separate implementations of the same feature",
+        "A materialization failure, because the online store wasn't refreshed on schedule",
+        "An on-demand feature view bug, because the feature depends on request-time input"
+      ],
+      "correctIndex": 1,
+      "explain": "Lesson 5's core problem is exactly this: a feature gets computed twice, by two different pieces of code written at different times, and the two paths drift out of sync — here, through a null-handling difference. That gap between what training saw and what serving sees is training/serving skew, and it's specifically the code-duplication cause, not a point-in-time leak or a stale materialization."
+    },
+    {
+      "id": "mlip-05",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about offline and online feature stores, per Lesson 6.",
+      "options": [
+        "The offline store is optimized for scanning large volumes of history, typically backed by a data warehouse or data lake",
+        "The online store holds only the latest value per entity and is typically backed by a low-latency key-value store like Redis or DynamoDB",
+        "Materialization is the step that copies feature values from the online store into the offline store",
+        "The same FeatureView definition works unchanged against either store; swapping stores is a configuration change, not a feature-logic rewrite",
+        "An online store query is expected to take seconds to minutes, the same as an offline store query"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "The offline store scans history for training sets; the online store is a fast, one-key lookup for live serving, which is why it's built on key-value technology like Redis or DynamoDB. The same FeatureView works against either store — swapping is configuration, not a rewrite. Materialization runs the opposite direction of option C: it copies values from offline into online, not online into offline. And online queries have to answer in single-digit milliseconds, not seconds to minutes — that latency budget is the whole reason online stores exist as a separate system."
+    },
+    {
+      "id": "mlip-06",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a ________ join matches each historical event to the feature value as of that event's own timestamp, rather than the feature's current value, preventing the time-travel/data-leakage form of training/serving skew.",
+      "acceptedAnswers": ["point-in-time", "point in time", "a point-in-time join"],
+      "explain": "A point-in-time join fixes the leak where a training set naively uses a feature's current value for a historical event, letting future data bleed into training. Feast's get_historical_features applies this automatically, looking up the value that was correct as of each row's own event_timestamp, never a later one."
+    },
+    {
+      "id": "mlip-07",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Match each term from Lesson 7's feature store architecture patterns to what it actually is.",
+      "left": [
+        "Batch materialization",
+        "Streaming ingestion",
+        "On-demand feature view",
+        "Materialization (the general mechanism)"
+      ],
+      "right": [
+        "A stream processor writes a feature value directly into the online store, bypassing the batch schedule entirely",
+        "The scheduled job that copies feature values from the offline store into the online store",
+        "The default pattern: a batch job computes values on a schedule, correct for most features' freshness needs",
+        "A transformation that runs at request time, combining precomputed features with data only available when the prediction request arrives"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "Batch materialization is the default pattern — correct for most features, since most freshness needs are measured in minutes to hours. Streaming ingestion is for sub-minute freshness, writing directly into the online store. An on-demand feature view runs its transformation at request time using inputs that can't be precomputed. Materialization itself, as a general mechanism, is the scheduled job copying values from offline to online that the batch pattern relies on."
+    },
+    {
+      "id": "mlip-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "A company's feature registry shows that driver_hourly_stats:avg_daily_trips's rolling window was silently changed from 7 days to 14 days six months ago, with no version bump and no record of when it happened. Per Lesson 9, what is this lack of versioning actually breaking?",
+      "options": [
+        "Materialization — the online store will stop refreshing until the feature is renamed",
+        "The point-in-time join — it can no longer compute historical values correctly",
+        "The online/offline split — the feature can no longer be served online",
+        "Lineage — nobody can tell which models were trained against the 7-day definition versus the 14-day definition"
+      ],
+      "correctIndex": 3,
+      "explain": "Lesson 9 is explicit: if a FeatureView's logic changes silently, with no new name and no record of when it took effect, every model trained before and after the change is implicitly using different features that look identical. That's a lineage failure — the ability to answer 'which exact feature definitions were used by this model' breaks down, even though materialization, serving, and the point-in-time join mechanics keep working exactly as before."
+    },
+    {
+      "id": "mlip-09",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Why does MLflow's Tracking Server keep a separate backend store and artifact store instead of one combined store?",
+      "options": [
+        "Because MLflow's artifact store is required to be on a different cloud provider than the backend store",
+        "So a metadata query never has to read through gigabytes of model weights to answer a question like 'what was the best run's learning rate,' even though both stores must always be scaled and backed up together as a single unit",
+        "Because the backend store can only hold one run's metadata at a time",
+        "So that artifacts can be edited in place after a run finishes, which querying the backend store doesn't allow",
+        "So structured metadata like params, metrics, and tags can be queried quickly in a database, while large files like model binaries and plots live in object storage that scales independently of that database",
+        "So that only administrators can access the backend store, while artifacts remain publicly readable"
+      ],
+      "correctIndex": 4,
+      "explain": "The backend store (a database) holds queryable metadata — run IDs, params, metrics, tags — while the artifact store (typically object storage) holds large files that don't need to be queried by content. The split matters operationally because you can scale or back up a multi-terabyte artifact store completely independently of the metadata database, and a metadata query never has to read through gigabytes of model weights just to answer a simple question.",
+      "distractorExplain": "Option B gets the motivating example right — a metadata query shouldn't have to scan through model weights — but it reverses the actual operational payoff. Lesson 10 specifically says the split lets you scale or back up the artifact store completely independently of the backend database, not that the two 'must always be scaled and backed up together as a single unit.' Tying them together that way is exactly the coupling the split is designed to avoid."
+    },
+    {
+      "id": "mlip-10",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about MLflow's aliases versus the older, deprecated stage-based lifecycle, per Lesson 11.",
+      "options": [
+        "A stage (None/Staging/Production/Archived) is a property of the version itself, which means a model can only be in one stage at a time across the whole registry",
+        "An alias like 'champion' is a mutable pointer that can be reassigned to a new version instantly, without touching the version history underneath it",
+        "A serving job that resolves an alias at load time has to be redeployed every time the alias is reassigned to a new version",
+        "Tags are free-form key/value metadata, a separate concept from the lifecycle role an alias or stage describes",
+        "MLflow's documentation recommends stages over aliases for any new registry workflow"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "A stage is a property of the version itself, which is exactly the structural flaw that made it brittle — only one stage at a time, with no agreed meaning across teams. An alias is a mutable pointer reassigned instantly, with nothing that depends on it needing to change. Tags carry metadata, deliberately separate from lifecycle. MLflow's own documentation has deprecated the stage-based workflow in favor of aliases and tags, the opposite of option E, and a serving job resolving an alias at load time is the whole point of aliases needing no redeploy when the pointer moves."
+    },
+    {
+      "id": "mlip-11",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: MLflow now recommends tracking a model version's current role with a mutable, named pointer called an ________, reassigned instantly without touching version history, rather than the older, deprecated stage field.",
+      "acceptedAnswers": ["alias", "an alias"],
+      "explain": "An alias (like 'champion' or 'challenger') is a mutable pointer to a specific version. Reassigning it is instant and leaves the underlying version history untouched, which is why Lesson 11 recommends it over the deprecated stage-based lifecycle."
+    },
+    {
+      "id": "mlip-12",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of promoting a challenger model to champion, per Lesson 14, in the correct order.",
+      "items": [
+        "Compare the challenger against the champion on the same fixed offline holdout set using mlflow.search_runs() or the Compare UI",
+        "Run the challenger in shadow deployment, logging its predictions on real traffic without serving them",
+        "Roll the challenger out as a canary, serving a small, gradually increasing percentage of real traffic",
+        "Reassign the 'champion' alias to the challenger's version, the one-line act of promotion"
+      ],
+      "explain": "Lesson 14 lays out promotion as a sequence of earned comparisons, not a single decision: beat the champion on a fixed offline evaluation set, survive shadow deployment on real traffic with zero risk, prove out on a small, gradually increasing canary slice, and only then reassign the champion alias — the one-line mechanical act that all the preceding comparisons exist to justify."
+    },
+    {
+      "id": "mlip-13",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Match each lineage link from Lesson 13 to the specific mechanism that closes it.",
+      "left": [
+        "Data consumed by a training run",
+        "Code version that produced a run",
+        "The run that produced a registered model version",
+        "Which model version is currently serving traffic"
+      ],
+      "right": [
+        "Deployment metadata tagging a serving endpoint with the alias or version it resolved at deploy time",
+        "mlflow.data's log_input(), attaching a structured dataset reference to the run",
+        "MLflow autologging the git commit hash as a tag when training runs inside a git repo",
+        "The registry storing the run_id on every model version created by register_model()"
+      ],
+      "correctMap": [1, 2, 3, 0],
+      "explain": "log_input() attaches a structured dataset reference to the run, closing the data link. MLflow autologs the git commit as a tag, closing the code link. The registry stores the run_id on every version it creates, closing the run-to-version link. The final link — which version is actually live — is closed only by deployment metadata tagging the serving endpoint with the resolved alias or version, since nothing upstream of deployment can know that on its own."
+    },
+    {
+      "id": "mlip-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "A platform team needs every training pipeline step to be bit-for-bit portable across local dev, staging, and a different cloud provider, with each step carrying its own pinned dependencies rather than sharing a worker's environment. Per Lessons 15 and 16, which pipeline framework's default model fits this requirement better, and why?",
+      "options": [
+        "Airflow, because its TaskFlow API lets each @task function pin its own Python interpreter",
+        "Airflow, because its DAGs are compiled into portable IR YAML the same way KFP pipelines are",
+        "Kubeflow Pipelines, because every component runs as its own independently containerized step with its own base image, rather than sharing one Airflow worker environment",
+        "Kubeflow Pipelines, because it replaces containers entirely with a shared virtual environment"
+      ],
+      "correctIndex": 2,
+      "explain": "Kubeflow Pipelines' default is that every component is its own container with its own base image and pinned dependencies, which is exactly what makes a compiled KFP pipeline portable across any KFP-compatible backend. Airflow's TaskFlow tasks, by contrast, are Python functions sharing one Airflow worker environment — convenient, but it means environment correctness has to hold for every task at once, not per step."
+    },
+    {
+      "id": "mlip-15",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Per Lesson 17, select every one of the concrete commitments required for a training pipeline step to be genuinely reproducible.",
+      "options": [
+        "A container image referenced by an immutable digest, or a lockfile with exact dependency versions, instead of a mutable tag like :latest",
+        "Every library that touches randomness seeded explicitly, such as numpy.random.seed(42)",
+        "A versioned, immutable dataset snapshot, rather than a live query against the current state of a table",
+        "The exact git commit SHA the training code ran at, captured and logged alongside the run",
+        "All hyperparameters as one serialized, fully logged config object",
+        "A human manually re-running the pipeline a second time to visually confirm the output model file looks similar"
+      ],
+      "correctIndices": [0, 1, 2, 3, 4],
+      "explain": "Lesson 17 names five concrete commitments — pinned dependencies, fixed random seeds, versioned immutable data, a captured code version, and captured config — all captured automatically inside the pipeline step itself. A human manually re-running the pipeline to eyeball the output isn't one of the five; it's exactly the kind of optional, skippable manual step the lesson says reproducibility has to be designed around, not depend on."
+    },
+    {
+      "id": "mlip-16",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: Airflow's ________ parameter controls whether the scheduler backfills every interval it missed between start_date and now — for a daily retraining DAG, this is almost always set to False so redeploying doesn't trigger weeks of backdated runs.",
+      "acceptedAnswers": ["catchup", "catchup=False", "the catchup parameter"],
+      "explain": "catchup controls backfilling of missed schedule intervals. For a retraining DAG, catchup=False is almost always correct, since you don't want fourteen backdated training runs firing the moment a DAG that's been 'scheduled' daily for two weeks finally gets deployed."
+    },
+    {
+      "id": "mlip-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "A task writes predictions by appending a new row to a predictions table every time it runs. After a network blip, Airflow retries the task automatically, and it succeeds. What has likely gone wrong, per Lesson 19's discussion of idempotency?",
+      "options": [
+        "Nothing — Airflow automatically deduplicates retried writes for every task",
+        "The retried attempt appended a second, duplicate row for the same run, because the task wasn't written to be safe to run more than once",
+        "The task will fail permanently, because Airflow blocks retries on any task that writes to a database",
+        "The checkpoint from the first attempt was automatically loaded, so no duplicate exists"
+      ],
+      "correctIndex": 1,
+      "explain": "Lesson 19 names exactly this pattern: a task that appends a row every time it runs will double-write on a retry, because retries only help if re-running the task leaves the system in the same final state. An append-only write is not idempotent — a write-to-fixed-path or upsert pattern would have been safe to retry, but this task wasn't written that way, and Airflow has no automatic deduplication for it."
+    },
+    {
+      "id": "mlip-18",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of an automated weekly retraining pipeline, per Lesson 20, in the order they actually run.",
+      "items": [
+        "pull_latest_data retrieves fresh training data, retrying automatically on transient failures",
+        "retrain fits a new candidate model with fixed seeds, pinned dependencies, and a tracked MLflow run",
+        "evaluate_against_champion compares the candidate against the current @champion on the same fixed evaluation set",
+        "promote_if_better reassigns the champion alias only if the candidate passed the quality gate, otherwise alerts a human"
+      ],
+      "explain": "Lesson 20's end-to-end DAG pulls fresh data first, retrains a reproducible candidate from it, evaluates that candidate against the current champion on a fixed set, and only then promotes — gated on whether the candidate actually passed, with a human alerted instead of a silent promotion when it doesn't."
+    },
+    {
+      "id": "mlip-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A team needs to export a PyTorch model so it can later be served by a C++ runtime with no Python or PyTorch installed at all. Per Lesson 21, which serialization format should they use?",
+      "options": [
+        "Pickle, because it's native to PyTorch and the fastest to write",
+        "joblib, since it's the standard format for any deep learning framework",
+        "ONNX, a framework-neutral graph format servable by any ONNX-compatible runtime in a different language",
+        "TorchScript, because it requires the PyTorch runtime to load"
+      ],
+      "correctIndex": 2,
+      "explain": "ONNX is the framework-neutral graph format Lesson 21 names specifically for cross-framework or cross-language portability — a model exported to ONNX can be served in C++, Java, or a browser by any ONNX-compatible runtime without the original framework installed. TorchScript, by contrast, strips Python-only dependencies but still runs inside PyTorch's own native runtime, and pickle/joblib are tied to the Python environment that wrote them."
+    },
+    {
+      "id": "mlip-20",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about continuous integration (CI), continuous delivery/deployment (CD), and continuous training (CT) for ML, per Lesson 22.",
+      "options": [
+        "CT is the stage, unique to ML, that retrains a model on fresh data and re-validates it independent of any code change",
+        "A full ML CI/CD pipeline has to support being triggered by both a code change and a data/schedule change",
+        "A model validation gate only needs to check that the model's offline AUC exceeds some absolute minimum threshold",
+        "Deploying a code change and deploying a newly retrained model are the same event, and good ML CI/CD pipelines should couple them into one deploy step",
+        "A model validation gate failing should stop the pipeline, so no model artifact becomes available for a downstream deploy job"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "CT is the ML-specific third stage beyond CI and CD, and a real pipeline must handle both a code-change trigger and a data/schedule trigger. A validation gate that fails correctly stops the pipeline cold. Option C understates a real gate, which also checks baseline comparison, slice-level performance, and schema contracts, not just an absolute threshold. Option D is the opposite of Lesson 22's point — a code deploy and a model deploy are deliberately kept separable so an incident investigation can tell which of the two actually changed."
+    },
+    {
+      "id": "mlip-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "A challenger model receives a mirrored copy of 100% of production traffic and produces real predictions on every request, but none of those predictions are ever shown to users or acted on — the champion's response is still the only one returned. What deployment pattern is this, and what can it NOT tell the team that a canary could?",
+      "options": [
+        "Canary deployment; it can't reveal latency or infrastructure issues, since canaries don't log predictions",
+        "Blue-green deployment; it can't reveal anything, since blue-green never routes any traffic to the new version",
+        "Shadow deployment; it can't reveal anything about latency, since shadowed requests skip actual inference",
+        "Shadow deployment; it can't reveal real business-outcome impact, because a discarded prediction was never actually acted on"
+      ],
+      "correctIndex": 3,
+      "explain": "This is a shadow deployment: real traffic mirrored to the new model, its output logged and discarded, zero user-facing risk. Lesson 23 is explicit about its blind spot: you can't know whether a discarded prediction, like 'approve this loan,' would have been a good business decision, because it was never actually acted on — that's exactly what a real canary slice can measure that shadow can't."
+    },
+    {
+      "id": "mlip-22",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: in a blue-green deployment, the single traffic-routing change that moves all traffic from the old environment to the fully-deployed new one at once is called the ________.",
+      "acceptedAnswers": ["cutover", "the cutover"],
+      "explain": "The cutover is the one-time switch — a Kubernetes Service selector change or an Istio weight flip — that moves all traffic from blue to green at once, after green has already been fully deployed and validated while idle."
+    },
+    {
+      "id": "mlip-23",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each rollback type from Lesson 24 to what it actually does.",
+      "left": [
+        "Infrastructure rollback",
+        "Model rollback via alias",
+        "Traffic-level rollback",
+        "Automatic rollback trigger"
+      ],
+      "right": [
+        "A hard, sustained metric breach reverts a deployment without waiting for a human to notice",
+        "Setting a bad canary version's traffic weight back to zero without deleting or rebuilding it",
+        "kubectl rollout undo reverts the serving Deployment itself to its previous revision",
+        "Reassigning a registry alias like champion back to a previous version, often without any pod restart"
+      ],
+      "correctMap": [2, 3, 1, 0],
+      "explain": "Infrastructure rollback reverts the deployment itself with kubectl rollout undo. Model rollback via alias just moves the champion pointer back, often with no pod restart at all. Traffic-level rollback zeroes a bad canary's weight without touching what's deployed. And an automatic rollback trigger fires on a hard, sustained metric breach, without waiting for a human to notice — the murkier cases route to a human decision instead."
+    },
+    {
+      "id": "mlip-24",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "A team runs dvc add data/train.csv and commits the resulting .dvc file to Git, while train.csv itself is added to .gitignore. Per Lesson 27, what does Git actually end up tracking?",
+      "options": [
+        "Nothing — DVC prevents Git from tracking anything related to data at all",
+        "A tiny pointer file containing a content hash (e.g. an md5) that resolves to the real data in object storage, not the data itself",
+        "The full train.csv file, compressed automatically by DVC before the commit",
+        "A live, read-only connection string to wherever train.csv currently lives on disk"
+      ],
+      "correctIndex": 1,
+      "explain": "dvc add moves train.csv into DVC's cache and replaces it with a small .dvc file containing a content hash (an md5). Git tracks that tiny pointer file; DVC resolves the hash to the actual bytes in whichever remote storage it's configured to use when someone runs dvc pull. Git never sees the data itself."
+    },
+    {
+      "id": "mlip-25",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about what makes a training run reproducible across the full ML lifecycle, per Lesson 28.",
+      "options": [
+        "A pinned Git commit with an unpinned requirements.txt like scikit-learn>=1.3 can still silently produce a different model later, because a new release can change a default",
+        "A container image tag like :latest is just as reliable a reproducibility anchor as a content-hash digest like @sha256:..., since both always point at the same bytes",
+        "Checking out a specific Git commit together with its corresponding dvc.lock reconstructs the full input state — code and the exact data version it ran against",
+        "If three of the four links — data, code, environment, parameters — are pinned, the chain is still considered fully reproducible",
+        "An MLflow run ID can tie parameters, git-commit tags, and a logged data-version tag together under one retrievable identifier"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "An unpinned dependency range can silently change behavior even with a pinned commit. git checkout plus dvc checkout together do reconstruct the full input state. And an MLflow run ID is built to tie parameters, commit tags, and data-version tags together under one identifier. A mutable tag like :latest is the opposite of a reliable anchor — it can point to a different image tomorrow, unlike a content digest. And missing any one of the four links breaks the chain entirely; three out of four is not 'fully reproducible.'"
+    },
+    {
+      "id": "mlip-26",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 30, an audit log of every model-affecting action (registration, promotion, rollback) has to be ________ — write-once, stored so entries can't be edited or deleted after the fact — or it defeats the entire purpose of keeping one.",
+      "acceptedAnswers": ["immutable", "an immutable audit log", "append-only"],
+      "explain": "An immutable, append-only audit log is the whole point: a log that can be quietly edited after an incident provides no real guarantee, which is why Lesson 30 insists on write-once storage, such as a dedicated audit-log service or object storage with object-lock enabled."
+    },
+    {
+      "id": "mlip-27",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each kind of ML artifact to the storage system Lesson 29 says actually fits it.",
+      "left": [
+        "A serialized model binary or a raw dataset file",
+        "A container image built for serving a model",
+        "A model registry's versions, aliases, and tags",
+        "A reproducibility manifest or model card"
+      ],
+      "right": [
+        "A specialized container registry with its own layer-deduplication and digest-addressing",
+        "Object storage (S3, GCS, Azure Blob) — cheap, large-blob storage not optimized for querying",
+        "Small and audit-critical — cheap enough to retain for the full regulatory window regardless of a cost-driven lifecycle policy",
+        "A metadata database behind the registry, while the model binary it points to still lives in object storage"
+      ],
+      "correctMap": [1, 0, 3, 2],
+      "explain": "Large blobs like raw model files and datasets belong in object storage. Container images belong in a dedicated container registry built for layer deduplication and digest-addressing. A registry's own versions, aliases, and tags live in a metadata database, with the actual binary still sitting in object storage underneath. And small, audit-critical artifacts like manifests and model cards are cheap enough to retain for the full regulatory window, resolving the tension between cost-driven retention and auditability through tiering rather than blanket deletion."
+    },
+    {
+      "id": "mlip-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "A platform team says: '99.3% of prediction requests in the last 5 minutes returned successfully.' Per Lesson 31, what is this statement, and how does it differ from the team's internal reliability target for the same metric?",
+      "options": [
+        "It's an SLA — a contractual promise with consequences — and it's identical to an SLO in every respect",
+        "It's an error budget — the spendable allowance of failure — and it has no relationship to an SLO at all",
+        "It's an SLI — the actual measured value right now — and it's different from an SLO, which is the target the team holds itself to, such as 99.9% over a rolling 28 days",
+        "It's an SLO — the internal target — and it's looser than the SLI, which is the contractual number given to customers"
+      ],
+      "correctIndex": 2,
+      "explain": "A measured number like '99.3% of requests succeeded in the last 5 minutes' is an SLI — what's actually happening right now. An SLO is the separate target the team holds itself to (e.g. 99.9% over 28 days), and an SLA, if one exists, is a looser contractual promise a layer further out, with consequences attached for missing it."
+    },
+    {
+      "id": "mlip-29",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about paging thresholds and alert fatigue on an ML platform, per Lesson 32.",
+      "options": [
+        "A latency spike that resolves on its own after a few seconds barely touches the error budget and generally shouldn't page anyone",
+        "Model metrics are naturally noisy, so alerting on raw metric wobble (like a 2% shift in average prediction score) tends to page constantly on changes that mean nothing",
+        "The recommended fix for noisy model metrics is to alert on sustained SLO burn rate rather than on raw metric values",
+        "An alert that hasn't led to a real human action in 90 days should be paged more aggressively to make sure it gets noticed",
+        "A fast-burn alert and a slow-burn alert should use the same severity, since both indicate the SLO is being violated"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "A self-resolving spike barely touches the error budget and isn't worth a page. Model metrics are naturally noisy, which is exactly why raw-metric alerting pages constantly on nothing, and why Lesson 32 recommends alerting on sustained burn rate instead. The lesson's actual rule for a 90-day-useless alert is the opposite of option D: demote it to a non-paging channel or delete it, don't page harder. And fast-burn and slow-burn alerts are deliberately given different severities — fast burn pages immediately, slow burn only opens a ticket — because they represent very different urgency."
+    },
+    {
+      "id": "mlip-30",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "A fraud team reports a customer segment's approval rate dropped 8% over four days, with no errors or latency spike anywhere on the platform's dashboards. Put the incident response stages from Lesson 33 in the order the on-call engineer actually works through them.",
+      "items": [
+        "Detect — the fraud team's Slack message surfaces something looks wrong, even though no alert fired on its own",
+        "Triage — confirm the model version hasn't changed, check feature freshness, then check feature distribution, running a PSI check to confirm upstream drift",
+        "Mitigate — flip a feature killswitch to fall back to a safe default while the upstream team fixes the root cause",
+        "Postmortem — write a blameless record of the timeline, root cause, and action items, including adding an automated drift check"
+      ],
+      "explain": "Lesson 33 walks this exact scenario through its four stages: detection here comes from a human report rather than an alert; triage works outward from the model version to freshness to distribution, confirming the cause with a PSI check instead of guessing; mitigation stops the damage immediately with a feature killswitch rather than retraining mid-incident; and the postmortem turns the one-off manual check into a standing, automated SLO so the next occurrence is caught by a system instead of a Slack message."
+    }
+  ]
+}
