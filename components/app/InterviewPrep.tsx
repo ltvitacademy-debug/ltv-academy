@@ -406,73 +406,55 @@ export default function InterviewPrep({
           <button
             type="button"
             onClick={practiceAvailableOnly}
-            className="block w-full rounded-[2px] border border-ink/20 bg-white/60 p-4 text-left hover:border-crimson"
+            className="flex w-full items-center justify-between gap-4 rounded-[2px] bg-crimson px-5 py-4 text-left text-parchment shadow-[0_4px_14px_-4px_rgba(142,28,28,0.5)] transition-colors hover:bg-crimson-deep"
           >
-            <span className="font-semibold text-ink">
-              Yes — go ahead with the {exactPool.length} question{exactPool.length === 1 ? "" : "s"}
+            <span>
+              <span className="block font-semibold">
+                Yes — go ahead with the {exactPool.length} question
+                {exactPool.length === 1 ? "" : "s"}
+              </span>
+              <span className="block text-sm text-parchment/80">
+                Exact match only, no substitutions.
+              </span>
             </span>
-            <span className="block text-sm text-stone">Exact match only, no substitutions.</span>
+            <span className="shrink-0 text-xl">→</span>
           </button>
 
           {skillFilter && withSkillExpanded.length > exactPool.length && (
-            <button
-              type="button"
+            <ExpandOption
               onClick={() => {
                 setExpandSkill(true);
                 startInterview();
               }}
-              className="block w-full rounded-[2px] border border-ink/20 bg-white/60 p-4 text-left hover:border-crimson"
-            >
-              <span className="font-semibold text-ink">
-                Include other skills to reach {Math.min(length, withSkillExpanded.length)}
-              </span>
-              <span className="block text-sm text-stone">
-                Drops the &ldquo;{skillFilter}&rdquo; filter — {withSkillExpanded.length} questions
-                become available.
-              </span>
-            </button>
+              title={`Include other skills to reach ${Math.min(length, withSkillExpanded.length)}`}
+              detail={`Drops the "${skillFilter}" filter — ${withSkillExpanded.length} questions become available.`}
+            />
           )}
 
           {difficulty !== "all" && withDifficultyExpanded.length > exactPool.length && (
-            <button
-              type="button"
+            <ExpandOption
               onClick={() => {
                 setExpandDifficulty(true);
                 startInterview();
               }}
-              className="block w-full rounded-[2px] border border-ink/20 bg-white/60 p-4 text-left hover:border-crimson"
-            >
-              <span className="font-semibold text-ink">
-                Include other difficulty levels to reach{" "}
-                {Math.min(length, withDifficultyExpanded.length)}
-              </span>
-              <span className="block text-sm text-stone">
-                Drops the &ldquo;{DIFFICULTY_LABELS[difficulty]}&rdquo; filter —{" "}
-                {withDifficultyExpanded.length} questions become available.
-              </span>
-            </button>
+              title={`Include other difficulty levels to reach ${Math.min(length, withDifficultyExpanded.length)}`}
+              detail={`Drops the "${DIFFICULTY_LABELS[difficulty]}" filter — ${withDifficultyExpanded.length} questions become available.`}
+            />
           )}
 
           {skillFilter && difficulty !== "all" && withBothExpanded.length > Math.max(
             withSkillExpanded.length,
             withDifficultyExpanded.length
           ) && (
-            <button
-              type="button"
+            <ExpandOption
               onClick={() => {
                 setExpandSkill(true);
                 setExpandDifficulty(true);
                 startInterview();
               }}
-              className="block w-full rounded-[2px] border border-ink/20 bg-white/60 p-4 text-left hover:border-crimson"
-            >
-              <span className="font-semibold text-ink">
-                Include both to reach {Math.min(length, withBothExpanded.length)}
-              </span>
-              <span className="block text-sm text-stone">
-                Drops both filters — {withBothExpanded.length} questions become available.
-              </span>
-            </button>
+              title={`Include both to reach ${Math.min(length, withBothExpanded.length)}`}
+              detail={`Drops both filters — ${withBothExpanded.length} questions become available.`}
+            />
           )}
         </div>
 
@@ -651,6 +633,30 @@ export default function InterviewPrep({
         </button>
       </div>
     </div>
+  );
+}
+
+function ExpandOption({
+  onClick,
+  title,
+  detail,
+}: {
+  onClick: () => void;
+  title: string;
+  detail: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex w-full items-center justify-between gap-4 rounded-[2px] border-2 border-ink/20 bg-white/60 px-5 py-4 text-left transition-colors hover:border-crimson hover:bg-white"
+    >
+      <span>
+        <span className="block font-semibold text-ink">{title}</span>
+        <span className="block text-sm text-stone">{detail}</span>
+      </span>
+      <span className="shrink-0 text-xl text-crimson">→</span>
+    </button>
   );
 }
 
