@@ -7,7 +7,7 @@ import type {
   InterviewDifficulty,
   InterviewQuestion,
 } from "@/lib/interviewPrepTypes";
-import { CATEGORY_LABELS, DIFFICULTY_LABELS, checkAvailability } from "@/lib/interviewPrepTypes";
+import { CATEGORY_LABELS, DIFFICULTY_LABELS } from "@/lib/interviewPrepTypes";
 
 type CompletedSession = {
   id: string;
@@ -111,7 +111,7 @@ export default function InterviewPrep({
   const [skillFilter, setSkillFilter] = useState<string | null>(null);
   const [difficulty, setDifficulty] = useState<InterviewDifficulty | "all">("all");
   const [category, setCategory] = useState<InterviewCategory | "mixed">("mixed");
-  const [length, setLength] = useState(20);
+  const [length, setLength] = useState<number | "all">(20);
 
   const [expandSkill, setExpandSkill] = useState(false);
   const [expandDifficulty, setExpandDifficulty] = useState(false);
@@ -121,11 +121,6 @@ export default function InterviewPrep({
   const [answer, setAnswer] = useState("");
   const [revealed, setRevealed] = useState(false);
   const [decisions, setDecisions] = useState<Record<string, Decision>>({});
-
-  const availability = useMemo(
-    () => checkAvailability(questions, skillFilter, difficulty, length),
-    [questions, skillFilter, difficulty, length]
-  );
 
   function matchingPool(opts: { ignoreSkill?: boolean; ignoreDifficulty?: boolean }) {
     return questions.filter((q) => {
@@ -146,7 +141,7 @@ export default function InterviewPrep({
 
   function startInterview() {
     const pool = matchingPool({ ignoreSkill: expandSkill, ignoreDifficulty: expandDifficulty });
-    const picked = shuffle(pool).slice(0, length);
+    const picked = length === "all" ? shuffle(pool) : shuffle(pool).slice(0, length);
     setSessionQuestions(picked);
     setIndex(0);
     setAnswer("");
@@ -273,7 +268,17 @@ export default function InterviewPrep({
             </span>
             <select
               value={length}
-              onChange={(e) => setLength(Number(e.target.value))}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v === "all") {
+                  // "All" means every question matching skill/level — a single
+                  // category wouldn't be "all" anymore, so reset type to Mixed.
+                  setLength("all");
+                  setCategory("mixed");
+                } else {
+                  setLength(Number(v));
+                }
+              }}
               className="mt-1.5 w-full border border-ink/20 bg-white/60 p-3 text-sm text-ink focus:border-crimson focus:outline-none"
             >
               {LENGTH_OPTIONS.map((n) => (
@@ -281,6 +286,7 @@ export default function InterviewPrep({
                   {n} questions
                 </option>
               ))}
+              <option value="all">All questions</option>
             </select>
           </label>
 
@@ -361,15 +367,17 @@ export default function InterviewPrep({
     ].filter((p): p is string => Boolean(p));
     const qualifier = qualifierParts.length > 0 ? qualifierParts.join(" ") + " " : "";
 
-    if (exactPool.length >= length) {
+    if (length === "all" || exactPool.length >= length) {
       return (
         <div className="border-2 border-ink/15 bg-parchment p-6 sm:p-8">
           <p className="eyebrow mb-2">Question availability</p>
           <p className="display text-2xl">
-            {exactPool.length} of {length} questions available
+            {length === "all"
+              ? `All ${exactPool.length} question${exactPool.length === 1 ? "" : "s"} selected`
+              : `${length} question${length === 1 ? "" : "s"} selected`}
           </p>
           <p className="mt-2 text-sm text-stone">
-            Exact match for your selected skill, level, and type. You&apos;re ready to start.
+            Exact match for your selected skill and level. You&apos;re ready to start.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <button
@@ -427,7 +435,7 @@ export default function InterviewPrep({
                 startInterview();
               }}
               title={`Include other skills to reach ${Math.min(length, withSkillExpanded.length)}`}
-              detail={`Drops the "${skillFilter}" filter — ${withSkillExpanded.length} questions become available.`}
+              detail={`Drops the "${skillFilter}" filter so other skills can fill the rest.`}
             />
           )}
 
@@ -438,7 +446,7 @@ export default function InterviewPrep({
                 startInterview();
               }}
               title={`Include other difficulty levels to reach ${Math.min(length, withDifficultyExpanded.length)}`}
-              detail={`Drops the "${DIFFICULTY_LABELS[difficulty]}" filter — ${withDifficultyExpanded.length} questions become available.`}
+              detail={`Drops the "${DIFFICULTY_LABELS[difficulty]}" filter so other levels can fill the rest.`}
             />
           )}
 
@@ -453,7 +461,7 @@ export default function InterviewPrep({
                 startInterview();
               }}
               title={`Include both to reach ${Math.min(length, withBothExpanded.length)}`}
-              detail={`Drops both filters — ${withBothExpanded.length} questions become available.`}
+              detail="Drops both filters so the rest of the bank can fill the request."
             />
           )}
         </div>
