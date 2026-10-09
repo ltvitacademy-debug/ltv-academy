@@ -2190,6 +2190,1017 @@
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
       "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-041",
+      "questionCode": "LTV-MSBI-INT-041",
+      "title": "EXISTS vs. IN vs. JOIN for Existence Checks",
+      "prompt": "You need to find every customer who has placed at least one order. Compare writing this with EXISTS, with IN, and with an INNER JOIN plus DISTINCT. Explain how each one behaves when a customer has multiple orders, and the specific trap with NOT IN when the subquery's column can contain NULLs.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "sql",
+      "skills": [
+        "T-SQL",
+        "Performance Tuning"
+      ],
+      "modelAnswer": "EXISTS, IN, and INNER JOIN with DISTINCT can all answer 'does this customer have at least one order,' but they get there differently. EXISTS(subquery) is a pure existence check -- SQL Server can stop scanning the moment it finds one matching row, and a customer with ten orders still only produces one result row, because EXISTS never actually returns the subquery's rows, just a true/false per outer row. IN (subquery) compares the outer column against the whole list the subquery returns; it also naturally avoids duplication since it's testing membership, not joining. An INNER JOIN behaves differently: joining Customer to Order on CustomerID and a customer with three orders produces three joined rows, which means DISTINCT (or GROUP BY) is required afterward to get back to one row per customer -- without it, the result silently overcounts. The sharper trap is with NOT IN rather than IN: if the subquery's column can contain a NULL, NOT IN against that list returns no rows at all for every single outer row, because SQL's three-valued logic can never prove an inequality against an unknown value. EXISTS doesn't have this problem because it's testing a condition, not comparing against a value list, which is one reason NOT EXISTS is generally the safer choice for 'does not have a match.'",
+      "professionalAnswer": "I'd walk through why these three roads to the same destination aren't actually equivalent in practice. EXISTS is the one I reach for by default for a pure existence check -- it's a yes/no test, the optimizer can bail out the instant it finds one match, and a customer with ten orders still contributes exactly one row to the result, because EXISTS never pulls the subquery's actual data back. IN behaves similarly for this particular case -- it's checking membership in a list, not joining, so it also doesn't duplicate. Where people get burned is reaching for a plain INNER JOIN instead: the moment you join Customer to Order, a customer with three orders becomes three rows, and if you forget the DISTINCT, you've silently inflated your result set without an error anywhere to tell you. But the real gotcha I always bring up, because it's bitten people in production, is NOT IN with a nullable column -- if even one NULL sneaks into the subquery's result, NOT IN returns completely empty, for every row, with no warning. I treat that as a hard rule: never write NOT IN against a column that could contain NULL -- use NOT EXISTS instead, which doesn't have that failure mode at all.",
+      "example": "-- EXISTS: pure existence check, no duplication risk\nSELECT c.CustomerID, c.Name\nFROM Customer c\nWHERE EXISTS (SELECT 1 FROM [Order] o WHERE o.CustomerID = c.CustomerID);\n\n-- IN: membership test against the subquery's result list\nSELECT c.CustomerID, c.Name\nFROM Customer c\nWHERE c.CustomerID IN (SELECT o.CustomerID FROM [Order] o);\n\n-- JOIN: requires DISTINCT or a customer with 3 orders appears 3 times\nSELECT DISTINCT c.CustomerID, c.Name\nFROM Customer c\nINNER JOIN [Order] o ON o.CustomerID = c.CustomerID;\n\n-- THE TRAP: if Order.CustomerID can be NULL, this returns ZERO rows for every customer:\nSELECT c.CustomerID FROM Customer c\nWHERE c.CustomerID NOT IN (SELECT o.CustomerID FROM [Order] o); -- avoid if nullable",
+      "commonMistakes": [
+        "Writing a plain INNER JOIN for an existence check and forgetting DISTINCT, silently duplicating customers with multiple orders",
+        "Using NOT IN against a subquery column that can contain NULL, not realizing it returns zero rows for every outer row",
+        "Assuming EXISTS and IN always perform identically to a JOIN, when EXISTS can short-circuit and avoid materializing the whole list",
+        "Not recognizing that EXISTS never actually returns the subquery's column values -- only whether a match exists"
+      ],
+      "keyPoints": [
+        "EXISTS is a short-circuiting existence check; it returns one result row regardless of how many matches exist",
+        "IN compares against a list but doesn't duplicate rows the way a JOIN does",
+        "An INNER JOIN needs DISTINCT/GROUP BY to avoid duplicating a row per matching child record",
+        "NOT IN against a nullable column can return zero rows entirely -- NOT EXISTS avoids that trap"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains EXISTS's existence-check, non-duplicating behavior",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly explains why a JOIN needs DISTINCT to avoid duplication",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly identifies the NOT IN / NULL trap and why NOT EXISTS avoids it",
+          "weight": 35
+        },
+        {
+          "criterion": "Provides correct, illustrative SQL for at least two of the three approaches",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "exists-vs-in-vs-join",
+        "label": "Review: EXISTS vs. IN vs. JOIN"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-042",
+      "questionCode": "LTV-MSBI-INT-042",
+      "title": "Routing rows with a Conditional Split",
+      "prompt": "Describe how you'd configure an SSIS Conditional Split transformation to route incoming order rows into three outputs: 'High Value' (OrderTotal > 1000), 'Standard' (OrderTotal between 1 and 1000), and a catch-all for anything else, including negative or zero totals that shouldn't normally occur.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "SSIS",
+        "Data Flow",
+        "ETL"
+      ],
+      "modelAnswer": "A Conditional Split evaluates its case expressions in order, top to bottom, and sends each row down the first case that evaluates to true -- so case order matters, and once a row matches one case it's done, it isn't also tested against the others. I'd define two named outputs plus rely on the built-in default output rather than defining three explicit cases: 'High Value' with the condition OrderTotal > 1000, and 'Standard' with the condition OrderTotal > 0 && OrderTotal <= 1000. Everything that doesn't match either named case -- specifically zero, negative totals, or NULLs -- falls through to the Conditional Split's default output, which I'd rename to something explicit like 'Unexpected Total' rather than leaving it as the generic default, and route that to an error-staging table or a flat file for investigation rather than silently discarding it. The key design point is that the default output isn't optional cleanup -- it's actually where the unexpected and invalid rows a real source system will eventually produce end up, so it needs a real downstream destination, not a dead end.",
+      "professionalAnswer": "I'd set this up with two explicit named cases and let the Conditional Split's built-in default output catch everything else, rather than trying to write a third explicit condition for it. First case, 'High Value': OrderTotal > 1000. Second case, 'Standard': OrderTotal > 0 && OrderTotal <= 1000. The order of the cases matters here -- the transformation tests top to bottom and a row goes down the first match, so I'd double check 'High Value' is listed first since it's the more specific, higher bound. Anything that doesn't match either -- zero, negative, or NULL OrderTotal, which shouldn't happen but absolutely will eventually in a real feed -- falls into the default output. I always rename that default output to something like 'Unexpected Total' instead of leaving the generic label, and I never leave it unconnected -- I route it to a staging table or a log file specifically so a data-quality problem shows up as rows I can go look at, rather than vanishing silently out of the pipeline.",
+      "example": "-- Conceptual SSIS Conditional Split configuration (not T-SQL):\n-- Output 1 'High Value'  : OrderTotal > 1000\n-- Output 2 'Standard'     : OrderTotal > 0 && OrderTotal <= 1000\n-- Default output (renamed 'Unexpected Total'): everything else -- zero, negative, NULL\n-- Route the default output to an error-staging table, not a dead end.",
+      "commonMistakes": [
+        "Writing a third explicit case for the catch-all instead of using the built-in default output",
+        "Ordering the 'Standard' case before 'High Value', causing high-value rows to incorrectly match the broader condition first",
+        "Leaving the default output unconnected, silently dropping rows with unexpected or invalid totals",
+        "Forgetting that a row is evaluated against cases top to bottom and only goes down the first match, not every matching case"
+      ],
+      "keyPoints": [
+        "Conditional Split evaluates cases top to bottom; a row goes down the first match only",
+        "The built-in default output catches anything that matches no explicit case -- no third condition needed",
+        "Case order matters when conditions could overlap (place the more specific/bounded case first)",
+        "The default output should be renamed and routed somewhere real, never left as a dead end"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly defines the two named case conditions",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly relies on the default output instead of a redundant third case",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly explains case evaluation order and why it matters here",
+          "weight": 25
+        },
+        {
+          "criterion": "Routes the default output to a real destination rather than leaving it unconnected",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "ssis-development",
+        "lessonSlug": "conditional-split",
+        "label": "Review: Conditional Split"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-043",
+      "questionCode": "LTV-MSBI-INT-043",
+      "title": "A report is hanging, but there's no deadlock error",
+      "prompt": "Users report that a dashboard query has been 'just spinning' for several minutes, but no deadlock error ever appears. Explain the difference between this situation and a deadlock, how you'd identify the actual head blocker, and what you'd check before deciding to kill the blocking session.",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "sql",
+      "skills": [
+        "T-SQL",
+        "Transactions",
+        "Troubleshooting"
+      ],
+      "modelAnswer": "This is ordinary blocking, not a deadlock -- a deadlock is a genuine standoff that SQL Server detects and resolves automatically within seconds by killing a victim; it never just hangs indefinitely. Plain blocking, by contrast, can hang as long as whatever is holding the lock keeps holding it, because there's no cycle for SQL Server to detect -- one session is simply waiting its turn behind another, and nothing resolves that automatically. To find the actual head blocker, I'd query sys.dm_exec_requests, specifically looking at the blocking_session_id column -- the session with a non-zero blocking_session_id is being blocked, and the session that ID points to (which itself usually shows blocking_session_id = 0) is the head blocker actually holding the lock everyone's waiting on. Before killing that session, I'd check what it's actually doing -- its SQL text, and whether it's an open, uncommitted transaction (an application that opened a transaction and is sitting idle, or a long-running batch job that's legitimately mid-write). Killing a session mid-write rolls back whatever it was doing, which can be worse than the wait itself if it's a large, mostly-finished operation -- so I'd rather understand what it's doing and consider letting it finish or committing/rolling it back cleanly than reflexively kill it.",
+      "professionalAnswer": "The first thing I'd clarify, because it changes the whole response, is that this isn't a deadlock -- SQL Server resolves deadlocks on its own, usually within seconds, by picking a victim and rolling it back. If nothing has errored and the query is just sitting there, that's plain blocking: one session waiting on a lock another session is holding, with no cycle, so nothing forces a resolution automatically. My first query is always against sys.dm_exec_requests, looking at blocking_session_id -- that tells me directly who's blocked and, by following the chain, who the actual head blocker is, as opposed to the session that looks blocked but is itself only blocked by someone else further up. Once I've got the head blocker's session ID, I'd pull its actual SQL text and check whether it's sitting inside an open transaction that was never committed, versus genuinely mid-execution on a big write. That distinction decides what I do next -- if it's an application bug that opened a transaction and forgot to close it, killing the session is reasonable and I'd also flag that bug separately. If it's a legitimate long-running batch load that's 90% done, killing it rolls back all of that work and probably makes things worse, so I'd rather let it finish, or coordinate with whoever owns that job before touching it.",
+      "example": "-- Find who's blocking whom\nSELECT session_id, blocking_session_id, wait_type, wait_time, status\nFROM sys.dm_exec_requests\nWHERE blocking_session_id <> 0;\n\n-- Follow the chain to the head blocker (blocking_session_id = 0, but others point to it)\n-- Then inspect what the head blocker is actually running:\nSELECT text\nFROM sys.dm_exec_requests r\nCROSS APPLY sys.dm_exec_sql_text(r.sql_handle) t\nWHERE r.session_id = @HeadBlockerSessionId;",
+      "commonMistakes": [
+        "Treating any hanging query as a deadlock, when a true deadlock is auto-resolved within seconds, not left hanging",
+        "Killing the first blocked session found instead of tracing blocking_session_id to the actual head blocker",
+        "Killing a session without checking whether it's mid-write on a legitimate long-running job",
+        "Not distinguishing an application bug (an abandoned open transaction) from a genuinely busy, legitimate session"
+      ],
+      "keyPoints": [
+        "A hanging query with no error is ordinary blocking, not a deadlock -- deadlocks auto-resolve quickly",
+        "sys.dm_exec_requests' blocking_session_id column traces the blocking chain to the actual head blocker",
+        "Check what the head blocker is actually doing before killing it -- an abandoned transaction vs. a legitimate long write",
+        "Killing a session mid-write rolls back its work, which can be worse than waiting for it to finish"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly distinguishes ordinary blocking from a deadlock",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly identifies how to find the head blocker (sys.dm_exec_requests / blocking_session_id)",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains what to check before killing the blocking session",
+          "weight": 30
+        },
+        {
+          "criterion": "Provides correct, relevant diagnostic SQL",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "concurrency-blocking",
+        "label": "Review: Concurrency and Blocking"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-044",
+      "questionCode": "LTV-MSBI-INT-044",
+      "title": "A package works in Visual Studio but fails on the server",
+      "prompt": "An SSIS package runs fine when you execute it from Visual Studio on your own machine, but fails on the production server with a 'cannot acquire connection from connection manager' error. What would you check first, and what's the most likely class of cause?",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "SSIS",
+        "Troubleshooting",
+        "ETL"
+      ],
+      "modelAnswer": "The phrase 'works on my machine, fails on the server' is a strong signal the problem isn't the package's logic at all -- it's an environment difference between where it was authored and where it's actually running. The most likely class of cause is a connection manager that depends on something present on the developer's machine but missing or different on the server: a driver that isn't installed on the server (a specific OLE DB or ODBC provider), a 32-bit vs. 64-bit mismatch (Visual Studio commonly runs packages in 32-bit debug mode by default, while the server's SQL Server Agent job typically runs the 64-bit runtime), or a connection string referencing a server name, file path, or credential that's only valid in the developer's own environment. I'd check, in order: whether the required provider is actually installed on the server, whether the package's Run64BitRuntime project property matches what's actually being used to execute it, and whether the connection manager's configuration (server name, authentication mode) was parameterized for different environments or is hardcoded to something that only resolves on a dev machine. I'd also check the specific error detail beyond the generic message -- the SSIS execution log usually names which connection manager failed, which narrows the search immediately instead of guessing across all of them.",
+      "professionalAnswer": "The moment I hear 'works for me, fails on the server,' I stop suspecting the package's actual logic and start suspecting the environment it's running in -- those are two different kinds of bugs, and this phrasing is a strong pointer toward the second kind. My first move is to find out exactly which connection manager the error is complaining about -- the execution log names it, so there's no need to guess. From there, the most common root causes I'd check, roughly in order of likelihood: is the required driver or provider actually installed on the server (a developer machine often has extra client tools installed that a lean production server doesn't); is there a 32-bit/64-bit mismatch, since Visual Studio's debugger often runs packages in 32-bit mode while the server almost always executes under the 64-bit runtime, and a provider that's only registered for one bitness will fail under the other; and is the connection string itself environment-specific -- a server name or file path that only exists on my own machine, which should have been parameterized for deployment instead of hardcoded. I'd fix the actual cause rather than just reinstalling things at random, because this exact failure mode repeats every time a new developer's machine differs even slightly from production.",
+      "commonMistakes": [
+        "Assuming the package's logic is broken and re-debugging the data flow instead of the environment difference",
+        "Not checking the specific connection manager named in the execution log before investigating generally",
+        "Missing the 32-bit vs. 64-bit runtime mismatch between Visual Studio's debug mode and the server's execution context",
+        "Leaving connection strings hardcoded to a developer's own environment instead of parameterized for deployment"
+      ],
+      "keyPoints": [
+        "'Works on my machine, fails on the server' points to an environment difference, not a logic bug",
+        "Check whether the required driver/provider is actually installed on the production server",
+        "Check for a 32-bit vs. 64-bit runtime mismatch between dev debugging and server execution",
+        "Check whether the connection string is hardcoded to the developer's own environment instead of parameterized"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly reframes this as an environment difference rather than a logic bug",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly identifies the 32-bit/64-bit mismatch as a likely cause",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly identifies missing drivers/providers and hardcoded connection strings as likely causes",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes a sensible, ordered diagnostic approach",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "ssis-development",
+        "lessonSlug": "common-failure-patterns",
+        "label": "Review: Common Failure Patterns"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-045",
+      "questionCode": "LTV-MSBI-INT-045",
+      "title": "Two rows are both marked as the current version",
+      "prompt": "A report joining the Sales fact table to DimEmployee (a Type 2 dimension) is returning roughly double the expected row count for employees who were ever reassigned to a different department. Diagnose the likely cause and how you'd confirm it.",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "sql",
+      "skills": [
+        "Data Warehousing",
+        "T-SQL",
+        "Troubleshooting"
+      ],
+      "modelAnswer": "This has the signature of a Type 2 ETL bug: somewhere, two rows for the same employee both ended up with IsCurrentFlag = 1 instead of exactly one. When that happens, any query that joins to the dimension using the natural/business key plus an IsCurrent filter (rather than the correct surrogate key the fact row was originally stamped with) can match both 'current' rows at once, doubling the result for that employee. This specific bug almost always traces back to the ETL's UPDATE step: the process that's supposed to close out the old row (setting its ExpirationDate and flipping IsCurrentFlag to 0) either didn't run, ran against the wrong row, or ran after the new row was already inserted with IsCurrentFlag = 1, leaving two rows open at once. I'd confirm it with a targeted query -- group DimEmployee by BusinessKey, count rows WHERE IsCurrentFlag = 1, and look for any BusinessKey with a count greater than 1. Once confirmed, the fix is two-fold: correct the duplicate flags in the existing data (close out every row except the most recent per BusinessKey), and fix the ETL job itself so the UPDATE and INSERT are guaranteed to run as a single atomic unit going forward, rather than two steps that can land out of order.",
+      "professionalAnswer": "The 'double the expected rows, only for employees who were reassigned' detail is the clue that tells me exactly where to look -- this isn't a join bug in the report, it's a data integrity problem in the Type 2 dimension itself. My working theory is that somewhere, the ETL's close-out step for the old row didn't actually happen, so two rows for the same employee are both sitting there with IsCurrentFlag = 1. If a query is joining to the dimension by business key plus 'IsCurrentFlag = 1' instead of the actual surrogate key the fact row was stamped with at load time, it now matches both open rows and doubles up. I'd confirm this in minutes with a simple GROUP BY on BusinessKey, counting how many rows have IsCurrentFlag = 1 per employee -- anything above 1 is the smoking gun. Once I've confirmed it, I'd fix it in two places: clean up the existing bad data by closing out every row except the genuinely most recent one per employee, and go back to the ETL job itself, because if this happened once it'll keep happening -- most likely the UPDATE-then-INSERT sequence isn't wrapped in a single transaction, so a failure or a race condition between the two statements can leave the dimension in exactly this inconsistent state.",
+      "example": "-- Confirm the bug: any BusinessKey with more than one 'current' row?\nSELECT BusinessKey, COUNT(*) AS CurrentRowCount\nFROM DimEmployee\nWHERE IsCurrentFlag = 1\nGROUP BY BusinessKey\nHAVING COUNT(*) > 1;\n\n-- Cleanup: close out every row except the most recently effective one per employee\nUPDATE e\nSET IsCurrentFlag = 0, ExpirationDate = GETDATE()\nFROM DimEmployee e\nWHERE e.IsCurrentFlag = 1\n  AND e.EmployeeKey NOT IN (\n      SELECT MAX(EmployeeKey) FROM DimEmployee GROUP BY BusinessKey\n  );",
+      "commonMistakes": [
+        "Assuming the report's join logic is the bug instead of checking the dimension's data for duplicate current flags first",
+        "Fixing the visible duplicate rows without also fixing the ETL job that will keep producing new ones",
+        "Not recognizing that fact rows should join on the surrogate key stamped at load time, not a live lookup by business key plus IsCurrentFlag",
+        "Overlooking that the UPDATE (close old row) and INSERT (new row) need to run as one atomic transaction to prevent this exact race"
+      ],
+      "keyPoints": [
+        "Doubled results specifically for reassigned employees points to a Type 2 ETL bug, not a report bug",
+        "The likely root cause is two rows per employee both left with IsCurrentFlag = 1",
+        "Confirm with a GROUP BY / HAVING COUNT(*) > 1 query on the dimension itself",
+        "Fix both the existing bad data and the ETL job's atomicity to prevent recurrence"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses duplicate IsCurrentFlag = 1 rows as the likely cause",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly proposes a query to confirm the diagnosis",
+          "weight": 25
+        },
+        {
+          "criterion": "Proposes a correct fix for the existing bad data",
+          "weight": 20
+        },
+        {
+          "criterion": "Proposes fixing the ETL job's atomicity to prevent recurrence",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "scd-type-2",
+        "label": "Review: SCD Type 2"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-046",
+      "questionCode": "LTV-MSBI-INT-046",
+      "title": "Bridge table or a direct many-to-many relationship?",
+      "prompt": "Power BI allows a direct many-to-many relationship between two tables without building a bridge table yourself. Given that, explain when you'd still choose to build an explicit bridge table for a Sale-to-Salesperson relationship instead of just setting the relationship's cardinality to many-to-many directly.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Power BI",
+        "Data Modeling",
+        "Architecture"
+      ],
+      "modelAnswer": "Power BI's direct many-to-many relationship setting is convenient -- it lets two tables relate without an intermediate table, and Power BI handles the filtering internally. But it comes with real tradeoffs: it can be harder to reason about and debug when filter results look wrong, and it doesn't give you anywhere to attach additional information about the relationship itself -- a role, a credit percentage, a date the association started. An explicit bridge table is still the better choice whenever any of those matter: if a salesperson's credit on a sale isn't always equal (say, a 60/40 split between two reps), the bridge table is exactly where that percentage lives, as a real column -- a direct many-to-many relationship setting has no equivalent. A bridge table is also more transparent during debugging: you can literally query it and see the actual association rows, whereas a direct many-to-many relationship's behavior is more opaque. I'd default to a direct many-to-many relationship for a quick, simple case with no extra attributes needed, and build an explicit bridge table the moment the relationship itself needs to carry data or the model needs to be debuggable by someone besides me.",
+      "professionalAnswer": "I think of the direct many-to-many setting as the quick path, and the bridge table as the path I take once the relationship itself needs to say more than just 'these two things are associated.' If all I need is 'this sale involved these salespeople,' with nothing else attached to that fact, the built-in many-to-many relationship setting is genuinely fine and saves me a table. But the moment the relationship needs its own data -- like a credit split percentage when a sale is shared 60/40 between two reps, or a 'role' on the sale like 'lead' vs. 'support' -- there's no column to put that on if I'm just flipping a cardinality setting; a bridge table, by contrast, is just a regular table, so I add CreditPercent or Role as columns on it without a second thought. I'd also reach for an explicit bridge table on anything a teammate besides me will need to maintain or debug, because 'query the bridge table and look at the rows' is a much easier thing to hand off than 'understand how Power BI's internal many-to-many filtering works.' So my actual rule is: default to the built-in setting for a quick, attribute-free case, and build the bridge table the moment the relationship needs to carry its own information or needs to be transparent to someone else on the team.",
+      "commonMistakes": [
+        "Treating the built-in many-to-many setting and a bridge table as functionally identical in every case",
+        "Missing that a bridge table can hold its own attributes (credit percentage, role) while a direct relationship setting cannot",
+        "Defaulting to a bridge table every time without considering the simpler built-in setting is sufficient for a bare association",
+        "Not considering debuggability/maintainability by other teammates as a real factor in the decision"
+      ],
+      "keyPoints": [
+        "Power BI's direct many-to-many relationship setting handles a bare association without an extra table",
+        "A bridge table is still preferred when the relationship itself needs to carry attributes (credit %, role, date)",
+        "A bridge table is more transparent to query and debug than the internal behavior of a direct many-to-many relationship",
+        "The decision should be based on whether the relationship needs its own data, not just convenience"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains what the built-in many-to-many relationship setting does",
+          "weight": 20
+        },
+        {
+          "criterion": "Correctly identifies that a bridge table can carry its own attributes and the direct setting can't",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly identifies debuggability/transparency as a reason to prefer a bridge table",
+          "weight": 25
+        },
+        {
+          "criterion": "Gives a clear, sensible decision rule",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "power-bi",
+        "lessonSlug": "cardinality",
+        "label": "Review: One-to-Many, One-to-One & Many-to-Many"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-047",
+      "questionCode": "LTV-MSBI-INT-047",
+      "title": "Deciding which customer attributes get Type 1 vs. Type 2 treatment",
+      "prompt": "You're designing DimCustomer with these attributes: CustomerName, EmailAddress, SalesRegion, and CreditRating. Which would you make Type 1 (overwrite) and which would you make Type 2 (versioned), and what question do you ask yourself for each attribute to decide?",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Data Warehousing",
+        "Data Modeling",
+        "Architecture"
+      ],
+      "modelAnswer": "The deciding question for every attribute is the same: if this value changes, does any past fact row need to keep showing the old value, or is the old value simply wrong now and should be corrected everywhere? CustomerName and EmailAddress are almost always Type 1 -- a name correction or an updated email isn't a meaningful business event worth preserving history for, and showing a customer's old, outdated email on a two-year-old sales report serves no purpose; overwrite it everywhere. SalesRegion is the classic Type 2 case: which region a customer belonged to when a specific sale happened is itself meaningful business history -- a regional sales report for last year needs to reflect last year's region assignment, not wherever the customer has since moved. CreditRating is the interesting one and depends on the actual business question: if analysts need to see 'what was this customer's credit rating when we approved that specific order,' it's Type 2; if the business only ever cares about a customer's current rating and never needs historical accuracy on it, Type 1 is simpler and sufficient. In practice I'd default CreditRating to Type 2 unless someone can specifically justify why history doesn't matter, because adding Type 2 later to an attribute that was Type 1 means you can't retroactively reconstruct the history you didn't capture.",
+      "professionalAnswer": "I'd ask the same single question for each attribute: when this changes, do I need old fact rows to keep showing the old value, or should the old value just be treated as wrong and corrected? CustomerName and EmailAddress clearly fail that test -- nobody needs a two-year-old report to show a customer's previous, no-longer-valid email; that's a correction, not a historical fact, so Type 1. SalesRegion passes it clearly -- which region a customer was in when a sale happened is a real piece of history that matters for regional performance reporting, so Type 2. CreditRating is the one I'd actually go ask the business about rather than guess -- if they need to justify an old lending or credit decision based on what the rating was at the time, it's Type 2; if they only ever look at the current rating, Type 1 is fine and simpler. The practical bias I bring to that conversation: I'd lean toward recommending Type 2 for CreditRating specifically because it's cheap to build in from day one and catastrophically expensive to retrofit -- if I guess Type 1 and I'm wrong, the history I needed is already gone and unrecoverable; if I guess Type 2 and it turns out nobody needed it, the cost is just a few extra dimension rows.",
+      "commonMistakes": [
+        "Applying the same change type to every attribute instead of deciding per attribute based on whether history matters",
+        "Treating a name/email correction as meaningful history worth a Type 2 version, when it's really just a data fix",
+        "Guessing Type 1 for an ambiguous attribute like CreditRating instead of confirming the business requirement first",
+        "Not recognizing that choosing Type 1 for an attribute that later needed history is unrecoverable -- the history was never captured"
+      ],
+      "keyPoints": [
+        "The deciding question per attribute: does a past fact row need to keep showing the old value, or should it be corrected?",
+        "Pure corrections (name, email typos) are Type 1 -- overwrite everywhere",
+        "Attributes tied to a business event's context (region at time of sale) are Type 2",
+        "Ambiguous cases should be confirmed with the business, with a bias toward Type 2 since it can't be added retroactively"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly articulates the deciding question for Type 1 vs. Type 2 per attribute",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly classifies CustomerName/EmailAddress as Type 1 and SalesRegion as Type 2",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly treats CreditRating as requiring a business decision rather than guessing",
+          "weight": 25
+        },
+        {
+          "criterion": "Notes the asymmetric risk of guessing Type 1 incorrectly vs. Type 2 incorrectly",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "scd-type-1",
+        "label": "Review: SCD Type 1"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-048",
+      "questionCode": "LTV-MSBI-INT-048",
+      "title": "Breaking a monolithic package into master and child packages",
+      "prompt": "A single SSIS package has grown to load twelve different dimension and fact tables sequentially, and it now takes a long time to maintain, test, and understand. Explain the master/child package pattern you'd refactor it into, and the main benefit it gives you beyond just making the package shorter.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "SSIS",
+        "Architecture",
+        "ETL"
+      ],
+      "modelAnswer": "The master/child pattern splits one monolithic package into several smaller, focused child packages -- one per logical unit of work, like one child package per dimension group and one per fact load -- and a master package whose entire job is to call those child packages, typically via Execute Package Task, in the right order and with the right dependencies between them. The obvious benefit is that each child package is small enough to actually understand and test in isolation -- if the Customer dimension load has a bug, you can open, test, and fix just that one small package instead of hunting through twelve tables' worth of logic in one file. The less obvious but bigger benefit is parallelism and selective restart: child packages that don't depend on each other (two unrelated dimension loads, say) can run in parallel inside the master package instead of forced sequential execution, cutting total run time; and if one child package fails, you can usually re-run just that one child rather than re-running the entire twelve-table sequence from the beginning, which checkpoints alone can't always give you as cleanly across a single giant package.",
+      "professionalAnswer": "I'd refactor this into one child package per logical, independently-testable unit -- say, one child package for each dimension group that loads together, and one for the fact table itself -- with a master package whose only job is orchestration: calling each child via Execute Package Task in the right order, using precedence constraints to express real dependencies. The maintainability win is obvious -- nobody wants to open a twelve-table package to fix one dimension's bug, so making each piece small and testable in isolation pays for itself immediately. But the benefit I'd actually lead with in an interview is what this unlocks beyond just tidiness: dimensions that don't depend on each other can now run in parallel inside the master package instead of being forced through one sequential chain, which can meaningfully cut the total nightly run time. And operationally, if one child package fails partway through a run, I can typically re-run just that one child package once the underlying issue is fixed, rather than re-running the entire twelve-table sequence from scratch -- that's a cleaner, more granular restart story than trying to checkpoint one enormous package internally.",
+      "commonMistakes": [
+        "Splitting packages arbitrarily instead of along logical, independently-testable units of work",
+        "Missing parallelism as a concrete benefit, treating the refactor as purely a maintainability/readability exercise",
+        "Not using precedence constraints in the master package to express real dependencies between child packages",
+        "Assuming this pattern replaces the need for checkpoints entirely, rather than complementing restartability at a coarser grain"
+      ],
+      "keyPoints": [
+        "Master/child splits one monolithic package into focused child packages plus an orchestrating master package",
+        "Each child package becomes independently understandable and testable",
+        "Independent child packages can run in parallel, reducing total run time",
+        "A failed child package can often be re-run on its own rather than restarting the entire sequence"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly describes the master/child package structure and Execute Package Task's role",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly identifies improved testability/maintainability as a benefit",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly identifies parallelism as a concrete performance benefit",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly identifies more granular restart as an operational benefit",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "ssis-development",
+        "lessonSlug": "master-child-package-patterns",
+        "label": "Review: Master/Child Package Patterns"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-049",
+      "questionCode": "LTV-MSBI-INT-049",
+      "title": "Tracking an order's pipeline stages: which fact table type?",
+      "prompt": "You need to report on how long orders take to move through Placed -> Picked -> Packed -> Shipped -> Delivered, and separately, management wants a daily view of how many orders are currently sitting in each stage. Explain which fact table type serves each need and why one fact table can't cleanly serve both.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Data Warehousing",
+        "Data Modeling",
+        "Architecture"
+      ],
+      "modelAnswer": "These are two different grains and two different fact table types, and trying to force one table to do both is where the design goes wrong. Tracking how long an order takes to move through its stages is exactly what an accumulating snapshot fact table is for: one row per order, with a date column for each milestone (PlacedDate, PickedDate, PackedDate, ShippedDate, DeliveredDate), and that single row gets revisited and updated in place as the order progresses -- it accumulates the whole lifecycle onto one row, which makes duration-between-milestones math trivial (DATEDIFF between any two columns on the same row). The daily 'how many orders are sitting in each stage right now' view is a different question with a different grain -- it needs a periodic snapshot fact table instead, with one row per order per day (or per stage per day, aggregated), recording the stage each order was in as of that day's snapshot, so a report can show the pipeline's state at any past date, not just where things stand right now. One fact table can't serve both cleanly because they disagree on how many rows an order should produce: the accumulating snapshot wants exactly one row per order, continuously updated, while the periodic snapshot wants one new row per order per day, specifically because it needs to preserve the historical state at each point in time rather than overwrite it.",
+      "professionalAnswer": "I'd separate this into two different questions before even thinking about fact table design, because the two requests actually want different grains. 'How long does an order take to move through its stages' is an accumulating snapshot fact table's whole reason for existing -- one row per order that gets updated in place as milestones happen, with a date column per stage, so computing 'time from Picked to Shipped' is just subtracting two columns on the same row. 'How many orders are in each stage as of today, and as of any past day' is a completely different grain -- that's a periodic snapshot, one row per order (or a rolled-up count per stage) captured at each snapshot interval, usually daily, specifically so you can go back and see what the pipeline looked like last Tuesday, not just right now. The reason one table can't do both is that they want contradictory row behavior -- the accumulating snapshot wants one row that keeps getting updated, while the periodic snapshot specifically needs a new row every period precisely so it never overwrites yesterday's state. I'd build both: an accumulating snapshot for lifecycle/duration analysis, and a periodic snapshot loaded nightly for the pipeline-state dashboard, and I'd say so explicitly rather than trying to engineer one table to awkwardly serve both jobs.",
+      "commonMistakes": [
+        "Trying to answer both requirements from a single fact table instead of recognizing they need different grains",
+        "Confusing the accumulating snapshot's 'one row per order, updated in place' behavior with the periodic snapshot's 'new row every period'",
+        "Missing that the periodic snapshot is specifically needed to preserve historical pipeline state, not just current state",
+        "Not recognizing accumulating snapshot's natural fit for duration-between-milestones calculations"
+      ],
+      "keyPoints": [
+        "Order lifecycle duration maps to an accumulating snapshot fact table (one row per order, updated as milestones occur)",
+        "Daily pipeline-stage counts, including historical, map to a periodic snapshot fact table (new row per order per period)",
+        "The two fact types want contradictory row behavior -- update-in-place vs. never-overwrite",
+        "Both fact tables are typically built side by side to serve their respective questions"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies accumulating snapshot for the duration/lifecycle question",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly identifies periodic snapshot for the daily pipeline-state question",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly explains why one fact table can't cleanly serve both",
+          "weight": 30
+        },
+        {
+          "criterion": "Recommends building both fact tables rather than forcing a single compromise design",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "accumulating-snapshot-facts",
+        "label": "Review: Accumulating Snapshot Facts"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-050",
+      "questionCode": "LTV-MSBI-INT-050",
+      "title": "Deciding whether and how to partition a growing fact table",
+      "prompt": "A Sales fact table has grown to 400 million rows and nightly loads and monthly archival are both getting slower. Explain what partitioning a fact table actually does, what column you'd partition on, and one concrete operational benefit it gives you for archiving old data.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Data Warehousing",
+        "Performance Tuning",
+        "Architecture"
+      ],
+      "modelAnswer": "Partitioning splits one logical table into multiple physical storage units behind the scenes, while every query and piece of code still sees and addresses it as one single table -- nothing about the table's name, columns, or how it's queried changes. For a sales fact table, the near-universal partitioning choice is a date column -- typically the order date key -- partitioned by month or quarter, because that aligns with both how most queries filter (reports almost always have a date range) and how businesses think about archiving data (by month or year). The direct query benefit is partition elimination: a query filtered to a specific date range only has to scan the partitions that date range actually touches, not the other 399 million rows sitting in partitions outside that range. The concrete operational benefit for archiving specifically is SWITCH PARTITION: instead of a slow, logged DELETE statement removing millions of old rows one at a time, you can switch an entire old partition out of the table (and into an archive table) as a near-instant metadata operation, because it's just repointing which table owns that physical chunk of storage rather than physically moving or deleting data row by row.",
+      "professionalAnswer": "I'd explain partitioning as splitting the table's physical storage into chunks while keeping it one logical table everywhere else -- the same name, same columns, same queries, nothing changes from the outside. For a sales fact table at this scale, I'd partition on the date key, by month, because that's the one column almost every report already filters by, and it's also exactly how the business thinks about archiving -- 'drop anything older than 7 years' is a date-range operation. The query-time win is partition elimination -- a report asking for last quarter's sales only touches the handful of partitions that quarter actually lives in, not a full scan across 400 million rows. But the benefit I'd actually highlight here, since the question specifically calls out archival getting slower, is SWITCH PARTITION. A regular DELETE against millions of old rows is a slow, fully-logged operation that can lock and bloat the transaction log. Switching an entire partition out into an archive table instead is close to instant, because it's a metadata change -- SQL Server is just reassigning which table owns that chunk of storage, not physically touching or deleting the rows one at a time. That's the difference between an archival job that takes hours and one that takes seconds.",
+      "commonMistakes": [
+        "Assuming partitioning changes how the table is queried or named, rather than only its underlying physical storage",
+        "Choosing a non-date column to partition on when the date key aligns with both query patterns and archival needs",
+        "Proposing a regular DELETE for archival instead of SWITCH PARTITION as the fast, metadata-only alternative",
+        "Missing partition elimination as the mechanism behind the query performance benefit"
+      ],
+      "keyPoints": [
+        "Partitioning splits physical storage into chunks while the table remains one logical object to every query",
+        "A date key, partitioned by month or quarter, is the standard choice for a sales fact table",
+        "Partition elimination lets date-filtered queries skip irrelevant partitions entirely",
+        "SWITCH PARTITION makes archiving an old partition a near-instant metadata operation instead of a slow row-by-row DELETE"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains that partitioning changes physical storage, not the logical table",
+          "weight": 20
+        },
+        {
+          "criterion": "Correctly justifies the date key as the partitioning column",
+          "weight": 20
+        },
+        {
+          "criterion": "Correctly explains partition elimination's query performance benefit",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly explains SWITCH PARTITION as the archival benefit",
+          "weight": 35
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "partitioning-large-fact-tables",
+        "label": "Review: Partitioning Large Fact Tables"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-051",
+      "questionCode": "LTV-MSBI-INT-051",
+      "title": "A stakeholder wants a new field added mid-sprint",
+      "prompt": "Your team is three days into a two-week sprint when a stakeholder asks you to add a new field to a report you're already building, saying it's 'quick, shouldn't change anything.' Walk me through how you'd actually handle this request.",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Agile",
+        "Communication",
+        "Stakeholder Management"
+      ],
+      "modelAnswer": "A strong answer doesn't just say yes or no -- it describes a specific process for evaluating a mid-sprint request honestly before committing to it. First, actually assess the request rather than taking 'quick' at face value: does the new field require touching the dataset's underlying query, does it interact with existing filters or parameters, does it need its own testing? Second, be transparent with the stakeholder and the team about the real tradeoff: if it genuinely is small, say so and fold it in; if it's not, explain specifically why (not vaguely) and present the actual options -- add it now and risk the sprint's committed work, or add it to the next sprint, or (if it's urgent) swap it in for something already committed and explicitly deprioritized. The point to get across is that this isn't about being rigid or unhelpful -- it's about making the tradeoff visible instead of silently absorbing scope and then explaining later why other committed work slipped.",
+      "professionalAnswer": "I wouldn't just say yes because it's described as quick, and I also wouldn't flatly refuse because 'that's not what we committed to' -- I'd actually go look at what the change requires first. If it really is a one-column addition to an existing dataset with no filter interactions, I'd just do it and move on, because treating every tiny request as a formal change-control event is its own kind of overhead. But if it touches the dataset's query, interacts with parameters already in play, or needs real testing, I'd say that specifically and honestly, rather than agreeing and then quietly having something else slip. I'd lay out the actual choice for the stakeholder and my Product Owner: we can add this now and something else committed to this sprint moves to next sprint, or this goes into the next sprint's backlog, or if it's genuinely urgent, I'll tell you specifically what I'd need to drop to make room for it. What I'm protecting isn't my own workload -- it's the team's ability to make an honest commitment and actually hit it, instead of everyone quietly absorbing 'just one more small thing' until the sprint's real scope bears no resemblance to what was planned.",
+      "commonMistakes": [
+        "Automatically agreeing to the request without actually assessing its real scope first",
+        "Refusing rigidly without explaining the real tradeoff or offering alternatives",
+        "Silently absorbing the extra work and letting already-committed work slip without telling anyone why",
+        "Not involving the Product Owner or team in the actual tradeoff decision"
+      ],
+      "keyPoints": [
+        "Actually assesses the request's real scope instead of taking 'quick' at face value",
+        "Is transparent about the tradeoff rather than silently absorbing scope creep",
+        "Presents concrete options (do it now and drop something, defer it, or swap priorities)",
+        "Frames the goal as protecting the team's ability to make honest commitments, not personal workload"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Describes actually assessing the request's real scope rather than assuming",
+          "weight": 25
+        },
+        {
+          "criterion": "Shows transparent communication about the tradeoff involved",
+          "weight": 30
+        },
+        {
+          "criterion": "Presents concrete, realistic options rather than a flat yes/no",
+          "weight": 30
+        },
+        {
+          "criterion": "Frames this as protecting the team's commitments, not personal convenience",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "how-it-teams-work",
+        "lessonSlug": "scrum-sprints-and-user-stories",
+        "label": "Review: Scrum, Sprints & User Stories"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-052",
+      "questionCode": "LTV-MSBI-INT-052",
+      "title": "Communicating a blocker in the daily standup",
+      "prompt": "You're stuck on a task -- a stored procedure change you need is waiting on another team's approval -- and it's been blocked for two days. How would you bring this up in the daily standup, and what would you do about it outside of standup?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Agile",
+        "Communication",
+        "Collaboration"
+      ],
+      "modelAnswer": "A strong answer treats the Daily Scrum correctly -- as a short team sync, not a status report to a manager -- and keeps the standup update itself brief and specific: what's blocked, who or what it's waiting on, and how long it's been stuck, rather than a long explanation of the underlying technical problem. The real work happens outside standup: actually escalating the blocker rather than just mentioning it and waiting -- following up directly with whoever owns the approval, looping in the Scrum Master if the blocker is specifically the kind of cross-team obstacle they're meant to help clear, and being honest with the team about the sprint-goal impact if it stays stuck much longer, rather than quietly hoping it resolves itself. The key distinction a strong answer draws is between mentioning a blocker (passive) and actively working to clear it (what's actually expected).",
+      "professionalAnswer": "In standup itself, I'd keep it tight: 'I'm blocked on the stored procedure change -- it's been waiting on sign-off from the other team for two days now, and I don't have a resolution plan yet.' That's it -- standup isn't the place to walk through the technical details or vent about how annoying the wait is; it's a quick sync so the team knows where things stand. The actual work happens right after standup, not during it. I'd go directly to whoever on the other team owns that approval and ask specifically what's holding it up and when I can expect it, rather than just waiting passively for two more days. If that doesn't move things, I'd loop in my Scrum Master specifically, because clearing exactly this kind of cross-team blocker is their job, not something I should be expected to just push through alone. And if it looks like this is going to threaten the sprint goal, I'd say that out loud to the team well before the sprint review, not as a surprise at the end -- being blocked isn't a failure on my part, but sitting on it quietly without escalating would be.",
+      "commonMistakes": [
+        "Treating the standup as the place to explain the full technical backstory instead of a brief status",
+        "Mentioning the blocker in standup but then passively waiting instead of actively escalating it afterward",
+        "Not involving the Scrum Master, whose job specifically includes clearing cross-team blockers",
+        "Waiting until the sprint review to surface that the blocker threatened the sprint goal"
+      ],
+      "keyPoints": [
+        "The Daily Scrum update should be brief and specific, not a technical deep dive",
+        "Mentioning a blocker in standup isn't the same as actively working to clear it",
+        "Escalating directly to the other team and/or the Scrum Master is the appropriate next step",
+        "Sprint-goal risk should be surfaced early, not held until the sprint review"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Describes an appropriately brief, specific standup update",
+          "weight": 25
+        },
+        {
+          "criterion": "Describes actively escalating the blocker outside of standup, not just waiting",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly involves the Scrum Master's actual role in clearing blockers",
+          "weight": 20
+        },
+        {
+          "criterion": "Shows early, honest communication about sprint-goal risk",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "how-it-teams-work",
+        "lessonSlug": "kanban-boards-and-work-management",
+        "label": "Review: Kanban Boards & Work Management"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-053",
+      "questionCode": "LTV-MSBI-INT-053",
+      "title": "Taking critical feedback on a pull request",
+      "prompt": "A teammate reviews your pull request for a new SSIS package and leaves several comments saying your approach to the incremental load is overly complicated and should be redesigned before it merges. How do you respond?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Collaboration",
+        "Communication",
+        "Code Review"
+      ],
+      "modelAnswer": "A strong answer treats this as a normal, expected part of the SDLC's Dev stage rather than a personal criticism -- code review exists specifically to catch exactly this kind of thing before a change moves further down the pipeline, and sending work back for changes is normal, not a sign something went badly wrong. The right first response is genuine engagement with the specific feedback, not defensiveness: asking the reviewer to walk through what specifically feels overcomplicated and why, rather than assuming they're wrong or immediately agreeing just to move past the friction. If the feedback holds up on reflection, the answer should describe actually redesigning the approach rather than making a token change to get the review to pass. If there's a genuine disagreement -- the complexity was intentional for a real reason the reviewer might not have context on -- a strong answer explains that reasoning back to the reviewer rather than either caving silently or digging in without justifying the choice.",
+      "professionalAnswer": "My first reaction wouldn't be defensive -- a pull request getting sent back with real feedback is code review doing exactly its job, not a sign I did something wrong. I'd go back to the reviewer and actually dig into the specific comments rather than treating 'overly complicated' as a vague verdict to just accept or reject -- what exactly feels complicated, and what would they build instead? Sometimes that conversation reveals they're right and I genuinely over-engineered something, in which case I'd rather redesign it properly than make a surface-level tweak just to get the checkmark and move on. Other times the complexity was there for a real reason -- maybe I added extra error handling for a failure mode they hadn't considered -- in which case I'd explain that reasoning back to them rather than either silently caving or just insisting I'm right without justifying it. Either way, the goal of that back-and-forth is a better package, not winning the exchange, and I'd rather have that conversation now, in review, than have the complicated version cause a problem in production later.",
+      "commonMistakes": [
+        "Reacting defensively to critical feedback instead of treating code review as a normal, expected part of the process",
+        "Making a superficial change just to get the review to pass instead of genuinely redesigning if the feedback is valid",
+        "Silently caving to feedback without explaining legitimate reasoning behind the original design choice",
+        "Insisting the original approach was correct without engaging with the specific concerns raised"
+      ],
+      "keyPoints": [
+        "Code review sending work back is a normal, expected part of the Dev stage, not a personal failure",
+        "Responds by engaging with the specific concern rather than reacting defensively",
+        "Actually redesigns the approach if the feedback holds up, rather than making a token change",
+        "Explains legitimate reasoning back to the reviewer if there's a genuine, justified disagreement"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Frames code review feedback as normal and expected, not personal criticism",
+          "weight": 25
+        },
+        {
+          "criterion": "Describes genuinely engaging with the specific feedback rather than reacting defensively",
+          "weight": 30
+        },
+        {
+          "criterion": "Commits to a real redesign if the feedback is valid, not a token fix",
+          "weight": 25
+        },
+        {
+          "criterion": "Shows how to handle a genuine, justified disagreement professionally",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "how-it-teams-work",
+        "lessonSlug": "sdlc-dev-qa-uat-and-production",
+        "label": "Review: SDLC: Dev, QA, UAT & Production"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-054",
+      "questionCode": "LTV-MSBI-INT-054",
+      "title": "Handing off a package from Dev to QA cleanly",
+      "prompt": "You've finished building and testing an SSIS package in your own Dev environment and it's about to move to QA. What would you make sure is in place before that handoff, so QA isn't coming back to you with basic questions?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Collaboration",
+        "Communication",
+        "SSIS"
+      ],
+      "modelAnswer": "A strong answer recognizes that QA answers a different question than Dev did -- 'does this work correctly, including cases I didn't think of' -- and that a clean handoff means giving QA what they need to actually test that, not just a working package. Concretely: a clear description of what changed and why (tied back to the original ticket/user story and its acceptance criteria, so QA knows exactly what 'done' means for this change); any configuration or environment differences QA needs to know about (connection strings, parameters, expected data volumes); and a note on what was and wasn't already tested in Dev, so QA isn't redundantly re-verifying the exact same happy path instead of focusing on edge cases and things outside what Dev already covered. The point is treating the handoff itself as a deliverable, not an afterthought -- a bad handoff just moves the same questions from QA's chat message back to you later anyway, so doing it properly upfront saves everyone time.",
+      "professionalAnswer": "I'd treat the handoff itself as something I'm actually responsible for delivering well, not just something that happens automatically once the code is checked in. Before it goes to QA, I'd make sure the pull request or ticket clearly ties back to the original acceptance criteria, so QA knows precisely what they're verifying against, not just 'test the new package.' I'd call out anything environment-specific that's different between my Dev setup and QA's -- connection strings, expected data volumes, any configuration that doesn't travel automatically. And I'd be upfront about what I already tested myself in Dev and what I specifically didn't get to, because QA's real value is testing the things the developer didn't think of -- if I don't tell them what I already covered, they either redundantly repeat my own tests or, worse, assume something's covered that isn't. The whole point of doing this well is that a sloppy handoff doesn't actually save me time -- it just means the same clarifying questions come back to me a day later anyway, except now with QA blocked waiting on my answer instead of me just having written it down upfront.",
+      "commonMistakes": [
+        "Handing off a package with no context tying it back to the original acceptance criteria",
+        "Not flagging environment or configuration differences between Dev and QA that could cause confusion",
+        "Failing to say what was already tested in Dev, causing QA to either duplicate effort or assume false coverage",
+        "Treating the handoff as a non-event instead of something that directly affects how fast QA can actually test"
+      ],
+      "keyPoints": [
+        "QA answers a different question than Dev ('does this work correctly, including untested cases')",
+        "A clean handoff ties the change back to the original ticket's acceptance criteria",
+        "Environment/configuration differences between Dev and QA should be flagged explicitly",
+        "Being upfront about what was and wasn't already tested focuses QA's effort correctly"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly distinguishes what QA needs versus what Dev already verified",
+          "weight": 30
+        },
+        {
+          "criterion": "Includes tying the handoff back to acceptance criteria",
+          "weight": 25
+        },
+        {
+          "criterion": "Includes flagging environment/configuration differences",
+          "weight": 25
+        },
+        {
+          "criterion": "Explains why a thorough handoff actually saves time rather than costing it",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "how-it-teams-work",
+        "lessonSlug": "sdlc-dev-qa-uat-and-production",
+        "label": "Review: SDLC: Dev, QA, UAT & Production"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-055",
+      "questionCode": "LTV-MSBI-INT-055",
+      "title": "Two stakeholders both want their ticket done first",
+      "prompt": "You have two open tickets: a bug fix a sales manager is pushing for urgently, and a new report feature your own manager assigned last week with a deadline that's actually sooner. Both stakeholders think their request is the priority. How do you handle it?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Prioritization",
+        "Communication",
+        "Stakeholder Management"
+      ],
+      "modelAnswer": "A strong answer doesn't unilaterally decide between two stakeholders' competing priorities on its own authority -- it recognizes that prioritization decisions belong with whoever actually owns the backlog's priority order (a Product Owner, in Scrum terms, or whoever plays that role on the team), and surfaces the conflict to them explicitly rather than quietly picking one and hoping the other doesn't notice. The practical first step is gathering the actual facts needed to make the decision -- how urgent is the bug really (is it actively breaking something for users right now, or just annoying), and what's the real deadline and consequence of missing it for the report feature -- rather than just taking either stakeholder's framing of urgency at face value. Then bring both pieces of information to whoever should decide, make the conflict and the tradeoff explicit, and get an actual decision rather than silently deprioritizing one person's request without them knowing.",
+      "professionalAnswer": "I wouldn't try to quietly referee this myself between two people who each think their thing is most important -- that's not actually my call to make alone, and if I just pick one, I've effectively made a business priority decision without the authority or the full context to make it well. My first step is getting the real facts: is this bug actually breaking something in production right now, or is it an annoyance that feels urgent but isn't actually blocking anyone? What's the real, hard deadline on the report feature, and what actually happens if it slips a few days? Once I have real answers instead of just each stakeholder's own sense of urgency, I'd go to whoever actually owns prioritization for my work -- my manager, or a Product Owner if that's how the team is structured -- lay out both asks and their actual urgency side by side, and ask for an explicit call. I'd rather spend ten minutes getting a clear decision than spend a day guessing which stakeholder to disappoint and then having to explain that choice after the fact.",
+      "commonMistakes": [
+        "Unilaterally deciding between two stakeholders' competing priorities without the authority or full context to do so",
+        "Taking either stakeholder's self-reported urgency at face value instead of verifying the actual impact and deadline",
+        "Quietly deprioritizing one request without telling that stakeholder, letting them find out later",
+        "Not escalating to whoever actually owns prioritization decisions for the team's work"
+      ],
+      "keyPoints": [
+        "Prioritization conflicts between stakeholders should be escalated, not unilaterally resolved",
+        "Gathers real facts about urgency and deadlines rather than accepting either framing at face value",
+        "Brings both pieces of information to whoever owns the priority decision for an explicit call",
+        "Avoids silently deprioritizing a stakeholder without their knowledge"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Recognizes this isn't a unilateral decision and escalates appropriately",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes gathering real facts about urgency/impact before escalating",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes a clear, explicit escalation with both pieces of information presented",
+          "weight": 25
+        },
+        {
+          "criterion": "Avoids silently disappointing either stakeholder without communication",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "how-it-teams-work",
+        "lessonSlug": "scrum-sprints-and-user-stories",
+        "label": "Review: Scrum, Sprints & User Stories"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-056",
+      "questionCode": "LTV-MSBI-INT-056",
+      "title": "Pushing back on a teammate's schema design, professionally",
+      "prompt": "A more senior teammate proposes snowflaking a dimension you think should stay a simple denormalized star, and you believe their reasoning doesn't actually hold up for this specific case. How do you raise your disagreement?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Collaboration",
+        "Communication",
+        "Data Modeling"
+      ],
+      "modelAnswer": "A strong answer focuses on raising the disagreement based on the specific technical tradeoff, not seniority or personality, and does it early and directly rather than silently going along with a design decision you believe is wrong. The right approach is to ask genuinely curious questions first -- what specific problem is the snowflake meant to solve here, is there a multi-grain fact table or storage concern that justifies it -- because the senior teammate may have context you don't, and the disagreement might resolve once you understand their actual reasoning. If, after that, the disagreement still holds, state your own reasoning concretely and specifically (star schema's one-join performance advantage, the lack of a clear reason to normalize this particular hierarchy) rather than vaguely, and be genuinely open to being wrong rather than digging in defensively. If the two of you still disagree after a real discussion, escalate to a decision rather than letting it fester unresolved or silently building it the way you think is right against what was actually decided.",
+      "professionalAnswer": "I'd start from curiosity, not confrontation -- before pushing back, I'd ask what specific problem they're trying to solve by snowflaking this dimension, because there might be a reason I'm not seeing, like a second fact table at a different grain that genuinely needs the normalized structure. If their answer doesn't actually address a real problem with the simpler star design, I'd say so directly but specifically -- not 'I don't think that's right,' but 'the star schema gives us one join to every attribute here, and I don't see a multi-grain fact table or storage concern that justifies giving that up for this particular dimension -- what am I missing?' That phrasing matters because it's a genuine question, not a gotcha, and it leaves room for them to either convince me or realize the reasoning doesn't hold. If we go back and forth and still land in different places, I wouldn't just quietly build it my way or silently defer against my own judgment either -- I'd suggest we get a third opinion or bring it to whoever owns the architecture decision, because an unresolved disagreement that nobody actually settles is worse for the project than either option being chosen clearly.",
+      "commonMistakes": [
+        "Silently going along with a design decision believed to be wrong instead of raising the disagreement",
+        "Raising the disagreement based on seniority or personality rather than the specific technical tradeoff",
+        "Not asking genuinely curious questions first, missing context the senior teammate might have",
+        "Letting an unresolved disagreement fester instead of escalating to an explicit decision"
+      ],
+      "keyPoints": [
+        "Starts with genuinely curious questions rather than an immediate counter-argument",
+        "Raises disagreement based on the specific technical tradeoff, not seniority",
+        "States reasoning concretely and specifically rather than vaguely",
+        "Escalates to an explicit decision if disagreement persists, rather than letting it go unresolved"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Starts by genuinely seeking to understand the other person's reasoning",
+          "weight": 25
+        },
+        {
+          "criterion": "Articulates the disagreement based on specific technical tradeoffs",
+          "weight": 30
+        },
+        {
+          "criterion": "Shows genuine openness to being wrong, not just going through the motions",
+          "weight": 20
+        },
+        {
+          "criterion": "Describes escalating to a real decision if disagreement persists",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "star-schema-vs-snowflake-schema",
+        "label": "Review: Star Schema vs. Snowflake Schema"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-057",
+      "questionCode": "LTV-MSBI-INT-057",
+      "title": "Explaining why 'duplicate data on purpose' isn't wasteful",
+      "prompt": "A budget-conscious product manager notices the warehouse design repeats category and subcategory names in every row of the Product dimension instead of storing them once, and asks why you're 'wasting storage.' How do you explain the star schema's denormalization tradeoff to someone with no data modeling background?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Communication",
+        "Data Warehousing",
+        "Stakeholder Management"
+      ],
+      "modelAnswer": "A strong answer avoids jargon entirely and anchors the explanation in something the product manager already cares about: speed and cost of the reports they actually look at, not the storage layer underneath. A useful comparison is a spreadsheet that already has every label filled in versus one where you have to look up a code in a separate tab each time -- splitting category and subcategory into separate reference tables saves some storage, the same way not re-typing a label saves a little paper, but it means every single report has to go look that information up again, every time. The repeated text in a denormalized Product table costs a small, cheap amount of extra storage, in exchange for every report running faster because it doesn't need those extra lookups. The closing point that actually lands with a cost-conscious stakeholder: storage is one of the cheapest resources in a data platform, while a team's and users' time waiting on slow reports is not -- so this tradeoff was made deliberately, trading a small amount of a cheap resource for a lot of a much more expensive one.",
+      "professionalAnswer": "I'd skip the technical vocabulary entirely and start from what they actually care about, which is probably 'why do our reports feel fast, and what does that cost us.' I'd use a simple comparison: imagine a spreadsheet where every row already has the category name filled in, versus one where you have to look up a category ID in a separate tab every time you want to know what it actually means. The second version saves a little space because the name is only typed once -- but every single person using that spreadsheet now has to do that lookup, every time, for every row. We chose the first version on purpose, because it means every report just works without extra lookups slowing it down. The storage cost of repeating that text is genuinely tiny by today's standards -- storage is one of the cheapest things in the whole system. What's expensive is people's time waiting on a slow dashboard, or an analyst manually joining three tables together just to answer a simple question. So this isn't an oversight or waste -- it's a specific, deliberate trade: we spend a little bit of a cheap resource to save a lot of an expensive one.",
+      "commonMistakes": [
+        "Using technical terms (denormalization, star schema, dimension table) without translating them",
+        "Dismissing the question instead of acknowledging it's a reasonable thing to notice and ask about",
+        "Not grounding the explanation in what the stakeholder actually cares about (report speed, team time)",
+        "Failing to name the actual cost being traded off (cheap storage vs. expensive time/complexity)"
+      ],
+      "keyPoints": [
+        "Translates the technical tradeoff into terms the stakeholder already cares about (speed, cost)",
+        "Uses a relatable comparison instead of data modeling jargon",
+        "Names the specific resources being traded: cheap storage vs. expensive query time/complexity",
+        "Frames the design as a deliberate decision, not an oversight or carelessness"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Explains the tradeoff without relying on unexplained jargon",
+          "weight": 30
+        },
+        {
+          "criterion": "Uses a clear, relatable comparison for a non-technical audience",
+          "weight": 25
+        },
+        {
+          "criterion": "Explicitly names the cheap-storage-vs-expensive-time tradeoff",
+          "weight": 30
+        },
+        {
+          "criterion": "Frames the design as deliberate rather than defensive or dismissive",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "star-schema-vs-snowflake-schema",
+        "label": "Review: Star Schema vs. Snowflake Schema"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-058",
+      "questionCode": "LTV-MSBI-INT-058",
+      "title": "A ticket has no acceptance criteria",
+      "prompt": "You pick up a ticket from the sprint backlog that says 'Add a filter for region to the sales dashboard' with no further detail -- no acceptance criteria, no mention of default behavior or how it should interact with existing filters. What do you do before writing any code?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Requirements Gathering",
+        "Communication",
+        "Agile"
+      ],
+      "modelAnswer": "A strong answer resists the temptation to just start building based on a guess, because a story without acceptance criteria is genuinely too vague to know when it's actually done -- 'I think this is done' and a shared, checkable definition of done are different things, and building against the wrong assumption wastes real time for both the developer and whoever has to send it back. The right move is going back to whoever owns the ticket -- the Product Owner or the stakeholder who requested it -- and asking specific, concrete questions rather than one vague 'what do you mean': what should the filter's default value be, does it need to interact with (cascade from or into) any existing filters already on the dashboard, and is there a specific list of regions or should it reflect whatever's in the data. Writing those answers down as explicit acceptance criteria before starting, not after, turns a vague request into something both the developer and whoever reviews the finished work can actually check against.",
+      "professionalAnswer": "I wouldn't start building off a guess, because 'add a filter for region' sounds simple but actually hides several real decisions -- what region data source is sensible as the dropdown's default, whether this filter needs to interact with any filter already on the dashboard, whether 'region' even means the same thing across every table the dashboard touches. Guessing wrong on any of those means I build something, it gets reviewed, and it comes back with changes -- which is slower overall than just asking upfront. So before writing anything, I'd go back to whoever owns the ticket with specific questions, not a vague 'can you clarify this' -- I'd ask directly: should this default to the viewer's own region if we track that, does selecting a region need to affect any other filter already on the page, and is there an existing region list I should match or is this open-ended. Once I have real answers, I'd write them down as the ticket's acceptance criteria myself if nobody else does, specifically so there's a shared, checkable definition everyone agrees to before I start -- that protects me too, since I now have something concrete to point back to if the request changes later.",
+      "commonMistakes": [
+        "Starting to build based on a guess instead of clarifying ambiguous requirements first",
+        "Asking a vague 'can you clarify this ticket' instead of specific, concrete questions",
+        "Not writing down the clarified requirements as explicit acceptance criteria before starting",
+        "Assuming the ticket's brevity means the request is actually simple, missing the real decisions hidden inside it"
+      ],
+      "keyPoints": [
+        "A story without acceptance criteria is genuinely too vague to know when it's actually done",
+        "Asks specific, concrete clarifying questions rather than a vague request for more detail",
+        "Writes down the clarified requirements as explicit acceptance criteria before starting work",
+        "Clarifying upfront is faster overall than building on a guess and having it sent back"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Recognizes the ticket is too ambiguous to build from directly",
+          "weight": 25
+        },
+        {
+          "criterion": "Asks specific, concrete clarifying questions rather than a vague request",
+          "weight": 35
+        },
+        {
+          "criterion": "Describes writing down clarified requirements as explicit acceptance criteria",
+          "weight": 25
+        },
+        {
+          "criterion": "Explains why clarifying upfront saves time overall",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "how-it-teams-work",
+        "lessonSlug": "scrum-sprints-and-user-stories",
+        "label": "Review: Scrum, Sprints & User Stories"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
     }
   ]
 }

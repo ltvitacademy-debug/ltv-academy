@@ -791,7 +791,7 @@
     {
       "id": "msbi-adv-013",
       "questionCode": "LTV-MSBI-ADV-013",
-      "title": "A Five-Task Nightly Package Fails on Task 4 \u2014 Designing a Safe Restart",
+      "title": "A Five-Task Nightly Package Fails on Task 4 — Designing a Safe Restart",
       "prompt": "A nightly package runs five sequential tasks (three Execute SQL Tasks, then two Data Flow Tasks) and fails intermittently on task 4 due to a transient timeout. Explain exactly which package and task properties you'd configure to let the package restart cleanly from task 4 without redoing tasks 1 through 3, the real restart granularity limit you have to design around, and why you would deliberately avoid also wrapping the entire package in one transaction here.",
       "category": "troubleshooting",
       "difficulty": "advanced",
@@ -803,7 +803,7 @@
         "Package Design"
       ],
       "modelAnswer": "On the package itself, I'd set SaveCheckpoints to True (the master switch that actually writes a checkpoint file as the package runs), CheckpointFileName to a real file path, and CheckpointUsage to IfExists -- so the package restarts from the checkpoint file if one exists from a prior failed run, but still starts clean from task 1 on a normal night with no leftover file. On every one of the five tasks, I'd set FailPackageOnFailure to True -- without that property set on a task, that task's failure doesn't register correctly as a checkpoint boundary, and the restart mechanism won't know to resume after it.\n\nWith that in place, if task 4 fails, tasks 1-3 are recorded as complete in the checkpoint file; fixing whatever caused the transient timeout and rerunning the package causes SSIS to skip 1-3 entirely and resume starting at task 4.\n\nThe real granularity limit to design around: a package can only restart at the control-flow level, at task-host-container boundaries. You cannot restart partway through a single task -- if task 4 is itself a Data Flow Task that fails five minutes into a ten-minute run, the whole Data Flow Task reruns from its own beginning on restart, not from wherever it got to. If that granularity genuinely matters -- say, task 4's data flow is actually doing two logically separate loads -- the real fix is to split it into two separate Data Flow Tasks in the Control Flow, each one its own restart point, not to look for a finer-grained checkpoint option that doesn't exist.\n\nI would deliberately not also wrap the whole package in one enclosing transaction here, because checkpoints and transactions actively fight each other. If a container is both covered by a transaction and inside a checkpoint's reach, a restart can replay a transaction that already committed successfully the first time around -- Microsoft's own guidance describes mixing the two as something that 'could cause unexpected results.' Given that this package already has a working checkpoint-based restart strategy, layering a package-wide transaction on top of it would introduce exactly that risk for no real benefit -- if I needed transactional atomicity for a specific task, I'd scope that transaction narrowly to just that task, kept separate from the checkpoint mechanism rather than wrapping everything together.",
-      "professionalAnswer": "For this one, I'd set three things on the package itself: SaveCheckpoints to True, which is really the on/off switch for writing the checkpoint file at all, CheckpointFileName pointing at a real path, and CheckpointUsage set to IfExists -- so it restarts from the checkpoint if one's sitting there from a failed run, but still runs clean from the top on a normal successful night. Then on every one of the five tasks, I'd flip FailPackageOnFailure to True, because without that, a task's failure just doesn't register as a real restart boundary for the checkpoint mechanism.\n\nWith all that set, if task 4 fails from the timeout, I fix whatever caused it, rerun the package, and it skips straight past tasks 1 through 3 and picks up at task 4 \u2014 exactly what we want.\n\nThe thing I'd make sure whoever's reviewing this understands: you can only restart at the task level, never partway through one. If task 4 were a ten-minute data flow and it died at the nine-minute mark, restarting doesn't resume from minute nine -- it reruns that whole data flow task from scratch. If that's a real problem, the fix is splitting that one data flow into two separate tasks in Control Flow, not hunting for a setting that restarts mid-flow, because that setting doesn't exist.\n\nAnd I'd specifically push back if someone suggested also wrapping the whole package in one transaction on top of this. Checkpoints and transactions genuinely don't play well together -- if you restart a package that's both checkpointed and transactional, you risk replaying a transaction that already committed the first time through, which Microsoft flat out says can cause unexpected results. Since the checkpoint approach already solves our restart problem cleanly, adding a package-wide transaction on top of it would just be introducing a new risk for nothing.",
+      "professionalAnswer": "For this one, I'd set three things on the package itself: SaveCheckpoints to True, which is really the on/off switch for writing the checkpoint file at all, CheckpointFileName pointing at a real path, and CheckpointUsage set to IfExists -- so it restarts from the checkpoint if one's sitting there from a failed run, but still runs clean from the top on a normal successful night. Then on every one of the five tasks, I'd flip FailPackageOnFailure to True, because without that, a task's failure just doesn't register as a real restart boundary for the checkpoint mechanism.\n\nWith all that set, if task 4 fails from the timeout, I fix whatever caused it, rerun the package, and it skips straight past tasks 1 through 3 and picks up at task 4 — exactly what we want.\n\nThe thing I'd make sure whoever's reviewing this understands: you can only restart at the task level, never partway through one. If task 4 were a ten-minute data flow and it died at the nine-minute mark, restarting doesn't resume from minute nine -- it reruns that whole data flow task from scratch. If that's a real problem, the fix is splitting that one data flow into two separate tasks in Control Flow, not hunting for a setting that restarts mid-flow, because that setting doesn't exist.\n\nAnd I'd specifically push back if someone suggested also wrapping the whole package in one transaction on top of this. Checkpoints and transactions genuinely don't play well together -- if you restart a package that's both checkpointed and transactional, you risk replaying a transaction that already committed the first time through, which Microsoft flat out says can cause unexpected results. Since the checkpoint approach already solves our restart problem cleanly, adding a package-wide transaction on top of it would just be introducing a new risk for nothing.",
       "example": "-- Package Properties (Control Flow background -> Properties):\n--   SaveCheckpoints     = True\n--   CheckpointFileName   = C:\\ETL\\Checkpoints\\NightlyLoad.chkpt\n--   CheckpointUsage      = IfExists\n\n-- On EACH of the five tasks (Properties):\n--   FailPackageOnFailure = True\n\n-- Result on a task-4 failure + rerun:\n--   Task 1 (Execute SQL) - skipped, already recorded complete\n--   Task 2 (Execute SQL) - skipped, already recorded complete\n--   Task 3 (Execute SQL) - skipped, already recorded complete\n--   Task 4 (Data Flow)   - re-executed from its own beginning\n--   Task 5 (Data Flow)   - runs normally after Task 4 succeeds",
       "commonMistakes": [
         "Forgetting FailPackageOnFailure on individual tasks, so their failures don't register as restart points",
@@ -1432,7 +1432,7 @@
       ],
       "modelAnswer": "This needs two separate role assignments because item-level and system-level security are mutually exclusive scopes in Reporting Services - neither substitutes for the other. First, an item-level role assignment on (or inherited down to) the Sales folder, granting the Browser role, which covers viewing and running reports there - this is what gets the analyst into the content itself. Second, a system-level role assignment granting the System User role, the predefined role covering use of Report Builder and shared schedules - this is scoped to the server as a whole and doesn't by itself grant access to any folder or report; without it, Report Builder simply won't be usable even though the analyst can see Sales reports fine. If the analyst also needs to publish the ad hoc reports they build back to the Sales folder rather than just author them, the item-level assignment needs to move up from Browser to Publisher on that folder specifically. I'd also confirm whether Sales currently inherits its security from Home or has already had security customized on it - if it's still inherited, adding the role assignment at Home would affect every other folder beneath it too, which is probably not the intent; the right move is to customize security specifically at the Sales folder level so the grant stays scoped to where it's needed.",
       "professionalAnswer": "I'd set this up as two distinct grants, because in Reporting Services item-level access and system-level access don't overlap at all - one doesn't imply the other. For the folder access, I'd add an item-level role assignment scoped to the Sales folder specifically - not at Home, where it would leak into every other folder - giving the analyst Browser so they can view and run what's there, or Publisher if they'll also be saving reports back into that folder. Separately, for Report Builder, I'd add a system-level role assignment granting System User, since Report Builder access is a server-wide capability that has nothing to do with folder permissions - without that second grant, they'd see the Sales reports fine but Report Builder just wouldn't work for them. I'd also check first whether Sales is still inheriting security from Home, so I know whether I'm customizing it fresh or adding to an existing override.",
-      "example": "Item-level: New Role Assignment on the Sales folder for user@contoso.com with Browser (or Publisher if they'll save reports back). System-level: Site Settings \u2192 Security \u2192 New Role Assignment for user@contoso.com with System User.",
+      "example": "Item-level: New Role Assignment on the Sales folder for user@contoso.com with Browser (or Publisher if they'll save reports back). System-level: Site Settings → Security → New Role Assignment for user@contoso.com with System User.",
       "commonMistakes": [
         "Assuming a system-level role assignment grants access to folders/reports",
         "Assuming full control/administrator anywhere implies system-level rights elsewhere automatically",
@@ -3057,6 +3057,1194 @@
         "courseSlug": "data-modeling-and-data-warehousing",
         "lessonSlug": "hybrid-scd-patterns",
         "label": "Review: Hybrid SCD Patterns"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-051",
+      "questionCode": "LTV-MSBI-ADV-051",
+      "title": "Why MERGE Doesn't Guarantee Atomicity Under Concurrent Sessions",
+      "prompt": "Your team uses a single MERGE statement to upsert a staging table's changes into a dimension table every hour, and until now it's always run alone. A new requirement means two different SSIS packages can now trigger that same MERGE concurrently against the same target table. Explain why MERGE is not automatically safe under concurrent execution the way its single, all-in-one syntax suggests, what actually goes wrong, and how you'd fix it.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "T-SQL",
+        "Concurrency",
+        "Transactions"
+      ],
+      "modelAnswer": "MERGE's single-statement syntax makes it look atomic, but under the hood it still has to evaluate WHEN MATCHED/WHEN NOT MATCHED by reading the target first and then writing based on what it read -- and under the default READ COMMITTED isolation level, that read-then-write gap is exactly where two concurrent sessions can collide. If two sessions both run the same MERGE against overlapping keys at nearly the same moment, both can evaluate a given key as \"not matched\" before either one has actually inserted it, because neither session's read sees the other session's not-yet-committed insert. Both then attempt WHEN NOT MATCHED BY TARGET's INSERT for the same key, and the second one to commit either throws a primary key/unique constraint violation or, if there's no such constraint protecting the key at all, silently creates a duplicate row -- the exact inconsistency MERGE was supposed to prevent.\n\nThe fix has two parts. First, close the actual race: wrap the MERGE in an explicit transaction and add a HOLDLOCK (equivalent to SERIALIZABLE) hint on the target table reference, which forces the session to hold its lock on the examined key range until the transaction commits, so a second concurrent session can't slip a conflicting insert into the same gap. Second, add a defensive safety net regardless: a unique constraint or primary key on the natural/business key the MERGE matches on, so that even if the locking discipline is ever missed somewhere, a duplicate fails loudly with a constraint violation instead of silently landing as two rows.",
+      "professionalAnswer": "The thing I'd want someone to understand here is that MERGE looking like one atomic statement doesn't make it safe just because two packages might fire it at the same time. Underneath, it's still checking whether a row matches and then deciding what to do, and under the normal isolation level SQL Server runs with by default, two sessions can both check the same key, both decide it's new, and both try to insert it -- and now you've either got a duplicate key error or, if there's nothing stopping it, an actual duplicate row sitting in your dimension table. The fix I'd put in place is wrapping the MERGE in an explicit transaction with a HOLDLOCK hint, which basically makes the first session to touch a given key hold onto it until it's done, so the second session can't sneak in underneath it. And on top of that, I'd always want a real unique constraint on whatever natural key we're matching on, so even if that locking discipline ever slips somewhere, we get a loud failure instead of a silent duplicate.",
+      "example": "-- Without protection: two concurrent MERGE executions against the same\n-- staging batch can both see 'NOT MATCHED' for the same key.\n\nBEGIN TRANSACTION;\n\nMERGE dbo.DimCustomer WITH (HOLDLOCK) AS target\nUSING dbo.StagingCustomer AS source\n    ON target.CustomerNaturalKey = source.CustomerNaturalKey\nWHEN MATCHED THEN\n    UPDATE SET target.Region = source.Region\nWHEN NOT MATCHED BY TARGET THEN\n    INSERT (CustomerNaturalKey, Region)\n    VALUES (source.CustomerNaturalKey, source.Region);\n\nCOMMIT TRANSACTION;\n\n-- Defensive safety net regardless of locking discipline:\nALTER TABLE dbo.DimCustomer\nADD CONSTRAINT UQ_DimCustomer_NaturalKey UNIQUE (CustomerNaturalKey);",
+      "commonMistakes": [
+        "Assuming MERGE's single-statement syntax means it's automatically safe under concurrent execution",
+        "Not adding a unique constraint on the natural key, so a race condition can land as an actual silent duplicate instead of a loud error",
+        "Not using HOLDLOCK/SERIALIZABLE, leaving the read-then-write gap open between concurrent sessions",
+        "Only testing the MERGE running alone, never under concurrent load, so the race condition never surfaces until production"
+      ],
+      "keyPoints": [
+        "MERGE still performs a read (match check) followed by a write, which is not inherently atomic against concurrent sessions",
+        "Default READ COMMITTED isolation doesn't prevent two sessions from both seeing 'not matched' for the same key",
+        "HOLDLOCK (SERIALIZABLE) on the target closes the race by holding the lock until commit",
+        "A unique constraint on the natural key is a cheap, essential defensive safety net",
+        "This class of bug only appears under real concurrent load, so it needs to be tested that way, not just run alone"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains why MERGE isn't atomic under concurrency",
+          "weight": 30
+        },
+        {
+          "criterion": "Identifies the specific failure mode (duplicate key violation or duplicate rows)",
+          "weight": 25
+        },
+        {
+          "criterion": "Proposes a concrete fix (HOLDLOCK/SERIALIZABLE or equivalent)",
+          "weight": 30
+        },
+        {
+          "criterion": "Mentions a defensive unique constraint as a safety net",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "merge-statement",
+        "label": "Review: The MERGE Statement"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-052",
+      "questionCode": "LTV-MSBI-ADV-052",
+      "title": "Building a Dynamic PIVOT for a Report Dataset With a Variable Number of Months",
+      "prompt": "A regional manager wants an SSRS report with one row per product and one column per month, showing total sales -- but which months appear has to adapt automatically to whatever date range the report parameter picks, so a fixed PIVOT column list won't work. Write the dynamic SQL that builds and executes a PIVOT query whose column list is generated at runtime, and explain why a static PIVOT can't solve this on its own.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "sql",
+      "skills": [
+        "T-SQL",
+        "Dynamic SQL",
+        "sp_executesql",
+        "PIVOT"
+      ],
+      "modelAnswer": "A static PIVOT's column list -- the values named inside FOR Color IN ([Red],[Blue],[Black]) -- has to be known and written out at parse/compile time; PIVOT does not discover its own output columns from a query at runtime, which is exactly why every PIVOT example uses literal, hardcoded values. A report whose date range parameter can produce a different set of months each time it runs can't satisfy that requirement with a plain PIVOT, because there's no way to hand PIVOT a variable or a subquery in place of that literal list.\n\nThe fix is to generate the column list as a string at runtime, then build and execute a complete PIVOT statement as dynamic SQL. First, query the distinct months actually present in the selected date range and build a comma-separated, bracket-quoted list of them using STRING_AGG and QUOTENAME -- QUOTENAME is not optional here, since a month label could otherwise be used to break out of the generated SQL. Then concatenate that column list into the full PIVOT statement as a string, and execute it with sp_executesql rather than EXEC on a raw concatenated string, passing the actual report parameters (the date range) as real parameters to sp_executesql rather than concatenating their values into the string -- the column list is the only part that has to be built as text, because it has to become identifiers, not data.",
+      "professionalAnswer": "The core problem is that PIVOT wants its list of output columns spelled out literally when the query is written, and this report's months change depending on whatever date range someone picks -- so a plain PIVOT just can't flex to that. What I'd do is build the column list myself, first: query the distinct months inside the selected range, use QUOTENAME to safely bracket each one, and glue them together with STRING_AGG into one comma-separated string. Then I take that string and drop it into a full PIVOT statement that I'm building as text, and run the whole thing through sp_executesql. The one thing I'm careful about is that I only build the column list as a string -- the actual filter parameters, like the start and end date, I pass into sp_executesql as real parameters instead of pasting their values into the SQL text, so I'm not opening an injection hole on the one part of this that actually comes from user input.",
+      "example": "DECLARE @Columns NVARCHAR(MAX), @SQL NVARCHAR(MAX);\n\n-- Build the column list from whatever months actually exist in range\nSELECT @Columns = STRING_AGG(QUOTENAME(MonthLabel), ',')\nFROM (\n    SELECT DISTINCT FORMAT(OrderDate, 'yyyy-MM') AS MonthLabel\n    FROM Sales.SalesOrderHeader\n    WHERE OrderDate BETWEEN @StartDate AND @EndDate\n) AS Months;\n\nSET @SQL = N'\nSELECT ProductName, ' + @Columns + N'\nFROM (\n    SELECT p.Name AS ProductName, FORMAT(soh.OrderDate, ''yyyy-MM'') AS MonthLabel, sod.LineTotal\n    FROM Sales.SalesOrderDetail sod\n    JOIN Sales.SalesOrderHeader soh ON soh.SalesOrderID = sod.SalesOrderID\n    JOIN Production.Product p ON p.ProductID = sod.ProductID\n    WHERE soh.OrderDate BETWEEN @StartDate AND @EndDate\n) AS SourceData\nPIVOT (SUM(LineTotal) FOR MonthLabel IN (' + @Columns + N')) AS PivotTable;';\n\nEXEC sp_executesql @SQL,\n    N'@StartDate DATE, @EndDate DATE',\n    @StartDate = @StartDate, @EndDate = @EndDate;",
+      "commonMistakes": [
+        "Trying to pass a variable or subquery directly as PIVOT's column list, which T-SQL doesn't allow",
+        "Forgetting QUOTENAME around each generated column value, opening a SQL injection risk through the data itself",
+        "Hardcoding a fixed set of months even though the report parameter range is variable, defeating the point of the report",
+        "Concatenating the date-range filter values directly into the dynamic SQL string instead of passing them as sp_executesql parameters"
+      ],
+      "keyPoints": [
+        "PIVOT's column list must be known at parse/compile time, so a variable range requires dynamic SQL",
+        "Build the column list from the actual distinct values using STRING_AGG plus QUOTENAME",
+        "Execute the generated statement with sp_executesql, not EXEC on a raw concatenated string",
+        "Pass genuinely variable filter values (like the date range) as sp_executesql parameters, never by string concatenation"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains why a static PIVOT can't adapt to a variable column set",
+          "weight": 25
+        },
+        {
+          "criterion": "Builds a correct dynamic column list using QUOTENAME",
+          "weight": 25
+        },
+        {
+          "criterion": "Executes the generated statement safely via sp_executesql",
+          "weight": 30
+        },
+        {
+          "criterion": "Parameterizes filter values rather than concatenating them",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "pivot",
+        "label": "Review: PIVOT"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-053",
+      "questionCode": "LTV-MSBI-ADV-053",
+      "title": "A Nightly Procedure That Used to Finish in Minutes Now Takes Hours",
+      "prompt": "A nightly stored procedure that updates loyalty points for every customer who made a purchase that day used to finish in under five minutes. Over the last two months it's crept up to three hours, and nobody changed the procedure's code. When you open it, you find it's built around a cursor that loops through qualifying customers one at a time, calling an UPDATE inside the loop. Walk through how you'd confirm the cursor is the real problem, why its cost grows disproportionately as the table grows, and how you'd rewrite it.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "T-SQL",
+        "Query Tuning",
+        "Cursors"
+      ],
+      "modelAnswer": "I wouldn't assume the cursor is guilty just because cursors have a bad reputation -- I'd confirm it with SET STATISTICS TIME and IO around the existing procedure, and separately time a rewritten set-based version against the same day's data, so the comparison is based on actual numbers rather than instinct. I'd also check whether the cursor's own underlying SELECT has degraded (stale statistics causing a scan instead of a seek on the qualifying-customers query), since that's a second, compounding problem that's easy to miss if you only blame the loop itself.\n\nThe reason a cursor's cost grows disproportionately as a table grows isn't just that there are more rows to loop over -- it's that every iteration carries fixed per-row overhead (a context switch between the engine and the cursor machinery, its own mini-transaction and log record for each UPDATE, lock acquisition and release every single time) that a single set-based statement pays only once, not once per row. As the qualifying-customer count has grown month over month with the business, that per-row overhead has been multiplying against a growing row count, which is exactly the kind of cost curve that looks fine for a long time and then visibly takes off -- nobody changed the code, but the data volume the same code runs against did.\n\nThe rewrite replaces the entire loop with a single set-based UPDATE ... FROM that joins the same filtering logic the cursor used to decide which customers qualify, letting the engine process the whole batch as one operation instead of thousands of tiny ones.",
+      "professionalAnswer": "My first move is to actually prove it's the cursor rather than just assuming it, because cursors get blamed a lot but I want real numbers. I'd run STATISTICS TIME and IO on the existing procedure, and time a rewritten set-based version against the same data, and compare. I'd also take a look at the cursor's own underlying query, because sometimes the real second problem is that it's degraded from a seek to a scan as the table's grown, on top of the cursor overhead itself. As for why this crept up without the code changing -- a cursor pays a fixed cost per row, every iteration, things like its own mini-transaction and locking overhead, and a single set-based statement only pays that cost once for the whole batch. As the number of qualifying customers has grown with the business over the last couple months, that per-row cost has been compounding against a bigger row count every single night, which is exactly the kind of thing that looks fine for a long time and then suddenly doesn't. The actual fix is just replacing the whole loop with one UPDATE statement that joins against the same qualifying criteria the cursor used, so the engine handles it as a single batch operation instead of thousands of small ones.",
+      "example": "-- Before: row-by-row cursor, each UPDATE its own mini-operation\nDECLARE @CustomerID INT;\nDECLARE loyalty_cursor CURSOR FOR\n    SELECT CustomerID FROM dbo.DailyPurchases WHERE PurchaseDate = @Today;\nOPEN loyalty_cursor;\nFETCH NEXT FROM loyalty_cursor INTO @CustomerID;\nWHILE @@FETCH_STATUS = 0\nBEGIN\n    UPDATE dbo.Customer SET LoyaltyPoints = LoyaltyPoints + 10 WHERE CustomerID = @CustomerID;\n    FETCH NEXT FROM loyalty_cursor INTO @CustomerID;\nEND\nCLOSE loyalty_cursor; DEALLOCATE loyalty_cursor;\n\n-- After: one set-based statement, processed as a single batch\nUPDATE c\nSET c.LoyaltyPoints = c.LoyaltyPoints + 10\nFROM dbo.Customer c\nJOIN dbo.DailyPurchases dp ON dp.CustomerID = c.CustomerID\nWHERE dp.PurchaseDate = @Today;",
+      "commonMistakes": [
+        "Assuming 'nobody changed the code' rules out a regression, missing that growing data volume is itself the real cause",
+        "Not profiling with STATISTICS TIME/IO before concluding the cursor is the bottleneck",
+        "Rewriting to a WHILE loop over a temp table instead of a true single set-based statement, which is still slow",
+        "Not checking whether the cursor's underlying SELECT has also degraded due to stale statistics"
+      ],
+      "keyPoints": [
+        "Confirm the cause with STATISTICS TIME/IO or direct timing, not assumption",
+        "Cursor cost scales with fixed per-row overhead that compounds as row counts grow month over month",
+        "Check the cursor's own driving query for separate degradation (stale stats, scan vs. seek)",
+        "Rewrite as one set-based UPDATE ... FROM statement",
+        "Validate the rewrite produces identical results before replacing the original in production"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Proposes a concrete way to confirm the cursor is the bottleneck",
+          "weight": 20
+        },
+        {
+          "criterion": "Explains why cursor cost compounds as data grows",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly rewrites the loop as a set-based UPDATE",
+          "weight": 30
+        },
+        {
+          "criterion": "Addresses validation before production rollout",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "performance-anti-patterns",
+        "label": "Review: Common T-SQL Performance Anti-Patterns"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-054",
+      "questionCode": "LTV-MSBI-ADV-054",
+      "title": "A Script Component Is Silently Dropping Rows in Production",
+      "prompt": "An SSIS data flow uses a Script Component to parse a semi-structured text field and extract three values from it before loading to the warehouse. Row counts between the source and the destination have quietly stopped matching -- no error, no failed package, just fewer rows landing each week. Walk through how you'd confirm the Script Component is where rows are disappearing, the specific coding mistake inside it that's the classic cause, and how you'd fix it so bad rows are visible instead of invisible.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "SSIS",
+        "Error Handling",
+        "Troubleshooting",
+        "Script Components"
+      ],
+      "modelAnswer": "I'd confirm the location first, not guess: add a Row Count transformation (or a data viewer) immediately before and immediately after the Script Component in the data flow, run the package against a known batch, and compare the two counts. If rows vanish exactly across that one component, it's confirmed.\n\nThe classic cause inside a Script Component used as a transformation is a try/catch wrapped around the parsing logic in Input0_ProcessInputRow -- splitting the semi-structured field and indexing into the result -- where the catch block does nothing, or simply returns without ever calling the output buffer's AddRow(). Unlike a built-in data flow component (a Lookup, a Derived Column), a Script Component has no automatic error output; you only get one if you explicitly add it yourself. So when a row's text doesn't parse the way the code expects, the exception gets caught, nothing gets written to any output, and that row simply disappears from the pipeline with the package still reporting success, because no exception ever escaped the component to actually fail anything.\n\nThe fix: add a dedicated error output to the Script Component, and inside the catch block, write the failing row's original data plus the exception message to that error output buffer's AddRow() instead of silently returning. Route that error output to a table or file so failed rows become visible and countable going forward, and only let the main output's AddRow() fire for rows that genuinely parsed.",
+      "professionalAnswer": "The first thing I'd do is actually pin down where the rows are disappearing instead of assuming -- drop a Row Count transformation right before and right after the Script Component and compare the numbers on a real run. Once that confirms it's the Script Component, I'd go looking for the classic bug: a try/catch around the parsing code that catches the exception and just does nothing, or returns without calling AddRow on any output. People forget that a Script Component doesn't get an error output the way a normal transformation does -- you have to build one yourself -- so if nobody did that, a row that fails to parse just vanishes with the package still reporting success, because nothing ever actually threw past the component to fail it. The fix is to add a real error output to the component, and in that catch block, write the row and the error message to it instead of swallowing it, then point that output at an error table so failures become something you can actually see and count, instead of a silent, slowly growing gap between source and destination.",
+      "example": "// Before: exception swallowed, row disappears silently\ntry {\n    var parts = Row.RawField.Split('|');\n    Row.ValueA = parts[0];\n    Row.ValueB = parts[1];\n    Row.ValueC = parts[2];\n} catch (Exception) {\n    // nothing -- row never reaches any output\n}\n\n// After: failure redirected to a visible, countable error output\ntry {\n    var parts = Row.RawField.Split('|');\n    Row.ValueA = parts[0];\n    Row.ValueB = parts[1];\n    Row.ValueC = parts[2];\n} catch (Exception ex) {\n    ErrorOutputBuffer.AddRow();\n    ErrorOutputBuffer.RawField = Row.RawField;\n    ErrorOutputBuffer.ErrorMessage = ex.Message;\n}",
+      "commonMistakes": [
+        "Trusting that a Script Component has a built-in error output the way other data flow components do -- it doesn't, you must add it yourself",
+        "Catching an exception and returning silently instead of redirecting or logging the failing row",
+        "Not instrumenting row counts across the data flow to localize exactly where rows are being lost",
+        "Only checking the package's overall success/failure status, which says nothing about silently dropped rows"
+      ],
+      "keyPoints": [
+        "Script Components don't get automatic error outputs like built-in transformations do",
+        "Isolate the problem with row counts before and after the component before assuming a cause",
+        "The classic bug is a try/catch that swallows a parsing exception without redirecting or logging the row",
+        "Fix by adding an explicit error output and writing failed rows to it inside the catch block",
+        "Row-count-based monitoring across the data flow is the only reliable way to catch this kind of silent data loss going forward"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly isolates the Script Component as the source using row counts",
+          "weight": 20
+        },
+        {
+          "criterion": "Identifies the swallowed-exception pattern as the cause",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains that Script Components lack automatic error outputs",
+          "weight": 25
+        },
+        {
+          "criterion": "Designs a concrete fix with an explicit error output",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "ssis-development",
+        "lessonSlug": "script-tasks-and-components",
+        "label": "Review: Script Tasks & Script Components"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-055",
+      "questionCode": "LTV-MSBI-ADV-055",
+      "title": "A Partition SWITCH Load Fails With a Schema Mismatch Error",
+      "prompt": "Your nightly load builds a new staging table for the day's fact rows and then runs ALTER TABLE ... SWITCH PARTITION to swap it into the partitioned Fact_Sales table as a near-instant metadata operation. Tonight's load fails with an error saying the source and target tables don't match. Nothing about the load logic changed. Walk through what SWITCH actually requires to succeed, the most likely reason it just started failing, and how you'd fix it.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "sql",
+      "skills": [
+        "T-SQL",
+        "Partitioning",
+        "Troubleshooting"
+      ],
+      "modelAnswer": "SWITCH PARTITION is a metadata-only operation, and SQL Server enforces that strictly: the source table (or partition) and the target partition must be structurally identical -- same columns, same order, same data types and nullability, the same clustered index definition -- and the source table must carry a CHECK constraint that provably confines its data to exactly the target partition's boundary values, or SQL Server rejects the switch before it ever looks at a single row.\n\nWith no change to the load logic itself, the most likely cause is schema drift between Fact_Sales and the staging/switch table: someone added a new column (a new attribute or measure) to Fact_Sales without making the identical change, in the identical column position, to the script that builds the staging table. That drift is invisible day to day -- the staging table still loads fine on its own -- and only surfaces the next time SWITCH compares the two structures.\n\nThe fix: regenerate the staging table's definition directly from Fact_Sales's current structure (a SELECT ... INTO ... WHERE 1=0, or a CREATE TABLE script kept in source control and updated in lockstep with any Fact_Sales schema change), rebuild the matching clustered index, and re-add a CHECK constraint on the partitioning column that proves the staging data fits exactly the partition boundary being switched into. Keeping the staging table's build script generated from or synchronized with Fact_Sales going forward is what prevents this from recurring the next time a column is added.",
+      "professionalAnswer": "SWITCH only works if the two tables are structurally identical -- same columns in the same order, same index, and a CHECK constraint on the staging table that proves its data actually fits inside the specific partition boundary it's switching into. If none of that changed in the load logic itself, the most likely thing that happened is someone added a new column to Fact_Sales and the script that builds the staging table didn't get updated to match -- that kind of drift just sits there quietly until the next SWITCH actually compares the two structures and fails. The fix is to regenerate the staging table's definition straight from Fact_Sales's current structure instead of maintaining it by hand, rebuild the clustered index to match, and put the CHECK constraint back on confirming the data fits the boundary. And going forward, I'd want that staging table build tied to Fact_Sales's definition so it can't drift out of sync again the next time someone adds a column.",
+      "example": "-- Diagnose: compare structures\nSELECT c.name, c.column_id, t.name AS data_type, c.is_nullable\nFROM sys.columns c JOIN sys.types t ON t.user_type_id = c.user_type_id\nWHERE c.object_id = OBJECT_ID('dbo.Fact_Sales')\nORDER BY c.column_id;\n-- Compare against the staging table's columns the same way.\n\n-- Fix: regenerate staging table from the current Fact_Sales definition\nSELECT TOP 0 * INTO dbo.Fact_Sales_Staging FROM dbo.Fact_Sales;\n\nALTER TABLE dbo.Fact_Sales_Staging\n    ADD CONSTRAINT CK_Staging_DateBoundary\n    CHECK (DateKey >= 20260101 AND DateKey < 20260201);\n\nCREATE CLUSTERED INDEX CX_Staging ON dbo.Fact_Sales_Staging (DateKey);\n\nALTER TABLE dbo.Fact_Sales\n    SWITCH PARTITION $PARTITION.PF_FactSales_ByMonth(20260101)\n    TO dbo.Fact_Sales_Staging;",
+      "commonMistakes": [
+        "Forgetting that any Fact_Sales schema change has to be mirrored in the staging/switch table build immediately, not eventually",
+        "Assuming SWITCH fails because of bad data when it's almost always a metadata/structure mismatch",
+        "Omitting the CHECK constraint that proves the staging table's data fits the target partition boundary, which SWITCH requires",
+        "Mismatched index structure (missing or differently-defined clustered index) between the source and target"
+      ],
+      "keyPoints": [
+        "SWITCH requires identical table structure, matching indexes, and a CHECK constraint proving the data fits the partition boundary",
+        "Schema drift between Fact_Sales and the staging/switch table build is the classic silent cause",
+        "Keep the staging table's definition generated from or synchronized with Fact_Sales so they can't drift apart",
+        "Re-verify the CHECK constraint boundary matches exactly the partition being switched into"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains SWITCH's structural requirements",
+          "weight": 30
+        },
+        {
+          "criterion": "Identifies schema drift as the likely cause",
+          "weight": 25
+        },
+        {
+          "criterion": "Diagnoses the CHECK constraint/index angle specifically",
+          "weight": 20
+        },
+        {
+          "criterion": "Gives a concrete, safe fix",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "partitioning-large-fact-tables",
+        "label": "Review: Partitioning Large Fact Tables"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-056",
+      "questionCode": "LTV-MSBI-ADV-056",
+      "title": "Orphaned-Looking Fact Rows After Fixing a Late-Arriving Dimension Bug",
+      "prompt": "Your warehouse's customer dimension load was supposed to insert inferred members for loyalty signups whose fact rows arrive before their full customer details, flipping IsInferredMember to FALSE once real details show up. A bug meant that flip never happened -- inferred rows just piled up, duplicated under the same natural key every time new details arrived. You've fixed the bug going forward. Now you need to clean up the backlog. Walk through how you'd identify the duplicated inferred members already in the warehouse, the risk in just deleting them outright, and the safe cleanup approach.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Data Warehousing",
+        "Dimensional Modeling",
+        "Troubleshooting"
+      ],
+      "modelAnswer": "I'd identify the duplicates by grouping DimCustomer on the natural key (the loyalty number) and finding any natural key with more than one surrogate key -- specifically, a stale row still marked IsInferredMember = TRUE sitting alongside a later row that was supposed to replace it but, because of the bug, got inserted as a new row instead of updating the original in place.\n\nThe risk in just deleting the stale inferred rows outright is referential integrity: fact rows already reference those stale surrogate keys through a foreign key. Deleting the dimension row either orphans that fact history if the foreign key isn't enforced, or fails outright on the constraint if it is -- either way, you can't clean this up by touching the dimension table alone.\n\nThe safe approach: for each duplicated natural key, identify the surviving, fully-detailed surrogate key, then UPDATE every fact row currently pointing at the stale duplicate key to point at the surviving key instead. Only once no fact row references the stale key is it safe to delete it from the dimension. I'd do the whole remap inside a single transaction, validate fact row counts before and after to confirm nothing was lost or double-counted, and keep an audit log mapping each stale key to its surviving replacement in case anything needs to be traced back later.",
+      "professionalAnswer": "To find these, I'd group the customer dimension on the natural key -- the loyalty number -- and look for any key that has more than one surrogate key, specifically a stale row still flagged as inferred sitting next to a newer row that should have updated it in place instead of getting created as a separate row. The thing I'd be careful about is that I can't just delete the stale rows, because fact rows already point at those surrogate keys -- deleting them either breaks referential integrity or orphans history, depending on whether the foreign key is actually enforced. So the real fix is: for each duplicate, figure out which surrogate key is the one that actually has real data, update every fact row pointing at the stale key to point at that surviving key instead, and only delete the stale dimension row once nothing references it anymore. I'd do that whole remap in one transaction, check the fact row counts before and after to make sure nothing got lost, and keep a log of which old key mapped to which new one in case I need to trace it back later.",
+      "example": "-- Find duplicated natural keys with a stale inferred row\nSELECT CustomerNaturalKey, COUNT(*) AS RowCount,\n       SUM(CASE WHEN IsInferredMember = 1 THEN 1 ELSE 0 END) AS InferredCount\nFROM dbo.DimCustomer\nGROUP BY CustomerNaturalKey\nHAVING COUNT(*) > 1;\n\nBEGIN TRANSACTION;\n\n-- Remap fact rows from the stale surrogate key to the surviving one\nUPDATE dbo.Fact_Sales\nSET CustomerKey = @SurvivingKey\nWHERE CustomerKey = @StaleKey;\n\n-- Only now is it safe to remove the stale row\nDELETE FROM dbo.DimCustomer WHERE CustomerKey = @StaleKey;\n\nCOMMIT TRANSACTION;",
+      "commonMistakes": [
+        "Deleting the stale inferred dimension rows before repointing fact table foreign keys, breaking referential integrity or orphaning history",
+        "Assuming the newest row for a natural key is always the correct one without checking which one actually has real attribute values versus placeholders",
+        "Not wrapping the remap in a transaction, risking a half-finished cleanup",
+        "Forgetting to re-verify the forward-going fix (the IsInferredMember flip) actually works before declaring the backlog closed"
+      ],
+      "keyPoints": [
+        "Find duplicates by grouping on the natural key and spotting multiple surrogate keys, including stale inferred rows",
+        "Fact rows already reference the stale surrogate keys, so cleanup order matters",
+        "Remap fact table foreign keys to the surviving surrogate key before deleting anything from the dimension",
+        "Wrap the remap in a transaction and keep an audit trail",
+        "Confirm the forward-going fix actually works before declaring the backlog closed"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies how to find the duplicated inferred members",
+          "weight": 20
+        },
+        {
+          "criterion": "Explains the foreign-key/referential-integrity risk of deleting directly",
+          "weight": 30
+        },
+        {
+          "criterion": "Designs a safe remap-then-delete cleanup order",
+          "weight": 35
+        },
+        {
+          "criterion": "Mentions validation/audit safeguards",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "late-arriving-dimensions",
+        "label": "Review: Late-Arriving Dimensions"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-057",
+      "questionCode": "LTV-MSBI-ADV-057",
+      "title": "Deciding Whether an Order Number Belongs on the Fact Table or in Its Own Dimension",
+      "prompt": "You're designing a new Fact_ServiceTickets table at the grain of one row per ticket. Each ticket has a TicketNumber that's unique, carries no descriptive attributes of its own, and is used constantly by support staff to look up a specific ticket. A junior developer on your team proposes building a DimTicket table with just a surrogate key and TicketNumber. Walk through how you'd evaluate that proposal, what you'd recommend instead, and how you'd still make the ticket number easy to filter and report on.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Dimensional Modeling",
+        "Grain",
+        "Data Warehousing"
+      ],
+      "modelAnswer": "I'd run the two-question test on TicketNumber: does it sit at exactly the same grain as the fact row (yes -- one ticket number per ticket), and does it carry any descriptive attributes of its own worth joining out to (no -- it's a bare identifier with nothing to look up alongside it)? Two yeses means this is a textbook degenerate dimension, and a DimTicket table holding nothing but a surrogate key and TicketNumber is pure overhead -- it adds a join to every query that needs the ticket number, and buys nothing in return, since the fact table already has every value that table would ever contain.\n\nMy recommendation: keep TicketNumber directly as a column on Fact_ServiceTickets, not in a separate dimension table. To keep it just as easy for support staff and report authors to filter and group on without them needing to know it's technically a fact column, I'd expose it through a view that presents it as if it were a dimension -- CREATE VIEW DimTicket AS SELECT DISTINCT TicketNumber FROM Fact_ServiceTickets -- so the field list in Power BI or any ad hoc query tool looks and behaves the same as a real dimension, without the warehouse actually storing or maintaining a second, redundant copy of the same data.",
+      "professionalAnswer": "When I look at this, I'd ask two things about TicketNumber: is it at the same level of detail as one fact row, and does it have any real descriptive attributes attached to it. Here the answer to both is basically yes and no in the way that makes this a degenerate dimension -- it's just an identifier, there's nothing to look up alongside it. So building a whole separate DimTicket table with just a surrogate key and that number doesn't actually buy us anything; it's an extra join every time someone needs it, for zero payoff. What I'd suggest instead is leaving TicketNumber right on the fact table, and if we want support staff and report authors to still be able to browse it like a normal dimension, I'd wrap it in a view that presents just the distinct ticket numbers -- so it looks and filters exactly like a real dimension table without us actually having to build and maintain one.",
+      "example": "CREATE VIEW dbo.DimTicket AS\nSELECT DISTINCT TicketNumber\nFROM dbo.Fact_ServiceTickets;",
+      "commonMistakes": [
+        "Building a real dimension table for an identifier with zero descriptive attributes, adding a join with no payoff",
+        "Assuming every identifier-looking column needs its own dimension table 'to be safe'",
+        "Forgetting to give report authors a dimension-like way to access the degenerate attribute, making it harder to use than it needs to be",
+        "Not checking grain alignment before deciding -- an identifier only qualifies as degenerate if it matches the fact row's exact grain"
+      ],
+      "keyPoints": [
+        "Test any identifier against two questions -- same grain as the fact row, and zero descriptive attributes -- to spot a degenerate dimension",
+        "A real dimension table for a bare identifier is overhead, not safety",
+        "Keep the identifier on the fact table itself",
+        "Expose it to report authors via a view so it still looks and filters like a dimension",
+        "Order numbers, ticket numbers, and invoice numbers are the classic real-world examples"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly applies the grain plus no-attributes test to identify a degenerate dimension",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains concretely why a separate table is pure overhead",
+          "weight": 25
+        },
+        {
+          "criterion": "Recommends keeping it on the fact table",
+          "weight": 20
+        },
+        {
+          "criterion": "Proposes the view-based exposure for report authors",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "degenerate-dimensions",
+        "label": "Review: Degenerate Dimensions"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-058",
+      "questionCode": "LTV-MSBI-ADV-058",
+      "title": "Consolidating Four Low-Cardinality Order Flags Into a Single Dimension",
+      "prompt": "Fact_Orders currently carries four separate foreign keys for low-cardinality flags: OrderPriority (3 values), IsGift (2 values), PaymentMethod (4 values), and IsBackordered (2 values) -- four tiny dimension tables, four joins, for a report that frequently filters on combinations of them. Walk through whether these are good candidates for a junk dimension, how you'd build it, and the one condition that would make you stop and NOT consolidate them.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Dimensional Modeling",
+        "Data Warehousing",
+        "Junk Dimensions"
+      ],
+      "modelAnswer": "These four flags fit the textbook profile for a junk dimension: there are several of them, each has only one attribute, and each is genuinely low cardinality. I'd build it as the Cartesian product of every combination -- 3 x 2 x 4 x 2 = 48 rows -- with one surrogate key per unique combination of OrderPriority, IsGift, PaymentMethod, and IsBackordered, then replace the four existing foreign keys on Fact_Orders with a single OrderAttributes_FK. That collapses four joins into one for any report filtering on these flags, and narrows the fact table from four FK columns down to one.\n\nThe one condition that would stop me from consolidating: if the combined cardinality were large enough that the Cartesian product explodes. If PaymentMethod grew to 15 values and a fifth flag with 10 values got added later, the row count could jump into the tens of thousands, at which point the junk dimension becomes a bigger, harder-to-maintain table than the four small ones it replaced, and the consolidation has stopped paying for itself. I'd calculate the actual projected row count before committing to the design, not just assume it stays small because it started small.",
+      "professionalAnswer": "Looking at these four flags, they're a good fit for a junk dimension -- there are several of them, each one is basically a single low-cardinality column, which is exactly the profile where this pattern pays off. What I'd do is build the table as every combination of the four flags, which comes out to 48 rows here, give each combination its own surrogate key, and then replace those four separate foreign keys on Fact_Orders with one single key pointing at this new table. That turns four joins into one for any report filtering on these, and the fact table gets narrower too. The one thing that would make me stop and not do this is if the combined row count were about to blow up -- if one of these flags grew to a lot more values, or we kept adding more flags to the same dimension, that Cartesian product can get out of hand fast, and at that point we've built something harder to manage than the four small tables we were trying to get rid of.",
+      "example": "-- Cartesian product row count: 3 x 2 x 4 x 2 = 48 rows\nSELECT op.OrderPriority, g.IsGift, pm.PaymentMethod, bo.IsBackordered,\n       ROW_NUMBER() OVER (ORDER BY op.OrderPriority, g.IsGift, pm.PaymentMethod, bo.IsBackordered) AS OrderAttributesKey\nINTO dbo.DimOrderAttributes\nFROM (SELECT DISTINCT OrderPriority FROM StagingOrders) op\nCROSS JOIN (SELECT DISTINCT IsGift FROM StagingOrders) g\nCROSS JOIN (SELECT DISTINCT PaymentMethod FROM StagingOrders) pm\nCROSS JOIN (SELECT DISTINCT IsBackordered FROM StagingOrders) bo;",
+      "commonMistakes": [
+        "Consolidating attributes that actually have independent business meaning analysts need to slice on their own (those belong as real dimensions, not junked together)",
+        "Not calculating the actual Cartesian product row count before deciding, missing a combinatorial explosion",
+        "Junk-dimensioning a single flag alone, which isn't a consolidation problem worth solving",
+        "Forgetting that the fact table's foreign keys need to be rebuilt and remapped to the new single surrogate key as part of the migration"
+      ],
+      "keyPoints": [
+        "Good junk dimension candidates are several, low-attribute-count, low-cardinality flags",
+        "Rows are built as the Cartesian product of every combination, one surrogate key per combination",
+        "Consolidating collapses multiple joins into one and narrows the fact table",
+        "Stop consolidating once combined cardinality would explode the row count past what's manageable",
+        "Don't junk-dimension attributes with independent business meaning that analysts need to filter on their own"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly evaluates the four flags against junk dimension candidate criteria",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly computes and explains the Cartesian product construction",
+          "weight": 25
+        },
+        {
+          "criterion": "Explains the fact table impact",
+          "weight": 20
+        },
+        {
+          "criterion": "Identifies the cardinality-explosion stopping condition",
+          "weight": 30
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "junk-dimensions",
+        "label": "Review: Junk Dimensions"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-059",
+      "questionCode": "LTV-MSBI-ADV-059",
+      "title": "Choosing Between a Periodic Snapshot and an Accumulating Snapshot Fact for Order Fulfillment",
+      "prompt": "Leadership wants to track order fulfillment performance: how long orders sit at each stage (placed, picked, shipped, delivered), plus a daily view of how many orders are currently sitting in each stage. One developer on your team proposes a single fact table to cover both needs. Walk through why that's the wrong grain for at least one of these questions, which fact table type(s) you'd actually design, and how they'd work together.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Fact Tables",
+        "Grain",
+        "Dimensional Modeling"
+      ],
+      "modelAnswer": "These are two different business questions with two different natural grains, and forcing them into one fact table only serves one of them well. 'How long did this order sit at each stage' is a per-process-instance question -- one row per order, updated as it reaches each milestone -- which is exactly what an accumulating snapshot fact table is built for: OrderDate_FK, PickDate_FK, ShipDate_FK, DeliverDate_FK as role-playing references to the same Date dimension, with duration measures like DaysToPickAfterOrder.\n\n'How many orders are sitting in each stage right now, as of today' is a different shape entirely -- it needs a row per day regardless of whether anything happened that day, which is what a periodic snapshot fact table is for: one row per day per stage, loaded on a fixed schedule, with a semi-additive count measure that's valid to sum across stages on a given day but never valid to sum across days. Trying to answer the daily-stage-count question from the accumulating snapshot alone would mean re-deriving 'which orders were in stage X on day Y' by inference from milestone dates every time a report runs, which is slow and fragile compared to a dedicated snapshot built for exactly that question.\n\nMy recommendation is to build both: an accumulating snapshot for the duration/timing question, a periodic snapshot for the daily-stage-count question, sharing the same conformed Order, Product, and Date dimensions so the two reports stay consistent with each other even though they're built from different fact tables.",
+      "professionalAnswer": "These really are two separate questions even though they sound related, and they each want a different shape of table. The duration question -- how long an order sat at each stage -- is a per-order thing, one row that gets updated as the order moves along, which is exactly what an accumulating snapshot is for. The daily count question -- how many orders are sitting in each stage right now -- needs a row every single day regardless of whether anything happened, which is a periodic snapshot's job, not the accumulating snapshot's. If we tried to answer the daily-count question off the accumulating snapshot alone, we'd be reconstructing 'who was in which stage on which day' from milestone dates every time someone runs that report, which is slow and honestly fragile compared to just building the table that's meant for it. So my recommendation is build both -- they're not competing designs, they answer two different questions -- and have them share the same Order, Product, and Date dimensions so the two reports never disagree with each other.",
+      "example": "-- Accumulating snapshot: one row per order, updated per milestone\nCREATE TABLE f_OrderFulfillment (\n    OrderDate_FK INT, PickDate_FK INT, ShipDate_FK INT, DeliverDate_FK INT,\n    OrderKey INT, DaysToPickAfterOrder INT, DaysToShipAfterPick INT, DaysToDeliverAfterShip INT\n);\n\n-- Periodic snapshot: one row per day per stage\nCREATE TABLE f_OrderStageSnapshot (\n    SnapshotDate_FK INT, Stage VARCHAR(20), OrderCount INT\n);",
+      "commonMistakes": [
+        "Trying to answer both questions from a single fact table, picking a grain that only really serves one of them well",
+        "Using an accumulating snapshot to answer 'how many are in each stage today' by deriving it from milestone dates at query time instead of building a dedicated periodic snapshot",
+        "Forgetting the accumulating snapshot needs an UPDATE-based load, not insert-only, which is operationally different from most other fact tables",
+        "Summing a periodic snapshot's count measure across days instead of treating it as semi-additive"
+      ],
+      "keyPoints": [
+        "'Duration at each stage' and 'how many are in each stage right now' are different business questions with different grains",
+        "An accumulating snapshot (one row per order, updated per milestone) answers the duration question",
+        "A periodic snapshot (one row per fixed interval) answers the daily-count question",
+        "The two fact table types can and should share the same conformed dimensions",
+        "Don't force two different grains into one fact table just to avoid building a second one"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies that the two questions need different grains",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly designs the accumulating snapshot for the duration question",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly designs the periodic snapshot for the daily-count question",
+          "weight": 25
+        },
+        {
+          "criterion": "Explains how they share conformed dimensions",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "accumulating-snapshot-facts",
+        "label": "Review: Accumulating Snapshot Facts"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-060",
+      "questionCode": "LTV-MSBI-ADV-060",
+      "title": "Designing an Aggregate Fact Table to Speed Up a Slow Executive Dashboard",
+      "prompt": "An executive dashboard built directly against your 400-million-row Fact_Sales table takes 30+ seconds to render 'revenue by month by region' -- the exact kind of summary query that gets run constantly and never changes shape. Walk through the aggregate table design you'd build to fix this, how you'd keep it from going stale, and the trade-off you're accepting by building it.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "sql",
+      "skills": [
+        "Fact Tables",
+        "Query Performance",
+        "Data Warehousing",
+        "Aggregate Tables"
+      ],
+      "modelAnswer": "I'd build an aggregate fact table that rolls Fact_Sales up to exactly the grain the dashboard needs -- one row per order-month and region, summing Revenue -- using CREATE TABLE AS SELECT (or SELECT INTO), grouping the detailed fact by those dimension keys. I'd point the dashboard's query at this small aggregate table instead of the 400-million-row detail table; because it's a rollup to a coarser grain, the row count drops by orders of magnitude, and the same 'revenue by month by region' query that took 30 seconds against the detail runs against a table with a few thousand rows instead.\n\nKeeping it from going stale: the aggregate isn't a one-time snapshot, it's a derived table that needs refreshing every time Fact_Sales gets new rows. I'd build the rollup logic into a stored procedure and schedule it as its own step in the nightly ETL orchestration, right after the Fact_Sales load completes -- the same dependency-ordering discipline as loading dimensions before facts -- and make sure any failure in that refresh step is visible, since a stale aggregate quietly disagreeing with the detail table is worse than no aggregate at all.\n\nThe trade-off I'm accepting: this is deliberate data duplication, not a free win. It's another table the orchestration has to process and keep in sync, and if that refresh job is ever skipped or fails silently, the dashboard will show numbers that don't match the detail table underneath it.",
+      "professionalAnswer": "What I'd build is a table that rolls Fact_Sales up to exactly the level the dashboard actually needs -- month and region -- using a CREATE TABLE AS SELECT that groups the detail and sums revenue. Then I point the dashboard at that small table instead of the 400-million-row one, and because it's a much coarser grain, the same query that used to take 30 seconds runs against a table with maybe a few thousand rows instead. The part people forget is that this table doesn't stay correct on its own -- every time Fact_Sales gets new data, this one needs to be refreshed too, so I'd build that into a stored procedure and run it as a scheduled step right after the nightly Fact_Sales load, and make sure if that step ever fails, it's loud about it, because a stale aggregate quietly disagreeing with the real numbers underneath it is worse than not having the shortcut at all. And I'd be upfront that this is a trade-off, not a free performance win -- it's duplicated data and one more thing the pipeline has to keep in sync, in exchange for a dashboard that actually loads fast.",
+      "example": "CREATE TABLE agg_sale_by_month_region AS\nSELECT\n    DATEFROMPARTS(YEAR(d.FullDate), MONTH(d.FullDate), 1) AS OrderMonth,\n    r.Region,\n    SUM(fs.Revenue) AS TotalRevenue\nFROM dbo.Fact_Sales fs\nJOIN dbo.Dim_Date d ON d.DateKey = fs.OrderDateKey\nJOIN dbo.Dim_Region r ON r.RegionKey = fs.RegionKey\nGROUP BY DATEFROMPARTS(YEAR(d.FullDate), MONTH(d.FullDate), 1), r.Region;\n\n-- Scheduled nightly, immediately after the Fact_Sales load step completes:\nCREATE PROCEDURE dbo.usp_RefreshAggSaleByMonthRegion AS\nBEGIN\n    TRUNCATE TABLE dbo.agg_sale_by_month_region;\n    INSERT INTO dbo.agg_sale_by_month_region\n    SELECT DATEFROMPARTS(YEAR(d.FullDate), MONTH(d.FullDate), 1), r.Region, SUM(fs.Revenue)\n    FROM dbo.Fact_Sales fs\n    JOIN dbo.Dim_Date d ON d.DateKey = fs.OrderDateKey\n    JOIN dbo.Dim_Region r ON r.RegionKey = fs.RegionKey\n    GROUP BY DATEFROMPARTS(YEAR(d.FullDate), MONTH(d.FullDate), 1), r.Region;\nEND;",
+      "commonMistakes": [
+        "Treating the aggregate table as a one-time build instead of something that needs a scheduled refresh tied to the detail table's load",
+        "Not making aggregate refresh failures visible, letting the dashboard silently drift out of sync with the detail",
+        "Building the aggregate at a grain finer than the dashboard actually needs, losing most of the performance benefit",
+        "Not considering Power BI's own user-defined aggregations or DirectQuery-over-the-aggregate as alternatives before committing to a new physical table"
+      ],
+      "keyPoints": [
+        "An aggregate fact table is a rollup of the detail fact to a coarser grain, built with CTAS",
+        "It should be built at exactly the grain the dashboard needs, not finer",
+        "It must be refreshed on a schedule tied to the detail table's own load, in dependency order",
+        "A stale, out-of-sync aggregate is worse than not having one, so refresh failures need to be visible",
+        "The trade-off being accepted is deliberate duplication and an extra table to maintain, not a free performance win"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Designs a correctly-grained aggregate table using CTAS",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains the performance mechanism",
+          "weight": 20
+        },
+        {
+          "criterion": "Addresses keeping it refreshed and in sync",
+          "weight": 30
+        },
+        {
+          "criterion": "Names the real trade-off (duplication/maintenance cost)",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "aggregate-tables",
+        "label": "Review: Aggregate Tables"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-061",
+      "questionCode": "LTV-MSBI-ADV-061",
+      "title": "Designing a Multi-Environment Promotion Strategy for a 30-Package SSIS Project",
+      "prompt": "You're the senior developer on a 30-package SSIS project that currently runs fine in development but has never been deployed anywhere else. The team is about to add a test server and a production server, and several packages hardcode connection strings today. Walk through the environment strategy you'd design in the SSIS Catalog so the same deployed project runs correctly on all three, and the one rule you'd make sure the whole team understands before anyone runs a production execution.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "SSIS Catalog",
+        "Environments",
+        "Dynamic Connection Strings"
+      ],
+      "modelAnswer": "First, every hardcoded connection string across the 30 packages has to become a project parameter or connection manager property exposed for environment mapping -- that's a prerequisite, not optional, since environments only work by overriding parameters and connection manager properties that already exist as such.\n\nThen, in the SSISDB catalog, I'd create three environments -- Dev, Test, Production -- each containing the same-named variables (server name, database name, file-share paths, anything that differs by server), with values appropriate to that tier, marking anything sensitive (like a connection password) as Sensitive so SSISDB encrypts it. I'd deploy the project once, add environment references to all three environments on the project's References page, then map each relevant parameter and connection manager property to the matching environment variable on the Parameters and Connection Managers tabs -- the same mapping, pointed at different environments depending on which one is active for a given execution.\n\nThe one rule every team member needs to internalize before running anything in production: a single execution can reference only one environment, never a mix. So when SQL Server Agent job steps are set up for the production schedule, each step's execution must explicitly specify the Production environment reference, and nobody should ever manually run an execution without double-checking which environment reference is selected -- that's the only thing standing between a routine run and a production job accidentally pulling a dev connection string.",
+      "professionalAnswer": "The first thing that has to happen before any of this works is getting rid of the hardcoded connection strings -- they have to become real parameters or connection manager properties, because environments can only override something that's already set up to be overridden. Once that's done, I'd create three environments in the catalog -- Dev, Test, Production -- each with the same-named variables but different values for things like server name and file paths, and I'd mark anything sensitive so SSISDB encrypts it properly. Then I deploy the project once and reference all three environments from it, and map the actual parameters and connection manager properties to those environment variables. The one thing I'd make absolutely sure the whole team understands before anyone touches production: a single execution can only pull from one environment, never a mix of two. So every Agent job step for the production schedule has to explicitly name the Production environment reference, and nobody should ever kick off a manual execution without checking which environment is selected first -- that's genuinely the only thing stopping a production run from accidentally using dev settings.",
+      "example": "-- Conceptual mapping, not literal T-SQL:\n-- Environment 'Dev':        ServerName = 'dev-sql01'\n-- Environment 'Test':       ServerName = 'test-sql01'\n-- Environment 'Production': ServerName = 'prod-sql01'\n--\n-- Project parameter 'TargetServer' mapped to environment variable 'ServerName'\n-- on each of the three environment references.\n--\n-- SQL Server Agent job step for the nightly production run:\n--   /ISSERVER \"\\SSISDB\\Finance\\MyProject\\MyPackage.dtsx\" /ENVREFERENCE Production",
+      "commonMistakes": [
+        "Leaving some connection strings hardcoded instead of converting all of them to parameters/connection manager properties first, which environments can't override",
+        "Creating the environments but forgetting to actually map parameters to them, leaving the project still running on its fixed defaults",
+        "Not marking sensitive values (passwords, connection secrets) as Sensitive in the environment variables",
+        "Letting a scheduled job or a manual execution run without explicitly specifying which environment reference to use, risking a production run against dev settings"
+      ],
+      "keyPoints": [
+        "Hardcoded connection strings must become parameters/connection manager properties before environments can override them",
+        "Create one environment per tier (Dev/Test/Production) with matching variable names and tier-appropriate values",
+        "Mark sensitive values as Sensitive so SSISDB encrypts them",
+        "Map parameters and connection manager properties to environment variables via project References and Configure",
+        "The one-environment-per-execution rule is the guardrail against a production run accidentally using the wrong tier's settings"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Identifies hardcoded connection strings as the real prerequisite to fix",
+          "weight": 20
+        },
+        {
+          "criterion": "Correctly designs three environments with mapped variables",
+          "weight": 30
+        },
+        {
+          "criterion": "Addresses sensitive value handling",
+          "weight": 15
+        },
+        {
+          "criterion": "Correctly explains and emphasizes the one-environment-per-execution rule",
+          "weight": 35
+        }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": {
+        "courseSlug": "ssis-development",
+        "lessonSlug": "environments-and-environment-variables",
+        "label": "Review: Environments & Environment Variables"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-062",
+      "questionCode": "LTV-MSBI-ADV-062",
+      "title": "Designing a Composite Model to Mix a Live Fact Table With Stable Dimensions in Power BI",
+      "prompt": "Your Power BI model has a 200-million-row Sales fact table in DirectQuery (too large to import, and the business wants it close to real-time) alongside small, rarely-changing Customer, Product, and Date dimension tables that are currently also set to DirectQuery, just because that's how the Sales connection defaulted. Report authors are complaining that slicers and cross-filtering feel sluggish. Walk through the storage-mode redesign you'd make, why it fixes the slowness, and the one conversion direction you need to warn the team is irreversible.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Power BI",
+        "Architecture",
+        "Performance Tuning"
+      ],
+      "modelAnswer": "The dimension tables don't need to be DirectQuery at all -- they're small and rarely change, so there's no real-time requirement forcing them to stay live-queried, and every slicer and cross-filter interaction against them is paying a round-trip to the source for data that barely ever changes. The fix is a composite model: convert Customer, Product, and Date to Dual storage mode rather than plain Import.\n\nDual lets each of those tables behave as Import when that's faster -- serving slicer and filter-pane interactions from memory instead of a live query -- while still behaving as DirectQuery when a query needs to join against the still-live Sales fact table, which is what keeps relationships and cross-filtering consistent between a cached dimension and a live fact table.\n\nPlain Import on the dimensions would be the wrong choice here despite being fastest, because once you convert a table to Import you cannot convert it back to DirectQuery -- if the business later decides a dimension attribute also needs to be live (say, a loyalty tier that changes in near-real-time), an Import table would have to be reconnected from scratch, while a Dual table keeps that option open. So: Sales stays DirectQuery because it has to, by requirement and size, the three dimensions move to Dual, and Sales itself is left alone since DirectQuery-to-Import is a one-way door you don't want to walk through accidentally on the one table you can't take back.",
+      "professionalAnswer": "The dimension tables here really don't need to be DirectQuery -- they're small, they barely change, and right now every slicer click is paying for a live round-trip to the source for data that's basically static. What I'd do is convert Customer, Product, and Date to Dual mode instead of plain Import. Dual lets them act like Import for fast, cached interactions like slicers, but still behave like DirectQuery when they need to join against the Sales table, which is what keeps everything consistent since Sales has to stay live. The reason I wouldn't just convert them to plain Import, even though that's fastest, is that converting to Import is a one-way door -- you can't go back to DirectQuery later without reconnecting the table from scratch. So if the business ever wants one of these dimensions to be more real-time down the line, Dual keeps that option open and Import would have closed it off. Sales itself I'd leave alone entirely, since that's the one table where an accidental, irreversible conversion would actually hurt.",
+      "example": "-- Model view storage modes after the redesign:\n-- Fact_Sales   -> DirectQuery  (200M rows, real-time requirement)\n-- Dim_Customer -> Dual         (small, rarely changes)\n-- Dim_Product  -> Dual         (small, rarely changes)\n-- Dim_Date     -> Dual         (small, rarely changes)",
+      "commonMistakes": [
+        "Converting the small dimensions straight to Import instead of Dual, closing off the option to ever make them live again without reconnecting from scratch",
+        "Leaving everything in DirectQuery 'to be safe,' which is what caused the sluggish slicer experience in the first place",
+        "Not recognizing that the fact table's size and freshness requirement is the actual constraint, not a reason to also force the dimensions into DirectQuery",
+        "Forgetting that converting DirectQuery to Import is irreversible, and applying it somewhere that might need to go back later"
+      ],
+      "keyPoints": [
+        "Small, rarely-changing dimension tables don't need to inherit DirectQuery just because the fact table does",
+        "Dual mode lets a table serve fast cached reads for its own interactions while still joining correctly against a live DirectQuery fact table",
+        "This composite model (one DirectQuery fact, Dual dimensions) directly fixes sluggish slicers and cross-filtering",
+        "Converting a table to Import is one-way -- Dual preserves future flexibility that plain Import would close off",
+        "The fact table's size and freshness requirement, not laziness, should be the only reason anything in the model stays DirectQuery"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies Dual mode as the fix for the dimension tables",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains why it resolves the slicer/cross-filter slowness",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly distinguishes Dual from plain Import for this scenario",
+          "weight": 25
+        },
+        {
+          "criterion": "Flags the Import conversion as irreversible",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "power-bi",
+        "lessonSlug": "import-vs-directquery",
+        "label": "Review: Import vs. DirectQuery"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-063",
+      "questionCode": "LTV-MSBI-ADV-063",
+      "title": "Resolving a Design Disagreement With Another Senior Developer Over Star vs. Snowflake",
+      "prompt": "You and another senior developer disagree about a new Product dimension: you want a star schema (one denormalized Product table), they want to snowflake it out into Product, Category, and Subcategory tables for what they call 'proper normalization.' The disagreement has stalled the sprint for two days. Walk me through how you'd resolve it.",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Communication",
+        "Peer Collaboration",
+        "Conflict Resolution"
+      ],
+      "modelAnswer": "I'd first separate the technical question from the stalled-sprint problem, because two days of disagreement is itself the more urgent issue. I'd bring the trade-off back to our specific warehouse, not an abstract preference: snowflaking buys normalized storage and easier updates to category names, at the cost of extra joins on every query and more clicks for report authors browsing a wider field list; a star schema's denormalized Product table costs a little redundant storage and a slightly more complex load (propagating a category rename to every product row instead of one category row), but it's faster to query and simpler for the Power BI models downstream that this team is accountable for performance on.\n\nI'd frame it as 'which cost are we more willing to pay,' not 'who's right about normalization in the abstract,' and bring concrete evidence -- how often category and subcategory names actually change for us, and how many joins snowflaking adds to the reports we already know are being built. If we still can't agree after that, I'd propose a tiebreaker that isn't just seniority: prototype both against a realistic query the Power BI team actually needs, and let the measured difference decide it, with an explicit time box so the disagreement doesn't cost the sprint a third day.",
+      "professionalAnswer": "I try not to let two senior people disagreeing turn into a standoff, so the first thing I'd do is name that the two-day stall is actually the bigger problem right now, separate from who's got the better modeling argument. Then I'd pull the conversation back to our actual data, not textbook normalization theory -- how often do category and subcategory names really change for us, and how many extra joins does snowflaking add to the Power BI reports we already know are coming. I'd lay out the real trade-off plainly: a star schema is faster to query and simpler for report authors, a snowflake is more normalized and slightly easier to update category text, and ask which of those we actually care more about for this specific warehouse. And if we're still stuck after that honest conversation, I'd rather settle it with a quick prototype -- build both, run the query the downstream team actually needs, and let the real numbers decide instead of two opinions. I'd also put a time box on it, because letting this run a third day costs the team more than either design choice would.",
+      "example": "\"Let's time-box this to one more conversation: I'll prototype both against the actual sales query Power BI needs, we compare, and whichever wins, we both commit to it by end of day.\"",
+      "commonMistakes": [
+        "Letting the disagreement run indefinitely without naming the sprint cost",
+        "Arguing from abstract normalization theory instead of this warehouse's actual query and change patterns",
+        "Pulling rank instead of proposing an objective tiebreaker",
+        "Not setting a time box, letting a two-day stall become a three- or four-day one"
+      ],
+      "keyPoints": [
+        "Name the stalled sprint as an urgent problem separate from the technical disagreement",
+        "Ground the argument in this warehouse's actual query patterns and data change frequency, not textbook theory",
+        "Frame it as a trade-off to choose, not a right-or-wrong question",
+        "Propose an objective tiebreaker (a quick prototype against a real query) if discussion alone doesn't resolve it",
+        "Time-box the resolution so the disagreement doesn't keep costing the sprint"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Recognizes the stalled sprint as a problem to address directly",
+          "weight": 20
+        },
+        {
+          "criterion": "Grounds the disagreement in concrete trade-offs rather than abstract theory",
+          "weight": 30
+        },
+        {
+          "criterion": "Proposes a fair resolution mechanism (prototype/evidence-based)",
+          "weight": 30
+        },
+        {
+          "criterion": "Shows awareness of timeliness and time-boxing",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-064",
+      "questionCode": "LTV-MSBI-ADV-064",
+      "title": "Justifying a Dimensional Model to Leadership That Wants a Single 'Simple' Flat Table",
+      "prompt": "You've designed a proper star schema for a new reporting initiative -- fact table, conformed dimensions, surrogate keys. A director who isn't technical pushes back: 'Why can't we just have one big flat table in Excel that has everything in it? That sounds simpler.' Walk me through how you'd respond.",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Communication",
+        "Stakeholder Management",
+        "BI Architecture"
+      ],
+      "modelAnswer": "I wouldn't argue dimensional modeling theory with a director -- I'd translate the trade-off into outcomes they already care about: cost, speed, and correctness. A single flat table repeats every customer and product attribute on every transaction row; for a company doing millions of transactions a year, that's a table that grows enormous fast, takes longer to refresh, and is slower for anyone filtering or summarizing it. Worse, if a customer's region is ever corrected, a flat table means updating that value on every one of their past transaction rows, or risking the same customer showing two different regions depending on which row you look at -- exactly the kind of inconsistency that erodes trust in a report.\n\nA star schema keeps one clean, authoritative copy of each customer and product's attributes, and transactions just reference them, so a correction happens in one place and is instantly correct everywhere, and the fact table stays lean and fast. I'd be honest that 'simpler to look at' and 'simpler to maintain and trust at scale' aren't the same thing, and offer a concrete comparison if it would help -- the flat-table size projection versus the star schema's, or a side-by-side on how long a correction takes to propagate in each.",
+      "professionalAnswer": "I always try to meet a non-technical stakeholder where they actually live, which is outcomes, not architecture vocabulary. So instead of explaining normalization, I'd say something like: if we flatten everything into one big table, every customer's name and region gets copied onto every single transaction row they ever make -- and if that region is ever wrong and needs fixing, we'd have to go find and fix it on thousands of old rows instead of one. The design I built keeps one clean record for each customer, and every transaction just points back to it, so a fix happens once and is correct everywhere immediately. I'd also point out that the flat table gets huge fast and gets slower to refresh and query as it grows, while this design stays lean on the transaction side. I try to be upfront that 'looks simpler' and 'is actually simpler to trust and maintain' aren't the same thing, and I'd offer to show them a quick side-by-side if that would help make the trade-off concrete instead of abstract.",
+      "example": "\"If we ever have to correct one customer's region, with my design that's one UPDATE statement. With one flat table, it's potentially thousands of rows to find and fix -- and until we do, the same customer shows two different regions depending on which row you're looking at.\"",
+      "commonMistakes": [
+        "Explaining normal forms, surrogate keys, or star-vs-snowflake terminology to a non-technical director instead of translating to cost/speed/correctness",
+        "Being dismissive or defensive about the 'simpler' framing instead of taking it seriously and addressing it",
+        "Not giving a concrete, relatable example of the real cost, like a correction propagating to thousands of rows",
+        "Failing to acknowledge that the flat table does look simpler on the surface, which is why the pushback feels reasonable to begin with"
+      ],
+      "keyPoints": [
+        "Translate the technical trade-off into cost, speed, and correctness outcomes a director already cares about",
+        "The concrete failure mode of a flat table is that a single correction has to propagate across every repeated row, or risks inconsistency",
+        "A star schema keeps one authoritative copy of each dimension's attributes so corrections happen once",
+        "Acknowledge honestly that 'looks simpler' and 'is simpler to maintain and trust at scale' are different things",
+        "Offer a concrete comparison or example rather than staying abstract"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Translates the technical justification into business-relevant outcomes",
+          "weight": 30
+        },
+        {
+          "criterion": "Gives a concrete, correct example of the flat-table failure mode",
+          "weight": 30
+        },
+        {
+          "criterion": "Avoids technical jargon inappropriate for the audience",
+          "weight": 20
+        },
+        {
+          "criterion": "Acknowledges the stakeholder's perspective respectfully",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-065",
+      "questionCode": "LTV-MSBI-ADV-065",
+      "title": "Owning a Mistake After an SCD Type 1 Overwrite Destroyed Historical Data",
+      "prompt": "You deployed a dimension update last week that was supposed to be a Type 2 change for customer region, but a copy-paste mistake left it running as a Type 1 overwrite instead. You just discovered that a month of historical region values for every customer who moved has been silently overwritten and can't be recovered from the warehouse itself. Walk me through how you'd handle this -- who you'd tell, in what order, and what you'd actually say.",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Communication",
+        "Slowly Changing Dimensions",
+        "Accountability"
+      ],
+      "modelAnswer": "I'd move fast and tell people before they find out from a report looking wrong, not after. First, my direct manager or team lead, immediately -- I'd state plainly what happened (a Type 1 ran where a Type 2 should have), what the actual impact is (a month of historical region values on moved customers is gone from the warehouse, not corrupted in a recoverable way), and what I'm already doing about it, rather than waiting until I have a full fix to say anything.\n\nSecond, whoever owns the reports that depend on historical region accuracy -- if region-based trend or territory reports went out during that window, they need to know those specific numbers may be wrong, so they can decide whether to re-run or caveat anything already delivered. For recovery, I'd check whether the source system still has the point-in-time region values even though the warehouse doesn't -- a source audit table, a backup, or an upstream change log -- and if so, backfill the dimension's historical rows from there; if genuinely nothing survives, I'd say so plainly rather than overstating what can be recovered.\n\nThroughout, I'd own the mistake directly -- it was my code, I wouldn't frame it as 'the deployment process' or soften it -- while being equally direct about the fix: the Type 2 logic itself, plus a test that specifically checks history is preserved on a sample customer, so the same class of bug can't ship again unnoticed.",
+      "professionalAnswer": "My instinct here is to say something immediately, before anyone else notices a report looks off. I'd go straight to my manager and lay it out simply: a copy-paste error made a Type 2 change run as a Type 1, and a month of customer region history got overwritten, not safely preserved somewhere I can just restore from. I wouldn't wait until I had the whole fix figured out to say something -- better they hear 'here's the problem and here's what I'm doing' today than find out from a stakeholder next week. Then I'd flag it to whoever owns the reports that lean on region history, because if anything went out during that window, they deserve to know it might be affected. On the recovery side, I'd check if the source system has the values I need even though my warehouse doesn't -- sometimes there's a backup or an audit trail upstream that saves you -- and if there genuinely isn't, I'd say that clearly instead of promising a recovery I can't deliver. And I'd take ownership of it as my mistake, not hide behind 'the process' -- while also being specific about what I'm changing so it can't happen the same way twice, like adding a test that actually verifies history gets preserved before this kind of deploy ships again.",
+      "example": "\"I made a mistake in last week's deployment -- a copy-paste error ran a Type 1 overwrite where it should have been Type 2, and a month of customer region history is gone from the warehouse. Here's what I'm checking for recovery, and here's what report owners need to know in the meantime.\"",
+      "commonMistakes": [
+        "Delaying disclosure until a full fix or recovery plan is ready, letting someone else discover the problem first",
+        "Softening or diffusing ownership of the mistake instead of stating plainly what went wrong and that it was your error",
+        "Overstating what can realistically be recovered instead of being honest about what's genuinely lost",
+        "Fixing the immediate bug without adding a safeguard (like a history-preservation test) that would catch the same class of mistake next time"
+      ],
+      "keyPoints": [
+        "Disclose promptly, before stakeholders discover it through a wrong-looking report",
+        "Tell your manager first, directly and specifically, not vaguely or late",
+        "Notify whoever owns affected downstream reports so they can assess real impact",
+        "Be honest about what can and can't actually be recovered",
+        "Take direct ownership of the mistake and pair the fix with a safeguard against the same class of error recurring"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Prioritizes prompt, direct disclosure over delay",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly identifies who needs to know and in what order",
+          "weight": 20
+        },
+        {
+          "criterion": "Takes clear personal ownership without deflecting",
+          "weight": 25
+        },
+        {
+          "criterion": "Proposes a concrete recovery approach plus a forward-looking safeguard",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "scd-type-2",
+        "label": "Review: SCD Type 2"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-066",
+      "questionCode": "LTV-MSBI-ADV-066",
+      "title": "Telling a Stakeholder Their Mid-Sprint Report Change Will Push the Deadline",
+      "prompt": "You're two days from delivering a Power BI dashboard that's been scoped and committed to for three weeks. A stakeholder asks, mid-sprint, for a new breakdown that requires adding a dimension to the model and reworking several measures -- not a quick tweak. The delivery date was already communicated to their leadership. Walk me through how you'd handle the conversation.",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Communication",
+        "Stakeholder Management"
+      ],
+      "modelAnswer": "I'd treat this as a scope and timeline decision the stakeholder should make with real information, not something I quietly absorb by working a weekend or quietly drop from the dashboard. I'd be specific about why this isn't a quick add: it requires a new dimension in the model and rework across several existing measures, not a cosmetic change, and I'd give an honest estimate of what that actually costs in time.\n\nThen I'd lay out the real options plainly: ship the committed scope on the original date and add this breakdown as a fast follow-up right after, or push the delivery date to absorb the new work now, or find a smaller version of what they're asking for that fits in the two days remaining. I wouldn't make that call for them -- it's their deadline commitment to leadership that's on the line, so I'd frame it as 'here's the trade-off, which one matters more to you,' and whatever they choose, I'd follow up in writing so there's a clear record of what was requested, when, and what we agreed to do about the date.",
+      "professionalAnswer": "The thing I try hardest not to do here is just silently absorb the extra work and hope I can still hit the date -- that usually ends with either a late delivery nobody saw coming or a rushed, lower-quality dashboard. So I'd be straightforward: this isn't a two-minute change, it means adding a new dimension and reworking several measures, and here's roughly how long that actually takes. Then I'd give them real choices instead of just saying no -- we can ship what we committed to on time and add this right after, we can push the date to include it now, or maybe there's a smaller version of the ask that fits in the time we have left. I'd let them pick, since it's their commitment to their leadership that's at stake, not mine to unilaterally decide, and I'd always follow up with a quick written summary of what we agreed, so nobody's surprised later about what shifted and why.",
+      "example": "\"This breakdown needs a new dimension and changes to several measures -- it's not a quick add. I can ship what we committed to on Thursday and add this as the first thing next sprint, or we push Thursday to include it now. Which matters more to you?\"",
+      "commonMistakes": [
+        "Silently absorbing the extra scope without surfacing the real time cost, risking a late or rushed delivery",
+        "Making the scope-vs-deadline trade-off decision unilaterally instead of giving the stakeholder real options",
+        "Downplaying the actual effort involved to seem accommodating, setting up a worse conversation later",
+        "Not following up in writing, leaving the agreed trade-off undocumented"
+      ],
+      "keyPoints": [
+        "Name the real cost of the change honestly instead of silently absorbing it",
+        "Give the stakeholder genuine options -- ship on time plus fast-follow, push the date, or scope down -- rather than a flat no",
+        "Let the stakeholder make the final call since their commitment to leadership is what's actually at stake",
+        "Document whatever is agreed to in writing so there's no ambiguity later"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Surfaces the real scope/time impact honestly rather than absorbing it silently",
+          "weight": 30
+        },
+        {
+          "criterion": "Presents concrete trade-off options instead of a flat refusal",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly defers the final decision to the stakeholder",
+          "weight": 20
+        },
+        {
+          "criterion": "Addresses documentation and follow-up",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-067",
+      "questionCode": "LTV-MSBI-ADV-067",
+      "title": "Giving a Peer Critical Feedback on an SSIS Package's Missing Restartability",
+      "prompt": "You're reviewing a teammate's new SSIS package before it goes to production. It works correctly end to end, but it has no checkpoints and no restart logic -- if task 4 of 6 fails, there's no way to resume without re-running the whole thing, including tasks that already succeeded and shouldn't run twice. The teammate is proud of the package and eager to ship it. Walk me through how you'd give this feedback.",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Communication",
+        "Checkpoints",
+        "Restartability",
+        "Code Review"
+      ],
+      "modelAnswer": "I'd start from what's actually true and positive -- the package works end to end, which is real, meaningful progress -- before raising the gap, so the feedback lands as 'here's one more thing before this is production-ready,' not as a takedown of their work. I'd be specific and concrete about the restartability gap rather than vague: walk through exactly what happens if task 4 fails tonight at 2 AM -- someone has to manually re-run tasks 1 through 3, which may not be safe if they're not idempotent (duplicate inserts, re-triggered side effects), and there's no checkpoint file to tell SSIS where to resume from.\n\nI'd frame it as a production-readiness requirement we apply to every package, not a personal preference of mine, and I'd offer to pair with them on adding checkpoints and restart logic rather than just handing back a list of required changes and walking away -- partly because it genuinely helps them learn the pattern faster, and partly because it keeps the conversation collaborative instead of adversarial. I'd also ask whether there's a reason they skipped it, since sometimes there's a real constraint I'm not aware of, rather than assuming the omission was carelessness.",
+      "professionalAnswer": "I always lead with what's genuinely working before I bring up a gap, because this package running correctly end to end is real progress and I don't want that to get lost. Then I'd get specific instead of vague about what's missing -- I'd walk through what actually happens if task 4 fails at 2 AM: someone has to rerun everything from task 1, and if those early tasks aren't safe to run twice, that's its own problem on top of the failure. I'd frame checkpoints and restart logic as something we require on every production package, not my personal preference, so it doesn't feel like I'm singling out their work. And I'd offer to sit down and add it together rather than just sending back a review with a required-changes list, both because that helps them pick up the pattern for next time and because it keeps the whole thing feeling like we're solving it together instead of me grading their work.",
+      "example": "\"This runs correctly end to end, which is great. One thing before this ships: if task 4 fails at 2 AM, there's no checkpoint, so someone has to rerun everything from task 1 -- and I want to make sure that's safe before we go to production. Want to pair on adding checkpoints this afternoon?\"",
+      "commonMistakes": [
+        "Leading with the gap instead of acknowledging what's genuinely working first, making the feedback feel like a takedown",
+        "Being vague about the restartability problem instead of walking through the concrete 2 AM failure scenario",
+        "Framing the required change as a personal preference instead of a team production-readiness standard",
+        "Not offering to help close the gap, leaving the teammate to figure out an unfamiliar pattern alone"
+      ],
+      "keyPoints": [
+        "Acknowledge genuine, working progress before raising the gap",
+        "Make the restartability risk concrete with a specific failure scenario, not an abstract rule",
+        "Frame checkpoints and restart logic as a team production standard, not a personal preference",
+        "Offer to collaborate on the fix rather than just listing required changes",
+        "Check whether there's a reason the gap exists before assuming it was an oversight"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Leads with genuine acknowledgment of what works",
+          "weight": 20
+        },
+        {
+          "criterion": "Makes the restartability risk concrete and specific",
+          "weight": 30
+        },
+        {
+          "criterion": "Frames the standard as objective/team-wide rather than personal",
+          "weight": 25
+        },
+        {
+          "criterion": "Offers collaborative help closing the gap",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "ssis-development",
+        "lessonSlug": "checkpoints-and-restartability",
+        "label": "Review: Checkpoints & Restartability"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-068",
+      "questionCode": "LTV-MSBI-ADV-068",
+      "title": "Triaging Two Stakeholders Who Both Say Their Request Is Top Priority",
+      "prompt": "On the same afternoon, the sales director tells you her regional pipeline report is 'the most important thing you could be working on' and needs to be done by Friday, and separately the finance director tells you his month-end reconciliation dashboard is 'the most important thing you could be working on' and also needs Friday. You can't do both well by Friday. Walk me through how you'd handle it.",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Communication",
+        "Stakeholder Management",
+        "Prioritization"
+      ],
+      "modelAnswer": "I wouldn't quietly pick one and hope the other doesn't notice, and I wouldn't try to split my time evenly between both and risk delivering two mediocre results by Friday. I'd surface the conflict explicitly and quickly, to whoever can actually resolve a priority call between two directors -- usually my manager, or whoever both directors report into if that's clearer -- and lay out the situation factually: both requests landed today, both are scoped as Friday deliverables, and I physically can't deliver both at full quality by then, so I need a decision on sequencing, not permission to work harder.\n\nI'd come with the actual facts that help that decision: a rough effort estimate for each, what happens if either slips a few days, and whether a partial version of either -- a smaller slice done well by Friday, the rest next week -- is an acceptable middle option. Once there's a decision, I'd personally tell the director whose request is being pushed, rather than letting them find out secondhand -- acknowledging their request is genuinely important, explaining honestly why the other one is going first, and giving them a real date for theirs, not a vague 'soon.'",
+      "professionalAnswer": "The thing I wouldn't do is just quietly decide which director to disappoint and hope it doesn't blow back on me, and I also wouldn't try to make both happy by splitting my time and risk doing a weak job on both. I'd flag the conflict right away to whoever can actually make a priority call between two directors -- my manager, usually -- and just lay out the facts: both of these landed today, both are asking for Friday, and I can't do both well by then, so I need help deciding which goes first. I'd bring enough information to make that an easy decision -- roughly how long each takes, what happens if either one slips, and whether there's a smaller version of either that could realistically land Friday with the rest following next week. And once there's a decision, I make a point of telling the deprioritized director myself, directly, rather than letting them find out some other way -- I'd acknowledge that their ask matters, be honest about why the other one is going first, and give them a specific date instead of something vague.",
+      "example": "\"Both of these landed on me today as Friday deliverables and I can't do both well by then. I need a priority call -- here's roughly what each takes, and here's what a partial version of either could look like if that helps.\"",
+      "commonMistakes": [
+        "Silently choosing one priority without escalating, leaving the deprioritized director blindsided",
+        "Trying to deliver both by splitting effort, risking two weak deliverables instead of one strong one",
+        "Escalating vaguely ('I'm overloaded') instead of bringing concrete facts that make the decision easy",
+        "Letting the deprioritized stakeholder find out secondhand instead of telling them directly and respectfully"
+      ],
+      "keyPoints": [
+        "Don't silently pick a priority between two stakeholders who both outrank that decision",
+        "Escalate the conflict explicitly and quickly to whoever can actually resolve it",
+        "Bring concrete facts (effort estimates, slip impact, partial-scope options) to make the decision easy, not just a complaint",
+        "Personally and respectfully inform whichever stakeholder is deprioritized, with a real new date, not vague reassurance"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Avoids silently choosing or silently overcommitting",
+          "weight": 25
+        },
+        {
+          "criterion": "Escalates the conflict appropriately and promptly",
+          "weight": 25
+        },
+        {
+          "criterion": "Brings concrete, decision-useful information",
+          "weight": 25
+        },
+        {
+          "criterion": "Handles the deprioritized stakeholder communication respectfully",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-069",
+      "questionCode": "LTV-MSBI-ADV-069",
+      "title": "Updating Your Manager on a Production Performance Regression Before You've Found the Cause",
+      "prompt": "A warehouse load that normally finishes by 5 AM is still running at 9 AM, and report refreshes across the company are stale. You've been investigating for an hour and have ruled out a few things, but you don't yet know the actual cause. Your manager messages asking for a status update. Walk me through what you'd say.",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Communication",
+        "Incident Response"
+      ],
+      "modelAnswer": "I wouldn't wait until I have the root cause to say something, and I also wouldn't speculate out loud about a cause I haven't confirmed -- both of those erode trust in different ways. I'd give a status update structured around what's known, what's not, and what happens next: the load that normally finishes by 5 AM is still running at 9, company-wide reports are stale as a result, I've ruled out specific things I've actually checked, I don't yet have a confirmed root cause, and here's exactly what I'm checking next and roughly when I'll have another update.\n\nI'd also flag the business impact honestly rather than downplaying it -- which reports are affected and since when -- so my manager can decide whether anything needs to be communicated further up or sideways to report consumers, which isn't my call to make alone. I'd commit to a specific time for the next update rather than 'I'll let you know when I know,' because an open-ended silence is worse for everyone than a short, honest 'still working on it, next update at 10.'",
+      "professionalAnswer": "My rule for a status update like this is to be clear about what I actually know versus what I'm still guessing at, instead of either staying silent until I have the answer or throwing out a theory I haven't confirmed. So I'd say something like: the load's been running four hours past normal, reports are stale company-wide, here's specifically what I've already ruled out, I don't have a confirmed cause yet, and here's what I'm checking next. I'd also be upfront about the actual business impact -- which reports, since when -- because that's information my manager needs to decide if anyone else needs to hear about this, not something I should quietly sit on. And I always try to commit to a specific time for the next update instead of leaving it open-ended, because 'I'll check back when I know something' leaves everyone hanging, while 'next update at 10' at least gives people something concrete.",
+      "example": "\"Still investigating -- load's 4 hours past normal, company-wide reports are stale since 5 AM. Ruled out blocking and disk space so far, no confirmed cause yet. Checking the data flow buffer settings next. Next update by 10.\"",
+      "commonMistakes": [
+        "Staying silent until the root cause is confirmed instead of giving an honest in-progress update",
+        "Speculating about an unconfirmed cause as if it were established fact",
+        "Downplaying or omitting the actual business impact to avoid looking bad",
+        "Leaving the next update open-ended instead of committing to a specific time"
+      ],
+      "keyPoints": [
+        "Give a structured update -- what's known, what's not, what's next -- rather than staying silent or guessing",
+        "Clearly separate confirmed findings from unconfirmed theories",
+        "Report the actual business impact honestly so leadership can decide on further communication",
+        "Commit to a specific time for the next update instead of an open-ended 'I'll let you know'"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Provides a timely, honest update rather than waiting for full resolution",
+          "weight": 25
+        },
+        {
+          "criterion": "Clearly separates confirmed facts from speculation",
+          "weight": 25
+        },
+        {
+          "criterion": "Accurately communicates business impact",
+          "weight": 25
+        },
+        {
+          "criterion": "Commits to a concrete next-update time",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-070",
+      "questionCode": "LTV-MSBI-ADV-070",
+      "title": "Pushing Back on a Deadline That Would Require Skipping Data Validation",
+      "prompt": "Your lead tells you to skip the data quality validation step on tomorrow's warehouse load -- just this once -- to hit a leadership demo deadline, since the validation step 'always passes anyway.' You're not confident it always will. Walk me through how you'd respond.",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Communication",
+        "Data Quality"
+      ],
+      "modelAnswer": "I'd push back, but specifically and with a reason, not just reflexively refusing. I'd point out exactly what the validation step actually catches -- row count mismatches, null keys, referential breaks -- and that 'it always passes' is true until the one day it doesn't, which is the entire reason the step exists in the first place; skipping it doesn't make tomorrow's data more trustworthy, it just means we wouldn't know if it isn't.\n\nI'd also reframe the actual risk for the demo: showing leadership a dashboard built on unvalidated data that turns out to have a broken join or a null-key row is a worse outcome for that demo than a short delay, because it damages trust in the data itself rather than just the schedule. Rather than a flat no, I'd offer an alternative that still protects the deadline: run the validation in parallel with final load steps so it doesn't block the critical path, or validate a representative subset fast if a full validation genuinely can't finish in time, so there's at least a real signal before the demo rather than none. If my lead still insists on skipping it entirely after hearing that, I'd ask them to make that call explicitly and own it as a conscious risk decision, not something I quietly agreed was fine.",
+      "professionalAnswer": "I wouldn't just refuse outright, but I also wouldn't quietly go along with it -- I'd explain specifically what that validation step actually catches, things like row count mismatches or broken keys, and point out that 'it always passes' is exactly why people forget it's protecting against the one time it doesn't. Skipping it doesn't make the data better, it just means we're flying blind on whether it's good. I'd also make the real trade-off clear for the demo specifically: showing leadership something built on data we didn't check, and having it turn out wrong in front of them, is a worse outcome than asking for a little more time. Instead of just saying no, I'd try to offer something that still protects the deadline -- running validation in parallel with the rest of the load instead of after it, or checking a smaller representative sample fast if a full check won't finish in time, so we're not going in with zero signal. And if my lead still wants to skip it entirely after all that, I'd ask them to make that call explicitly themselves, so it's a decision somebody owns on purpose, not something that just quietly happened.",
+      "example": "\"I'd rather not skip it blind -- can I run validation in parallel with the final load steps instead, so it doesn't block tomorrow but we still have a real signal before the demo?\"",
+      "commonMistakes": [
+        "Silently complying without raising the risk, leaving an unvalidated load to speak for itself at a leadership demo",
+        "Refusing flatly without offering any alternative that still respects the deadline pressure",
+        "Not articulating specifically what the validation step actually protects against, making the pushback sound like process for its own sake",
+        "Letting an informal 'just this once' become the de facto new standard without anyone consciously deciding that"
+      ],
+      "keyPoints": [
+        "Push back with a specific reason (what the validation actually catches), not a reflexive no",
+        "Reframe the real risk -- bad data in front of leadership is worse than a short delay",
+        "Offer a concrete alternative that still respects the deadline, like parallelizing validation or checking a representative subset",
+        "If overridden, make sure the decision to skip it is made explicitly and owned by whoever makes that call, not absorbed silently"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Pushes back with a specific, substantive reason rather than reflexively",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly reframes the real risk to the business/demo",
+          "weight": 25
+        },
+        {
+          "criterion": "Offers a concrete deadline-respecting alternative",
+          "weight": 30
+        },
+        {
+          "criterion": "Handles being overridden professionally if it comes to that",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "data-quality-in-staging",
+        "label": "Review: Data Quality in Staging"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-adv-071",
+      "questionCode": "LTV-MSBI-ADV-071",
+      "title": "Mentoring a Junior Developer Through Their First Production Incident",
+      "prompt": "A junior developer on your team just got paged for the first time -- their SSIS package failed overnight, and they're visibly rattled when they message you at 6 AM asking for help before their manager notices. Walk me through how you'd handle both the technical problem and the junior developer's state in this moment.",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Mentoring",
+        "Communication",
+        "Incident Response"
+      ],
+      "modelAnswer": "I'd deal with both halves of this, because a rattled junior developer trying to debug under panic will move slower and make more mistakes than a calm one, so settling them down isn't a soft distraction from the technical work -- it's part of fixing it efficiently. First, I'd say plainly that a package failing isn't a crisis and isn't a reflection on them -- this happens to everyone, and the fact that they're asking for help instead of either panicking alone or trying to hide it is exactly the right instinct, not something to be embarrassed about.\n\nThen I'd walk the actual triage with them rather than just taking over and fixing it myself -- read the error message together, figure out which of the recurring SSIS failure categories it falls into, check the obvious first things -- because they learn the pattern by doing it with support, not by watching me solve it while they take notes. On their manager finding out: I'd be straightforward that hiding an incident is worse than a manager hearing about it calmly after it's handled, and I'd offer to be there with them if they want to give that update, so they're not facing it alone, but I wouldn't suggest trying to quietly fix it before anyone notices -- that pattern, if it became a habit, is worse for them long-term than owning an early-career incident openly. Once it's resolved, I'd suggest a short, blame-free walk-through afterward -- not right at 6 AM when they're still rattled -- so the incident turns into something they actually learn from rather than just survive.",
+      "professionalAnswer": "There are really two things happening here at once -- an actual technical problem, and a junior developer who's scared -- and I treat the second one as just as real as the first, because someone panicking is going to debug worse, not better. So I'd start by just telling them plainly that this happens to everyone, it's not a reflection on them, and reaching out for help at 6 AM instead of spiraling alone is exactly the right move, not something to feel bad about. Then I'd work through the actual triage with them rather than taking the keyboard away and fixing it myself -- read the error together, figure out what kind of failure this is, check the first obvious things -- because that's how they actually build the instinct for next time instead of just watching me do it. On telling their manager, I'd be honest that trying to quietly fix it before anyone notices is a worse habit to build than just handling it and letting their manager know calmly once it's resolved -- and I'd offer to be there with them for that conversation if it would help, so they don't feel like they're facing it completely alone. Once we've actually fixed it, I'd want to circle back later, not right then while they're still rattled, for a quick no-blame look at what happened and what we'd watch for next time.",
+      "example": "\"First -- this happens to everyone, you did the right thing messaging me instead of panicking alone. Let's read the error together and figure out what we're actually looking at before we touch anything.\"",
+      "commonMistakes": [
+        "Taking over and fixing the package solo instead of walking through it with the junior developer, missing the teaching opportunity",
+        "Treating the junior developer's anxiety as irrelevant to the technical task instead of addressing it directly and early",
+        "Encouraging or tacitly allowing them to hide the incident from their manager instead of handling it openly and calmly",
+        "Doing the post-incident debrief immediately while they're still rattled instead of after things have settled"
+      ],
+      "keyPoints": [
+        "Address the junior developer's emotional state directly and early, since panic makes debugging slower and more error-prone",
+        "Walk through triage together rather than taking over, so they build the skill instead of just watching it happen",
+        "Be honest that hiding an incident from a manager is a worse long-term habit than handling it openly and calmly",
+        "Offer to be present for the manager conversation if that would help, without suggesting avoidance",
+        "Schedule the learning debrief for after things have settled, not in the middle of the panic"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Explicitly addresses the junior developer's emotional state as part of resolving the incident",
+          "weight": 25
+        },
+        {
+          "criterion": "Walks through triage collaboratively rather than taking over",
+          "weight": 30
+        },
+        {
+          "criterion": "Gives sound, honest guidance on manager communication",
+          "weight": 25
+        },
+        {
+          "criterion": "Proposes a later blame-free debrief for learning",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "ssis-development",
+        "lessonSlug": "common-failure-patterns",
+        "label": "Review: Common Failure Patterns"
       },
       "status": "published",
       "version": 1,

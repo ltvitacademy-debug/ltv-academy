@@ -1573,6 +1573,1058 @@
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
       "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-031",
+      "questionCode": "LTV-MSBI-BEG-031",
+      "title": "Building a Conditional Split transformation",
+      "prompt": "Describe how you'd configure a Conditional Split transformation in SSIS so that products from Production.Product are routed into two separate outputs -- one for products with ListPrice >= 500 ('Premium') and one for everything else ('Standard') -- and connect each output to its own OLE DB Destination table.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "SSIS",
+        "Data Flow",
+        "ETL"
+      ],
+      "modelAnswer": "Conditional Split is a single-input, multiple-output transformation -- you define one or more named outputs, each with a Boolean expression written in SSIS expression language, plus one Default output that catches anything matching none of them. For this case, add one output named 'Premium' with the expression ListPrice >= 500, then rename the built-in Default output to 'Standard' rather than leaving its generic name in place. SSIS evaluates the case expressions in order from top to bottom and sends each row out the FIRST case it matches -- it is not a true broadcast where a row could go down multiple paths, so when conditions could overlap, order determines the actual result. After closing the editor, the transformation shows two output paths on the design surface; dragging a path to a destination pops up a dialog asking which output that specific path represents, since a Conditional Split's output arrows all look identical until that setting is checked. Each output then connects to its own OLE DB Destination -- one for the Premium table, one for the Standard table -- exactly as if each were a separate stream of rows from this point forward.",
+      "professionalAnswer": "I'd set this up as one Conditional Split with two named outputs instead of two separate filtered queries. The first case I'd add is named Premium, with the expression ListPrice >= 500, and then I'd specifically rename the built-in Default output to Standard, because leaving it with its generic name makes the package harder for the next person to read. The detail I always double-check is output order and overlap -- Conditional Split checks cases top to bottom and a row leaves through the first match, so if I ever had cases that could both be true for the same row, whichever one I listed first is the one that wins, not both. Once that's configured, I just drag each output path to its own OLE DB Destination, and SSIS asks me which output that arrow represents the moment there's more than one path leaving the component -- that's the one step that's easy to get backwards if you're not paying attention to which arrow you're dragging.",
+      "example": "-- Conditional Split outputs (evaluated top to bottom):\n-- Output \"Premium\":  ListPrice >= 500\n-- Default output renamed to \"Standard\"\n\n-- Each output path is then dragged to its own OLE DB Destination;\n-- SSIS prompts you to pick which output that path represents.",
+      "commonMistakes": [
+        "Leaving the Default output with its generic name instead of renaming it to something meaningful like 'Standard'",
+        "Assuming Conditional Split broadcasts a row to every matching case, rather than only the first case it matches, top to bottom",
+        "Not realizing which output arrow is which until checking the path's Input/Output selection dialog",
+        "Writing the Boolean expression in T-SQL syntax instead of SSIS expression language (for example == for equality, not =)"
+      ],
+      "keyPoints": [
+        "Conditional Split is single-input, multiple-output, evaluated with SSIS expression language",
+        "Rows exit through the FIRST matching case, top to bottom -- not every matching case",
+        "The Default output catches rows matching no case, and should be renamed meaningfully",
+        "Connecting an output path prompts you to select which output it represents"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly configures the two named outputs and expressions",
+          "weight": 45
+        },
+        {
+          "criterion": "Correctly explains top-to-bottom, first-match evaluation order",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly connects each output to its own destination",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "ssis-development",
+        "lessonSlug": "conditional-split",
+        "label": "Review: Conditional Split"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-032",
+      "questionCode": "LTV-MSBI-BEG-032",
+      "title": "Package runs in Visual Studio but fails under SQL Agent",
+      "prompt": "An SSIS package runs successfully every time it's executed from inside Visual Studio (SSDT), but the exact same package fails almost immediately when it's scheduled as a SQL Server Agent job. What's the most common beginner-level cause of this specific pattern, and how would you fix it?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "SSIS",
+        "Deployment",
+        "Troubleshooting"
+      ],
+      "modelAnswer": "The default package ProtectionLevel is EncryptSensitiveWithUserKey, which encrypts sensitive values (like a password embedded in a connection string) using a key tied to the Windows user profile that last saved the package. Inside SSDT, the package runs under the developer's own Windows login -- the same identity that saved it -- so decryption happens silently and nobody notices anything unusual. A SQL Server Agent job, by contrast, typically runs under the SQL Server Agent service account (or a proxy), a different Windows identity entirely, which cannot decrypt values encrypted under the original developer's user key -- so the package fails almost immediately, often with an error about failing to decrypt a protected XML node, or simply a connection failure because a password came through blank or garbled. The fix is to change the package's ProtectionLevel to something that isn't tied to one person's key: most commonly DontSaveSensitive, with the actual connection values supplied at run time through project/package parameters or an SSISDB environment reference instead of being stored in the package at all, so the job step never needs to decrypt anything saved in the file.",
+      "professionalAnswer": "The pattern itself -- works in SSDT, fails the instant it's scheduled -- is almost always an identity problem, not a logic problem, so I wouldn't start by re-reading the package's control flow. My first move is checking ProtectionLevel in the package's Properties pane, because EncryptSensitiveWithUserKey is the default, and it ties any sensitive value to the Windows login that last saved the package. SSDT runs as me; the SQL Agent job runs as the Agent service account or a proxy, which is a completely different identity that can't unlock what my login encrypted. The fix is switching to DontSaveSensitive and moving the actual connection details out of the package entirely -- into project parameters or an SSISDB environment the job step references -- so there's nothing user-specific left for any account to fail to decrypt.",
+      "example": "-- Package Properties pane:\n-- ProtectionLevel: EncryptSensitiveWithUserKey (default, tied to one Windows login)\n--      change to  -> DontSaveSensitive\n-- Sensitive connection values then come from a Project Parameter\n-- or an SSISDB Environment Variable referenced by the Agent job step,\n-- not from anything stored inside the package itself.",
+      "commonMistakes": [
+        "Assuming the package itself is broken because of the error message, instead of suspecting the account/identity mismatch first",
+        "Not knowing EncryptSensitiveWithUserKey is the default ProtectionLevel and is tied to one specific Windows user",
+        "Granting the SQL Agent service account more permissions as a fix, when the real problem is the encryption key, not permissions",
+        "Forgetting a SQL Agent job step running an SSIS package may need a proxy account if it must run under a different, non-service identity"
+      ],
+      "keyPoints": [
+        "Default ProtectionLevel is EncryptSensitiveWithUserKey, tied to the Windows user who last saved the package",
+        "SSDT runs under the developer's own login; SQL Agent runs under the Agent service account (or a proxy) -- a different identity",
+        "The mismatched identity can't decrypt sensitive values, so the job fails almost immediately",
+        "Fix: DontSaveSensitive plus parameters/environment variables, instead of a user-tied protection level"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies the protection level / identity mismatch as the likely cause",
+          "weight": 45
+        },
+        {
+          "criterion": "Explains why SSDT succeeds while the Agent job fails",
+          "weight": 30
+        },
+        {
+          "criterion": "Proposes a correct fix",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "ssis-development",
+        "lessonSlug": "scheduling-with-sql-server-agent",
+        "label": "Review: Scheduling with SQL Server Agent"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-033",
+      "questionCode": "LTV-MSBI-BEG-033",
+      "title": "A slicer that silently doesn't filter",
+      "prompt": "A Power BI model has two relationships between the Sales table and the Date table -- one on OrderDate and one on ShipDate. A slicer built on the Date table filters visuals using OrderDate correctly, but a separate visual that's supposed to use ShipDate doesn't react to the slicer at all. What's almost certainly going on, and how would you fix it?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Power BI",
+        "Data Modeling"
+      ],
+      "modelAnswer": "Power BI only allows one active relationship between any two given tables at a time, so that every filter path through the model stays unambiguous. With two relationships between Sales and Date (OrderDate and ShipDate), only one can be active (shown as a solid line); the other is automatically made inactive (a dashed line in the model view) and does not propagate filters on its own at all -- a slicer built on Date simply has no effect on anything meant to rely on the inactive relationship. Editing the relationship to make ShipDate active wouldn't fix this -- it would just flip which relationship is inactive, since the one-active-at-a-time rule doesn't go away. The real fix is a measure that explicitly activates the inactive relationship for just that calculation: CALCULATE(<expression>, USERELATIONSHIP(Sales[ShipDate], 'Date'[Date])). Any visual that needs to filter by ShipDate has to use a measure built with USERELATIONSHIP; a plain SUM(Sales[Amount]) dropped into a visual keeps using whichever relationship is active, regardless of which date field happens to be on that visual's axis.",
+      "professionalAnswer": "The dashed line in the model view is the first thing I'd check, because that's Power BI's visual signal for an inactive relationship. Two relationships between the same pair of tables means only one gets to be active -- that's not a bug, it's by design, so there's always exactly one unambiguous filter path between any two tables. Flipping which one is active in Manage Relationships doesn't actually solve this; it just swaps which one is now inactive. What I'd do instead is write a measure specifically for the ShipDate-based visual using CALCULATE with USERELATIONSHIP(Sales[ShipDate], 'Date'[Date]) wrapped around it, which activates that relationship for just this one calculation. A plain SUM measure on that same visual would still silently follow the active OrderDate relationship no matter what's on the axis, which is exactly the confusing symptom described here.",
+      "example": "-- Ship Date Sales = CALCULATE(\n--     SUM(Sales[Amount]),\n--     USERELATIONSHIP(Sales[ShipDate], 'Date'[Date])\n-- )\n-- Activates the normally-inactive ShipDate relationship for just this measure.",
+      "commonMistakes": [
+        "Trying to make the ShipDate relationship active in Manage Relationships, not realizing that just makes OrderDate inactive instead -- only one can be active at a time",
+        "Not noticing the dashed line in the model diagram, which is Power BI's visual signal for an inactive relationship",
+        "Assuming a visual will automatically use the 'other' relationship just because that date field is on the visual's axis",
+        "Forgetting USERELATIONSHIP only works inside CALCULATE, and only activates the relationship for that one measure's evaluation"
+      ],
+      "keyPoints": [
+        "Power BI allows only one active relationship between any two tables at a time",
+        "The second relationship becomes inactive automatically, shown as a dashed line",
+        "An inactive relationship does not propagate filters until explicitly activated",
+        "USERELATIONSHIP inside CALCULATE activates an inactive relationship for one measure's calculation"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses the inactive-relationship cause",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains why only one relationship can be active",
+          "weight": 30
+        },
+        {
+          "criterion": "Proposes the correct fix (USERELATIONSHIP inside CALCULATE)",
+          "weight": 30
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "power-bi",
+        "lessonSlug": "active-inactive",
+        "label": "Review: Active & Inactive Relationships"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-034",
+      "questionCode": "LTV-MSBI-BEG-034",
+      "title": "OLTP vs. OLAP",
+      "prompt": "What's the difference between an OLTP system and an OLAP system, and why is it usually a bad idea to run heavy analytical reporting directly against the same database that's handling live order entry?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Data Warehousing",
+        "Architecture"
+      ],
+      "modelAnswer": "OLTP (Online Transaction Processing) is optimized for many short, simple read/write transactions happening constantly -- inserting an order, updating a customer's address -- and its schema is normalized to keep each piece of data in exactly one place, which keeps individual writes fast and consistent. OLAP (Online Analytical Processing) is optimized for the opposite workload: fewer, much larger read-heavy queries that scan and aggregate huge numbers of rows at once -- 'total sales by region by quarter for the last three years' -- and its schema (a star schema in a warehouse) is deliberately denormalized to make those large scans and aggregations fast. Running heavy analytical queries directly against an OLTP database causes two real problems: the long-running, table-scanning nature of an analytical query can lock or slow down the exact tables the live transactional system needs to keep writing to, and the OLTP schema's normalization means an analytical query has to join across many more tables than it would against a warehouse, making it slower than necessary anyway. The standard fix is to extract data out of the OLTP system (typically via a tool like SSIS) into a separate OLAP-shaped warehouse, so analytical queries run against a copy built for that purpose and never compete with or slow down live transactions.",
+      "professionalAnswer": "I'd describe OLTP as the system that keeps the business running right now -- lots of small, fast transactions, normalized so every update is quick and consistent. OLAP is the system built for looking backward and sideways across huge amounts of that same data at once, which is why its schema is intentionally denormalized into a star schema instead -- that shape is what makes a big aggregation fast. The reason I wouldn't point a heavy report directly at the OLTP database is twofold: a long-running analytical query can genuinely lock or slow down the live tables order entry depends on, and the normalized OLTP schema forces that query to join across far more tables than a warehouse would need anyway. That's exactly why ETL exists as a bridge -- pull the data out into a warehouse shaped for OLAP, and the reporting workload stops competing with the transactional one entirely.",
+      "example": null,
+      "commonMistakes": [
+        "Thinking OLTP and OLAP are just two names for the same kind of database",
+        "Running a large analytical report directly against a production OLTP database without understanding why it slows down order entry",
+        "Assuming a normalized OLTP schema is just as fast for aggregation as a denormalized warehouse schema",
+        "Not knowing ETL (such as SSIS) is the standard bridge that moves data from OLTP into an OLAP-shaped warehouse"
+      ],
+      "keyPoints": [
+        "OLTP: many small fast transactions, normalized schema, optimized for writes",
+        "OLAP: fewer large aggregating queries, denormalized star schema, optimized for reads/scans",
+        "Running OLAP-style queries against an OLTP database can lock/slow down live transactions",
+        "ETL moves data from OLTP into a separate OLAP warehouse built for reporting"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly distinguishes OLTP from OLAP workloads and schema shape",
+          "weight": 45
+        },
+        {
+          "criterion": "Correctly explains the risk of reporting directly against OLTP",
+          "weight": 35
+        },
+        {
+          "criterion": "Mentions ETL as the standard separation mechanism",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "oltp-vs-olap-revisited",
+        "label": "Review: OLTP vs. OLAP, Revisited"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-035",
+      "questionCode": "LTV-MSBI-BEG-035",
+      "title": "Power BI Desktop vs. the Power BI Service",
+      "prompt": "What's the architectural difference between Power BI Desktop and the Power BI Service, and why does a report usually need both instead of just one or the other?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Power BI",
+        "Architecture"
+      ],
+      "modelAnswer": "Power BI Desktop is a free, locally-installed Windows application where all of the authoring happens -- connecting to data sources, building the data model and DAX measures in Power Query and the model view, and designing the actual report visuals. It produces a single .pbix file that lives on the author's own machine until it's deliberately published. The Power BI Service (app.powerbi.com) is the cloud-hosted side -- a published report lives inside a workspace there, where it can be shared with other people, scheduled for automatic data refresh, organized into an App for wider distribution, and secured with row-level security role assignments. The split exists because authoring (building a model, writing measures, designing visuals) and consumption/distribution (viewing, sharing, scheduling, securing) are genuinely different jobs with different audiences: one author builds in Desktop, then publishes once to the Service so many viewers can consume it without ever touching Desktop or the underlying model. Some things can only happen in the Service (scheduled refresh against on-premises data via a gateway, app distribution, RLS role assignment) and some only in Desktop (building or materially changing the data model) -- which is exactly why most real projects move back and forth between the two rather than picking only one.",
+      "professionalAnswer": "I'd describe Desktop as the workshop and the Service as the storefront. Desktop is where I actually build things -- the model, the measures, the report layout -- all saved into one .pbix file that nobody else can see until I choose to publish it. The Service is where that finished work actually reaches people: it lives in a workspace, it can be shared, it can be scheduled to refresh on its own overnight, and it's the only place I can assign a specific person to a row-level-security role. I couldn't do RLS assignment or scheduled refresh from inside Desktop even if I wanted to -- those are Service-only capabilities -- and I can't materially change the data model from inside the Service, so a real change still has to start back in Desktop and get republished. That back-and-forth isn't a workaround, it's just how the two pieces are meant to work together.",
+      "example": null,
+      "commonMistakes": [
+        "Thinking the Power BI Service is just a web version of Desktop instead of a separate hosting/distribution layer",
+        "Trying to assign RLS role membership inside Desktop, which isn't possible there",
+        "Forgetting a report has to be deliberately published from Desktop before it exists in the Service at all",
+        "Not realizing scheduled, unattended data refresh is a Service feature, not something Desktop does on its own"
+      ],
+      "keyPoints": [
+        "Power BI Desktop: local authoring tool, produces a .pbix file, where the model and visuals are built",
+        "Power BI Service: cloud hosting/distribution layer -- sharing, scheduled refresh, apps, RLS assignment",
+        "Authoring and distribution are different jobs with different audiences",
+        "Some features exist only in Desktop (model building) and some only in the Service (RLS assignment, scheduled refresh, apps)"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly distinguishes Desktop's authoring role from the Service's hosting/distribution role",
+          "weight": 45
+        },
+        {
+          "criterion": "Gives correct examples of Service-only and Desktop-only capabilities",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains why most projects need both",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "power-bi",
+        "lessonSlug": "service-vs-desktop",
+        "label": "Review: Power BI Service vs. Desktop"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-036",
+      "questionCode": "LTV-MSBI-BEG-036",
+      "title": "Why ETL needs a staging layer",
+      "prompt": "Why do most ETL pipelines load source data into a staging table first, instead of transforming it directly from the source system straight into the warehouse's fact and dimension tables?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "ETL",
+        "Data Warehousing",
+        "Architecture"
+      ],
+      "modelAnswer": "A staging table is a temporary, usually untransformed (or only lightly typed) landing spot for data pulled straight out of a source system, before any real business transformation happens. The main reasons to stage rather than transform directly in-flight: it gets the extract away from the fragile, often slow source connection as quickly as possible, so a transformation bug or a long-running join doesn't hold a connection open against a live production system any longer than necessary; it gives you a stable, local copy to re-run transformations against repeatedly while developing and debugging, without hitting the source again every time; and it creates a natural checkpoint to validate row counts and basic data quality before anything touches the real fact/dimension tables, so bad data can be caught and rejected in staging instead of corrupting the warehouse. Transforming directly from source to warehouse in one pass couples the pipeline's correctness entirely to the source system's availability and performance for the whole duration of the load, and makes it much harder to isolate whether a problem came from extraction, transformation, or load.",
+      "professionalAnswer": "I'd explain staging as getting the data to safety first, then worrying about shaping it. The moment I've pulled rows into a staging table, I'm no longer dependent on the source system staying fast and available while I work out the transformation logic -- I can re-run my joins and lookups against the local staging copy as many times as I need while debugging, instead of hitting a live production database on every attempt. Staging also gives me a clean checkpoint: I can check row counts and basic data quality right there, before anything touches the real fact or dimension tables, which means a bad batch gets caught in staging instead of corrupting the warehouse. Skipping straight from source to warehouse in one pass means if something goes wrong, I have no way to tell whether the problem was in extraction, transformation, or load -- staging is what lets me isolate which stage actually broke.",
+      "example": null,
+      "commonMistakes": [
+        "Skipping staging to 'save a step,' then having no way to isolate whether a bad load came from extraction, transformation, or load",
+        "Treating the staging table as if it needs the same constraints/indexes as the real warehouse tables",
+        "Holding a connection open against the live source for the entire transformation instead of extracting quickly into staging first",
+        "Not validating row counts or data quality at the staging checkpoint before loading into fact/dimension tables"
+      ],
+      "keyPoints": [
+        "Staging is a temporary landing area for source data before any real transformation happens",
+        "Staging minimizes how long the fragile source connection stays open",
+        "Staging gives a stable local copy to re-run and debug transformations against",
+        "Staging creates a checkpoint to validate data quality before it reaches the real warehouse tables"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains what a staging table is and when it's populated",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly explains the source-connection/performance benefit",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains the debugging/data-quality-checkpoint benefit",
+          "weight": 35
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "the-staging-layers-purpose",
+        "label": "Review: The Staging Layer's Purpose"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-037",
+      "questionCode": "LTV-MSBI-BEG-037",
+      "title": "Why warehouses use surrogate keys",
+      "prompt": "What's a surrogate key, and why do dimension tables in a warehouse typically use a warehouse-generated surrogate key as their primary key instead of just reusing the source system's natural key (like a CustomerID from the OLTP database)?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Data Warehousing",
+        "Dimensional Modeling",
+        "Architecture"
+      ],
+      "modelAnswer": "A natural key is whatever already uniquely identifies a row in the source system -- a CustomerID, a ProductCode -- and it has business meaning outside the warehouse. A surrogate key is a meaningless, warehouse-generated identifier (almost always a simple incrementing integer) created purely to be the dimension table's own primary key, with no meaning to the business at all. Warehouses use surrogate keys instead of natural keys for a few concrete reasons: a surrogate key insulates the warehouse from the source system changing its own key format or reusing an old ID; it lets a single natural key have more than one row in the dimension at once, which is exactly what SCD Type 2 versioning requires -- the same CustomerID needs multiple surrogate-keyed rows over time as attributes change, something a natural key alone could never support as a primary key; and it keeps join performance predictable, since a simple integer join is typically faster and more compact than joining on a source system's natural key, which might be a longer string or a composite key. The natural key doesn't disappear -- it's still stored as a regular column on the dimension (often called the business key) for traceability back to the source, it's just no longer the column other tables join against.",
+      "professionalAnswer": "I'd define it by contrast: the natural key is whatever ID the source system already uses -- CustomerID, say -- and it carries real business meaning. The surrogate key is just a meaningless integer I generate inside the warehouse, purely so the dimension has its own stable identity independent of the source. The concrete reason this matters is Type 2 history: if DimCustomer needs to keep two versions of the same customer around because an attribute changed, I can't use CustomerID as the primary key for both rows -- it would collide, since a primary key can't repeat. A surrogate key solves that cleanly, since each version just gets its own new integer. It also protects me if the source system ever changes its own ID scheme, or reuses an old ID for someone new, since my warehouse's own key never has to depend on the source staying consistent. I'd still keep CustomerID around as a normal column on the dimension -- just not as what other tables join against.",
+      "example": null,
+      "commonMistakes": [
+        "Using the source system's natural key directly as the dimension's primary key, then being unable to support SCD Type 2 versioning",
+        "Thinking the natural key disappears entirely instead of still being stored as a regular (business key) column",
+        "Not realizing a surrogate key insulates the warehouse from the source system changing or reusing its own key values",
+        "Assuming surrogate keys are only about performance, missing the more fundamental Type 2 history requirement"
+      ],
+      "keyPoints": [
+        "Natural key: the source system's own identifier, with real business meaning",
+        "Surrogate key: a meaningless, warehouse-generated integer used as the dimension's primary key",
+        "Surrogate keys let the same natural key have multiple versioned rows (required for SCD Type 2)",
+        "The natural key is retained as a regular business-key column, just not used for joins"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly defines natural key vs. surrogate key",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly connects surrogate keys to SCD Type 2 versioning",
+          "weight": 40
+        },
+        {
+          "criterion": "Mentions insulation from source-system key changes and/or join performance",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "surrogate-keys",
+        "label": "Review: Surrogate Keys"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-038",
+      "questionCode": "LTV-MSBI-BEG-038",
+      "title": "What you'd say in your first stand-up",
+      "prompt": "What is a Daily Scrum (stand-up), and what would you actually say during one in your first week on a new BI team?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Behavioral",
+        "Communication"
+      ],
+      "modelAnswer": "A Daily Scrum, commonly called a stand-up, is a short, time-boxed daily meeting -- often 15 minutes -- where the team synchronizes with itself on progress and blockers; it's explicitly not a status report delivered upward to a manager, it's the team talking to each other. The typical shape each person covers is roughly: what I did since the last stand-up, what I'm doing until the next one, and anything blocking me. A strong first-week answer from a junior team member stays specific and brief rather than vague: naming the actual ticket or task worked on, being honest and specific about being stuck rather than saying a vague 'I'm still working on it,' and flagging a blocker the moment it's identified rather than waiting to mention it, since the whole point of surfacing a blocker in stand-up is getting help from the team quickly, not saving face. A junior new hire should resist the urge to over-explain or justify slow progress at length -- stand-up is meant to be short, and a longer conversation about a specific blocker belongs in a follow-up afterward, not consuming the whole meeting.",
+      "professionalAnswer": "I'd keep it short and specific, something like: 'Yesterday I finished writing the Lookup for the Customer dimension and started on the fact table load. Today I'm wiring up the error output so bad rows get redirected instead of failing the whole package. I'm blocked on getting read access to the QA staging database, so if anyone can help with that after stand-up, I'd appreciate it.' That covers all three parts -- what I did, what I'm doing, what's blocking me -- in under thirty seconds, and it names a real ticket instead of a vague status. I'd also remind myself that stand-up isn't the place to actually solve the blocker; it's the place to surface it so the right person can grab me right after.",
+      "example": null,
+      "commonMistakes": [
+        "Treating stand-up like a status report to a manager instead of the team syncing with itself",
+        "Being vague ('still working on it') instead of naming the specific ticket or task",
+        "Saving a blocker until later instead of surfacing it the moment it's identified",
+        "Turning stand-up into a long problem-solving discussion instead of flagging it briefly and following up afterward"
+      ],
+      "keyPoints": [
+        "Daily Scrum/stand-up is short, time-boxed, and team-to-team, not a report to a manager",
+        "Typical shape: what I did, what I'm doing next, what's blocking me",
+        "Name specific work, not vague progress statements",
+        "Surface blockers immediately; save detailed discussion for after stand-up"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly describes what a stand-up is and its purpose",
+          "weight": 35
+        },
+        {
+          "criterion": "Gives a specific, well-structured example of what to say",
+          "weight": 40
+        },
+        {
+          "criterion": "Avoids the common vague-status-report trap",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "how-it-teams-work",
+        "lessonSlug": "scrum-sprints-and-user-stories",
+        "label": "Review: Scrum, Sprints & User Stories"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-039",
+      "questionCode": "LTV-MSBI-BEG-039",
+      "title": "Recognizing 'blocked' vs. just behind",
+      "prompt": "You've been working on a ticket and progress has stalled. How do you tell whether you're just behind schedule or genuinely blocked, and how do you communicate that to your team?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Behavioral",
+        "Communication"
+      ],
+      "modelAnswer": "'Off Track' means the work is simply taking longer than planned -- normal, and usually just needs more time or a closer look, with progress still genuinely possible on your own. 'Blocked' means the work has hit a hard stop entirely outside your control -- a pending approval, a broken test environment, a dependency on another team -- where no amount of your own effort moves it forward until that's resolved. The practical test is asking: is there anything I can still personally do right now to make progress on this? If yes, it's Off Track -- keep working and simply mention in stand-up that it's taking longer than expected. If no -- you're waiting on someone or something outside your control -- it's Blocked, and it should be flagged clearly and immediately, not saved for the next scheduled meeting, since every day a real blocker goes unflagged is a day of work not getting unstuck sooner.",
+      "professionalAnswer": "I'd ask myself one question: is there anything I can actually still do myself, right now, to move this forward? If the honest answer is yes -- I just need more time, or I need to think through the approach again -- that's Off Track, and I'd keep grinding and just flag in stand-up that it's taking longer than I estimated. If the honest answer is no -- I'm waiting on an approval, a broken environment, or someone on another team -- that's genuinely Blocked, and I wouldn't sit on it until the next stand-up. I'd flag it the moment I realize it, specifically naming what I actually need to get unblocked, rather than just saying 'I'm stuck,' because a specific ask is what actually gets someone to act on it quickly.",
+      "example": null,
+      "commonMistakes": [
+        "Quietly grinding on a ticket without flagging it, assuming asking for help makes you look unprepared",
+        "Mislabeling 'off track' (just taking longer) as 'blocked' when there's still personal progress possible",
+        "Waiting until the next stand-up to mention a blocker instead of flagging it the moment it's identified",
+        "Flagging a blocker vaguely instead of saying specifically what's needed to unblock it"
+      ],
+      "keyPoints": [
+        "Off Track: work is simply taking longer than planned, more time/closer look resolves it",
+        "Blocked: a hard stop entirely outside your control -- no amount of personal effort moves it forward",
+        "The test: is there anything I can still do myself right now? If no, you're blocked",
+        "Flag a blocker immediately and specifically, not quietly or vaguely"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly distinguishes Off Track from Blocked",
+          "weight": 40
+        },
+        {
+          "criterion": "Gives a usable decision test for telling them apart",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes a clear, prompt way to communicate a real blocker",
+          "weight": 30
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "how-it-teams-work",
+        "lessonSlug": "kanban-boards-and-work-management",
+        "label": "Review: Kanban Boards & Work Management"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-040",
+      "questionCode": "LTV-MSBI-BEG-040",
+      "title": "Explaining why the team works in sprints, not all at once",
+      "prompt": "A stakeholder asks why your team can't just build the whole report and show it to them when it's completely done, instead of working in two-week sprints. How would you explain the difference between Agile and Waterfall to them, and why your team works the way it does?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Behavioral",
+        "Communication",
+        "Agile"
+      ],
+      "modelAnswer": "Waterfall fits work where the requirements are genuinely stable and fully understood up front, moving through fixed phases once in order -- but if a requirement turns out to be wrong, that's usually not discovered until most of the work is already built, which makes it expensive to fix at that point. Agile instead breaks the same work into short, repeating two-week cycles, each one producing something real and working that the stakeholder can actually see and react to. The explanation should connect directly to the stakeholder's own interest rather than staying abstract: working in sprints means they get to say 'that's not quite what I meant' after two weeks of effort instead of after two months, which protects them, not just the team. It's also worth clarifying that a sprint still produces a genuinely working, shippable piece of the report each cycle -- not an unfinished fragment -- so showing it early isn't showing something broken.",
+      "professionalAnswer": "I'd skip straight to what's in it for them. If we built the whole thing in one long pass and only showed it at the end, and it turned out we misunderstood something on day one, we wouldn't find that out until the entire report was already built -- which is expensive and slow to fix at that point. Working in two-week sprints means every two weeks you get to look at something real and tell us if we're headed the wrong direction, while that's still cheap to correct. I'd also be clear that what you're seeing every two weeks isn't a half-finished mess -- it's a genuinely working slice of the report, just not the whole thing yet. That's really the whole point of sprints: catching a misunderstanding in week two instead of week eight.",
+      "example": null,
+      "commonMistakes": [
+        "Explaining Agile/Waterfall in the abstract without connecting it to why it benefits this stakeholder specifically",
+        "Implying sprints mean nothing gets fully finished, instead of explaining a sprint still produces a real, shippable increment",
+        "Being dismissive of the stakeholder's preference instead of explaining the real trade-off",
+        "Using unexplained jargon (backlog, increment, retrospective) instead of plain language"
+      ],
+      "keyPoints": [
+        "Waterfall fits stable, well-understood requirements but surfaces mistakes late and expensively",
+        "Agile's short cycles let the stakeholder react to real progress every 1-2 weeks, catching misunderstandings early",
+        "Connect the explanation to the stakeholder's own interest, not an abstract process lecture",
+        "Each sprint still produces a real, working increment, not an unfinished fragment"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Accurately explains the Agile vs. Waterfall trade-off",
+          "weight": 40
+        },
+        {
+          "criterion": "Connects the explanation to the stakeholder's own interest",
+          "weight": 35
+        },
+        {
+          "criterion": "Communicates without unexplained jargon",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "how-it-teams-work",
+        "lessonSlug": "agile-vs-waterfall",
+        "label": "Review: Agile vs. Waterfall"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-041",
+      "questionCode": "LTV-MSBI-BEG-041",
+      "title": "Responding to a pull request sent back for changes",
+      "prompt": "Tell me about a time a teammate reviewed your work -- a query, a package, or a report -- and sent it back with specific changes requested. How did you respond?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Behavioral",
+        "Communication"
+      ],
+      "modelAnswer": "This is a behavioral question testing professionalism and how a candidate handles feedback, not a request for a technical fact. A strong answer first frames code/report review correctly: it happens inside the Dev stage, before QA ever sees the change, as a normal second set of eyes on the approach -- not a personal judgment, and it's completely normal for a reviewer to send work back before it's allowed to merge. The answer should use the STAR structure (Situation, Task, Action, Result), with Action describing reading the specific feedback carefully, asking a clarifying question if the reasoning wasn't obvious rather than assuming or arguing, making the requested change (or explaining a respectful disagreement if there was a good reason), and re-requesting review. Result should state the concrete outcome -- the change was approved and merged, and ideally what was learned or changed going forward.",
+      "professionalAnswer": "I'd tell one specific story rather than describe my attitude toward feedback in general. Situation: on my capstone's SSIS package, a reviewer flagged that my Lookup transformation had no error output configured, so a non-matching row would silently fail the whole package instead of being handled. Task: I needed to understand why that mattered and fix it properly, not just make the comment go away. Action: I asked the reviewer to walk me through what would actually happen with a non-matching row, since I hadn't considered it, then I configured the error output to redirect those rows to a dedicated log table instead of failing the package, and re-requested review with a short note explaining what I'd changed and why. Result: it was approved on the second pass, and I started checking every Lookup's error output by default on everything I built after that, which is the kind of habit a good review catches before it becomes a real production incident.",
+      "example": null,
+      "commonMistakes": [
+        "Taking review feedback personally instead of treating it as a normal part of the Dev stage",
+        "Making the requested change without understanding why it was requested",
+        "Arguing defensively instead of asking a clarifying question when the reasoning isn't clear",
+        "Describing review feedback in general terms instead of telling one specific, real story with a stated Result"
+      ],
+      "keyPoints": [
+        "Code/report review happens inside the Dev stage, before QA -- it's a normal second set of eyes, not a personal judgment",
+        "Read specific feedback carefully; ask a clarifying question if the reasoning isn't obvious",
+        "Make the change (or explain a respectful disagreement), then re-request review",
+        "Use STAR and state the concrete Result -- what happened after the change was made"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Frames review feedback as a normal part of the process, not a personal setback",
+          "weight": 30
+        },
+        {
+          "criterion": "Tells a specific, real story using STAR",
+          "weight": 40
+        },
+        {
+          "criterion": "States a concrete Result",
+          "weight": 30
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "how-it-teams-work",
+        "lessonSlug": "sdlc-dev-qa-uat-and-production",
+        "label": "Review: SDLC: Dev, QA, UAT & Production"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-042",
+      "questionCode": "LTV-MSBI-BEG-042",
+      "title": "Communicating during a live production incident",
+      "prompt": "Two days after a dashboard launches, a regional manager reports it's showing zero sales for their region all month. Walk me through how you'd investigate, and what you would communicate to the manager while you're still figuring out the cause.",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Behavioral",
+        "Communication",
+        "Troubleshooting"
+      ],
+      "modelAnswer": "A strong answer separates the two parts of this question clearly. On investigation: start with the simplest explanation before anything complex -- did the dashboard's scheduled refresh actually run last night at all -- then work backward from the visible symptom toward the source, checking whether the ETL load completed for that region, whether the issue is in the underlying data or just a report-level filter, rather than guessing at a cause. On communication: send an honest, specific acknowledgment quickly -- confirming the report was received, that it's being looked into, and giving a concrete time to expect an update -- rather than staying silent until a fix is confirmed. It's expected and professional to communicate while still investigating, not only once the cause is found; silence during that window reads as neglect even when real work is happening behind the scenes.",
+      "professionalAnswer": "I'd split this into what I say and what I actually do, and do the communication part first. Within a few minutes I'd send something like: 'Thanks for flagging this -- I'm looking into it now and will have an update for you by end of day.' That costs me almost nothing and tells the manager they haven't been forgotten. Then I'd investigate from the simplest explanation outward: did last night's scheduled refresh actually complete, or did it fail silently? If the refresh ran fine, I'd check whether that region's rows actually loaded into the fact table for this month, or whether this is a filter or slicer issue purely inside the report itself. I'd keep narrowing from the visible symptom back toward the source rather than guessing at something exotic first. Once I actually find the cause, I'd follow up with a clear explanation of what happened and what I changed -- not just a silent fix with no note at all.",
+      "example": null,
+      "commonMistakes": [
+        "Staying silent until the fix is confirmed instead of acknowledging the report and giving a timeframe while still investigating",
+        "Jumping straight to a complex theory instead of checking the simplest thing first (did the scheduled refresh even run)",
+        "Investigating only inside the report itself without checking whether the issue actually originates further upstream in the data pipeline",
+        "Not giving the manager a concrete time to expect an update, leaving them to wonder if it's been forgotten"
+      ],
+      "keyPoints": [
+        "Communicate an acknowledgment and a timeframe immediately, don't wait for the fix to say anything",
+        "Investigate by narrowing from the visible symptom back toward the source (refresh status, pipeline, source data)",
+        "Check the simplest explanation first (did the scheduled load actually run) before assuming something complex",
+        "Follow up with a clear explanation once the cause is found, not just a silent fix"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Describes a logical investigation approach, working from symptom back to source",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly emphasizes communicating early, before the cause is known",
+          "weight": 35
+        },
+        {
+          "criterion": "Clarity and professionalism of the communication described",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "how-it-teams-work",
+        "lessonSlug": "real-world-it-project-simulation",
+        "label": "Review: Real-World IT Project Simulation"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-043",
+      "questionCode": "LTV-MSBI-BEG-043",
+      "title": "Turning a vague business request into a user story",
+      "prompt": "A sales director emails you: 'Our regional managers keep asking me for last month's numbers by email. I need a dashboard that shows revenue by region and by product category, updated automatically, so they can check it themselves.' How would you turn that into a proper user story with acceptance criteria before you start building anything?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Behavioral",
+        "Communication",
+        "Requirements Gathering"
+      ],
+      "modelAnswer": "A user story is written from the user's point of view, in the shape 'As a [role], I want [capability], so that [benefit]' -- for this request: 'As a regional manager, I want a dashboard showing revenue by region and product category, so that I can check my own numbers without emailing the sales director.' A story alone is too vague to know when it's actually done, which is what acceptance criteria are for -- specific, checkable conditions, such as 'the dashboard reflects the prior day's closed sales by 7 AM each morning, with no manual steps' and 'the region filter defaults to the viewer's assigned territory.' Just as important is noticing what the original email left out: it never says what should happen when a region has zero sales for the month. A strong answer explicitly surfaces that gap -- either asking the sales director directly, or documenting a reasonable judgment call as its own acceptance criterion -- rather than silently guessing and discovering the wrong assumption after the dashboard is already built.",
+      "professionalAnswer": "I wouldn't start building from that email directly -- I'd turn it into a story first: 'As a regional manager, I want a dashboard showing revenue by region and product category, so that I can check my own numbers without emailing the sales director.' Then I'd write acceptance criteria that are actually checkable, not just a vague sense of done -- something like 'reflects yesterday's closed sales by 7 AM with no manual steps' and 'the region filter defaults to the viewer's own territory.' The thing I'd specifically flag before writing a single line of DAX is that the email never says what should happen if a region had zero sales that month -- show it as zero, blank, or leave it off the list entirely? I'd either ask the sales director directly or write down my own reasonable assumption as an explicit acceptance criterion, because guessing silently on that detail is exactly the kind of thing that comes back wrong during UAT.",
+      "example": null,
+      "commonMistakes": [
+        "Starting to build directly from the vague email instead of writing a structured user story first",
+        "Writing a user story with no acceptance criteria, leaving 'done' undefined",
+        "Silently guessing at an ambiguous detail (like the zero-sales case) instead of asking or explicitly documenting the judgment call",
+        "Writing acceptance criteria that aren't actually checkable ('looks good') instead of specific and testable"
+      ],
+      "keyPoints": [
+        "User story shape: As a [role], I want [capability], so that [benefit]",
+        "Acceptance criteria must be specific and checkable, not vague",
+        "Explicitly surface and resolve ambiguous details (like the zero-sales edge case) before building",
+        "A story isn't ready to build until its acceptance criteria are defined"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Writes a correctly-shaped user story",
+          "weight": 30
+        },
+        {
+          "criterion": "Writes specific, checkable acceptance criteria",
+          "weight": 40
+        },
+        {
+          "criterion": "Identifies and resolves an ambiguous detail from the original request",
+          "weight": 30
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "how-it-teams-work",
+        "lessonSlug": "scrum-sprints-and-user-stories",
+        "label": "Review: Scrum, Sprints & User Stories"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-044",
+      "questionCode": "LTV-MSBI-BEG-044",
+      "title": "UNION vs. UNION ALL",
+      "prompt": "In T-SQL, what's the difference between UNION and UNION ALL when combining the result sets of two SELECT statements, and what two conditions must both SELECT statements satisfy before you can combine them at all?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "T-SQL",
+        "Set Operators"
+      ],
+      "modelAnswer": "UNION combines the rows returned by two (or more) SELECT statements into one result set and removes any duplicate rows from that combined set, which requires SQL Server to do an implicit sort/distinct pass over the whole combined output. UNION ALL also combines the rows, but keeps every row exactly as returned, duplicates included, and skips the dedup pass entirely -- which makes it faster and cheaper to run whenever duplicates either can't occur or genuinely don't matter. Both statements being combined must return the same number of columns, and the data type in each corresponding column position must be compatible (not necessarily identical, but implicitly convertible) -- column names in the final result come from the first SELECT statement, regardless of what the second one used.",
+      "professionalAnswer": "I'd default to UNION ALL unless I actually have a reason to expect duplicates and need them removed, because UNION ALL skips the sort/distinct work UNION does under the hood, so it's just cheaper to run on anything beyond a trivial row count. The two things I always check before combining two SELECTs this way: same number of columns on both sides, and compatible data types lining up column-by-column -- if the second SELECT's third column is a different, incompatible type from the first's third column, the combine fails outright. One detail that trips people up is that the final column names come entirely from the first SELECT -- aliasing a column differently in the second query doesn't change anything in the output.",
+      "example": "-- UNION: removes duplicate rows across both queries\nSELECT FirstName, LastName FROM Person.Person WHERE LastName = 'Smith'\nUNION\nSELECT FirstName, LastName FROM HumanResources.Employee e\nJOIN Person.Person p ON p.BusinessEntityID = e.BusinessEntityID WHERE LastName = 'Smith';\n\n-- UNION ALL: keeps every row, including duplicates, and skips the dedup work\nSELECT FirstName, LastName FROM Person.Person WHERE LastName = 'Smith'\nUNION ALL\nSELECT FirstName, LastName FROM HumanResources.Employee e\nJOIN Person.Person p ON p.BusinessEntityID = e.BusinessEntityID WHERE LastName = 'Smith';",
+      "commonMistakes": [
+        "Using UNION by default everywhere, paying for a dedup pass that isn't actually needed",
+        "Assuming the two SELECTs need identical column names instead of just a matching column count and compatible types",
+        "Not realizing the final result's column names come from the first SELECT, regardless of aliases used in the second",
+        "Forgetting ORDER BY can only appear once, at the very end of the combined statement, not after each individual SELECT"
+      ],
+      "keyPoints": [
+        "UNION removes duplicate rows across the combined result sets; UNION ALL keeps every row",
+        "UNION ALL is cheaper -- it skips the sort/distinct pass UNION performs",
+        "Both SELECTs must return the same number of columns with compatible data types per position",
+        "Result column names come from the first SELECT statement"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains the duplicate-removal difference",
+          "weight": 45
+        },
+        {
+          "criterion": "Correctly states the column-count/data-type compatibility requirement",
+          "weight": 35
+        },
+        {
+          "criterion": "Mentions the performance implication of the dedup pass",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "union-vs-union-all",
+        "label": "Review: UNION vs. UNION ALL"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-045",
+      "questionCode": "LTV-MSBI-BEG-045",
+      "title": "Building a grouped Tablix with subtotals",
+      "prompt": "Describe how you'd configure a Tablix in SSRS Report Builder so that AdventureWorks2012 sales data is grouped by ProductCategory, with each category showing a subtotal of SalesAmount, plus a single grand total at the very bottom of the whole report.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "SSRS",
+        "Tablix",
+        "Reporting"
+      ],
+      "modelAnswer": "Start with a Tablix bound to a dataset that includes ProductCategory and SalesAmount. In the Row Groups pane at the bottom of the designer, right-click the existing detail group and choose Add Group > Parent Group, grouping by ProductCategory -- this inserts a new group header/footer row pair around the detail rows and adds a ProductCategory textbox automatically. To get a subtotal per category, right-click the SalesAmount cell in the detail row and choose Add Total; SSRS inserts a =Sum(Fields!SalesAmount.Value) expression into the new group's footer row, and because that textbox lives inside the ProductCategory group's footer, Sum() automatically scopes itself to just that group's rows -- no explicit scope argument is needed. For the grand total, add a second total, but this time on the outermost table (body) row rather than inside any group -- the same Sum(Fields!SalesAmount.Value) expression, placed outside every group's scope, sums across the entire dataset instead of just one category's rows. The key mechanic throughout is that Sum() defaults to whatever scope (group, table, or dataset) the textbox containing it actually sits in, unless a second argument explicitly names a different scope.",
+      "professionalAnswer": "I'd build this from the inside out: detail rows first, bound to SalesAmount, then right-click to add a parent group on ProductCategory, which gives me a header and footer row around each category's detail rows automatically. For the category subtotal, I right-click the SalesAmount cell and choose Add Total, which drops a Sum() expression right into that group's new footer -- and because of where that textbox physically sits, it already knows to only sum rows inside that one category's group, with no extra configuration from me. The grand total is the same idea one level up: I add a total on the outer table row, outside any group, and that Sum() expression now scopes to the entire table instead of one category. The thing I'd double check before calling it done is that I haven't accidentally copied a group-scoped Sum() expression into the grand-total row, because a textbox's scope comes from its physical location in the Tablix, not from the expression text itself.",
+      "example": "-- Category subtotal (in the ProductCategory group footer row):\n=Sum(Fields!SalesAmount.Value)\n\n-- Grand total (in the outer table/body row, outside any group):\n=Sum(Fields!SalesAmount.Value)\n-- Same expression text -- the difference is entirely the row's scope.",
+      "commonMistakes": [
+        "Placing the grand-total expression inside a group's footer by mistake, so it only sums that one group instead of the whole report",
+        "Assuming Sum() needs an explicit scope argument for a simple case like this, instead of relying on the textbox's own location",
+        "Forgetting Add Group > Parent Group is what actually inserts the new header/footer rows, rather than editing the detail row directly",
+        "Not verifying each category's subtotal against a manual SUM in SSMS before trusting the report"
+      ],
+      "keyPoints": [
+        "A parent group on ProductCategory adds a header/footer row pair around the detail rows",
+        "Add Total inserts a Sum() expression into the group's footer, scoped to that group automatically",
+        "A total placed outside any group (table/body scope) sums the entire dataset for the grand total",
+        "Sum()'s scope comes from the textbox's location in the Tablix, not from the expression itself"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly describes adding the ProductCategory group",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly describes the category subtotal mechanism and its automatic scope",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly describes the grand total's different scope",
+          "weight": 30
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "ssrs-development",
+        "lessonSlug": "grouping-and-sorting",
+        "label": "Review: Grouping & Sorting"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-046",
+      "questionCode": "LTV-MSBI-BEG-046",
+      "title": "SUM inflated after joining a one-to-many table",
+      "prompt": "A query joins SalesOrderHeader to SalesOrderDetail and correctly totals each order with SUM(LineTotal). After adding a third join to a Promotion table -- where some orders have more than one matching promotion row -- the total for those specific orders suddenly doubles or triples, even though nothing about the actual sales changed. The join conditions are all correct and genuinely relate the tables. What's going on, and how would you fix it?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "T-SQL",
+        "Joins",
+        "Aggregation"
+      ],
+      "modelAnswer": "This isn't a Cartesian product -- every join condition is correct and genuinely relates the tables -- it's join fan-out, which happens whenever a correct join still has a one-to-many relationship on one side. Each SalesOrderDetail row that matches more than one Promotion row gets physically duplicated once per matching promotion before SUM ever runs, so SUM(LineTotal) is now adding the same line total two or three times for any order whose promotion happens to match more than once, while orders with exactly one (or zero) matching promotions are unaffected. The fix is to never combine two separate one-to-many expansions in a single flat join and then aggregate at the end -- instead, pre-aggregate each one-to-many relationship to the grain actually needed, in its own subquery or CTE, before joining. Here, that means computing the order total from SalesOrderHeader and SalesOrderDetail alone first, and only joining Promotion afterward (or in a separate query) if promotion details are genuinely needed, rather than letting its fan-out multiply rows that feed directly into the order-total SUM.",
+      "professionalAnswer": "I'd point out first that this isn't the Cartesian-product bug people usually learn about -- every join condition here is correct and really does relate the tables. This is fan-out: joining in a table that can legitimately match more than one row per order duplicates the order-detail rows underneath it, once per matching promotion, before the SUM even runs. So an order with two matching promotions gets its LineTotal counted twice, not because the math is wrong, but because the row genuinely got duplicated first. My fix is to separate the two aggregations: compute each order's total from just SalesOrderHeader and SalesOrderDetail in a CTE first, completely isolated from the Promotion join, and only bring Promotion into a separate query (or join it after the order total is already locked in) if I actually need promotion-level detail. The rule I'd apply going forward is never to let two independent one-to-many joins sit in the same flat query feeding one aggregate -- pre-aggregate each one to the grain I need first.",
+      "example": "-- WRONG: Promotion's fan-out inflates the order total\nSELECT soh.SalesOrderID, SUM(sod.LineTotal) AS OrderTotal\nFROM Sales.SalesOrderHeader soh\nJOIN Sales.SalesOrderDetail sod ON sod.SalesOrderID = soh.SalesOrderID\nJOIN Sales.SpecialOfferProduct promo ON promo.ProductID = sod.ProductID\nGROUP BY soh.SalesOrderID;\n\n-- FIXED: order total computed in isolation, before any promotion join\nWITH OrderTotals AS (\n    SELECT soh.SalesOrderID, SUM(sod.LineTotal) AS OrderTotal\n    FROM Sales.SalesOrderHeader soh\n    JOIN Sales.SalesOrderDetail sod ON sod.SalesOrderID = soh.SalesOrderID\n    GROUP BY soh.SalesOrderID\n)\nSELECT * FROM OrderTotals;",
+      "commonMistakes": [
+        "Assuming a correct, relating join condition rules out row duplication entirely",
+        "Not comparing row counts (or a known-good total) before and after adding the third join",
+        "Reaching for SUM(DISTINCT ...) as a quick fix, which only coincidentally works and breaks again as soon as two genuinely different line totals happen to match",
+        "Combining two separate one-to-many expansions in one flat query feeding a single aggregate, instead of pre-aggregating each one to the grain actually needed"
+      ],
+      "keyPoints": [
+        "A correct join condition can still fan out rows when the relationship is genuinely one-to-many",
+        "Fan-out duplicates rows before aggregation runs, inflating any SUM downstream",
+        "This is distinct from a Cartesian product, which comes from a missing or non-relating join condition",
+        "Fix: pre-aggregate each one-to-many relationship to the needed grain in its own subquery/CTE before joining further"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses join fan-out (not a Cartesian product)",
+          "weight": 45
+        },
+        {
+          "criterion": "Explains why the duplication inflates the SUM",
+          "weight": 30
+        },
+        {
+          "criterion": "Proposes a correct fix (pre-aggregating before joining further)",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "one-to-many",
+        "label": "Review: Table Relationships: One-to-Many"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-047",
+      "questionCode": "LTV-MSBI-BEG-047",
+      "title": "A Flat File Source that suddenly won't parse",
+      "prompt": "An SSIS package has loaded the same vendor CSV file successfully every night for months. Tonight it fails at the Flat File Source with an error like 'The column delimiter for column 4 was not found.' Nobody touched the package. What's the most likely cause, and how would you confirm and fix it?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "SSIS",
+        "Flat File",
+        "Troubleshooting"
+      ],
+      "modelAnswer": "A Flat File Connection Manager's column layout -- delimiters, column count, text qualifier -- is configured once, against a sample of the file, and saved as a fixed definition; it does not re-detect or adapt to the file's structure on later runs. This exact pattern -- worked for months, suddenly fails, package itself unchanged -- almost always means the upstream vendor changed the file's actual structure: a column was added or removed, a free-text field that never used to contain the delimiter character now does (common with an unqualified comma-delimited file and no text qualifier configured), or an extra header or footer row was introduced. The way to confirm it is to open the actual current file directly -- not just trust the connection manager's cached preview -- and compare its real column count and content against the Flat File Connection Manager's Columns page. The fix is to update the connection manager to match the file's new real structure: adjust the column count, add or correct the text qualifier if a field can legitimately contain the delimiter, or adjust how many header/footer rows are skipped, then re-validate with the Preview button before re-running the package.",
+      "professionalAnswer": "My first move wouldn't be to open the SSIS package at all -- it'd be to open the actual file that landed tonight and just look at it. A Flat File Connection Manager's column definition is locked in whenever it was first configured; it has no way to notice on its own that the vendor's file changed shape. 'Worked for months, broke overnight, nothing in the package changed' is close to a textbook signature for exactly that -- an extra column got added, or a text field that used to be delimiter-safe now has a comma in it with no text qualifier set up to protect against that. Once I've actually compared tonight's file to what the connection manager expects, the fix is just updating the connection manager to match reality -- column count, text qualifier, header rows -- and then hitting Preview before I trust it enough to re-run the whole package.",
+      "example": null,
+      "commonMistakes": [
+        "Assuming the package itself broke and debugging SSIS logic before ever opening the actual file",
+        "Trusting the connection manager's cached preview instead of looking at the file that actually landed tonight",
+        "Forgetting to configure a text qualifier for free-text fields that could legitimately contain the delimiter character",
+        "Changing the connection manager's settings without re-validating with Preview before re-running the package"
+      ],
+      "keyPoints": [
+        "A Flat File Connection Manager's column layout is fixed at configuration time and doesn't adapt automatically",
+        "This failure pattern (worked for months, package unchanged, sudden failure) usually means the source file's structure changed upstream",
+        "Confirm by comparing the actual current file against the connection manager's Columns page",
+        "Fix by updating the connection manager (column count, text qualifier, header rows) to match the file's real structure, then re-validate with Preview"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies an upstream file-structure change as the likely cause",
+          "weight": 40
+        },
+        {
+          "criterion": "Describes a practical way to confirm it (comparing the actual file to the connection manager)",
+          "weight": 35
+        },
+        {
+          "criterion": "Proposes the correct fix and re-validation step",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "ssis-development",
+        "lessonSlug": "flat-file-source-and-destination",
+        "label": "Review: Flat File Source & Destination"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-048",
+      "questionCode": "LTV-MSBI-BEG-048",
+      "title": "Why Dev, QA, and Production stay separate",
+      "prompt": "Why does a BI team typically maintain separate Dev, QA, and Production SQL Server environments, and promote a change through them in that fixed order, instead of just building and testing directly against the Production database that live reports and real users already depend on?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Architecture",
+        "SDLC",
+        "Data Warehousing"
+      ],
+      "modelAnswer": "Dev is where new work is actually built, and it's expected to be unstable -- half-finished packages, broken queries, and throwaway test data are all normal there, and critically, none of that instability is visible to anyone who depends on real numbers. QA is a separate, more stable environment with data that resembles Production, used specifically to verify a change behaves correctly before any real user is ever exposed to it -- this is where testing is supposed to happen, not in Dev and not in Production. Production is the environment real business users and live reports actually run against, and it's deliberately the last environment any change reaches, only after being built in Dev and then validated in QA. Testing directly against Production is risky for two concrete reasons: an in-progress or buggy change can lock, corrupt, or simply show wrong numbers in data that live reports depend on right now, and there's no safe way to test something genuinely risky -- a schema change, a large bulk load -- without potentially causing a real outage if it goes wrong. Promoting a change through Dev, then QA, then Production in that fixed order guarantees every change gets at least one chance to fail somewhere that doesn't matter yet before it ever reaches somewhere that does.",
+      "professionalAnswer": "I'd frame it around what's allowed to break where. Dev is allowed to break -- that's the whole point of it, it's where I'm actively building and nobody real is looking at it. QA is where I prove a change actually works against data that looks like the real thing, before any real user sees it. Production is the one environment where breaking something has an actual business cost, so it's deliberately the last stop, not the first. If I skipped straight to testing in Production, the two real risks are: a change that's still buggy could corrupt or lock data that a live report is reading from right now, and there's no safe way to rehearse something genuinely risky, like a schema change, without actually risking the outage I was trying to avoid. The fixed Dev-then-QA-then-Production order is really just making sure every change gets tested somewhere low-stakes before it reaches somewhere high-stakes.",
+      "example": null,
+      "commonMistakes": [
+        "Making a direct change in Production 'just this once' to save time",
+        "Treating QA as optional for a change that 'seems small' instead of validating it there first",
+        "Letting QA's data drift so far from Production's that it stops catching real issues",
+        "Conflating Dev and QA as the same environment instead of recognizing their different purposes (building vs. validating)"
+      ],
+      "keyPoints": [
+        "Dev is for building and is expected to be unstable, isolated from real users",
+        "QA validates a change against production-like data before any real user is exposed to it",
+        "Production is the last environment reached, only after Dev and QA",
+        "Direct Production changes risk live data and can't safely rehearse risky operations"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly describes the purpose of each environment (Dev, QA, Production)",
+          "weight": 45
+        },
+        {
+          "criterion": "Correctly explains the risk of testing directly in Production",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains why the promotion order matters",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "how-it-teams-work",
+        "lessonSlug": "sdlc-dev-qa-uat-and-production",
+        "label": "Review: SDLC: Dev, QA, UAT & Production"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-049",
+      "questionCode": "LTV-MSBI-BEG-049",
+      "title": "Why the semantic model is its own layer",
+      "prompt": "In Power BI, what is a semantic model (also called a dataset), and why is it treated as a layer separate from any one report built on top of it? What becomes possible once you realize several different reports can all point at the very same semantic model?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Power BI",
+        "Architecture",
+        "Data Modeling"
+      ],
+      "modelAnswer": "A semantic model is the published data model itself -- tables, relationships, calculated columns, measures, and RLS roles -- without any particular report's visuals attached to it; it's the single source of truth layer sitting between raw data and however many reports choose to visualize it. Publishing a single .pbix that has both a model and report visuals does create a semantic model and a report together by default, but once published, the semantic model exists in the workspace as its own independent object. Any report author with the right permission can then build a brand-new report connected to that existing semantic model (through Create report, or a Live Connection) without rebuilding the tables, relationships, or measures from scratch. This matters because it means business logic -- how a measure is calculated, which relationships are correct, who can see which rows under RLS -- is defined exactly once, and every report built against that semantic model automatically inherits the same correct logic; if a measure's definition ever needs fixing, fixing it once in the semantic model updates every report built on top of it, instead of requiring the same fix to be found and repeated across several separately-built reports.",
+      "professionalAnswer": "I'd describe the semantic model as the thing that actually has the business logic in it -- the relationships, the measures, the RLS roles -- completely separate from however a given report chooses to visualize that logic. Publishing one .pbix does hand you both a semantic model and a report at the same time, but they're two separate objects the moment they land in the workspace, and that's exactly what lets a finance team build one report and an executive-summary team build a completely different-looking report, both connected live to that same underlying semantic model, without either of them re-deriving what 'Total Revenue' actually means. The real payoff is maintenance: if I find a bug in a measure, I fix it once, in the semantic model, and every report built on top of it -- including ones I didn't build myself -- picks up the fix automatically, instead of me having to track down and patch the same formula in five separate files.",
+      "example": null,
+      "commonMistakes": [
+        "Rebuilding the same measures and relationships from scratch in every new report instead of connecting to the existing semantic model",
+        "Thinking a published semantic model and a published report are the same object",
+        "Not realizing RLS lives on the semantic model, so it applies consistently to every report connected to it",
+        "Forgetting a Live Connection report depends on that semantic model staying published and accessible"
+      ],
+      "keyPoints": [
+        "A semantic model is the data model (tables, relationships, measures, RLS) without any one report's visuals",
+        "Publishing a .pbix creates a semantic model and a report, but they become separate objects in the workspace",
+        "Multiple reports can connect to one shared semantic model via Live Connection",
+        "Fixing logic once in the semantic model updates every report built on top of it"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly defines a semantic model and what it contains",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains that it's a separate object from any one report",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains the maintenance/consistency benefit of multiple reports sharing one model",
+          "weight": 30
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "power-bi",
+        "lessonSlug": "semantic-models",
+        "label": "Review: Semantic Models"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-beg-050",
+      "questionCode": "LTV-MSBI-BEG-050",
+      "title": "Asking for help when you're stuck",
+      "prompt": "Tell me about a time early in a project when you didn't know how to do something and had to ask a teammate or a more senior developer for help. How did you approach that conversation, and what did you do with the answer afterward?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Behavioral",
+        "Communication"
+      ],
+      "modelAnswer": "This is a behavioral question testing resourcefulness and whether a candidate can ask for help effectively, rather than either staying silently stuck or outsourcing the thinking entirely to someone else. A strong answer shows an attempt was made first -- checking documentation, trying an approach, forming a specific theory -- since teams value someone who tries before asking, but it should also show the candidate didn't stay stuck in silence for an unreasonably long time out of fear of looking unprepared. When actually asking, the question should be specific -- naming what was tried and exactly where it broke down -- rather than a vague 'it's not working,' since a specific question gets a faster and more useful answer. The Action should also cover what happened after getting the answer: not just copying the fix, but understanding why it worked, so the same category of problem doesn't require asking again. Result should state a concrete outcome using STAR -- being unblocked within some stated timeframe, and ideally applying the same concept independently on a later, similar problem.",
+      "professionalAnswer": "I'd tell one specific story. Situation: early in my capstone, I couldn't get an OLE DB Destination's fast-load mode to actually speed anything up, and I'd already tried switching the data access mode and rereading the component's tooltips with no luck. Task: I needed to actually understand what I was missing, not just make the error go away. Action: I asked a more experienced developer a specific question -- 'I switched to fast load, but it's still inserting one row at a time based on the execution time, here's what I've already tried' -- rather than just saying it wasn't working. They pointed out I still had the destination's table lock option unchecked, which was serializing the insert behind other activity on the table. Result: once I checked that option, the load time dropped noticeably, and I started checking that same setting by default on every OLE DB Destination I've built since, without needing to ask again. I'd keep the story specific and make sure it lands on that last point -- what I actually learned to do differently afterward.",
+      "example": null,
+      "commonMistakes": [
+        "Staying stuck in silence for too long before asking, out of fear of looking unprepared",
+        "Asking a vague question ('it's not working') instead of naming what was tried and exactly where it broke down",
+        "Copying the fix without understanding why it worked, so the same type of problem requires asking again later",
+        "Describing a general attitude toward asking for help instead of telling one specific, real story with a stated Result"
+      ],
+      "keyPoints": [
+        "Show an attempt was made before asking, but don't stay stuck in silence too long either",
+        "Ask a specific question naming what was tried and where it broke down",
+        "Understand why the answer worked rather than just copying it",
+        "Use STAR and state a concrete Result, including what changed afterward"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Shows a reasonable attempt was made before asking for help",
+          "weight": 25
+        },
+        {
+          "criterion": "Tells a specific, real story using STAR",
+          "weight": 40
+        },
+        {
+          "criterion": "States a concrete Result, including what was learned or applied afterward",
+          "weight": 35
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "how-it-teams-work",
+        "lessonSlug": "kanban-boards-and-work-management",
+        "label": "Review: Kanban Boards & Work Management"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
     }
   ]
 }

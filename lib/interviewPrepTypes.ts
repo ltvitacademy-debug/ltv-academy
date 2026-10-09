@@ -53,17 +53,25 @@ export type InterviewBank = {
 };
 
 // ---------------------------------------------------------------------------
-// Sizing (per-path total = 175: 30 beginner / 40 intermediate / 50 advanced / 55 expert)
+// Sizing. The governing rule is per-category, not per-difficulty: every path
+// needs a minimum of 50 questions in EACH of the 5 categories below, so a
+// student who filters down to a single category never runs short. Spread
+// across the 4 difficulty tiers, that lands around 43 beginner / 58
+// intermediate / 71 advanced / 78 expert per path (~250 total) — those
+// per-tier numbers are a starting guide for authoring a new path, not a hard
+// quota; CATEGORY_MIN_QUESTIONS is the number that actually matters.
 // ---------------------------------------------------------------------------
 
+export const CATEGORY_MIN_QUESTIONS = 50;
+
 export const DIFFICULTY_QUOTA: Record<InterviewDifficulty, number> = {
-  beginner: 30,
-  intermediate: 40,
-  advanced: 50,
-  expert: 55,
+  beginner: 43,
+  intermediate: 58,
+  advanced: 71,
+  expert: 78,
 };
 
-export const PATH_TOTAL_QUESTIONS = Object.values(DIFFICULTY_QUOTA).reduce((a, b) => a + b, 0); // 175
+export const PATH_TOTAL_QUESTIONS = Object.values(DIFFICULTY_QUOTA).reduce((a, b) => a + b, 0); // ~250
 
 export const DIFFICULTY_LABELS: Record<InterviewDifficulty, string> = {
   beginner: "Beginner — Entry level",
