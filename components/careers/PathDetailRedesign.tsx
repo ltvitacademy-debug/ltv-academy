@@ -633,15 +633,23 @@ export default function PathDetailRedesign({
               <Link href={startHref} className="mt-5 inline-block rounded-[2px] bg-gold px-6 py-3 text-sm font-semibold text-crimson-deep hover:bg-gold-pale transition-colors">
                 Start this path →
               </Link>
-              {hasInterviewPrep && (
+            </div>
+
+            {hasInterviewPrep && (
+              <div className="rounded-[2px] border-2 border-ink/15 bg-white/50 p-6 text-center">
+                <p className="display text-xl text-ink">Think you&apos;re ready for the interview?</p>
+                <p className="mt-2 text-sm text-stone">
+                  Test yourself against real {path.title} interview questions — type your own
+                  answer, then reveal a full model answer to see how you did.
+                </p>
                 <Link
                   href={`/app/interview-prep/${path.slug}`}
-                  className="mt-3 block rounded-[2px] border border-gold-pale/40 px-6 py-3 text-sm font-semibold text-gold-pale transition-colors hover:border-gold-pale hover:bg-crimson-deep/60"
+                  className="mt-5 inline-block rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep transition-colors"
                 >
                   Practice interview questions →
                 </Link>
-              )}
-            </div>
+              </div>
+            )}
           </aside>
         </div>
       </div>
