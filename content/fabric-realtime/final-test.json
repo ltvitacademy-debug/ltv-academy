@@ -1,0 +1,904 @@
+{
+  "questions": [
+    {
+      "id": "fr-ch01-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "What is a Fabric shortcut, as Lesson 7 defines it?",
+      "options": [
+        "A reference inside OneLake that lets one item read another item's data \u2014 or data sitting outside Fabric entirely \u2014 in place, with nothing physically copied",
+        "A saved query template that has to be re-run manually to refresh its results",
+        "A temporary cache Fabric creates automatically to speed up repeated DirectQuery calls",
+        "A keyboard shortcut for jumping between workspaces in the Fabric portal",
+        "A scheduled trigger that runs a notebook automatically at a set time each day",
+        "A compressed backup copy of a table, stored outside OneLake for disaster recovery"
+      ],
+      "correctIndex": 0,
+      "explain": "A shortcut \u2014 internal (to another OneLake location) or external (to ADLS Gen2, S3, GCS) \u2014 is a pointer through OneLake to data whose real bytes live somewhere else. Nothing is duplicated, and every query engine reads through it exactly as it would read a real table; it's Fabric's version of Databricks & Delta Lake's external table concept.",
+      "distractorExplain": "Option C sounds plausible because it also describes something that avoids re-fetching data, but a cache is a copy Fabric manages and refreshes behind the scenes \u2014 a shortcut is the opposite: it guarantees there is no copy at all, just a reference to the one real location of the bytes."
+    },
+    {
+      "id": "fr-ch01-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "A team of analysts writes T-SQL day to day and needs to run native INSERT/UPDATE statements against their gold-layer tables. Per Lesson 11's decision framework, should this team's gold layer be a Lakehouse or a Warehouse, and why?",
+      "options": [
+        "Warehouse \u2014 it's SQL-first with full T-SQL including real writes, giving a T-SQL-fluent team the native INSERT/UPDATE support a Lakehouse's read-only SQL endpoint can't offer",
+        "Lakehouse \u2014 a Lakehouse always outperforms a Warehouse for any analyst-facing layer",
+        "Either one works identically, since both ultimately store their tables in OneLake in Delta format",
+        "Warehouse \u2014 only a Warehouse item type can be assigned to a Fabric capacity"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 11's deciding factor is who's actually querying day to day. A T-SQL-fluent analyst team gets real value from a Warehouse's native CREATE TABLE/INSERT/UPDATE support, which a Lakehouse's SQL analytics endpoint genuinely cannot provide since that endpoint is read-only against Spark-managed Delta tables."
+    },
+    {
+      "id": "fr-ch01-03",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "A table was created entirely by running spark.write.format(\"delta\") on a Databricks cluster. A colleague then points a Fabric Lakehouse shortcut at that same storage location. Can Fabric actually read the table correctly, and why?",
+      "options": [
+        "Yes \u2014 both platforms build on the same open Delta Lake specification (Parquet data files plus a _delta_log/ transaction log), so neither engine is reading a proprietary, incompatible format",
+        "No \u2014 a table written by Databricks uses a format only Databricks can open, unless it's first exported to CSV",
+        "Yes, but only after the table is manually rebuilt using Fabric's \"Load to Tables\" feature",
+        "No \u2014 a Delta table is permanently tied to whichever platform originally created it"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 5 is explicit that neither Fabric nor Databricks invented its own competing table format \u2014 both build on the same open Delta Lake specification. A Fabric Lakehouse and a Databricks cluster are two different engines pointed at the same kind of files, not two incompatible islands of data."
+    },
+    {
+      "id": "fr-ch01-04",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "Per Lesson 9, why is a Dataflow Gen2 called a poor fit for this course's full-scale NYC Taxi trip data (millions of rows needing casting, deduplication, and window-function logic), even though it's a reasonable choice for the much smaller zones lookup table?",
+      "options": [
+        "A Dataflow's steps run on Power Query's own M-based transformation model, built for smaller, business-user-friendly cleanup \u2014 not the scale or kind of logic a real PySpark notebook is built to handle",
+        "A Dataflow Gen2 has a hard row-count limit that makes it technically incapable of processing more than a few thousand rows",
+        "A Dataflow Gen2 can only write its output to a Warehouse, never to a Lakehouse, so it can't reach the right destination table",
+        "A Dataflow Gen2 requires its own dedicated capacity, entirely separate from the one notebooks run against"
+      ],
+      "correctIndex": 0,
+      "explain": "Dataflows fit well for smaller, business-user-friendly transformations \u2014 the zones table's simple column cleanup. The full-scale trip data needs the casting, deduplication, and window-function logic a real notebook with real PySpark is built for; a Dataflow's step-based Power Query model simply isn't built for that scale or that kind of logic."
+    },
+    {
+      "id": "fr-ch01-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "What makes the Monitoring Hub a genuinely broader tool than checking one item type's own run history, per Lesson 16?",
+      "options": [
+        "It lists runs from every Fabric item type \u2014 notebooks, pipelines, Dataflow refreshes, and more \u2014 in one unified, filterable list, instead of requiring a separate check per item type",
+        "It only shows notebook runs, since pipelines and Dataflows still each require their own separate monitoring page",
+        "It replaces the need to open and read the actual error message when a run fails",
+        "It only displays runs that are currently in progress, never completed ones"
+      ],
+      "correctIndex": 0,
+      "explain": "The Monitoring Hub's actual pitch is one place, every item type: notebook runs, pipeline runs, and Dataflow refreshes all land in the same filterable list, rather than checking each item type's own separate history page the way Databricks & Delta Lake's per-job Run History worked."
+    },
+    {
+      "id": "fr-ch01-06",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Fabric Capacity Units (CUs), F-SKUs, bursting, and smoothing, per Lesson 14.",
+      "options": [
+        "A Capacity Unit (CU) is the shared unit of compute every Fabric engine draws from the same pool \u2014 there's no separate compute budget per item type",
+        "An F-SKU (F2, F64, F256, etc.) is a fixed number of CUs purchased as one capacity-level unit, chosen once per capacity rather than per cluster or per item",
+        "Bursting lets a job briefly use more CUs than the capacity nominally provides, so an occasional heavy job doesn't automatically force a permanently bigger SKU",
+        "Smoothing means a job's real cost is always charged as one spike the instant it runs, with no ability to spread it out over time",
+        "The correct sizing decision for a capacity depends only on the single worst-case peak job it will ever run, never on sustained average load"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "A CU is the shared currency every engine spends from one pool, and an F-SKU is simply a fixed CU budget bought at the capacity level. Bursting and smoothing exist specifically so an occasional heavy job doesn't force permanently buying peak-load-sized compute. Smoothing is the opposite of option D \u2014 it spreads real cost out over time rather than charging a spike all at once \u2014 and the actual sizing decision depends on sustained average load, not worst-case peaks, which is why option E is backwards."
+    },
+    {
+      "id": "fr-ch01-07",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Git integration and deployment pipelines in Fabric, per Lesson 15.",
+      "options": [
+        "Connecting a workspace to Git syncs each item's definition \u2014 a notebook's cells, a pipeline's activity graph, a semantic model's relationships and measures \u2014 as real, diffable files in the repository",
+        "Git integration also version-controls the actual trip data sitting inside OneLake, not just each item's definition",
+        "A Fabric deployment pipeline promotes a workspace's items through separate dev, test, and production stages",
+        "Each deployment pipeline stage is its own workspace, connected to the same capacity model but kept genuinely separate from the others",
+        "Fabric's Git integration is scoped only to notebooks, the same narrow scope Databricks & Delta Lake's own material covered"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        3
+      ],
+      "explain": "Git tracks an item's definition \u2014 cells, activity graphs, relationships and measures as text/JSON \u2014 never the underlying OneLake data itself. A deployment pipeline promotes items through dev/test/production, each its own workspace sharing the capacity model but kept separate. Fabric's Git sync is explicitly broader than a notebook-only story, covering every item type at once, which is exactly what makes options B and E false."
+    },
+    {
+      "id": "fr-ch01-08",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: every Fabric tenant automatically gets exactly one ________ the moment the tenant exists \u2014 there's no storage account or location to provision, unlike Databricks & Delta Lake's MANAGED LOCATION step.",
+      "acceptedAnswers": [
+        "OneLake",
+        "One Lake"
+      ],
+      "explain": "OneLake is automatic, not provisioned \u2014 every Fabric tenant gets exactly one, immediately, with no storage account or location decision required, the way creating a Databricks catalog required choosing a real MANAGED LOCATION."
+    },
+    {
+      "id": "fr-ch01-09",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a Fabric notebook attaches to a ________ instead of a cluster you configure yourself, and Fabric provisions the Spark session behind that attachment automatically.",
+      "acceptedAnswers": [
+        "lakehouse",
+        "a lakehouse",
+        "Lakehouse"
+      ],
+      "explain": "Unlike Databricks, where a notebook attaches to a cluster you configured (VM size, runtime), a Fabric notebook attaches to a lakehouse, and Fabric provisions the Spark session automatically \u2014 no cluster form to fill in at all."
+    },
+    {
+      "id": "fr-ch01-10",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each Fabric workspace role to what it can actually do, per Lesson 2.",
+      "left": [
+        "Admin",
+        "Member",
+        "Contributor",
+        "Viewer"
+      ],
+      "right": [
+        "Create and edit items, but cannot share them with others",
+        "Everything, including managing workspace settings and other members' roles",
+        "Read-only access to items",
+        "Create, edit, and share items, but cannot change workspace-level settings"
+      ],
+      "correctMap": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "explain": "Admin can do everything, including managing workspace settings and other members' roles. Member can create, edit, and share items, but not change workspace-level settings. Contributor can create and edit items, but not share them. Viewer has read-only access \u2014 a simpler, workspace-scoped version of Unity Catalog's per-object GRANT/REVOKE."
+    },
+    {
+      "id": "fr-ch01-11",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "Match each term to what it actually is, per Lessons 12 and 13.",
+      "left": [
+        "Import mode",
+        "DirectQuery mode",
+        "Direct Lake mode",
+        "Semantic model"
+      ],
+      "right": [
+        "Sends a live query to the source engine on every interaction \u2014 always current, but only as fast as that source's query engine",
+        "The layer adding relationships, measures, and friendly names on top of raw tables, so a report author queries concepts, not raw columns",
+        "Copies data into Power BI's own compressed in-memory format \u2014 fast, but a real copy, refreshed on a schedule",
+        "Reads a Lakehouse or Warehouse table's Delta Parquet files directly, with no Spark or SQL engine in between \u2014 combining Import's speed with DirectQuery's freshness"
+      ],
+      "correctMap": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "explain": "Import mode copies data into a refreshed in-memory format. DirectQuery sends a live query to the source on every interaction. Direct Lake mode reads Delta's own Parquet files directly, combining Import's speed with DirectQuery's freshness, and is a property of the semantic model \u2014 the layer that adds relationships and measures on top of raw tables so reports query concepts, not columns."
+    },
+    {
+      "id": "fr-ch01-12",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of one NYC Taxi record's journey through Fabric's items, per Lesson 17's recap, in the correct order.",
+      "items": [
+        "A Copy activity moves the raw trip file into the Lakehouse's Files area",
+        "The file is loaded from Files into a real Delta table in the Lakehouse's Tables area",
+        "A Fabric notebook, attached to that lakehouse, cleans the data with real PySpark",
+        "The cleaned table is related to the zones table and summarized by a measure inside a semantic model",
+        "A Power BI report reads that semantic model in Direct Lake mode, fast and current, with no copy ever made"
+      ],
+      "explain": "Lesson 17 traces one record through exactly this path: a Copy activity lands the raw file in Files, it's loaded into a real Delta table in Tables, a notebook cleans it with PySpark, a semantic model relates and summarizes it with a measure, and a Power BI report finally reads that model in Direct Lake mode \u2014 fast and current, with nothing ever copied along the way."
+    },
+    {
+      "id": "fr-ch01-13",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of creating a lakehouse and loading a raw file into a real Delta table, per Lesson 4, in the correct order.",
+      "items": [
+        "In the workspace, select New item, choose Lakehouse, and name and create it",
+        "In the Files section, hover over the raw CSV and open its ... menu",
+        "Select Load to Tables, then New table",
+        "Name the new table and select Load",
+        "Fabric reads the source file, infers a schema, and writes it out as a new, separate Delta table in Tables"
+      ],
+      "explain": "A lakehouse is created first, opening to its empty Files and Tables sections. Loading a file means hovering over it in Files, opening its ... menu, choosing Load to Tables then New table, naming it, and selecting Load \u2014 at which point Fabric infers a schema and writes a new Delta table, leaving the original CSV in Files completely untouched."
+    },
+    {
+      "id": "fr-ch02a-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Databricks & Delta Lake's Structured Streaming already processes data continuously, in micro-batches. Per Lesson 18, why doesn't that achieve the same latency as Real-Time Intelligence's Eventstream/Eventhouse pairing?",
+      "options": [
+        "Micro-batches still process data in small batches, seconds apart at best, while Eventstream/Eventhouse is built for sub-second latency, such as an alert firing within milliseconds of an event arriving",
+        "Structured Streaming only runs on a schedule once per day, while Real-Time Intelligence runs continuously",
+        "Structured Streaming can't connect to Azure Event Hubs at all, so it never receives events in real time to begin with",
+        "Real-Time Intelligence replaces Spark's DataFrame engine entirely, and that swap alone is what makes it faster"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 18 is explicit that Structured Streaming's micro-batches still process data in small batches, seconds apart at best, while the Eventstream/Eventhouse pairing is built for sub-second latency \u2014 an alert firing within milliseconds of an event arriving, not at the next micro-batch interval. Nothing in the lesson claims Structured Streaming is schedule-only, event-hub-incompatible, or that a general engine swap by itself explains the latency gap."
+    },
+    {
+      "id": "fr-ch02a-02",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of creating an Eventstream, per Lesson 19, in the correct order.",
+      "items": [
+        "In your workspace, select New item -> Eventstream",
+        "Add a source to the canvas",
+        "Add a destination - an Eventhouse, a Lakehouse table, or both",
+        "Publish, so the Eventstream starts running immediately and continuously"
+      ],
+      "explain": "Lesson 19 walks through this exact sequence: create the item from New item -> Eventstream, add a source node, add one or more destination nodes (an Eventhouse, a Lakehouse table, or both at once), then publish \u2014 at which point the Eventstream starts running immediately and continuously, unlike a pipeline that runs once and finishes."
+    },
+    {
+      "id": "fr-ch02a-03",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each KQL pipe step to what it actually does, per Lessons 23-24.",
+      "left": [
+        "| where fare_amount > 0 and trip_distance > 0",
+        "| project VendorID, fare_amount, pickup_time = tpep_pickup_datetime",
+        "| extend fare_per_mile = fare_amount / trip_distance",
+        "| summarize TripCount = count(), AvgFare = avg(fare_amount) by VendorID"
+      ],
+      "right": [
+        "Filters rows - the same idea as .filter() or T-SQL's WHERE",
+        "Selects and optionally renames columns, dropping every column not named",
+        "Adds a computed column while keeping every existing column, like withColumn()",
+        "Combines groupBy() and .agg() into one operator, with named aggregate expressions per group"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "where filters rows exactly like .filter()/WHERE. project keeps and optionally renames only the columns named, dropping the rest. extend adds a new computed column while keeping every existing one, the real KQL equivalent of withColumn(). summarize ... by combines groupBy() and .agg() into a single operator, with TripCount = count() and AvgFare = avg(fare_amount) as named aggregate expressions computed per VendorID group."
+    },
+    {
+      "id": "fr-ch02a-04",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in `RawTripEvents | summarize TripCount = count() by ________(pickup_time, 1h)`, this function rounds each event's timestamp down to the start of the hour it falls in, so summarize ... by groups events into real hourly buckets.",
+      "acceptedAnswers": [
+        "bin",
+        "bin()"
+      ],
+      "explain": "bin(pickup_time, 1h) rounds each timestamp down to the nearest interval boundary - here, the start of the hour - which is exactly the mechanism that lets summarize ... by group a continuously arriving stream into real time buckets, per Lesson 24."
+    },
+    {
+      "id": "fr-ch02a-05",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "RawTripEvents\n| join kind=leftouter (\n    Zones\n) on $left.PULocationID == $right.LocationID\n| project VendorID, $left.fare_amount, ZoneName = $right.Zone",
+      "prompt": "Select every true statement about KQL's join operator, per Lesson 25.",
+      "options": [
+        "join kind=leftouter keeps every row from the left side, matched or not, with unmatched right-side columns coming back as null",
+        "KQL's default join kind, innerunique, is the exact same default an unqualified join uses in SQL and PySpark",
+        "$left. and $right. are needed here specifically because fare_amount and Zone exist as plain column names that could otherwise be ambiguous between the two sides",
+        "Joining RawTripEvents against a small, mostly-static lookup table like Zones is cheap and common",
+        "A join between two large, fast-moving streams is just as simple as this join against a static lookup table, since KQL optimizes both identically"
+      ],
+      "correctIndices": [
+        0,
+        3
+      ],
+      "explain": "join kind=leftouter keeps every left-side row, matched or not, with null unmatched right-side columns - exactly Lesson 25's parallel to a left join. Joining against a small, mostly-static table like Zones is explicitly called cheap and common. KQL's default join kind differs slightly from SQL/PySpark's usual inner-join default, so option B is wrong. $left./$right. disambiguate a column name shared by both sides, but fare_amount and Zone/ZoneName aren't actually shared names needing disambiguation in this query - they're used for clarity, not because of a name collision - so option C misstates the reason. Lesson 25 explicitly flags stream-to-stream joins as a genuinely harder problem than joining against a static lookup, not an equally simple one."
+    },
+    {
+      "id": "fr-ch02a-06",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: in `RawTripEvents | where pickup_time > ________(1h)`, this function returns a moving reference point - one hour before the moment the query actually runs - rather than a fixed timestamp.",
+      "acceptedAnswers": [
+        "ago",
+        "ago()"
+      ],
+      "explain": "ago(1h) means one hour before the moment the query actually runs - a genuinely moving reference point, unlike a fixed timestamp literal. This is the real mechanism behind a live dashboard showing everything from the last hour, since the where clause recalculates what one hour ago means every time it runs, per Lesson 26."
+    },
+    {
+      "id": "fr-ch02a-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "RawTripEvents\n| make-series TripCount = count() on pickup_time from ago(6h) to now() step 15m",
+      "prompt": "A dashboard needs a time-series chart for the last 6 hours in 15-minute increments, where intervals with zero trips still show as a zero rather than a gap in the x-axis. Why does make-series deliver that while summarize ... by bin(pickup_time, 15m) would not?",
+      "options": [
+        "make-series explicitly fills in every interval across the requested range, including zero-count intervals with no events at all, while summarize ... by bin(...) only returns buckets that actually have data",
+        "summarize ... by bin(...) can only group by hour-sized intervals, never by 15-minute intervals",
+        "Both approaches fill in zero-count intervals identically; the only real difference is which one supports a from/to/step range at all",
+        "make-series is a KQL alias for project, so it behaves like a column selector rather than an aggregation"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 26 draws this exact distinction: summarize ... by bin(...) only returns buckets that actually have data, so a bucket with zero events is silently missing from the result. make-series explicitly fills in every interval in the requested range, including genuine zero-count intervals, which matters precisely because a missing bucket on a chart's x-axis would otherwise look like missing data rather than a real zero."
+    },
+    {
+      "id": "fr-ch02a-08",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Match each Real-Time Intelligence item or term to what it actually is, per Lessons 18, 19, and 21.",
+      "left": [
+        "Eventstream",
+        "Eventhouse",
+        "KQL Database",
+        "Activator"
+      ],
+      "right": [
+        "Sub-second alerting directly on streaming data, with no scheduled job required",
+        "A visual canvas that ingests and routes a continuous, always-running flow of events",
+        "A container that holds one or more KQL Databases",
+        "The real storage unit where event data actually lands and gets queried"
+      ],
+      "correctMap": [
+        1,
+        2,
+        3,
+        0
+      ],
+      "explain": "An Eventstream is the visual canvas that ingests and routes a continuous, always-running flow of events. An Eventhouse is a container holding one or more KQL Databases. A KQL Database is the real storage unit where event data lands and is queried. Activator provides sub-second alerting directly on a stream, with no scheduled job required - the three genuinely new pieces plus the umbrella container Lesson 18 and 21 introduce."
+    },
+    {
+      "id": "fr-ch02a-09",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about ingesting data into a KQL Database, per Lesson 27.",
+      "options": [
+        "An Eventstream destination node is genuinely streaming ingestion - events land continuously as they're produced, with no separate ingestion step required",
+        ".ingest into table pulls a batch of existing files into a KQL Database directly, in one pass, rather than waiting for the data to arrive as a live stream",
+        "Replaying a year of historical NYC Taxi CSVs as a simulated stream is the simpler, cheaper choice compared to batch .ingest",
+        "Rows that arrived via streaming ingestion and rows that arrived via .ingest into table are queried with the exact same KQL once they're in the same table",
+        "A KQL Database can only accept one ingestion path at a time - turning on .ingest into table disables Eventstream destinations for that table"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Lesson 27 describes an Eventstream destination as genuinely streaming ingestion requiring no separate step, and .ingest into table as a direct, one-time batch pull of existing files. It states both paths land data in the same table, queryable with the exact same KQL regardless of which path brought a row in. It explicitly says the opposite of option C: replaying a year of history as a simulated stream is a worse choice than batch .ingest, since pulling existing files in once is simpler and cheaper. Option E's mutual-exclusivity claim appears nowhere in the lesson."
+    },
+    {
+      "id": "fr-ch02a-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "RawTripEvents\n| where EventTime  > ago(1h)   // when the trip actually happened\n| where IngestionTime > ago(1h) // when Fabric received the event",
+      "prompt": "A streaming query windows RawTripEvents on EventTime rather than IngestionTime. If some trip events straggle in 15 minutes late due to network delay, what does windowing on EventTime actually give you, and why?",
+      "options": [
+        "Still 'what happened during 2-3pm,' even though some of those late events arrived at 3:15 - because EventTime reflects when the trip actually happened at the source, not when Fabric received it",
+        "'What arrived between 2-3pm,' since EventTime and IngestionTime always match exactly once a window closes",
+        "An error, because a window can only ever be defined on IngestionTime, never on EventTime",
+        "The late-arriving events are silently dropped from every window, since EventTime windowing has no way to place a late-arriving row"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 29 defines event time as when something actually happened at the source and processing time as when the system received it, and states network delays mean these are almost never identical. Windowing on event time gives you 'what happened during 2-3pm,' even if some of those events straggled in at 3:15 - exactly the scenario here. Nothing in the lesson restricts windows to IngestionTime only, or claims late events are simply dropped; late data is instead the reason watermarks exist, covered later in the chapter."
+    },
+    {
+      "id": "fr-ch02b-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly defines what a watermark does in a real-time streaming system?",
+      "options": [
+        "A declared tolerance for lateness that lets a window close on a deadline, accepting events that arrive within that grace period and dropping or rerouting anything later",
+        "A fixed-size, non-overlapping window that aggregates events back-to-back with no gaps between windows",
+        "A mechanism that reorders out-of-order events back into their original sequence before a window computes its aggregate",
+        "A rule that fires an action the moment a monitored property crosses a defined threshold",
+        "A mechanism recording every row-level insert, update, and delete in an operational database as it happens",
+        "A gap of inactivity that closes a variable-size window once no new events arrive within it"
+      ],
+      "correctIndex": 0,
+      "explain": "A watermark is a declared tolerance for lateness \u2014 \"assume no event will arrive more than 2 minutes late\" \u2014 that lets the system close a window on a deadline instead of waiting indefinitely for every possible straggler. It's a deliberate tradeoff between latency and completeness, not a mechanism that fixes or reorders anything by itself.",
+      "distractorExplain": "Option C is the most tempting wrong answer because watermarks and out-of-order events are easy to conflate \u2014 Lesson 34 exists specifically to separate them. A watermark only decides when a window is allowed to close; it never reorders events or changes how a still-open window computes its aggregate. Fixing out-of-order arrival (when it even needs fixing) means tolerating it, widening the watermark, or routing bad events elsewhere \u2014 not reordering, which the watermark itself never does."
+    },
+    {
+      "id": "fr-ch02b-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "A dispatcher dashboard tile needs to show \"trips in the last 5 minutes,\" updating every minute so the count visibly slides forward instead of jumping. Which window type does this, and why wouldn't a tumbling window work instead?",
+      "options": [
+        "A hopping (sliding) window with a 5-minute size and a 1-minute hop \u2014 it recomputes a new overlapping 5-minute result every minute, while a tumbling window would only emit a new count once every 5 minutes",
+        "A tumbling window with a 1-minute size \u2014 tumbling windows can be set to any length, including one minute, so this satisfies the requirement on its own",
+        "A session window with a 5-minute timeout \u2014 it stays open as long as trips keep arriving within 5 minutes of each other, which produces the same smooth effect",
+        "A tumbling window with a 5-minute size, because tumbling windows refresh their result continuously as new events stream in"
+      ],
+      "correctIndex": 0,
+      "explain": "A hopping (sliding) window is fixed-size but advances by a hop smaller than its own length \u2014 a 5-minute window hopping every 1 minute produces 12:00-12:05, then 12:01-12:06, then 12:02-12:07, and so on, each event landing in several overlapping windows. A tumbling window, by contrast, only emits a fresh result once per full window length, so a 5-minute tumbling window would jump every 5 minutes instead of sliding smoothly every 1."
+    },
+    {
+      "id": "fr-ch02b-03",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Activator rules, per Lesson 37 and the Lesson 41 capstone.",
+      "options": [
+        "A rule configured to fire on a \"change\" triggers once when a property newly crosses the threshold, not repeatedly while it stays above it",
+        "A rule configured as a plain threshold would re-fire every time Activator re-evaluates a property that is still above that value, even if nothing new happened",
+        "Activator can only watch an Eventstream directly \u2014 it cannot watch a KQL query's results or a Power BI/Real-Time Dashboard tile",
+        "In the Lesson 41 capstone, the rule watching FareAmount > 200 is configured as a change, so it fires once per trip that crosses $200 rather than continuously",
+        "Databricks Structured Streaming has a built-in feature that behaves identically to Activator"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Activator's threshold-vs-change distinction is the whole point of Lesson 37: a change rule fires once when a property newly crosses a line, while a plain threshold rule would keep re-firing on every re-evaluation while the value is still above it \u2014 exactly why the Lesson 41 capstone configures FareAmount > 200 as a change. Activator can watch an Eventstream, a KQL query's results, or a dashboard tile \u2014 not just an Eventstream alone. And per Lesson 40, Databricks Structured Streaming has no built-in equivalent to Activator; alerting there means writing custom code against something like foreachBatch."
+    },
+    {
+      "id": "fr-ch02b-04",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a session window has no fixed size at all \u2014 it stays open as long as events keep arriving close together, and only closes once a gap of inactivity called a ________ passes with nothing new showing up.",
+      "acceptedAnswers": [
+        "timeout",
+        "a timeout"
+      ],
+      "explain": "A session window's boundary is set by a timeout \u2014 a declared gap of inactivity, such as 10 minutes of silence \u2014 rather than by a fixed clock interval the way tumbling and hopping windows are. That's what lets it draw a clean boundary around a rider's single burst of app activity, whether that burst lasts 90 seconds or 40 minutes."
+    },
+    {
+      "id": "fr-ch02b-05",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each term to its correct definition, per Lessons 30-33.",
+      "left": [
+        "Tumbling window",
+        "Hopping (sliding) window",
+        "Session window",
+        "Watermark"
+      ],
+      "right": [
+        "A declared tolerance for lateness that lets a window close on a deadline instead of waiting indefinitely for stragglers",
+        "Fixed-size but overlapping \u2014 advances by a hop smaller than its length, so one event can land in multiple windows at once",
+        "Fixed-size and non-overlapping \u2014 every event belongs to exactly one window, tiling back-to-back with no gaps",
+        "Variable-size \u2014 stays open while events keep arriving, and closes after a gap of inactivity (a timeout)"
+      ],
+      "correctMap": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "explain": "A tumbling window is fixed-size and non-overlapping, tiling back-to-back with no gaps. A hopping (sliding) window is also fixed-size but advances by a hop smaller than its own length, so events can fall into several windows at once. A session window has no fixed size and closes only after a timeout gap of inactivity. A watermark isn't a window shape at all \u2014 it's the declared lateness tolerance that lets any of the above windows actually close on a deadline."
+    },
+    {
+      "id": "fr-ch02b-06",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Put these stages of Lesson 41's end-to-end NYC Taxi pipeline in the order the pipeline actually runs them.",
+      "items": [
+        "An Event Hub source emits simulated NYC Taxi trip events",
+        "Eventstream's Filter and Manage Fields nodes drop bad rows and shape fields early",
+        "A Sliding Window node (5-minute size, 1-minute hop) computes a rolling trip count and average fare",
+        "The KQL Database destination receives the shaped, windowed events into RawTripEvents",
+        "The Real-Time Dashboard's tiles auto-refresh against KQL queries over RawTripEvents",
+        "An Activator rule watches FareAmount and fires a Teams alert when a trip's fare crosses $200"
+      ],
+      "explain": "Lesson 41 chains together the whole chapter in exactly this order: the Event Hub source emits events, Eventstream's Filter and Manage Fields nodes clean and shape them, a Sliding Window node computes the rolling aggregate, the KQL Database destination stores the result as RawTripEvents, the Real-Time Dashboard queries and displays it on auto-refreshing tiles, and an Activator rule watches the same data and fires an alert when FareAmount crosses $200 as a change, not a continuous threshold."
+    },
+    {
+      "id": "fr-ch02b-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A team wants real-time alerting equivalent to Fabric's Activator, but they're building entirely in Databricks Structured Streaming. What does Lesson 40 say they'll actually need to do?",
+      "options": [
+        "Write their own alerting logic in code, such as against foreachBatch or a similar hook, since Structured Streaming has no built-in equivalent to Activator",
+        "Enable Databricks's own built-in Activator feature, which behaves identically to Fabric's",
+        "Switch their storage layer from Delta tables to a KQL Database first, since Activator only works against a KQL Database",
+        "Do nothing extra \u2014 .withWatermark() already provides the same alerting behavior that Activator provides in Fabric"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 40's concept map names Activator as a place where Fabric and Databricks genuinely diverge: Fabric has a dedicated alerting item with no code required, while Databricks Structured Streaming has no built-in equivalent at all. A team on Structured Streaming has to write custom code, such as logic against foreachBatch, to get comparable behavior \u2014 .withWatermark() only addresses late data, not alerting."
+    },
+    {
+      "id": "fr-ch02b-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Why does streamed CDC avoid adding extra query load to the source operational database, unlike a periodic \"compare and diff\" polling job would?",
+      "options": [
+        "CDC reads the database's own internal change log, which it's already maintaining for its own purposes, instead of repeatedly querying the live database to check what changed since last time",
+        "CDC only runs once per night, the same cadence as a batch MERGE job, so the amount of load it adds is identical either way",
+        "CDC moves all of the query load onto the KQL Database destination instead of the source, which isn't a real difference since it's still a Fabric item",
+        "CDC disables the source database's own transaction log while it reads from it, which prevents any other query from running during that time"
+      ],
+      "correctIndex": 0,
+      "explain": "Change Data Capture reads a mechanism the database already maintains internally \u2014 its own change log \u2014 rather than running repeated queries against a live database that's also serving real production traffic, such as the vendor's booking app. That's the opposite of a periodic polling job, which does add real query load every time it asks \"what changed since I last checked?\" CDC also runs continuously as changes happen, not on a nightly cadence like a batch MERGE."
+    },
+    {
+      "id": "fr-ch03a-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Lesson 43 names six qualities that separate a production-ready pipeline from a working demo. Which quality is defined as \"a bad run or bad deploy can be undone\"?",
+      "options": [
+        "Reproducible",
+        "Tested",
+        "Observable",
+        "Alertable",
+        "Recoverable",
+        "Cost-aware"
+      ],
+      "correctIndex": 4,
+      "explain": "Lesson 43 lists Recoverable as the quality meaning a bad run or bad deploy can be undone, alongside reproducible (runs the same way across environments), tested, observable, alertable, and cost-aware.",
+      "distractorExplain": "Alertable is the closest trap, but it means something different: it's about a notification reaching a human before a user notices the problem. That tells you something broke; it doesn't give you a way to undo the bad run or deploy once it's already happened. That undo capability is specifically what Recoverable names."
+    },
+    {
+      "id": "fr-ch03a-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Per Lesson 44, the KQL queries, Eventstream logic, and dashboard tiles should be identical across dev, test, and prod. A junior engineer argues this means the three workspaces are basically interchangeable. What's actually different between them?",
+      "options": [
+        "The data underneath and who can touch what \u2014 dev uses small/sample data with relaxed permissions, test uses production-shaped (not real) data, and prod uses real data with tightly scoped permissions",
+        "Nothing meaningful \u2014 once the item definitions match, the three workspaces are functionally the same thing",
+        "The KQL syntax itself has to be rewritten for each workspace, even though the underlying logic is conceptually the same",
+        "Dev and test both read real production data directly, while only prod keeps a private, isolated copy"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 44 is explicit that the logic (queries, Eventstream, dashboard tiles) stays identical across all three \u2014 what differs is the data underneath and who can touch what: dev has small/sample data and relaxed permissions for breaking things freely, test has production-shaped (but not real) data with prod-like permissions, and prod has real data, tightly scoped permissions, and real Activator alerts firing."
+    },
+    {
+      "id": "fr-ch03a-03",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these stages of Lesson 45's example CI/CD pipeline (azure-pipelines.yml) in the order a successful run executes them.",
+      "items": [
+        "Build stage's ValidateItems job runs fabric-cli validate against the workspace items",
+        "Test stage's RunPySparkTests job runs pytest against the test workspace",
+        "Deploy stage's PromoteToTest job runs fabric-cli deploy --to test",
+        "Deploy stage's PromoteToProd job runs fabric-cli deploy --to prod, gated on PromoteToTest succeeding"
+      ],
+      "explain": "Each stage only runs if the one before it succeeded: Build validates the item definitions first, Test then runs the PySpark test suite against the test workspace, and only after both succeed does Deploy promote to test and then to prod \u2014 with PromoteToProd explicitly dependent on PromoteToTest finishing first. A failed test stage stops the deploy stage from ever running at all."
+    },
+    {
+      "id": "fr-ch03a-04",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "code": "# Committed:\ndf.groupBy(\"VendorId\").count().show()\n\n# NOT committed (if configured correctly):\n+--------+-----+\n|VendorId|count|\n+--------+-----+\n|       1| 4821|\n|       2| 3910|\n+--------+-----+",
+      "prompt": "A teammate wants to commit a notebook's cell output (the results table shown above) alongside its source code, reasoning that it documents what the notebook actually produced. Why does Fabric's Git integration deliberately avoid tracking that output?",
+      "options": [
+        "Cell output changes every time the underlying data changes, even when the code itself didn't, so committing it would generate a meaningless diff on every run",
+        "Fabric doesn't support storing notebook output in any file format at all",
+        "Cell output is saved as an opaque binary blob that Git is physically unable to diff, unlike the readable source code",
+        "Committing the output would silently overwrite the source code cells the next time the notebook is opened"
+      ],
+      "correctIndex": 0,
+      "explain": "A notebook's last-run output reflects whatever the underlying data happened to be at that moment, not the code. Committing it alongside the source means every single run produces a new diff, even when nothing meaningful about the logic changed \u2014 which is exactly why Fabric's Git integration is configured to track the source code of a notebook, not its last-run output."
+    },
+    {
+      "id": "fr-ch03a-05",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Bicep and Terraform both describe infrastructure using a ________ model \u2014 stating the desired end state (\"this Event Hub namespace should exist, with this SKU\") rather than a sequence of manual steps to get there.",
+      "acceptedAnswers": [
+        "declarative",
+        "declarative model",
+        "a declarative model"
+      ],
+      "explain": "Lesson 47 describes both Bicep and Terraform as declarative: the file states the desired end state, and running it against an environment that already matches does nothing, while running it against an empty resource group creates everything described in one repeatable action \u2014 in contrast to a sequence of manual portal clicks."
+    },
+    {
+      "id": "fr-ch03a-06",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the four kinds of data pipeline tests from Lesson 48.",
+      "options": [
+        "Unit tests check a single transformation function in isolation, with known inputs and expected outputs",
+        "Schema tests check that a table's columns and types match what downstream consumers expect",
+        "Row-count/volume tests catch a run that silently processed zero rows, or far more rows than expected",
+        "Regression tests catch a KQL query change that accidentally altered its output shape",
+        "A pipeline test that passes against a handful of hand-picked sample rows is guaranteed to also catch real production data quality problems"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "Unit, schema, row-count, and regression tests each catch a genuinely different category of mistake, exactly as Lesson 48 describes them. The last statement is false and is specifically the lesson's warning: testing against hand-picked rows can pass while completely missing a data quality problem that only shows up at real scale or with real messiness \u2014 which is why production-shaped test data (Lesson 44) matters for testing specifically."
+    },
+    {
+      "id": "fr-ch03a-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "# Hard to test: reads and transforms in one function\ndef process_trips():\n    df = spark.read.csv(\"abfss://.../trips.csv\")\n    return df.filter(df.FareAmount > 0).select(\"TripId\", \"FareAmount\")\n\n# Testable: the transformation takes a DataFrame, returns a DataFrame\ndef clean_trips(df):\n    return df.filter(df.FareAmount > 0).select(\"TripId\", \"FareAmount\")",
+      "prompt": "Per Lesson 49, why is clean_trips(df) actually easier to unit test than process_trips()?",
+      "options": [
+        "clean_trips(df) takes a DataFrame in and returns a DataFrame out, so a test can hand it an exact, known DataFrame without needing a real file to read",
+        "clean_trips(df) runs measurably faster, because it skips the filter() step that process_trips() performs",
+        "process_trips() can only execute inside a real Fabric workspace, while clean_trips(df) can run on any operating system without Spark installed",
+        "clean_trips(df) doesn't use Spark at all, so no SparkSession fixture is needed to test it"
+      ],
+      "correctIndex": 0,
+      "explain": "Separating the transformation from the I/O is the entire point: you can't easily unit-test \"reads a file and transforms it\" without a real file, but you can very easily unit-test \"transforms a DataFrame,\" because the test gets to hand clean_trips() exactly the DataFrame it wants, built with spark.createDataFrame() in a local[1] SparkSession \u2014 no file, cluster, or network call involved."
+    },
+    {
+      "id": "fr-ch03a-08",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Match each data contract / schema drift term to what it actually is, per Lessons 50-51.",
+      "left": [
+        "Data contract",
+        "Semantics (in a contract)",
+        "Breaking change",
+        "Deprecation window"
+      ],
+      "right": [
+        "What a field actually means, beyond its type \u2014 e.g. \"total fare in USD, including tip\"",
+        "A transition period where both the old and new form of a changed field are emitted",
+        "An explicit, agreed-upon schema plus semantics plus SLA between a producer and consumer",
+        "Anything that alters what a consumer is already relying on, such as renaming a field"
+      ],
+      "correctMap": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "explain": "A data contract is the full agreement \u2014 schema, semantics, and SLA \u2014 between producer and consumer. Semantics is specifically what a field means beyond its type, like FareAmount being \"total fare in USD, including tip.\" A breaking change is anything that alters what a consumer already relies on, like renaming FareAmount to TotalFare. A deprecation window is the transition period where both the old and new field are emitted so every consumer can migrate on its own schedule."
+    },
+    {
+      "id": "fr-ch03a-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A dashboard's error-rate metric jumps sharply at 2:14pm. Per Lesson 52, what's the right next step to find out exactly what went wrong, and why?",
+      "options": [
+        "Check the logs for that specific time window \u2014 a metric can tell you that something's wrong, but not the specific detail of what actually happened",
+        "Build a full trace of every event from that entire day first, since a trace is the most detailed pillar and should always be checked before anything else",
+        "Re-run the same KQL metric query with a smaller time bucket, since a metric alone always reveals the exact root cause if you aggregate it finely enough",
+        "Nothing further is needed \u2014 the Monitoring Hub's run history already includes full event-level tracing by default"
+      ],
+      "correctIndex": 0,
+      "explain": "A real incident usually starts with a metric or alert noticing something's off, then moves to logs to find the specific error, and only reaches for a trace when the failure spans multiple stages and it's unclear where things actually went wrong. A metric answers \"is this trending wrong?\" \u2014 not \"what exactly happened?\" \u2014 which is what logs are for."
+    },
+    {
+      "id": "fr-ch03a-10",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about alerting on pipeline failures, per Lesson 53.",
+      "options": [
+        "An Eventstream disconnecting from its source should page immediately, since data has stopped flowing entirely",
+        "A single event failing a data-quality check should page immediately, the same as a disconnected Eventstream",
+        "Activator (Lesson 37) watches data values, while this lesson's pipeline-health alerts watch the pipeline's own operation",
+        "The fix for alert fatigue is adding more alert rules, so nothing ever slips through unnoticed",
+        "Attaching a severity tier to each alert rule means the response matches the actual stakes, instead of treating every alert the same"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        4
+      ],
+      "explain": "A disconnected Eventstream means data has stopped flowing entirely and needs a human right now \u2014 that's Sev 1. A single event failing a quality check is already handled automatically by Lesson 36's routing, so it's logged for later review, not paged immediately. Activator watches data values; this lesson's alerts watch the pipeline's own operation \u2014 a genuinely different trigger condition. And alert fatigue's fix is being deliberate about which conditions warrant interrupting someone, never simply adding more alerts."
+    },
+    {
+      "id": "fr-ch03a-11",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Match each cost/capacity/SLA term to what it actually is, per Lessons 54-56.",
+      "left": [
+        "Retention policy",
+        "Sustained bursting",
+        "SLO",
+        "Error budget"
+      ],
+      "right": [
+        "The allowed slack in an SLO, spendable on risky deploys or experiments",
+        "A signal that the baseline Fabric Capacity SKU itself is too small, not just handling a rare spike",
+        "Automatically aging out KQL Database data past a defined point to control storage cost",
+        "The internal target a team holds itself to, set stricter than the external SLA it supports"
+      ],
+      "correctMap": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "explain": "A retention policy (e.g. softdelete = 30d) ages out KQL Database data automatically to control storage cost. Sustained bursting \u2014 borrowing against future capacity every single day at the same hour, not just during a rare spike \u2014 signals the baseline SKU itself is too small. An SLO is the internal target, deliberately set stricter than the external SLA (3 minutes internally vs. 5 minutes promised). An error budget is the allowed slack in that SLO, spendable on risky changes until it runs out."
+    },
+    {
+      "id": "fr-ch03b-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "In a disaster recovery plan, what does the RPO (Recovery Point Objective) actually define, per Lesson 59?",
+      "options": [
+        "How much data loss is acceptable if the worst happens",
+        "How long recovery is allowed to take before the system must be back online",
+        "How many separate backup copies must be stored at once",
+        "How often a backup must be tested for restorability",
+        "The maximum size of a Delta table's time-travel retention window",
+        "The number of Azure regions a workspace must be replicated across"
+      ],
+      "correctIndex": 0,
+      "explain": "RPO (Recovery Point Objective) answers how much data loss is acceptable in the worst case \u2014 for example, 'up to 15 minutes of events.' It forces a real conversation about cost versus risk, since a tighter RPO almost always costs more to guarantee.",
+      "distractorExplain": "Option B describes RTO (Recovery Time Objective), not RPO \u2014 the two numbers answer different questions (how much data loss vs. how long downtime), and the lesson is explicit that a vague 'we have backups' isn't a plan until both numbers are actually set."
+    },
+    {
+      "id": "fr-ch03b-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "In Lesson 69's walkthrough, the on-call engineer rolls back the Window transformation change at 00:10, and the dashboard numbers look correct again by 00:12. According to the mitigate-vs-resolve distinction from Lesson 57, what has actually been accomplished at this point?",
+      "options": [
+        "Mitigation only \u2014 the immediate symptom stopped, but the missing CI check that let the bad deploy reach prod was still unfixed",
+        "Full resolution \u2014 the root cause was fixed and the incident could be closed immediately",
+        "Nothing meaningful, since a rollback doesn't count as a real incident-response action",
+        "Disaster recovery \u2014 the KQL Database had to be restored from a backup"
+      ],
+      "correctIndex": 0,
+      "explain": "The rollback at 00:10 is mitigation: it stops the immediate damage fast, even though the actual underlying gap \u2014 no CI check validating Eventstream definitions \u2014 wasn't fixed until the forward fix shipped at 00:40. Lesson 57 is explicit that mistaking mitigation for resolution is how the same incident quietly recurs."
+    },
+    {
+      "id": "fr-ch03b-03",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about handling PII in this course's real-time taxi pipeline, per Lesson 61.",
+      "options": [
+        "Precise pickup/dropoff coordinates can be sensitive even with no name attached, because repeated lat/long pairs for the same rider can reveal a home address or workplace",
+        "Classification by itself, without access control, is just labeling \u2014 it doesn't actually restrict who can query the real unmasked value",
+        "The cheapest PII control is often the Manage Fields transformation dropping or truncating a sensitive field before it ever flows downstream",
+        "Fixing a masking rule after unmasked PII has already reached a live dashboard un-exposes the data that already went out",
+        "Real-time pipelines carry less PII exposure risk than batch pipelines, since there's more time to catch a mistake before anyone sees it"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Location data can identify someone even without a named field, so it's sensitive despite looking purely operational. Classification without access control is only a label, not a restriction. Minimizing collection via Manage Fields is the cheapest control because the field never flows downstream at all. Masking can't un-expose data already shown on a live dashboard, and real-time actually raises the stakes versus batch \u2014 a stream exposes a mistake the moment it happens, with no review step to catch it first."
+    },
+    {
+      "id": "fr-ch03b-04",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 62, an Eventstream's configuration should never contain a connection string or API key in plain text, since anything committed to Git is effectively permanent. Instead, it should reference a secret stored in Azure ________ by name, with the real value fetched only at runtime.",
+      "acceptedAnswers": [
+        "Key Vault",
+        "Azure Key Vault"
+      ],
+      "explain": "Azure Key Vault stores the actual secret value outside any Fabric item definition entirely. The Eventstream, notebook, or pipeline holds only a safe-to-commit reference to the secret's name, while the sensitive value itself never touches Git."
+    },
+    {
+      "id": "fr-ch03b-05",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each term from Chapter 3's second half to what it actually means.",
+      "left": [
+        "Root cause (Lesson 58)",
+        "Lineage (Lesson 60)",
+        "Permission creep (Lesson 63)",
+        "Canary deployment (Lesson 65)"
+      ],
+      "right": [
+        "Tracing a specific dashboard value back through every transformation that produced it",
+        "The earliest fixable point in the chain that would have prevented the whole incident",
+        "Access that accumulates because revoking a grant is never automatic the way granting it is",
+        "Routing a small percentage of real traffic to a new version first, expanding gradually if it looks correct"
+      ],
+      "correctMap": [
+        1,
+        0,
+        2,
+        3
+      ],
+      "explain": "Root cause is the earliest fixable point that would have prevented the whole chain, not just the first symptom. Lineage traces a dashboard number back through every transformation stage. Permission creep accumulates because granting access is deliberate while revoking it almost never is. Canary routes a small slice of real traffic to a new version first, watching before expanding."
+    },
+    {
+      "id": "fr-ch03b-06",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Put the five stages of incident response, per Lesson 57, in the correct order.",
+      "items": [
+        "Detect \u2014 the alert fires, or a person notices first",
+        "Triage \u2014 assess how bad it actually is",
+        "Mitigate \u2014 stop the immediate damage, even imperfectly",
+        "Resolve \u2014 fix the actual underlying cause",
+        "Review \u2014 determine what happened and how to prevent it"
+      ],
+      "explain": "Every real incident moves through roughly this shape: detect, triage, mitigate, resolve, review. Naming the stages explicitly is what keeps a stressed, fast-moving team from skipping one \u2014 most commonly, jumping straight from detection to resolution and missing mitigation entirely."
+    },
+    {
+      "id": "fr-ch03b-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Per Lesson 66, why can't rolling back the bad code also undo an Activator alert that already paged someone, or a dispatcher's decision already made from a wrong dashboard number?",
+      "options": [
+        "Because those are real-world side effects that already happened \u2014 a rollback only changes what the system does going forward, not actions already taken outside it",
+        "Because Activator alerts live in a separate Git repository that a code or data rollback never touches",
+        "Because KQL Databases support no form of rollback at all, unlike Delta tables",
+        "Because the on-call engineer must manually send a 'disregard' message before any rollback is allowed to take effect"
+      ],
+      "correctIndex": 0,
+      "explain": "A rollback, code or data, stops the bad behavior going forward and can sometimes undo what's stored \u2014 but it can't un-send a Teams message that already reached someone or un-make a decision a dispatcher already acted on. That's exactly why mitigation as its own step matters: some damage is only preventable before it happens, not fixable afterward by any rollback."
+    },
+    {
+      "id": "fr-ch03b-09",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "In Lesson 69's walkthrough, the FareAmount incident is explicitly described as NOT certain other scenarios. Select every true statement about this, per the lesson.",
+      "options": [
+        "It wasn't a disaster (Lesson 59), because the system was never down or unreachable \u2014 it was only producing wrong numbers",
+        "It wasn't a PII exposure (Lesson 61), because FareAmount isn't sensitive data, so no additional governance response was needed",
+        "It still counted against the month's error budget (Lesson 56), since 12 minutes of degraded freshness occurred",
+        "It required a full disaster-recovery restore from backup, since the Window transformation itself was unrecoverable",
+        "Mitigation and resolution were the same action \u2014 the canary-rollback at 00:10 was both the mitigation and the final fix"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "The lesson is explicit that correctly recognizing what an incident ISN'T saves real time: this wasn't a disaster since the system stayed up, and it wasn't a PII issue since FareAmount isn't sensitive \u2014 but it still debited 12 minutes of degraded freshness from that month's error budget. No backup restore was needed, and resolution was the later CI fix at 00:40, not the 00:10 rollback, which was mitigation only."
+    }
+  ]
+}
