@@ -1,0 +1,461 @@
+{
+  "questions": [
+    {
+      "id": "sfdgov-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "In Snowflake's RBAC model, which statement correctly describes how access actually reaches a user?",
+      "options": [
+        "Privileges are granted to roles, and roles are granted to users — never privileges directly to a person",
+        "Privileges are granted directly to users, and roles are just a cosmetic label with no real effect on access",
+        "Privileges are granted to roles, and once a role has privileges, every user in the account can use it automatically",
+        "Roles can only be granted to other roles, never to an individual user",
+        "ACCOUNTADMIN must personally issue every GRANT statement in the account; no other role can grant privileges",
+        "A role must be re-created from scratch every time a new privilege needs to be added to it"
+      ],
+      "correctIndex": 0,
+      "explain": "RBAC's whole design is grant-to-role, then role-to-user, never privileges straight to a person. Lesson 4 demonstrates this end to end: USERADMIN creates the role, SECURITYADMIN grants it privileges, and only a separate GRANT ROLE ... TO USER actually lets someone use it.",
+      "distractorExplain": "Option C is the exact mistake Lesson 4 warns against: creating a role and granting it privileges does not let anyone use that role automatically. A role with privileges but never granted to a user still can't be used by anyone — GRANT ROLE ... TO USER is a separate, required step, not an automatic side effect of granting privileges."
+    },
+    {
+      "id": "sfdgov-02",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of creating a custom role and getting a real user into it, per Lesson 4, in the correct order.",
+      "items": [
+        "As USERADMIN, run CREATE ROLE to create the new custom role",
+        "As SECURITYADMIN, GRANT USAGE on the warehouse and database the role needs",
+        "As SECURITYADMIN, GRANT SELECT on the specific tables or views the role needs",
+        "Run GRANT ROLE ... TO USER so a specific user can actually use the new role",
+        "Switch into the new role and confirm in the object browser that only the granted objects are visible"
+      ],
+      "explain": "USERADMIN creates the role first; SECURITYADMIN then grants it warehouse, database, and object-level access as separate steps. Only after GRANT ROLE ... TO USER runs can anyone actually use the role — and the object browser is the concrete proof that exactly the granted objects, nothing more, are now visible."
+    },
+    {
+      "id": "sfdgov-03",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each system-defined role to what it actually does.",
+      "left": ["ACCOUNTADMIN", "SECURITYADMIN", "USERADMIN", "SYSADMIN"],
+      "right": [
+        "Manages grants, and typically is the role that grants privileges to other roles",
+        "Creates and owns warehouses, databases, and most day-to-day objects; most custom roles are granted under it",
+        "The top-level role that can manage every aspect of the account, including billing — grant sparingly",
+        "Creates and manages users and roles, but doesn't grant privileges on data objects"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "ACCOUNTADMIN sits at the top and can touch every part of the account including billing. SECURITYADMIN manages grants. USERADMIN creates users and roles but doesn't grant data-object privileges. SYSADMIN owns the warehouses, databases, and objects most custom roles should be granted underneath."
+    },
+    {
+      "id": "sfdgov-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: GRANT SELECT ON ________ TABLES IN SCHEMA governance_demo.sales TO ROLE analyst_role; applies automatically to tables created after this statement runs, not to any table that already exists.",
+      "acceptedAnswers": ["FUTURE", "FUTURE TABLES"],
+      "explain": "A FUTURE grant doesn't touch anything that exists today — it attaches automatically to any table created in that schema from this point forward, so analyst_role never has to wait on a manual grant for a new table again."
+    },
+    {
+      "id": "sfdgov-05",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement from Lesson 5's least-privilege checklist.",
+      "options": [
+        "Grant privileges to roles, and roles to users — never privileges directly to a person",
+        "It's safer to over-grant a role generously up front \"just in case\" than to add privileges later when someone actually requests them",
+        "ACCOUNTADMIN membership should be kept to a tiny handful of people",
+        "USERADMIN creating a role and SECURITYADMIN granting it privileges can be safely collapsed into ACCOUNTADMIN for convenience",
+        "A consistent role and warehouse naming convention keeps SHOW ROLES legible once an account has fifty roles instead of five"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "The checklist argues the opposite of over-granting: it's safer to add a privilege later on request than to over-grant and have to claw it back. Collapsing USERADMIN and SECURITYADMIN's separate steps into ACCOUNTADMIN defeats the separation of duties the checklist specifically preserves. Keeping ACCOUNTADMIN membership tiny and using a consistent naming convention are both real items on the list."
+    },
+    {
+      "id": "sfdgov-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "SECURITYADMIN and SYSADMIN are both granted to ACCOUNTADMIN in the role hierarchy. A session using ACCOUNTADMIN runs a command that privileges were only ever explicitly granted to SYSADMIN for. What happens?",
+      "options": [
+        "It succeeds — ACCOUNTADMIN inherits everything SYSADMIN can do, because SYSADMIN is granted to it",
+        "It fails — inheritance only flows from ACCOUNTADMIN downward, never upward into it",
+        "It succeeds only if the user also separately switches into SYSADMIN first, then back to ACCOUNTADMIN",
+        "It fails, because ACCOUNTADMIN can only use privileges granted directly to ACCOUNTADMIN itself, not to roles beneath it"
+      ],
+      "correctIndex": 0,
+      "explain": "A role granted to another role inherits everything that role can do. Because SECURITYADMIN and SYSADMIN are granted to ACCOUNTADMIN, a session using ACCOUNTADMIN implicitly has everything SYSADMIN has, with no separate switch required."
+    },
+    {
+      "id": "sfdgov-07",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A masking policy is defined as CREATE MASKING POLICY p AS (val STRING) RETURNS STRING -> CASE ... END. Which statement correctly describes a hard requirement this definition is subject to?",
+      "options": [
+        "The RETURNS type must match the val signature type exactly, and must match the data type of any column the policy is attached to",
+        "RETURNS can declare any type, since Snowflake automatically converts the output to match whatever column the policy is attached to",
+        "A single masking policy with RETURNS STRING can also be attached to DATE-typed columns, as long as the CASE expression handles both",
+        "The val parameter's type is cosmetic documentation only — Snowflake infers the real incoming type from the column at attach time",
+        "RETURNS must always be VARIANT, regardless of the underlying column's type, so one policy can serve every column type",
+        "A masking policy needs no RETURNS clause at all if every WHEN branch happens to return a literal string"
+      ],
+      "correctIndex": 0,
+      "explain": "Snowflake has to guarantee a masking policy's output is still a legal value for the column it protects, so RETURNS must match val's declared type exactly, and both must match the target column's type. That's exactly why the Tasty Bytes example needs two separate policy objects: one STRING policy for name/phone/email, one DATE policy for birthday.",
+      "distractorExplain": "Option C is the mistake Lesson 7 explicitly warns against: a policy written with RETURNS STRING cannot be attached to a DATE column, no matter how the CASE branches are written. The type match is enforced by Snowflake at the signature level, not inferred from what the branches happen to compute."
+    },
+    {
+      "id": "sfdgov-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "CASE\n  WHEN CURRENT_ROLE() IN ('ACCOUNTADMIN','SYSADMIN')\n    THEN val\n  WHEN SYSTEM$GET_TAG_ON_CURRENT_COLUMN('TAGS.TASTY_PII') = 'PHONE_NUMBER'\n    THEN CONCAT(LEFT(val,3), '-***-****')\n  WHEN SYSTEM$GET_TAG_ON_CURRENT_COLUMN('TAGS.TASTY_PII') = 'EMAIL'\n    THEN CONCAT('**~MASKED~**','@', SPLIT_PART(val, '@', -1))\n  ELSE '**~MASKED~**'\nEND",
+      "prompt": "A column tagged TAGS.TASTY_PII = 'EMAIL' holding the value 'jane@acme.com' is queried by TB_TEST_ROLE (not ACCOUNTADMIN or SYSADMIN). What does this policy actually return?",
+      "options": [
+        "**~MASKED~**@acme.com — the local part is masked but the real domain is kept",
+        "jane@acme.com, unchanged, since EMAIL isn't handled by the phone-number branch",
+        "**~MASKED~** with no domain at all, since EMAIL falls through to the ELSE branch",
+        "jan-***-**** — the phone-number masking format applies because the email value also contains an '@' character"
+      ],
+      "correctIndex": 0,
+      "explain": "TB_TEST_ROLE isn't ACCOUNTADMIN or SYSADMIN, so the first branch is skipped. The tag value is EMAIL, not PHONE_NUMBER, so the second branch is skipped too. The EMAIL branch matches and runs CONCAT('**~MASKED~**','@', SPLIT_PART(val, '@', -1)), which masks everything before the '@' while keeping the real domain after it."
+    },
+    {
+      "id": "sfdgov-09",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about how masking and row access policies behave, per Lessons 6 and 8.",
+      "options": [
+        "Dynamic masking changes what a query sees but never rewrites the stored bytes of the table",
+        "A table can have both a row access policy and a masking policy active at the same time, operating independently",
+        "A row access policy that evaluates to FALSE for a row causes Snowflake to return that row with a visible error flag instead of simply omitting it",
+        "A masking policy attached to a base table does not automatically apply to a view built on top of that table — each view needs its own policy",
+        "The mapping-table pattern lets a new role's row-level access be added with an INSERT instead of rewriting the policy itself"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "Dynamic masking is purely a query-time rewrite of the result set, leaving stored data untouched. Row access policies and masking policies stack independently on the same table, as the Tokyo screenshot in Lesson 8 shows directly. A FALSE row access policy result silently omits the row — no error, no flag. And both masking and row access policies propagate automatically into downstream views, which is exactly why the mapping-table pattern (an INSERT, not a policy rewrite) scales."
+    },
+    {
+      "id": "sfdgov-10",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: SHOW VIEWS reports an ________ column so you can confirm whether a view is secure without re-reading its full definition.",
+      "acceptedAnswers": ["IS_SECURE"],
+      "explain": "IS_SECURE is the column SHOW VIEWS reports, letting you check a view's secure status at a glance instead of inspecting its SELECT text directly."
+    },
+    {
+      "id": "sfdgov-11",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each data-protection term to what it actually is.",
+      "left": ["Dynamic data masking", "Static masking", "Row access policy", "Secure view"],
+      "right": [
+        "Hides plaintext column values at query time based on the requesting role, leaving stored bytes untouched",
+        "A boolean expression attached to a table deciding whether an entire row is visible to the querying role",
+        "Hides a view's own SQL definition from roles without the privilege to see it",
+        "An ETL job that permanently rewrites values, usually into a separate lower-environment copy of a table"
+      ],
+      "correctMap": [0, 3, 1, 2],
+      "explain": "Dynamic masking rewrites values at query time without touching storage. Static masking is the ETL-time alternative that permanently rewrites a separate copy. A row access policy is a boolean test deciding row visibility. A secure view hides its own definition, not the underlying data."
+    },
+    {
+      "id": "sfdgov-12",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of setting up tag-based masking, per Lesson 10, in the correct order.",
+      "items": [
+        "CREATE TAG defining the tag and its ALLOWED_VALUES",
+        "ALTER TABLE ... MODIFY COLUMN ... SET TAG to apply the tag, with a value, to each column that needs protecting",
+        "ALTER TAG ... SET MASKING POLICY to bind the masking policy to the tag itself",
+        "Query the table as a non-privileged role and confirm every tagged column comes back masked"
+      ],
+      "explain": "The tag has to exist before it can be applied to any column, and the columns have to carry the tag before a policy bound to that tag has anything to protect. Only after ALTER TAG ... SET MASKING POLICY runs does every currently-tagged column become protected in one motion — confirmed last by querying as a restricted role."
+    },
+    {
+      "id": "sfdgov-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "tags.tasty_pii is created with ALLOWED_VALUES 'NAME', 'PHONE_NUMBER', 'EMAIL', 'BIRTHDAY'. A teammate runs ALTER TABLE ... MODIFY COLUMN ssn SET TAG tags.tasty_pii = 'SSN'. What happens?",
+      "options": [
+        "The statement is rejected, because 'SSN' isn't in the tag's ALLOWED_VALUES list",
+        "It succeeds, and Snowflake silently adds 'SSN' to the tag's allowed values for future use",
+        "It succeeds, but the column is tagged with a NULL value instead of 'SSN'",
+        "It succeeds, because ALLOWED_VALUES only restricts values applied through SYSTEM$CLASSIFY, not manual ALTER TABLE statements"
+      ],
+      "correctIndex": 0,
+      "explain": "ALLOWED_VALUES constrains what a tag can be set to, and that constraint is enforced at apply time regardless of whether the value is being set by hand or by a classification call. Attempting to set an unlisted value is rejected outright, which is exactly what keeps tagging consistent across many teams."
+    },
+    {
+      "id": "sfdgov-14",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about tags and propagation, per Lessons 11 and 12.",
+      "options": [
+        "A tag can be applied manually by a person, automatically by Snowflake's built-in classification, or by a custom classifier's own logic — and all three are queried the same way via TAG_REFERENCES_ALL_COLUMNS",
+        "SYSTEM$CLASSIFY_SCHEMA tags only the specific tables named explicitly inside the call, never a table left unnamed",
+        "CREATE TABLE ... CLONE automatically copies the source object's tags onto the clone",
+        "A tag-driven masking policy on a base table propagates forward through the dependency graph into views built on that table",
+        "Tags can only be applied to columns, never to schemas, databases, or warehouses"
+      ],
+      "correctIndices": [0, 3],
+      "explain": "Three different origins — manual, built-in classification, custom classifier — all show up identically in TAG_REFERENCES_ALL_COLUMNS. A tag-bound masking policy on a base table reaches views automatically through the dependency graph. But SYSTEM$CLASSIFY_SCHEMA tags every table inside the named schema, including ones never named directly, and CLONE explicitly does NOT copy tags — a cloned table's columns start untagged and unprotected. Tags also apply to more than columns: schemas, databases, and warehouses are all valid targets."
+    },
+    {
+      "id": "sfdgov-15",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: calling SYSTEM$CLASSIFY with auto_tag omitted (or explicitly set to false) only produces a recommendation — nothing gets tagged. Setting auto_tag to ________ instead writes the recommended tags immediately.",
+      "acceptedAnswers": ["true", "TRUE"],
+      "explain": "auto_tag is the setting that turns a classification recommendation into an actual write. With it true, the recommended tags (like PRIVACY_CATEGORY and SEMANTIC_CATEGORY) are applied the moment SYSTEM$CLASSIFY runs."
+    },
+    {
+      "id": "sfdgov-16",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each classification term to what it actually is.",
+      "left": ["Privacy category", "Semantic category", "Custom classifier", "ADD_REGEX"],
+      "right": [
+        "The method that teaches a custom classifier a new pattern: semantic category, privacy category, regex, column-name hint, description",
+        "How identifying a column is on its own — IDENTIFIER versus QUASI_IDENTIFIER",
+        "A SNOWFLAKE.DATA_PRIVACY.CUSTOM_CLASSIFIER instance taught to recognize an organization-specific sensitive format",
+        "The specific kind of data a column holds, like DATE_OF_BIRTH or EMAIL"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "Privacy category is the IDENTIFIER/QUASI_IDENTIFIER distinction. Semantic category is the more specific label, like DATE_OF_BIRTH. A custom classifier is the object you create to recognize a format Snowflake doesn't know by default. ADD_REGEX is the method that teaches it a pattern, taking all five pieces at once."
+    },
+    {
+      "id": "sfdgov-17",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of building and running a custom classifier, per Lesson 14, in the correct order.",
+      "items": [
+        "Write a regex that matches the organization-specific format and test it with a plain SELECT ... WHERE ... REGEXP(...)",
+        "CREATE a SNOWFLAKE.DATA_PRIVACY.CUSTOM_CLASSIFIER instance in its own schema",
+        "CALL the classifier's ADD_REGEX method with the semantic category, privacy category, regex, column-name hint, and description",
+        "CALL SYSTEM$CLASSIFY naming the custom classifier in custom_classifiers, with auto_tag true",
+        "Confirm the new tag with TAG_REFERENCES_ALL_COLUMNS"
+      ],
+      "explain": "Confirming the regex works as a plain SELECT first makes it far easier to debug than troubleshooting it inside a classifier later. Only after the classifier object exists and ADD_REGEX has taught it the pattern can SYSTEM$CLASSIFY actually use it, and the tag is only provably there once TAG_REFERENCES_ALL_COLUMNS confirms it."
+    },
+    {
+      "id": "sfdgov-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A table with masking-policy-bound tags on several PII columns is cloned with CREATE TABLE ... CLONE. What happens to those columns' protection on the clone immediately after the clone completes?",
+      "options": [
+        "The clone's columns start untagged and therefore unprotected — the tags must be reapplied by hand",
+        "The clone inherits the tags and the masking protection automatically, identical to the source",
+        "The clone inherits the tags but not the masking policy bound to them",
+        "The clone fails to create at all, because CLONE can't be used on a table with tagged columns"
+      ],
+      "correctIndex": 0,
+      "explain": "CREATE TABLE ... CLONE does not automatically copy tags from the source object, even though the clone looks and queries exactly like its source, including its data. A clone full of sensitive data can sit completely unprotected until its tags — and therefore its masking protection — are reapplied explicitly."
+    },
+    {
+      "id": "sfdgov-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "A query selects from a secure view that wraps a sensitive base table; the view's SELECT text never mentions the base table by name. Which view and column would actually prove that query read the base table, and why wouldn't searching QUERY_HISTORY's query text work?",
+      "options": [
+        "ACCESS_HISTORY's base_objects_accessed, because it resolves indirection through views and UDFs to the real underlying object — QUERY_HISTORY's query text only shows what was literally typed",
+        "QUERY_HISTORY's query_text, because ILIKE-searching for the base table's name will always find it eventually",
+        "ACCESS_HISTORY's direct_objects_accessed, because it lists the base table instead of the view",
+        "Neither view can prove this — only the application's own logs can"
+      ],
+      "correctIndex": 0,
+      "explain": "A query that selects from a view never names the base table in its own text, so QUERY_HISTORY's text search misses it entirely. ACCESS_HISTORY's base_objects_accessed specifically resolves that indirection to the real underlying object — direct_objects_accessed would show the view itself, not the table behind it."
+    },
+    {
+      "id": "sfdgov-20",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about ACCOUNT_USAGE versus INFORMATION_SCHEMA, per Lessons 16 and 17.",
+      "options": [
+        "ACCOUNT_USAGE.TABLES shows dropped tables with a DELETED timestamp; INFORMATION_SCHEMA.TABLES never shows a dropped table at all",
+        "INFORMATION_SCHEMA is scoped to the entire account at once, while ACCOUNT_USAGE is scoped to one database at a time",
+        "ACCESS_HISTORY requires Enterprise Edition or higher",
+        "ACCOUNT_USAGE data can lag real time by minutes to hours depending on the view, while INFORMATION_SCHEMA is near real-time",
+        "GRANTS_TO_USERS filtered to deleted_on IS NULL gives the full history of every grant event ever issued, including ones already revoked"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "ACCOUNT_USAGE retains dropped objects with a DELETED timestamp, which INFORMATION_SCHEMA never shows. ACCESS_HISTORY is Enterprise Edition or higher only. ACCOUNT_USAGE trades some latency (minutes to hours) for that account-wide retention, while INFORMATION_SCHEMA stays near real-time. The scope claim is backwards — INFORMATION_SCHEMA is per-database, ACCOUNT_USAGE is account-wide — and GRANTS_TO_USERS filtered to deleted_on IS NULL gives only currently active grants, not the full history of revoked ones."
+    },
+    {
+      "id": "sfdgov-21",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: ACCESS_HISTORY data can lag up to ________ minutes behind real time, so it isn't the right tool for same-minute incident response.",
+      "acceptedAnswers": ["180", "180 minutes"],
+      "explain": "ACCESS_HISTORY's latency can reach 180 minutes (3 hours). QUERY_HISTORY, with lower latency, is the right first stop for \"did this query even run\"; ACCESS_HISTORY is the right stop for \"did it touch that specific table or column,\" just not within the same minute."
+    },
+    {
+      "id": "sfdgov-22",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each ACCOUNT_USAGE view (or filter) to the question it actually answers.",
+      "left": [
+        "QUERY_HISTORY",
+        "ACCESS_HISTORY",
+        "GRANTS_TO_USERS",
+        "ACCOUNT_USAGE.TABLES, filtered to deleted IS NOT NULL"
+      ],
+      "right": [
+        "Which tables and columns did a query actually read or write, resolved through views and UDFs",
+        "What ran, who ran it, and did it succeed",
+        "Proving a specific table existed in the account months ago and was later dropped",
+        "Which users currently hold which roles, and who granted them"
+      ],
+      "correctMap": [1, 0, 3, 2],
+      "explain": "QUERY_HISTORY answers what ran and whether it succeeded. ACCESS_HISTORY resolves the real tables and columns touched. GRANTS_TO_USERS reports current role assignments. ACCOUNT_USAGE.TABLES filtered to deleted IS NOT NULL is the one place that still proves a dropped table once existed, since INFORMATION_SCHEMA would show nothing."
+    },
+    {
+      "id": "sfdgov-23",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of turning a one-off audit query into a recurring monitoring check, per Lessons 18 and 19, in the correct order.",
+      "items": [
+        "Define the audit question precisely: which object, which users count as expected versus unexpected",
+        "Write the ACCESS_HISTORY or ACCOUNT_USAGE query that answers it once, as a one-off",
+        "Wrap the query in a CREATE TASK with a SCHEDULE and a WAREHOUSE to run it automatically",
+        "Have the task write its findings into a log or alert table",
+        "Review the output on a regular cadence instead of waiting to discover a gap by accident"
+      ],
+      "explain": "A query that answers something once is an audit, not a program. Defining the question precisely comes first, then proving the query works as a one-off, then scheduling it with CREATE TASK against a real warehouse, then giving it somewhere to write results, and finally actually reviewing that output on a cadence — skipping that last step leaves a working Task nobody is watching."
+    },
+    {
+      "id": "sfdgov-24",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "A Snowsight dashboard tile shows a bar chart of login failures by user. Under the hood, what is that tile actually backed by?",
+      "options": [
+        "A worksheet's saved SQL query against an ACCOUNT_USAGE view, rendered as a chart and refreshable on demand or a schedule",
+        "A separate, dashboard-only data source that doesn't involve writing any SQL",
+        "A snapshot image exported once from a worksheet, which stops updating after it's added to the dashboard",
+        "A Snowflake Task that can only ever produce a table, never a chart"
+      ],
+      "correctIndex": 0,
+      "explain": "A dashboard tile is just a worksheet's query result rendered as a chart or table. Anything queryable in ACCOUNT_USAGE can become a tile, which is exactly why a governance dashboard is built from the same SQL covered earlier in the chapter rather than some separate reporting API."
+    },
+    {
+      "id": "sfdgov-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "A team runs CREATE SHARE sales_share; and then tells a partner the share is ready to consume. Is this correct?",
+      "options": [
+        "No — a share starts completely empty, and nothing is visible to a consumer until objects are explicitly GRANTed into the share and a consumer account is added with ALTER SHARE ... ADD ACCOUNTS",
+        "Yes — CREATE SHARE automatically exposes every object in the current database to any account that requests it",
+        "No — CREATE SHARE requires a consumer account name as a parameter, so the statement itself would have failed without one",
+        "Yes — a share exposes whatever the creating role's own default access includes, with no additional GRANT required"
+      ],
+      "correctIndex": 0,
+      "explain": "Creating a share does nothing on its own. Nothing is visible to anyone until specific objects are GRANTed into the share and a consumer account is explicitly added — the same explicit-grant discipline from Chapter 1's RBAC, just aimed at a share object instead of a role."
+    },
+    {
+      "id": "sfdgov-26",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Time Travel and retention, per Lesson 22.",
+      "options": [
+        "AT and BEFORE can each name a past moment by TIMESTAMP, OFFSET, or STATEMENT",
+        "UNDROP can restore a table at any time after it's dropped, with no time limit",
+        "Standard Edition allows DATA_RETENTION_TIME_IN_DAYS up to 90 days, the same as Enterprise",
+        "Fail-safe gives 7 additional days after Time Travel ends, but it isn't queryable by the customer at all — only Snowflake support can recover it",
+        "Setting DATA_RETENTION_TIME_IN_DAYS to 0 disables Time Travel for that object entirely"
+      ],
+      "correctIndices": [0, 3, 4],
+      "explain": "AT and BEFORE both accept TIMESTAMP, OFFSET, or STATEMENT. Fail-safe is a genuinely non-queryable 7-day period recoverable only through Snowflake support. Setting retention to 0 disables Time Travel outright. UNDROP only works within the retention window, not indefinitely, and Standard Edition is capped at 0 or 1 day — the 0-to-90-day range is Enterprise Edition or higher only."
+    },
+    {
+      "id": "sfdgov-27",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: after a permanent table's Time Travel window ends, its historical data moves into Fail-safe for ________ additional days, recoverable only by Snowflake support.",
+      "acceptedAnswers": ["7", "seven"],
+      "explain": "Fail-safe adds exactly 7 more days beyond the Time Travel window — not queryable with AT, BEFORE, or UNDROP, and reachable only through an actual Snowflake support engagement."
+    },
+    {
+      "id": "sfdgov-28",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Match each cross-account governance statement to what it actually does.",
+      "left": [
+        "SHOW ACCOUNTS",
+        "CREATE DATABASE ... AS REPLICA OF",
+        "ALTER DATABASE ... ENABLE REPLICATION TO ACCOUNTS",
+        "ALTER DATABASE ... REFRESH"
+      ],
+      "right": [
+        "Synchronizes a secondary database from a snapshot of its primary — it doesn't run continuously",
+        "Lists every account that exists in the organization",
+        "Names which secondary account(s) a primary database can replicate to",
+        "Creates a secondary account's copy of a database, including the primary's masking policies, row access policies, and tags"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "SHOW ACCOUNTS lists the organization's accounts. CREATE DATABASE ... AS REPLICA OF creates the secondary copy, bringing the primary's policies and tags with it. ENABLE REPLICATION TO ACCOUNTS names the allowed secondary. REFRESH synchronizes from a snapshot — a one-time action, not a continuous stream, which is itself worth monitoring."
+    },
+    {
+      "id": "sfdgov-29",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Put these six steps of the Lesson 25 end-to-end governance checklist in the correct order.",
+      "items": [
+        "Create a least-privilege role and grant it exactly the access it needs",
+        "Apply a masking policy to one sensitive column",
+        "Tag the column that was just masked",
+        "Query as a non-privileged role, then confirm in ACCESS_HISTORY that the masking policy actually fired",
+        "Share the table through a secure view, not the raw table, to a second account",
+        "Drop the table on purpose and run UNDROP to prove Time Travel recovery works before an emergency"
+      ],
+      "explain": "The checklist's order isn't arbitrary: access control first (who can even see the table), then protection (what they see if they can), then classification (so the protection is findable later), then proof (did it actually work), then safe extension (sharing and recoverability) — each layer depends on the one before it already being in place."
+    },
+    {
+      "id": "sfdgov-30",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "In the Cascade Health Analytics case study, a departed contractor's role could still query PATIENT_VISITS six months after their engagement ended, with the sensitive columns fully unmasked. What does the course identify as the one query that would have surfaced this gap in minutes, had it been run on a schedule?",
+      "options": [
+        "The GRANTS_TO_USERS query from Lesson 17, filtered to the contractor's grantee_name with deleted_on IS NULL",
+        "A SYSTEM$CLASSIFY call against PATIENT_VISITS",
+        "A SHOW SHARES statement listing the company's outbound shares",
+        "A DATA_RETENTION_TIME_IN_DAYS check against the PATIENT_VISITS table"
+      ],
+      "correctIndex": 0,
+      "explain": "The case study's closing point is that the tooling was never missing — GRANTS_TO_USERS filtered to the contractor's name with deleted_on IS NULL would have shown the stale grant immediately. The gap was never running it on a schedule as part of offboarding, not a lack of any query to run."
+    }
+  ]
+}

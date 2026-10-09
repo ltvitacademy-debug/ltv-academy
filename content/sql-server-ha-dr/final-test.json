@@ -1,0 +1,621 @@
+{
+  "questions": [
+    {
+      "id": "hadr-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "A database needs to support being restored to any specific moment within the last 24 hours, not just to a backup's own timestamp. Which recovery model makes this possible?",
+      "options": [
+        "FULL",
+        "SIMPLE",
+        "BULK_LOGGED",
+        "SIMPLE, as long as log backups are scheduled frequently enough",
+        "AUTO_CLOSE",
+        "READ_COMMITTED_SNAPSHOT"
+      ],
+      "correctIndex": 0,
+      "explain": "Point-in-time recovery requires an unbroken chain of log backups, and only FULL recovery keeps the transaction log around (rather than truncating it automatically) so that chain can exist. SIMPLE recovery allows no log backups at all, so restoring to 'any moment' is never possible under it, no matter how often anything is scheduled.",
+      "distractorExplain": "BULK_LOGGED is the closest wrong answer because it behaves like FULL for most operations and does support log backups. But it minimally logs certain bulk operations, so if the target moment falls inside one of those operations, SQL Server can't stop at an arbitrary point inside it — only at the end of the log backup containing it. FULL is the model that guarantees arbitrary point-in-time recovery with no such caveat."
+    },
+    {
+      "id": "hadr-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "A 400 GB OLTP database runs a full backup weekly and a differential backup nightly, but no log backups at all. The business states its RPO is 30 minutes. Is the current strategy meeting that RPO?",
+      "options": [
+        "No — without log backups, worst-case data loss is up to a full day since the last differential, far exceeding 30 minutes; log backups need to be added on a schedule that matches the stated RPO",
+        "Yes — the nightly differential alone satisfies a 30-minute RPO, since it runs once every day",
+        "Yes — weekly full backups are enough on their own, since RPO is about downtime, not data loss",
+        "No — the fix is running the full backup nightly instead of weekly; differentials and log backups aren't relevant to RPO"
+      ],
+      "correctIndex": 0,
+      "explain": "RPO is set directly by log backup frequency, because log backups are the only backup type that bounds data loss to the interval between them. With no log backups at all, the worst-case loss is everything since the last differential — up to a day — not 30 minutes. Only adding log backups on roughly a 30-minute (or tighter) schedule actually closes that gap; the full backup's frequency doesn't change the RPO math at all."
+    },
+    {
+      "id": "hadr-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about backup compression and encryption in SQL Server, per this lesson.",
+      "options": [
+        "WITH COMPRESSION typically shrinks a backup file by 50-70%, at the cost of extra CPU during the backup",
+        "Backup encryption requires a certificate or asymmetric key to already exist in the target database before the backup can reference it",
+        "SQL Server encrypts a backup first and compresses it second, so encryption happens before compression",
+        "If the certificate used to encrypt a backup is lost, the .bak file itself becomes permanently unrestorable even though the file is intact",
+        "Backup compression can only be set per-statement with WITH COMPRESSION; it can never be made a server-wide default"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Compression typically cuts backup size 50-70% at the cost of CPU during the backup. Encryption requires a pre-existing certificate or asymmetric key — it isn't a flag you can just add. Losing that certificate (never backed up with BACKUP CERTIFICATE) makes every backup it protected permanently unreadable, even though the .bak file is physically intact. SQL Server actually compresses before encrypting, not the reverse, so encryption doesn't undo the size savings. Compression can also be set as a server-wide default via sp_configure 'backup compression default', so it isn't limited to per-statement opt-in."
+    },
+    {
+      "id": "hadr-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a single BACKUP statement listing more than one DISK = target doesn't create independent copies — it ________ the backup, splitting it across all listed files, none of which is restorable without all the others.",
+      "acceptedAnswers": ["stripes", "striping", "stripe"],
+      "explain": "Listing multiple DISK = targets stripes the backup across all of them for I/O performance, not redundancy. Every file in a striped set is required to restore — losing any one of them makes the entire backup set unusable. True redundant copies require MIRROR TO instead."
+    },
+    {
+      "id": "hadr-05",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of rigorously verifying a backup, per this lesson, in the correct order.",
+      "items": [
+        "Take the backup WITH CHECKSUM so page checksums are validated as SQL Server reads them",
+        "Run RESTORE VERIFYONLY WITH CHECKSUM against the backup file to confirm it's complete and its stored checksum is intact",
+        "Periodically restore the backup to a separate scratch or test instance",
+        "Confirm the restored database actually comes online and is queryable"
+      ],
+      "explain": "CHECKSUM at backup time catches corrupt pages before they're silently backed up. RESTORE VERIFYONLY WITH CHECKSUM is a cheap, read-only check that the file is complete and its checksum matches, but it doesn't prove restorability. Only a real periodic test restore to a scratch instance, followed by confirming the database actually comes online and is queryable, proves the backup would genuinely bring the database back — the only rigorous verification there is."
+    },
+    {
+      "id": "hadr-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "RESTORE DATABASE MyDatabase\nFROM DISK = N'D:\\Backup\\MyDatabase_Full.bak'\nWITH RECOVERY;",
+      "prompt": "A DBA runs the restore above, then realizes a differential backup taken later that same day should have been applied too. Can they now restore that differential on top of the already-recovered database?",
+      "options": [
+        "No — WITH RECOVERY finalized the restore and brought the database online; no further backups can be applied, so the entire restore has to start over from the full backup, this time using WITH NORECOVERY",
+        "Yes — RESTORE DATABASE can always apply another backup on top, regardless of the database's current recovery state",
+        "Yes, but only if WITH REPLACE is added to the differential restore statement",
+        "No — once a database is recovered, it can never be restored again under any circumstances, even starting over from scratch"
+      ],
+      "correctIndex": 0,
+      "explain": "WITH RECOVERY tells SQL Server this is the last backup being applied — it rolls back uncommitted transactions and brings the database online. Once recovered, no further backups can be layered on; the only way to apply the differential now is to restore the full backup again, this time WITH NORECOVERY, leaving the door open for the differential to follow."
+    },
+    {
+      "id": "hadr-07",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about differential restores, per this lesson.",
+      "options": [
+        "A differential restore chain is always exactly two backups deep — full, then the most recent differential — never a stack of differentials on top of each other",
+        "Every statement in a multi-step restore chain except the last should use WITH NORECOVERY, with WITH RECOVERY only on the final step",
+        "A differential backup can be restored on top of any full backup from the same database, regardless of which specific full backup it was actually taken against",
+        "Restoring a differential that doesn't match the full backup underneath it causes SQL Server to reject the restore with an error rather than silently producing a corrupted database",
+        "RESTORE HEADERONLY actually performs a preview restore in read-only mode before committing it"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "A differential captures everything since the last full, so restoring the most recent one is always exactly a two-backup chain. NORECOVERY on every step but the last is the general rule for every multi-backup chain. Each differential is tied to a specific full backup by its differential_base_lsn — restoring it against the wrong full triggers a deliberate integrity error, not silent corruption. RESTORE HEADERONLY is a read-only metadata report; it never touches the target database or performs any restore."
+    },
+    {
+      "id": "hadr-08",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in a point-in-time restore, the ________ clause tells SQL Server to replay the transaction log only up to a specified date and time, discarding any transactions committed after that moment.",
+      "acceptedAnswers": ["STOPAT", "WITH STOPAT", "STOPAT clause"],
+      "explain": "STOPAT is what makes a restore genuinely 'point-in-time' — it stops replaying the log at the exact moment specified, as if everything committed after that moment never happened. It only needs to be specified on the log restore statement that actually crosses the target time."
+    },
+    {
+      "id": "hadr-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "EXEC sp_change_users_login 'Report';",
+      "prompt": "A production backup restores successfully onto a staging server using MOVE, but an application account that worked fine in production can't log in on staging. The command above is run to investigate. What's the most likely cause this command reveals?",
+      "options": [
+        "The database user is orphaned — its SID doesn't match any server-level login on the staging server, since logins are server-level objects that don't travel with a database restore",
+        "The MOVE clause corrupted the login's stored password, so a new password needs to be set with ALTER LOGIN",
+        "RESTORE FILELISTONLY needs to be re-run on staging to repair the mapping",
+        "The database is still in a RESTORING state, which always blocks every login regardless of its mapping"
+      ],
+      "correctIndex": 0,
+      "explain": "A restored database keeps its database-level users, but SQL Server logins are server-level objects stored separately. If staging doesn't have a login with the exact same SID the user was mapped to in production — which it usually won't — that user becomes orphaned: it exists in the database but can't authenticate. sp_change_users_login 'Report' is exactly the command that surfaces orphaned users for this reason."
+    },
+    {
+      "id": "hadr-10",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Match each restore troubleshooting scenario or command to what it actually means or does, per this lesson.",
+      "left": [
+        "\"Exclusive access could not be obtained because the database is in use\"",
+        "A restore fails with an operating system error naming a MOVE target path, even though MOVE was specified correctly",
+        "Log backups 4 and 5 become unusable after log backup 3 turns out to be corrupted",
+        "ALTER DATABASE ... SET SINGLE_USER WITH ROLLBACK IMMEDIATE"
+      ],
+      "right": [
+        "Forces out other connections by terminating their open transactions, clearing the way for the restore to proceed",
+        "Another connection — an open query window, an app pool, a monitoring tool — is still using the database being restored over",
+        "The MOVE target's folder doesn't actually exist yet on the target server; MOVE redirects the file path but doesn't create missing directories",
+        "A backup chain gap breaks LSN continuity, so everything after the missing or corrupted link is unusable regardless of whether later files are otherwise valid"
+      ],
+      "correctMap": [1, 2, 3, 0],
+      "explain": "The exclusive-access error means some other connection is still using the database. A MOVE path failure despite correct syntax almost always means the target folder itself doesn't exist. A corrupted log backup in the middle of a chain breaks LSN continuity for everything after it, with no partial credit for later files. SINGLE_USER WITH ROLLBACK IMMEDIATE is the real fix that forces out other connections by terminating their transactions."
+    },
+    {
+      "id": "hadr-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A company has a Failover Cluster Instance protecting their SQL Server against node failure, with all nodes sharing one SAN in a single datacenter. Is this configuration HA, DR, or both — and what real-world event would it fail to protect against?",
+      "options": [
+        "It's HA only — it protects against a node crashing, but a fire or other event destroying the datacenter (and the shared SAN with it) would take the whole cluster down at once",
+        "It's DR only, since failover clustering is specifically a disaster-recovery technology by design",
+        "It's both HA and DR at once, since FCI nodes can be physically located in different cities",
+        "It's neither HA nor DR — an FCI provides no protection of any kind without an Availability Group layered on top of it"
+      ],
+      "correctIndex": 0,
+      "explain": "High availability is about surviving a local, component-level failure while staying inside the same datacenter — exactly what an FCI's node failover provides. Because every node shares one SAN in one building, a site-wide event like a fire or flood destroys the shared storage along with the datacenter, taking every node down at once. That's precisely the scope-of-failure gap HA technologies like FCI don't close on their own."
+    },
+    {
+      "id": "hadr-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A stakeholder asks for '99.99% uptime, same as we have now' for a database currently running on a single standalone instance with manual failover taking about 30 minutes per incident. Using the uptime math from this lesson, is that target achievable with the current setup?",
+      "options": [
+        "No — 99.99% allows only about 52.6 minutes of downtime per year total, so even two 30-minute manual-failover incidents in a year would already blow the entire annual budget; real automatic failover technology is required",
+        "Yes — 30 minutes per incident is well within the 99.99% budget as long as it doesn't happen more than once a month",
+        "Yes — 99.99% allows roughly 8.76 hours of downtime per year, so dozens of 30-minute incidents would still be fine",
+        "No — 99.99% requires zero downtime of any kind, so even a single incident of any length fails it outright"
+      ],
+      "correctIndex": 0,
+      "explain": "99.99% ('four nines') allows about 52.6 minutes of downtime across the entire year, not per incident. A single 30-minute manual-failover incident already uses most of that budget, and a second one in the same year blows it entirely. Hitting that target realistically requires automatic failover technology — a synchronous AG or an FCI — not just hoping incidents stay rare."
+    },
+    {
+      "id": "hadr-13",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the four HA/DR technologies compared in this lesson.",
+      "options": [
+        "Failover Cluster Instances protect against node/instance failure but not against loss of the shared storage itself",
+        "Availability Groups use independent storage per replica, which is actually a strength over FCI rather than a gap",
+        "Log shipping provides automatic, fast redirection of applications to the secondary during failover",
+        "Replication exists to distribute data for reporting or integration, not to serve as a clean failover mechanism",
+        "Every one of the four technologies requires Windows Server Failover Clustering to function at all"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "FCI protects node/instance failure but shares one storage array, so storage loss takes down every node at once. AGs replicate to independent storage per replica, which is a real advantage over FCI's single point of failure. Log shipping's failover is manual and scripted with no automatic redirection — the opposite of option C. Replication was never designed as a failover mechanism; it distributes data for other purposes. Replication and log shipping don't require WSFC at all, so option E is false."
+    },
+    {
+      "id": "hadr-14",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each HA/DR technology to its real, honest gap, per this lesson's comparison table.",
+      "left": [
+        "Availability Groups",
+        "Failover Cluster Instance (FCI)",
+        "Log shipping",
+        "Replication"
+      ],
+      "right": [
+        "Not a failover technology at all — it's a distribution technology, by design",
+        "Shared storage is a single point of failure",
+        "Requires WSFC (or cluster-less tradeoffs) and every database must be in FULL recovery model",
+        "Manual failover with a real data-loss window equal to whatever log hasn't been shipped and restored yet"
+      ],
+      "correctMap": [2, 1, 3, 0],
+      "explain": "AGs require WSFC (or a cluster-less Linux tradeoff) and FULL recovery on every database. FCI's gap is that shared storage itself is a single point of failure. Log shipping's gap is a manual failover process with a real data-loss window. Replication's gap is simply that it was never designed as a failover technology at all."
+    },
+    {
+      "id": "hadr-15",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "In an Always On Availability Group, which statement correctly describes synchronous commit mode?",
+      "options": [
+        "The primary waits for the secondary to confirm it has hardened the log record before reporting the commit as successful to the client, guaranteeing zero data loss on failover",
+        "The primary reports the commit as successful to the client immediately, without waiting for the secondary, then ships the log record afterward",
+        "The secondary reports the commit as successful to the client directly, bypassing the primary entirely",
+        "Synchronous commit mode replicates data through shared storage rather than over the network",
+        "Synchronous commit mode is only available when FAILOVER_MODE is set to MANUAL",
+        "Synchronous commit mode means the secondary applies log records before the primary itself writes them"
+      ],
+      "correctIndex": 0,
+      "explain": "Synchronous commit means the primary doesn't tell the client 'done' until the secondary has already hardened that log record durably to its own local log. This guarantees zero data loss on failover, because nothing is considered committed until the secondary has it too — at the cost of added write latency from waiting on that confirmation.",
+      "distractorExplain": "Option B describes asynchronous commit, not synchronous — it's exactly the opposite behavior. Under asynchronous commit the primary reports success immediately without waiting, which is why asynchronous replicas can lose recent transactions on failover. Synchronous commit is specifically defined by the primary waiting for that confirmation first."
+    },
+    {
+      "id": "hadr-16",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A team adds a Standard Edition SQL Server instance as a secondary replica in an Availability Group whose other replicas run Enterprise Edition. What happens to the AG's overall feature set as a result?",
+      "options": [
+        "The whole AG is constrained to Basic AG behavior — single database, no readable secondary — even on the Enterprise nodes, because the AG as a whole can't rely on features the Standard replica doesn't have",
+        "Nothing changes — each replica's edition only affects that one replica, never the AG as a whole",
+        "The Standard Edition replica is automatically excluded from the AG until it's upgraded to Enterprise",
+        "The AG applies the Basic AG single-database limit only to the Standard replica, while the Enterprise replicas keep full multi-database support"
+      ],
+      "correctIndex": 0,
+      "explain": "All replicas should meet the same edition tier expectations. Mixing Standard and Enterprise replicas in one AG constrains the entire AG to Basic AG behavior — single database, no readable secondary — even on the Enterprise-licensed nodes, because the AG as a whole can't depend on features a participating Standard replica doesn't have."
+    },
+    {
+      "id": "hadr-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "ALTER AVAILABILITY GROUP [AG_Sales] JOIN;",
+      "prompt": "A DBA restores a database normally, bringing it fully online, before attempting to run the statement above to join it to an Availability Group. What has to be redone before the join will succeed?",
+      "options": [
+        "The restore has to be redone WITH NORECOVERY, since a database that's already been recovered can't be joined to an AG until it's back in a restoring state",
+        "Nothing — ALTER AVAILABILITY GROUP ... JOIN works regardless of the database's current recovery state",
+        "The database needs to be dropped and re-created from scratch before it can join an AG",
+        "The AG itself needs to be re-created with SEEDING_MODE = AUTOMATIC before the join will succeed"
+      ],
+      "correctIndex": 0,
+      "explain": "A database must be restored WITH NORECOVERY — left in a restoring state — so SQL Server can still apply incoming log records to it once it joins the AG. A database that's already been recovered (brought fully online) can't accept that initial synchronization until the restore is redone with NORECOVERY."
+    },
+    {
+      "id": "hadr-18",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about Availability Group failover modes, per this lesson.",
+      "options": [
+        "Automatic failover requires both synchronous commit mode and automatic failover mode configured on the same secondary",
+        "A planned manual failover (ALTER AVAILABILITY GROUP ... FAILOVER) run against a healthy synchronous secondary causes no data loss",
+        "FORCE_FAILOVER_ALLOW_DATA_LOSS can safely be used routinely on a healthy synchronous secondary with no real downside",
+        "Automatic failover can still be blocked even with a healthy synchronous, automatic-failover-mode secondary if the WSFC has lost quorum",
+        "Asynchronous replicas can be configured for automatic failover mode, just with a longer health-detection window"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Automatic failover specifically requires synchronous commit plus automatic failover mode on the same replica. A planned failover between healthy synchronous replicas causes no data loss, since the secondary is already caught up. Even a healthy synchronous automatic-failover secondary won't get an automatic failover if the WSFC has lost quorum — quorum loss blocks it deliberately to avoid split-brain. FORCE_FAILOVER_ALLOW_DATA_LOSS is a last-resort, disaster-scenario operation, never a routine one. Automatic failover mode is only ever allowed on a synchronous-commit replica — SQL Server enforces this, it isn't just a policy preference."
+    },
+    {
+      "id": "hadr-19",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the Availability Group listener's stable DNS name is called the ________ — it's what application connection strings should reference, so a failover never requires changing a connection string.",
+      "acceptedAnswers": ["virtual network name", "VNN", "virtual network name (VNN)"],
+      "explain": "The listener's virtual network name (VNN) is a DNS name separate from any replica's own machine name. Clients resolve the VNN to a virtual IP that the WSFC rebinds to whichever node hosts the current primary, so the name itself never has to change after a failover."
+    },
+    {
+      "id": "hadr-20",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each AG monitoring DMV or column to what it actually reports, per this lesson.",
+      "left": [
+        "sys.dm_hadr_availability_replica_states",
+        "sys.dm_hadr_database_replica_states",
+        "redo_queue_size",
+        "log_send_queue_size"
+      ],
+      "right": [
+        "KB of log data a secondary has received but not yet replayed — a key lag indicator",
+        "Reports replica-level role, connection state, and aggregated synchronization health",
+        "KB of log data waiting to be sent from the primary to a secondary",
+        "Reports per-database synchronization state and lag, since any one database on a replica could individually fall behind"
+      ],
+      "correctMap": [1, 3, 0, 2],
+      "explain": "The replica-level DMV reports role, connection, and aggregated health. The database-level DMV is more granular, since a single database can fall behind even if the replica overall looks connected. redo_queue_size is log data received but not yet replayed; log_send_queue_size is log data still waiting to be sent."
+    },
+    {
+      "id": "hadr-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A colleague says, 'we run a Failover Cluster Instance, so our databases are being replicated across three nodes for safety.' What's inaccurate about that statement?",
+      "options": [
+        "An FCI doesn't replicate data at all — there's only ever one copy of the data files on shared storage, and what moves between nodes on failover is which node has that storage mounted, not a copy of the data",
+        "Nothing is inaccurate — FCI nodes genuinely do each keep their own replicated copy of the database",
+        "The statement is wrong only about the node count — FCI always uses exactly two nodes, never three",
+        "FCI replicates data, but only the transaction log, never the data files themselves"
+      ],
+      "correctIndex": 0,
+      "explain": "An FCI is one single SQL Server instance that can run on any of several cluster nodes, but only ever on one at a time, against one shared copy of the data files. There's no replication happening at all — what moves during a failover is which node has the shared storage mounted and is running the instance, not a copy of any data."
+    },
+    {
+      "id": "hadr-22",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Windows Server Failover Clustering quorum, per this lesson.",
+      "options": [
+        "Node majority quorum keeps the cluster running as long as more than half the nodes are online and communicating",
+        "Node and disk majority uses a shared witness disk as a tie-breaking vote, typically for an even number of nodes",
+        "A cloud witness uses an Azure Storage account as the tie-breaking vote instead of a physical witness disk",
+        "Quorum's main purpose is improving performance during normal operation, not preventing split-brain",
+        "If a cluster splits into two groups and neither group holds a majority, both groups are still allowed to keep running independently"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Node majority requires more than half the nodes online. Node and disk majority adds a witness disk as a tie-breaker, typically for even node counts. A cloud witness is an Azure Storage-based alternative to a physical witness disk. Quorum's actual purpose is making split-brain structurally impossible, not a performance feature. If neither side of a partition holds a majority, neither side is allowed to run cluster resources — the cluster deliberately goes down rather than risk both sides acting independently."
+    },
+    {
+      "id": "hadr-23",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: if two nodes ever both believed they were the active owner of the same shared storage at the same time, they could both try to mount and write to the same disks independently — this data-corruption scenario is called ________.",
+      "acceptedAnswers": ["split-brain", "split brain"],
+      "explain": "Split-brain is exactly this scenario: two isolated nodes each believing they're in charge of the same shared storage simultaneously. It's the specific corruption risk that shared-storage design combined with cluster quorum exists to prevent, by guaranteeing only one node is ever allowed to claim the storage."
+    },
+    {
+      "id": "hadr-24",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of standing up a Failover Cluster Instance, per this lesson, in the correct order.",
+      "items": [
+        "Install Windows Server on each node, join them to the same Active Directory domain, and enable the Failover Clustering feature",
+        "Run the Create Cluster wizard (or New-Cluster) to validate the nodes and form the Windows Server Failover Cluster",
+        "Present the shared storage (a SAN LUN or Storage Spaces Direct) to the cluster and add it as cluster shared storage",
+        "Run SQL Server Setup and choose 'New SQL Server Failover Cluster Installation' on the first node",
+        "Run SQL Server Setup again on each additional node, choosing 'Add node to a SQL Server failover cluster'"
+      ],
+      "explain": "Each step structurally depends on the one before it: the cluster has to exist before shared storage is presented to it, and shared storage has to be validated and configured before SQL Server Setup's failover cluster installation path will even offer itself, since the installer explicitly checks for both. Additional nodes are added afterward, one at a time."
+    },
+    {
+      "id": "hadr-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "code": "-- RESTORE ... WITH STANDBY  vs.  RESTORE ... WITH NORECOVERY",
+      "prompt": "A team wants their log shipping secondary to also serve ad-hoc reporting queries between log restores. Which restore mode should the restore job use, and what's the real tradeoff?",
+      "options": [
+        "WITH STANDBY — it leaves the secondary read-only and queryable between restores, at the cost of briefly disconnecting active readers each time the next log restore needs to run",
+        "WITH NORECOVERY — it keeps the secondary queryable at all times with no interruptions",
+        "WITH STANDBY — it makes the secondary fully read/write, so reports and transactions can both run there",
+        "WITH RECOVERY — it finalizes the secondary permanently, so no further log restores are ever needed"
+      ],
+      "correctIndex": 0,
+      "explain": "WITH STANDBY leaves the secondary in a read-only state between restores, so it can serve reporting queries — exactly the right choice when the secondary also needs to be queryable. The tradeoff is that each time the next log restore needs to run, active readers get briefly disconnected. WITH NORECOVERY, by contrast, keeps the secondary completely inaccessible for querying at all times."
+    },
+    {
+      "id": "hadr-26",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Microsoft has marked database mirroring ________, with Availability Groups positioned as its direct, modern replacement for new work.",
+      "acceptedAnswers": ["deprecated"],
+      "explain": "Database mirroring has been deprecated by Microsoft for a considerable time, with AGs recommended instead for anything new. It hasn't received the ongoing feature investment AGs have, so nothing in the lesson treats it as a live recommendation for new deployments."
+    },
+    {
+      "id": "hadr-27",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each log shipping or database mirroring term to what it actually is, per this chapter.",
+      "left": ["Backup job", "Restore job", "Principal", "Witness"],
+      "right": [
+        "The database mirroring instance actively serving the database to clients",
+        "Runs on the primary on a schedule, taking a transaction log backup and writing it to a shared folder",
+        "An optional third instance that can enable automatic failover between a mirroring principal and mirror",
+        "Runs on the secondary, restoring each copied log backup in sequence onto the secondary database"
+      ],
+      "correctMap": [1, 3, 0, 2],
+      "explain": "The backup job runs on the primary, taking and sharing log backups. The restore job runs on the secondary, applying each one in sequence. The principal is mirroring's actively-serving instance. The witness is the optional third instance that enables automatic failover between principal and mirror."
+    },
+    {
+      "id": "hadr-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "A manager asks whether replication can be used 'as our disaster recovery solution' for a critical OLTP database, since it's 'already keeping a copy of the data somewhere else.' What's the accurate answer?",
+      "options": [
+        "No — replication distributes defined published objects to independent subscribers with no built-in failover relationship; if the publisher goes down, subscribers just stop receiving updates rather than taking over its workload. An Availability Group or FCI is the right tool for failover",
+        "Yes — any subscriber can be promoted to take over the publisher's workload automatically the moment the publisher fails",
+        "Yes, as long as transactional replication specifically is used, since only transactional replication supports automatic failover",
+        "No — replication can never keep any usable copy of data, so it isn't genuinely useful for any purpose, DR or otherwise"
+      ],
+      "correctIndex": 0,
+      "explain": "Replication exists to distribute data for reporting, offloading, or integration — not as a failover mechanism. Subscribers are independent databases with no built-in failover relationship to the publisher; if the publisher fails, subscribers simply stop receiving updates rather than taking over. An AG or FCI is the right tool when the actual goal is surviving a server or site failure."
+    },
+    {
+      "id": "hadr-29",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the Log Reader Agent and Distribution Agent in transactional replication, per this lesson.",
+      "options": [
+        "The Log Reader Agent runs continuously, reading the publisher's transaction log for committed changes to published articles",
+        "The Distribution Agent applies queued commands from the distribution database to each subscriber, in the same order the transactions originally committed",
+        "The Distribution Agent must always run at the distributor, never at the subscriber",
+        "Splitting change-capture from change-delivery means a slow or unreachable subscriber doesn't block the Log Reader Agent from continuing to capture changes on the publisher",
+        "The Log Reader Agent only runs once per scheduled backup job, the same way a log backup does"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "The Log Reader Agent runs continuously rather than on a schedule, which is what makes transactional replication near-real-time. The Distribution Agent applies queued commands in original commit order. Splitting capture from delivery means a slow subscriber doesn't block the Log Reader Agent, and the publisher's log can still be truncated once the Log Reader Agent has consumed those transactions. The Distribution Agent can run at the distributor (push) or the subscriber (pull), so it isn't restricted to one location."
+    },
+    {
+      "id": "hadr-30",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a ________ is a small, harmless marker transaction inserted at the publisher specifically to measure how long it actually takes to travel the full replication path to each subscriber.",
+      "acceptedAnswers": ["tracer token"],
+      "explain": "A tracer token measures real end-to-end latency, hop by hop: publisher log, Log Reader Agent, distribution database, Distribution Agent, and finally the subscriber. Replication Monitor records the timestamp at each hop, which splits total latency into the two numbers that matter separately for finding a bottleneck."
+    },
+    {
+      "id": "hadr-31",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch08",
+      "difficulty": "foundational",
+      "prompt": "Which statement correctly distinguishes RPO (Recovery Point Objective) from RTO (Recovery Time Objective)?",
+      "options": [
+        "RPO is how much data loss is tolerable, measured in time; RTO is how long the system can be down before it must be back",
+        "RPO is how long the system can be down before it must be back; RTO is how much data loss is tolerable",
+        "RPO and RTO both measure the same thing — allowed downtime — just using different units",
+        "RPO measures CPU overhead during a backup; RTO measures network latency during replication",
+        "RPO applies only to Availability Groups; RTO applies only to Failover Cluster Instances",
+        "RPO is a measure of budget; RTO is a measure of licensing edition"
+      ],
+      "correctIndex": 0,
+      "explain": "RPO answers 'how much recent data are we willing to lose' — a gap between protection points. RTO answers 'how long can the system actually be down' — the speed of the recovery process itself. The two are independent: a system can have a tight RPO and a loose RTO, or the reverse.",
+      "distractorExplain": "Option B simply swaps the two definitions — it's exactly backwards. RPO is about data loss, not downtime; RTO is about downtime, not data loss. Getting these reversed leads to designing the wrong technology for a stated requirement, which is precisely why this lesson treats the distinction carefully."
+    },
+    {
+      "id": "hadr-32",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "A business says a database can lose up to 4 hours of data but must be back online within 5 minutes of a failure. What does that combination actually require, and what would be an inadequate solution that only addresses one of the two numbers?",
+      "options": [
+        "It requires fast, automatic (or near-automatic) failover technology — an AG with automatic failover, or an FCI — even though the RPO is loose; relying only on periodic backups with a long manual restore process would meet the loose RPO but badly miss the tight 5-minute RTO",
+        "It requires synchronous replication with zero data loss, since any RTO under an hour always implies an RPO of zero too",
+        "It requires nothing beyond nightly full backups, since a 4-hour RPO is generous enough on its own to satisfy both numbers",
+        "It requires log shipping specifically, since log shipping is the only technology that can meet a 5-minute RTO"
+      ],
+      "correctIndex": 0,
+      "explain": "RPO and RTO are independent numbers that can point to different technology needs. A loose RPO (4 hours) could be met with periodic backups alone, but the tight RTO (5 minutes) demands automatic or near-automatic failover regardless — a manual restore process, even one that satisfies the RPO, would badly miss that RTO. Log shipping's manual failover and minutes-level lag don't reliably meet a 5-minute RTO either."
+    },
+    {
+      "id": "hadr-33",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about tabletop exercises versus real failover drills, per this lesson.",
+      "options": [
+        "A tabletop exercise is good at surfacing gaps in the plan itself — missing roles, unclear escalation points — without touching production or DR systems",
+        "A real failover drill validates whether the runbook's actual commands still work against the current environment and whether RTO is really met",
+        "A tabletop exercise, done thoroughly enough, can confirm that a specific RESTORE command still runs cleanly",
+        "Most organizations should choose one of the two approaches exclusively rather than using both",
+        "An untested DR plan encodes assumptions — like backup file locations or current AG configuration — that can silently go stale over time"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "Tabletop exercises are low-cost and good at surfacing gaps in roles, escalation, and plan logic, but they can't validate whether the actual technical steps work. Real drills are what validate that — whether commands still run and RTO is actually met. Most organizations use both, on different cadences, rather than choosing one. An untested plan encodes assumptions that can silently go stale, which is exactly why testing matters."
+    },
+    {
+      "id": "hadr-34",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Match each DR planning term to what it actually is, per this chapter.",
+      "left": ["Tabletop exercise", "Failover drill", "Runbook", "Communication role"],
+      "right": [
+        "A person dedicated to stakeholder updates during a disaster, separate from the team doing the actual recovery work",
+        "A talk-through of the DR plan without touching real systems, good at surfacing gaps in roles and escalation points",
+        "Command-level, specific recovery procedure meant to be followed under pressure by someone who didn't build the original system",
+        "Actually executing some or all of the recovery process to validate that the technical steps really work"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "A tabletop exercise walks through the plan without touching systems. A failover drill actually executes recovery steps to validate them technically. A runbook is the specific, command-level procedure meant to be followed under pressure. The communication role is a dedicated person handling stakeholders, kept separate from the recovery team."
+    },
+    {
+      "id": "hadr-35",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Bellhaven's 15-minute local RTO and 5-minute RPO both point to synchronous, automatic local protection between SQLPRD01 and SQLPRD02. Why doesn't that same synchronous approach work for the Indianapolis replica, SQLDR01?",
+      "options": [
+        "At roughly 175 miles of real distance, forcing synchronous commit would add unacceptable latency to every transaction on the primary; SQLDR01 is configured asynchronous instead, accepting some potential data loss in exchange for not slowing down every write",
+        "SQLDR01 can't use synchronous commit because it runs a different SQL Server edition than SQLPRD01 and SQLPRD02",
+        "Synchronous commit only works between exactly two replicas, and AG_Bellhaven already has two synchronous replicas",
+        "SQLDR01 is a reporting-only replica, and reporting replicas are never allowed to use synchronous commit"
+      ],
+      "correctIndex": 0,
+      "explain": "Synchronous commit requires the primary to wait for the secondary's hardening confirmation before reporting success — over real distance, that round-trip adds real, unacceptable latency to every write. SQLDR01, 175 miles away, is configured asynchronous specifically so the primary's performance isn't held hostage to a distant replica's network latency, accepting some potential data loss on failover in exchange."
+    },
+    {
+      "id": "hadr-36",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "code": "BACKUP DATABASE BellhavenOLTP\nTO DISK = N'\\\\SQLBKP01\\Backups\\BellhavenOLTP\\Diff\\BellhavenOLTP_Diff.bak'\nWITH DIFFERENTIAL, COMPRESSION, CHECKSUM, STATS = 10;",
+      "prompt": "A teammate suggests running this differential backup on SQLDR01 (the asynchronous DR replica) to save load on the primary. Why won't that work?",
+      "options": [
+        "Differential backups aren't supported on a secondary replica at all — only COPY_ONLY full backups and log backups can run there, because the differential bitmap tracking changes since the last full isn't something a secondary can maintain on its own",
+        "SQLDR01 is too far away geographically for any backup type to run there successfully",
+        "Differential backups can run on a secondary, but only if AUTOMATED_BACKUP_PREFERENCE is set to PRIMARY instead",
+        "Differential backups require the database to be in SIMPLE recovery, which AG_Bellhaven's databases aren't"
+      ],
+      "correctIndex": 0,
+      "explain": "Always On only supports COPY_ONLY full backups and log backups on a secondary replica — never differential backups — because the differential bitmap that tracks what's changed since the last full isn't something a secondary can independently maintain. This is a real, deliberate limitation, which is exactly why Bellhaven's schedule runs the differential on SQLPRD01, the primary, and the full backup on SQLPRD02 instead."
+    },
+    {
+      "id": "hadr-37",
+      "type": "multi-select",
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about how AG_Bellhaven is actually configured, per the capstone's CREATE AVAILABILITY GROUP statement.",
+      "options": [
+        "SQLPRD01 and SQLPRD02 are both SYNCHRONOUS_COMMIT with FAILOVER_MODE = AUTOMATIC, letting them fail over to each other in seconds without a human",
+        "SQLDR01 is ASYNCHRONOUS_COMMIT with FAILOVER_MODE = MANUAL, so a human has to confirm a real disaster before failing over to it",
+        "All three replicas use ASYNCHRONOUS_COMMIT, since the AG spans more than one city",
+        "GRANT CREATE ANY DATABASE on each secondary enables automatic seeding instead of a manual backup/restore to initialize the database",
+        "The listener BHFS-AGL registers a single IP address, since AG_Bellhaven only spans one subnet"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "SQLPRD01 and SQLPRD02 are both synchronous with automatic failover, giving the HA pair seconds-level, no-data-loss failover. SQLDR01 is asynchronous with manual failover, so a human confirms the disaster before accepting possible data loss. GRANT CREATE ANY DATABASE enables automatic seeding. Not all three replicas are asynchronous — only SQLDR01 is. The listener registers two IPs, one per Columbus subnet, since AG_Bellhaven's local replicas span more than one subnet."
+    },
+    {
+      "id": "hadr-38",
+      "type": "fill-in",
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: when both SQLPRD01 and SQLPRD02 become unreachable at once, promoting the asynchronous SQLDR01 replica requires explicitly running ALTER AVAILABILITY GROUP AG_Bellhaven ________, acknowledging that some committed transactions might not have made it to SQLDR01 yet.",
+      "acceptedAnswers": ["FORCE_FAILOVER_ALLOW_DATA_LOSS"],
+      "explain": "With both other replicas gone, there's no way to confirm SQLDR01 has every committed transaction, so a plain FAILOVER refuses to run. FORCE_FAILOVER_ALLOW_DATA_LOSS is the explicit, deliberate command that promotes it anyway, requiring a human to accept the possible data loss rather than letting any automation decide alone."
+    },
+    {
+      "id": "hadr-39",
+      "type": "matching",
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Match each AG_Bellhaven component to what it actually is in the capstone scenario.",
+      "left": ["SQLPRD01", "SQLPRD02", "SQLDR01", "BHFS-AGL"],
+      "right": [
+        "The asynchronous-commit, manual-failover DR replica at a colocation facility in Indianapolis",
+        "The original primary, in Columbus Data Center A",
+        "The listener's virtual network name that applications connect to instead of any specific replica name",
+        "The synchronous-commit, automatic-failover HA replica in Columbus Data Center B"
+      ],
+      "correctMap": [1, 3, 0, 2],
+      "explain": "SQLPRD01 is the original Columbus Data Center A primary. SQLPRD02 is the synchronous, automatic-failover HA replica two miles away in Data Center B. SQLDR01 is the asynchronous, manual-failover DR replica 175 miles away in Indianapolis. BHFS-AGL is the listener name every application and reporting job actually connects to."
+    },
+    {
+      "id": "hadr-40",
+      "type": "sequencing",
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of Bellhaven's runbook decision tree and procedure, per the capstone, in the correct order.",
+      "items": [
+        "Check whether SQLPRD01, the primary, is actually unreachable before running any failover command",
+        "If SQLPRD01 is down, check whether SQLPRD02 is reachable and shows SYNCHRONIZED",
+        "If SQLPRD02 is healthy, run Procedure A: a planned ALTER AVAILABILITY GROUP ... FAILOVER on SQLPRD02",
+        "If only SQLDR01 is reachable, escalate to the IT Director to confirm this is a real declared disaster before Procedure B",
+        "Once confirmed, run Procedure B: ALTER AVAILABILITY GROUP ... FORCE_FAILOVER_ALLOW_DATA_LOSS on SQLDR01",
+        "Run the verification checklist and, for Procedure B, measure and log the actual data-loss window before declaring recovery complete"
+      ],
+      "explain": "The runbook's decision tree routes the incident before any command runs: confirm the primary is actually unreachable, then check whether the synchronous SQLPRD02 is healthy for a routine Procedure A failover, or escalate first when only the asynchronous SQLDR01 survives, since Procedure B explicitly accepts possible data loss. Verification — including measuring the real data-loss window for Procedure B — always comes last, before declaring recovery complete."
+    }
+  ]
+}

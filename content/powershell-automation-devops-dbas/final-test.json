@@ -1,0 +1,632 @@
+{
+  "questions": [
+    {
+      "id": "psdevops-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "What is dbatools, and what does its Verb-DbaNoun naming convention actually let you predict?",
+      "options": [
+        "A free, open-source PowerShell module for SQL Server administration, where every command follows a predictable Verb-DbaNoun pattern, such as Get-Dba*, Test-Dba*, and Backup-Dba*",
+        "The .NET class library that SQL Server Management Studio itself uses internally to render its object tree, exposing servers, databases, and logins as objects",
+        "A Microsoft-shipped, officially supported module bundled automatically with every SQL Server installation",
+        "A commercial, paid module that requires a support contract before it can be installed on a production server",
+        "A module that replaced SMO entirely, so SMO itself is no longer relevant to PowerShell-based SQL Server administration",
+        "A set of commands named Noun-Verb instead of PowerShell's usual Verb-Noun pattern, specifically to avoid collisions with built-in cmdlets"
+      ],
+      "correctIndex": 0,
+      "explain": "dbatools is a free, open-source PowerShell module genuinely maintained by working DBAs, built specifically to automate SQL Server administration. Its Verb-DbaNoun convention (Get-Dba*, Test-Dba*, Backup-Dba*/Restore-Dba*, Copy-Dba*/Set-Dba*) is what makes its 500+ commands genuinely guessable instead of something you memorize one by one.",
+      "distractorExplain": "Option B describes SMO (SQL Server Management Objects), not dbatools — SMO is the underlying .NET API that SSMS itself uses, and dbatools is a separate, community-built module that wraps SMO for DBA-specific tasks. Confusing the two misses the whole point of dbatools existing as a friendlier, DBA-focused layer on top of SMO rather than being SMO itself."
+    },
+    {
+      "id": "psdevops-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "Invoke-Command -ComputerName SQLPRD01 -ScriptBlock {\n    Import-Module dbatools\n    Test-DbaLastBackup -SqlInstance localhost\n}",
+      "prompt": "Why is -SqlInstance localhost correct inside this script block rather than a mistake?",
+      "options": [
+        "The script block executes on SQLPRD01 itself, so from that machine's own point of view, the SQL instance it needs to reach really is local",
+        "localhost is a placeholder dbatools automatically substitutes with the real computer name, regardless of where the code actually runs",
+        "Invoke-Command always silently rewrites any -SqlInstance value to localhost before sending the script block to the remote machine",
+        "It's actually a mistake — without wrapping it in New-PSSession first, the command silently fails to connect to anything"
+      ],
+      "correctIndex": 0,
+      "explain": "PowerShell Remoting gets the code running on the right box; dbatools then does the SQL Server work once it's there. Because Invoke-Command's script block actually executes on SQLPRD01, that machine's own SQL Server instance genuinely is local to it — localhost is accurate, not a leftover from wherever the script was originally written."
+    },
+    {
+      "id": "psdevops-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about SMO (SQL Server Management Objects), per Lesson 3.",
+      "options": [
+        "SMO is the same .NET API that SQL Server Management Studio itself uses to render its object tree",
+        "dbatools is built partly on SMO, so dbatools' existence doesn't make SMO knowledge obsolete",
+        "Every property SMO exposes also has a dedicated dbatools cmdlet, so there's no task SMO can do that dbatools can't",
+        "SMO's Scripter object can generate a table's full CREATE TABLE script, including constraints and indexes, as text",
+        "SMO can only be called from PowerShell, never from any other .NET language"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "SMO is the actual API behind SSMS's object tree, and dbatools' own source code is full of SMO calls underneath — which is exactly why SMO knowledge doesn't go away. The Scripter object is a real example of something SMO can do that has no single dedicated dbatools cmdlet: scripting out a table's full CREATE definition with granular control. dbatools deliberately doesn't wrap every single SMO property and method, and SMO is callable from any .NET language, not just PowerShell."
+    },
+    {
+      "id": "psdevops-04",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "A function is decorated with [CmdletBinding(SupportsShouldProcess)] and calls $PSCmdlet.ShouldProcess() around a Remove-Item line. Put the sequence of events in order when it's run with -WhatIf.",
+      "items": [
+        "PowerShell parses the -WhatIf switch passed on the function call",
+        "The function reaches the line that calls $PSCmdlet.ShouldProcess() around the destructive action",
+        "ShouldProcess() detects -WhatIf and returns $false instead of actually prompting",
+        "The code inside the resulting if block, the real Remove-Item call, is skipped entirely",
+        "PowerShell prints a 'What if: Performing the operation...' message instead of deleting anything"
+      ],
+      "explain": "[CmdletBinding(SupportsShouldProcess)] alone only makes -WhatIf and -Confirm available as switches — it's the call to $PSCmdlet.ShouldProcess() around the actual destructive line that gates whether that line runs. With -WhatIf present, ShouldProcess() returns false, the real deletion is skipped, and PowerShell prints the preview message instead."
+    },
+    {
+      "id": "psdevops-05",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: -ErrorAction ________ forces a specific cmdlet's errors to be treated as terminating, which is required for a catch block to actually fire on that command's failure.",
+      "acceptedAnswers": ["Stop", "-ErrorAction Stop"],
+      "explain": "By default most cmdlets produce a non-terminating error that prints but lets the script continue, so catch never runs. Adding -ErrorAction Stop forces that specific command's errors to be treated as terminating, which is the one-flag difference between a try/catch that looks correct and one that silently does nothing."
+    },
+    {
+      "id": "psdevops-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "code": "Backup-DbaDatabase -SqlInstance SQLPRD01 -Path \\\\backups\\sales -Type Full",
+      "prompt": "This command omits -Database entirely. What does it actually do?",
+      "options": [
+        "It backs up every user database on SQLPRD01, since omitting -Database backs up the whole instance's user databases",
+        "It fails with a required-parameter error, since -Database is mandatory for Backup-DbaDatabase",
+        "It backs up only the master system database by default",
+        "It prompts interactively, asking which database to back up"
+      ],
+      "correctIndex": 0,
+      "explain": "Omitting -Database and dbatools backs up every user database on the instance, which is exactly the loop-avoidance a hand-written script would otherwise need explicit code for."
+    },
+    {
+      "id": "psdevops-07",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the health-check cmdlets from Lesson 7.",
+      "options": [
+        "Test-DbaDiskSpace returns every drive visible to the instance, not just the low ones — filtering happens separately",
+        "Get-DbaLastGoodCheckDb returns the last known-good DBCC CHECKDB date per database",
+        "Get-DbaAgentJobHistory requires manually parsing the SQL Server error log's raw text to find failed jobs",
+        "Get-DbaLastBackup returns the most recent backup of any type per database",
+        "Building the combined report as a [PSCustomObject] is required because dbatools cmdlets can't be run back-to-back otherwise"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Test-DbaDiskSpace returns every drive; the Where-Object filter to PercentFree -lt 15 is what turns that into a signal. Get-DbaLastGoodCheckDb and Get-DbaLastBackup both do exactly what their names say. Get-DbaAgentJobHistory returns structured job history objects filterable by Status, no log-parsing required. The dbatools cmdlets can already run back-to-back on their own — the [PSCustomObject] is for building one combined, structured report, not a technical requirement for chaining them."
+    },
+    {
+      "id": "psdevops-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "Invoke-DbaDbOptimize -SqlInstance SQLPRD01 -Database Sales -FragmentationLow Skip -FragmentationMedium IndexReorganize -FragmentationHigh IndexRebuild -UpdateStatistics",
+      "prompt": "What does this command actually do for an index with medium fragmentation, and for one with low fragmentation?",
+      "options": [
+        "It reorganizes the medium-fragmentation index and does nothing to the low-fragmentation index",
+        "It rebuilds both indexes, since -UpdateStatistics forces a rebuild regardless of fragmentation level",
+        "It skips both indexes entirely, since -FragmentationLow Skip applies globally to the whole command",
+        "It reorganizes both indexes, since IndexReorganize is the default action when no fragmentation band is specified"
+      ],
+      "correctIndex": 0,
+      "explain": "Invoke-DbaDbOptimize applies a different action per fragmentation band: low fragmentation is skipped, medium gets a reorganize (cheaper, online), and high gets a rebuild (more thorough, more expensive) — the same rebuild-vs-reorganize decision the SQL Server DBA course taught manually, now automated per index."
+    },
+    {
+      "id": "psdevops-09",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each security-audit cmdlet from Lesson 9 to what it actually does.",
+      "left": [
+        "Get-DbaLogin",
+        "Test-DbaLoginPassword",
+        "Get-DbaDbOrphanUser",
+        "Repair-DbaDbOrphanUser"
+      ],
+      "right": [
+        "Enumerates every SQL Server login and its properties",
+        "Checks SQL logins for empty or username-matching weak passwords via PWDCOMPARE()",
+        "Finds database users with no matching server login",
+        "Remaps an orphaned user to an existing login"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Get-DbaLogin enumerates logins and their properties. Test-DbaLoginPassword checks SQL logins for weak password patterns using PWDCOMPARE() against stored hashes. Get-DbaDbOrphanUser finds database users with no matching server login. Repair-DbaDbOrphanUser remaps an orphaned user to an existing login once it's been reviewed."
+    },
+    {
+      "id": "psdevops-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Why does this chapter's scripts (backups, health checks, index maintenance, security audits) run as Windows Task Scheduler jobs under a dedicated service account, rather than as SQL Server Agent PowerShell steps?",
+      "options": [
+        "SQL Server Agent's PowerShell step always runs under the single Agent service account, not a per-job account, which is often either too little or too much access for what a specific script needs",
+        "SQL Server Agent cannot run PowerShell steps at all, only T-SQL job steps",
+        "Task Scheduler jobs execute measurably faster than SQL Server Agent jobs on identical hardware",
+        "SQL Server Agent PowerShell steps require a separate paid license to enable"
+      ],
+      "correctIndex": 0,
+      "explain": "Agent's PowerShell step type runs under whatever the Agent service account has rights to, which is either too little (the script fails) or too much (the account was over-provisioned to stop scripts failing). Task Scheduler lets you specify exactly which dedicated account each scheduled task runs under, which is the right default for scripts needing controlled, specific permissions."
+    },
+    {
+      "id": "psdevops-11",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of Lesson 11's automation-ready error handling pattern in order, for a scheduled nightly backup script.",
+      "items": [
+        "Set $ErrorActionPreference = 'Stop' at the top of the script",
+        "Write-Log records that the backup job is starting",
+        "The try block runs Backup-DbaDatabase with -ErrorAction Stop",
+        "If it fails, the catch block logs the error and sends an alert email",
+        "The finally block logs that the backup job has finished, regardless of outcome"
+      ],
+      "explain": "Setting $ErrorActionPreference = 'Stop' makes every error in the script terminating by default. Write-Log at the start gives a durable record the run even began. The try block attempts the real work; catch only fires on failure and is where logging plus an active alert belong, since a silent failure in a 2 a.m. script has no one watching. finally always runs last, regardless of outcome, recording that the job is done."
+    },
+    {
+      "id": "psdevops-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "A team says a shared spreadsheet change log makes Git unnecessary for their database objects. What can git blame specifically tell them that the spreadsheet can't?",
+      "options": [
+        "Exactly which commit, and therefore which specific change, last touched each line still in a given object's file today",
+        "The current free disk space on the server hosting the database",
+        "Whether a stored procedure's query execution plan has changed since the last deployment",
+        "The exact row-level data contents of a table at a prior point in time"
+      ],
+      "correctIndex": 0,
+      "explain": "git blame shows exactly which commit last changed each line of a file, and by whom — invaluable when a procedure starts behaving oddly at 2 a.m. and someone needs to know what changed and when, down to the specific line, not just a manually-typed summary entry in a spreadsheet."
+    },
+    {
+      "id": "psdevops-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A developer changes a stored procedure directly on the test server without updating the corresponding file in the database project. What would a schema comparison between the project and the test server show, and how is it resolved?",
+      "options": [
+        "It shows the procedure's body differs between the two sides; the team either updates the project to reflect the legitimate change, or generates and runs a script to bring the server back in line with the project",
+        "It shows nothing at all, because Schema Compare only detects table changes, never stored procedure changes",
+        "It automatically updates the database project's file to match the server, with no review needed",
+        "It fails outright, because Schema Compare requires both sides to already match before it can even run"
+      ],
+      "correctIndex": 0,
+      "explain": "Schema Compare produces a concrete, itemized diff between a source and a target — here, the project versus the live test server. A changed procedure body shows up as a mismatch, and the resolution is always one of two directions: update source control to reflect a legitimate change, or generate a script to bring the live database back in line with what source control says it should be."
+    },
+    {
+      "id": "psdevops-14",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: with one .sql file per database object, two developers who each change a different stored procedure on the same day don't produce a Git merge ________, because their changes land in entirely different files.",
+      "acceptedAnswers": ["conflict", "merge conflict", "conflicts"],
+      "explain": "A merge conflict happens when two changes touch the same lines of the same file and Git can't automatically reconcile them. With one object per file, two developers editing different procedures are editing entirely different files, so there's nothing for Git to conflict over — unlike a single giant schema-dump file, where unrelated changes frequently collide."
+    },
+    {
+      "id": "psdevops-15",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about branching strategies for database code, per Lesson 15.",
+      "options": [
+        "Trunk-based development means small, frequent merges into one shared branch rather than long-lived separate branches",
+        "A feature branch for database work should stay short — days, not weeks — because the longer it lives, the further its schema drifts from what's actually deployed",
+        "Deleting an abandoned feature branch automatically reverts any migration that branch already applied to a test environment",
+        "Migration sequencing matters regardless of which branching model a team chooses",
+        "A database schema can be branched exactly like application code, with no extra considerations, because Git handles both identically"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Trunk-based development favors small, frequent merges; feature branches for database work should stay short specifically because of schema drift. Deleting a branch never undoes a migration already applied to real data — someone has to explicitly handle that. And whichever branching model a team picks, migration sequencing is the real constraint that actually matters, because a schema is stateful in a way application code branches aren't."
+    },
+    {
+      "id": "psdevops-16",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each code-review concern from Lesson 16 to what it actually checks.",
+      "left": [
+        "Table lock duration",
+        "Rollback script",
+        "Query plan impact",
+        "Standard code review practice"
+      ],
+      "right": [
+        "How long a proposed change holds an exclusive lock on a large, actively-written table",
+        "How a proposed schema change would be reversed if it needs to be",
+        "Whether other queries on the same table could be affected by a new index",
+        "Readability and naming conventions, the same baseline every code review already needs"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Table lock duration asks how long an operation like adding a NOT NULL column with a default will hold the table. A rollback script states how the change would be reversed, reviewed before approval rather than discovered during an incident. Query plan impact asks whether a new index could change the optimizer's plan for a different query on the same table. Standard practice — readability, naming conventions — is the baseline every review still needs on top of these database-specific concerns."
+    },
+    {
+      "id": "psdevops-17",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "For a database specifically, what does Continuous Integration (CI) actually validate, and what does it deliberately NOT do?",
+      "options": [
+        "CI builds the .sqlproj on every proposed change to confirm the schema is internally valid — no view references a missing column, no foreign key points at an undefined table — but CI itself never deploys anything anywhere",
+        "CI both validates the schema build and automatically deploys the validated change straight to production in the same step",
+        "CI only runs after a change has already been deployed to production, as a post-deployment sanity check",
+        "CI replaces the need for a code-review pull request entirely",
+        "CI is specific to application code and has no real equivalent for a database schema project",
+        "CI's only job is to run the smoke-test queries against a throwaway database"
+      ],
+      "correctIndex": 0,
+      "explain": "Continuous Integration means every proposed change is automatically validated, and for a database project that validation is building the .sqlproj — it answers one question, automatically: is this schema internally valid? CI doesn't deploy anything anywhere; that's CD's job, which comes after.",
+      "distractorExplain": "Option B collapses CI and CD into one step, but the lesson draws that line deliberately: CI only validates (build and check), while CD/delivery is the separate stage that actually applies a validated change to a target environment, sometimes with a human approval gate before production. Treating validation and deployment as the same step misses exactly the distinction this lesson is built around."
+    },
+    {
+      "id": "psdevops-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "SqlPackage.exe /Action:Publish /SourceFile:MyDatabase.dacpac /TargetServerName:SQLTEST01 /TargetDatabaseName:MyDatabase",
+      "prompt": "What does SqlPackage.exe actually do when it runs this command?",
+      "options": [
+        "It compares the DACPAC's intended schema state to what SQLTEST01's MyDatabase currently contains, and generates and runs the ALTER/CREATE/DROP statements needed to reconcile the two",
+        "It copies the DACPAC file itself onto SQLTEST01, and SQL Server reads schema definitions directly from that file at query time",
+        "It always drops and recreates the entire MyDatabase database from scratch, regardless of how similar the two schemas already are",
+        "It only validates the DACPAC's internal syntax, without making any actual change to SQLTEST01"
+      ],
+      "correctIndex": 0,
+      "explain": "A DACPAC is a snapshot of what the schema should look like, not a change script. SqlPackage.exe takes that snapshot and a target database, compares them conceptually the same way Schema Compare does interactively, and generates and runs exactly the ALTER/CREATE/DROP statements needed to bring the target in line — no hand-written change script required."
+    },
+    {
+      "id": "psdevops-19",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: because migration 0003 may have already run against real environments, the correct fix for a mistake inside it is a brand-new migration like 0005, never an edit to 0003 itself — migrations are ________ by convention, never rewritten after the fact.",
+      "acceptedAnswers": ["additive", "additive by convention"],
+      "explain": "Once a migration has run anywhere, the tracking table already records it as applied, and anyone who ran the old version now has a database that wouldn't match an edited one. The additive convention means the fix is always a new migration correcting the problem going forward, never a rewrite of one already deployed."
+    },
+    {
+      "id": "psdevops-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Why does Lesson 20's pipeline stage create a brand-new PipelineTestDb and drop it at the end of every run, rather than reusing one long-lived test database?",
+      "options": [
+        "A fresh, empty database on every run proves the migrations work from a clean slate, with no leftover data or state from a prior run masking a real problem",
+        "SQL Server requires a uniquely-named database for every single SqlPackage.exe deployment",
+        "A long-lived test database would eventually run out of available migration numbers to apply",
+        "Smoke-test queries can only run successfully against a database created on the same calendar day"
+      ],
+      "correctIndex": 0,
+      "explain": "Because the test database is created fresh and destroyed every run, there's no risk of accumulated test data or a prior failed run leaving the environment in a bad state — every run proves the migrations work starting from nothing, exactly the scenario a brand-new real environment would actually face."
+    },
+    {
+      "id": "psdevops-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Migration 0003 added a Status column to Orders. Two weeks later, thousands of real orders have meaningful status values in that column. Why would running the paired down-migration now be the wrong move?",
+      "options": [
+        "Dropping the column at this point wouldn't just undo a schema change — it would destroy real status data that now exists because of decisions made after the migration ran",
+        "Down-migrations can only be executed within 24 hours of the matching up-migration",
+        "SQL Server physically refuses a DROP COLUMN once that column holds any non-NULL values",
+        "The migrations-tracking table would reject the down-migration as an already-applied duplicate entry"
+      ],
+      "correctIndex": 0,
+      "explain": "Adding and then dropping a column is only a clean, symmetric reversal as long as nothing has started depending on its data yet. Once real orders carry meaningful status values, the down-migration isn't a mechanical undo anymore — it's a data-loss decision. Forward-fix-only, a new migration correcting the problem, is the honest path at that point."
+    },
+    {
+      "id": "psdevops-22",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Put these stages of the realistic database CI/CD pipeline from Lesson 22 in order, from commit to production.",
+      "items": [
+        "A developer commits a changed stored procedure script and opens a pull request",
+        "A reviewer checks locking impact, rollback plan, and downstream query effects, then approves",
+        "CI builds the .sqlproj, or validates the new migration script, on merge",
+        "The validated change deploys automatically to a test environment",
+        "A throwaway test database is migrated and smoke-tested",
+        "The change deploys to production, either automatically or after a deliberate manual approval"
+      ],
+      "explain": "The pipeline runs as a dependency chain, each stage gated on the one before succeeding: commit, human code review, automated CI build/validation, automated deploy to test, automated testing against a disposable database, and only then production — automatically, or behind an approval gate — with a rollback plan already decided ahead of time."
+    },
+    {
+      "id": "psdevops-23",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each IaC-for-DBAs term to what it actually is, per Lessons 23 and 26.",
+      "left": [
+        "Provisioning",
+        "Configuration",
+        "Reproducibility benefit",
+        "Auditability benefit"
+      ],
+      "right": [
+        "Bringing a compute/storage/networking resource into existence",
+        "Setting the state of what runs on a resource once it exists — memory limits, logins, jobs",
+        "A pull request against a .tf/.bicep file is a permanent, reviewable record of what infrastructure changed and why",
+        "Spinning up an identical dev or test SQL Server instance from the same template used for prod"
+      ],
+      "correctMap": [0, 1, 3, 2],
+      "explain": "Provisioning is bringing the resource into existence — what Terraform/Bicep/ARM are built for. Configuration is setting the state of what's running on it once it exists, which IaC tools model poorly. Reproducibility means spinning up an identical environment from the same template. Auditability means a reviewable PR record of what changed, unlike a portal click history."
+    },
+    {
+      "id": "psdevops-24",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about provisioning Azure SQL Database (PaaS) versus a SQL Server VM (IaaS), per Lesson 24.",
+      "options": [
+        "With Azure SQL Database, Microsoft manages the underlying OS and SQL Server binaries",
+        "Choosing a SQL Server VM means you now own patching and OS-level configuration that Azure SQL Database would have handled for you",
+        "Terraform's azurerm_mssql_server resource provisions a SQL Server VM, not a logical Azure SQL server",
+        "Real IaC for SQL Server almost never hardcodes secrets like admin passwords directly in the resource block",
+        "IaC automatically chooses between PaaS and IaaS for you based on the resource group's region"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Azure SQL Database is PaaS, so Microsoft manages the OS and SQL Server binaries; choosing a VM (IaaS) instead means taking on patching and OS-level configuration yourself. Real resource blocks reference secrets through variables (var.sql_admin_password), not literal values. azurerm_mssql_server provisions the logical Azure SQL server (PaaS), not a VM. And PaaS versus IaaS is a real architectural choice a team makes first — IaC doesn't decide it automatically."
+    },
+    {
+      "id": "psdevops-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "code": "# Imperative\nInvoke-DbaQuery -SqlInstance SQLPRD01 -Query \"EXEC sp_configure 'max degree of parallelism', 4; RECONFIGURE\"\n\n# Declarative (DSC)\nSqlMaxDop 'SetMaxDop' { ServerName = 'SQLPRD01'; MaxDop = 4 }",
+      "prompt": "Both of these can set MaxDop to 4 on SQLPRD01. Why is the declarative DSC version safer to re-run on a recurring schedule than the imperative version?",
+      "options": [
+        "The DSC engine checks the current value first and only changes it if it doesn't already match, so re-applying it is a no-op when nothing has drifted; the imperative version just runs sp_configure every time regardless of current state",
+        "The imperative version is actually the faster of the two to re-run, which is why it's preferred for scheduled jobs",
+        "DSC resources can only ever be executed once, and refuse to run a second time on the same node",
+        "sp_configure cannot be called more than once between SQL Server service restarts"
+      ],
+      "correctIndex": 0,
+      "explain": "Declarative configuration describes the desired end state; re-applying it is a no-op if the state already matches, because the DSC engine checks before changing anything. The imperative script doesn't know or care whether the setting already matches — it just runs, which is riskier (or at least less meaningful) to schedule repeatedly."
+    },
+    {
+      "id": "psdevops-26",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: provisioning dev, test, and prod from the same parameterized IaC template guarantees they start structurally consistent, but this lesson is explicit that structural consistency is not a substitute for actually testing against production-like data and ________.",
+      "acceptedAnswers": ["load", "production-like load"],
+      "explain": "Environment consistency from IaC is a real foundation, but it doesn't guarantee data is the same across environments or that load is comparable — a smaller dev SKU genuinely has different performance characteristics. It's not a replacement for testing against real, production-like data and load before a release."
+    },
+    {
+      "id": "psdevops-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Why does forcing a SQL login creation or a database restore into a Terraform resource usually produce a worse result than a short PowerShell/dbatools script run right after terraform apply?",
+      "options": [
+        "Terraform's resource model is built around infrastructure objects with create/update/destroy lifecycle semantics, which a SQL login or a restored database doesn't naturally fit",
+        "Terraform cannot expose any output values after a resource is created, so a script could never learn the new server's address anyway",
+        "dbatools cannot be invoked from inside any CI/CD pipeline, only interactively at a console",
+        "SQL logins and database restores aren't supported by SQL Server at all once a server has been provisioned through IaC"
+      ],
+      "correctIndex": 0,
+      "explain": "Terraform's output block is exactly how a pipeline passes connection details downstream, so outputs aren't the limitation. The real reason is that Terraform's resource model fits cloud/infrastructure objects with clean create/update/destroy semantics, and a SQL login or a restored database simply doesn't map cleanly onto that — a direct dbatools script handles it far more naturally."
+    },
+    {
+      "id": "psdevops-28",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "For posting an automated DBA alert to a Teams or Slack channel, which statement correctly describes the real, current PowerShell approach and why?",
+      "options": [
+        "Invoke-RestMethod POSTing a JSON payload to the channel's incoming webhook URL is the standard approach — the same general technique used to call any REST API, with no SMTP server or mailbox credentials involved",
+        "Send-MailMessage is the standard modern approach, since Microsoft continues to actively develop it with full support for current secure authentication methods",
+        "Posting to a Teams or Slack webhook requires a dedicated PowerShell module unrelated to calling any other REST API",
+        "Webhooks can only deliver plain text, so richer alert formatting like Teams adaptive cards isn't actually possible from PowerShell",
+        "Invoke-RestMethod can only issue GET requests, so POSTing a JSON payload to a webhook requires a separate tool",
+        "A chat webhook requires the exact same SMTP relay configuration an email-based alert would need"
+      ],
+      "correctIndex": 0,
+      "explain": "Both Teams and Slack support incoming webhooks: POST a JSON payload to a unique URL and it posts into a channel. Invoke-RestMethod is a standard PowerShell cmdlet for exactly this — a chat webhook is just a REST API with one endpoint, no SMTP server or mailbox credentials required.",
+      "distractorExplain": "Option B is the direct opposite of what the lesson states: Send-MailMessage is marked obsolete in modern PowerShell specifically because it lacks support for current secure authentication methods most mail providers now require, and it isn't being actively developed further. Treating it as the modern standard is exactly the outdated habit this lesson warns new scripts away from."
+    },
+    {
+      "id": "psdevops-29",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Why can a scheduled PowerShell script check something like \"did last night's backup actually restore successfully,\" when a native SQL Server Agent alert generally can't do the same thing?",
+      "options": [
+        "Agent alerts fire on signals SQL Server itself observes directly, like a performance counter or error number — they can't run a multi-step check like actually restoring a backup to verify it, which is exactly the kind of composite logic ordinary PowerShell code can express",
+        "SQL Server Agent alerts are disabled by default on every instance until a DBA manually enables them server-wide",
+        "Backup verification can only be performed from a server with no SQL Server Agent installed at all",
+        "Test-DbaLastBackup is a native T-SQL function that Agent alerts already call automatically behind the scenes"
+      ],
+      "correctIndex": 0,
+      "explain": "Agent alerts are strong at conditions SQL Server observes directly and fires on itself. They're weaker at anything requiring several combined signals or a multi-step check like a real backup-restore verification — which is exactly the kind of composite, judgment-based check a scheduled PowerShell/dbatools script can express that a native Agent alert can't."
+    },
+    {
+      "id": "psdevops-30",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the export-then-visualize monitoring pattern from Lesson 30.",
+      "options": [
+        "The PowerShell script's job stops at writing the metrics somewhere structured; a separate tool like Power BI or Grafana renders the actual chart",
+        "Export-Csv -Append is one real way a script builds a time series by appending a new row on every scheduled run",
+        "This pattern is meant to replace a dedicated monitoring platform at any scale, including large fleets needing real alerting rules and long retention",
+        "Power BI can connect directly to a CSV, a folder of them, or a SQL Server table as a data source",
+        "The PowerShell script itself is expected to render the dashboard's UI once the metrics are collected"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "The pattern deliberately keeps collection and rendering as two separate jobs: the script writes rows (via Export-Csv -Append or a table write), and a genuine dashboard tool like Power BI or Grafana reads and renders them. It's honestly scoped to a small team without need for a full monitoring platform — not a replacement for one at real scale with alerting rules and long retention — and the script is never expected to build a UI itself."
+    },
+    {
+      "id": "psdevops-31",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Which of these two incident payloads is the more useful automated ticket, and why?\nA: { short_description: \"Something is wrong on SQLPRD01\" }\nB: { short_description: \"Disk space critical: SQLPRD01 D: at 6% free (threshold 10%)\", urgency: 1 }",
+      "options": [
+        "B — it tells the responder exactly which instance, which check failed, the actual value, and the threshold it crossed, all in the title alone",
+        "A — a shorter description is always preferable because responders read tickets quickly",
+        "They're equally useful, since both successfully create a real ticket in the system",
+        "A — leaving the description vague gives the responder room to investigate without being biased by specific numbers"
+      ],
+      "correctIndex": 0,
+      "explain": "A good automated incident needs the specifics a responder needs without logging into the server first: which instance and check failed, the actual metric value and threshold, and enough context to triage severity. Payload B delivers all of that in the title alone; payload A is barely better than the chat notification on its own."
+    },
+    {
+      "id": "psdevops-32",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: rather than escalating the first time a condition crosses a threshold, this lesson recommends escalating only once the condition recurs across several consecutive checks or persists past a meaningful duration — in other words, requiring a real ________ before escalating, not a single blip.",
+      "acceptedAnswers": ["pattern", "a pattern"],
+      "explain": "A single slow query or momentary CPU spike is often transient and self-resolving. The honest practice is to require a genuine pattern — the same condition recurring across checks, or persisting meaningfully — before treating it as urgent enough to escalate."
+    },
+    {
+      "id": "psdevops-33",
+      "type": "matching",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Match each DevOps-for-DBAs term to what it actually is.",
+      "left": [
+        "Gatekeeper model",
+        "Enabler model",
+        "Guardrail",
+        "Shift left"
+      ],
+      "right": [
+        "A DBA manually reviews and approves every database change before production",
+        "A DBA builds automated checks that let others move fast safely, instead of personally reviewing every change",
+        "An automated check that enforces a standard without requiring a person to re-check it each time",
+        "Moving problem detection earlier on the development timeline, toward code and away from production"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "The gatekeeper model is manual, per-change review and approval. The enabler model relocates the DBA's judgment into automated guardrails built once, applied to every change. A guardrail is exactly that kind of automated check. Shift left is the broader principle of moving detection earlier, which is where those guardrails actually live in a CI/CD pipeline."
+    },
+    {
+      "id": "psdevops-34",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "A developer's new orders table migration looks technically correct — proper types, a primary key, foreign keys in place. Why might a DBA consulted during sprint planning catch a problem that a migration review alone, done after the fact, would miss?",
+      "options": [
+        "A schema that looks correctly normalized on paper can still perform badly if the application's actual query pattern — which columns get filtered on, whether a lookup fires many small queries instead of one — fights against it, and that pattern isn't visible from the CREATE TABLE statement alone",
+        "Migration scripts are technically forbidden from containing foreign keys, so the review would have rejected it regardless",
+        "Sprint planning is the only point in the process where a DBA is permitted to look at a schema change at all",
+        "A DBA consulted during sprint planning automatically gains write access to approve the migration without any review"
+      ],
+      "correctIndex": 0,
+      "explain": "A DBA who only looks at CREATE TABLE statements sees half the picture. The other half is how the application actually queries that schema — filter columns, aggregation frequency, N+1 patterns. A migration can be technically correct and still fight the application's real access pattern, which a DBA embedded earlier, asking \"how will this get queried,\" is positioned to catch before it ships."
+    },
+    {
+      "id": "psdevops-35",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about \"shift left\" for database practices, per Lesson 35.",
+      "options": [
+        "Shift left means moving the point where a problem gets caught earlier on the development timeline, ideally into code review or an automated CI check",
+        "A CI stage that validates a migration against a throwaway schema copy before merge is a concrete shift-left practice",
+        "Shift-left eliminates the need for any production monitoring or alerting, since every problem is now caught before merge",
+        "The core argument for shift-left is cost: the same problem is far cheaper to fix in code review than after it causes a production incident",
+        "Shift-left specifically means moving database work later, closer to the production deployment, so more context is available"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Shift left literally means moving detection earlier — toward code, away from production — and a CI stage validating a migration against a scratch schema copy before merge is exactly that in practice. The argument for it is cost: a problem caught in review costs a comment, the same problem in production costs an incident and a postmortem. It doesn't eliminate the value of monitoring, and it means moving earlier, not later."
+    },
+    {
+      "id": "psdevops-36",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: rewriting \"The on-call DBA failed to notice the alert for 40 minutes\" as \"The alert had no escalation ________, so it went unacknowledged for 40 minutes\" turns a personal-failing statement into one that names a fixable gap in the system.",
+      "acceptedAnswers": ["path", "escalation path"],
+      "explain": "A blameless postmortem asks what about the system allowed an incident to happen, not who caused it. Naming the missing escalation path points at a gap an action item can actually close, instead of ending the investigation at a person's shortcoming."
+    },
+    {
+      "id": "psdevops-37",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "At Meridian Outfitters, which of the three manual habits from Lesson 37 carries the most immediate business risk if it fails silently just once?",
+      "options": [
+        "Backups by hand — a single missed backup before an unplanned disk failure can mean restoring from a backup that's over 36 hours old",
+        "Health checks by eyeball — a single skipped morning check has an immediate, irreversible data-loss consequence on its own",
+        "Schema changes by email — a single emailed script always causes outright data loss the moment it's run",
+        "All three carry exactly identical immediate risk, since each one is performed manually"
+      ],
+      "correctIndex": 0,
+      "explain": "The lesson gives a concrete real example: twice in the past year Priya forgot the nightly backup, and once a disk failure on a Monday morning meant restoring from a backup over 36 hours old. A single missed backup, paired with real hardware failure, is the habit with the most immediate consequence if it fails silently even once."
+    },
+    {
+      "id": "psdevops-38",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the MeridianDBAOps automation suite built in Lesson 38.",
+      "options": [
+        "Invoke-MeridianBackups runs a full backup, then a log backup, then verifies the full backup is actually restorable with Test-DbaLastBackup",
+        "Invoke-MeridianHealthCheck pulls disk space, last backup status, and failed Agent jobs into a single object for Priya to review",
+        "Invoke-MeridianIndexMaintenance is scheduled to run nightly, at the same cadence as the backup script",
+        "Invoke-MeridianIndexMaintenance wraps Invoke-DbaDbIndexOptimize to decide, index by index, whether to reorganize, rebuild, or update statistics",
+        "None of the three scripts use try/catch, since Chapter 1's error handling patterns don't apply to this capstone"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Invoke-MeridianBackups runs full then log backups and proves restorability with Test-DbaLastBackup. Invoke-MeridianHealthCheck combines disk, backup, and Agent job status into one object. Invoke-MeridianIndexMaintenance wraps Invoke-DbaDbIndexOptimize for per-index decisions, but runs weekly off-hours, not nightly, since index maintenance is real I/O/CPU load the storefront can't absorb daily. Both backups and index maintenance are explicitly wrapped in try/catch, calling Send-MeridianAlert on failure."
+    },
+    {
+      "id": "psdevops-39",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Meridian's pipeline deploys to MERSQLDEV01 automatically but requires a human approval before deploying the same .dacpac to MERSQLPRD01. What does that asymmetry actually buy the team?",
+      "options": [
+        "Fast iteration and validation against a low-risk environment, while still giving Priya a deliberate review of exactly what SqlPackage.exe intends to change before anything touches production",
+        "Nothing — the approval gate is purely ceremonial and has no actual effect on what SqlPackage.exe does",
+        "A guarantee that MERSQLPRD01 can never experience a failed deployment, since a human already approved it",
+        "The removal of any need for MERSQLDEV01 to run its own SqlPackage.exe deployment step at all"
+      ],
+      "correctIndex": 0,
+      "explain": "Deploying to test automatically, with no human in the loop, keeps iteration fast on a low-risk environment. Gating production behind the meridian-prod-approval environment means Priya actually reviews what SqlPackage.exe intends to change before it touches MERSQLPRD01 — the deliberate continuous-delivery choice for the step where a bad database change is hardest to fully undo."
+    },
+    {
+      "id": "psdevops-40",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Put these elements of Meridian's tuned log-space alert from Lesson 40 in the order the check actually applies them.",
+      "items": [
+        "DBCC SQLPERF(LOGSPACE) reports the current log space percentage used for MeridianCommerce",
+        "The check requires that percentage to stay at or above the warning threshold across several consecutive checks",
+        "If it's sustained and over the warning threshold but under critical, Send-MeridianAlert posts a Warning to Teams",
+        "If it's sustained and reaches the critical threshold, Send-MeridianAlert pages Priya's phone directly"
+      ],
+      "explain": "The check first reads the real metric via DBCC SQLPERF(LOGSPACE), then requires the condition to be sustained across several consecutive checks rather than firing on one blip. Only then does severity-based routing apply: a sustained Warning posts to Teams for next-morning review, while a sustained Critical pages Priya's phone directly — the combination that cut nightly false pages down to roughly one real page every couple of weeks."
+    }
+  ]
+}

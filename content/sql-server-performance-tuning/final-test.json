@@ -1,0 +1,697 @@
+{
+  "questions": [
+    {
+      "id": "perftune-01",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the expanded tuning workflow, per Lesson 4, in the correct order for handling a real \"this query is slow\" ticket.",
+      "items": [
+        "Get the actual complaint in specific terms: which query, what does \"slow\" mean here, when does it happen",
+        "Run the actual query with the actual parameter values a user hit, against representative data volume",
+        "Capture duration, CPU time, logical reads, and the actual execution plan for the reproduced query",
+        "Make exactly one change that tests a specific, falsifiable hypothesis about the cause",
+        "Re-measure the same metrics against the baseline and confirm the targeted bottleneck actually moved"
+      ],
+      "explain": "The expanded workflow runs intake (get the complaint in concrete terms) before reproduce (run the real query with real parameters and representative volume), before measure (capture duration/CPU/reads/plan), before change (exactly one deliberate change testing a hypothesis), before verify (re-measure the same metrics and confirm the bottleneck moved). Skipping ahead to change without reproducing and measuring first is exactly the mistake this lesson exists to prevent."
+    },
+    {
+      "id": "perftune-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "A query has a duration of 8 seconds but a CPU time of only 200 milliseconds. What does that gap suggest about where the problem likely lives, and what kind of fix is NOT likely to help?",
+      "options": [
+        "The gap suggests the query is waiting on something (a lock, I/O, a memory grant) rather than doing heavy computation; rewriting the query's logic to reduce CPU work is unlikely to help much, since CPU was never the bottleneck.",
+        "The gap suggests the query is extremely CPU-intensive, so adding a covering index to reduce logical reads is the fix most likely to help.",
+        "The gap means the query's execution plan is corrupted and must be recompiled before any further diagnosis is possible.",
+        "The gap is meaningless, because duration and CPU time always measure the exact same thing for a single-threaded query."
+      ],
+      "correctIndex": 0,
+      "explain": "When duration is high but CPU time is low, Lesson 2 is explicit: the query isn't slow because it's doing too much work, it's slow because it's waiting for something — a wait-based problem that query rewriting or indexing (both aimed at reducing computation) won't fix. That gap is exactly the clue that points toward Chapter 5's wait-stat methodology instead."
+    },
+    {
+      "id": "perftune-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about gathering a performance baseline, per Lesson 3.",
+      "options": [
+        "Query Store automatically persists historical execution statistics over time without requiring you to run anything yourself ahead of time.",
+        "sys.dm_exec_query_stats is cumulative since the plan was compiled, and its numbers empty out on a plan eviction or a server restart.",
+        "A single PerfMon snapshot taken at 2 a.m. is a valid baseline for comparing against a measurement taken at 2 p.m. the next day.",
+        "PerfMon counters (or sys.dm_os_performance_counters) describe individual queries at the same level of detail Query Store provides.",
+        "A baseline should be captured across at least one full representative business cycle, not just a quiet moment."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        4
+      ],
+      "explain": "Query Store persists history automatically, which is exactly why it's a strong baseline source. sys.dm_exec_query_stats is cumulative since compilation and empties on eviction or restart, so it has to be diffed between two captured snapshots rather than trusted at a single point in time. A lone 2 a.m. snapshot compared against a 2 p.m. one isn't a valid baseline comparison — load, cache warmth, and time of day all differ. PerfMon counters describe the server as a whole, not individual queries — that's Query Store's and the DMVs' job. And capturing across a full representative cycle (a day, or a week if there's a weekly pattern) is exactly what the lesson recommends over a lucky or unlucky moment."
+    },
+    {
+      "id": "perftune-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank, per Lesson 5: ________ (XEvents) is the lightweight, modern successor to SQL Trace/Profiler, letting you capture detailed event data like query completions and lock waits with much lower overhead than the old Profiler GUI.",
+      "acceptedAnswers": [
+        "Extended Events",
+        "XEvents",
+        "Extended Events (XEvents)"
+      ],
+      "explain": "Extended Events (XEvents) is the modern, low-overhead successor to SQL Trace/Profiler. It's the right tool when DMVs and Query Store don't have enough detail — for example, capturing every individual execution of a specific query with its exact parameter values to catch a parameter-sniffing case in the act."
+    },
+    {
+      "id": "perftune-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "An operator's tooltip shows Estimated Number of Rows: 8, Actual Number of Rows: 640,000. Name the two most likely root causes this lesson gives you, and the decisive way to tell which one it actually is.",
+      "options": [
+        "Stale statistics or parameter sniffing; the decisive test is OPTION (RECOMPILE) with current statistics confirmed via sys.dm_db_stats_properties — if the recompiled plan with fresh stats is still bad, it's something else entirely.",
+        "A hardware failure on the storage subsystem; the decisive test is checking sys.dm_io_virtual_file_stats for stalled reads on that file.",
+        "An unsupported data type appearing in the WHERE clause; the decisive test is rewriting the query so every predicate uses CAST.",
+        "Insufficient MAXDOP for the query; the decisive test is raising cost threshold for parallelism and re-running."
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 7 names exactly two usual causes of a large estimated-vs-actual mismatch: stale statistics and parameter sniffing. The decisive test is OPTION (RECOMPILE) using the current call's actual parameter value — if the fresh-compile plan is dramatically better with statistics confirmed current, it's parameter sniffing; if it's still bad even after a fresh compile with current stats, the cause is something else entirely, not sniffing."
+    },
+    {
+      "id": "perftune-06",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about ad hoc plan bloat and the plan cache, per Lesson 10.",
+      "options": [
+        "Ad hoc plan bloat happens when literal values are baked directly into SQL text instead of being parameterized.",
+        "Each literally different query text is a cache miss, so SQL Server compiles and caches a new plan for nearly every call.",
+        "optimize for ad hoc workloads fixes ad hoc bloat outright by automatically parameterizing the application's queries.",
+        "A large count of rows in sys.dm_exec_cached_plans with usecounts = 1 and near-identical query text differing only by a literal is the signature of ad hoc plan bloat.",
+        "Ad hoc plan bloat only wastes memory for the ad hoc query itself and never affects any other query's cached plan."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "Ad hoc bloat comes from unparameterized literal SQL, where each differing literal is a fresh cache miss producing a new, rarely-reused plan — exactly the usecounts=1, near-identical-text signature in sys.dm_exec_cached_plans. optimize for ad hoc workloads doesn't fix this; it only mitigates the damage by caching a small stub plan on first execution instead of a full one. And at scale, ad hoc bloat can consume enough plan cache memory to evict plans that were genuinely being reused, hurting the whole server, not just the ad hoc query."
+    },
+    {
+      "id": "perftune-07",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each plan-forcing or hinting mechanism from Lesson 11 to what it actually does.",
+      "left": [
+        "FORCESEEK",
+        "USE PLAN",
+        "sp_query_store_force_plan",
+        "OPTIMIZE FOR"
+      ],
+      "right": [
+        "Forces compilation as if a specified (or UNKNOWN/average) parameter value were supplied, regardless of what's actually passed",
+        "Forces a previously captured, already-executed Query Store plan by its plan_id, reversible with no code change",
+        "Pins an exact captured plan shape via literal XML; brittle, and breaks silently on schema or statistics drift",
+        "Forces an index seek against a given index instead of allowing a scan, for one specific query"
+      ],
+      "correctMap": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "explain": "FORCESEEK forces a seek (optionally against a named index) instead of a scan, for one query. USE PLAN pins an exact plan shape via literal XML — guaranteed, but brittle to schema or statistics drift. sp_query_store_force_plan forces a specific, already-captured Query Store plan by plan_id, surgically and reversibly, with no application code change. OPTIMIZE FOR forces compilation as if a specified or UNKNOWN value were supplied, regardless of the actual parameter passed in."
+    },
+    {
+      "id": "perftune-08",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "In a SQL Server execution plan, what does a Key Lookup operator represent?",
+      "options": [
+        "A secondary trip back to the clustered index (or heap) to fetch columns that a nonclustered index used for the seek doesn't carry as key or included columns",
+        "An index seek that can only use the first column of a composite index",
+        "A hash-based join that builds an in-memory table from the smaller of its two inputs",
+        "A scan that reads every row of a table because no clustered index exists on it",
+        "A sort operator that explicitly reorders rows to satisfy an ORDER BY clause",
+        "A parallelism operator that synchronizes worker threads after a parallel scan completes"
+      ],
+      "correctIndex": 0,
+      "explain": "A Key Lookup fires once per row matched by a nonclustered index seek, to go back and fetch columns the index doesn't include as key or included columns. Cheap for a handful of rows, it becomes the dominant cost in a plan at scale — exactly the pattern a covering index (Chapter 3) is built to eliminate.",
+      "distractorExplain": "Option B describes the leftmost-prefix rule's seek behavior on a composite index, not a Key Lookup — seeking on a leading column is a property of how a composite index's keys are ordered, which is a completely different concept from the extra trip back to the clustered index for missing columns that a Key Lookup specifically represents."
+    },
+    {
+      "id": "perftune-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A table has a composite nonclustered index (Status, CreatedDate), and Status has only three possible values across the table. A query filters only on WHERE CreatedDate >= @cutoff. Will this index be seeked efficiently for that query?",
+      "options": [
+        "No — CreatedDate is the second key column, and the leftmost-prefix rule means a composite index can't be seeked using only a trailing column; a scan, or a seek against a different index on CreatedDate alone, is far more likely.",
+        "Yes — because Status only has three distinct values, the optimizer disregards it entirely and seeks directly on CreatedDate.",
+        "Yes — SQL Server automatically reorders a composite index's columns at query time to match whichever column the WHERE clause happens to filter on.",
+        "No, and this is unrelated to column order — a filter on a single column can never use any multi-column index, no matter how it's built."
+      ],
+      "correctIndex": 0,
+      "explain": "A composite index is sorted first by its leading column, then by the next within each value of the first — exactly like a phone book sorted by last name, then first name. SQL Server can seek on the leading column alone, or on the leading-plus-next together, but not on a trailing column by itself, because that column's values aren't sorted globally, only within each leading-column value. Filtering only on CreatedDate here forces a scan (or use of a different index), not a seek on this one."
+    },
+    {
+      "id": "perftune-10",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about key columns versus included columns in a nonclustered index, per Lessons 13 and 14.",
+      "options": [
+        "Key columns are stored at every level of an index's B-tree, while included columns are stored only at the leaf level.",
+        "A column that a query only needs to read back — never seeks, range-scans, or sorts on — belongs in INCLUDE rather than the key.",
+        "Included columns can be data types like nvarchar(max) or xml that aren't allowed as index key columns at all.",
+        "Adding a column to the key instead of INCLUDE is always cheaper, because key columns are indexed more efficiently at every level.",
+        "A covering index removes write cost entirely, since widening an index only ever affects how SELECT queries read data."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Key columns live at every level of the B-tree because the tree's sort order depends on them; included columns live only at the leaf level, which is exactly why they're cheaper to add and can hold types like nvarchar(max) or xml that key columns can't. The rule is: if a query needs to seek, range-scan, or sort on a column, it has to be a key column; otherwise it belongs in INCLUDE. Adding an unnecessary column to the key, rather than INCLUDE, makes every level of the tree wider for no seek benefit — the opposite of \"always cheaper.\" And a covering index is never free on the write side: every INSERT, UPDATE, or DELETE has to maintain the wider structure too."
+    },
+    {
+      "id": "perftune-11",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank, per Lesson 15: a filtered index can only be used by a query whose WHERE clause SQL Server can prove is a ________ of the index's own filter predicate.",
+      "acceptedAnswers": [
+        "subset",
+        "a subset",
+        "provable subset"
+      ],
+      "explain": "The optimizer will only use a filtered index when it can guarantee, from the query text itself, that every row the query could match is also covered by the index's own WHERE clause — a provable subset relationship. This is also why filtered indexes pair awkwardly with a parameterized @Status value instead of a literal: the optimizer often can't prove the match at compile time."
+    },
+    {
+      "id": "perftune-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A ten-billion-row fact table is scanned nightly by reporting queries that aggregate sales by category and region, and is never queried for an individual row. Which index design should it use, per Lesson 16?",
+      "options": [
+        "A clustered columnstore index — it stores each column together and compresses independently, and its batch-mode execution over huge row counts suits large aggregate scans far better than a rowstore structure built for single-row lookups.",
+        "A traditional rowstore clustered index — rowstore storage is always faster than columnstore for any table over a billion rows, regardless of query pattern.",
+        "A nonclustered columnstore index only, with no clustered index of any kind defined on the table.",
+        "A heap with no clustered index at all, since a fact table this large should avoid any form of indexing entirely."
+      ],
+      "correctIndex": 0,
+      "explain": "Columnstore storage is column-major, not row-major: each column is stored and compressed together across all rows, which is exactly the shape a query that touches most rows but only a few columns needs. Batch-mode execution (roughly 900 rows per batch) drastically cuts CPU overhead for aggregates over huge row counts. A clustered columnstore index replaces the table's storage entirely and is the standard choice for a large analytical fact table scanned by reporting queries, never queried row-by-row."
+    },
+    {
+      "id": "perftune-13",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Match each index term from Lesson 12 to what it actually is.",
+      "left": [
+        "Clustered index",
+        "Nonclustered index",
+        "Key Lookup",
+        "Selectivity"
+      ],
+      "right": [
+        "The fraction of distinct values in a column relative to row count; higher values make a better index candidate",
+        "A separate, ordered structure of key columns plus a pointer back to the full row",
+        "The extra trip back to the clustered index for columns a nonclustered index doesn't carry",
+        "Determines the physical row order on disk; it is the table itself, and there can be only one per table"
+      ],
+      "correctMap": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "explain": "A clustered index determines the physical storage order and is the table itself — one per table. A nonclustered index is a separate, ordered structure of key columns plus a pointer back to the full row. A Key Lookup is the extra trip back to the clustered index for columns a nonclustered index doesn't carry. Selectivity is the fraction of distinct values in a column relative to row count — higher selectivity makes a column a better indexing candidate."
+    },
+    {
+      "id": "perftune-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "code": "SELECT OrderId FROM dbo.Orders\nWHERE CAST(CustomerId AS varchar(10)) = '4210';",
+      "prompt": "A table has an index on CustomerId, an int column. Is this predicate sargable, and if not, how should it be rewritten so the index can be seeked?",
+      "options": [
+        "No, it isn't sargable — wrapping the indexed CustomerId column in CAST forces SQL Server to evaluate the function per row before it can filter, blocking a seek; rewriting it as WHERE CustomerId = 4210 (the bare column compared to a matching int literal) restores the seek.",
+        "Yes, it's already sargable — CAST only affects how the final result is displayed, not how the predicate is evaluated against the index.",
+        "No, and there is no sargable rewrite possible for this predicate; a column can never be compared against a differently-typed literal under any circumstances.",
+        "Yes, it's sargable, but only because the literal '4210' happens to be written as a quoted string."
+      ],
+      "correctIndex": 0,
+      "explain": "Sargable means the optimizer can use an index seek directly against the predicate. Wrapping the indexed column itself in a function or cast means SQL Server has to compute that function for every row before it can decide which rows match, forcing a scan. Removing the CAST and comparing the bare CustomerId column to the matching int literal 4210 restores sargability and lets the index be seeked."
+    },
+    {
+      "id": "perftune-15",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about anti-patterns and procedural overhead, per Lessons 19 and 20.",
+      "options": [
+        "WITH (NOLOCK) can return uncommitted data that later gets rolled back, duplicate rows, or skip rows entirely.",
+        "An implicit conversion between mismatched data types can force a per-row conversion on the indexed column, defeating a seek with no function visibly wrapping anything.",
+        "Before SQL Server 2019's inlining improvements, a scalar UDF called in a WHERE clause typically executes once per candidate row.",
+        "A cursor's per-iteration overhead (plan lookup, logging, locking) is negligible no matter how many rows the loop processes.",
+        "WITH (NOLOCK) guarantees the reader only ever sees fully committed data, just without having to wait on locks."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "NOLOCK's real tradeoff is correctness, not a free speed switch: it can return uncommitted, duplicate, or skipped rows. An implicit conversion can silently force a per-row conversion on the indexed column, blocking a seek with no function visible in the query text. A scalar UDF called from a WHERE clause, pre-2019, is a hidden row-by-row loop in disguise. A cursor's per-iteration overhead is trivial for ten rows but compounds into real cost at scale, not negligible regardless of row count. And NOLOCK does not guarantee committed data — that's exactly the opposite of what it trades away."
+    },
+    {
+      "id": "perftune-16",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank, per Lesson 21: for a #temp table, SQL Server maintains real column statistics the same way it does for a permanent table; for an @table variable, in most versions, the optimizer has no statistics at all and falls back to a fixed, low-row-count ________ instead, regardless of how many rows the variable actually holds.",
+      "acceptedAnswers": [
+        "estimate",
+        "a fixed estimate",
+        "cardinality estimate"
+      ],
+      "explain": "Without real statistics, the optimizer can only fall back to a fixed, low-row-count estimate for an @table variable — which can lead it to pick a plan (like Nested Loops) built for \"a handful of rows\" even against a table variable actually holding hundreds of thousands. A #temp table, by contrast, gets real, maintained statistics the optimizer can build an accurate plan around."
+    },
+    {
+      "id": "perftune-17",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the TOP (n) batch-delete loop pattern, per Lesson 23, in the correct order.",
+      "items": [
+        "Declare a counter variable and set it to a nonzero starting value so the loop runs at least once",
+        "Inside a WHILE loop, run DELETE TOP (n) FROM the table using the same WHERE filter as the original single giant DELETE",
+        "Set the counter variable from @@ROWCOUNT immediately after the DELETE TOP (n) statement",
+        "Optionally WAITFOR a short delay so other sessions get a chance to run between batches",
+        "Let the WHILE loop exit once the counter reaches zero, meaning no rows were left to delete"
+      ],
+      "explain": "The counter starts nonzero so the loop enters at least once. Each pass deletes only a bounded chunk (TOP (n)) using the same filter as the original operation, then @@ROWCOUNT tells the loop how many rows that batch actually removed. An optional short WAITFOR gives other sessions breathing room on a busy system. The loop exits once a batch removes zero rows, meaning nothing is left to delete — at that point only the current (empty) batch would roll back if interrupted, not the whole multi-million-row operation."
+    },
+    {
+      "id": "perftune-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "CREATE FUNCTION dbo.fn_OrderTotal_iTVF(@OrderId INT)\nRETURNS TABLE\nAS\nRETURN (\n    SELECT SUM(LineTotal) AS OrderTotal\n    FROM dbo.OrderLines\n    WHERE OrderId = @OrderId\n);",
+      "prompt": "A scalar UDF computing a customer's lifetime order total was rewritten above as an inline table-valued function. Which call-site change correctly invokes it against every row of dbo.Customers, per Lesson 22?",
+      "options": [
+        "SELECT c.CustomerId, t.OrderTotal FROM dbo.Customers AS c CROSS APPLY dbo.fn_OrderTotal_iTVF(c.CustomerId) AS t",
+        "SELECT c.CustomerId, dbo.fn_OrderTotal_iTVF(c.CustomerId) FROM dbo.Customers AS c — called exactly the same way the original scalar function was",
+        "SELECT c.CustomerId, t.OrderTotal FROM dbo.Customers AS c, dbo.fn_OrderTotal_iTVF AS t — joined with no APPLY and no join condition at all",
+        "SELECT c.CustomerId, t.OrderTotal FROM dbo.fn_OrderTotal_iTVF(ALL) AS t JOIN dbo.Customers AS c ON 1 = 1"
+      ],
+      "correctIndex": 0,
+      "explain": "An inline table-valued function returns a table, not a scalar value, so it has to be invoked per outer row with CROSS APPLY (or OUTER APPLY), not called directly in the SELECT list the way a scalar function was. CROSS APPLY dbo.fn_OrderTotal_iTVF(c.CustomerId) lets the optimizer expand the function's definition into the surrounding query and optimize the whole thing as one set-based plan, instead of running it as a hidden per-row loop."
+    },
+    {
+      "id": "perftune-19",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "In sys.dm_os_wait_stats, what is the correct definition of resource wait time versus signal wait time?",
+      "options": [
+        "Resource wait time (wait_time_ms minus signal_wait_time_ms) is time genuinely spent waiting for the resource itself; signal wait time is time spent ready to run but queued for a free CPU scheduler.",
+        "Resource wait time is time spent queued for a free CPU scheduler; signal wait time is time spent genuinely waiting for the resource itself.",
+        "Resource wait time and signal wait time both measure the exact same underlying quantity, just reported in different units.",
+        "Signal wait time only has meaning for PAGEIOLATCH waits and carries no meaning for any other wait type.",
+        "Resource wait time resets to zero every time a query recompiles, while signal wait time is cumulative since the last server restart.",
+        "Signal wait time is always zero on a single-CPU server, since no scheduler contention is possible with only one processor."
+      ],
+      "correctIndex": 0,
+      "explain": "wait_time_ms is made of two different things: resource wait time (wait_time_ms minus signal_wait_time_ms) is time genuinely spent waiting for the resource itself — a page from disk, a lock, a memory grant — while signal wait time is time spent ready to run but queued for a free CPU scheduler. A high signal-wait share points at CPU pressure; a high resource wait concentrated in one wait type points at a specific subsystem.",
+      "distractorExplain": "Option B swaps the two definitions exactly backwards — it's signal wait time that measures queueing for a free CPU scheduler, and resource wait time that measures genuinely waiting for the resource itself. Getting them reversed can lead to misreading a CPU-pressure signal as a storage or lock problem, or the other way around."
+    },
+    {
+      "id": "perftune-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "sys.dm_os_wait_stats shows CXPACKET as a top wait type with a large total, but every parallel query's actual execution plan shows evenly balanced row counts across threads. Should this be treated as a problem worth chasing, per Lesson 25?",
+      "options": [
+        "No — CXPACKET is high simply because the instance runs a lot of parallel plans, which is normal; evenly balanced per-thread row counts mean there's no skew problem here, so it isn't automatically worth chasing.",
+        "Yes — any high CXPACKET total always means parallelism should be disabled across the entire instance immediately.",
+        "Yes, but the only valid fix is lowering MAXDOP to 1 for every query running on the instance.",
+        "No, because CXPACKET can only ever appear on a server with a single CPU core."
+      ],
+      "correctIndex": 0,
+      "explain": "High CXPACKET time on its own doesn't mean parallelism is bad — it means the instance is running a lot of parallel plans, which may be perfectly appropriate for large analytical queries. It becomes worth investigating specifically when paired with skew (uneven per-thread row counts) or with cost-threshold/MAXDOP settings letting small queries go parallel unnecessarily. Balanced thread row counts rule out the skew explanation here."
+    },
+    {
+      "id": "perftune-21",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about I/O-bound wait types, per Lesson 26.",
+      "options": [
+        "PAGEIOLATCH_SH is the wait for a data page being physically read from disk into the buffer pool for shared (read) access.",
+        "WRITELOG waits are tied specifically to the transaction log, not the data files.",
+        "A high WRITELOG total is typically fixed by adding more data-file storage spindles.",
+        "sys.dm_io_virtual_file_stats reports cumulative read/write counts and stall time per physical database file.",
+        "PAGEIOLATCH_EX and PAGEIOLATCH_SH always point at completely unrelated subsystems from each other."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "PAGEIOLATCH_SH is a shared-access physical page read wait; WRITELOG is tied exclusively to the transaction log, since every commit requires a log write. Because WRITELOG points at the log, not the data files, adding more data-file spindles is the wrong fix — it's usually addressed by reducing transaction size/frequency or moving the log to faster storage. sys.dm_io_virtual_file_stats gives per-file cumulative read/write counts and stall time. PAGEIOLATCH_EX and PAGEIOLATCH_SH point at the same underlying cause (reads coming from disk instead of cache), just for exclusive versus shared access — not unrelated subsystems."
+    },
+    {
+      "id": "perftune-22",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each wait type from this chapter to what it actually signals.",
+      "left": [
+        "SOS_SCHEDULER_YIELD",
+        "RESOURCE_SEMAPHORE",
+        "PAGEIOLATCH_SH",
+        "ASYNC_NETWORK_IO"
+      ],
+      "right": [
+        "Recorded when a query's memory grant request is queued behind memory-grant contention",
+        "Recorded when SQL Server has results ready to send but is waiting on the client to consume the buffer",
+        "Recorded when a task voluntarily yields the CPU after its scheduler quantum, with other tasks waiting for that scheduler",
+        "Recorded while waiting for a data page to be physically read from disk into the buffer pool for shared access"
+      ],
+      "correctMap": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "explain": "SOS_SCHEDULER_YIELD fires when a task yields the CPU after its quantum with other tasks waiting for that same scheduler — a CPU-pressure signal. RESOURCE_SEMAPHORE fires when a query's memory grant request queues behind contention for the shared grant pool. PAGEIOLATCH_SH is the wait for a data page being physically read from disk for shared access. ASYNC_NETWORK_IO fires when SQL Server has results ready but the client hasn't consumed the network buffer yet — usually a client-side bottleneck, not a server one."
+    },
+    {
+      "id": "perftune-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "A DBA adds four new TempDB data files to fix PAGELATCH_UP contention, but sizes each new file at 1 GB while the original file is 20 GB with autogrowth left on. Contention barely improves. What's the most likely reason, per Lesson 29?",
+      "options": [
+        "The new files are much smaller than the original, so SQL Server's proportional-fill algorithm keeps favoring the file with more free space; contention doesn't spread evenly unless every TempDB data file is the same size and growth setting.",
+        "Adding any additional data files always fixes PAGELATCH contention immediately, regardless of their relative size.",
+        "The fix is unrelated to file count or size entirely — only rebuilding every index in the database resolves PAGELATCH contention.",
+        "PAGELATCH contention has nothing to do with TempDB's data files at all; only the transaction log file is ever involved."
+      ],
+      "correctIndex": 0,
+      "explain": "SQL Server's proportional-fill algorithm allocates new extents across a filegroup's files in proportion to how much free space each one has. Unequal file sizes defeat the whole point of adding files — the algorithm keeps favoring whichever file has more free space (here, the original 20 GB file), so allocation activity, and the GAM/SGAM/PFS contention that comes with it, keeps concentrating unevenly. Every TempDB data file needs the same SIZE and FILEGROWTH for the fix to actually spread the load."
+    },
+    {
+      "id": "perftune-24",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank, per Lesson 30: certain query operators — sorts, hash joins, hash aggregates — request a reserved chunk of workspace memory called a memory ________ before they can execute.",
+      "acceptedAnswers": [
+        "grant",
+        "memory grant"
+      ],
+      "explain": "A memory grant is workspace memory SQL Server reserves for operators like sorts and hash joins before the query starts executing, sized based on the optimizer's estimated row count and row width — an estimate, not a measurement, which is the root of most grant-related problems."
+    },
+    {
+      "id": "perftune-25",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Resource Governor, per Lesson 32.",
+      "options": [
+        "A classifier function is a scalar UDF run once per new session that returns which workload group the session belongs to.",
+        "MAX_CPU_PERCENT and MAX_MEMORY_PERCENT cap what a resource pool can consume, even under contention.",
+        "MIN_CPU_PERCENT guarantees a floor for a pool only when multiple pools are actually competing for CPU.",
+        "Resource Governor makes a capped reporting workload's individual queries run faster.",
+        "max server memory is configured as part of a resource pool's own definition inside Resource Governor."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "A classifier function is a scalar UDF, run once per session, that returns which workload group the session belongs to. MAX_CPU_PERCENT/MAX_MEMORY_PERCENT are hard caps even under contention, while MIN_CPU_PERCENT is a guaranteed floor that only matters when pools are actually competing. Resource Governor doesn't make the reporting queries themselves faster — it isolates their resource footprint so the rest of the instance stays predictable; the queries still need Chapter 3/4-style tuning to get faster. max server memory is a separate, instance-level sp_configure setting, not part of a Resource Governor pool definition."
+    },
+    {
+      "id": "perftune-26",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank, per Lesson 33: Query Store's plan store holds distinct, deduplicated execution plans per query; its ________ store holds aggregated duration, CPU time, logical reads, and execution count per plan, bucketed into time intervals you control.",
+      "acceptedAnswers": [
+        "runtime stats",
+        "runtime stats store",
+        "the runtime stats store"
+      ],
+      "explain": "Query Store persists two related but distinct kinds of data: the plan store (distinct plans, deduplicated per query) and the runtime stats store (aggregated performance metrics per plan, per time interval). That separation is what lets Query Store show that a query's plan changed and got slower on a specific day, even after the old plan has long since left the plan cache."
+    },
+    {
+      "id": "perftune-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "A query occasionally reverts to a slow scan-based plan after a statistics update, and a known-good seek-based plan already exists in its Query Store history. Why might forcing that plan through sp_query_store_force_plan be preferable here to hard-coding a FORCESEEK or USE PLAN hint directly in the application's query text, per Lesson 11?",
+      "options": [
+        "Forcing through Query Store requires no application code change, is fully reversible with one statement, and is auditable directly through Query Store's own views — a hard-coded hint would require redeploying the application and is harder to track or remove later.",
+        "sp_query_store_force_plan is the only one of the three mechanisms that guarantees the exact same plan shape forever, regardless of any future schema change.",
+        "FORCESEEK and USE PLAN can only be applied to tables that have a clustered columnstore index, which rules them out for this scenario.",
+        "There's no real difference between the three mechanisms; all of them require the exact same application deployment process to apply or remove."
+      ],
+      "correctIndex": 0,
+      "explain": "sp_query_store_force_plan points at a plan Query Store already captured and ran — no XML to author, no application deployment to apply or remove it, and the forced state is visible and auditable directly in Query Store's own views. A hard-coded FORCESEEK or USE PLAN hint lives in application code, requiring a deployment to change, and (for USE PLAN specifically) is brittle to schema or statistics drift in a way plan forcing isn't."
+    },
+    {
+      "id": "perftune-28",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about operating Query Store in production, per Lesson 37.",
+      "options": [
+        "If SIZE_BASED_CLEANUP_MODE is OFF and the storage cap is genuinely hit, Query Store flips to READ_ONLY and stops capturing new data.",
+        "SIZE_BASED_CLEANUP_MODE = AUTO proactively cleans up the oldest, least useful data to stay under the cap, so capture continues uninterrupted.",
+        "A Query Store that flips to READ_ONLY mode immediately loses all of its previously captured historical data.",
+        "QUERY_CAPTURE_MODE = AUTO is generally recommended over ALL, to reduce capture overhead on busy production systems.",
+        "current_storage_size_mb and max_storage_size_mb are only visible through SSMS's GUI reports, never queryable directly in T-SQL."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "With SIZE_BASED_CLEANUP_MODE = OFF, hitting the storage cap flips Query Store to READ_ONLY, which stops capturing anything new while still serving existing historical data for reports and queries. AUTO avoids this by proactively cleaning up the oldest data to stay under the cap. QUERY_CAPTURE_MODE = AUTO is the recommended default to reduce overhead versus capturing every ad hoc query. Both current_storage_size_mb and max_storage_size_mb are directly queryable from sys.database_query_store_options in T-SQL, not GUI-only."
+    },
+    {
+      "id": "perftune-29",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the manual regressed-query workflow, per Lesson 36, in the correct order.",
+      "items": [
+        "Spot a candidate query from the Regressed Queries report or a scripted comparison against Query Store's runtime stats",
+        "Compare the two plan versions side by side to see whether the operator shape changed or only the runtime stats got worse",
+        "Decide whether to force the earlier plan, if it's demonstrably better and stable, or fix the actual root cause instead",
+        "Verify by returning to Query Store's runtime stats and confirming the targeted metric actually improved"
+      ],
+      "explain": "The workflow starts by spotting a candidate regression, then comparing plan versions to tell apart a genuine plan-shape change from a stats-only decline, then deciding whether forcing the earlier plan is appropriate or whether the real root cause (missing index, stale statistics, a rewrite) needs fixing instead, and finally verifying by checking that the targeted metric actually improved — the same measure-identify-change-verify loop from Lesson 1, applied to Query Store data."
+    },
+    {
+      "id": "perftune-30",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "What does the \"cost threshold for parallelism\" server configuration setting actually control, and what is its out-of-the-box default value?",
+      "options": [
+        "It sets the estimated plan cost a query must exceed before the optimizer even considers a parallel plan at all; its default is 5.",
+        "It caps how many logical processors a single query's parallel operators can use; its default is 0, meaning unlimited.",
+        "It sets the estimated plan cost a query must exceed before the optimizer even considers a parallel plan at all; its default is 50.",
+        "It controls how much memory a parallel query's sort or hash operators can be granted; its default is 25 percent of max server memory.",
+        "It determines whether TempDB's allocation pages are split across multiple data files; its default is one file per logical core.",
+        "It is a Windows-level privilege rather than a SQL Server configuration option, and it has no numeric default at all."
+      ],
+      "correctIndex": 0,
+      "explain": "Cost threshold for parallelism sets the estimated-cost bar a query's plan has to clear before the optimizer even considers going parallel; below it, SQL Server always runs serially regardless of MAXDOP. Its shipped default is 5 — a number set decades ago on hardware nothing like a modern server, which is exactly why it's worth reviewing rather than leaving untouched.",
+      "distractorExplain": "Option C gets the setting's purpose exactly right but the default value wrong — the out-of-the-box default is 5, not 50. Values in the 25–50 range are a common recommended *starting point* on modern hardware, but that's a deliberate tuning choice someone makes, not what the setting ships with."
+    },
+    {
+      "id": "perftune-31",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "A query shows high CXPACKET waits, and its execution plan's parallel operator reveals one thread processed 90% of the rows while three others processed almost none. Would raising cost threshold for parallelism fix this, per Lesson 39?",
+      "options": [
+        "No — the uneven row distribution across threads is skew, not a cost-threshold problem; raising cost threshold only changes whether small, cheap queries are allowed to go parallel at all, it doesn't fix an already-skewed parallel operation. The fix is usually on the query or statistics side.",
+        "Yes — raising cost threshold for parallelism always eliminates thread skew whenever it occurs.",
+        "Yes — skew is caused exclusively by cost threshold being set too low, regardless of statistics or data distribution.",
+        "No, and nothing can be done about skew at all — it's an unavoidable property of every parallel plan."
+      ],
+      "correctIndex": 0,
+      "explain": "Skewed parallelism — one thread doing most of the real work while others sit idle — usually comes from poor cardinality estimates or a nonuniform data distribution, not from the cost-threshold setting. Cost threshold decides whether a query is allowed to go parallel at all; it has no bearing on how evenly an already-parallel plan's work gets distributed across threads. The fix for skew is typically better cardinality estimates, updated statistics, or a rewrite — not a parallelism setting."
+    },
+    {
+      "id": "perftune-32",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about server and instance-level configuration, per Lessons 40 and 41.",
+      "options": [
+        "Leaving max server memory at its default can let the buffer pool grow until it starves the OS and other processes of memory.",
+        "Trace flags 1117 and 1118 are still required on SQL Server 2016 and later to get their historical behavior, since neither one became a default.",
+        "optimize for ad hoc workloads caches only a small stub plan on a query's first execution, with the full plan cached only once that exact query text runs a second time.",
+        "Lock Pages in Memory (LPIM) is granted through sp_configure, the exact same way max server memory is set.",
+        "Instant File Initialization applies to data files but never to the transaction log, which SQL Server always zero-initializes."
+      ],
+      "correctIndices": [
+        0,
+        2,
+        4
+      ],
+      "explain": "Left at its unlimited default, max server memory lets the buffer pool grow until it starves the OS and other processes — a real, common cause of a sudden, unexplained slowdown. optimize for ad hoc workloads caches a small stub on first execution and only the full plan on a second run of the exact same text. Instant File Initialization applies only to data files, never the log, which SQL Server always zero-fills for crash-recovery correctness. TF 1117 and 1118 are, as of SQL Server 2016, simply default behavior (or a per-database option) — they are not required and have nothing left to turn on. LPIM is a Windows local security policy privilege granted via secpol.msc, not an sp_configure option."
+    },
+    {
+      "id": "perftune-33",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "A server has two NUMA nodes with 12 logical processors each. Per Microsoft's guidance in Lesson 38, what MAXDOP value is generally appropriate, and why not simply set it to 24, the full processor count?",
+      "options": [
+        "MAXDOP around 12, the per-NUMA-node processor count — Microsoft's guidance caps at the processors-per-node, not the system-wide total, because a very high MAXDOP can let a single query pull threads across NUMA node boundaries, introducing cross-node memory-access latency.",
+        "MAXDOP 24 — using every available logical processor for every query always maximizes throughput with no downside on a NUMA system.",
+        "MAXDOP 1 — parallelism should always be disabled entirely on any server with more than one NUMA node.",
+        "MAXDOP 8 is mandatory on every server regardless of its specific core count or NUMA configuration."
+      ],
+      "correctIndex": 0,
+      "explain": "Microsoft's guidance for multiple NUMA nodes with 8 or fewer logical processors per node caps MAXDOP at the per-node processor count — here, 12 — rather than the system-wide total of 24. Setting it to the full processor count would let a single query's parallel threads cross NUMA node boundaries, introducing the exact cross-node memory-access latency the per-node cap is designed to avoid."
+    },
+    {
+      "id": "perftune-34",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Why can't you look at a single reading of sys.dm_os_wait_stats and conclude \"this server has a lot of PAGEIOLATCH_SH waits right now,\" and what would you need to capture instead, per Lesson 43?",
+      "options": [
+        "The DMV is cumulative since the last restart or clear, so one raw reading can't distinguish \"a lot right now\" from \"a lot that accumulated gradually over months\"; you need two snapshots on a schedule and the delta between them, compared against your own historical pattern.",
+        "Nothing more is needed — any nonzero value for PAGEIOLATCH_SH by itself already proves a current I/O problem exists.",
+        "A single reading is already sufficient, because sys.dm_os_wait_stats automatically resets its own counters every hour.",
+        "The DMV only reports waits accumulated in the current second, so no meaningful historical comparison is ever possible."
+      ],
+      "correctIndex": 0,
+      "explain": "Several key DMVs and counters — wait stats, batch requests, most PerfMon counters — are cumulative since the last restart or manual clear. A single raw number is meaningless on its own; what matters is the change between two snapshots, captured on a recurring schedule and stored in a history table, so \"is this normal right now\" can be answered against the right slice of history rather than a guess."
+    },
+    {
+      "id": "perftune-35",
+      "type": "multi-select",
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about alerting and monitoring tool choices, per Lessons 44 and 45.",
+      "options": [
+        "A SQL Server Agent performance condition alert's threshold is fixed and global, so \"PLE below 300\" might be a real problem on one server and completely normal on another.",
+        "Comparing a live metric against your own stored baseline history generally produces a more meaningful trigger than one arbitrary round-number threshold.",
+        "A commercial monitoring dashboard automatically fixes the root cause of whatever problem it surfaces, with no further DBA action needed.",
+        "A DIY monitoring table that only ever grows, with no retention cleanup, eventually becomes its own performance problem.",
+        "Third-party monitoring tools are mandatory — there is no way to build a working monitoring setup using only built-in SQL Server features."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "A fixed Agent alert threshold applies the same number to every server regardless of its own buffer pool size or workload, which is exactly why baseline-comparison alerting against stored history is more precise. A dashboard, free or paid, surfaces signals — it doesn't tune anything or replace understanding why a wait type matters. And an unpruned logging table eventually becomes its own performance problem, which is why retention cleanup matters as much as capture. Third-party tools are a genuine, viable category, but Chapter 9 is explicit that a DIY setup built from DMVs, a history table, and Agent jobs gets most of the same practical value."
+    },
+    {
+      "id": "perftune-36",
+      "type": "fill-in",
+      "chapter": "ch09",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank, per Lesson 46: a DIY monitoring setup's retention cleanup job — deleting rows older than a set window, a reasonable starting point being around ________ days — matters just as much as the capture job itself.",
+      "acceptedAnswers": [
+        "60",
+        "60 days"
+      ],
+      "explain": "Sixty days is the reasonable starting retention window this lesson gives: long enough to compare this week against several previous weeks, short enough that the logging table doesn't grow without bound. A capture job with no matching retention cleanup eventually turns the monitoring table itself into a performance problem."
+    },
+    {
+      "id": "perftune-37",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch10",
+      "difficulty": "advanced",
+      "prompt": "In the Meridian Outfitters capstone, the execution plan for dbo.usp_CustomerOrderHistory shows a Key Lookup running 18,400 times, with over 90% of the plan's total cost. Why does that single detail, per Lesson 48, already tell you almost exactly what the fix needs to do?",
+      "options": [
+        "The existing nonclustered index on CustomerID doesn't cover the query's other selected columns, so the fix needed is a covering index — adding the missing output columns (and the ORDER BY column) to the index so the Key Lookup disappears entirely.",
+        "It tells you the server needs more CPU cores, since Key Lookups running tens of thousands of times are fundamentally a parallelism capacity problem.",
+        "It tells you TempDB needs additional data files, since every Key Lookup operation spills its intermediate results to TempDB.",
+        "It tells you the stored procedure must be rewritten as a cursor so each customer's rows can be processed one at a time instead."
+      ],
+      "correctIndex": 0,
+      "explain": "A Key Lookup running once per matching row, dominating the plan's cost, is the exact signature of a non-covering index: IX_Orders_CustomerID seeks efficiently on CustomerID but doesn't carry OrderDate, OrderStatus, OrderTotal, or ShipDate, so every one of the 18,400 matching rows triggers a separate trip back to the clustered index. The fix Lesson 49 applies is precisely a covering index that adds those columns, eliminating the Key Lookup rather than touching parallelism, TempDB, or the procedure's set-based structure."
+    },
+    {
+      "id": "perftune-38",
+      "type": "fill-in",
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank, per Lesson 50's validation of the TrailWorks Co-op fix: before the covering index, dbo.usp_CustomerOrderHistory ran in roughly 28,000 ms with about 118,000 logical reads; after adding the covering index and dropping the redundant one, it ran in roughly 85 ms with about ________ logical reads.",
+      "acceptedAnswers": [
+        "350",
+        "~350",
+        "350 logical reads"
+      ],
+      "explain": "After the fix, a single Index Seek against the new covering index returns already-sorted, fully-covered rows with no Key Lookup at all — roughly 350 logical reads, down from about 118,000, matching the more-than-300x drop in both duration and logical reads that Lesson 50 verifies."
+    },
+    {
+      "id": "perftune-39",
+      "type": "sequencing",
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "Put these events of the Meridian Outfitters capstone, spanning Lessons 47 through 50, in the correct order.",
+      "items": [
+        "Receive the vague symptom report: the Order History panel times out intermittently for certain accounts during peak hours",
+        "Measure: pull a Query Store baseline and run the procedure with SET STATISTICS IO, TIME ON for a known slow case",
+        "Identify: read the actual execution plan and find the Key Lookup running thousands of times, confirmed by PAGEIOLATCH_SH wait stats",
+        "Change: create one covering index for the procedure's exact columns and drop the now-redundant narrow index",
+        "Verify: re-run the same test, confirm the Key Lookup is gone, the metrics dropped, and no write-side regression appeared"
+      ],
+      "explain": "The capstone runs Chapter 1's loop for real: the vague report arrives first, then a Query Store/STATISTICS-based baseline measurement, then plan-reading and wait-stat confirmation to identify the exact operator at fault, then one deliberate change (the covering index, plus retiring the redundant one), and finally verification against the same metrics, plan, and wait types the diagnosis used."
+    },
+    {
+      "id": "perftune-40",
+      "type": "multi-select",
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about documenting and wrapping up the capstone, per Lessons 51 and 52.",
+      "options": [
+        "The write-up's \"change made\" section should record the exact CREATE INDEX and DROP INDEX statements verbatim, not a paraphrase.",
+        "A manager-facing version of the write-up leans on the summary and result sections, in plain language.",
+        "Documenting only \"what changed\" ages just as well over time as documenting \"why,\" since the what is the important part.",
+        "Chapters 4, 6, 7, and 8's techniques were each actively applied as part of this specific capstone fix.",
+        "A reusable finding explains the general pattern (a filter plus several output columns plus an ORDER BY) so the next DBA can recognize it on a different procedure."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        4
+      ],
+      "explain": "The write-up records the exact T-SQL verbatim so it can be audited or reversed later, and a manager-facing read leans on the summary and result sections in plain language, while a DBA-facing read leans on root cause and the exact change. \"What changed\" expires the moment someone forgets why; the reasoning is what lets a future DBA reuse the finding on a different procedure. And per the wrap-up, Chapters 4, 6, 7, and 8 were tools in the kit that this particular bottleneck did NOT need — the fix only drew on Chapters 1, 2, 3, and 5; knowing which tools don't apply is itself part of the methodology, not evidence that every chapter was used."
+    }
+  ]
+}

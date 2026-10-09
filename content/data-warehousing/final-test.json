@@ -1,0 +1,447 @@
+{
+  "questions": [
+    {
+      "id": "dwh-01",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put Kimball's four-step dimensional design process, from Lesson 5, in the correct order.",
+      "items": [
+        "Choose the business process",
+        "Declare the grain",
+        "Identify the dimensions",
+        "Identify the facts"
+      ],
+      "explain": "Each step constrains the one after it: you can't correctly declare a grain until you know which business process you're modeling, and you can't correctly pick dimensions or facts until the grain is locked. Reversing this order is exactly how a fact table ends up with a mixed grain or columns that don't actually belong."
+    },
+    {
+      "id": "dwh-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "A company currently produces 'total revenue by region, by quarter, by product category' by querying its normalized OLTP order-entry database directly. Per Lesson 1, what's the main structural reason this breaks down as the business grows?",
+      "options": [
+        "The normalized schema requires joining many tables to answer an aggregate question that a dimensional model answers with a handful of joins instead",
+        "OLTP databases are physically incapable of storing more than a few million rows",
+        "SQL Server refuses to run analytical queries against any table that also receives live writes",
+        "Normalized tables cannot be queried with GROUP BY at all"
+      ],
+      "correctIndex": 0,
+      "explain": "Getting a clean 'revenue by region by quarter' number out of a fully normalized OLTP schema often means joining 8-10 tables, and every one of those joins costs real query time at scale. A dimensional model answers the same question by joining a handful of tables instead — that join-count gap is the structural problem Lesson 1 identifies, not a hard row-count ceiling or a write/read lockout."
+    },
+    {
+      "id": "dwh-03",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each term from Lessons 2-3 to what it actually means.",
+      "left": ["Dimension table", "Fact table", "Denormalization", "Star schema"],
+      "right": [
+        "Stores measurements and events; holds dimension keys plus numeric measures",
+        "A fact table joined directly, one hop, to each of its fully denormalized dimension tables",
+        "Describes a business entity like product or customer, with a key plus descriptive attributes",
+        "Deliberately storing redundant descriptive data, like a category name on every row, to reduce joins"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "A dimension table describes an entity with a key and attributes; a fact table stores measurements as dimension keys plus numeric measures. Denormalization is the deliberate redundancy a dimension table carries on purpose. A star schema is the shape that denormalization produces: every dimension one join away from the fact table at its center."
+    },
+    {
+      "id": "dwh-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the ________ of a fact table is a one-sentence statement of exactly what a single row represents, and per Lesson 4 it must be decided before a single column is written.",
+      "acceptedAnswers": ["grain"],
+      "explain": "Grain is a precise, one-sentence statement of what one fact table row means — 'one row per order' and 'one row per order line' are two different grains, and every dimension key and measure a fact table can legitimately hold is determined by which one you declared first."
+    },
+    {
+      "id": "dwh-05",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about a periodic snapshot fact table's measures, per Lesson 8.",
+      "options": [
+        "QuantityOnHand can be validly summed across products within one single snapshot date",
+        "QuantityOnHand can be validly summed across snapshot dates to produce a meaningful multi-day total",
+        "To see a trend over time, you take the average or last value per period for the measure, rather than summing across dates",
+        "A periodic snapshot fact table only gets a new row when something actually changes, the same way a transaction fact table does",
+        "A periodic snapshot table's row count is bounded by entities multiplied by time intervals, rather than growing with every individual event"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "Semi-additive measures like an inventory balance sum validly across some dimensions (products, on a given day) but not across time — summing Monday's and Tuesday's balances double-counts stock that never moved, which is why a trend needs an average or a last-value, never a SUM across dates. A periodic snapshot gets a full batch of rows every scheduled interval regardless of activity, unlike a transaction table, which is exactly why its size is bounded by entities times intervals instead of growing with every event."
+    },
+    {
+      "id": "dwh-06",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Which of the following correctly defines a transaction fact table, as distinguished from the other fact table types Chapter 2 covers?",
+      "options": [
+        "One row per business event, inserted once and left alone, with measures that are almost always fully additive",
+        "One row per entity per fixed time interval, loaded on a schedule whether or not anything actually changed",
+        "One row per process instance, updated repeatedly in place as the process reaches each new milestone",
+        "A table with no measure columns at all, where the only way to measure anything is to count rows",
+        "One row per day summarizing every transaction that occurred across the whole business that day",
+        "A table that must be entirely rebuilt every time a single transaction needs to be corrected"
+      ],
+      "correctIndex": 0,
+      "explain": "A transaction fact table stores one row per business event — a sales order line, a call, a click — written once at insert and never touched again except to correct a genuine error. Because each row is a genuinely independent event, its measures are almost always fully additive across every dimension, which is exactly what makes 'total revenue by region by quarter' a single GROUP BY against one table.",
+      "distractorExplain": "Option B describes a periodic snapshot fact table, not a transaction fact table — it's loaded on a fixed schedule regardless of whether anything happened, whereas a transaction fact table only ever gets a row when a real event actually occurs. Confusing an insert-only event ledger with a scheduled, whether-or-not-anything-changed batch load is exactly the mix-up Chapter 2 warns against."
+    },
+    {
+      "id": "dwh-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "CREATE TABLE f_OrderFulfillment\n(\n    OrderDate_Date_FK      INT NOT NULL,\n    PickDate_Date_FK       INT NOT NULL,\n    ShipDate_Date_FK       INT NOT NULL,\n    DeliverDate_Date_FK    INT NOT NULL,\n    SalesOrderNo           INT NOT NULL,\n    DaysToPickAfterOrder   INT NULL,\n    DaysToShipAfterPick    INT NULL\n);",
+      "prompt": "An order moves through Order Placed, Picked, Shipped, and Delivered, using the accumulating snapshot table above. Per Lesson 9, what does the ETL load process have to do that a transaction fact table's load never has to do?",
+      "options": [
+        "Find the existing row for that specific order and UPDATE it in place as each milestone happens, rather than only ever inserting new rows",
+        "Insert a brand-new row for the order at every milestone, so the table ends up with one row per order per stage reached",
+        "Delete the order's row once it's delivered, so the table only ever holds orders still in progress",
+        "Run the load only once per order, since accumulating snapshot tables never get updated after their first insert"
+      ],
+      "correctIndex": 0,
+      "explain": "An accumulating snapshot table's one row per process instance gets updated, not re-inserted, every time the process reaches its next milestone — filling in PickDate_Date_FK when picking happens, ShipDate_Date_FK when it ships, and recalculating the duration measures. That update-in-place pattern is a fundamentally different ETL design than a transaction table's insert-only load."
+    },
+    {
+      "id": "dwh-08",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a factless fact table like class attendance has no measure column to sum — you answer 'how many students attended' with ________(*) grouped by class and date, not a SUM.",
+      "acceptedAnswers": ["COUNT", "COUNT()", "COUNT(*)"],
+      "explain": "A factless fact table's rows exist to record that something happened (or that a condition existed) rather than to carry a number. The row's mere existence is the measurement, so COUNT(*) grouped by the relevant dimensions is how you measure it — there's nothing to SUM()."
+    },
+    {
+      "id": "dwh-09",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each dimension-design term from Chapter 3 to what it actually is.",
+      "left": ["Surrogate key", "Natural key", "Degenerate dimension", "Conformed dimension"],
+      "right": [
+        "The source system's own identifier, kept on a dimension for traceability and ETL change detection",
+        "A single, governed dimension table referenced by multiple fact tables from entirely different business processes",
+        "A system-generated, meaningless identifier that serves as a dimension table's primary key",
+        "An identifier that sits at the fact row's own grain with no descriptive attributes of its own, kept directly on the fact table"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "A surrogate key is the warehouse's own meaningless, generated identifier. A natural key is the source system's identifier, kept for traceability even though it isn't the primary key. A degenerate dimension is an identifier like an order number, left on the fact table because it has no attributes to justify its own table. A conformed dimension is shared, unchanged, across multiple fact tables so 'product' or 'date' means the same thing everywhere."
+    },
+    {
+      "id": "dwh-10",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about surrogate keys, per Lessons 12-13.",
+      "options": [
+        "A surrogate key lets the warehouse assign one clean identifier even when two source systems each have their own numbering for the same kind of entity",
+        "A surrogate key should generally carry business meaning so users can recognize it on sight",
+        "A date dimension's surrogate key is conventionally stored as an INT in YYYYMMDD format — the one widely accepted exception to the 'meaningless' rule",
+        "SCD Type 2 history is only possible because the surrogate key, rather than the natural key, is what has to stay unique per row",
+        "A dimension table should drop its natural key entirely once a surrogate key exists, since keeping both is redundant"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "Surrogate keys consolidate multiple sources' own numbering into one clean identifier and are what makes SCD Type 2 versioning possible, since the natural key alone can't stay unique across versions. The date dimension's YYYYMMDD surrogate key is the one standard exception to 'meaningless.' A surrogate key should never carry business meaning in general, and the natural key is deliberately kept — not dropped — for traceability and ETL change detection."
+    },
+    {
+      "id": "dwh-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "CREATE TABLE Fact_Sales (\n    SalesKey        BIGINT IDENTITY(1,1) PRIMARY KEY,\n    ProductKey      INT NOT NULL,\n    CustomerKey     INT NOT NULL,\n    DateKey         INT NOT NULL,\n    InvoiceNumber   VARCHAR(20) NOT NULL,\n    SalesAmount     DECIMAL(12,2) NOT NULL\n);",
+      "prompt": "InvoiceNumber above sits at exactly the fact table's own grain and carries no descriptive attributes of its own — no category, no owner, nothing to group by beyond the number itself. Per Lesson 14, what's the right design move?",
+      "options": [
+        "Leave InvoiceNumber directly on the fact table as a degenerate dimension, optionally wrapped in a view if report authors need it to look like a dimension",
+        "Build a DimInvoice table holding just a surrogate key and InvoiceNumber, and join to it from the fact table",
+        "Store InvoiceNumber as a measure column and SUM it in reports",
+        "Remove InvoiceNumber from the warehouse entirely, since it has no descriptive attributes"
+      ],
+      "correctIndex": 0,
+      "explain": "A degenerate dimension candidate sits at the fact's own grain with no descriptive attributes to justify a separate table. Building a dimension table with nothing in it but that one identifier column is pure overhead — an extra join that buys nothing — so the right move is leaving it on the fact table, exposed through a view if needed."
+    },
+    {
+      "id": "dwh-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A Sales fact table and an Inventory fact table both reference the exact same DimProduct and DimDate tables. What capability does this specifically enable, per Lesson 15?",
+      "options": [
+        "A drill-across query that compares sales and inventory levels for the same product, on the same date, across the two different fact tables",
+        "Automatic deduplication of rows between the two fact tables",
+        "The ability to delete DimProduct without affecting either fact table",
+        "Faster INSERT performance on both fact tables"
+      ],
+      "correctIndex": 0,
+      "explain": "Because Sales and Inventory key off the exact same conformed DimProduct and DimDate, a query can compare measures from the two completely different fact tables for the same product on the same date — a drill-across query. Without a genuinely conformed dimension, that comparison would silently answer a different question than the one someone asked."
+    },
+    {
+      "id": "dwh-13",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A salesperson's assigned sales region changes. Which statement correctly distinguishes how SCD Type 1 and SCD Type 2 each handle that change?",
+      "options": [
+        "Type 1 overwrites the existing row in place, so historical sales now report under the new region as if it had always been true; Type 2 inserts a new versioned row, so historical sales keep reporting under the region that was actually true at the time",
+        "Type 1 inserts a new versioned row for the change, while Type 2 overwrites the existing row in place",
+        "Both types overwrite the existing row in place, but only Type 2 also logs the old value to a separate audit table",
+        "Type 1 requires a surrogate key for the change to work, while Type 2 can be implemented using only the natural key",
+        "Type 2 is the recommended default for most changing attributes, while Type 1 is reserved for attributes that specifically need full history",
+        "Type 1 and Type 2 differ only in naming convention; the underlying update mechanics are identical"
+      ],
+      "correctIndex": 0,
+      "explain": "Type 1 is a plain overwrite: the surrogate key doesn't change, no new row appears, and every historical fact joined to that row now reflects the new value as if it had always been true. Type 2 instead closes out the old row (ExpirationDate, IsCurrentFlag = 0) and inserts a new row with a new surrogate key, so facts loaded before the change keep pointing at the closed-out row and facts loaded after point at the new one — preserving exactly the history Type 1 discards.",
+      "distractorExplain": "Option B swaps the two mechanics entirely backwards — it's Type 1 that overwrites in place with no new row, and Type 2 that inserts the new versioned row while preserving the old one untouched. Reversing which type does the overwriting and which does the versioning is precisely the mix-up this chapter is built to prevent."
+    },
+    {
+      "id": "dwh-14",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A salesperson is reassigned from one sales region to another, tracked with SCD Type 2. Put these steps in the correct order.",
+      "items": [
+        "UPDATE the existing row's ExpirationDate to the change date and flip IsCurrentFlag to FALSE",
+        "INSERT a new row with a new surrogate key, the same natural key, the new SalesRegionKey, and IsCurrentFlag set to TRUE",
+        "Future fact loads look up the salesperson and receive the new surrogate key going forward",
+        "Historical facts that already reference the old surrogate key keep reporting against the closed-out row, unchanged"
+      ],
+      "explain": "The old row is closed first — ExpirationDate set, IsCurrentFlag flipped off — and only then does the new row open with a fresh surrogate key carrying the new region. From that point on, new fact loads pick up the new key while every fact already loaded against the old key is left alone, which is exactly what preserves accurate historical reporting."
+    },
+    {
+      "id": "dwh-15",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about hybrid SCD dimensions, per Lesson 20.",
+      "options": [
+        "A single dimension table can legitimately apply SCD Type 1 to some columns and Type 2 to others",
+        "Treating an entire dimension as pure Type 2 avoids clutter, since trivial corrections never spawn a new version under that approach",
+        "A Type 0 column like DateFirstPurchase is never touched by either the Type 1 or the Type 2 branch of the ETL load logic",
+        "The decisive question for classifying an attribute is whether any report needs its value exactly as it was at the time a related fact occurred",
+        "A hybrid dimension needs fewer historical tracking columns overall than a dimension that's purely Type 2"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "Real dimensions mix SCD types attribute by attribute, decided by whether a report genuinely needs the historical value. Type 0 columns are frozen at insert and excluded from every UPDATE path, Type 1 or Type 2, forever. Treating a whole dimension as pure Type 2 is actually worse for clutter, not better — every trivial typo correction would spawn a new version it doesn't need. A hybrid dimension still needs the full EffectiveDate/ExpirationDate/IsCurrentFlag set for whichever columns are Type 2; it doesn't need fewer."
+    },
+    {
+      "id": "dwh-16",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: SCD Type ________ tracks only the immediately previous value of an attribute in an extra column on the same row, instead of inserting a new row or discarding the old value entirely.",
+      "acceptedAnswers": ["3", "Type 3", "three"],
+      "explain": "Type 3 sits between Type 1 and Type 2: like Type 1 it keeps one row per member with no new row inserted, but like Type 2 it doesn't throw the old value away — it just keeps exactly one prior value in a Previous* column, not a full version history."
+    },
+    {
+      "id": "dwh-17",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about what a staging layer buys you, per Lesson 21.",
+      "options": [
+        "A slow transformation step running against staged data no longer holds a connection or lock against the live production OLTP system",
+        "If a transformation step fails on a bad row, it fails against a table you can inspect and fix, not against a fact table analysts are actively querying",
+        "Staging tables are meant to be queried directly by analysts and BI tools, the same as a published dimension table",
+        "A failed load can often be re-run from already-staged data without re-extracting from the source system a second time",
+        "Staging exists primarily to add an extra layer of security around the source database's login credentials"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Staging isolates the source system from slow transformation work, gives you a safe place to fail and inspect bad rows, and lets a failed load restart from already-extracted data instead of hitting a fragile or rate-limited source again. It is explicitly not a reporting layer — nobody outside the ETL process should query it — and its purpose has nothing to do with credential security."
+    },
+    {
+      "id": "dwh-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "A staging table feeds a Type 2 SCD comparison step that diffs the current load's rows against the previous load's rows to detect changes. Per Lesson 22, why would truncate-and-reload be the wrong pattern for this specific staging table?",
+      "options": [
+        "Truncating the table before the next load would destroy the previous load's rows before the diff that needs them ever runs",
+        "TRUNCATE TABLE is not valid syntax against a table used for staging in SQL Server",
+        "Truncate-and-reload only works on dimension tables, never on staging tables",
+        "A Type 2 comparison can only be performed inside the final warehouse tables, never against staged data"
+      ],
+      "correctIndex": 0,
+      "explain": "Truncate-and-reload is the right default when a staging table only ever needs the current load's data. But a table whose whole job is diffing 'what changed since last time' needs the previous load's rows still present to compare against — truncating it first destroys exactly the data the comparison depends on."
+    },
+    {
+      "id": "dwh-19",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each data-quality check from Lesson 24 to what it actually catches.",
+      "left": ["Nulls in required fields", "Referential integrity check", "Duplicate check", "Type and format mismatch check"],
+      "right": [
+        "Catches a column the source system normally guarantees is populated, in case that guarantee is ever violated",
+        "Confirms a fact row's dimension key actually exists in that dimension before the row gets loaded",
+        "Catches the same source row landing twice in a single extract, which would double-count an additive measure",
+        "Catches a date column holding text like 'N/A', or a price column holding a negative value that should never be negative"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Each check targets a different failure mode: a required column going unexpectedly empty, a fact row pointing at a dimension key that doesn't exist yet, the same row being extracted twice, and a value that technically loaded but is malformed or impossible for its business meaning."
+    },
+    {
+      "id": "dwh-20",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: ________ is the audit column shared by every row loaded in the same run, letting you answer 'show me every row this specific load touched' without guessing by timestamp alone.",
+      "acceptedAnswers": ["BatchID", "Batch ID", "batch id"],
+      "explain": "LoadDate tells you when a row was loaded and SourceSystem tells you where it came from, but BatchID is specifically what lets you isolate every row from one particular run — useful for both debugging a bad load and cleanly reprocessing exactly that run's rows."
+    },
+    {
+      "id": "dwh-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "A warehouse considers consolidating four flag-like attributes into a junk dimension: OrderStatus (3 values), DeliveryStatus (3 values), GiftWrap (2 values), and RushOrder (2 values). How many rows would the resulting junk dimension have, and is this still a reasonable candidate per Lesson 26?",
+      "options": [
+        "36 rows (3 x 3 x 2 x 2) — still small enough to be a reasonable junk dimension",
+        "10 rows (3 + 3 + 2 + 2) — a junk dimension's row count is the sum of each attribute's distinct values, not a product",
+        "4 rows, one row per attribute being consolidated",
+        "100,000 rows, because combining four attributes into one dimension always explodes cardinality past usefulness"
+      ],
+      "correctIndex": 0,
+      "explain": "A junk dimension's rows are the Cartesian product of every combination of the attributes being consolidated, so the counts multiply rather than add: 3 x 3 x 2 x 2 = 36. That's still a small, perfectly reasonable table — the warning in Lesson 26 is about attributes with many distinct values each, where the product grows into the tens or hundreds of thousands, not a case like this one."
+    },
+    {
+      "id": "dwh-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "A sales fact table has OrderDate_FK, ShipDate_FK, and DeliveryDate_FK, each a role-playing reference to the Date dimension. Per Lesson 27, how many physical Date dimension tables should the warehouse actually build and maintain?",
+      "options": [
+        "Exactly one — the three foreign keys are three distinct business roles, not three separate physical tables",
+        "Three — one physical copy per date role, kept in sync by the ETL process",
+        "Zero — role-playing dimensions are handled entirely at the semantic-model layer, with no physical warehouse table at all",
+        "As many physical copies as there are fact tables anywhere in the warehouse that reference the Date dimension"
+      ],
+      "correctIndex": 0,
+      "explain": "A role-playing dimension is one physical table referenced multiple times, each reference a distinct logical role. Duplicating the physical table per role would mean multiple ETL loads to keep in sync, extra storage, and the risk of the same date looking slightly different across supposedly identical copies — exactly what building only one physical table avoids."
+    },
+    {
+      "id": "dwh-23",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about bridge tables, per Lesson 28.",
+      "options": [
+        "A bridge table resolves a genuine many-to-many relationship into two one-to-many relationships",
+        "A bridge table holding only foreign key columns, with no measures, is itself a factless fact table",
+        "Bridge tables are only needed when a fact table has been designed incorrectly and needs to be fixed",
+        "A sale split three ways among three salespeople would produce three rows in a Sale-Salesperson bridge table",
+        "A bridge table replaces the need for the fact table to relate to the Date or Product dimensions at all"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "A bridge table exists because some real-world relationships genuinely are many-to-many — not because of a design mistake — and resolving one into two clean one-to-many relationships is exactly its job. Holding nothing but identifier columns makes it a factless fact table by definition, and a three-way split sale produces exactly three bridge rows, one per salesperson. It has nothing to do with the fact table's other, perfectly normal one-to-many relationships to Date or Product."
+    },
+    {
+      "id": "dwh-24",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: when a fact load process can't find a matching dimension row but trusts the natural key, it inserts a new dimension row with placeholder 'Unknown' attribute values and sets the audit attribute ________ to TRUE, so the dimension load can later recognize and update it.",
+      "acceptedAnswers": ["IsInferredMember", "IsInferredMember flag", "is inferred member"],
+      "explain": "The inferred member pattern lets a fact row load with a valid dimension key even when the full dimension details haven't arrived yet. IsInferredMember = TRUE marks that row so that when the real details do show up, they're applied as an update to this specific row rather than treated as an ordinary SCD change."
+    },
+    {
+      "id": "dwh-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "code": "SELECT ProductKey, DateKey, SUM(SalesAmount) AS TotalSales\nFROM Fact_Sales\nGROUP BY ProductKey, DateKey;",
+      "prompt": "Fact_Sales is queried almost entirely with aggregate scans like the one above, and almost never looked up by a single row. Per Lesson 32, what's the default, recommended indexing choice for this table in a SQL Server warehouse, and why?",
+      "options": [
+        "A clustered columnstore index — it stores data column-by-column with heavy compression and batch-mode execution, exactly suited to scanning and aggregating a few columns across millions of rows",
+        "A clustered rowstore index on the primary key, the same default you'd pick for an OLTP table",
+        "No index at all, since a fact table performs best left as a completely unindexed heap",
+        "A separate nonclustered rowstore index on every foreign key column, built individually"
+      ],
+      "correctIndex": 0,
+      "explain": "A traditional rowstore B-tree index is built for looking up individual rows, not for scanning and aggregating millions of them — SQL Server still has to visit and decompress a full row for every column touched. A clustered columnstore index converts the table's storage to column-by-column compressed segments, letting an aggregate query read only the columns it actually needs, which is exactly the shape of this fact table's workload."
+    },
+    {
+      "id": "dwh-26",
+      "type": "matching",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Match each partitioning term from Lesson 33 to what it actually does.",
+      "left": ["Partition function", "Partition scheme", "Partitioning column on a fact table", "SWITCH PARTITION"],
+      "right": [
+        "Maps column values to partition numbers, defining the boundaries",
+        "Maps partition numbers to physical filegroups",
+        "Almost always the integer date key, since that's the natural boundary for loading and purging",
+        "Moves an entire partition in or out of a table as a near-instant metadata operation"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "A partition function defines the boundary values; a partition scheme maps the resulting partition numbers to filegroups. The date key is almost always what a fact table partitions on, because loading and purging both naturally happen in date-based chunks. SWITCH PARTITION is what makes that practical — moving a whole partition in or out without a row-by-row operation."
+    },
+    {
+      "id": "dwh-27",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 34's naming convention, a table holding measures at a defined grain is prefixed ________, while a table of descriptive attributes is prefixed Dim_.",
+      "acceptedAnswers": ["Fact_", "Fact"],
+      "explain": "The Fact_ / Dim_ prefix convention lets anyone opening the warehouse for the first time know, from the table name alone, whether they're looking at something to aggregate and filter (a fact table) or something to browse for descriptive attributes (a dimension table)."
+    },
+    {
+      "id": "dwh-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "code": "ReceivedQty  DECIMAL(8,2)  NOT NULL DEFAULT 0,\nRejectedQty  DECIMAL(8,2)  NOT NULL DEFAULT 0,\nStockedQty   DECIMAL(9,2)  NOT NULL DEFAULT 0",
+      "prompt": "The capstone's FactPurchaseOrderLine tracks a purchase order line that gets partially received over one or more deliveries, with the columns above updated in place as that happens. Per Lesson 37, why is this an accumulating snapshot fact table rather than a plain transaction fact table?",
+      "options": [
+        "Its measures update in place as the line moves through defined milestones, rather than being written once at insert and left alone",
+        "It has more dimension foreign keys than a typical transaction fact table",
+        "It stores dollar amounts, and only accumulating snapshot tables are allowed to hold currency measures",
+        "It is loaded on a nightly schedule instead of in real time"
+      ],
+      "correctIndex": 0,
+      "explain": "A purchase order line isn't written once and left alone — it's placed, then partially received over one or more deliveries, sometimes with a rejected quantity recorded against it. That lifecycle of milestone events updating the same row in place is the exact definition of an accumulating snapshot, not the insert-once pattern of a transaction fact table."
+    },
+    {
+      "id": "dwh-29",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the capstone's dimension design, per Lessons 37-38.",
+      "options": [
+        "DimVendor is SCD Type 2, because CreditRating and PreferredVendorStatus need to reflect what was true on the order date, not just what's true today",
+        "DimProduct is a conformed dimension, built so a future sales fact table could join to the exact same table",
+        "DimShipMethod is SCD Type 2, since shipping methods change constantly and need full version history",
+        "PurchaseOrderID and RevisionNumber are degenerate dimensions kept directly on the fact table rather than in their own dimension table",
+        "DimEmployee uses SCD Type 2 tracking because a purchasing agent's job title must be versioned for history"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "DimVendor is Type 2 specifically because vendor credit rating and preferred status materially affect historical rollups. DimProduct is conformed with the sales side of the business, built from the same attributes a sales warehouse would use. PurchaseOrderID and RevisionNumber identify the order itself, not a vendor or product, so they ride on the fact table as degenerate dimensions. DimShipMethod is actually Type 0 — a small, essentially static reference table — and DimEmployee is Type 1, overwritten in place with no history tracking needed."
+    },
+    {
+      "id": "dwh-30",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Put these capstone deliverables in the order Lessons 36-39 actually produced them.",
+      "items": [
+        "Choose procurement as the business process and write down the project's scope",
+        "Declare the grain as one row per purchase order line",
+        "Identify the five dimensions and assign each one's SCD type",
+        "Write the CREATE TABLE statements for the dimensions and the fact table",
+        "Check the finished design against the original scope table"
+      ],
+      "explain": "The capstone runs Kimball's four-step process for real: choosing procurement and scoping it in writing (Lesson 36), then declaring the grain and identifying dimensions and facts (Lesson 37), before Lesson 38 turns those decisions into actual CREATE TABLE statements, and Lesson 39 checks the finished design row by row against the scope table written at the very start."
+    }
+  ]
+}
