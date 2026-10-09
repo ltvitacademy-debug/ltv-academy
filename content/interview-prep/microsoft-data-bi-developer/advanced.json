@@ -735,7 +735,6 @@
       "responseFormat": "text",
       "skills": [
         "SSIS",
-        "SCD Transformation",
         "Slowly Changing Dimensions",
         "Data Warehousing"
       ],
@@ -2314,7 +2313,7 @@
       "difficulty": "advanced",
       "responseFormat": "sql",
       "skills": [
-        "SCD",
+        "Slowly Changing Dimensions",
         "T-SQL",
         "Dimensional Modeling"
       ],
@@ -2373,7 +2372,7 @@
       "difficulty": "advanced",
       "responseFormat": "text",
       "skills": [
-        "SCD",
+        "Slowly Changing Dimensions",
         "Dimensional Modeling"
       ],
       "modelAnswer": "The decision rule for every attribute is the same question asked individually: does any report need this value exactly as it was at the time a related fact occurred? DateFirstPurchase is Type 0 - it's fixed the moment it's first recorded and is never a real 'change,' so it should be write-once and excluded from every future UPDATE statement's column list, forever. EmailAddress is Type 1 - a correction or update with no analytical need for the old value; nobody runs 'revenue by email address as of the order date.' CustomerSegment is Type 2 - 'revenue by segment' rollups need the segment as it actually was at the time of each historical order, not today's segment, or a customer who moved from Budget to Premium last month would retroactively show all of last year's orders as Premium. MailingRegion is Type 2 for the same reason - regional sales rollups must reflect where the customer actually was assigned when each historical order happened, otherwise a salesperson's past territory reassignment silently rewrites historical regional totals. PreferredContactMethod is Type 1 - it's purely operational (how to reach the customer today), and no report's historical accuracy depends on knowing what the preferred method used to be. LoyaltyTierAtEnrollment is Type 0 - by definition it's the tier at the moment of enrollment, a fixed historical fact about that customer's signup, distinct from the customer's current loyalty tier (which would itself be a separate, Type 2 or Type 1 attribute if tracked). This mix is exactly the hybrid pattern: a single dimension applying different SCD types to different columns based on each attribute's own history requirement, which means the ETL load logic has to branch per column rather than applying one rule to the whole table.",
@@ -2609,7 +2608,7 @@
       "responseFormat": "sql",
       "skills": [
         "ETL",
-        "Incremental Load",
+        "Incremental Loads",
         "T-SQL"
       ],
       "modelAnswer": "The cycle has four steps, in a fixed order, and getting the boundaries and the timing of the last step right is what makes it safe to re-run. Step one reads the previously stored watermark value for this specific table from a control table. Step two reads the current maximum ModifiedDate in the source right now. Step three extracts rows whose ModifiedDate falls strictly after the old watermark and up to and including the new watermark captured in step two - bounding both ends matters, because an unbounded upper edge (just WHERE ModifiedDate > @OldWatermark) can pick up a row that gets modified again in the middle of this very extract, landing it in an inconsistent partial state, or double-processing rows across adjacent runs if the extract takes a long time. Step four persists the new watermark value back to the control table - but only after the rows pulled in step three have been fully loaded and verified successful. If the watermark is updated before confirming the load succeeded, a failure partway through silently and permanently loses whatever didn't make it in, because the next run's lower bound has already moved past those rows and will never request them again. The watermark update belongs as the last statement of a successful transaction, ideally gated behind the same validation checks (row counts, no orphaned keys) used elsewhere in the pipeline.",
@@ -2906,7 +2905,7 @@
       "skills": [
         "Communication",
         "Stakeholder Management",
-        "SCD"
+        "Slowly Changing Dimensions"
       ],
       "modelAnswer": "I wouldn't just comply, and I wouldn't just refuse - I'd translate the technical risk into a consequence they can see the business impact of. I'd explain concretely: if region gets overwritten in place rather than versioned, every historical sale tied to that customer or salesperson will retroactively show the new region as if it had always been true, so a 'sales by region last year' report will quietly change numbers that may have already gone into a board deck or a commission calculation, with no error or warning anywhere that it happened. I'd then offer the actual alternative plainly - a Type 2 versioned dimension - and be honest that the real cost difference is smaller than it sounds; a Type 2 load isn't dramatically harder to build, and the cost of not doing it is a much more expensive, much harder to trace data-quality incident discovered later, probably by someone other than me. If, after understanding the tradeoff, the stakeholder still prefers the simpler overwrite because they've decided history genuinely doesn't matter for this attribute, that's a legitimate business call and ultimately theirs to make - but I'd document the decision and its known limitation clearly, so it isn't a mystery to whoever investigates a discrepancy six months from now.",
       "professionalAnswer": "I try not to just say yes or just say no in a moment like this - I explain what actually happens to their numbers if we go the simple route. In this case, I'd walk them through exactly what overwriting region in place does to history: every past sale from that customer or rep would suddenly show the new region as if it had always been that way, which means a report someone already presented using last year's numbers could silently change under them. Then I'd offer the real fix - versioning the dimension properly - and I'd be upfront that it's not actually that much more work to build, especially compared to the cost of someone discovering six months from now that last year's regional numbers have been quietly wrong. If they hear all that and still want the simpler approach because they've decided this attribute's history genuinely doesn't matter to them, that's their call to make, not mine to override - but I make sure it's written down clearly what we decided and why, so it's a known tradeoff, not a surprise someone finds later.",
@@ -3016,7 +3015,7 @@
       "responseFormat": "text",
       "skills": [
         "Mentoring",
-        "SCD",
+        "Slowly Changing Dimensions",
         "Communication"
       ],
       "modelAnswer": "I'd treat this as a teaching moment rather than a correction of carelessness, because the instinct behind it - don't lose history, don't throw anything away - is a reasonable one to start from, so I'd validate that intent before correcting the approach. I'd walk through their own warehouse with them and show the concrete cost: how many extra dimension rows a single typo fix or formatting cleanup is generating, and how that affects both storage and the usability of the semantic model report authors actually browse, since versions with no real analytical meaning clutter what should be a clean dimension. Then I'd teach the actual decision rule rather than just telling them to stop: for each attribute, ask whether any report needs this value exactly as it was at the time a related fact occurred. I'd walk through two or three real attributes on their dimension together and classify them live - a typo correction becomes Type 1, something fixed at insert becomes Type 0, something that actually drives historical rollups becomes Type 2. I'd have them go back and reclassify the dimension attribute by attribute themselves, rather than me rewriting it for them, and review the result together. I'd also follow up again later rather than treating this as a one-time correction, since internalizing a judgment call like this usually takes more than a single conversation.",

@@ -8,14 +8,17 @@
       "category": "technical-knowledge",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["T-SQL", "Joins"],
-      "modelAnswer": "INNER JOIN returns only the rows where the ON condition evaluates true on both sides — any row from either table that has no match on the other side is dropped from the result entirely. LEFT JOIN keeps every row from the table named in the FROM clause (the 'left' table), whether or not it has a match in the table named after JOIN (the 'right' table). When a left-table row has no match, every column that would have come from the right table comes back as NULL instead of the row being dropped. 'Left' and 'right' describe position in the query text — the table in FROM is left, the table after JOIN is right — not anything about the size or importance of the data. A common real use of LEFT JOIN is combining it with WHERE <right-table-column> IS NULL to find rows that have no match at all, since that column can only be NULL if the join failed to find a partner row.",
-      "professionalAnswer": "I'd explain it with a concrete example: if I join Product to SalesOrderDetail with an INNER JOIN, I only see products that have actually sold — a product sitting in inventory with zero orders just disappears from the result, because there's nothing on the right side to pair it with. If my actual question is 'show me every product, including the ones that have never sold,' INNER JOIN can't answer that by definition, so I switch to a LEFT JOIN from Product. Now every product shows up, and for the ones with no matching order, the order columns just come back NULL. That NULL is actually useful — if I add WHERE OrderQty IS NULL to that LEFT JOIN, I've just built a 'products that have never sold' report, which is a query I get asked for constantly in a reporting role. The one thing I'm careful to remember is that left and right only refer to where I physically wrote the table in the query, not which table is 'bigger' or more important.",
+      "skills": [
+        "T-SQL",
+        "Joins"
+      ],
+      "modelAnswer": "INNER JOIN returns only the rows where the ON condition evaluates true on both sides \u2014 any row from either table that has no match on the other side is dropped from the result entirely. LEFT JOIN keeps every row from the table named in the FROM clause (the 'left' table), whether or not it has a match in the table named after JOIN (the 'right' table). When a left-table row has no match, every column that would have come from the right table comes back as NULL instead of the row being dropped. 'Left' and 'right' describe position in the query text \u2014 the table in FROM is left, the table after JOIN is right \u2014 not anything about the size or importance of the data. A common real use of LEFT JOIN is combining it with WHERE <right-table-column> IS NULL to find rows that have no match at all, since that column can only be NULL if the join failed to find a partner row.",
+      "professionalAnswer": "I'd explain it with a concrete example: if I join Product to SalesOrderDetail with an INNER JOIN, I only see products that have actually sold \u2014 a product sitting in inventory with zero orders just disappears from the result, because there's nothing on the right side to pair it with. If my actual question is 'show me every product, including the ones that have never sold,' INNER JOIN can't answer that by definition, so I switch to a LEFT JOIN from Product. Now every product shows up, and for the ones with no matching order, the order columns just come back NULL. That NULL is actually useful \u2014 if I add WHERE OrderQty IS NULL to that LEFT JOIN, I've just built a 'products that have never sold' report, which is a query I get asked for constantly in a reporting role. The one thing I'm careful to remember is that left and right only refer to where I physically wrote the table in the query, not which table is 'bigger' or more important.",
       "example": "-- INNER JOIN: only products with at least one order line\nSELECT p.Name, p.ListPrice, sod.OrderQty\nFROM Production.Product AS p\nINNER JOIN Sales.SalesOrderDetail AS sod\n    ON p.ProductID = sod.ProductID;\n\n-- LEFT JOIN: every product, NULL-filled when there's no match\nSELECT p.Name, p.ListPrice, sod.OrderQty\nFROM Production.Product AS p\nLEFT JOIN Sales.SalesOrderDetail AS sod\n    ON p.ProductID = sod.ProductID;\n\n-- Finding products that have NEVER sold\nSELECT p.Name\nFROM Production.Product AS p\nLEFT JOIN Sales.SalesOrderDetail AS sod\n    ON p.ProductID = sod.ProductID\nWHERE sod.ProductID IS NULL;",
       "commonMistakes": [
         "Thinking 'left' and 'right' describe which table has more rows or matters more, instead of just position in the FROM/JOIN clause",
         "Forgetting that unmatched right-side columns come back as NULL, then getting confused when COUNT() or SUM() on those columns behaves unexpectedly",
-        "Using INNER JOIN when the real goal is to find rows with no match — that specifically requires LEFT JOIN plus an IS NULL check",
+        "Using INNER JOIN when the real goal is to find rows with no match \u2014 that specifically requires LEFT JOIN plus an IS NULL check",
         "Not realizing WHERE runs after the join, so a WHERE clause on a right-side column can accidentally turn a LEFT JOIN back into something that behaves like an INNER JOIN"
       ],
       "keyPoints": [
@@ -26,12 +29,25 @@
         "LEFT JOIN + IS NULL is the standard pattern for finding unmatched rows"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly explains what each join type returns", "weight": 50 },
-        { "criterion": "Explains NULL behavior for unmatched LEFT JOIN rows", "weight": 30 },
-        { "criterion": "Clarity of explanation", "weight": 20 }
+        {
+          "criterion": "Correctly explains what each join type returns",
+          "weight": 50
+        },
+        {
+          "criterion": "Explains NULL behavior for unmatched LEFT JOIN rows",
+          "weight": 30
+        },
+        {
+          "criterion": "Clarity of explanation",
+          "weight": 20
+        }
       ],
       "estimatedMinutes": 3,
-      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "left-join", "label": "Review: LEFT JOIN" },
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "left-join",
+        "label": "Review: LEFT JOIN"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -45,9 +61,12 @@
       "category": "technical-knowledge",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["T-SQL", "Aggregation"],
-      "modelAnswer": "WHERE is evaluated before GROUP BY runs, so at the point WHERE executes, groups and their aggregated values (like AVG(ListPrice)) don't exist yet — there's nothing for WHERE to compare against. HAVING is WHERE's counterpart for groups: it runs after GROUP BY has formed the groups and after the aggregate functions have been computed, so by the time HAVING evaluates, every group's aggregate already exists and can be filtered on. The correct logical processing order in T-SQL is: FROM (and JOIN) first, then WHERE filters individual rows, then GROUP BY forms groups, then HAVING filters those groups, then SELECT picks the columns/expressions to return, and finally ORDER BY sorts the final result. WHERE and HAVING aren't mutually exclusive — you commonly use WHERE to remove rows before grouping even starts, and HAVING to filter the groups that result.",
-      "professionalAnswer": "I think of it as a timeline problem, not a syntax problem. If I write WHERE AVG(ListPrice) > 500, SQL Server throws an error, because logically WHERE runs before GROUP BY has even created any groups — there's no average to check yet. The moment I actually need to filter on an aggregated value, I move that condition to HAVING, which runs after the grouping and aggregation have already happened. In practice I use both together constantly: WHERE Color IS NOT NULL to throw out rows with no color recorded before I even start grouping, then GROUP BY Color, then HAVING AVG(ListPrice) > 500 to keep only the color groups whose average price clears that bar. I always come back to the same six-step order — FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY — whenever I'm unsure why a query is or isn't behaving the way I expect.",
+      "skills": [
+        "T-SQL",
+        "Aggregation"
+      ],
+      "modelAnswer": "WHERE is evaluated before GROUP BY runs, so at the point WHERE executes, groups and their aggregated values (like AVG(ListPrice)) don't exist yet \u2014 there's nothing for WHERE to compare against. HAVING is WHERE's counterpart for groups: it runs after GROUP BY has formed the groups and after the aggregate functions have been computed, so by the time HAVING evaluates, every group's aggregate already exists and can be filtered on. The correct logical processing order in T-SQL is: FROM (and JOIN) first, then WHERE filters individual rows, then GROUP BY forms groups, then HAVING filters those groups, then SELECT picks the columns/expressions to return, and finally ORDER BY sorts the final result. WHERE and HAVING aren't mutually exclusive \u2014 you commonly use WHERE to remove rows before grouping even starts, and HAVING to filter the groups that result.",
+      "professionalAnswer": "I think of it as a timeline problem, not a syntax problem. If I write WHERE AVG(ListPrice) > 500, SQL Server throws an error, because logically WHERE runs before GROUP BY has even created any groups \u2014 there's no average to check yet. The moment I actually need to filter on an aggregated value, I move that condition to HAVING, which runs after the grouping and aggregation have already happened. In practice I use both together constantly: WHERE Color IS NOT NULL to throw out rows with no color recorded before I even start grouping, then GROUP BY Color, then HAVING AVG(ListPrice) > 500 to keep only the color groups whose average price clears that bar. I always come back to the same six-step order \u2014 FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY \u2014 whenever I'm unsure why a query is or isn't behaving the way I expect.",
       "example": "SELECT Color, AVG(ListPrice) AS AveragePrice\nFROM Production.Product\nWHERE Color IS NOT NULL\nGROUP BY Color\nHAVING AVG(ListPrice) > 500;\n-- WHERE removes NULL-color rows before grouping; HAVING keeps only\n-- the color groups whose computed average price exceeds 500.",
       "commonMistakes": [
         "Writing WHERE AVG(ListPrice) > 500 and being surprised by the error instead of recognizing aggregates aren't available yet at that stage",
@@ -62,12 +81,25 @@
         "WHERE and HAVING can and often should be used together"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly explains why WHERE can't reference aggregates", "weight": 40 },
-        { "criterion": "Correctly states the logical processing order", "weight": 35 },
-        { "criterion": "Explains how WHERE and HAVING work together", "weight": 25 }
+        {
+          "criterion": "Correctly explains why WHERE can't reference aggregates",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly states the logical processing order",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains how WHERE and HAVING work together",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 3,
-      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "having-vs-where", "label": "Review: HAVING vs. WHERE" },
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "having-vs-where",
+        "label": "Review: HAVING vs. WHERE"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -81,10 +113,13 @@
       "category": "hands-on",
       "difficulty": "beginner",
       "responseFormat": "sql",
-      "skills": ["T-SQL", "Aggregation"],
+      "skills": [
+        "T-SQL",
+        "Aggregation"
+      ],
       "code": "-- Production.Product (AdventureWorks2012) has columns including:\n-- ProductID, Name, Color, ListPrice\nUSE AdventureWorks2012;\nGO",
-      "modelAnswer": "GROUP BY works in three conceptual steps: split the table into groups (one group per distinct Color value), aggregate within each group separately (COUNT and AVG each run once per group, not once overall), then combine the results into one row per group. Every column in SELECT must either be wrapped in an aggregate function or listed in GROUP BY — Color qualifies because it's the GROUP BY column; Name would not be allowed unaggregated here because it varies within a color group. Filtering out NULL colors belongs in WHERE, since that's a row-level filter that should happen before grouping, not a group-level filter.",
-      "professionalAnswer": "I'd write WHERE Color IS NOT NULL first, since that's just removing rows before grouping even starts — no reason to let NULL colors form their own group if the business doesn't care about them. Then GROUP BY Color splits the remaining rows into one bucket per color, and COUNT(*) plus AVG(ListPrice) each compute their own answer per bucket rather than one answer for the whole table. The result has exactly one row per distinct color — the same number of rows COUNT(DISTINCT Color) would report — which is a good sanity check I'd run after writing a query like this.",
+      "modelAnswer": "GROUP BY works in three conceptual steps: split the table into groups (one group per distinct Color value), aggregate within each group separately (COUNT and AVG each run once per group, not once overall), then combine the results into one row per group. Every column in SELECT must either be wrapped in an aggregate function or listed in GROUP BY \u2014 Color qualifies because it's the GROUP BY column; Name would not be allowed unaggregated here because it varies within a color group. Filtering out NULL colors belongs in WHERE, since that's a row-level filter that should happen before grouping, not a group-level filter.",
+      "professionalAnswer": "I'd write WHERE Color IS NOT NULL first, since that's just removing rows before grouping even starts \u2014 no reason to let NULL colors form their own group if the business doesn't care about them. Then GROUP BY Color splits the remaining rows into one bucket per color, and COUNT(*) plus AVG(ListPrice) each compute their own answer per bucket rather than one answer for the whole table. The result has exactly one row per distinct color \u2014 the same number of rows COUNT(DISTINCT Color) would report \u2014 which is a good sanity check I'd run after writing a query like this.",
       "example": "SELECT Color,\n       COUNT(*) AS ProductCount,\n       AVG(ListPrice) AS AveragePrice\nFROM Production.Product\nWHERE Color IS NOT NULL\nGROUP BY Color\nORDER BY ProductCount DESC;\n-- One row per distinct Color; COUNT and AVG are computed per color group.",
       "commonMistakes": [
         "Adding Name or another non-aggregated, non-grouped column to SELECT and getting a GROUP BY error",
@@ -99,12 +134,25 @@
         "Result row count should match COUNT(DISTINCT <grouped column>)"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correct GROUP BY syntax and aggregate functions", "weight": 50 },
-        { "criterion": "Correctly excludes NULL colors with WHERE, not HAVING", "weight": 30 },
-        { "criterion": "Explains why the query is structured that way", "weight": 20 }
+        {
+          "criterion": "Correct GROUP BY syntax and aggregate functions",
+          "weight": 50
+        },
+        {
+          "criterion": "Correctly excludes NULL colors with WHERE, not HAVING",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains why the query is structured that way",
+          "weight": 20
+        }
       ],
       "estimatedMinutes": 5,
-      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "group-by-basics", "label": "Review: GROUP BY Basics" },
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "group-by-basics",
+        "label": "Review: GROUP BY Basics"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -118,15 +166,18 @@
       "category": "hands-on",
       "difficulty": "beginner",
       "responseFormat": "sql",
-      "skills": ["T-SQL", "Window Functions"],
+      "skills": [
+        "T-SQL",
+        "Window Functions"
+      ],
       "code": "-- Production.Product (AdventureWorks2012): Name, ListPrice\nUSE AdventureWorks2012;\nGO",
-      "modelAnswer": "ROW_NUMBER() always produces unique, sequential numbers — even for genuinely tied values, it arbitrarily breaks the tie and gives one row a lower number than the other. RANK() gives tied rows the same number, but leaves a gap afterward: if two products tie for rank 1, the next distinct price gets rank 3, not 2, because RANK() accounts for how many rows were tied at the previous rank. DENSE_RANK() also gives tied rows the same number, but with no gap — the next distinct price after a tie at rank 1 gets rank 2. All three are computed with an OVER (ORDER BY ...) window clause and require no GROUP BY.",
-      "professionalAnswer": "I'd run all three in one query so the difference is visible directly in the output rather than just described. If two products are tied for the most expensive, ROW_NUMBER() pretends there's no tie at all and numbers them 1 and 2 arbitrarily — which would misrepresent a genuine tie as a win. RANK() is honest about the tie: both get rank 1, but the next product jumps to rank 3, because two rows already occupied rank 1's 'slot.' DENSE_RANK() is also honest about the tie — both get rank 1 — but it only cares about distinct values, so the next price tier is rank 2 with no gap. Which one I pick depends on the business question: a sales leaderboard where two reps tied for second place genuinely skips third place calls for RANK(); a scale of distinct price tiers where I just want the next gap-free tier number calls for DENSE_RANK().",
+      "modelAnswer": "ROW_NUMBER() always produces unique, sequential numbers \u2014 even for genuinely tied values, it arbitrarily breaks the tie and gives one row a lower number than the other. RANK() gives tied rows the same number, but leaves a gap afterward: if two products tie for rank 1, the next distinct price gets rank 3, not 2, because RANK() accounts for how many rows were tied at the previous rank. DENSE_RANK() also gives tied rows the same number, but with no gap \u2014 the next distinct price after a tie at rank 1 gets rank 2. All three are computed with an OVER (ORDER BY ...) window clause and require no GROUP BY.",
+      "professionalAnswer": "I'd run all three in one query so the difference is visible directly in the output rather than just described. If two products are tied for the most expensive, ROW_NUMBER() pretends there's no tie at all and numbers them 1 and 2 arbitrarily \u2014 which would misrepresent a genuine tie as a win. RANK() is honest about the tie: both get rank 1, but the next product jumps to rank 3, because two rows already occupied rank 1's 'slot.' DENSE_RANK() is also honest about the tie \u2014 both get rank 1 \u2014 but it only cares about distinct values, so the next price tier is rank 2 with no gap. Which one I pick depends on the business question: a sales leaderboard where two reps tied for second place genuinely skips third place calls for RANK(); a scale of distinct price tiers where I just want the next gap-free tier number calls for DENSE_RANK().",
       "example": "SELECT Name, ListPrice,\n       ROW_NUMBER() OVER (ORDER BY ListPrice DESC) AS RowNum,\n       RANK()       OVER (ORDER BY ListPrice DESC) AS Rank_,\n       DENSE_RANK() OVER (ORDER BY ListPrice DESC) AS DenseRank_\nFROM Production.Product\nORDER BY ListPrice DESC;\n-- Tied prices: RowNum stays unique, Rank_ ties then skips ahead,\n-- DenseRank_ ties with no gap.",
       "commonMistakes": [
         "Assuming ROW_NUMBER() is 'safer' for ties when it actually hides them by assigning arbitrary unique numbers",
         "Confusing RANK's gap-after-a-tie behavior with DENSE_RANK's no-gap behavior",
-        "Forgetting that ORDER BY inside OVER() determines which rows get which rank — changing it changes the whole result",
+        "Forgetting that ORDER BY inside OVER() determines which rows get which rank \u2014 changing it changes the whole result",
         "Trying to use these functions without an OVER() clause, or expecting them to need a GROUP BY"
       ],
       "keyPoints": [
@@ -136,12 +187,25 @@
         "All three run inside OVER (ORDER BY ...), no GROUP BY needed"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correct syntax for all three ranking functions", "weight": 45 },
-        { "criterion": "Accurately explains the tie-handling difference", "weight": 35 },
-        { "criterion": "Picks a sensible real-world scenario for each function", "weight": 20 }
+        {
+          "criterion": "Correct syntax for all three ranking functions",
+          "weight": 45
+        },
+        {
+          "criterion": "Accurately explains the tie-handling difference",
+          "weight": 35
+        },
+        {
+          "criterion": "Picks a sensible real-world scenario for each function",
+          "weight": 20
+        }
       ],
       "estimatedMinutes": 5,
-      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "rank-dense-rank", "label": "Review: RANK and DENSE_RANK" },
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "rank-dense-rank",
+        "label": "Review: RANK and DENSE_RANK"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -155,9 +219,12 @@
       "category": "technical-knowledge",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["T-SQL", "Database Design"],
-      "modelAnswer": "A primary key guarantees two things at once about a column (or set of columns): every value is unique, and no value is ever NULL — together that means a primary key value always identifies exactly one row. Creating a primary key without specifying otherwise also builds a clustered index on it by default, physically sorting the table by that key. A foreign key enforces referential integrity: every value in the foreign-key column must already exist as a primary-key value in the referenced table. Trying to insert or update a row with a foreign-key value that doesn't exist in the referenced table fails with error 547 — the database physically refuses to create the orphaned row. ON DELETE CASCADE changes the default behavior (which blocks deleting a referenced row while dependents still point to it) so that deleting a parent row automatically deletes its dependent rows too.",
-      "professionalAnswer": "I'd describe the primary key as the table's identity guarantee — Production.Product's primary key, ProductID, means I can always find exactly one product for a given ID, never zero, never two. The foreign key is what makes a JOIN trustworthy: Product.ProductSubcategoryID is a foreign key to ProductSubcategory, so SQL Server physically won't let me insert a product pointing at a subcategory that doesn't exist. If I try, I get error 547, which is the database doing its job, not a bug to work around. I'm careful with ON DELETE CASCADE, though — it's convenient for cleaning up dependent rows automatically, but on a deep relationship chain it can silently delete far more data than I expect, so I think through the blast radius before turning it on.",
+      "skills": [
+        "T-SQL",
+        "Database Design"
+      ],
+      "modelAnswer": "A primary key guarantees two things at once about a column (or set of columns): every value is unique, and no value is ever NULL \u2014 together that means a primary key value always identifies exactly one row. Creating a primary key without specifying otherwise also builds a clustered index on it by default, physically sorting the table by that key. A foreign key enforces referential integrity: every value in the foreign-key column must already exist as a primary-key value in the referenced table. Trying to insert or update a row with a foreign-key value that doesn't exist in the referenced table fails with error 547 \u2014 the database physically refuses to create the orphaned row. ON DELETE CASCADE changes the default behavior (which blocks deleting a referenced row while dependents still point to it) so that deleting a parent row automatically deletes its dependent rows too.",
+      "professionalAnswer": "I'd describe the primary key as the table's identity guarantee \u2014 Production.Product's primary key, ProductID, means I can always find exactly one product for a given ID, never zero, never two. The foreign key is what makes a JOIN trustworthy: Product.ProductSubcategoryID is a foreign key to ProductSubcategory, so SQL Server physically won't let me insert a product pointing at a subcategory that doesn't exist. If I try, I get error 547, which is the database doing its job, not a bug to work around. I'm careful with ON DELETE CASCADE, though \u2014 it's convenient for cleaning up dependent rows automatically, but on a deep relationship chain it can silently delete far more data than I expect, so I think through the blast radius before turning it on.",
       "example": "CREATE TABLE dbo.Department (\n    DepartmentID INT NOT NULL PRIMARY KEY,\n    Name NVARCHAR(50) NOT NULL\n);\n\nCREATE TABLE dbo.Employee (\n    EmployeeID INT NOT NULL PRIMARY KEY,\n    DepartmentID INT NOT NULL\n        REFERENCES dbo.Department (DepartmentID)\n);\n\n-- Fails with Error 547: DepartmentID 9999 doesn't exist\nINSERT INTO dbo.Employee VALUES (1, 9999);",
       "commonMistakes": [
         "Thinking a primary key only guarantees uniqueness and forgetting it also guarantees NOT NULL",
@@ -173,12 +240,25 @@
         "ON DELETE CASCADE changes the default block-on-delete behavior"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly describes what a primary key guarantees", "weight": 35 },
-        { "criterion": "Correctly describes referential integrity and Error 547", "weight": 40 },
-        { "criterion": "Mentions the clustered index / cascade nuance", "weight": 25 }
+        {
+          "criterion": "Correctly describes what a primary key guarantees",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly describes referential integrity and Error 547",
+          "weight": 40
+        },
+        {
+          "criterion": "Mentions the clustered index / cascade nuance",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 3,
-      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "foreign-keys", "label": "Review: Foreign Keys" },
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "foreign-keys",
+        "label": "Review: Foreign Keys"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -188,13 +268,16 @@
       "id": "msbi-beg-006",
       "questionCode": "LTV-MSBI-BEG-006",
       "title": "Debugging a WHERE = NULL mistake",
-      "prompt": "A junior developer writes WHERE MiddleName = NULL to find customers with no middle name recorded, and gets zero rows back — even though many customers genuinely have a NULL MiddleName. What's actually wrong with that query, and how should they fix it?",
+      "prompt": "A junior developer writes WHERE MiddleName = NULL to find customers with no middle name recorded, and gets zero rows back \u2014 even though many customers genuinely have a NULL MiddleName. What's actually wrong with that query, and how should they fix it?",
       "category": "troubleshooting",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["T-SQL", "NULL Handling"],
-      "modelAnswer": "NULL represents an unknown or not-applicable value, not zero or an empty string. Because it's unknown, NULL can't be said to equal anything — not even another NULL — so any comparison using the = operator against NULL evaluates to unknown (treated as false), never true. That means WHERE MiddleName = NULL will always return zero rows, regardless of how many rows actually have a NULL MiddleName, because the comparison can never succeed. The fix is to use the special IS NULL syntax instead: WHERE MiddleName IS NULL. IS NULL isn't a comparison operator — it's dedicated syntax built specifically to test for the absence of a value, and it works correctly where = cannot. The same logic applies to IS NOT NULL for the opposite case.",
-      "professionalAnswer": "The first thing I'd point out is that this isn't a typo or syntax error — the query runs fine, it just silently returns the wrong answer, which is the dangerous kind of bug. I'd explain that NULL means 'unknown,' and you can't compare an unknown value to anything using = and expect a meaningful true or false — SQL Server treats that comparison as unknown, which gets filtered out just like false. So WHERE MiddleName = NULL isn't matching NULLs, it's failing to match anything at all. The fix is WHERE MiddleName IS NULL, which is purpose-built syntax for exactly this case rather than a regular comparison. If the goal were actually to display something readable instead of filtering, I'd reach for ISNULL(MiddleName, '(none)') or COALESCE for more than two fallback values.",
+      "skills": [
+        "T-SQL",
+        "NULL Handling"
+      ],
+      "modelAnswer": "NULL represents an unknown or not-applicable value, not zero or an empty string. Because it's unknown, NULL can't be said to equal anything \u2014 not even another NULL \u2014 so any comparison using the = operator against NULL evaluates to unknown (treated as false), never true. That means WHERE MiddleName = NULL will always return zero rows, regardless of how many rows actually have a NULL MiddleName, because the comparison can never succeed. The fix is to use the special IS NULL syntax instead: WHERE MiddleName IS NULL. IS NULL isn't a comparison operator \u2014 it's dedicated syntax built specifically to test for the absence of a value, and it works correctly where = cannot. The same logic applies to IS NOT NULL for the opposite case.",
+      "professionalAnswer": "The first thing I'd point out is that this isn't a typo or syntax error \u2014 the query runs fine, it just silently returns the wrong answer, which is the dangerous kind of bug. I'd explain that NULL means 'unknown,' and you can't compare an unknown value to anything using = and expect a meaningful true or false \u2014 SQL Server treats that comparison as unknown, which gets filtered out just like false. So WHERE MiddleName = NULL isn't matching NULLs, it's failing to match anything at all. The fix is WHERE MiddleName IS NULL, which is purpose-built syntax for exactly this case rather than a regular comparison. If the goal were actually to display something readable instead of filtering, I'd reach for ISNULL(MiddleName, '(none)') or COALESCE for more than two fallback values.",
       "example": "-- WRONG: always returns zero rows, even when MiddleName IS NULL for many people\nSELECT FirstName, MiddleName FROM Person.Person WHERE MiddleName = NULL;\n\n-- CORRECT\nSELECT FirstName, MiddleName FROM Person.Person WHERE MiddleName IS NULL;\n\n-- Substituting a readable default instead of filtering\nSELECT FirstName, ISNULL(MiddleName, '(none)') AS MiddleName FROM Person.Person;",
       "commonMistakes": [
         "Not realizing the query runs without error and silently returns the wrong result, rather than throwing an obvious failure",
@@ -209,12 +292,25 @@
         "ISNULL()/COALESCE() substitute a default value rather than test for NULL"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly diagnoses why = NULL fails silently", "weight": 45 },
-        { "criterion": "Provides the correct fix (IS NULL)", "weight": 35 },
-        { "criterion": "Mentions ISNULL/COALESCE as a related but different tool", "weight": 20 }
+        {
+          "criterion": "Correctly diagnoses why = NULL fails silently",
+          "weight": 45
+        },
+        {
+          "criterion": "Provides the correct fix (IS NULL)",
+          "weight": 35
+        },
+        {
+          "criterion": "Mentions ISNULL/COALESCE as a related but different tool",
+          "weight": 20
+        }
       ],
       "estimatedMinutes": 4,
-      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "null-handling", "label": "Review: Handling NULL" },
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "null-handling",
+        "label": "Review: Handling NULL"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -228,9 +324,12 @@
       "category": "technical-knowledge",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["T-SQL", "CTEs"],
-      "modelAnswer": "A CTE (Common Table Expression) is a named, temporary result set defined at the top of a query with the WITH keyword. Functionally, it's equivalent to putting the same SELECT inside a subquery in the FROM clause — but instead of nesting it inline, you give it a name once and then reference that name like a real table in the statement that follows. This makes deeply nested subqueries much easier to read, especially when the same intermediate result needs to be referenced more than once in the outer query. A CTE is strictly temporary: it only exists for the single statement immediately following its WITH clause, is never saved anywhere, and disappears the moment that statement finishes — unlike a VIEW, which is a genuinely reusable, saved named query.",
-      "professionalAnswer": "I reach for a CTE mainly for readability. A subquery nested three levels deep inside a FROM clause gets hard to read fast — you end up mentally tracking which closing parenthesis belongs to which level. If I give that same logic a name with WITH CategoryAverages AS (...), I can read the outer query almost like English: 'from CategoryAverages, where...' That's especially valuable when I need to reference the same intermediate calculation more than once in the final query, since a CTE lets me do that without repeating the underlying SELECT. The one thing I always clarify for someone newer to this is that a CTE isn't a saved object — it only lives for the one statement right after it, so if I need that same logic reused across multiple separate queries, a VIEW is the right tool, not a CTE.",
+      "skills": [
+        "T-SQL",
+        "CTEs"
+      ],
+      "modelAnswer": "A CTE (Common Table Expression) is a named, temporary result set defined at the top of a query with the WITH keyword. Functionally, it's equivalent to putting the same SELECT inside a subquery in the FROM clause \u2014 but instead of nesting it inline, you give it a name once and then reference that name like a real table in the statement that follows. This makes deeply nested subqueries much easier to read, especially when the same intermediate result needs to be referenced more than once in the outer query. A CTE is strictly temporary: it only exists for the single statement immediately following its WITH clause, is never saved anywhere, and disappears the moment that statement finishes \u2014 unlike a VIEW, which is a genuinely reusable, saved named query.",
+      "professionalAnswer": "I reach for a CTE mainly for readability. A subquery nested three levels deep inside a FROM clause gets hard to read fast \u2014 you end up mentally tracking which closing parenthesis belongs to which level. If I give that same logic a name with WITH CategoryAverages AS (...), I can read the outer query almost like English: 'from CategoryAverages, where...' That's especially valuable when I need to reference the same intermediate calculation more than once in the final query, since a CTE lets me do that without repeating the underlying SELECT. The one thing I always clarify for someone newer to this is that a CTE isn't a saved object \u2014 it only lives for the one statement right after it, so if I need that same logic reused across multiple separate queries, a VIEW is the right tool, not a CTE.",
       "example": "WITH CategoryAverages AS (\n    SELECT ProductSubcategoryID, AVG(ListPrice) AS AvgPrice\n    FROM Production.Product\n    GROUP BY ProductSubcategoryID\n)\nSELECT ca1.ProductSubcategoryID, ca1.AvgPrice\nFROM CategoryAverages AS ca1\nWHERE ca1.AvgPrice > (SELECT AVG(AvgPrice) FROM CategoryAverages);\n-- CategoryAverages is referenced twice in one statement -- hard to\n-- do cleanly with a nested subquery instead.",
       "commonMistakes": [
         "Thinking a CTE is saved/reusable across separate queries like a VIEW, rather than scoped to one statement",
@@ -245,12 +344,25 @@
         "Scoped to one statement only -- not saved like a VIEW"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly defines what a CTE is", "weight": 40 },
-        { "criterion": "Explains the readability/multiple-reference advantage", "weight": 35 },
-        { "criterion": "Correctly notes the CTE is scoped to one statement, unlike a VIEW", "weight": 25 }
+        {
+          "criterion": "Correctly defines what a CTE is",
+          "weight": 40
+        },
+        {
+          "criterion": "Explains the readability/multiple-reference advantage",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly notes the CTE is scoped to one statement, unlike a VIEW",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 3,
-      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "ctes", "label": "Review: Common Table Expressions" },
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "ctes",
+        "label": "Review: Common Table Expressions"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -264,9 +376,12 @@
       "category": "hands-on",
       "difficulty": "beginner",
       "responseFormat": "sql",
-      "skills": ["T-SQL", "Stored Procedures"],
+      "skills": [
+        "T-SQL",
+        "Stored Procedures"
+      ],
       "code": "-- Production.Product (AdventureWorks2012): Name, ListPrice\nUSE AdventureWorks2012;\nGO",
-      "modelAnswer": "A parameter is declared right after the procedure name, before the AS keyword, and behaves like a normal variable throughout the procedure body — it's just pre-populated from whatever the caller passes in. Giving a parameter a default value (@MinPrice MONEY = 100) makes it optional: if the caller doesn't supply a value, SQL Server uses the default automatically. Calling the procedure with named notation (EXEC usp_GetProductsAbovePrice @MinPrice = 500) is unambiguous and order-independent, which is why it's preferred over positional calling once a procedure has more than one parameter.",
+      "modelAnswer": "A parameter is declared right after the procedure name, before the AS keyword, and behaves like a normal variable throughout the procedure body \u2014 it's just pre-populated from whatever the caller passes in. Giving a parameter a default value (@MinPrice MONEY = 100) makes it optional: if the caller doesn't supply a value, SQL Server uses the default automatically. Calling the procedure with named notation (EXEC usp_GetProductsAbovePrice @MinPrice = 500) is unambiguous and order-independent, which is why it's preferred over positional calling once a procedure has more than one parameter.",
       "professionalAnswer": "I'd write the parameter with a sensible default so the procedure is usable both ways out of the box. The body itself is just the same filtered, sorted SELECT I'd write ad hoc, except @MinPrice stands in for whatever literal value I'd otherwise hard-code. Calling it with EXEC usp_GetProductsAbovePrice; uses the default of 100 automatically, and calling it with @MinPrice = 500 overrides that for just this call. I always call with named parameters -- @MinPrice = 500 instead of just 500 -- because the moment a procedure picks up a second or third parameter, positional calling becomes an easy way to silently pass values to the wrong parameter.",
       "example": "CREATE PROCEDURE usp_GetProductsAbovePrice\n    @MinPrice MONEY = 100\nAS\nBEGIN\n    SELECT Name, ListPrice\n    FROM Production.Product\n    WHERE ListPrice >= @MinPrice\n    ORDER BY ListPrice DESC;\nEND;\nGO\n\nEXEC usp_GetProductsAbovePrice @MinPrice = 500; -- overrides the default\nEXEC usp_GetProductsAbovePrice;                 -- uses the default, 100",
       "commonMistakes": [
@@ -282,12 +397,25 @@
         "EXEC without a value for an optional parameter falls back to its default"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correct CREATE PROCEDURE syntax with a default parameter", "weight": 45 },
-        { "criterion": "Correct query logic (filter + sort)", "weight": 30 },
-        { "criterion": "Shows both calling styles (with and without override)", "weight": 25 }
+        {
+          "criterion": "Correct CREATE PROCEDURE syntax with a default parameter",
+          "weight": 45
+        },
+        {
+          "criterion": "Correct query logic (filter + sort)",
+          "weight": 30
+        },
+        {
+          "criterion": "Shows both calling styles (with and without override)",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 5,
-      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "stored-procedures-parameters", "label": "Review: Stored Procedures: Parameters" },
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "stored-procedures-parameters",
+        "label": "Review: Stored Procedures: Parameters"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -301,7 +429,11 @@
       "category": "troubleshooting",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["T-SQL", "Joins", "Performance Tuning"],
+      "skills": [
+        "T-SQL",
+        "Joins",
+        "Performance Tuning"
+      ],
       "modelAnswer": "50 million is exactly 500 times 100,000 -- the row-count signature of a Cartesian product, where every row of one table gets paired with every row of the other instead of only matching rows being paired. The most common real-world cause isn't a deliberate CROSS JOIN -- it's a missing or ineffective ON condition on what was meant to be a normal join: either the ON clause is left out entirely (old-style comma join with no join condition), or it exists but evaluates to true for nearly every row combination (for example ON p.Name IS NOT NULL, which doesn't actually relate the two tables). To confirm it, check the join's ON clause first for a missing or non-relating condition, and as a general habit, sanity-check the row count after any join: if two tables of roughly 500 and 100,000 rows produce millions of result rows instead of a number in that rough range, that's an immediate signal to re-check the ON clause rather than assume the data is simply that large.",
       "professionalAnswer": "The first thing I'd notice is that 50 million is suspiciously close to 500 times 100,000 -- that's the fingerprint of a Cartesian product, not a coincidence. My first move is to go straight to the ON clause of the join and check two things: is it missing entirely, which happens with old comma-style joins that have no join condition at all, or does it exist but not actually relate the two tables -- something like ON p.Name IS NOT NULL, which is true for almost every row and produces a Cartesian product in disguise even though there's technically an ON clause sitting there. Once I fix the condition to something that actually ties the tables together, like p.ProductID = sod.ProductID, I'd re-run the query and expect the row count to land in the same rough range as the bigger of the two tables, not multiply them together. I've made this a habit on every join I write now: sanity-check the row count before trusting the result.",
       "example": "-- BUG: no join condition at all -- a Cartesian product\nSELECT p.Name, sod.OrderQty\nFROM Production.Product AS p, Sales.SalesOrderDetail AS sod;\n\n-- BUG: ON clause exists but doesn't relate the tables\nSELECT p.Name, sod.OrderQty\nFROM Production.Product AS p\nINNER JOIN Sales.SalesOrderDetail AS sod\n    ON p.Name IS NOT NULL;\n\n-- FIXED: a real join condition tying the tables together\nSELECT p.Name, sod.OrderQty\nFROM Production.Product AS p\nINNER JOIN Sales.SalesOrderDetail AS sod\n    ON p.ProductID = sod.ProductID;",
@@ -319,12 +451,25 @@
         "Sanity-check row counts after any join as a standing habit"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly identifies the Cartesian product and the row-count math", "weight": 40 },
-        { "criterion": "Correctly identifies missing/ineffective ON clause as the cause", "weight": 35 },
-        { "criterion": "Describes a practical way to catch this before production", "weight": 25 }
+        {
+          "criterion": "Correctly identifies the Cartesian product and the row-count math",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly identifies missing/ineffective ON clause as the cause",
+          "weight": 35
+        },
+        {
+          "criterion": "Describes a practical way to catch this before production",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 4,
-      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "cartesian-product", "label": "Review: The Cartesian Product" },
+      "lessonLink": {
+        "courseSlug": "t-sql-development",
+        "lessonSlug": "cartesian-product",
+        "label": "Review: The Cartesian Product"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -338,7 +483,10 @@
       "category": "technical-knowledge",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["SSIS", "ETL"],
+      "skills": [
+        "SSIS",
+        "ETL"
+      ],
       "modelAnswer": "Every SSIS package runs on two separate engines. The runtime engine manages the Control Flow -- task order, precedence constraints, logging, event handlers, and variables -- and is active any time a package validates or runs, in development or production. The data flow engine is a specialized engine that a Data Flow Task hands off to, dedicated purely to moving and transforming rows. The Data Flow tab is a completely separate design surface from Control Flow, with its own Toolbox of sources, transformations, and destinations -- none of the Control Flow tasks (Execute SQL, For Loop, Sequence Container) belong there. A Data Flow Task is just a task sitting on the Control Flow, like any other: a package can contain more than one Data Flow Task, each with its own completely independent data flow, and the Control Flow is what sequences them (with precedence constraints) and decides when each one runs.",
       "professionalAnswer": "I'd describe it as two engines working together rather than one. Control Flow is the orchestration layer -- it decides the order things happen in, handles looping, branching, and error handling at the task level. The moment I drop a Data Flow Task onto the Control Flow and double-click into it, I'm on a completely different surface with a different Toolbox -- sources, transformations, destinations -- because that's where rows actually move and get transformed, powered by a separate data flow engine built for exactly that job. A real package I'd build often has multiple Data Flow Tasks sequenced on the Control Flow with precedence constraints -- say, one to stage raw extracts, a second to clean and conform them, a third to load the warehouse -- and each one is its own self-contained pipeline I can open, debug, and reason about independently of the others.",
       "example": null,
@@ -355,12 +503,25 @@
         "A package can hold multiple independent Data Flow Tasks, sequenced on the Control Flow"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly distinguishes the two engines", "weight": 45 },
-        { "criterion": "Explains why a Data Flow Task sits on the Control Flow", "weight": 30 },
-        { "criterion": "Mentions multiple independent data flows in one package", "weight": 25 }
+        {
+          "criterion": "Correctly distinguishes the two engines",
+          "weight": 45
+        },
+        {
+          "criterion": "Explains why a Data Flow Task sits on the Control Flow",
+          "weight": 30
+        },
+        {
+          "criterion": "Mentions multiple independent data flows in one package",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 3,
-      "lessonLink": { "courseSlug": "ssis-development", "lessonSlug": "data-flow-architecture", "label": "Review: Data Flow Architecture" },
+      "lessonLink": {
+        "courseSlug": "ssis-development",
+        "lessonSlug": "data-flow-architecture",
+        "label": "Review: Data Flow Architecture"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -374,7 +535,11 @@
       "category": "hands-on",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["SSIS", "Data Flow", "ETL"],
+      "skills": [
+        "SSIS",
+        "Data Flow",
+        "ETL"
+      ],
       "modelAnswer": "First, add an OLE DB Source to the Data Flow, double-click it, pick the OLE DB connection manager pointed at AdventureWorks2012, set the data access mode to 'Table or view' (or 'SQL command' for a filtered query), and select Person.Person. On the Columns page, select FirstName and LastName as the external columns to bring into the data flow, and use Preview to confirm the rows look right before finishing. Next, drag a Derived Column transformation onto the surface and connect the source's output to it. Add a new derived column named FullName, set it to '<add as new column>' (not Replace, since FirstName and LastName should remain untouched), and set the expression to FirstName + \" \" + LastName -- the editor will auto-detect the resulting data type. Finally, add an OLE DB Destination downstream, connect the Derived Column's output to it, point it at the staging table, and set its data access mode to 'Table or view - fast load' so the load uses SQL Server's bulk-insert mechanism instead of row-by-row inserts. On the Mappings page, map FirstName, LastName, and FullName to the matching destination columns, making sure every non-nullable destination column has a mapping, since an unmapped NOT NULL column fails the load at run time.",
       "professionalAnswer": "I'd walk through it in the same order the data actually flows. Source first: OLE DB Source pointed at Person.Person, data access mode set to Table or view, and I always hit Preview before moving on so I'm not debugging a typo three components downstream. Then the Derived Column transformation -- I add FullName as a brand-new column rather than replacing anything, with the expression FirstName + \" \" + LastName, and I let the editor auto-infer the data type rather than fighting it. Last is the OLE DB Destination, and the one detail I wouldn't skip is switching its data access mode to Table or view - fast load, because that uses SQL Server's bulk-insert mechanism instead of inserting row by row -- it's a meaningful speed difference on anything beyond a trivial row count. On the Mappings page I'd specifically double-check that every NOT NULL column on the staging table has something mapped to it, because an unmapped nullable column is harmless but an unmapped non-nullable one fails the whole load at run time.",
       "example": null,
@@ -391,12 +556,25 @@
         "Unmapped non-nullable destination columns cause the load to fail"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correct end-to-end component sequence", "weight": 40 },
-        { "criterion": "Correct Derived Column configuration (add vs. replace)", "weight": 30 },
-        { "criterion": "Mentions fast load and the Mappings-page nullability risk", "weight": 30 }
+        {
+          "criterion": "Correct end-to-end component sequence",
+          "weight": 40
+        },
+        {
+          "criterion": "Correct Derived Column configuration (add vs. replace)",
+          "weight": 30
+        },
+        {
+          "criterion": "Mentions fast load and the Mappings-page nullability risk",
+          "weight": 30
+        }
       ],
       "estimatedMinutes": 5,
-      "lessonLink": { "courseSlug": "ssis-development", "lessonSlug": "ole-db-source-and-destination", "label": "Review: OLE DB Source & Destination" },
+      "lessonLink": {
+        "courseSlug": "ssis-development",
+        "lessonSlug": "ole-db-source-and-destination",
+        "label": "Review: OLE DB Source & Destination"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -410,7 +588,10 @@
       "category": "troubleshooting",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["SSIS", "Error Handling"],
+      "skills": [
+        "SSIS",
+        "Error Handling"
+      ],
       "modelAnswer": "By default, most data flow components treat any row-level problem as fatal -- 'Fail Component' is the default disposition on both errors (an unrecoverable conversion failure, producing a NULL) and truncations (data cut short but still usable). The fix is to open the failing component's Configure Error Output dialog and change the Error (and/or Truncation) disposition from Fail Component to Redirect Row for the relevant column(s). That exposes a second, red error-output path out of the component. Connect that error output to a separate destination -- commonly a Flat File Destination writing to something like rejected_rows.txt -- so bad rows land there instead of stopping the task. SSIS automatically adds two columns to a redirected row, ErrorCode and ErrorColumn, identifying what went wrong and where; a Script Component calling GetErrorDescription() against ErrorCode can turn that into a readable message before it's written out. The main path continues on to the real destination untouched, so the 9,999,999 good rows still load.",
       "professionalAnswer": "I'd point out first that the default behavior -- Fail Component on both Error and Truncation -- is exactly why one bad row takes down the whole load, and that's rarely what anyone actually wants in production. My fix is to open Configure Error Output on the component that's failing, select the column (or columns) causing the problem, and change the Error disposition to Redirect Row. That gives the component a second, red output path I can wire into its own destination -- usually a flat file for rejected rows -- so the bad row gets written somewhere reviewable instead of killing the task. SSIS tacks on ErrorCode and ErrorColumn automatically for every redirected row, and if I want that to actually be readable instead of just a number, I'd route it through a Script Component that calls GetErrorDescription() first. The main path keeps running untouched, so the good 9,999,999 rows load exactly as before -- the only thing that changes is where the bad row ends up.",
       "example": null,
@@ -427,12 +608,25 @@
         "The main (green) path continues loading good rows untouched"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly identifies the default Fail Component behavior as the cause", "weight": 30 },
-        { "criterion": "Correctly proposes Redirect Row via Configure Error Output", "weight": 40 },
-        { "criterion": "Mentions ErrorCode/ErrorColumn and routing bad rows to a separate destination", "weight": 30 }
+        {
+          "criterion": "Correctly identifies the default Fail Component behavior as the cause",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly proposes Redirect Row via Configure Error Output",
+          "weight": 40
+        },
+        {
+          "criterion": "Mentions ErrorCode/ErrorColumn and routing bad rows to a separate destination",
+          "weight": 30
+        }
       ],
       "estimatedMinutes": 4,
-      "lessonLink": { "courseSlug": "ssis-development", "lessonSlug": "error-outputs-on-data-flow-components", "label": "Review: Error Outputs on Data Flow Components" },
+      "lessonLink": {
+        "courseSlug": "ssis-development",
+        "lessonSlug": "error-outputs-on-data-flow-components",
+        "label": "Review: Error Outputs on Data Flow Components"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -446,7 +640,10 @@
       "category": "architecture",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["SSIS", "Deployment"],
+      "skills": [
+        "SSIS",
+        "Deployment"
+      ],
       "modelAnswer": "The SSISDB catalog is the modern, production home for deployed SSIS projects -- it is not a separate service, but a real database named SSISDB hosted inside an actual instance of the SQL Server Database Engine. SQL Server doesn't create it automatically; it's provisioned once per instance by right-clicking Integration Services Catalogs in Object Explorer and selecting Create Catalog. Once created, the catalog becomes the single place where a deployed project's packages, parameters, environments, permissions, and full execution history live, all queryable with T-SQL. CLR integration has to be enabled because the catalog's functionality -- versioning, parameterization, execution tracking -- is implemented using CLR stored procedures (.NET code running inside SQL Server), so the instance-level CLR integration feature must be turned on for the catalog to work at all. Creating the catalog also requires a master key password, which protects the database master key SSISDB uses to encrypt sensitive parameter and connection manager values.",
       "professionalAnswer": "I'd frame this around the design-time versus run-time split: everything built in SSDT lives on a developer's own machine with no server involved until a deliberate deploy. SSISDB is that run-time destination -- a real database, not a special service, that every deployed project needs to exist before you can deploy anything to it at all. The reason CLR integration has to be turned on first is that the catalog's own stored procedures are written in .NET, not plain T-SQL, so without CLR integration enabled at the instance level, those procedures simply can't run. When I create the catalog I'm also asked for a master key password, which I'd treat as something to store securely, since it (or a backup of the master key) is what lets you recover the catalog onto a different instance later if you ever need to.",
       "example": null,
@@ -463,12 +660,25 @@
         "The master key password protects encrypted sensitive catalog data and is needed for recovery"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly describes what SSISDB is (a database, not a service)", "weight": 40 },
-        { "criterion": "Correctly explains the CLR integration requirement", "weight": 35 },
-        { "criterion": "Mentions the master key password's purpose", "weight": 25 }
+        {
+          "criterion": "Correctly describes what SSISDB is (a database, not a service)",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains the CLR integration requirement",
+          "weight": 35
+        },
+        {
+          "criterion": "Mentions the master key password's purpose",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 4,
-      "lessonLink": { "courseSlug": "ssis-development", "lessonSlug": "the-ssis-catalog", "label": "Review: The SSIS Catalog" },
+      "lessonLink": {
+        "courseSlug": "ssis-development",
+        "lessonSlug": "the-ssis-catalog",
+        "label": "Review: The SSIS Catalog"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -482,7 +692,10 @@
       "category": "technical-knowledge",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["SSRS", "Reporting"],
+      "skills": [
+        "SSRS",
+        "Reporting"
+      ],
       "modelAnswer": "A data source is the connection information -- server, database, and credential method -- while a dataset is a query run against that connection, producing the actual rows and columns a report uses. They're always a pair: a data source without a dataset is a connection to nowhere in particular, and a dataset needs a data source to run against. Both come in two flavors: embedded, saved inside one report only, and shared, published once to the Report Server and referenced by any report that needs it. With five reports all pointing at the same database, an embedded data source means maintaining five separate copies of the same connection string -- if the server name changes, all five need updating individually. A shared data source centralizes that: change the server name in one place, and every report referencing that shared data source picks up the change automatically.",
       "professionalAnswer": "New report authors often use 'data source' to mean the whole thing, but I'd keep the two separate: the data source is just the plumbing -- server, database, how to authenticate -- and the dataset is the actual query that runs through that plumbing to get rows. Once I have more than one or two reports hitting the same database, I move the data source to shared rather than embedded, because the alternative is five copies of the same connection string scattered across five report files. If that server ever gets renamed or moved, a shared data source means I fix it in exactly one place and every report referencing it just picks up the change; with embedded data sources I'd be opening and editing five separate reports by hand.",
       "example": null,
@@ -499,12 +712,25 @@
         "A data source and dataset are always a pair"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly distinguishes data source from dataset", "weight": 40 },
-        { "criterion": "Correctly explains embedded vs. shared", "weight": 35 },
-        { "criterion": "Gives a concrete maintenance-cost reason for using shared", "weight": 25 }
+        {
+          "criterion": "Correctly distinguishes data source from dataset",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains embedded vs. shared",
+          "weight": 35
+        },
+        {
+          "criterion": "Gives a concrete maintenance-cost reason for using shared",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 3,
-      "lessonLink": { "courseSlug": "ssrs-development", "lessonSlug": "datasets-and-data-sources", "label": "Review: Datasets & Data Sources" },
+      "lessonLink": {
+        "courseSlug": "ssrs-development",
+        "lessonSlug": "datasets-and-data-sources",
+        "label": "Review: Datasets & Data Sources"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -518,7 +744,10 @@
       "category": "hands-on",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["SSRS", "Parameters"],
+      "skills": [
+        "SSRS",
+        "Parameters"
+      ],
       "modelAnswer": "A cascading parameter setup isn't one property to flip on -- it's a chain of separate datasets, each one filtered by the parameter chosen before it. For the State dataset, I'd add a filter on its Filters tab where Expression is the state's country column, Operator is '=', and Value is [@CountryParameter] -- the shorthand referencing the Country parameter's current value. The City dataset gets its own filter the same way, built against [@StateParameter]. Each level needs its own dataset and its own filter referencing the parameter one level up; there's no single dialog that shows the whole chain at once. Order matters because the parameters' position under the Parameters node in the Report Data pane is the order the reader is prompted for them at run time, and because a dataset's filter can't reference a parameter value that hasn't been chosen yet -- Country must be listed before State, and State before City, or the chain breaks.",
       "professionalAnswer": "I'd build this as three datasets, not one clever setting. The Country dataset is unfiltered -- it just lists every country. The State dataset gets a filter on its Filters tab: Expression is the state's country column, Operator is =, Value is [@CountryParameter]. The City dataset mirrors that pattern one level down, filtered on [@StateParameter]. The part that trips people up is parameter order in the Report Data pane -- it's not cosmetic, it's literally the order the reader gets prompted, and a parameter can't reference a value that doesn't exist yet, so Country has to come before State, and State before City, or the whole chain is broken from the start. Once it's wired up correctly, the reader experience is exactly what you'd expect: picking a country narrows the state dropdown, picking a state narrows the city dropdown, each step one level down the same chain.",
       "example": null,
@@ -535,12 +764,25 @@
         "A parameter can't be referenced by a filter before it's been chosen"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly describes the chain of filtered datasets", "weight": 45 },
-        { "criterion": "Correctly describes the Filters tab mechanism (Expression/Operator/Value)", "weight": 30 },
-        { "criterion": "Explains why parameter order matters", "weight": 25 }
+        {
+          "criterion": "Correctly describes the chain of filtered datasets",
+          "weight": 45
+        },
+        {
+          "criterion": "Correctly describes the Filters tab mechanism (Expression/Operator/Value)",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains why parameter order matters",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 5,
-      "lessonLink": { "courseSlug": "ssrs-development", "lessonSlug": "cascading-parameters", "label": "Review: Cascading Parameters" },
+      "lessonLink": {
+        "courseSlug": "ssrs-development",
+        "lessonSlug": "cascading-parameters",
+        "label": "Review: Cascading Parameters"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -554,7 +796,10 @@
       "category": "troubleshooting",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["SSRS", "Subscriptions"],
+      "skills": [
+        "SSRS",
+        "Subscriptions"
+      ],
       "modelAnswer": "The first place to check is the subscription's own Result column on the report's Subscriptions management page -- it holds the outcome or error message from the most recent run, and is the fastest way to see whether the subscription is even firing or failing silently. Beyond that, the underlying mechanism is: a schedule writes to the report server database and creates a SQL Server Agent job; when that job fires, it drops an event into a queue the Scheduling and Delivery Processor polls (by default every 10 seconds), which then runs the report and hands the result to the delivery extension. Likely causes include: the schedule (shared or report-specific) being paused or deleted, SQL Server Agent being stopped during that window (scheduled operations that should have fired are simply lost, not queued to catch up later), the report's data source credentials having expired or changed (subscriptions run unattended and need stored or no credentials), or a parameter that used to have a default value no longer having one. Using Run Now on the Subscriptions page is a good way to test immediately rather than waiting for the next scheduled time.",
       "professionalAnswer": "I'd start at the Subscriptions page for that report and check the Result column first -- that tells me in one glance whether the subscription is firing and failing, or not firing at all. If it's failing with a credential error, the most common cause is the data source's stored credentials expiring, since a subscription runs unattended and can't prompt anyone to log in. If there's no result at all for three days, I'd check whether SQL Server Agent was stopped during that window, since a schedule is backed by a real Agent job, and if the server was down when it should have fired, Reporting Services doesn't queue it to catch up -- it's just gone. I'd also check whether the schedule itself -- shared or report-specific -- got paused or deleted; if a shared schedule was deleted, Reporting Services actually clones it into individual report-specific schedules automatically, so that's less likely to be a silent failure, but worth confirming. Once I have a theory, Run Now on the subscription is the fastest way to test it without waiting for 6 AM to come around again.",
       "example": null,
@@ -571,12 +816,25 @@
         "Run Now is the fastest way to test a fix without waiting for the next scheduled time"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly identifies where to check first (Result column)", "weight": 30 },
-        { "criterion": "Lists plausible real causes (credentials, Agent downtime, paused schedule)", "weight": 45 },
-        { "criterion": "Describes a practical verification step (Run Now)", "weight": 25 }
+        {
+          "criterion": "Correctly identifies where to check first (Result column)",
+          "weight": 30
+        },
+        {
+          "criterion": "Lists plausible real causes (credentials, Agent downtime, paused schedule)",
+          "weight": 45
+        },
+        {
+          "criterion": "Describes a practical verification step (Run Now)",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 4,
-      "lessonLink": { "courseSlug": "ssrs-development", "lessonSlug": "subscription-scheduling", "label": "Review: Subscription Scheduling" },
+      "lessonLink": {
+        "courseSlug": "ssrs-development",
+        "lessonSlug": "subscription-scheduling",
+        "label": "Review: Subscription Scheduling"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -590,7 +848,10 @@
       "category": "architecture",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["SSRS", "Architecture"],
+      "skills": [
+        "SSRS",
+        "Architecture"
+      ],
       "modelAnswer": "A native-mode report server centers on the Report Server service, a Windows service that hosts the Report Server web service, runs background processing (scheduled operations, report delivery), and turns a report definition into a rendered report. The Report Server web service is the actual communications interface -- every client, including the web portal, Report Builder, SSDT, and rs.exe, talks to the report server through this web service, never around it. The web portal is the browser-based front end built on top of that web service (available only in native mode, not SharePoint-integrated mode), where users browse folders, run reports, subscribe, and manage permissions. Two databases are created together: ReportServer stores everything that must survive a restart -- reports, shared data sources, folders, subscriptions, schedules, snapshots, security settings, and encrypted credentials -- while ReportServerTempDB stores session/execution data, cached reports, and working tables that don't need to persist, and (unlike ReportServer) won't be automatically re-created if missing.",
       "professionalAnswer": "I'd lay out four pieces. The Report Server service is the Windows service at the center of everything -- it's always running, hosting the web service and doing the actual work of rendering reports. The Report Server web service is the real communications layer: whether it's the web portal, Report Builder, or a script using rs.exe, every one of them talks through this web service, not directly to the databases. The web portal is the part end users actually see -- the browsable, human-facing UI built on top of that web service. And then there are the two databases, which get created together and serve very different purposes: ReportServer is the one that has to survive a restart -- it's where reports, schedules, subscriptions, and security settings actually live -- while ReportServerTempDB is disposable working space for session data and cached output that Reporting Services periodically cleans out on its own, and critically, it won't come back automatically if it's deleted the way ReportServer would.",
       "example": null,
@@ -607,12 +868,25 @@
         "ReportServer persists content; ReportServerTempDB holds disposable session/cache data"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly describes the Report Server service and web service roles", "weight": 35 },
-        { "criterion": "Correctly explains why two databases exist and what each stores", "weight": 40 },
-        { "criterion": "Mentions the web portal as a distinct, native-mode-only piece", "weight": 25 }
+        {
+          "criterion": "Correctly describes the Report Server service and web service roles",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains why two databases exist and what each stores",
+          "weight": 40
+        },
+        {
+          "criterion": "Mentions the web portal as a distinct, native-mode-only piece",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 4,
-      "lessonLink": { "courseSlug": "ssrs-development", "lessonSlug": "report-server-architecture", "label": "Review: Report Server Architecture" },
+      "lessonLink": {
+        "courseSlug": "ssrs-development",
+        "lessonSlug": "report-server-architecture",
+        "label": "Review: Report Server Architecture"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -626,7 +900,10 @@
       "category": "technical-knowledge",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["Power BI", "DAX"],
+      "skills": [
+        "Power BI",
+        "DAX"
+      ],
       "modelAnswer": "A calculated column is computed once, when data is entered or refreshed, and stored per row in row context -- it adds to the model's size and updates only when the table refreshes. A measure is computed dynamically every time it's viewed, evaluated in filter context (whatever's currently filtering the report), and isn't stored at all -- it recalculates instantly as filters change. The decision rule is: do you need to slice, filter, or group by this value, or just display a summarized number? If you need a new category to filter, group, or put in a slicer/legend/axis, you need a calculated column, because only columns are filterable. If you need a calculated number that summarizes -- a total, average, ratio, or projection -- you need a measure. Choosing wrong doesn't throw an error: a calculated column used where a measure was needed freezes at refresh-time values and goes silently stale as filters change; a measure used where a column was needed simply can't be dragged into a slicer or axis at all.",
       "professionalAnswer": "I'd give the one-question test I actually use: am I going to filter or group by this, or am I just going to display a summarized number? A customer loyalty tier based on total purchases is something I'd want in a slicer, so that's a calculated column. Total revenue that should recalculate as someone clicks through a report is a measure. The part I'd specifically warn a newer analyst about is that getting this wrong doesn't throw an error -- it just quietly produces the wrong behavior. A calculated column written where a measure belonged freezes at whatever it computed during the last refresh and goes stale the moment someone applies a filter; a measure written where a column belonged simply won't let you drag it into a slicer at all, since measures aren't filterable, only summarizable.",
       "example": "CityState = [City] & \",\" & [State]                              -- calculated column: used to group/display\nProjected Sales = SUM('Reseller Sales'[Last Years Sales]) * 1.06  -- measure: dynamic, filter-context aware",
@@ -643,12 +920,25 @@
         "Getting it wrong doesn't error -- it silently misbehaves"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly distinguishes storage/evaluation differences", "weight": 40 },
-        { "criterion": "States a clear, usable decision rule", "weight": 35 },
-        { "criterion": "Explains the silent-failure consequence of choosing wrong", "weight": 25 }
+        {
+          "criterion": "Correctly distinguishes storage/evaluation differences",
+          "weight": 40
+        },
+        {
+          "criterion": "States a clear, usable decision rule",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains the silent-failure consequence of choosing wrong",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 3,
-      "lessonLink": { "courseSlug": "power-bi", "lessonSlug": "measures-vs-columns", "label": "Review: Measures vs. Calculated Columns" },
+      "lessonLink": {
+        "courseSlug": "power-bi",
+        "lessonSlug": "measures-vs-columns",
+        "label": "Review: Measures vs. Calculated Columns"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -662,7 +952,10 @@
       "category": "technical-knowledge",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["Power BI", "Data Modeling"],
+      "skills": [
+        "Power BI",
+        "Data Modeling"
+      ],
       "modelAnswer": "Import copies the data into the Power BI file: visuals read from memory, so they're fast, and the model has full DAX feature support, but the data is only as fresh as the last refresh and is limited by file size (roughly a 1 GB typical cap). DirectQuery leaves the data in the source and queries it live every time a visual loads: it handles very large sources and gives truly real-time data, but visual speed depends entirely on the source's own speed, and some DAX/modeling features are restricted. Import is the default choice for most real reports and for learning, because of full feature support and no dependency on a live connection while working; DirectQuery earns its place when the source is too large to import practically, the data must be truly real-time, or a security policy requires data to never leave its source system. You can convert a DirectQuery table to Import because that's simply choosing to copy and cache data that was already being queried live -- but going the other direction would mean somehow 'un-caching' data and re-establishing a live query path, which isn't a simple reversal, so Power BI doesn't support converting Import back to DirectQuery.",
       "professionalAnswer": "I'd frame it as a speed-versus-freshness-versus-scale trade-off. Import is fast because everything's sitting in memory, and it gets full DAX support with no dependency on the source being reachable while I work -- that's why it's the default for basically every lesson and most real reports. DirectQuery trades that speed for currency and scale: the data never leaves the source, so it's always live, and there's no 1 GB-ish file-size ceiling, but now every visual's performance is only as good as the source database's performance, and some features aren't available. The one-way-door detail I'd flag explicitly: you can always switch a DirectQuery table to Import, since that's just deciding to start caching data you were already querying live, but you can't go back -- there's no clean way to 'un-cache' Import data and reconnect it as a live query, so if I'm unsure which mode I'll end up needing, I start with DirectQuery and convert later rather than the reverse.",
       "example": null,
@@ -679,12 +972,25 @@
         "You can convert DirectQuery to Import, never the reverse"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly describes the Import vs. DirectQuery trade-off", "weight": 50 },
-        { "criterion": "Correctly explains the one-directional conversion", "weight": 30 },
-        { "criterion": "Gives a sensible real scenario for choosing DirectQuery", "weight": 20 }
+        {
+          "criterion": "Correctly describes the Import vs. DirectQuery trade-off",
+          "weight": 50
+        },
+        {
+          "criterion": "Correctly explains the one-directional conversion",
+          "weight": 30
+        },
+        {
+          "criterion": "Gives a sensible real scenario for choosing DirectQuery",
+          "weight": 20
+        }
       ],
       "estimatedMinutes": 3,
-      "lessonLink": { "courseSlug": "power-bi", "lessonSlug": "import-vs-directquery", "label": "Review: Import vs. DirectQuery" },
+      "lessonLink": {
+        "courseSlug": "power-bi",
+        "lessonSlug": "import-vs-directquery",
+        "label": "Review: Import vs. DirectQuery"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -698,7 +1004,10 @@
       "category": "hands-on",
       "difficulty": "beginner",
       "responseFormat": "code",
-      "skills": ["Power BI", "DAX"],
+      "skills": [
+        "Power BI",
+        "DAX"
+      ],
       "code": "-- Model: Sales[SalesAmount], 'Product'[Color], related by a relationship",
       "modelAnswer": "CALCULATE evaluates an expression inside a modified filter context: CALCULATE(<expression>, <filter1>, <filter2>, ...). Blue Revenue = CALCULATE(SUM(Sales[SalesAmount]), 'Product'[Color] = \"Blue\") sums SalesAmount but only for rows where Product[Color] equals 'Blue'. When a filter argument targets a column that's already filtered elsewhere in the report (like a slicer set to 'Red'), CALCULATE's filter overwrites the existing one for that expression rather than combining with it -- so Blue Revenue still shows blue-only totals even with the Red slicer active, because CALCULATE's explicit filter on Color replaces whatever the slicer was doing to that same column.",
       "professionalAnswer": "I'd write it as CALCULATE(SUM(Sales[SalesAmount]), 'Product'[Color] = \"Blue\"). The part I'd specifically call out in an interview is the overwrite behavior: if a report already has a slicer set to Color = 'Red', my Blue Revenue measure doesn't get combined with that -- it overwrites it for this expression, because CALCULATE's filter argument always wins over an existing filter on the same column. So no matter what the user has selected in that slicer, Blue Revenue keeps showing blue-only totals, which is exactly the point: CALCULATE lets me force a measure to ignore what the user selected and substitute my own condition instead.",
@@ -716,12 +1025,25 @@
         "KEEPFILTERS exists specifically to change this default overwrite behavior when needed"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correct CALCULATE syntax for the measure", "weight": 45 },
-        { "criterion": "Correctly explains the overwrite behavior against the Red slicer", "weight": 40 },
-        { "criterion": "Clarity of explanation", "weight": 15 }
+        {
+          "criterion": "Correct CALCULATE syntax for the measure",
+          "weight": 45
+        },
+        {
+          "criterion": "Correctly explains the overwrite behavior against the Red slicer",
+          "weight": 40
+        },
+        {
+          "criterion": "Clarity of explanation",
+          "weight": 15
+        }
       ],
       "estimatedMinutes": 5,
-      "lessonLink": { "courseSlug": "power-bi", "lessonSlug": "calculate", "label": "Review: CALCULATE Explained" },
+      "lessonLink": {
+        "courseSlug": "power-bi",
+        "lessonSlug": "calculate",
+        "label": "Review: CALCULATE Explained"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -735,7 +1057,10 @@
       "category": "troubleshooting",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["Power BI", "Data Modeling"],
+      "skills": [
+        "Power BI",
+        "Data Modeling"
+      ],
       "modelAnswer": "Power BI sets cardinality to one-to-one automatically when it notices a value never repeats on either side of the relationship at the time the relationship is created. If the underlying data later changes so that one side starts legitimately repeating values (for example, a second budget row gets added for the same project in a later refresh), that one-to-one relationship no longer reflects reality, and Power BI's query engine will treat each row match as unique when it isn't -- a many-side table with duplicated keys joined as if it were one-to-one can fan out matching rows and inflate a SUM measure, because the engine isn't aggregating correctly across what are actually multiple matching rows per key. The fix is to open Manage relationships, edit the relationship, and override the cardinality to 'many to one' (or 'one to many'), explicitly pointing the 'many' side at the table that actually repeats values, rather than trusting Power BI's automatic detection once the data's shape has changed.",
       "professionalAnswer": "My first move would be Manage relationships, to actually see what cardinality Power BI chose and why. One-to-one only gets picked automatically because, at the moment the relationship was created, Power BI genuinely didn't see any repeated values on either side -- but that's a snapshot of the data at one point in time, not a guarantee. If a later refresh adds a second row for the same key on one side -- say a second budget line for a project that used to have exactly one -- the relationship is now lying about the data's actual shape, and a SUM measure built on top of it can double-count or otherwise misbehave because the engine is still treating the join as strictly one-to-one. The fix is straightforward once I've diagnosed it: edit the relationship and explicitly set cardinality to many-to-one, with the 'many' side pointed at whichever table I know will eventually repeat values, rather than leaving it to Power BI's automatic guess.",
       "example": null,
@@ -752,12 +1077,25 @@
         "Point the 'many' side at whichever table is known to eventually repeat values"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly diagnoses stale/incorrect cardinality as the likely cause", "weight": 45 },
-        { "criterion": "Explains how that causes inflated aggregation", "weight": 30 },
-        { "criterion": "Proposes the correct fix (Manage relationships, override cardinality)", "weight": 25 }
+        {
+          "criterion": "Correctly diagnoses stale/incorrect cardinality as the likely cause",
+          "weight": 45
+        },
+        {
+          "criterion": "Explains how that causes inflated aggregation",
+          "weight": 30
+        },
+        {
+          "criterion": "Proposes the correct fix (Manage relationships, override cardinality)",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 4,
-      "lessonLink": { "courseSlug": "power-bi", "lessonSlug": "cardinality", "label": "Review: One-to-Many, One-to-One & Many-to-Many" },
+      "lessonLink": {
+        "courseSlug": "power-bi",
+        "lessonSlug": "cardinality",
+        "label": "Review: One-to-Many, One-to-One & Many-to-Many"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -771,7 +1109,11 @@
       "category": "architecture",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["Power BI", "Data Modeling", "Star Schema"],
+      "skills": [
+        "Power BI",
+        "Data Modeling",
+        "Star Schema"
+      ],
       "modelAnswer": "A star schema connects one fact table at the center to dimension tables around it, each one joined directly to the fact table by its own relationship -- so filters flow inward from every dimension to the fact table along a single, predictable path. When a report visual spans two dimensions (say, sales by region compared to sales by product), the query has to travel through the fact table to connect them, and in a star schema there's exactly one route to do that. In a model where tables chain together in a loop or a long sequence (a snowflake, or dimensions connected to each other instead of only to the fact table), a filter can have more than one possible path to reach the same table, and Power BI can't always determine which path is intended -- which produces ambiguous or unexpected filtering behavior. A star schema avoids that entirely because every dimension has exactly one, direct route to the fact table, giving the engine an unambiguous path for every question a report asks.",
       "professionalAnswer": "I'd describe it in terms of how a filter actually travels through the model. In a star schema, every dimension connects straight to the fact table and nowhere else, so when a report visual asks a cross-dimension question -- sales by region versus sales by product, say -- there's exactly one path for that filter to travel: dimension to fact table. If instead I chain dimensions to each other, or let relationships form a loop, a filter might have two different ways to reach the same table, and the engine genuinely can't always tell which one I meant, which shows up as reports that filter in ways I didn't expect. Star schema isn't a stylistic preference -- it's what gives the engine a single, unambiguous path for every question, which is exactly why this course keeps coming back to 'one fact table, dimensions directly around it' as the default shape to build toward.",
       "example": null,
@@ -788,12 +1130,25 @@
         "Keep tables clearly fact or dimension, never mixed"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly explains the single-path filter-flow advantage", "weight": 45 },
-        { "criterion": "Correctly contrasts with ambiguous paths in a snowflake/loop", "weight": 35 },
-        { "criterion": "Clarity and use of a concrete example", "weight": 20 }
+        {
+          "criterion": "Correctly explains the single-path filter-flow advantage",
+          "weight": 45
+        },
+        {
+          "criterion": "Correctly contrasts with ambiguous paths in a snowflake/loop",
+          "weight": 35
+        },
+        {
+          "criterion": "Clarity and use of a concrete example",
+          "weight": 20
+        }
       ],
       "estimatedMinutes": 4,
-      "lessonLink": { "courseSlug": "power-bi", "lessonSlug": "star-schema", "label": "Review: Star Schema" },
+      "lessonLink": {
+        "courseSlug": "power-bi",
+        "lessonSlug": "star-schema",
+        "label": "Review: Star Schema"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -807,7 +1162,11 @@
       "category": "hands-on",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["Power BI", "Security", "RLS"],
+      "skills": [
+        "Power BI",
+        "Security",
+        "RLS"
+      ],
       "modelAnswer": "In Desktop, go to the Modeling tab and select Manage Roles, then New. Name the role 'West Sales' (commas aren't allowed in role names). Under Select tables, pick the table holding the Region column -- for example DimSalesTerritory. Under Filter data, use the default drop-down editor (since this is a simple static filter, not one needing a DAX function like USERPRINCIPALNAME()) and set the filter to [Region] = \"West\". Save, then publish the semantic model. Every DAX filter expression returns TRUE or FALSE per row, and only rows evaluating TRUE stay visible, so anyone later assigned to this role sees only rows where Region equals 'West.' You cannot assign users to the role from inside Desktop at all -- that step, along with fully testing the role as a specific user would see it, only exists once the semantic model is published to the Power BI service.",
       "professionalAnswer": "I'd walk through it exactly as Desktop presents it: Modeling tab, Manage Roles, New, name it West Sales, pick the table that actually has the Region column -- DimSalesTerritory in an AdventureWorksDW2014-style model -- and since this is a plain static filter, the default drop-down editor is enough; I'd set it to [Region] = \"West\" rather than switching to the DAX editor, which I'd only need for something dynamic like USERPRINCIPALNAME(). Save, publish, done -- as far as Desktop is concerned. The thing I'd flag clearly is that creating the role and assigning a person to it are two completely separate steps in two completely separate places: Desktop only lets me define the rule, and assigning an actual user to 'West Sales' only happens once the model is in the Power BI service, so I can't fully test what a specific user would see until it's published.",
       "example": null,
@@ -824,12 +1183,25 @@
         "User assignment happens only in the Power BI service, never in Desktop"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correct step-by-step role creation in Desktop", "weight": 45 },
-        { "criterion": "Correct static filter expression", "weight": 25 },
-        { "criterion": "Correctly explains the Desktop/service split for assignment", "weight": 30 }
+        {
+          "criterion": "Correct step-by-step role creation in Desktop",
+          "weight": 45
+        },
+        {
+          "criterion": "Correct static filter expression",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly explains the Desktop/service split for assignment",
+          "weight": 30
+        }
       ],
       "estimatedMinutes": 5,
-      "lessonLink": { "courseSlug": "power-bi", "lessonSlug": "rls-roles", "label": "Review: Creating RLS Roles" },
+      "lessonLink": {
+        "courseSlug": "power-bi",
+        "lessonSlug": "rls-roles",
+        "label": "Review: Creating RLS Roles"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -843,7 +1215,10 @@
       "category": "architecture",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["Data Warehousing", "Dimensional Modeling"],
+      "skills": [
+        "Data Warehousing",
+        "Dimensional Modeling"
+      ],
       "modelAnswer": "A fact table stores measurements about a business process at a defined grain -- mostly foreign keys to dimensions plus numeric measures -- and can grow into the billions of rows as events accumulate, while staying relatively narrow in column count. A dimension table stores the descriptive context used to filter and group those facts, sorted into four kinds of columns: a surrogate key, a natural key, descriptive attributes (the text columns actually filtered/grouped by), and sometimes foreign keys to other dimensions. Dimension tables are deliberately denormalized -- a product dimension stores its category and subcategory names directly on the same row instead of normalizing them into separate tables -- which adds columns but costs little, because a dimension table typically has only a few thousand rows. That's exactly why dimensions end up 'wide but short' (many columns, few rows) while fact tables end up 'narrow but tall' (few columns, potentially huge row counts): the denormalization trade-off only works out favorably because a dimension's row count stays small.",
       "professionalAnswer": "I'd describe a fact table as the 'what happened and how much' table -- mostly keys and numbers, one row per event at whatever grain was chosen, and it's the table that can genuinely reach billions of rows over time. A dimension table is the 'who, what, where, when' context around that -- names, categories, regions -- and it's deliberately denormalized on purpose: instead of normalizing Category, Subcategory, and Product into three separate tables the way an OLTP system would, a warehouse's DimProduct just stores all three as columns on the same row. That sounds wasteful until you look at the actual row counts: a product dimension might have a few thousand rows, so storing 'Bikes' redundantly on every one of them costs almost nothing, and in exchange I get to filter or group by category without an extra join. That's the whole reason dimensions end up wide but short while facts end up narrow but tall -- the trade-off only pays off because dimension row counts stay small.",
       "example": null,
@@ -860,12 +1235,25 @@
         "Dimensions are wide but short; facts are narrow but tall -- because dimension row counts stay small"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly distinguishes fact vs. dimension table purpose", "weight": 40 },
-        { "criterion": "Correctly explains deliberate denormalization in dimensions", "weight": 35 },
-        { "criterion": "Explains the wide-but-short / narrow-but-tall framing", "weight": 25 }
+        {
+          "criterion": "Correctly distinguishes fact vs. dimension table purpose",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains deliberate denormalization in dimensions",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains the wide-but-short / narrow-but-tall framing",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 4,
-      "lessonLink": { "courseSlug": "data-modeling-and-data-warehousing", "lessonSlug": "dimension-table-design", "label": "Review: Dimension Table Design" },
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "dimension-table-design",
+        "label": "Review: Dimension Table Design"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -879,7 +1267,10 @@
       "category": "technical-knowledge",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["Data Warehousing", "Slowly Changing Dimensions"],
+      "skills": [
+        "Data Warehousing",
+        "Slowly Changing Dimensions"
+      ],
       "modelAnswer": "SCD Type 1 overwrites the existing dimension row in place when an attribute changes -- no new row is inserted, the surrogate key doesn't change, and the old value leaves no trace. It's the simplest pattern and Microsoft's own guidance is that it should be the default for most changing attributes, especially corrections (a misspelled name) or attributes where history genuinely doesn't matter for analysis. Its real cost is that every historical fact joined to that dimension member now reports under the new value, even for events that happened before the change -- for example, reassigning a salesperson's region with a Type 1 update makes a 'historical sales by region' report show all of their past sales under the new region, as if they'd always been there. SCD Type 2 solves exactly that problem: instead of overwriting, it closes the old row (setting an ExpirationDate and flipping IsCurrentFlag to false) and inserts a brand-new row with a new surrogate key, the same natural key, the new attribute value, and IsCurrentFlag set to true. Because the old row is preserved untouched, historical facts loaded before the change still point at the old surrogate key and correctly reflect what was true at the time, while new facts point at the new version.",
       "professionalAnswer": "I'd describe Type 1 as the 'just fix it' pattern -- one UPDATE statement, the old value is gone, done -- and it's genuinely the right default for most attributes, since most changes (a corrected phone number, a fixed typo) aren't business events worth preserving history for. Type 2 is what I'd reach for specifically when history matters for reporting, and the mechanics are an UPDATE and an INSERT working together as one transaction: the old row gets its EndDate set and IsCurrent flipped to false, and a brand-new row is inserted with a new surrogate key, the same natural key, the new attribute, and IsCurrent set to true. The concrete problem this solves is a real one Microsoft's own documentation calls out: if a salesperson moves from one region to another and I used Type 1, every sale they ever made -- even the ones from before the move -- would retroactively show up under the new region in a historical rollup. Type 2 keeps the old surrogate key intact for those old facts, so the history stays accurate, at the cost of now having two (or more) rows to account for when analyzing that one salesperson.",
       "example": "-- SCD Type 1: overwrite in place, no history\nUPDATE DimSalesperson SET Phone = '555-6789' WHERE Salesperson_SK = 295;\n\n-- SCD Type 2: close the old row, insert a new version\nUPDATE DimSalesperson\nSET ExpirationDate = '2024-05-23', IsCurrentFlag = 0\nWHERE SalespersonKey = 296;\n\nINSERT INTO DimSalesperson\n  (BusinessKey, SalesRegionKey, EffectiveDate, ExpirationDate, IsCurrentFlag)\nVALUES (758596752, 5, '2024-05-23', '9999-12-31', 1);",
@@ -896,12 +1287,25 @@
         "Type 2's tracking columns: EffectiveDate/ExpirationDate/IsCurrentFlag"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly describes Type 1 mechanics and its retroactive-rollup risk", "weight": 35 },
-        { "criterion": "Correctly describes Type 2 mechanics (update + insert, surrogate key)", "weight": 40 },
-        { "criterion": "Clearly states what business problem Type 2 solves", "weight": 25 }
+        {
+          "criterion": "Correctly describes Type 1 mechanics and its retroactive-rollup risk",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly describes Type 2 mechanics (update + insert, surrogate key)",
+          "weight": 40
+        },
+        {
+          "criterion": "Clearly states what business problem Type 2 solves",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 4,
-      "lessonLink": { "courseSlug": "data-modeling-and-data-warehousing", "lessonSlug": "scd-type-2", "label": "Review: SCD Type 2" },
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "scd-type-2",
+        "label": "Review: SCD Type 2"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -915,7 +1319,10 @@
       "category": "hands-on",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["Data Warehousing", "Dimensional Modeling"],
+      "skills": [
+        "Data Warehousing",
+        "Dimensional Modeling"
+      ],
       "modelAnswer": "The grain statement should be: 'one row per order line.' Grain is a one-sentence statement of exactly what a single fact table row represents, and it has to be declared before any column is chosen, because every dimension key and measure a fact table can legitimately hold is determined by its grain. A 'one row per order' grain can answer 'how many orders did we take,' but it cannot answer which products were on any order, because a product key isn't meaningful at the order level -- an order can contain multiple products, so there's no single ProductKey to attach to an order-level row. At the order-line grain, a ProductKey belongs naturally, because every line genuinely has exactly one product. This is also why Kimball's standard advice is to build at the atomic (finest-detail) grain first: atomic data can answer questions you haven't thought to ask yet, while a coarser, summarized grain can only answer questions that fit the level it was already rolled up to.",
       "professionalAnswer": "I'd write the grain as 'one row per order line' and explain why that single sentence has to come before any column gets named. If I'd instead declared the grain as 'one row per order,' I could still answer 'how many orders did we take in March' just fine, but the moment someone asks 'which products were on those orders,' I'm stuck -- an order can have several products on it, so there's no single, unambiguous ProductKey to put on an order-level row. At the order-line grain, every row genuinely has exactly one product, so ProductKey fits naturally without forcing anything. I'd also flag the broader principle here: Kimball's advice is almost always to go atomic first, because atomic-grain data can still answer a question nobody's thought to ask yet, while a table that was already summarized up to order-level can only ever answer the questions that fit that level -- asking for finer detail later means reprocessing from the source all over again.",
       "example": "GRAIN: one row per order line\n-- ProductKey belongs on this row: every line has exactly one product.\n-- A coarser \"one row per order\" grain cannot carry ProductKey at all,\n-- since one order can contain several different products.",
@@ -932,12 +1339,25 @@
         "A grain statement containing 'and'/'or' is a warning sign of mixed grain"
       ],
       "evaluationCriteria": [
-        { "criterion": "Writes a correct, precise grain statement", "weight": 40 },
-        { "criterion": "Correctly explains why the coarser grain fails the second question", "weight": 40 },
-        { "criterion": "Mentions the atomic-grain-first principle", "weight": 20 }
+        {
+          "criterion": "Writes a correct, precise grain statement",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains why the coarser grain fails the second question",
+          "weight": 40
+        },
+        {
+          "criterion": "Mentions the atomic-grain-first principle",
+          "weight": 20
+        }
       ],
       "estimatedMinutes": 4,
-      "lessonLink": { "courseSlug": "data-modeling-and-data-warehousing", "lessonSlug": "choosing-the-grain", "label": "Review: Choosing the Grain" },
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "choosing-the-grain",
+        "label": "Review: Choosing the Grain"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -951,7 +1371,10 @@
       "category": "troubleshooting",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["Data Warehousing", "Slowly Changing Dimensions"],
+      "skills": [
+        "Data Warehousing",
+        "Slowly Changing Dimensions"
+      ],
       "modelAnswer": "This isn't a bug -- it's Type 1 working exactly as designed. Type 1 overwrites the existing dimension row in place with no history preserved, so every historical fact joined to that dimension member now reports using the new value, as if it had always been true, regardless of when the fact actually occurred. The real issue is that Type 1 was the wrong pattern to apply to this attribute given the business's reporting needs. The fix is to reclassify the SalesRegionKey attribute on this dimension as Type 2 instead: when the salesperson's region changes, close the existing row (set its ExpirationDate and flip IsCurrentFlag to false) and insert a new row with a new surrogate key, the same natural key, the new region, and IsCurrentFlag true. Because the old row stays intact under its original surrogate key, historical facts that were loaded while the salesperson was still assigned to East continue to point at that old row and correctly report under East, while new facts point at the new West version.",
       "professionalAnswer": "I'd be clear with the business that this isn't a defect -- it's exactly what Type 1 is supposed to do, which is overwrite with no memory of the old value. The mistake was choosing Type 1 for an attribute that this specific report actually needs history for. If accurate historical-by-region reporting matters, I'd migrate SalesRegionKey on this dimension to a Type 2 pattern: the next time the region changes, instead of one UPDATE, it becomes an UPDATE that closes the old row (ExpirationDate, IsCurrentFlag = false) plus an INSERT that opens a new row with a new surrogate key and the new region, run together as one transaction. Going forward, facts loaded before the change keep pointing at the old surrogate key and still show East correctly, while facts loaded after point at the new one and show West -- which is the entire reason Type 2 exists, and exactly the trade-off Type 1 couldn't give me.",
       "example": null,
@@ -968,12 +1391,25 @@
         "Type 2 requires a surrogate key so old and new versions are independently addressable"
       ],
       "evaluationCriteria": [
-        { "criterion": "Correctly identifies this as expected Type 1 behavior, not a bug", "weight": 35 },
-        { "criterion": "Correctly proposes migrating the attribute to Type 2", "weight": 40 },
-        { "criterion": "Notes the limitation that already-lost history can't be recovered retroactively", "weight": 25 }
+        {
+          "criterion": "Correctly identifies this as expected Type 1 behavior, not a bug",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly proposes migrating the attribute to Type 2",
+          "weight": 40
+        },
+        {
+          "criterion": "Notes the limitation that already-lost history can't be recovered retroactively",
+          "weight": 25
+        }
       ],
       "estimatedMinutes": 4,
-      "lessonLink": { "courseSlug": "data-modeling-and-data-warehousing", "lessonSlug": "scd-type-1", "label": "Review: SCD Type 1" },
+      "lessonLink": {
+        "courseSlug": "data-modeling-and-data-warehousing",
+        "lessonSlug": "scd-type-1",
+        "label": "Review: SCD Type 1"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -987,7 +1423,11 @@
       "category": "behavioral",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["Capstone", "Architecture", "Communication"],
+      "skills": [
+        "Capstone",
+        "Architecture",
+        "Communication"
+      ],
       "modelAnswer": "A strong answer names a concrete pipeline rather than describing tools in the abstract: raw source tables in SQL Server, an SSIS package that moves and transforms data from a staging table into a warehouse fact table and its dimensions, an SSRS paginated report built against that warehouse for fixed, printable, grouped reporting, and a Power BI report connecting to the same warehouse independently for interactive, trend-based visuals. The answer should explain why each tool was chosen for its stage: SSIS for scheduled, server-side ETL that needs to run unattended and handle error cases; a warehouse with a deliberately chosen grain and real fact/dimension design (for example, an accumulating snapshot fact table like one tracking a work order through its lifecycle) so the same clean data serves multiple downstream consumers; SSRS for a fixed, operational, paginated report a business user prints or exports; Power BI for interactive exploration, filtering, and dashboard-style visuals that a paginated report isn't suited for. SSRS and Power BI should be described as two independent consumers of one shared warehouse, not as feeding each other.",
       "professionalAnswer": "I'd walk through my capstone project the way I actually built it, naming real objects instead of speaking in generalities. Raw data lived in AdventureWorks2012's Production tables. I built an SSIS package that staged it and loaded it into a warehouse fact table I modeled as an accumulating snapshot, because the thing it tracked -- a work order -- gets revisited and updated as it moves through production, not inserted once and left alone. From there, two completely separate tools read the same warehouse: an SSRS paginated report gave operations a fixed, grouped-by-product report they could export or print, and a Power BI report connected independently and built the trend and comparison visuals a paginated report just isn't designed for -- things like a scrap-rate trend over time. I'd specifically call out that neither tool fed the other; they're two independent consumers of one shared, well-modeled warehouse, which is really the entire point of building the warehouse in the first place rather than letting each report reinvent its own data prep.",
       "example": null,
@@ -1004,12 +1444,25 @@
         "Mention the grain/fact-table design decision behind the warehouse if possible"
       ],
       "evaluationCriteria": [
-        { "criterion": "Describes a concrete, specific pipeline rather than generic tool names", "weight": 35 },
-        { "criterion": "Explains why each tool/stage was chosen", "weight": 35 },
-        { "criterion": "Clearly communicates the end-to-end flow", "weight": 30 }
+        {
+          "criterion": "Describes a concrete, specific pipeline rather than generic tool names",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains why each tool/stage was chosen",
+          "weight": 35
+        },
+        {
+          "criterion": "Clearly communicates the end-to-end flow",
+          "weight": 30
+        }
       ],
       "estimatedMinutes": 5,
-      "lessonLink": { "courseSlug": "microsoft-bi-capstone", "lessonSlug": "architecture-planning", "label": "Review: Architecture Planning" },
+      "lessonLink": {
+        "courseSlug": "microsoft-bi-capstone",
+        "lessonSlug": "architecture-planning",
+        "label": "Review: Architecture Planning"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -1023,7 +1476,11 @@
       "category": "behavioral",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["Behavioral", "Communication", "Troubleshooting"],
+      "skills": [
+        "Behavioral",
+        "Communication",
+        "Troubleshooting"
+      ],
       "modelAnswer": "This is a behavioral question testing how a candidate works under pressure and communicates about a technical problem, not a request for a specific technical fact. A strong answer uses the STAR structure: Situation (brief context -- what project, what was happening), Task (what the candidate was specifically responsible for), Action (the actual debugging steps taken, which is the bulk of the answer), and Result (the concrete outcome, stated directly rather than left implied -- ideally with a number or a specific fixed state). The most commonly skipped beat is Result; candidates often describe the problem and the fix in detail, then stop without stating what actually happened afterward. The best source material for a career-changer is a real moment from their own project work -- a package that failed silently, a fact table that wouldn't balance against the source until a join was traced, or a report returning numbers that didn't match expectations until a specific cause was isolated.",
       "professionalAnswer": "I'd tell this as one specific, real story rather than a general description of how I debug things. Situation: while building my capstone's SSIS package, the warehouse load finished without any error, but the fact table's row count didn't match what I expected from the source. Task: I needed to find where rows were being silently dropped. Action: I isolated each transformation one at a time with data viewers until I found a Lookup transformation that was rejecting non-matching rows without any visible error, because its error output wasn't connected to anything -- it was just quietly discarding them. I wired the error output into a flat-file destination so the rejected rows became visible instead of invisible, and traced those back to a handful of rows with a ScrapReasonID that didn't yet exist in the dimension. Result: once I fixed the dimension load order so the dimension populated before the fact table referenced it, the row counts matched exactly, and I had a permanent, visible log of any future rejected rows instead of a silent gap. I'd keep this under about two minutes and make sure I actually land that last sentence instead of trailing off.",
       "example": null,
@@ -1040,12 +1497,25 @@
         "Keep the whole answer to roughly two minutes"
       ],
       "evaluationCriteria": [
-        { "criterion": "Uses a clear STAR structure", "weight": 30 },
-        { "criterion": "Tells a specific, real, technically grounded story", "weight": 40 },
-        { "criterion": "States a concrete, explicit Result", "weight": 30 }
+        {
+          "criterion": "Uses a clear STAR structure",
+          "weight": 30
+        },
+        {
+          "criterion": "Tells a specific, real, technically grounded story",
+          "weight": 40
+        },
+        {
+          "criterion": "States a concrete, explicit Result",
+          "weight": 30
+        }
       ],
       "estimatedMinutes": 4,
-      "lessonLink": { "courseSlug": "microsoft-bi-capstone", "lessonSlug": "behavioral-interview-basics", "label": "Review: Behavioral Interview Basics" },
+      "lessonLink": {
+        "courseSlug": "microsoft-bi-capstone",
+        "lessonSlug": "behavioral-interview-basics",
+        "label": "Review: Behavioral Interview Basics"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
@@ -1059,7 +1529,11 @@
       "category": "behavioral",
       "difficulty": "beginner",
       "responseFormat": "text",
-      "skills": ["Behavioral", "Communication", "Data Modeling"],
+      "skills": [
+        "Behavioral",
+        "Communication",
+        "Data Modeling"
+      ],
       "modelAnswer": "This question tests whether a candidate can translate a real technical concept into plain language a non-technical stakeholder can act on, without dumbing it down to the point of being inaccurate. A strong answer avoids jargon like 'cardinality' or 'denormalization' and instead uses a concrete analogy: organizing the data the way a reporting tool can quickly use it, with one central table of 'what happened' (sales, orders) surrounded by a small number of reference tables describing 'who, what, where, when' (customers, products, dates) -- so every question the dashboard asks has one clear, fast path to the answer instead of the tool getting confused about which table relates to which. The answer should connect this directly to the stakeholder's actual concern: this restructuring is what makes the dashboard fast and reliable, and skipping it is what causes dashboards to be slow or to show inconsistent numbers later.",
       "professionalAnswer": "I'd skip the term 'star schema' entirely in the actual explanation and focus on what it does for them. I'd say something like: right now the data is organized the way it's easiest to enter and update, which is great for the system that runs day-to-day operations, but it's not organized the way a reporting tool can quickly answer questions. What we're doing is putting one central table of 'what happened' -- your sales, your orders -- in the middle, and a small number of simple reference tables around it for things like which customer, which product, and which date, each connected directly to that center table. That way, when you ask the dashboard 'show me sales by region and by product,' there's exactly one clear path for it to follow, instead of the tool getting confused trying to guess which table relates to which. I'd close with the stakes in their terms: skip this step, and the dashboard you get is either going to be slow, or it's going to show numbers that don't quite add up the way you expect -- this restructuring is what prevents both of those.",
       "example": null,
@@ -1076,12 +1550,25 @@
         "Stay accurate while staying simple -- don't oversimplify into something wrong"
       ],
       "evaluationCriteria": [
-        { "criterion": "Explains the concept accurately without technical jargon", "weight": 40 },
-        { "criterion": "Uses a clear, relatable analogy", "weight": 30 },
-        { "criterion": "Connects the explanation to the stakeholder's actual concern", "weight": 30 }
+        {
+          "criterion": "Explains the concept accurately without technical jargon",
+          "weight": 40
+        },
+        {
+          "criterion": "Uses a clear, relatable analogy",
+          "weight": 30
+        },
+        {
+          "criterion": "Connects the explanation to the stakeholder's actual concern",
+          "weight": 30
+        }
       ],
       "estimatedMinutes": 4,
-      "lessonLink": { "courseSlug": "microsoft-bi-capstone", "lessonSlug": "common-bi-developer-interview-questions", "label": "Review: Common Microsoft BI Developer Interview Questions" },
+      "lessonLink": {
+        "courseSlug": "microsoft-bi-capstone",
+        "lessonSlug": "common-bi-developer-interview-questions",
+        "label": "Review: Common Microsoft BI Developer Interview Questions"
+      },
       "status": "published",
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
