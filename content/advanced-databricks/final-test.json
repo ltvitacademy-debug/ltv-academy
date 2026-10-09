@@ -1,0 +1,599 @@
+{
+  "questions": [
+    {
+      "id": "advdatabricks-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "A team argues they need their own Unity Catalog metastore for isolation from other teams in the organization. Per the lesson on metastore topology at scale, what is the correct recommendation, and why?",
+      "options": [
+        "Use one metastore per region for the whole organization, and achieve isolation through catalog-level workspace bindings instead",
+        "Create one metastore per team, since metastores are cheap to provision and this gives the cleanest isolation",
+        "Create one metastore per workspace, since a metastore can only ever attach to a single workspace",
+        "Use one metastore globally across all regions, since catalog bindings alone are enough to handle cross-region latency",
+        "Metastores don't support any form of isolation, so isolation must be handled entirely outside Unity Catalog",
+        "Create one metastore per catalog, so each catalog's governance is fully independent"
+      ],
+      "correctIndex": 0,
+      "explain": "Databricks recommends one metastore per region for the whole organization, with isolation handled by catalog-level workspace bindings instead — a catalog can be bound to only the subset of workspaces that should see it, even though many other workspaces share the same metastore.",
+      "distractorExplain": "Option B is the exact mistake the lesson warns against: splitting into one metastore per team recreates the per-workspace permission silos Unity Catalog was built to eliminate. Isolation is achieved through catalog bindings within one shared metastore, not through separate metastores — a new metastore per team undoes the shared-governance benefit a single metastore provides."
+    },
+    {
+      "id": "advdatabricks-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "CREATE EXTERNAL LOCATION nyc_taxi_raw\nURL 'abfss://raw@storageaccount.dfs.core.windows.net/nyc_taxi/'\nWITH (STORAGE CREDENTIAL nyc_taxi_credential);",
+      "prompt": "Why does an external table or volume reference an external location like the one above, instead of embedding a raw cloud path and access key directly?",
+      "options": [
+        "Because the external location is itself a securable object bound to a storage credential, so Unity Catalog can grant or revoke access to the path without ever exposing the underlying cloud credential to users",
+        "Because Unity Catalog cannot resolve raw cloud paths at all, regardless of credentials",
+        "Because external locations are only required for managed tables, never for external ones",
+        "Because embedding a raw path is faster at query time, and external locations exist purely for human readability"
+      ],
+      "correctIndex": 0,
+      "explain": "A storage credential wraps a real cloud identity so Unity Catalog can authenticate without exposing keys; the external location binds a path to that credential and is itself GRANT/REVOKE-able. Users get privileges on the external location, never on the credential or a raw key directly."
+    },
+    {
+      "id": "advdatabricks-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: converting an external table into a managed table requires a real data copy — the correct command is ________, which copies files into the catalog's managed location rather than just flipping a metadata property.",
+      "acceptedAnswers": ["DEEP CLONE", "DEEP CLONE()", "CREATE TABLE ... DEEP CLONE"],
+      "explain": "There is no ALTER TABLE ... SET MANAGED. DEEP CLONE (not the shallow CLONE, which still references the original files) is the real external-to-managed path — it copies bytes into the catalog's managed location, with a real consistency window while it runs."
+    },
+    {
+      "id": "advdatabricks-04",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Unity Catalog volumes, per the lesson on governing files at scale.",
+      "options": [
+        "Putting a Structured Streaming checkpointLocation inside a volume brings that checkpoint's offset state under the same GRANT/REVOKE governance as a table",
+        "Volumes can govern files that were never going to become a Delta table at all, such as trained model artifacts or PDFs",
+        "A volume's READ VOLUME privilege only applies to files smaller than a fixed size limit",
+        "Before volumes existed, non-tabular files typically lived on DBFS root or an unmanaged mount with no governance at all",
+        "Volumes require every file placed inside them to eventually be registered as an external table"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "A checkpoint inside a volume inherits READ VOLUME governance over offset state that used to be ungoverned. Volumes govern any file — tabular or not, including model artifacts and PDFs — the exact gap that previously meant DBFS root or an unmanaged mount with no governance at all. There's no size limit on what READ VOLUME covers, and nothing in a volume is required to ever become a table."
+    },
+    {
+      "id": "advdatabricks-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "A compliance team asks 'show me every downstream table that contains a column derived from customers.ssn,' and needs to re-run this check on a recurring schedule. Why is querying system.access.column_lineage the right approach rather than relying only on the lineage graph UI?",
+      "options": [
+        "Because the system table exposes the same lineage graph as plain SQL, turning the check into a repeatable, scriptable, scheduled query instead of a manual UI click-through each time",
+        "Because the lineage UI only shows table-level lineage, and column-level lineage does not exist anywhere in Unity Catalog",
+        "Because system.access.column_lineage is the only place lineage is captured at all; the UI is purely cosmetic and shows no real data",
+        "Because the UI's lineage graph only updates once per day, while the system table updates in real time"
+      ],
+      "correctIndex": 0,
+      "explain": "The UI's column-level lineage view is real and useful for orientation, but system.access.column_lineage exposes the exact same graph as queryable SQL — the real payoff for a compliance or audit requirement that needs to be answered on a recurring, repeatable basis rather than by hand."
+    },
+    {
+      "id": "advdatabricks-06",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each access-control-at-scale term to what it actually does.",
+      "left": ["Reusable mask function", "Scripted GRANT generation", "SCIM-synced group grant", "Catalog binding"],
+      "right": [
+        "The autoscaling floor that protects against cold-start latency on every job trigger",
+        "Restricting which workspaces can see a specific catalog within a shared metastore",
+        "One CREATE FUNCTION attached via SET MASK across every table carrying that column",
+        "GRANT statements generated from information_schema.tables instead of hand-typed one at a time"
+      ],
+      "correctMap": [2, 3, 0, 1],
+      "explain": "A reusable mask function is one CREATE FUNCTION attached via SET MASK across every table that needs it. Scripted GRANT generation builds statements from information_schema.tables instead of hand-typing hundreds. SCIM-synced groups mean membership changes from the identity provider propagate automatically with zero GRANTs touched — but that's not listed here as 'min_workers', the autoscaling floor belongs to a later chapter. Catalog binding restricts which workspaces can even see a catalog."
+    },
+    {
+      "id": "advdatabricks-07",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these objects in the order Unity Catalog actually requires them, before an external table can read from cloud storage.",
+      "items": [
+        "Create a storage credential wrapping a real cloud identity, such as an Azure managed identity",
+        "Create an external location that binds a specific cloud path to that storage credential",
+        "GRANT the needed privileges (e.g. CREATE EXTERNAL TABLE, READ FILES) on the external location to a group",
+        "Create the external table, pointing at a path registered under that external location"
+      ],
+      "explain": "The real relationship runs storage credential -> external location -> external table/volume. A credential authenticates to cloud storage; an external location binds a path to that credential and is itself granted on; only then can an external table or volume reference a path already registered under that location."
+    },
+    {
+      "id": "advdatabricks-08",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: at the scale of millions of files, Auto Loader's checkpoint doesn't track 'already seen' files as a flat list — it backs that state with an embedded ________ key-value store, specifically so the record stays fast to scan even after years of continuous ingestion.",
+      "acceptedAnswers": ["RocksDB", "a RocksDB store", "RocksDB key-value store"],
+      "explain": "A naive flat list of every filename ever seen would itself become slow to scan as it grows. Auto Loader backs its checkpoint with a real embedded RocksDB key-value store specifically to stay fast at millions of files."
+    },
+    {
+      "id": "advdatabricks-09",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": ".option(\"cloudFiles.schemaEvolutionMode\", \"addNewColumns\")   # default\n.option(\"cloudFiles.schemaEvolutionMode\", \"rescue\")\n.option(\"cloudFiles.schemaEvolutionMode\", \"failOnNewColumns\")\n.option(\"cloudFiles.schemaEvolutionMode\", \"none\")",
+      "prompt": "Match each cloudFiles.schemaEvolutionMode value to what actually happens when a genuinely new column shows up mid-stream.",
+      "left": ["addNewColumns (default)", "rescue", "failOnNewColumns", "none"],
+      "right": [
+        "Stops the stream entirely rather than silently changing the schema",
+        "Ignores the schema change entirely and drops the new data",
+        "Adds the new column to the table going forward, failing the current micro-batch once so the schema updates before retry",
+        "Routes the unexpected field into _rescued_data instead of altering the table or failing the batch"
+      ],
+      "correctMap": [2, 3, 0, 1],
+      "explain": "addNewColumns adds the column and fails the current batch once so the schema updates before retry. rescue never fails a batch — new fields go into _rescued_data. failOnNewColumns stops the stream for an unreviewed change. none ignores the change and drops the new data."
+    },
+    {
+      "id": "advdatabricks-10",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "A pipeline ingests from a directory tree with millions of small files nested under a deep, continuously growing partition structure, triggered frequently. Which Auto Loader configuration choice correctly addresses the resulting cost and latency problem, and why?",
+      "options": [
+        "Switch to file notification mode (cloudFiles.useNotifications = true), so the storage account pushes new-file events through a queue instead of Auto Loader re-listing the directory tree on every trigger",
+        "Increase cloudFiles.maxFilesPerTrigger to a very large number, so each micro-batch processes the entire backlog at once",
+        "Set cloudFiles.includeExistingFiles to false, since that stops Auto Loader from ever listing the directory again",
+        "Switch to directory listing mode explicitly, since it is specifically designed for very large, deep partition trees",
+        "Disable schema inference, since schema inference is what causes the repeated directory listing",
+        "Reduce the trigger interval to once per day, since file notification mode does not work with frequent triggers"
+      ],
+      "correctIndex": 0,
+      "explain": "Directory listing cost scales with how many objects and prefixes exist under a path, not just how much is new — it gets slower as a deep, continuously growing tree grows, even with a small amount of genuinely new data each run. File notification mode replaces that periodic re-listing with cloud-native storage events, which is exactly the setup cost worth paying at this scale.",
+      "distractorExplain": "Option C (includeExistingFiles = false) only controls whether a brand-new stream processes a directory's pre-existing backlog once at startup — it has nothing to do with the ongoing, recurring listing cost of an already-running stream, which is the actual problem described here. That's a backfill switch, not a listing-cost switch."
+    },
+    {
+      "id": "advdatabricks-11",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about running Auto Loader continuously with foreachBatch, per the lesson on Auto Loader + Structured Streaming.",
+      "options": [
+        "Swapping trigger(availableNow=True) for trigger(processingTime='30 seconds') is what turns a one-shot catch-up job into an always-on pipeline that never stops",
+        "foreachBatch hands each micro-batch to ordinary batch DataFrame code, which can write to more than one sink from a single stream",
+        "query.status and query.lastProgress let you confirm a running stream is healthy without stopping it",
+        "foreachBatch can only be used with the Kafka source format, not with cloudFiles",
+        "A continuous stream using trigger(processingTime=...) automatically switches back to availableNow mode once the backlog is cleared"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "processingTime vs. availableNow is the real difference between continuous and one-shot. foreachBatch hands a micro-batch to ordinary batch code, including multiple sinks, regardless of source format — the same API works identically whether the source is cloudFiles or Kafka. query.status/lastProgress inspect a running stream without stopping it. Nothing automatically switches trigger modes on its own."
+    },
+    {
+      "id": "advdatabricks-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A team is deciding between one multiplexed Auto Loader stream handling every bronze table, versus many independent streams, one per table. Which consideration correctly favors the many-small-streams approach?",
+      "options": [
+        "Tables fail independently or arrive at very different rates, and a failure or schema break in one table should never stall ingestion for the others",
+        "Many small streams always cost strictly less compute in aggregate than one multiplexed stream",
+        "Running more streams always reduces the total number of checkpoints that need to be managed",
+        "A multiplexed stream cannot be triggered on a schedule, only continuously"
+      ],
+      "correctIndex": 0,
+      "explain": "Independent streams are the honest choice when tables fail independently, arrive at different rates, or need different SLAs — a genuine fault-isolation benefit, accepted at the real cost of more running jobs. A multiplexed stream is reasonable only when tables are genuinely related and similarly sized."
+    },
+    {
+      "id": "advdatabricks-13",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Put these steps in the order a dozen-stream bronze ingestion layer should follow to avoid the checkpoint mix-ups the lesson on ingestion patterns at scale warns about.",
+      "items": [
+        "Decide per source table whether it needs its own independent Auto Loader stream or can share a multiplexed one",
+        "Create a clearly and predictably named schema-location path per table inside a governed volume",
+        "Create a matching, clearly paired checkpoint path for that same table's stream",
+        "Point that table's readStream/writeStream at its own schema location and checkpoint, never reusing another table's path"
+      ],
+      "explain": "Losing track of which checkpoint belongs to which stream is a real way to either double-process data or silently stop ingesting a table. The discipline is deciding the topology first, then naming schema-location and checkpoint paths predictably and in pairs, then wiring each stream to only its own paths."
+    },
+    {
+      "id": "advdatabricks-14",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Lakeflow Declarative Pipelines (formerly Delta Live Tables) now runs on the open-source ________ engine, available since Spark 4.1.",
+      "acceptedAnswers": ["Apache Spark Declarative Pipelines", "Spark Declarative Pipelines", "SDP", "Apache Spark Declarative Pipelines (SDP)"],
+      "explain": "The naming chain is: Delta Live Tables (DLT) -> Lakeflow Declarative Pipelines (the Databricks product name) -> built on Apache Spark Declarative Pipelines (SDP), open source since Spark 4.1."
+    },
+    {
+      "id": "advdatabricks-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "from pyspark import pipelines as dp\n\n@dp.materialized_view()\ndef gold_daily_revenue():\n    return (\n        spark.read.table(\"bronze_trips\")\n        .groupBy(\"VendorID\")\n        .sum(\"fare_amount\")\n    )",
+      "prompt": "Neither this function nor bronze_trips's own definition contains any special linking syntax, yet Lakeflow always runs bronze_trips before gold_daily_revenue. Why?",
+      "options": [
+        "Lakeflow builds a dependency graph from the plain spark.read.table(\"bronze_trips\") reference itself, and runs upstream tables before any table that reads from them",
+        "Alphabetical ordering of function names determines execution order",
+        "Every @dp.materialized_view is always run after every @dp.table, regardless of what it reads",
+        "The dependency must be declared explicitly with a special dp.depends_on() call, which is hidden elsewhere in the pipeline file"
+      ],
+      "correctIndex": 0,
+      "explain": "An ordinary spark.read.table()/spark.readStream.table() call is enough for Lakeflow's dependency graph to see the link — the current pyspark.pipelines module drops the legacy dlt.read()/dlt.read_stream() requirement entirely. Lakeflow reads every table definition, builds a graph from which statement references which other table, and orders execution automatically."
+    },
+    {
+      "id": "advdatabricks-16",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the trade-off between a Lakeflow Declarative Pipeline and a traditional notebook pipeline.",
+      "options": [
+        "A Lakeflow pipeline retries a failed table update automatically, without custom try/except code",
+        "A Lakeflow pipeline tracks which rows a streaming table has already processed without a hand-managed checkpointLocation",
+        "A traditional notebook pipeline supports cell-by-cell interactive debugging in a way a running pipeline graph does not",
+        "A traditional notebook pipeline requires more initial learning investment than a Lakeflow pipeline in every single case, with no exceptions",
+        "A one-off exploratory script with two or three steps that change weekly is usually better served by a plain notebook than by adopting Lakeflow"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Lakeflow automates retries and incremental state tracking that a traditional notebook would otherwise require by hand. A traditional notebook keeps the interactive, cell-by-cell debugging rhythm a running pipeline graph doesn't offer. And for a one-off or frequently-changing script, the overhead of learning Lakeflow's declarative model isn't worth it yet — the honest answer there is 'keep the notebook,' which contradicts the absolute claim in option D."
+    },
+    {
+      "id": "advdatabricks-17",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "CREATE OR REFRESH STREAMING TABLE silver_trips (\n  CONSTRAINT valid_distance EXPECT (trip_distance > 0) ON VIOLATION DROP ROW\n)\nAS SELECT * FROM STREAM(bronze_trips);",
+      "prompt": "A row arrives with trip_distance = -5. Given the CONSTRAINT above, what happens to that row, and what happens to the pipeline run?",
+      "options": [
+        "The row is filtered out before it reaches the table; the pipeline run continues normally and the violation is counted in metrics",
+        "The row is kept in the table with trip_distance set to NULL, and the run continues normally",
+        "The entire pipeline update stops immediately and nothing is written",
+        "The row is automatically redirected into a separate quarantine table created for it",
+        "The row is kept in the table unchanged, and only a warning is logged with no row filtering at all",
+        "The constraint is ignored entirely because ON VIOLATION DROP ROW is not valid SQL syntax"
+      ],
+      "correctIndex": 0,
+      "explain": "ON VIOLATION DROP ROW filters the violating row out before it reaches the table, while the rest of the pipeline update continues — the violation is counted, not silently lost and not halting the run. That's genuinely different from the default EXPECT (warn, kept) or ON VIOLATION FAIL UPDATE (stops the whole run).",
+      "distractorExplain": "Option D describes what a deliberately built quarantine pattern could do, but ON VIOLATION DROP ROW does not give you that for free — a dropped row is simply excluded and counted, not automatically redirected anywhere. Building an actual quarantine table is a separate, deliberate design layered on top, not part of DROP ROW's own behavior."
+    },
+    {
+      "id": "advdatabricks-18",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a Databricks Asset Bundle declares a pipeline as code inside a databricks.yml file, under the top-level key resources.________, and is deployed with the command 'databricks bundle deploy'.",
+      "acceptedAnswers": ["pipelines", "resources.pipelines"],
+      "explain": "resources.pipelines.<name> is the top-level YAML shape for declaring a pipeline resource in a bundle; libraries points at the source files holding the table definitions, and databricks bundle deploy ships it to a workspace."
+    },
+    {
+      "id": "advdatabricks-19",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each Expectations/CONSTRAINT action to what actually happens to a violating row.",
+      "left": ["EXPECT (...) with no ON VIOLATION clause", "ON VIOLATION DROP ROW", "ON VIOLATION FAIL UPDATE", "@dp.expect_or_drop (Python equivalent)"],
+      "right": [
+        "The row is filtered out before reaching the table",
+        "The entire pipeline update stops; nothing is written",
+        "The row is kept in the table; the violation is only counted",
+        "Same behavior as SQL's ON VIOLATION DROP ROW"
+      ],
+      "correctMap": [2, 0, 1, 3],
+      "explain": "A bare EXPECT defaults to warn — kept, violation counted. ON VIOLATION DROP ROW filters the row out before it reaches the table. ON VIOLATION FAIL UPDATE stops the entire pipeline update. @dp.expect_or_drop is the Python equivalent of DROP ROW — same engine, same three outcomes, two different syntaxes."
+    },
+    {
+      "id": "advdatabricks-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "A pipeline's Auto Loader source location is meant to be the trigger condition for starting downstream processing. Why does a file-arrival trigger on the Job suit this better than a fixed cron schedule?",
+      "options": [
+        "It starts the job the moment new data actually lands, instead of guessing a schedule that might run too early (missing data) or too late (adding needless delay)",
+        "File-arrival triggers run on a fixed daily schedule in the background, identical to cron, just with a different name",
+        "File-arrival triggers do not support retry policies, so they are only usable for non-critical jobs",
+        "A file-arrival trigger requires the job to have exactly one task, unlike a cron-triggered job"
+      ],
+      "correctIndex": 0,
+      "explain": "A file-arrival trigger starts a job the moment new files land in a specified storage location, directly useful for ingestion work instead of guessing a schedule that could run too early or too late relative to when data actually shows up."
+    },
+    {
+      "id": "advdatabricks-21",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: building a job by dragging task boxes in the Workflows UI and declaring the exact same job in a Databricks Asset Bundle's databricks.yml produce the ________ underlying job object.",
+      "acceptedAnswers": ["identical", "same", "exact same"],
+      "explain": "Neither path is 'the real one' — the Workflows UI and a bundle's YAML are two different ways of authoring the identical job object, and a team often starts in the UI before hand-writing the equivalent YAML once the shape is settled."
+    },
+    {
+      "id": "advdatabricks-22",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "Job: nyc_taxi_orchestration\n  Task: transform_customers\n  Task: transform_orders\n  Task: load_gold\n    depends_on: [transform_customers, transform_orders]\n    # default Run if: All succeeded",
+      "prompt": "Select every true statement about task dependencies and Run if conditions, given the job above.",
+      "options": [
+        "This is a fan-in pattern: load_gold simply lists two dependencies, and its default 'All succeeded' condition means both upstream tasks must finish successfully first",
+        "A task whose Run if condition isn't met is marked Excluded, which is a different status from Failed",
+        "'At least one failed' and 'All failed' Run if conditions let you build a cleanup-or-alert task that runs because something upstream broke, not despite it",
+        "An Excluded task's own downstream dependents are, by default, treated as Failed rather than Excluded",
+        "depends_on only supports naming a single upstream task; fan-in with multiple dependencies requires a separate special field"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "load_gold listing two dependencies with the default 'All succeeded' condition is exactly the fan-in pattern, using the same depends_on field fan-out patterns use. Excluded (condition not met) is genuinely different from Failed (something broke) — and an Excluded task's own dependents cascade as Excluded too, not Failed. 'At least one failed'/'All failed' conditions build real cleanup-or-alert tasks."
+    },
+    {
+      "id": "advdatabricks-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A job has one heavy transformation task needing a large memory-optimized cluster and one lightweight notification task needing almost no compute. Which cluster strategy correctly fits this, and why?",
+      "options": [
+        "Separate job clusters per task, since each can be sized independently and neither task's cluster configuration constrains the other's, even though it costs more in aggregate than one shared cluster",
+        "One shared job cluster, since job clusters are always cheaper than all-purpose clusters regardless of task sizing differences",
+        "An all-purpose cluster for both tasks, since all-purpose clusters support only one task type at a time",
+        "Separate job clusters are never a valid choice inside a single Databricks job, only across different jobs"
+      ],
+      "correctIndex": 0,
+      "explain": "Separate job clusters cost more in aggregate (two spin-ups instead of one) but buy real isolation — a memory-hungry task can run on genuinely different hardware than a lightweight one, with neither task's configuration constraining the other's. That's the right call when tasks have very different sizing needs."
+    },
+    {
+      "id": "advdatabricks-24",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Put these tasks of the nyc_taxi_full_pipeline job in the order they actually run, or become eligible to run, per the multi-step orchestration example.",
+      "items": [
+        "ingest_raw_files starts, triggered by new files arriving (file-arrival trigger)",
+        "run_lakeflow_pipeline runs once ingest_raw_files has succeeded",
+        "refresh_dashboard becomes eligible once run_lakeflow_pipeline succeeds",
+        "send_failure_alert becomes eligible only if run_lakeflow_pipeline is among the tasks that failed"
+      ],
+      "explain": "Ingestion starts the chain via a file-arrival trigger, the Lakeflow pipeline runs once ingestion succeeds, and the two downstream tasks fan out from the pipeline task with different Run if conditions — one for the normal path, one firing only on failure."
+    },
+    {
+      "id": "advdatabricks-25",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Match each Databricks Job trigger type to what it actually does.",
+      "left": ["Scheduled", "File arrival", "Continuous", "Manual"],
+      "right": [
+        "The job only runs when someone explicitly starts it, with no schedule at all",
+        "The job keeps running indefinitely, restarting automatically if it stops",
+        "A cron expression runs the job on a fixed, precise interval",
+        "The job starts the moment new files land in a specified storage location"
+      ],
+      "correctMap": [2, 3, 1, 0],
+      "explain": "Scheduled uses a cron expression for precise, fixed-interval runs. File arrival starts the moment new files land. Continuous keeps the job running indefinitely, restarting automatically if it stops. Manual has no schedule at all — it only runs on demand."
+    },
+    {
+      "id": "advdatabricks-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "code": "# One query plan, two operator types\ndf = (spark.table(\"bronze_trips\")\n      .groupBy(\"VendorID\")\n      .sum(\"fare_amount\"))\n\nresult = df.withColumn(\"flag\", my_python_udf(\"VendorID\"))",
+      "prompt": "This query mixes a large GROUP BY aggregation with a Python UDF applied to each row. What should you expect to see when inspecting this query's profile, regarding Photon?",
+      "options": [
+        "The aggregation operator shows Photon's vectorized execution, while the Python UDF step falls back to standard JVM execution, within the same query plan",
+        "The entire query either runs fully on Photon or falls back entirely to JVM execution — there is no per-operator mixing",
+        "Photon cannot accelerate any query that contains a Python UDF anywhere in its plan, even for unrelated operators",
+        "The Python UDF step runs on Photon, because Photon natively vectorizes arbitrary Python code"
+      ],
+      "correctIndex": 0,
+      "explain": "Photon rewrites specific physical operators — scan, filter, aggregate, join, write — into vectorized equivalents, operator by operator, not all-or-nothing per query. Photon can't vectorize arbitrary Python, so a UDF step falls back to the JVM in the same plan that has Photon running the aggregation."
+    },
+    {
+      "id": "advdatabricks-27",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: Adaptive Query Execution re-optimizes a Spark query's plan at runtime using real, measured statistics from completed stages — rather than trusting the ________ plan the upfront planner chose based on potentially stale table statistics.",
+      "acceptedAnswers": ["upfront", "initial", "the upfront"],
+      "explain": "Spark's planner picks a physical plan before the query runs, based on statistics that are often stale or incomplete. AQE doesn't trust that upfront guess all the way through — it re-optimizes using measured statistics from completed stages while the query is still running."
+    },
+    {
+      "id": "advdatabricks-28",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Databricks' disk cache versus .cache()/.persist(), per the lesson on caching strategies.",
+      "options": [
+        "The disk cache is automatic and transparent, keyed by file, and caches compressed remote Parquet/Delta bytes onto local worker SSD",
+        ".cache() materializes a specific DataFrame's computed result in memory, and you are responsible for releasing it with .unpersist()",
+        ".cache() automatically refreshes itself whenever the underlying table's data changes",
+        "Caching a DataFrame on a job cluster that terminates right after the job finishes provides essentially zero reuse benefit",
+        "The disk cache requires an explicit .cache() call on every DataFrame to activate"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "The disk cache is automatic, transparent, and keyed by file — no code change needed. .cache() is explicit, keyed by DataFrame, and doesn't refresh itself; it serves a frozen snapshot and you release it yourself. A job cluster that terminates right after one run never outlives its own cache, so nothing was ever going to reuse it."
+    },
+    {
+      "id": "advdatabricks-29",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "A join between a 10 TB fact table and a 2 GB dimension table runs with most partitions finishing in seconds, but one partition taking over an hour. Per the lesson on cluster sizing, what is the correct response?",
+      "options": [
+        "Doubling the cluster's worker count will not fix this, because the bottleneck is one severely skewed partition running alone on one core — the fix is addressing the skew itself (e.g. via AQE's skew handling), not adding more idle hardware",
+        "Doubling the cluster's worker count will proportionally fix this, since more workers always speed up every bottleneck equally",
+        "The fix is to reduce min_workers to 0, since a smaller floor forces better load balancing across partitions",
+        "The fix is exclusively to increase max_workers without touching anything else, since skew is always resolved by raising the autoscaling ceiling"
+      ],
+      "correctIndex": 0,
+      "explain": "A job bottlenecked on one oversized shuffle partition doesn't get faster with more nodes — that one task still runs alone on one core no matter how many other cores sit idle. Fixing skew means fixing the skew itself (AQE's skew handling splits the oversized partition), not buying more hardware to sit idle around it."
+    },
+    {
+      "id": "advdatabricks-30",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Match each cost-optimization term to what it actually controls.",
+      "left": ["Spot / preemptible instance", "Auto-termination", "Right-sizing", "min_workers"],
+      "right": [
+        "The autoscaling floor that protects against cold-start latency on every job trigger",
+        "Sizing a cluster to the measured workload shape instead of padding 'just in case'",
+        "Discounted compute the cloud provider can reclaim with little notice — safe for fault-tolerant job clusters, risky for active all-purpose ones",
+        "Shutting down an idle all-purpose cluster after a configured window of inactivity"
+      ],
+      "correctMap": [2, 3, 1, 0],
+      "explain": "Spot/preemptible instances are discounted, reclaimable compute — fine for a fault-tolerant job cluster, risky for an active all-purpose one. Auto-termination shuts down an idle all-purpose cluster. Right-sizing means sizing to measured workload shape, not padding for comfort. min_workers protects against cold-start latency."
+    },
+    {
+      "id": "advdatabricks-31",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the cluster-sizing checklist in the order the lesson on cluster sizing for large workloads walks through them.",
+      "items": [
+        "Determine whether the workload is shuffle-heavy or scan-heavy",
+        "Identify the worst observed data skew in the dataset",
+        "Compare typical versus peak load to set autoscaling min/max bounds",
+        "Determine whether this is a job cluster (terminates after) or an all-purpose cluster (stays running)"
+      ],
+      "explain": "The checklist starts with workload shape, since that changes the answer; then checks the worst observed skew, since more nodes won't fix a bad skew problem; then sets min/max bounds around typical vs. peak load; then considers whether it's a job or all-purpose cluster, which changes whether right-sizing or auto-termination matters more."
+    },
+    {
+      "id": "advdatabricks-32",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "A Unity Catalog metastore is attached to three workspaces. A masking function uses is_member('pii-readers') to decide whether to reveal a column's value. What is the real risk with this, and what should be used instead?",
+      "options": [
+        "is_member() checks workspace-local group membership, which can resolve differently depending on which attached workspace the query runs from; is_account_group_member() checks account-level group membership consistently across every attached workspace",
+        "is_member() only works for row filters, never for column masks, so it will simply fail to parse",
+        "is_account_group_member() is deprecated in favor of is_member(), so the function should be left as-is",
+        "Both functions behave identically; the only difference is a naming convention with no functional impact"
+      ],
+      "correctIndex": 0,
+      "explain": "Unity Catalog's identity model is account-level, but is_member() checks a workspace-local group — a real, silent gap the moment a catalog is bound to more than one workspace. is_account_group_member() checks account-level group membership instead, consistently, regardless of which attached workspace the query runs from."
+    },
+    {
+      "id": "advdatabricks-33",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "code": "ALTER TABLE sales.customers ALTER COLUMN ssn\n  SET TAGS ('pii_category' = 'ssn');\n\nCREATE MASKING POLICY mask_by_pii_tag\n  FOR COLUMNS TAGGED ('pii_category' = 'ssn')\n  RETURN CASE WHEN is_account_group_member('pii-readers')\n              THEN value ELSE 'REDACTED' END;",
+      "prompt": "Select every true statement about this tag-based masking policy, per the lesson on access control at scale.",
+      "options": [
+        "Tagging a column and writing one masking policy tied to that tag applies automatically to every column carrying it, present or future",
+        "A tag-based policy still requires a separate ALTER TABLE ... SET MASK statement for every table that has the tagged column",
+        "The real production question tag-based policies solve is guaranteeing every column that should carry a protection actually does, today and after new tables are added",
+        "Tag-based masking eliminates the need for account-level group checks like is_account_group_member() entirely",
+        "Writing a masking policy by hand, one ALTER TABLE at a time, for forty tables is a realistic way masks quietly drift out of sync when the policy changes"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "A tag-based policy protects every column that carries the tag, including ones added later, without a per-table ALTER TABLE. That solves the real production problem of guaranteeing consistent protection as the lakehouse grows. It still uses is_account_group_member() inside the policy — tagging doesn't remove that need. Hand-typing masks one table at a time, forty times, is exactly how masks drift out of sync."
+    },
+    {
+      "id": "advdatabricks-34",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a Delta Share can be extended with the clause ________ so a recipient can read a table's version history and Change Data Feed, pulling incremental changes since their last read instead of re-reading the whole table every time.",
+      "acceptedAnswers": ["WITH HISTORY", "ADD TABLE ... WITH HISTORY"],
+      "explain": "A plain shared table gives only the current snapshot. ALTER SHARE ... ADD TABLE ... WITH HISTORY lets the recipient read version history and Change Data Feed through the same protocol — the real technical difference between Delta Sharing and simply exporting a file."
+    },
+    {
+      "id": "advdatabricks-35",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Put these in the order a Key Vault-backed secret scope actually resolves a credential at runtime.",
+      "items": [
+        "A Databricks secret scope is created referencing an Azure Key Vault's DNS name and resource ID, with no secret value copied into Databricks",
+        "Code calls dbutils.secrets.get(scope=..., key=...) to request the value",
+        "Databricks reads the current value directly from Key Vault at that moment, through the reference",
+        "If the value is accidentally printed, Databricks redacts it in notebook output as a safety net, not a substitute for proper handling"
+      ],
+      "explain": "A Key Vault-backed scope is only ever a reference, never a stored copy. dbutils.secrets.get() triggers a real-time read from Key Vault itself, and Databricks' automatic redaction is a safety net against an accidental print, not the primary protection."
+    },
+    {
+      "id": "advdatabricks-36",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about answering 'did anyone outside the pii-readers group ever see an unmasked SSN in Q3,' per the lesson on compliance patterns.",
+      "options": [
+        "Audit logs alone can show who ran a query against the table, but not whether that access was authorized",
+        "Lineage alone can show what else is exposed if a sensitive table is exposed, but not who actually queried it",
+        "A current screenshot of the masking policy proves what was true for every historical query, not just what's true today",
+        "Answering the question for real requires checking the access-control state that was active at the time of each historical query, not today's policy",
+        "Access-control state alone proves someone's entitlement to see data, which is the same as proving they actually ran a query"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Audit logs show activity without authorization context; lineage shows exposure without who actually queried anything. Answering the real question requires combining audit-log activity with the access-control state that was actually in effect at each historical timestamp — a current policy screenshot proves only what's true right now, and entitlement alone never proves actual access occurred."
+    },
+    {
+      "id": "advdatabricks-37",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Per Microsoft's own DP-750 study guide as cited in the exam-overview lesson, which two of the four skill domains carry the most combined exam weight?",
+      "options": [
+        "Prepare and process data (30-35%) and Deploy and maintain data pipelines and workloads (30-35%)",
+        "Set up and configure an Azure Databricks environment (15-20%) and Secure and govern Unity Catalog objects (15-20%)",
+        "Prepare and process data (30-35%) and Set up and configure an Azure Databricks environment (15-20%)",
+        "Secure and govern Unity Catalog objects (15-20%) and Deploy and maintain data pipelines and workloads (30-35%)"
+      ],
+      "correctIndex": 0,
+      "explain": "Prepare and process data and Deploy and maintain data pipelines and workloads are both weighted 30-35%, together making up 60-70% of the exam — more than the setup and governance domains combined. Chapters 2 through 5 of this course carry most of that weight."
+    },
+    {
+      "id": "advdatabricks-38",
+      "type": "matching",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Match each DP-750 practice scenario to the feature that correctly solves it.",
+      "left": [
+        "Directory listing timing out against millions of files across thousands of subdirectories",
+        "A row with a negative order_total should be dropped, not halt the pipeline",
+        "Two independent silver-to-gold tasks both depend on one upstream task, and a final task needs both",
+        "A password must be used without ever being hard-coded in a notebook"
+      ],
+      "right": [
+        "Secrets management: a secret scope plus dbutils.secrets.get()",
+        "A task dependency graph: fan-out then fan-in, not a linear chain",
+        "File notification mode instead of directory listing",
+        "An expectation with ON VIOLATION DROP ROW (or expect_or_drop)"
+      ],
+      "correctMap": [2, 3, 1, 0],
+      "explain": "Millions of files across deep subdirectories is file notification mode's exact use case. A row that shouldn't halt the pipeline needs a DROP ROW expectation, not FAIL UPDATE. Two tasks feeding one final task is a fan-out-then-fan-in dependency graph, not a linear sequence. A password that must never be hard-coded is a secrets-management problem."
+    },
+    {
+      "id": "advdatabricks-39",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the capstone lakehouse pipeline's design decisions, per the capstone lesson.",
+      "options": [
+        "The streaming order-events ingestion runs as its own separate job, rather than as one more task inside the daily batch orchestration chain",
+        "orders_silver uses expect_or_drop for a bad order_total, since a bad total shouldn't halt the whole pipeline run",
+        "orders_silver uses a plain expect (not expect_or_drop) for a missing customer_id, since that row might still be recoverable data worth keeping for review",
+        "The capstone deliberately avoids using external tables, since an external table would require an existing outside system reading the same files directly, which this project does not have",
+        "The gold-layer join is intentionally forced into a sort-merge join to guarantee deterministic output ordering"
+      ],
+      "correctIndices": [0, 1, 2, 3],
+      "explain": "Mixing a continuous stream and a scheduled batch chain into one job would make the schedule meaningless for the streaming half, so they run as separate jobs. order_total uses expect_or_drop since a bad total shouldn't halt the run; a missing customer_id uses a plain expect since it might still be recoverable. Managed tables were chosen throughout since nothing in the project needs direct outside-Databricks file access. The gold join is actually a natural AQE/broadcast-join candidate, not a forced sort-merge join."
+    },
+    {
+      "id": "advdatabricks-40",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: completing Advanced Databricks Specialization closes out the Advanced stage, and with it, the entire Databricks / Lakehouse Engineer path — a total of ________ courses across both stages.",
+      "acceptedAnswers": ["nine", "9"],
+      "explain": "The Job Ready stage (T-SQL Development, Data Engineering Foundations, Data Factory, Azure Databricks & Delta Lake) plus the Advanced stage (Advanced Databricks Specialization, Kafka & Event Streaming, Airflow, Terraform & Bicep, Data Engineering Career & Capstone) together make nine courses, both stages complete."
+    }
+  ]
+}

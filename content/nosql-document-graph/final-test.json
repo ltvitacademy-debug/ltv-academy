@@ -1,0 +1,874 @@
+{
+  "questions": [
+    {
+      "id": "nosql-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "A colleague says: 'CAP theorem means you pick any two of Consistency, Availability, and Partition tolerance, so a well-designed system should just pick Consistency and Availability and skip Partition tolerance.' Which statement correctly explains what's wrong with that reasoning?",
+      "options": [
+        "Partition tolerance isn't a feature a distributed system can decline — network partitions are a fact of distributed systems, so the real choice CAP forces is which of Consistency or Availability to sacrifice during a partition, not whether to have partition tolerance at all.",
+        "A system can indeed skip partition tolerance entirely by running in a single data center with a sufficiently reliable network, which eliminates the possibility of a network partition.",
+        "CAP theorem only applies to relational databases, not to NoSQL platforms, so the tradeoff described doesn't apply to MongoDB, Cosmos DB, or Neo4j.",
+        "Choosing Consistency and Availability without Partition tolerance is correct, since those two guarantees combined are strictly stronger than any CP or AP system.",
+        "The CAP theorem was later disproven and no longer applies to modern distributed databases.",
+        "A sufficiently fast network lets a distributed system satisfy Consistency, Availability, and Partition tolerance simultaneously, with no tradeoff required."
+      ],
+      "correctIndex": 0,
+      "explain": "CAP's real condition is a network partition, and partitions are not optional in a distributed system — nodes on different machines, racks, or regions will eventually fail to communicate. Partition tolerance therefore isn't a third option to opt out of; the actual decision CAP forces is what happens during a partition: sacrifice consistency (serve possibly-stale data) or sacrifice availability (reject requests until nodes agree again).",
+      "distractorExplain": "Option B sounds plausible because a single data center does reduce cross-region network risk, but it doesn't eliminate partitions — hardware failures, switch outages, and software bugs still split communication between nodes even within one data center. Any system with more than one node is subject to CAP's tradeoff; it isn't a geography-specific problem that disappears with a 'reliable enough' network."
+    },
+    {
+      "id": "nosql-02",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the four major NoSQL data-model families (key-value, document, column-family, graph), per Lesson 3.",
+      "options": [
+        "Key-value stores like Redis have no visibility into the internal structure of the value they store, making them a poor fit for querying on inner fields.",
+        "Document databases like MongoDB require every document in a collection to share an identical set of fields, the same as a column-family database requires identical columns per row.",
+        "Column-family databases like Cassandra are built for massive write throughput using a peer-to-peer, masterless architecture with no single point of failure.",
+        "Graph databases like Neo4j make relationships first-class stored objects, which is why traversal queries avoid the chain of increasingly expensive JOINs a relational model would need.",
+        "This course covers all four NoSQL families in equal depth, including Redis and Cassandra, since every NoSQL career path requires fluency in all four."
+      ],
+      "correctIndices": [
+        0,
+        2,
+        3
+      ],
+      "explain": "Key-value stores genuinely can't query into a value's structure, which is exactly why they suit caching and lookups-by-key. Cassandra's peer-to-peer, masterless architecture is a real, distinguishing design choice for write-heavy scale. Graph databases storing relationships as first-class objects is precisely why traversals are fast local hops instead of chained joins. Document databases do NOT require identical fields across documents — that's the opposite of MongoDB's schema-less-by-default model. This course covers document (MongoDB), multi-model (Cosmos DB), and graph (Neo4j) in depth, not key-value or standalone column-family stores."
+    },
+    {
+      "id": "nosql-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: many NoSQL systems target BASE instead of ACID — Basically Available, Soft state, and ________ consistency, which guarantees replicas converge to the same value only over time, not instantly.",
+      "acceptedAnswers": [
+        "Eventual",
+        "eventual consistency",
+        "eventual"
+      ],
+      "explain": "BASE stands for Basically Available, Soft state, and Eventual consistency. Eventual consistency is a guarantee about the future — if no new updates occur, every replica will eventually converge to the same value — rather than a guarantee that every read instantly reflects the latest write."
+    },
+    {
+      "id": "nosql-04",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "code": "// Both valid in the same \"users\" collection:\n{ \"_id\": 1, \"name\": \"Priya Patel\", \"email\": \"priya@example.com\" }\n{ \"_id\": 2, \"name\": \"Sam Okafor\", \"loyaltyTier\": \"gold\", \"referredBy\": 1 }",
+      "prompt": "Both documents above live in the same MongoDB users collection, and MongoDB accepts both as-is. What does this demonstrate that is NOT true of a relational table?",
+      "options": [
+        "A collection doesn't enforce that every document share the same fields — documents in the same collection can have genuinely different shapes with no schema violation.",
+        "MongoDB automatically adds the missing fields (email, loyaltyTier) to each document with a value of NULL so both documents end up with an identical shape.",
+        "This is only legal because schema validation has been explicitly disabled on this collection; by default MongoDB rejects mismatched documents.",
+        "MongoDB silently merges the two documents into one wider document, since they share the same collection."
+      ],
+      "correctIndex": 0,
+      "explain": "A MongoDB collection, by default, enforces no schema at all — two documents in the same collection can have completely different fields, and MongoDB rejects neither. This is a genuine architectural choice (letting the data shape evolve with the application), not a missing feature, and it's the one structural detail that separates a collection from a true relational table even though the two are often loosely compared."
+    },
+    {
+      "id": "nosql-05",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a MongoDB ObjectId is a 12-byte value built from a 4-byte timestamp, a 5-byte random value, and a 3-byte ________ that increments for each ObjectId generated by that process.",
+      "acceptedAnswers": [
+        "counter",
+        "incrementing counter"
+      ],
+      "explain": "An ObjectId's three parts are a 4-byte timestamp (seconds since the Unix epoch), a 5-byte random value unique to the generating process, and a 3-byte incrementing counter initialized to a random value. Because ObjectIds are generated client-side from these components, no round trip to the server is needed to assign one — unlike a SQL Server IDENTITY column."
+    },
+    {
+      "id": "nosql-06",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each real-world relationship to the schema-design pattern that actually fits it best, per Lessons 8 and 10.",
+      "left": [
+        "Comments on a typical, non-viral blog post",
+        "A blog post's author profile",
+        "A product's reviews once they number in the tens of thousands",
+        "A session value looked up only by its session ID"
+      ],
+      "right": [
+        "Reference it — the related data changes independently and is shared across many parent documents",
+        "Embed it — it's almost always read together with the parent and stays a bounded size",
+        "Shift to a hybrid pattern — keep a small recent subset embedded, reference the full history elsewhere",
+        "This is a key-value access pattern, not an embed-vs-reference decision at all"
+      ],
+      "correctMap": [
+        1,
+        0,
+        2,
+        3
+      ],
+      "explain": "Comments on a normal post are read every time the post is read and stay bounded, which is embedding's strongest signal. An author's profile changes independently of any single post and is shared across many posts, which is referencing's classic fit. A post whose comments have grown unbounded needs the hybrid pattern: a small embedded subset plus a separate referenced collection for the rest. A pure lookup-by-key value with no need to query on its contents is a key-value access pattern, outside the embed/reference decision entirely."
+    },
+    {
+      "id": "nosql-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "db.users.updateOne(\n  { email: \"dana@example.com\" },\n  { loyaltyTier: \"platinum\" }\n);",
+      "prompt": "This updateOne call runs with no $set operator in its update document. What actually happens to the matched document?",
+      "options": [
+        "The entire document is replaced with { loyaltyTier: \"platinum\" } — every other field is lost, because an update document containing no update operators is treated as a full document replacement.",
+        "MongoDB merges loyaltyTier into the existing document and leaves every other field untouched, since updateOne always merges by default.",
+        "The update fails with an error, because MongoDB requires the $set operator for any field-level change.",
+        "Only the loyaltyTier field is added; every original field remains untouched, since update documents are additive by default."
+      ],
+      "correctIndex": 0,
+      "explain": "When an update document contains no update operators (like $set), MongoDB treats it as a full replacement document rather than a partial update — the matched document is replaced wholesale with { loyaltyTier: \"platinum\" }, and every other field (email, name, etc.) is gone. $set is what scopes an update to only the named fields, leaving the rest of the document untouched."
+    },
+    {
+      "id": "nosql-08",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A MongoDB collection has a single compound index { status: 1, total: -1 }. Which statement correctly describes what this index can and cannot efficiently support?",
+      "options": [
+        "It efficiently supports queries filtering on status alone, or on status and total together — but not a query filtering on total alone — because of the leftmost-prefix rule.",
+        "It efficiently supports a query filtering on total alone, because total is part of the index regardless of its position in the key list.",
+        "It supports queries filtering on status or on total interchangeably, since MongoDB can scan a compound index starting from either field.",
+        "It only supports queries that include both status and total together; neither field works as a standalone filter on its own.",
+        "It supports any query on status or total, but writes to the collection are blocked unless both fields are specified.",
+        "MongoDB automatically creates two separate single-field indexes, one on status and one on total, in addition to the compound index itself."
+      ],
+      "correctIndex": 0,
+      "explain": "A compound index's field order determines which queries can use it, under the same leftmost-prefix rule a SQL Server composite index follows. { status: 1, total: -1 } efficiently supports filtering on status alone, or on status and total together, because status is the leading key. A query filtering only on total — the second key — cannot efficiently use this index.",
+      "distractorExplain": "Option B is the tempting mistake: total genuinely is part of the index, but being present isn't the same as being usable on its own. Because total sits second in the key list, MongoDB can't jump to the right index entries using total alone — it would have to scan the whole index checking every status value, which defeats the purpose. The leftmost-prefix rule means a field's position, not just its presence, decides whether a query can use it efficiently."
+    },
+    {
+      "id": "nosql-09",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about $lookup, $group, and $facet in the MongoDB aggregation pipeline.",
+      "options": [
+        "$lookup returns its matched documents as an array, even when exactly one document matches, because it performs a one-to-many join under the hood.",
+        "$group's _id field must always be the document's original _id field — grouping by any other expression is not allowed.",
+        "$facet runs several independent sub-pipelines against the same input documents in a single pass, returning each result set under its own named key.",
+        "$group's accumulator operators ($sum, $avg, $count, $min, $max) correspond directly to SQL's SUM(), AVG(), COUNT(), MIN(), and MAX().",
+        "A single aggregation pipeline can contain at most one $lookup stage."
+      ],
+      "correctIndices": [
+        0,
+        2,
+        3
+      ],
+      "explain": "$lookup always returns an array because it's fundamentally a one-to-many join, even on a 1:1 match — $unwind is the typical follow-up to flatten it. $facet genuinely runs multiple sub-pipelines in one pass over the same input, each under its own key, useful for a dashboard's worth of summaries at once. $group's accumulators map directly onto SQL's aggregate functions. $group's _id is simply the grouping key — it can be any expression, not just the document's real _id field — and there's no limit of one $lookup per pipeline."
+    },
+    {
+      "id": "nosql-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "db.orders.find({ status: \"shipped\" }).explain(\"executionStats\")\n// executionStats: { totalKeysExamined: 50000, totalDocsExamined: 50000,\n//                    nReturned: 5, executionStages: { stage: \"IXSCAN\", ... } }",
+      "prompt": "This explain(\"executionStats\") output shows nReturned: 5 but totalDocsExamined: 50000, with a winning plan stage of IXSCAN. What does this combination most likely indicate?",
+      "options": [
+        "An index is being used, but it isn't selective enough for this query — MongoDB is examining tens of thousands of documents to return only 5, so a more selective or different index should be investigated.",
+        "The query is already optimally tuned, because IXSCAN alone confirms an index is in use regardless of how many documents were examined.",
+        "MongoDB is actually performing a full collection scan despite the IXSCAN label, since IXSCAN only ever applies to the automatic _id index.",
+        "The large gap between totalDocsExamined and nReturned means the collection has no indexes at all and one should be created from scratch."
+      ],
+      "correctIndex": 0,
+      "explain": "IXSCAN confirms an index is being used, but the real health check is the relationship between totalDocsExamined and nReturned: when they're roughly equal, the index is doing its job; a dramatic gap (50,000 examined to return 5) signals the index in use isn't selective enough for this particular query, the same red flag as a huge rows-examined-versus-returned gap on a SQL Server execution plan."
+    },
+    {
+      "id": "nosql-11",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Put these aggregation pipeline stages in the correct order to return the top 5 \"West\" region sales by revenue, descending.",
+      "items": [
+        "$match filters the input down to documents where region equals \"West\"",
+        "$sort orders the remaining documents by revenue, descending",
+        "$limit keeps only the first 5 documents from the sorted output"
+      ],
+      "explain": "A pipeline is a literal left-to-right sequence: $match should run first both for correctness and so MongoDB can use an index to narrow rows early. $sort must come before $limit — limiting before sorting would arbitrarily cap the input before it's ordered, the same trap as forgetting ORDER BY before TOP in T-SQL."
+    },
+    {
+      "id": "nosql-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "A teammate spins up a new MongoDB instance, connects with mongosh using no username or password, and it works immediately with full read/write access. Why does this happen, and what real risk does it create?",
+      "options": [
+        "Authentication is disabled by default on a fresh install to keep local development frictionless; left this way on a network-reachable instance, anyone who can reach the port has full access with no credentials at all.",
+        "MongoDB auto-generates a default admin password printed once to the console on first startup, which the teammate must have copied without noticing.",
+        "This only happens because the connection is from localhost; any remote connection attempt is rejected by default even with authentication still disabled.",
+        "MongoDB requires a valid TLS certificate before any connection succeeds, so this behavior actually indicates TLS has already been configured."
+      ],
+      "correctIndex": 0,
+      "explain": "A fresh MongoDB install has authentication disabled by default, a historical choice to keep local development frictionless. It is not a bug, but it's a real, well-documented cause of exposed databases when an instance ends up reachable on a network before anyone deliberately turns authentication on."
+    },
+    {
+      "id": "nosql-13",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each MongoDB built-in role to what it actually grants.",
+      "left": [
+        "read",
+        "readWrite",
+        "dbAdmin",
+        "dbOwner"
+      ],
+      "right": [
+        "Read and write access to a database's data, but no administrative privileges",
+        "Administrative tasks on a database, such as indexing and stats, but not user management",
+        "Combines readWrite, dbAdmin, and userAdmin on a single database — effectively full control of it",
+        "Read-only access to a database's data"
+      ],
+      "correctMap": [
+        3,
+        0,
+        1,
+        2
+      ],
+      "explain": "read grants read-only access. readWrite adds write access with no admin privileges. dbAdmin covers administrative tasks like indexing and stats but not user management. dbOwner combines readWrite, dbAdmin, and userAdmin together, giving effectively full control of one database — the MongoDB equivalent of a user holding every relevant SQL Server database role at once."
+    },
+    {
+      "id": "nosql-14",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: encryption in transit (TLS/SSL) is available in MongoDB Community Server, but encryption at rest via the Encrypted Storage Engine requires MongoDB ________ or Atlas.",
+      "acceptedAnswers": [
+        "Enterprise",
+        "MongoDB Enterprise"
+      ],
+      "explain": "MongoDB draws a real licensing line between the two protections: TLS/SSL encryption in transit is available to everyone on Community Server, while the Encrypted Storage Engine that provides encryption at rest requires MongoDB Enterprise or running on Atlas, where it's handled automatically."
+    },
+    {
+      "id": "nosql-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "code": "sh.shardCollection(\"appdb.events\", { _id: 1 })",
+      "prompt": "The events collection is sharded using its default ObjectId _id field as the shard key, as shown above. What problem does this choice create, and why?",
+      "options": [
+        "Because ObjectId values are roughly monotonically increasing (leading with a timestamp component), nearly every new insert lands on whichever shard currently owns the highest key range, creating a write hotspot instead of spreading writes evenly.",
+        "ObjectId has too high a cardinality to ever be used as a shard key, so MongoDB rejects this shardCollection call outright.",
+        "This shard key actually distributes writes perfectly evenly, since ObjectId values are generated with no predictable ordering at all.",
+        "Sharding on _id is disallowed by MongoDB; every sharded collection must choose a field other than _id as its shard key."
+      ],
+      "correctIndex": 0,
+      "explain": "ObjectId's leading component is a timestamp, so ObjectId values trend upward over time — a monotonically increasing shard key. Every new write's key is higher than the last, so new inserts all land on whichever shard owns the current high end of the range, creating exactly the write hotspot a relational DBA already recognizes from a bad monotonic partition key. A hashed shard key is the standard fix."
+    },
+    {
+      "id": "nosql-16",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about MongoDB replica sets, elections, and the oplog.",
+      "options": [
+        "The oplog is a capped collection, so a secondary that stays offline too long can fall outside its window and require a full resync.",
+        "An arbiter holds a full copy of the replica set's data, exactly like a secondary, but simply doesn't serve reads.",
+        "During an election, the replica set briefly has no primary and cannot accept writes until a new primary is chosen.",
+        "A replica set election requires a majority of the set's voting members to agree on the new primary.",
+        "Secondaries apply oplog entries in whatever order they happen to receive them over the network, with no guarantee of matching the primary's original write order."
+      ],
+      "correctIndices": [
+        0,
+        2,
+        3
+      ],
+      "explain": "The oplog is genuinely capped, and a secondary too far behind falls outside that window and needs a full resync. An election leaves the replica set briefly without a primary, unable to accept writes, and requires a majority vote to elect a new one. An arbiter holds no data at all — it exists purely to vote — which is exactly why it doesn't serve reads. Secondaries apply oplog entries in order, replaying the primary's write sequence faithfully, not in arbitrary arrival order."
+    },
+    {
+      "id": "nosql-17",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of standing up a sharded MongoDB cluster in the correct order.",
+      "items": [
+        "Deploy the config server replica set and initiate it with rs.initiate()",
+        "Deploy each shard's own replica set and initiate it the same way",
+        "Start mongos pointed at the config server replica set",
+        "Register each shard replica set with the cluster using sh.addShard()",
+        "Enable sharding on the database and shard the target collection with sh.shardCollection()"
+      ],
+      "explain": "The config server replica set comes up first, since it holds the cluster's metadata that every later routing decision depends on. Each shard's own replica set is deployed next. mongos is started pointed at the config servers, then each shard is registered with the running cluster via sh.addShard(). Only after all of that is sharding actually enabled on a database and a collection assigned its shard key."
+    },
+    {
+      "id": "nosql-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A MongoDB deployment is experiencing write-throughput bottlenecks specifically — writes are slow, but read query performance is fine. Which scaling strategy actually addresses this, and why won't adding more replica set secondaries help?",
+      "options": [
+        "Sharding, because it distributes both data and the writes that create it across multiple shards; adding secondaries only adds nodes that can serve reads — every write still goes through the single primary no matter how many secondaries exist.",
+        "Adding more secondaries, because each additional secondary gives the primary somewhere else to offload incoming write traffic.",
+        "Vertical scaling of the primary's disk is guaranteed to fully resolve any write-throughput bottleneck, regardless of how large the write volume grows.",
+        "Creating a text index on the collection, since text indexes are specifically optimized to improve write throughput."
+      ],
+      "correctIndex": 0,
+      "explain": "Replica set secondaries scale read capacity only — every write still goes to the single primary regardless of secondary count. Sharding is the lever that actually scales write throughput, by distributing data (and the writes that create it) across multiple shards so no single primary has to absorb all of it."
+    },
+    {
+      "id": "nosql-19",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Match each Cosmos DB resource-hierarchy term to what it actually is, per Chapter 6.",
+      "left": [
+        "Account",
+        "Database",
+        "Container",
+        "Logical partition"
+      ],
+      "right": [
+        "The unit that actually stores documents, and the level at which partition key and throughput are most often set",
+        "A logical namespace grouping containers within an account, roughly analogous to a database namespace in SQL Server",
+        "The set of all items sharing one partition key value — Cosmos DB's internal unit of data distribution",
+        "The top-level Azure resource where the API type, regions, and account-wide consistency are chosen"
+      ],
+      "correctMap": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "explain": "An account is the top-level resource where API type, regions, and account-wide consistency are chosen. A database is a logical namespace grouping containers. A container is where data actually lives and where partition key and throughput are usually set. A logical partition is the set of all items sharing one partition key value — Cosmos DB's internal distribution unit, which it automatically maps onto physical partitions."
+    },
+    {
+      "id": "nosql-20",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a good Cosmos DB partition key needs high ________ — a large number of distinct possible values — so that data and request volume can actually spread across many logical partitions.",
+      "acceptedAnswers": [
+        "cardinality",
+        "high cardinality"
+      ],
+      "explain": "High cardinality means the key has many distinct possible values. A low-cardinality key like orderStatus (maybe five values) caps the number of logical partitions Cosmos DB can ever create, no matter how much throughput is provisioned — the same underlying concern as MongoDB shard key cardinality."
+    },
+    {
+      "id": "nosql-21",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Cosmos DB's multi-model engine and its APIs, per Chapter 6.",
+      "options": [
+        "Core (SQL) API is the native API — every Cosmos DB feature lands there first, sometimes exclusively",
+        "The MongoDB, Cassandra, Gremlin, and Table APIs are completely separate database engines bundled under one Azure billing umbrella",
+        "The honest reason to choose the MongoDB or Cassandra API for a brand-new project with no existing codebase is personal familiarity with that API",
+        "Wire-protocol-compatible APIs like MongoDB and Cassandra don't always expose 100% feature parity with a genuine, ground-up implementation of that protocol",
+        "The API type chosen at account creation (Core, MongoDB, Cassandra, Gremlin, Table) can be changed later without creating a new account"
+      ],
+      "correctIndices": [
+        0,
+        3
+      ],
+      "explain": "Core (SQL) API is genuinely the native API, with full feature access. The other APIs are wire-protocol compatibility layers translating onto the same underlying engine, which is exactly why they can't guarantee 100% feature parity with a native MongoDB or Cassandra deployment. They're one engine, not five bundled databases. The real reason to choose a non-Core API is migration compatibility with an existing codebase, not personal preference — and the API type is fixed at account creation; changing it means creating a new account."
+    },
+    {
+      "id": "nosql-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "code": "az cosmosdb sql container create \\\n  --account-name my-cosmos-account \\\n  --database-name RetailDB \\\n  --name Orders \\\n  --partition-key-path \"/orderStatus\" \\\n  --throughput 4000",
+      "prompt": "This container is expected to hold hundreds of millions of orders over time. What real problem does this partition key choice create, regardless of how much throughput is provisioned?",
+      "options": [
+        "orderStatus likely has only a handful of distinct values (pending, shipped, delivered, and so on), which caps the number of logical partitions Cosmos DB can ever create — a hard scaling ceiling no amount of RU/s can raise",
+        "Cosmos DB will reject the container creation outright, because a partition key must reference a numeric property",
+        "The partition key choice only affects write cost, never read cost or overall scalability",
+        "This is a safe choice as long as throughput is set high enough, since RU/s is what determines the maximum number of logical partitions"
+      ],
+      "correctIndex": 0,
+      "explain": "A low-cardinality key like orderStatus can only ever create as many logical partitions as it has distinct values — maybe five. That caps how much the container can scale no matter how much RU/s is provisioned, because RU/s is split across whatever logical (and physical) partitions actually exist, not manufactured by raising throughput. A key like orderId or customerId, with potentially millions of distinct values, is the fix."
+    },
+    {
+      "id": "nosql-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "code": "SELECT VALUE tag\nFROM c\nJOIN tag IN c.tags\nWHERE c.type = \"product\"",
+      "prompt": "A relational DBA reading this query assumes JOIN is pulling rows from a second container, the same way a T-SQL JOIN pulls from a second table. What is this JOIN actually doing?",
+      "options": [
+        "It's an intra-document join — it unwinds the tags array inside each matching product document into one result row per tag, entirely within that single document",
+        "It joins the container c to a separate container named tag, matching on shared property names",
+        "It performs a cross-partition join across every physical partition that contains a product document",
+        "It's a syntax error — Cosmos DB's Core (SQL) API doesn't actually support a JOIN keyword"
+      ],
+      "correctIndex": 0,
+      "explain": "Cosmos DB's JOIN keyword never reaches into another container — there's no such thing as a cross-container JOIN in the Core API. It's an intra-document join: it unwinds an array property inside a single document into multiple result rows, the same idea as CROSS APPLY against a JSON array in T-SQL."
+    },
+    {
+      "id": "nosql-24",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Cosmos DB stored procedures, triggers, and UDFs, per Chapter 7.",
+      "options": [
+        "A stored procedure's multi-statement transactional guarantee only holds within a single logical partition — there is no cross-partition transaction",
+        "A Cosmos DB post-trigger fires automatically on every insert, the same way an AFTER INSERT trigger does in SQL Server",
+        "A UDF is called inside a SELECT list with a udf. prefix, computing a value per document the same way a T-SQL scalar function computes a value per row",
+        "Pre-triggers and post-triggers must be explicitly named on the create/replace/delete request that invokes them",
+        "Stored procedures, triggers, and UDFs in Cosmos DB are written in a proprietary procedural SQL dialect similar to T-SQL"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        3
+      ],
+      "explain": "A stored procedure's transactional scope is confined to one logical partition — there's no cross-partition transaction. UDFs behave like a T-SQL scalar function used inline in a SELECT, called with a udf. prefix. Triggers aren't automatic in Cosmos DB the way they are in SQL Server — a pre-trigger or post-trigger must be explicitly named on the request that invokes it. And all three are written in JavaScript, not a proprietary SQL-like procedural dialect."
+    },
+    {
+      "id": "nosql-25",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: every Cosmos DB container maintains a ________ — an ordered, persistent, append-only log of every insert and update made to its items — without the DBA having to build it.",
+      "acceptedAnswers": [
+        "change feed",
+        "the change feed"
+      ],
+      "explain": "The change feed is on by default and requires no setup. It's an ordered, append-only log scoped per partition key range, read sequentially from a checkpoint forward via the Change Feed Processor library or an Azure Functions Cosmos DB trigger — the built-in alternative to hand-rolled trigger-based auditing or CDC."
+    },
+    {
+      "id": "nosql-26",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of a basic Cosmos DB SDK point-read workflow in the correct order.",
+      "items": [
+        "Construct a single CosmosClient for the application's lifetime, using the account's endpoint URI and key",
+        "Get a reference to the target Database, then the target Container, from that client",
+        "Call ReadItemAsync with the item's id and partition key to perform a point read",
+        "Read the RequestCharge property on the response to see the exact RU cost of that read"
+      ],
+      "explain": "CosmosClient is expensive to construct, so it's created once as a singleton and reused. From it you get a Database reference, then a Container reference. ReadItemAsync with an id and partition key performs a point read — the cheapest operation Cosmos DB offers. Every response, including a successful point read, exposes RequestCharge so the exact RU cost is measurable in real time."
+    },
+    {
+      "id": "nosql-27",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly orders Cosmos DB's five consistency levels from strongest (most up-to-date, highest latency) to weakest (most stale, lowest latency)?",
+      "options": [
+        "Strong, Bounded Staleness, Session, Consistent Prefix, Eventual",
+        "Eventual, Consistent Prefix, Session, Bounded Staleness, Strong",
+        "Strong, Session, Bounded Staleness, Eventual, Consistent Prefix",
+        "Session, Strong, Bounded Staleness, Consistent Prefix, Eventual",
+        "Strong, Bounded Staleness, Consistent Prefix, Session, Eventual",
+        "Bounded Staleness, Strong, Session, Consistent Prefix, Eventual"
+      ],
+      "correctIndex": 0,
+      "explain": "From strongest to weakest, Cosmos DB's five levels are: Strong (every read sees the latest committed write), Bounded Staleness (a guaranteed, tunable ceiling on staleness), Session (the default — read-your-own-writes and monotonic reads within a client session), Consistent Prefix (writes are never seen out of order, but may lag), and Eventual (no ordering guarantee at all, just eventual convergence).",
+      "distractorExplain": "Option E keeps Strong and Bounded Staleness in the right place but swaps Consistent Prefix and Session — placing Consistent Prefix ahead of Session. Session is actually the stronger of the two: it guarantees a single client always reads its own writes and never sees data go backwards (monotonic reads), a real per-client guarantee. Consistent Prefix only guarantees writes are never seen out of order across all readers, with no read-your-own-writes guarantee at all — which is why it sits below Session, not above it."
+    },
+    {
+      "id": "nosql-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "code": "{\n  \"conflictResolutionPolicy\": {\n    \"mode\": \"LastWriterWins\",\n    \"conflictResolutionPath\": \"/_ts\"\n  }\n}",
+      "prompt": "A multi-region-write shopping cart container uses this default conflict resolution policy. Customers in different regions occasionally report that items they added to their cart simply vanish. What's actually happening, and what should replace this policy?",
+      "options": [
+        "Last-Writer-Wins is resolving conflicting writes to the same cart document by keeping only the version with the higher timestamp and discarding the other entirely — a custom conflict-resolution stored procedure that merges both versions' items is needed instead",
+        "This is a Cosmos DB bug unrelated to the conflict resolution policy — Last-Writer-Wins only applies to delete operations, never to normal item updates",
+        "The /_ts path is invalid for Last-Writer-Wins, so Cosmos DB is silently falling back to Eventual consistency and dropping writes at random",
+        "Switching the account from multi-region writes to Bounded Staleness consistency would fix this without touching the conflict resolution policy"
+      ],
+      "correctIndex": 0,
+      "explain": "Last-Writer-Wins picks one conflicting version by its timestamp (or another designated property) and discards the other entirely — fine for a view counter, but a real problem for a shopping cart, where the discarded version might contain items the customer genuinely added. A custom conflict resolution stored procedure, which receives all conflicting versions and can merge them (for example, summing or unioning cart items), is the fix this lesson recommends for data where silently dropping a write is unacceptable."
+    },
+    {
+      "id": "nosql-29",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Match each throughput or backup term to what it actually controls, per Chapter 8.",
+      "left": [
+        "Manual (standard) throughput",
+        "Autoscale throughput",
+        "Periodic backup mode",
+        "Continuous backup mode"
+      ],
+      "right": [
+        "Enables point-in-time restore to any specific timestamp within a 7- or 30-day retention window",
+        "A fixed RU/s value you set and are billed for regardless of actual usage; exceeding it returns 429 responses",
+        "Takes full snapshots at a configurable interval (default every 4 hours) and restores into a new account at one of those discrete points",
+        "Automatically scales RU/s between a floor of 10% of a configured maximum and that maximum, billed on the highest RU/s reached each hour"
+      ],
+      "correctMap": [
+        1,
+        3,
+        2,
+        0
+      ],
+      "explain": "Manual throughput is a fixed, billed RU/s regardless of actual usage, throttling with a 429 once exceeded. Autoscale automatically scales RU/s between a 10%-of-maximum floor and a configured ceiling, billed on the hour's highest point reached. Periodic backup mode takes discrete snapshots (every 4 hours by default) restorable only to a new account at one of those points. Continuous backup mode enables true point-in-time restore to any timestamp within its retention window."
+    },
+    {
+      "id": "nosql-30",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: enabling ________ writes lets every configured region accept writes simultaneously, cutting write latency for globally distributed users — but introduces the possibility of conflicting writes that single-region write mode never had to handle.",
+      "acceptedAnswers": [
+        "multi-region",
+        "multi-master",
+        "multi-region write",
+        "multi-region writes"
+      ],
+      "explain": "Multi-region writes (also called multi-master) let every configured region accept writes at once, reducing latency for users far from a single write region. Because two regions can now accept conflicting writes to the same item nearly simultaneously, Cosmos DB needs an explicit conflict resolution policy — a problem single-region write mode, with exactly one writer, can never have."
+    },
+    {
+      "id": "nosql-31",
+      "type": "multi-select",
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Cosmos DB's security layers, per Chapter 9.",
+      "options": [
+        "A primary/secondary account key is a bearer token — whoever holds the string has full read-write access to every database and container in the account, with no per-container scoping",
+        "Azure AD/RBAC-based access ties permissions to an identity (such as a managed identity) that can be centrally audited and revoked instantly, without rotating a shared secret",
+        "A VNet service endpoint or Private Endpoint controls who can authenticate, fully replacing the need for keys or RBAC",
+        "A Private Endpoint gives the Cosmos DB account a private IP address inside your VNet, so traffic never has to traverse the public internet",
+        "An IP firewall rule removes the Cosmos DB account's public endpoint entirely, the same way a Private Endpoint does"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "An account key is a full-access bearer token with no per-container scoping. Azure AD/RBAC ties access to an auditable, instantly-revocable identity instead of a shared secret. A Private Endpoint gives the account a private IP inside your VNet so traffic stays off the public internet. But network isolation controls where a connection can come from, not who is authenticating — it's a separate, complementary layer, not a replacement for keys or RBAC. And an IP firewall rule only filters traffic to a still-public endpoint; it doesn't remove that endpoint the way a Private Endpoint does."
+    },
+    {
+      "id": "nosql-32",
+      "type": "sequencing",
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of diagnosing a hot-partition throttling problem in the correct order, per Chapter 9.",
+      "items": [
+        "Notice sustained 429 (Request rate is large) responses even though the container's overall Normalized RU Consumption metric looks comfortably under 100%",
+        "Check the Normalized RU Consumption metric sliced per physical partition instead of at the container level",
+        "Spot one physical partition sitting near 100% while the others sit low — the signature of a hot partition",
+        "Review the actual partition key choice to find the low-cardinality or unevenly-distributed value causing it",
+        "Redesign the partition key, rather than simply raising provisioned RU/s, since more RU/s would just raise the ceiling for every partition including the ones that aren't the problem"
+      ],
+      "explain": "The classic hot-partition signature starts with 429s despite a healthy-looking overall RU metric, which only becomes explainable once you slice Normalized RU Consumption per physical partition rather than at the container level. Finding one partition pinned near 100% while others sit idle points straight at the partition key design, and the real fix is redesigning that key — not raising RU/s, which would just raise the ceiling for every partition, including the ones that were never the problem."
+    },
+    {
+      "id": "nosql-33",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "code": "# Migration result: 3 containers, 1:1 with the old SQL Server tables\nCustomers    (partition key: /customerId)\nOrders       (partition key: /orderId)\nOrderItems   (partition key: /orderItemId)",
+      "prompt": "A team migrates their normalized Customers, Orders, and OrderItems SQL Server tables into three separate Cosmos DB containers like this, one document per old row, keeping each table's old primary key as the partition key. An order's line items used to come back in a single SQL JOIN. What happens to that query pattern after migration, and why?",
+      "options": [
+        "It now requires multiple separate round trips to Cosmos DB, each costing its own RUs, because Cosmos DB has no server-side JOIN across containers — a query pattern that was cheap relationally can become RU-expensive at scale",
+        "Nothing changes — Cosmos DB automatically joins across containers behind the scenes by matching partition key values",
+        "The query becomes cheaper, because each container's smaller row-per-document size means every read is automatically a point read",
+        "The migration tool automatically denormalizes the three containers back into a single one during the data load"
+      ],
+      "correctIndex": 0,
+      "explain": "This is the classic lift-and-shift migration mistake: preserving a normalized relational schema as separate containers means a query that used to be one SQL JOIN now needs multiple round trips stitched together in application code, since Cosmos DB has no server-side JOIN across containers — and each of those round trips costs its own RUs. The fix is redesigning before migrating: embedding order line items inside the order document if they're almost always read together, and choosing a partition key that matches the real access pattern rather than defaulting to each table's old primary key."
+    },
+    {
+      "id": "nosql-34",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch13",
+      "difficulty": "advanced",
+      "prompt": "A client running Neo4j Community Edition asks for a support-service account that can read Customer and Order nodes but is explicitly denied access to the creditCardToken property on Customer. Which statement correctly describes whether this is achievable?",
+      "options": [
+        "This is not achievable on Community Edition — custom roles and fine-grained TRAVERSE/READ/DENY privilege grants are an Enterprise Edition feature; Community only offers native username/password authentication with no role-based access control beyond that.",
+        "This is achievable on Community Edition by creating a custom role with GRANT TRAVERSE and DENY READ on the specific property, since the privilege-grant system ships with every edition.",
+        "This is not achievable on any edition, because Neo4j's DENY privilege only applies to relationship properties, never node properties.",
+        "This is achievable on Community Edition, but only by physically removing the creditCardToken property from every Customer node before granting read access.",
+        "This is achievable on Community Edition as long as the built-in PUBLIC role is disabled first.",
+        "This is not achievable on Community Edition, and it would also fail on Neo4j Aura's free tier, since AuraDB Free runs on Community Edition under the hood."
+      ],
+      "correctIndex": 0,
+      "explain": "Neo4j Community Edition supports native authentication (usernames and passwords) but has no role-based access control beyond that — there is effectively one class of authenticated user with full access to the data. Custom roles and fine-grained privilege grants like TRAVERSE, READ, and DENY are an Enterprise Edition feature. A client who needs the supportReader-style narrow grant described here needs Enterprise Edition, or Aura, which is built on Enterprise.",
+      "distractorExplain": "Option B is the tempting answer because the GRANT/DENY syntax itself is real Cypher — but that whole privilege system, not just the specific grant being requested, is gated to Enterprise Edition. On Community Edition those statements aren't available at all, so there's no custom role to create in the first place, regardless of which privileges it would have held."
+    },
+    {
+      "id": "nosql-35",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "code": "CREATE (c:Customer {customerId: 1, name: 'Ana Ortiz', email: 'ana@example.com'})\nCREATE (p:Product {productId: 101, name: 'Widget', price: 9.99})\nCREATE (o:Order {orderId: 5001, orderDate: date('2026-03-01')})\nCREATE (c)-[:PLACED]->(o)\nCREATE (o)-[:CONTAINS {quantity: 3}]->(p)",
+      "prompt": "This graph was converted from a relational Customers/Orders/OrderItems/Products schema, where OrderItems was the junction table resolving the many-to-many relationship between Orders and Products. Where did OrderItems' Quantity column end up in this graph model, and why?",
+      "options": [
+        "As a property on the CONTAINS relationship between Order and Product — OrderItems' only job was pairing an Order with a Product and carrying one piece of pairing-specific data, which maps directly onto a relationship property instead of its own node.",
+        "As a property on the Order node, since Order is the node that sat closest to OrderItems in the original schema.",
+        "As its own :OrderItem node, connected to both Order and Product, preserving the junction table as a node in the graph.",
+        "It was dropped entirely during the conversion, since Quantity isn't needed once the CONTAINS relationship exists."
+      ],
+      "correctIndex": 0,
+      "explain": "A junction table whose only purpose is connecting two other tables and carrying a small amount of pairing-specific data maps directly onto a relationship with a property in the graph. Quantity doesn't need its own node — it becomes a property on the CONTAINS relationship connecting Order to Product, exactly as shown in the CREATE statement. The foreign keys become relationships (PLACED, CONTAINS), not properties, and no OrderItems node or foreign-key column survives the conversion at all."
+    },
+    {
+      "id": "nosql-36",
+      "type": "multi-select",
+      "chapter": "ch10",
+      "difficulty": "foundational",
+      "prompt": "Select every true statement about Neo4j's core graph model, per this course's Neo4j chapters.",
+      "options": [
+        "A relationship in Neo4j is always directed, with a start node and an end node, even when a query traverses it without specifying a direction.",
+        "Properties (key-value data) can be attached to relationships as well as to nodes.",
+        "A single node can carry more than one label at the same time, such as both :Person and :Employee.",
+        "Index-free adjacency means Neo4j builds a B-tree index on every relationship so lookups stay fast as the graph grows.",
+        "A single relationship can carry more than one relationship type at once, the same way a node can carry multiple labels."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Every Neo4j relationship is directed and typed with exactly one type, and that direction is stored even if a query matches it either way. Properties can live on both nodes and relationships — a PURCHASED relationship carrying its own date and quantity is the classic example. A node can carry multiple labels simultaneously. Index-free adjacency is not a B-tree index at all — it means relationships are stored as direct physical pointers between nodes, which is a different mechanism from indexing entirely. A relationship has exactly one type; there's no multi-type relationship analog to a node's multiple labels."
+    },
+    {
+      "id": "nosql-37",
+      "type": "fill-in",
+      "chapter": "ch10",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Neo4j's storage model, where relationships are stored as direct physical pointers between nodes so that traversal cost doesn't grow with the total size of the database, is called ________.",
+      "acceptedAnswers": [
+        "index-free adjacency",
+        "index free adjacency"
+      ],
+      "explain": "Index-free adjacency is the term for relationships being stored as direct, physical pointers between nodes rather than resolved at query time through an index or join. It's why traversing from a node to its neighbor is a constant-time pointer lookup regardless of how many total nodes exist in the database."
+    },
+    {
+      "id": "nosql-38",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch11",
+      "difficulty": "intermediate",
+      "code": "MATCH (c:Company)<-[:WORKS_AT]-(p:Person)\nRETURN c.name, count(p) AS employeeCount, avg(p.salary) AS avgSalary",
+      "prompt": "This query returns one row per company with an employee count and average salary, even though there's no GROUP BY clause anywhere in it. Why does this actually work?",
+      "options": [
+        "Cypher automatically treats any non-aggregated field in RETURN — here, c.name — as the implicit grouping key, so count(p) and avg(p.salary) are computed per distinct value of that field.",
+        "Cypher silently inserts a hidden GROUP BY c.name behind the scenes, but only when exactly one aggregate function appears in RETURN.",
+        "It doesn't actually group anything — count(p) and avg(p.salary) are both computed once across the entire result set, and c.name just happens to repeat in the output.",
+        "This query is invalid Cypher and raises an error, because an aggregate function can never be mixed with a non-aggregated field unless GROUP BY is present."
+      ],
+      "correctIndex": 0,
+      "explain": "Cypher has no GROUP BY clause at all. Instead, any field in RETURN that isn't wrapped in an aggregate function becomes the implicit grouping key — here, c.name. Cypher automatically groups by distinct company name and computes employeeCount and avgSalary per group, the same result a T-SQL query would need an explicit GROUP BY c.name to produce."
+    },
+    {
+      "id": "nosql-39",
+      "type": "fill-in",
+      "chapter": "ch11",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: running MERGE (p:Person {name: 'Marcus Lee'}) twice produces only one node, because MERGE first searches for a pattern matching the given specification, and only falls back to behaving like ________ if no match is found.",
+      "acceptedAnswers": [
+        "CREATE"
+      ],
+      "explain": "MERGE searches for a pattern matching the given specification; if found, it behaves like MATCH and binds to the existing data, and only if no match exists does it fall back to behaving like CREATE and insert a new node. That's exactly why the second MERGE run finds the node the first run created and just binds to it, instead of duplicating it the way two plain CREATE statements would."
+    },
+    {
+      "id": "nosql-40",
+      "type": "matching",
+      "chapter": "ch11",
+      "difficulty": "intermediate",
+      "prompt": "Match each Cypher clause or pattern to the T-SQL concept a SQL Server DBA would recognize it as behaving like.",
+      "left": [
+        "MATCH ... RETURN",
+        "OPTIONAL MATCH",
+        "WITH (used mid-query)",
+        "CALL { WITH p ... } subquery"
+      ],
+      "right": [
+        "A correlated subquery that references a value from the current outer row",
+        "SELECT ... FROM ... JOIN — except the relationship is walked as a stored pointer, not computed at query time",
+        "A CTE or derived table that passes a narrowed, named result set forward into the next stage",
+        "A LEFT JOIN — keeps every row from the left side, filling unmatched results with NULL"
+      ],
+      "correctMap": [
+        1,
+        3,
+        2,
+        0
+      ],
+      "explain": "MATCH...RETURN does the conceptual work of SELECT...FROM...JOIN, except there's no join computed at query time since the relationship already exists as a stored pointer. OPTIONAL MATCH keeps every row even when the pattern doesn't match, filling missing values with null — exactly like a LEFT JOIN's unmatched rows returning NULL. WITH mid-query passes named results forward and narrows scope, the same role a CTE or derived table plays in T-SQL. CALL {} with an explicit WITH p import mirrors a correlated subquery, referencing the outer row's current value inside an otherwise-isolated inner query."
+    },
+    {
+      "id": "nosql-41",
+      "type": "sequencing",
+      "chapter": "ch11",
+      "difficulty": "advanced",
+      "prompt": "Put these stages of a single chained Cypher query — matching companies, computing each one's employee count, filtering to just the larger companies, then optionally attaching office location — in the order they'd actually appear in the query.",
+      "items": [
+        "MATCH (c:Company)<-[:WORKS_AT]-(p:Person) to find every company and its employees",
+        "WITH c, count(p) AS employeeCount to compute the per-company count and carry it forward",
+        "WHERE employeeCount > 10 to filter on the aggregate computed in the previous WITH",
+        "OPTIONAL MATCH (c)-[:LOCATED_AT]->(o:Office) to attach an office if one exists, without dropping companies that have none",
+        "RETURN c.name, employeeCount, o.city ORDER BY employeeCount DESC to project and sort the final result"
+      ],
+      "explain": "MATCH finds the starting pattern first. Because Cypher has no HAVING clause, filtering on an aggregate requires computing it in a WITH first, then filtering on it in the WHERE that follows that WITH, as if it were an ordinary property. OPTIONAL MATCH comes next to attach optional data without dropping rows that lack it, and RETURN with ORDER BY projects and sorts the final result last — exactly the chained pattern this lesson's closing example builds."
+    },
+    {
+      "id": "nosql-42",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch12",
+      "difficulty": "intermediate",
+      "code": "CALL gds.pageRank.stream('employeeGraph')\nYIELD nodeId, score\nRETURN gds.util.asNode(nodeId).name AS name, score",
+      "prompt": "Before this call can run successfully, what has to exist first, and why?",
+      "options": [
+        "An in-memory graph projection named 'employeeGraph', created with gds.graph.project — GDS algorithms run against a compact in-memory copy of the relevant nodes and relationships, not directly against the main graph store.",
+        "A relationship-level index on every WORKS_AT relationship, since GDS algorithms can only run against relationship types that are indexed.",
+        "Nothing extra — gds.pageRank.stream runs directly against whatever the most recent MATCH query happened to return.",
+        "A pageRankScore property already written onto every node from a previous run, since GDS stream calls can only return results that already exist as properties."
+      ],
+      "correctIndex": 0,
+      "explain": "GDS algorithms need a named in-memory graph projection to exist before they can run, created separately with gds.graph.project. This is architectural: PageRank and similar algorithms iterate repeatedly over the whole graph until scores converge, and repeatedly reading from disk-backed storage for each pass would be far slower than operating on a purpose-built, compressed in-memory structure."
+    },
+    {
+      "id": "nosql-43",
+      "type": "multi-select",
+      "chapter": "ch12",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about PageRank, betweenness centrality, and degree centrality, per this course's Graph Data Science chapter.",
+      "options": [
+        "PageRank's core idea is that a node is important if it's linked to by other important nodes, with importance flowing recursively through the graph until scores converge.",
+        "Betweenness centrality measures how often a node sits on the shortest path between other pairs of nodes, so a node with very few direct connections can still score very high if it's the sole bridge between two otherwise-separate parts of the graph.",
+        "Degree centrality requires iterating across the whole graph the same way PageRank does, making it roughly as expensive to compute.",
+        "A node with high betweenness centrality automatically also has a high PageRank score, since both measure the exact same underlying property of a node.",
+        "Degree centrality is simply a count of a node's direct relationships, with no regard for which specific nodes those relationships connect to."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        4
+      ],
+      "explain": "PageRank's importance flows recursively from being linked to by other important nodes. Betweenness centrality can score a sparsely-connected bridge node very highly, since it measures how often a node lies on other pairs' shortest paths, not how many direct connections it has. Degree centrality is the cheapest centrality measure precisely because it's just a count with no traversal or iteration required, unlike PageRank. Betweenness and PageRank measure genuinely different things — a bridge node with high betweenness can have very few direct connections and therefore a low PageRank score."
+    },
+    {
+      "id": "nosql-44",
+      "type": "fill-in",
+      "chapter": "ch12",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Jaccard similarity between two nodes is calculated as the size of the ________ of their connections divided by the size of the union of their connections.",
+      "acceptedAnswers": [
+        "intersection"
+      ],
+      "explain": "Jaccard similarity is the size of the intersection of two nodes' connections divided by the size of their union. Two customers who bought exactly the same products score 1.0; two with nothing in common score 0.0."
+    },
+    {
+      "id": "nosql-45",
+      "type": "matching",
+      "chapter": "ch12",
+      "difficulty": "intermediate",
+      "prompt": "Match each graph algorithm to what it actually does.",
+      "left": [
+        "Dijkstra's algorithm",
+        "A*",
+        "Louvain",
+        "Label Propagation"
+      ],
+      "right": [
+        "Finds the lowest-total-weight path between a source and target node, always expanding the currently-cheapest known path first",
+        "Finds the same optimal shortest path as Dijkstra but typically explores fewer nodes, using a heuristic estimate of remaining distance to the target",
+        "Discovers both the number of communities and their membership automatically by iteratively merging nodes into groups that improve a modularity score",
+        "A faster, simpler community detection approach where every node starts with its own label and repeatedly adopts the label most common among its neighbors"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "Dijkstra explores outward, always expanding the cheapest known path first. A* solves the same problem but uses a heuristic estimate of remaining distance to explore fewer nodes. Louvain optimizes modularity to discover community count and membership automatically. Label Propagation is the faster, cheaper alternative where nodes repeatedly adopt their neighbors' most common label until communities stabilize."
+    },
+    {
+      "id": "nosql-46",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch13",
+      "difficulty": "advanced",
+      "prompt": "A client's Neo4j deployment has 3 core servers and is seeing write-throughput bottlenecks under heavy load. They propose adding 10 read replicas to fix it. What's wrong with that plan, and what would actually help?",
+      "options": [
+        "Read replicas don't participate in Raft consensus and can't become the write leader — they only scale read throughput, not write throughput. Writes are bottlenecked by the core servers and ultimately the single leader accepting writes, so the real fix is scaling or optimizing the core-server write path, not adding read replicas.",
+        "Read replicas do participate in Raft consensus once added to the cluster, so adding more of them directly increases write throughput.",
+        "Adding read replicas is the correct fix, but only if an even number is added so Raft's quorum math stays balanced.",
+        "Nothing is wrong with the plan — Neo4j automatically promotes a read replica to core-server status whenever write load increases."
+      ],
+      "correctIndex": 0,
+      "explain": "Read replicas hold an asynchronous copy of the graph for read scaling and explicitly cannot become the leader or participate in Raft consensus — adding more of them does nothing for write throughput, which is bounded by the core servers (and ultimately by whichever one is currently the leader accepting writes). Solving a write bottleneck means addressing the core-server tier itself, not the read-replica tier."
+    },
+    {
+      "id": "nosql-47",
+      "type": "fill-in",
+      "chapter": "ch13",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: on Neo4j Community Edition, the only backup option is stopping the database, copying its files, and restarting it. Taking a consistent backup of a database that stays online and keeps serving queries (neo4j-admin database backup) is a capability gated to ________ Edition.",
+      "acceptedAnswers": [
+        "Enterprise",
+        "Enterprise Edition"
+      ],
+      "explain": "Online, non-disruptive backup via neo4j-admin database backup against a running instance is an Enterprise Edition feature. Community Edition can only use the offline stop-copy-start pattern, since it has no mechanism for taking a consistent backup while the database stays up and serving traffic."
+    },
+    {
+      "id": "nosql-48",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch14",
+      "difficulty": "intermediate",
+      "prompt": "Meridian Outfitters' loyalty program is being abused by a ring of accounts that share shipping addresses and payment cards to farm referral credit. Per this course's capstone, which platform actually fits detecting that ring, and why?",
+      "options": [
+        "Neo4j — fraud-ring detection is about how entities connect to each other, not about any single account's own attributes; relationships are stored, first-class objects, so a multi-hop traversal to surface a shared-address/shared-card cluster is a cheap pointer-chase instead of an increasingly expensive multi-hop relational join.",
+        "MongoDB — accounts are documents with flexible, uneven attributes, so storing each account's fraud risk score as a nested field solves the problem.",
+        "Cosmos DB — detecting a fraud ring requires serving low-latency reads from multiple geographic regions at once.",
+        "SQL Server, with a few extra indexes on the accounts table, exactly as the engineering lead suggested — the real long-term fix."
+      ],
+      "correctIndex": 0,
+      "explain": "Finding a ring of accounts sharing shipping addresses and payment cards means following multi-hop connections between accounts, exactly the kind of query that gets slower and uglier the more hops are added relationally. Neo4j stores the relationship between entities as a real, stored edge rather than something rebuilt from a join at query time, which is why this lesson pairs Meridian's fraud-ring problem with Neo4j rather than MongoDB or Cosmos DB, whose strengths (flexible uneven records, multi-region low-latency distribution) solve different problems entirely."
+    },
+    {
+      "id": "nosql-49",
+      "type": "multi-select",
+      "chapter": "ch14",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Meridian Outfitters' polyglot-persistence architecture (MongoDB + Neo4j + Cosmos DB), per this course's capstone lessons.",
+      "options": [
+        "The three platforms are kept in sync through events and background jobs, not through one platform directly querying another live.",
+        "When a Meridian order is placed, the checkout process writes directly and synchronously to Neo4j so the recommendation graph is always perfectly up to date at the moment of purchase.",
+        "If the purchase-event consumer that updates the recommendation graph goes down, checkout itself keeps working fine, but the recommendation graph silently goes stale.",
+        "Running three platforms instead of one relational database means three separate backup strategies, three security surfaces, and three sets of monitoring to own, instead of one.",
+        "A single relational database could have handled all three of Meridian's problems equally well; the only real reason to use three platforms is a preference for newer technology."
+      ],
+      "correctIndices": [
+        0,
+        2,
+        3
+      ],
+      "explain": "The three platforms are independent systems kept in sync by events and sync jobs, not a shared database or live cross-platform queries — checkout publishes a purchase event, and a separate sync job consumes it to update Neo4j, specifically so checkout doesn't depend on a fourth system being up. That also means a failed consumer lets checkout keep working while the recommendation graph quietly goes stale. Running three platforms genuinely means three backup strategies, three security surfaces, and three monitoring setups to own. A single relational database would not have handled all three problems equally well — each problem (uneven catalog attributes, multi-hop relationship queries, multi-region low-latency state) was shown to degrade specifically because it was the wrong fit relationally, not because of a technology preference."
+    },
+    {
+      "id": "nosql-50",
+      "type": "sequencing",
+      "chapter": "ch14",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of a single Meridian shopper's visit — from loading a product page through to the recommendation graph being updated — in the order they actually happen, per this course's capstone architecture.",
+      "items": [
+        "The product page loads the tent's document directly from MongoDB, with no join or reconstruction needed",
+        "The shopper adds the tent to their cart, writing to Cosmos DB in whichever region is physically closest, under session consistency",
+        "The shopper places the order, a transactional write against Meridian's order system that also publishes a purchase event",
+        "A separate sync job consumes that purchase event and writes a new (:Customer)-[:BOUGHT]->(:Product) relationship into Neo4j",
+        "The next shopper who views that product gets a recommendation informed by this purchase, served by a traversal through Neo4j"
+      ],
+      "explain": "The product page reads straight from MongoDB first. Adding to cart writes to Cosmos DB under session consistency so the shopper's own next read always reflects their own write. Placing the order is a transactional write that also publishes a purchase event — nothing queries Neo4j synchronously during checkout. A separate sync job then consumes that event and updates the recommendation graph, so the benefit (an informed recommendation) only shows up for a later shopper, not within this same checkout request."
+    }
+  ]
+}

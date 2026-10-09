@@ -1,0 +1,881 @@
+{
+  "questions": [
+    {
+      "id": "snow-01",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of Lesson 5's lab — setting up your first Snowflake warehouse and database — in the correct order.",
+      "items": [
+        "Sign up for a free 30-day trial at trial.snowflake.com and follow the registration email's link to sign in",
+        "Run SELECT CURRENT_ROLE(), CURRENT_WAREHOUSE(), CURRENT_DATABASE(); and confirm CURRENT_DATABASE() returns NULL",
+        "Create your own warehouse with CREATE WAREHOUSE ... and switch to it with USE WAREHOUSE",
+        "Create a database and schema, then create a table and insert a row into it",
+        "Run SELECT * FROM first_table; and confirm your row comes back"
+      ],
+      "explain": "A trial account ships with a default role and warehouse but no database selected, which the first CURRENT_DATABASE() check confirms. From there, Lesson 5 has you create your own warehouse (rather than relying on the shared COMPUTE_WH), then a database/schema/table, and finally prove the whole chain worked by reading your own inserted row back."
+    },
+    {
+      "id": "snow-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "An ANALYTICS_WH running dashboard queries and a LOAD_WH bulk-loading files both query the same orders table at the same time. Why don't they block each other?",
+      "options": [
+        "Storage and compute are separate layers — each warehouse is its own compute cluster reading from one shared copy of the data, not a separate copy",
+        "Snowflake automatically creates a temporary copy of the table for each warehouse that queries it",
+        "Only one warehouse can hold a lock on the table at a time, and the other simply waits briefly",
+        "LOAD_WH automatically pauses itself whenever ANALYTICS_WH is running a query"
+      ],
+      "correctIndex": 0,
+      "explain": "Snowflake's architecture splits storage and compute into separate layers on purpose. Multiple warehouses can read the same underlying storage at the same time because they're independent compute clusters, not separate copies of the data and not a single shared lock a second warehouse has to wait on."
+    },
+    {
+      "id": "snow-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in Snowflake, unquoted identifiers are case-________ and get folded to uppercase internally, so orders, Orders, and ORDERS all refer to the same table unless the name is wrapped in double quotes.",
+      "acceptedAnswers": [
+        "insensitive",
+        "case-insensitive"
+      ],
+      "explain": "Unquoted identifiers in Snowflake are case-insensitive and folded to uppercase internally — a quiet difference from T-SQL, where case sensitivity depends on the server's collation instead."
+    },
+    {
+      "id": "snow-04",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A developer migrating a T-SQL query needs to filter down to the 3 most recent orders per customer without wrapping a ROW_NUMBER() window function in a CTE. Which Snowflake-specific clause lets filtering apply directly to a window function's result, in the same query?",
+      "options": [
+        "QUALIFY",
+        "HAVING",
+        "WHERE",
+        "OVER",
+        "FILTER",
+        "PARTITION BY"
+      ],
+      "correctIndex": 0,
+      "explain": "QUALIFY is the Snowflake-specific clause that filters directly on a window function's result, running after WHERE/GROUP BY/HAVING but before ORDER BY/LIMIT — it has no T-SQL equivalent, and it's exactly what replaces the CTE + ROW_NUMBER() + outer WHERE pattern from T-SQL.",
+      "distractorExplain": "HAVING filters aggregated GROUP BY results, not row-level window function output — ROW_NUMBER() isn't an aggregate, so HAVING can't see it any more than WHERE can. Only QUALIFY runs specifically after window functions are computed, which is why it's the one construct in this chapter with no T-SQL equivalent at all."
+    },
+    {
+      "id": "snow-05",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Snowflake's three table persistence types, per Chapter 2.",
+      "options": [
+        "A transient table has no Fail-safe period, unlike a permanent table's default 7-day Fail-safe window",
+        "A temporary table is scoped to the session that created it and is dropped automatically when that session ends",
+        "A permanent table's Time Travel window defaults to 1 day and can extend up to 90 days on Enterprise Edition and above",
+        "Transient tables are visible only to the session that created them, the same as temporary tables",
+        "Temporary tables get the same 7-day Fail-safe period as permanent tables, just with a shorter Time Travel window"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Transient tables drop Fail-safe entirely while keeping permanent-table durability otherwise. Temporary tables are session-scoped and auto-dropped at session end. Permanent tables default to 1 day of Time Travel, extendable to 90 on Enterprise Edition+. Transient tables persist across sessions and are visible to everyone with access, unlike session-scoped temporary tables — and neither transient nor temporary tables get any Fail-safe period at all."
+    },
+    {
+      "id": "snow-06",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Snowflake's MERGE has no ________ clause, unlike T-SQL's MERGE — to capture which rows a MERGE changed, you instead query the target table's Time Travel history afterward.",
+      "acceptedAnswers": [
+        "OUTPUT",
+        "OUTPUT clause"
+      ],
+      "explain": "Snowflake's MERGE has no OUTPUT clause at all, so there's no way to stream affected rows out of the statement directly — the usual workaround is checking Time Travel or a separate query afterward."
+    },
+    {
+      "id": "snow-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "MERGE INTO target_table AS t\nUSING staging_table AS s ON t.customer_id = s.customer_id\nWHEN NOT MATCHED BY SOURCE THEN DELETE;",
+      "prompt": "A developer tries to run this T-SQL-style MERGE, unchanged, in a Snowflake worksheet to delete target rows no longer present in the source. What happens?",
+      "options": [
+        "It fails — Snowflake's MERGE has no BY SOURCE / BY TARGET qualifiers at all, so WHEN NOT MATCHED only ever means 'in source, not in target'",
+        "It runs fine and deletes every target row with no matching source row, identically to T-SQL",
+        "It runs fine, but it deletes every row in target_table regardless of whether it matched",
+        "It fails because DELETE is not a valid action inside any Snowflake MERGE clause"
+      ],
+      "correctIndex": 0,
+      "explain": "Snowflake's MERGE supports WHEN MATCHED and WHEN NOT MATCHED, but WHEN NOT MATCHED always means 'exists in source, not in target' — there's no BY SOURCE / BY TARGET qualifier to target the opposite direction. Deleting target rows no longer in source needs a separate DELETE ... WHERE NOT EXISTS statement instead."
+    },
+    {
+      "id": "snow-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A JSON file contains a single top-level array of three objects: [{...}, {...}, {...}]. It's loaded using a file format with TYPE = 'JSON' and no STRIP_OUTER_ARRAY setting specified at all. How many rows does loading this file produce?",
+      "options": [
+        "One row, holding the entire array as a single VARIANT value",
+        "Three rows, one per object in the array, because Snowflake always unwraps top-level arrays automatically",
+        "An error, because a JSON file format requires STRIP_OUTER_ARRAY to be set explicitly",
+        "Three rows, but each one missing its original nested structure"
+      ],
+      "correctIndex": 0,
+      "explain": "Without STRIP_OUTER_ARRAY = TRUE, a file containing a top-level array loads as one row holding the whole array as a single VARIANT value, not one row per element. STRIP_OUTER_ARRAY is specifically the setting that unwraps the array into separate rows."
+    },
+    {
+      "id": "snow-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A team runs the exact same COPY INTO statement against the same stage two days in a row, with no FORCE option and no new files added to the stage. What happens on the second run?",
+      "options": [
+        "Nothing loads — Snowflake already recorded those files as loaded (by file name and checksum) and skips them automatically",
+        "Every row loads a second time, doubling the table's row count",
+        "The COPY INTO statement fails with an error since the files were already loaded",
+        "Only files modified since the first load are reloaded automatically"
+      ],
+      "correctIndex": 0,
+      "explain": "Snowflake tracks, per stage, which files it has already successfully loaded for 64 days, and skips them automatically on a repeat COPY INTO — no manual bookkeeping needed. FORCE = TRUE is required to force a genuine reload."
+    },
+    {
+      "id": "snow-10",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about COPY INTO's ON_ERROR options, per Chapter 3.",
+      "options": [
+        "ABORT_STATEMENT, the default, fails the whole file's load the instant one row errors",
+        "CONTINUE skips only the bad row and keeps loading the rest of the file",
+        "SKIP_FILE_<n>% skips the entire file only if more than n% of its rows error",
+        "VALIDATION_MODE = 'RETURN_ERRORS' is a value you pass to ON_ERROR, not a separate COPY INTO option",
+        "ON_ERROR = 'CONTINUE' is the safe default recommended for production loads"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "ABORT_STATEMENT is the default and fails the whole load on any error; CONTINUE skips just the bad row; SKIP_FILE_<n>% skips the whole file past a percentage error threshold. VALIDATION_MODE is its own separate COPY INTO option, not a value of ON_ERROR. The course's recommended safe default for production is ABORT_STATEMENT (or a tight SKIP_FILE_<n>% threshold), not CONTINUE, so failures stay loud instead of silently dropping rows."
+    },
+    {
+      "id": "snow-11",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 3 term to what it actually is.",
+      "left": [
+        "User stage (@~)",
+        "Storage integration",
+        "FIELD_OPTIONALLY_ENCLOSED_BY",
+        "COPY_HISTORY"
+      ],
+      "right": [
+        "A quote character that protects a delimiter character appearing inside a field's own value",
+        "Authorizes Snowflake to assume a cloud IAM role instead of storing raw secret keys",
+        "A private internal stage that exists automatically for every user, with no CREATE STAGE needed",
+        "A table function reporting past load attempts, successes, and errors, scoped to a table name and time window"
+      ],
+      "correctMap": [
+        2,
+        1,
+        0,
+        3
+      ],
+      "explain": "The user stage (@~) is a private internal stage every user already has. A storage integration authorizes Snowflake against a cloud IAM identity instead of hardcoded keys. FIELD_OPTIONALLY_ENCLOSED_BY is the quote character protecting delimiters inside a field. COPY_HISTORY is the table function reporting past load outcomes for a given table and time window."
+    },
+    {
+      "id": "snow-12",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of loading from cloud storage into Snowflake in the correct order.",
+      "items": [
+        "Authorize Snowflake against the cloud provider via a storage integration (or, less preferably, hardcoded credentials)",
+        "Create a named stage pointing at the bucket, referencing the storage integration",
+        "Create or reuse a named file format describing how the files are shaped",
+        "Run COPY INTO to load matching files from the stage into the target table"
+      ],
+      "explain": "A stage can't authorize itself, so the storage integration (or credentials) has to exist first. The stage then points at the bucket using that authorization. A file format tells COPY INTO how to parse the files. Only once all three exist does COPY INTO actually move rows from stage to table."
+    },
+    {
+      "id": "snow-13",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Snowpipe loads run on ________ compute that Snowflake provisions and bills per-second, per-file-processed — you never assign a warehouse to a pipe or size it yourself.",
+      "acceptedAnswers": [
+        "serverless",
+        "serverless compute"
+      ],
+      "explain": "Snowpipe uses serverless compute Snowflake provisions on your behalf — billed per-second and per-file-processed, separate from any warehouse you manage, and never sized or assigned by you."
+    },
+    {
+      "id": "snow-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "A pipe appears to have stopped loading new files. PIPE_USAGE_HISTORY shows the pipe received files and credits were used, but COPY_HISTORY shows several of those files with a LOAD_FAILED status. What does this combination point to?",
+      "options": [
+        "The files arrived and the pipe ran, but something about the files themselves (bad shape, parse errors) caused the load to fail — not a trigger or permissions problem",
+        "The S3 event notification never fired, so the pipe never saw the files at all",
+        "The pipe is paused and needs ALTER PIPE ... SET PIPE_EXECUTION_PAUSED = FALSE",
+        "The pipe's role is missing USAGE on the stage, which always shows up as zero PIPE_USAGE_HISTORY activity"
+      ],
+      "correctIndex": 0,
+      "explain": "PIPE_USAGE_HISTORY showing real activity rules out 'the pipe never received the file' — that's exactly what a trigger/notification failure would look like instead (zero usage). COPY_HISTORY's LOAD_FAILED status for those same files points specifically at the files or the load itself, not the trigger or a missing stage grant."
+    },
+    {
+      "id": "snow-15",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the ELT pattern and the raw/staging/business-ready layering, per Chapter 5.",
+      "options": [
+        "In ELT, data is loaded into the warehouse before transformation runs, rather than being transformed in a separate engine first",
+        "Snowflake's storage/compute separation is what makes ELT the natural default pattern rather than ETL",
+        "The raw layer should contain only validated, deduplicated rows — bad rows are filtered out before they ever reach raw",
+        "Business-ready tables are usually made permanent, since reports depend on them directly and rebuilding may be expensive",
+        "Staging and raw tables are typically marked PERMANENT rather than TRANSIENT, since they must never be lost"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "ELT loads raw data first and transforms it afterward inside the warehouse, which Snowflake's separately billed storage/compute makes cheap and natural. Raw is an unmodified landing zone — if the source sent a bad row, raw keeps the bad row too, that's the whole point. Business-ready tables are usually permanent since reports depend on them directly, while raw/staging are often marked transient precisely because they're reproducible and disposable."
+    },
+    {
+      "id": "snow-16",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 5 term to what it actually does.",
+      "left": [
+        "Watermark",
+        "QUALIFY-based dedup",
+        "CTAS",
+        "Anti-join referential check"
+      ],
+      "right": [
+        "CREATE TABLE AS SELECT — builds a brand-new table directly from a query's result set",
+        "Filters a window function's result directly in the same query, with no CTE wrapper needed",
+        "A LEFT JOIN with a WHERE ... IS NULL filter that finds foreign keys pointing to rows that don't exist",
+        "The highest already-processed value of an ever-increasing column, tracked to identify only new or changed rows"
+      ],
+      "correctMap": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "explain": "A watermark tracks the highest already-processed value of an ever-increasing column. QUALIFY-based dedup filters a window function's result directly, no CTE wrapper needed. CTAS builds a new table straight from a query's result set. An anti-join referential check is a LEFT JOIN plus WHERE ... IS NULL that surfaces orphaned foreign keys."
+    },
+    {
+      "id": "snow-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "CREATE TABLE staging.orders_cleaned AS\nSELECT order_id, customer_id, TRY_CAST(order_total AS NUMBER(12,2)) AS order_total\nFROM raw.orders WHERE order_id IS NOT NULL;",
+      "prompt": "A scheduled task reruns this exact statement every night (not CREATE OR REPLACE TABLE). What happens on the second night's run?",
+      "options": [
+        "It fails — the table from last night's run already exists, and plain CTAS doesn't overwrite it",
+        "It silently appends the new rows to the existing table",
+        "It silently truncates the table first, then inserts the new result set",
+        "It succeeds, replacing the table instantly, since CTAS is idempotent by default in Snowflake"
+      ],
+      "correctIndex": 0,
+      "explain": "A plain CREATE TABLE AS SELECT fails on the second run because the table already exists. CREATE OR REPLACE TABLE ... AS SELECT is the idempotent, rerunnable form a scheduled task should actually use — it atomically swaps the old table for the new result set with no window where the table is empty or missing."
+    },
+    {
+      "id": "snow-18",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "A dimension table needs a surrogate key that stays identical across repeated CREATE OR REPLACE TABLE ... AS SELECT rebuilds, and that a separate, independently-scheduled transformation can compute on its own without first inserting into the dimension and reading the assigned value back. Which approach correctly provides this?",
+      "options": [
+        "A NUMBER column generated with HASH() of the natural key, computed directly in the SELECT",
+        "A NUMBER column declared AUTOINCREMENT START 1 INCREMENT 1",
+        "A VARCHAR column storing CURRENT_TIMESTAMP() at insert time",
+        "A NUMBER column declared PRIMARY KEY with no further configuration",
+        "A column populated by a SEQUENCE's NEXTVAL, referenced only after the row is inserted",
+        "A VARIANT column holding the entire source row as JSON"
+      ],
+      "correctIndex": 0,
+      "explain": "HASH()-based surrogate keys are deterministic: the same natural key always produces the same key value, on every run, computable independently with no round trip through the dimension table first. That's exactly why this pattern pairs with CREATE OR REPLACE TABLE AS SELECT rebuilds, which don't preserve AUTOINCREMENT state cleanly.",
+      "distractorExplain": "AUTOINCREMENT/IDENTITY (option B) is Snowflake's direct analog of T-SQL's IDENTITY and works fine for simple sequential inserts, but it doesn't survive a CREATE OR REPLACE TABLE AS SELECT rebuild cleanly, and it requires the dimension row to already exist before another pipeline step can reference its key — exactly the round-trip problem a HASH()-based key avoids by construction."
+    },
+    {
+      "id": "snow-19",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 6 term to what it actually does.",
+      "left": [
+        "SCD Type 1",
+        "SCD Type 2",
+        "CLUSTER BY on a fact table",
+        "is_current flag"
+      ],
+      "right": [
+        "Overwrites a changed dimension attribute in place, keeping no history of the old value",
+        "Organizes a table's micro-partitions by a column so filtered queries can prune most of the table",
+        "Flags exactly one row per natural key as the active version in an SCD2 dimension",
+        "Closes out the old row with an expiry date and inserts a brand-new row for the changed attribute"
+      ],
+      "correctMap": [
+        0,
+        3,
+        1,
+        2
+      ],
+      "explain": "SCD Type 1 overwrites in place with no history. SCD Type 2 closes out the old row and inserts a new version instead. CLUSTER BY keeps a column's values co-located across micro-partitions for pruning. is_current flags exactly one row per natural key as the active SCD2 version."
+    },
+    {
+      "id": "snow-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "code": "CREATE TABLE analytics.dim_customer (\n    customer_key NUMBER PRIMARY KEY,\n    customer_id  VARCHAR NOT NULL,\n    customer_name VARCHAR\n);\n\nINSERT INTO analytics.dim_customer VALUES (1, 'C100', 'Acme');\nINSERT INTO analytics.dim_customer VALUES (1, 'C100', 'Acme');",
+      "prompt": "The second INSERT duplicates customer_key 1 exactly. What happens?",
+      "options": [
+        "Both rows insert successfully — PRIMARY KEY and NOT NULL are declared as informational metadata in Snowflake, not enforced constraints that block inserts",
+        "The second INSERT fails with a primary key violation, exactly like SQL Server",
+        "The second INSERT silently updates the existing row instead of inserting a duplicate",
+        "The CREATE TABLE statement itself fails, since PRIMARY KEY requires a unique index to be created first"
+      ],
+      "correctIndex": 0,
+      "explain": "Snowflake declares PRIMARY KEY and NOT NULL as informational metadata by default — useful to query optimizers and BI tools, but not enforced constraints that block a bad insert the way SQL Server's do. Data quality checks, not the constraint declaration alone, are what actually protect a Snowflake table from duplicates."
+    },
+    {
+      "id": "snow-21",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a VARIANT column holding a JSON array field returns the whole array as one VARIANT value with colon notation — to get one row per array element instead, you need LATERAL ________.",
+      "acceptedAnswers": [
+        "FLATTEN",
+        "FLATTEN()"
+      ],
+      "explain": "LATERAL FLATTEN is the table function that turns a VARIANT array into one row per element, while still letting you reference the parent row's other columns alongside each flattened element."
+    },
+    {
+      "id": "snow-22",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about VARIANT, colon notation, and FLATTEN, per Chapter 7.",
+      "options": [
+        "A colon lookup like v:CIK returns a VARIANT-typed value that usually needs an explicit ::type cast before use",
+        "PARSE_JSON() converts a plain string column containing JSON text into a real VARIANT value",
+        "Wrapping a colon-notation query in a view lets downstream SQL query plain typed columns with no VARIANT or colon syntax visible",
+        "LATERAL FLATTEN is only needed when a JSON field holds a single scalar value, not an array",
+        "Snowflake requires a VARIANT column's JSON structure to be declared up front in the CREATE TABLE statement"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "A colon lookup returns a VARIANT value that usually needs an explicit cast. PARSE_JSON() turns a JSON-formatted string column into a real VARIANT. Wrapping colon-notation logic in a view hides VARIANT/colon syntax from downstream queries entirely. FLATTEN is needed specifically when a field is an array, not a scalar — the opposite of the false statement — and VARIANT's whole point is accepting any JSON shape with no schema declared up front."
+    },
+    {
+      "id": "snow-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "A stream orders_stream is created on table orders. A teammate runs SELECT * FROM orders_stream; just to look at pending changes, with no INSERT or MERGE reading from it inside a committed transaction. What happens to the stream's contents?",
+      "options": [
+        "Nothing changes — a plain SELECT doesn't consume the stream, so the same changes still show up next time it's queried",
+        "The stream is immediately marked consumed and returns zero rows on the next query",
+        "The SELECT fails, since a stream can only be read from inside a DML statement",
+        "Half of the pending changes are consumed, since Snowflake splits stream reads across transactions"
+      ],
+      "correctIndex": 0,
+      "explain": "A stream's changes are only marked consumed when a DML statement reads from it inside a transaction that commits — a plain SELECT just to look doesn't advance the stream's offset at all, so the same changes are still there next time."
+    },
+    {
+      "id": "snow-24",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of building an incremental Streams + Tasks pipeline, per Chapter 8, in the correct order.",
+      "items": [
+        "Create a STREAM on the source table to track inserts, updates, and deletes",
+        "Create a TASK with a SCHEDULE and a WHEN SYSTEM$STREAM_HAS_DATA(...) condition",
+        "Write the task's body as a MERGE that reads from the stream into the target table",
+        "Resume the task with ALTER TASK ... RESUME, since tasks are created suspended",
+        "Confirm in Query History, filtered to queries executed by user tasks, that each run only processes the actual changed rows"
+      ],
+      "explain": "The stream has to exist before a task can check or consume it. The task is defined with its schedule and WHEN gate, with the MERGE as its body. Since every task starts suspended, it must be explicitly resumed before it runs at all. Only after it's running can you verify, in Query History, that it's genuinely processing small incremental batches rather than silently reprocessing everything."
+    },
+    {
+      "id": "snow-25",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "A role has been granted only SELECT ON TABLE cybersyn.public.company_metadata TO ROLE junior_dba, and the query SELECT * FROM cybersyn.public.company_metadata; fails for that role. What's actually missing?",
+      "options": [
+        "USAGE on the cybersyn database and USAGE on its public schema — without them, a role can't 'see through' to the table even with SELECT already granted on it",
+        "Nothing is missing — SELECT on the table alone should be sufficient to query it, so the failure must be a syntax error",
+        "GRANT ROLE junior_dba TO ROLE sysadmin — without that, no role can query any table at all",
+        "OWNERSHIP ON TABLE cybersyn.public.company_metadata, which is required before any SELECT grant takes effect",
+        "A resource monitor must be attached to the warehouse before any SELECT grant can take effect",
+        "ACCOUNTADMIN must personally run the SELECT query first to initialize access for other roles"
+      ],
+      "correctIndex": 0,
+      "explain": "USAGE on a warehouse, database, and schema just lets a role 'see through' to what's inside — it grants no data access by itself. SELECT is the privilege that actually lets rows come back, but it does nothing if the role can't reach the table in the first place. Missing USAGE on the database and schema is exactly what blocks a SELECT grant from working.",
+      "distractorExplain": "Option C confuses the role hierarchy (GRANT ROLE ... TO ROLE, which connects custom roles to SYSADMIN for manageability) with object-level access. A role doesn't need to be slotted under SYSADMIN to query a table — it needs USAGE on the containing database and schema plus SELECT on the table itself. Granting role hierarchy fixes organization, not missing table access."
+    },
+    {
+      "id": "snow-26",
+      "type": "multi-select",
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about row access policies and dynamic data masking, per Chapter 9.",
+      "options": [
+        "A row access policy filters which rows a query returns; a masking policy changes what a returned column's value looks like",
+        "Dynamic data masking changes a query's results, not the value actually stored on disk",
+        "A secure view hides a view's definition from everyone except its owner, while a regular view's definition is visible via GET_DDL",
+        "A masking policy must be explicitly referenced inside every SELECT statement that wants masked output",
+        "Row access policies and masking policies apply only to queries issued by ACCOUNTADMIN, never to ordinary roles"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Row access policies filter rows; masking policies alter a column's returned value, with the stored data never changing. Secure views hide their definition from everyone but the owner, unlike a regular view's visible GET_DDL. Once attached to a column or table, a policy applies automatically to any query against it — no SELECT-level reference needed — and it evaluates for every role, including ACCOUNTADMIN, based on that policy's own logic."
+    },
+    {
+      "id": "snow-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch10",
+      "difficulty": "advanced",
+      "prompt": "A query's Query Profile shows a TableScan node that scanned 40 GB to return just 200 rows, consuming 85% of the query's total time. What does this combination most likely indicate?",
+      "options": [
+        "A pruning problem — the filtered column's values aren't well co-located across micro-partitions, so Snowflake can't skip much before scanning",
+        "A caching problem — the result cache simply hasn't been populated yet for this exact query",
+        "A warehouse sizing problem that a bigger warehouse alone would fully resolve, regardless of the filter",
+        "A normal, unavoidable cost of any TableScan node, not worth investigating further"
+      ],
+      "correctIndex": 0,
+      "explain": "Bytes scanned far exceeding bytes returned on the most expensive node is exactly the pruning-failure signature: a filter on a column whose values are scattered across nearly every micro-partition instead of naturally clustered together, so Snowflake can't skip much before scanning."
+    },
+    {
+      "id": "snow-28",
+      "type": "matching",
+      "chapter": "ch10",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 10 performance concept to what it actually does.",
+      "left": [
+        "Result cache",
+        "Metadata cache",
+        "Warehouse (local disk) cache",
+        "Clustering key"
+      ],
+      "right": [
+        "Account-wide cache of query results for 24 hours, used at zero compute cost on an exact-match rerun",
+        "Cloud-services-layer statistics like min/max and row counts, usable without spinning up warehouse compute",
+        "Lost the moment its warehouse suspends; caches raw data pages read from cloud storage",
+        "A column Snowflake actively keeps co-located across micro-partitions as a table changes, to keep pruning effective"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "The result cache serves identical queries for 24 hours at zero compute cost. The metadata cache holds per-partition statistics usable without a running warehouse. The warehouse's local disk cache is lost the instant it suspends. A clustering key keeps a column co-located across micro-partitions so pruning stays effective as a table grows."
+    },
+    {
+      "id": "snow-29",
+      "type": "fill-in",
+      "chapter": "ch11",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: Snowflake credits are metered per second, with a ________-second minimum each time a suspended warehouse resumes — which is exactly why AUTO_SUSPEND matters for cost, not just tidiness.",
+      "acceptedAnswers": [
+        "60",
+        "60-second",
+        "sixty"
+      ],
+      "explain": "Credits are metered per second, but every resume from suspension bills at least a 60-second minimum — a detail that matters most for bursty, frequent-resume workloads, which is exactly the DirectQuery scenario Chapter 12 later connects it to."
+    },
+    {
+      "id": "snow-30",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch12",
+      "difficulty": "advanced",
+      "prompt": "A Power BI report connects to Snowflake using DirectQuery mode, with active users clicking slicers throughout the business day. Why does this specifically risk higher Snowflake cost than the same traffic pattern against an always-on SQL Server box?",
+      "options": [
+        "Each DirectQuery interaction sends a live query that may resume a suspended warehouse, and every resume bills at least a 60-second minimum — frequent small bursts rack up those minimums repeatedly",
+        "DirectQuery against Snowflake always runs on the largest available warehouse size regardless of query complexity",
+        "Snowflake charges a fixed per-click fee for every slicer interaction made in DirectQuery mode",
+        "DirectQuery mode disables the result cache entirely, so no query can ever be served from cache"
+      ],
+      "correctIndex": 0,
+      "explain": "DirectQuery sends a live query to Snowflake for every interaction, and against Snowflake specifically that interacts badly with per-second billing plus the 60-second resume minimum — frequent, bursty queries rack up repeated minimums instead of one clean, predictable usage window, unlike an always-on database where the server is running regardless."
+    },
+    {
+      "id": "snow-31",
+      "type": "fill-in",
+      "chapter": "ch12",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in Power BI's Snowflake connection dialog, the two required fields are Server and ________ — the second one determines which compute cluster bills for every query the report issues.",
+      "acceptedAnswers": [
+        "Warehouse",
+        "warehouse"
+      ],
+      "explain": "The connection dialog asks for Server (the account hostname) and Warehouse — the compute warehouse that every query this report issues will run against and bill to, a cost decision as much as a connection detail."
+    },
+    {
+      "id": "snow-32",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch13",
+      "difficulty": "intermediate",
+      "prompt": "A five-person analytics team needs forty transformation models with documentation, tests, and a reviewable change history. Applying Chapter 13's four-question decision framework, which tool fits, and why?",
+      "options": [
+        "dbt — the SQL logic itself may be no more complex than a single view, but team scale and process (docs, tests, version control) are the actual problem dbt solves",
+        "Plain SQL views — nothing here needs anything beyond CREATE VIEW",
+        "Python via Snowpark — forty models is too many for SQL alone to express",
+        "Airflow — the real problem here is sequencing forty models in the right order"
+      ],
+      "correctIndex": 0,
+      "explain": "This is exactly Scenario B from Chapter 13's four scenarios: the SQL itself might be simple, but scale and team process are the real problem. dbt formalizes documentation, tests, and version control around SQL that was going to exist anyway — it's not 'better SQL,' it's SQL with discipline wrapped around it."
+    },
+    {
+      "id": "snow-33",
+      "type": "multi-select",
+      "chapter": "ch14",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Query History and load history, per Chapter 14.",
+      "options": [
+        "INFORMATION_SCHEMA.QUERY_HISTORY() only sees queries from the current session's warehouse context over roughly the last 7 days by default",
+        "SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY holds up to a year of history but can lag real time by up to 45 minutes",
+        "COPY_HISTORY answers whether a specific file loaded into a specific table; QUERY_HISTORY answers whether a query itself succeeded or failed",
+        "ACCOUNT_USAGE views always reflect activity in real time, with zero lag",
+        "QUERY_HISTORY and COPY_HISTORY both only cover manual COPY INTO statements, not Snowpipe loads"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "INFORMATION_SCHEMA.QUERY_HISTORY() is scoped to the current session's recent history; ACCOUNT_USAGE.QUERY_HISTORY trades that for a year of retention at the cost of up to a 45-minute lag. COPY_HISTORY is specifically about whether a file loaded, distinct from QUERY_HISTORY's question of whether a query succeeded. ACCOUNT_USAGE views are not real-time, and COPY_HISTORY backs both manual COPY INTO and Snowpipe loads, not just manual ones."
+    },
+    {
+      "id": "snow-34",
+      "type": "sequencing",
+      "chapter": "ch14",
+      "difficulty": "advanced",
+      "prompt": "A reporting table that should refresh nightly still shows yesterday's numbers. Put Chapter 14's chain-walking checks in the order they should run.",
+      "items": [
+        "Check SYSTEM$PIPE_STATUS and COPY_HISTORY to confirm the file actually loaded",
+        "Check SYSTEM$STREAM_HAS_DATA (and peek at the stream's row count) to confirm it captured the change",
+        "Check TASK_HISTORY to confirm the task ran, and distinguish SUCCEEDED/FAILED/SKIPPED",
+        "Check the downstream table's MAX(loaded_at) and row count to confirm the result actually landed"
+      ],
+      "explain": "Walking the pipe → stream → task → table chain in order, starting at the beginning rather than guessing which piece broke, finds the actual break fastest: did the file load, did the stream capture the change, did the task run (and was it SKIPPED because the stream was empty, not FAILED), and did the result actually land."
+    },
+    {
+      "id": "snow-35",
+      "type": "sequencing",
+      "chapter": "ch15",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the capstone's realistic order of operations, per Lesson 57, in the correct order.",
+      "items": [
+        "Pick three sources with genuinely different shapes and get all of them loaded into raw tables before building anything downstream",
+        "Build staging and the dimensional model, and get it correct before adding Streams, Tasks, or RBAC",
+        "Add RBAC once the object structure is stable, rather than granting privileges on tables about to be restructured",
+        "Tune performance and connect Power BI last, against a model that already works"
+      ],
+      "explain": "You can't model what you haven't landed, so loading comes first. Automating a wrong transformation just runs the wrong thing faster, so staging and the dimensional model need to be correct before Streams/Tasks are added. Granting privileges on tables about to change is wasted work, so RBAC comes once the structure is stable. Tuning and Power BI come last, against a model that already works."
+    },
+    {
+      "id": "snow-36",
+      "type": "matching",
+      "chapter": "ch15",
+      "difficulty": "intermediate",
+      "prompt": "Match each capstone piece, per Lessons 58-60, to what it actually does.",
+      "left": [
+        "Loader role",
+        "Analyst role",
+        "SCD Type 2 dimension",
+        "Clustering key on fact_orders"
+      ],
+      "right": [
+        "Granted INSERT/SELECT on raw and staging only, plus USAGE on the load warehouse",
+        "Granted SELECT on the warehouse schema's tables only, with no access to raw or staging",
+        "A dimension with effective_date, end_date, and is_current, so a fact row joins to the version that was current when it happened",
+        "Organized around order_date so queries that always filter by date can prune most of the table"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "The loader role writes to raw and staging and uses the load warehouse. The analyst role reads only the warehouse layer, never raw or staging. An SCD Type 2 dimension's effective_date/end_date/is_current columns let facts join to the dimension version that was current at the time. A clustering key on order_date keeps the fact table's micro-partitions organized for date-filtered queries."
+    },
+    {
+      "id": "snow-37",
+      "type": "multi-select",
+      "chapter": "ch15",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the capstone project, per Chapter 15.",
+      "options": [
+        "The analyst role should have no grant on the raw or staging schemas at all, only on the warehouse/reporting layer",
+        "A fact table in the capstone's star schema should join to dimensions by surrogate key, not natural key",
+        "The right first step, before loading any sources, is deciding the Import vs. DirectQuery choice for Power BI",
+        "At least one dimension in the capstone needs real SCD Type 2 history, not just a renamed staging table",
+        "Granting privileges on tables that are about to be restructured is a good way to get RBAC configured early"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "The analyst role deliberately has no access to raw or staging, proving the RBAC boundary is real. Fact tables join dimensions by surrogate key, which is what makes SCD Type 2 history possible. The capstone's deliverable list requires at least one real SCD Type 2 dimension. The realistic order of operations loads sources first and connects Power BI last, and granting privileges on tables about to be restructured is explicitly called out as wasted work, not an early win."
+    },
+    {
+      "id": "snow-38",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch15",
+      "difficulty": "advanced",
+      "prompt": "A capstone builder's reporting table shows yesterday's numbers in Power BI at 9 a.m., with no error visible anywhere. Following the capstone's chain-walking approach, which check should run first?",
+      "options": [
+        "SYSTEM$PIPE_STATUS and COPY_HISTORY, to confirm the raw file itself actually loaded before looking at anything downstream",
+        "The Power BI report's Import vs. DirectQuery setting, since that's always the first thing to suspect",
+        "SHOW GRANTS TO ROLE on the analyst role, since missing privileges are the most common cause of stale data",
+        "ALTER WAREHOUSE ... SET WAREHOUSE_SIZE, since a bigger warehouse always fixes a stale reporting table"
+      ],
+      "correctIndex": 0,
+      "explain": "Chapter 14's chain-walking method starts at the beginning of the pipeline, not at the end or by guessing: check whether the file loaded first, before checking the stream, the task, or the table — and well before suspecting Power BI's connection mode, grants, or warehouse size, none of which were established as the cause yet."
+    },
+    {
+      "id": "snow-39",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch16",
+      "difficulty": "advanced",
+      "prompt": "A team wants a Cortex Agent to turn plain-English business questions into SQL that's grounded in real table/column mappings instead of the LLM guessing from raw schema names alone. Which artifact provides that grounding?",
+      "options": [
+        "A semantic model — a YAML file mapping business vocabulary (dimensions, measures, synonyms, verified queries) to the actual tables",
+        "A resource monitor attached to the warehouse running the agent's queries",
+        "A clustering key on the fact table the agent will query",
+        "A masking policy attached to the table's most sensitive column",
+        "A larger warehouse size, so the LLM has more compute to reason with",
+        "A row access policy filtering which rows the agent can see"
+      ],
+      "correctIndex": 0,
+      "explain": "Cortex Analyst's semantic model names tables, dimensions, measures, and synonyms, and can include verified queries — known-good question/SQL pairs. That narrows the LLM's job to mapping a new question onto an explicit contract instead of guessing from raw schema names, which independent testing found improves accuracy by roughly 20%.",
+      "distractorExplain": "A row access policy (option F) and a masking policy (option D) both matter for governing what an agent can see once it's running, but neither one gives the LLM the business-vocabulary mapping it needs to generate correct SQL in the first place — that grounding is specifically the semantic model's job, established before governance even enters the picture."
+    },
+    {
+      "id": "snow-40",
+      "type": "multi-select",
+      "chapter": "ch16",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Cortex AI functions and agents, per Chapter 16.",
+      "options": [
+        "AI_COMPLETE and the rest of the AI_* function family are called from SQL and billed by tokens processed, on top of whatever warehouse is running the query",
+        "A Cortex Agent's reasoning loop consists of planning, tool use, and reflection, repeating as needed within a single request",
+        "Cortex Analyst's generated SQL runs under the asking user's own role, so existing row access and masking policies still apply",
+        "The legacy SNOWFLAKE.CORTEX.* function names were removed from Snowflake entirely as of 2026 and no longer run",
+        "A Cortex Agent always calls Cortex Analyst and Cortex Search in a fixed, pre-scripted order regardless of the question"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "AI_* functions are SQL functions billed by tokens processed, on top of warehouse runtime. A Cortex Agent cycles through plan, tool use, and reflection as needed. Cortex Analyst's SQL runs under the asking user's own role, so existing RBAC still governs it. The legacy SNOWFLAKE.CORTEX.* names still work for backward compatibility (slated for deprecation by end of 2026, not already removed), and an agent decides tool order dynamically per question rather than following a fixed script."
+    },
+    {
+      "id": "snow-41",
+      "type": "fill-in",
+      "chapter": "ch16",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: in Cortex Agents, multi-turn conversation context is maintained server-side inside Snowflake through an object called a ________, so a follow-up request only needs the new message plus its identifier instead of resending the whole prior transcript.",
+      "acceptedAnswers": [
+        "thread",
+        "a thread"
+      ],
+      "explain": "A thread maintains conversation context across turns server-side inside Snowflake, so a follow-up request only needs the new user message plus the thread's identifier — the agent already has access to everything said earlier in that thread."
+    },
+    {
+      "id": "snow-42",
+      "type": "matching",
+      "chapter": "ch16",
+      "difficulty": "intermediate",
+      "prompt": "Match each Cortex capability, per Chapter 16, to what it actually does.",
+      "left": [
+        "Cortex Search",
+        "Cortex Analyst",
+        "Cortex Agents",
+        "Cortex Fine-Tuning"
+      ],
+      "right": [
+        "Turns a natural-language business question into SQL, grounded in a semantic model",
+        "Fully managed hybrid (vector + keyword + reranking) retrieval service for unstructured text",
+        "Adapts a supported foundation model to your own data using LoRA, via a single SQL function",
+        "Managed orchestration layer that plans, calls tools, and reflects across multiple steps for one request"
+      ],
+      "correctMap": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "explain": "Cortex Search is the hybrid retrieval service for unstructured text. Cortex Analyst turns natural language into SQL, grounded in a semantic model. Cortex Agents is the orchestration layer running plan/tool-use/reflection. Cortex Fine-Tuning adapts a model to your data with LoRA via a single SQL function."
+    },
+    {
+      "id": "snow-43",
+      "type": "sequencing",
+      "chapter": "ch16",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of connecting an external AI platform to Snowflake via MCP, per Lesson 67, in the correct order.",
+      "items": [
+        "Create the underlying Cortex services in Snowflake — a Cortex Search service, a semantic view, and a Cortex Agent wrapping them",
+        "Expose that agent through the Snowflake-managed MCP server",
+        "In the external platform, add an MCP connector pointing at the Snowflake endpoint",
+        "Authenticate via OAuth, so the external platform's agent can call CORTEX_AGENT_RUN as one of its own tools"
+      ],
+      "explain": "The Cortex services have to exist before anything can expose them. Exposing the agent through the managed MCP server is what makes it reachable externally. The external platform then needs its own connector pointed at that endpoint, and only after OAuth authentication succeeds can its agent actually call CORTEX_AGENT_RUN as a tool."
+    },
+    {
+      "id": "snow-44",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch16",
+      "difficulty": "advanced",
+      "prompt": "An external AI platform connects to Snowflake's managed MCP server and calls CORTEX_AGENT_RUN using a user's own OAuth-authenticated session. That user's role has no SELECT privilege on a particular table. What happens when the agent tries to query that table?",
+      "options": [
+        "The call is denied — every tool call runs under the caller's own Snowflake role, so RBAC, masking, and row access policies all still apply",
+        "The call succeeds, because MCP connections bypass ordinary RBAC checks by design",
+        "The call succeeds only if the external platform's own service account happens to have broader privileges than the user",
+        "The call is allowed once, then blocked on every subsequent attempt from the same thread"
+      ],
+      "correctIndex": 0,
+      "explain": "Authentication through the managed MCP server runs on OAuth, and once authenticated, every tool call runs under the caller's own Snowflake role — RBAC, masking, and row access policies all apply automatically, the same as a plain SQL session. An external agent can't see more than that role could already see."
+    },
+    {
+      "id": "snow-45",
+      "type": "multi-select",
+      "chapter": "ch17",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Cortex AI Observability and Agent Evaluation, per Lesson 69.",
+      "options": [
+        "tool_selection_accuracy checks whether the agent called the tools you'd expect for a given question",
+        "answer_correctness compares the agent's final response against an expected ground-truth answer",
+        "A metric version pins the judge model, prompt, rubric, and thresholds together so scores stay reproducible over time",
+        "logical_consistency requires a ground-truth answer to compare against, the same way answer_correctness does",
+        "EXECUTE_AI_EVALUATION runs synchronously, blocking the calling session until the entire evaluation completes"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "tool_selection_accuracy and answer_correctness check exactly what their names say. A metric version pins the judge model, prompt, rubric, and thresholds together for reproducibility. logical_consistency is specifically reference-free — it doesn't need a ground-truth answer, unlike answer_correctness — and EXECUTE_AI_EVALUATION runs asynchronously, with 'STATUS' used to poll progress rather than blocking the session."
+    },
+    {
+      "id": "snow-46",
+      "type": "fill-in",
+      "chapter": "ch17",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: a masking or row access policy can react specifically to agent-driven queries by checking SYS_CONTEXT('SNOWFLAKE$CURRENT', '________')::BOOLEAN, which is TRUE only when an AI agent, not a human, is the one asking.",
+      "acceptedAnswers": [
+        "IS_AGENT_ACTIVATED"
+      ],
+      "explain": "IS_AGENT_ACTIVATED is the context function a masking or row access policy can check to behave differently when an agent, rather than a human, is driving the query — even under the exact same role."
+    },
+    {
+      "id": "snow-47",
+      "type": "matching",
+      "chapter": "ch17",
+      "difficulty": "advanced",
+      "prompt": "Match each Chapter 17 governance control to what it actually does.",
+      "left": [
+        "Cortex AI Guardrails",
+        "Agent Identity",
+        "Restricted Session Scope (RSS)",
+        "Horizon Catalog"
+      ],
+      "right": [
+        "Opt-in, specialized-LLM layer catching zero-day-style prompt injection and jailbreak attempts",
+        "Recognizes when an AI agent, not a human, is active in a session, tagging query history and access history accordingly",
+        "A privilege ceiling that narrows what an agent can touch, without granting anything beyond the user's own roles",
+        "Snowflake's governance engine organizing security, privacy, access, compliance, and interoperability, enforcing policy at runtime"
+      ],
+      "correctMap": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "Cortex AI Guardrails is the opt-in layer for sophisticated, previously-unseen injection/jailbreak attempts. Agent Identity recognizes and tags agent-driven activity. Restricted Session Scope narrows, never grants beyond, a user's existing roles. Horizon Catalog is the umbrella governance engine organizing all five pillars and enforcing policy at runtime."
+    },
+    {
+      "id": "snow-48",
+      "type": "sequencing",
+      "chapter": "ch17",
+      "difficulty": "advanced",
+      "prompt": "A Cortex Agent's code execution tool is configured with permission_policy: always_ask. Put the resulting sequence of events in order when the agent reaches a state-modifying call.",
+      "items": [
+        "The agent's tool configuration includes a code execution tool with permission_policy set to always_ask",
+        "The agent reaches a state-modifying call, emits a tool_use event, and stops",
+        "The calling application sends back a permission_decision referencing that tool call's ID",
+        "The agent resumes execution only after receiving the approval decision"
+      ],
+      "explain": "always_ask has to be configured before any of this applies. When the agent hits a state-modifying call, it genuinely pauses rather than just logging the action, emitting a tool_use event. The calling application then sends back a permission_decision tied to that specific tool call's ID, and only then does the agent resume — nothing executes in between."
+    },
+    {
+      "id": "snow-49",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch17",
+      "difficulty": "advanced",
+      "prompt": "A support agent built on Cortex Search and Cortex Analyst reads customer-submitted ticket descriptions as part of answering questions. One ticket description contains text written to look like ordinary content but is actually aimed at making the agent ignore its instructions and export an entire table. What is this attack called, and which Snowflake defense layer is specifically built to catch sophisticated, previously-unseen versions of it?",
+      "options": [
+        "Prompt injection; Cortex AI Guardrails, the opt-in layer using a specialized LLM for zero-day-style attacks",
+        "A jailbreak; the always-on security baseline alone, with no opt-in layer involved",
+        "Prompt injection; Restricted Session Scope, since RSS narrows what any agent can touch regardless of attack type",
+        "A jailbreak; Agent Identity, since it traces which agent carried out the action"
+      ],
+      "correctIndex": 0,
+      "explain": "Instructions hidden inside content an agent reads, disguised as data but aimed at the agent itself, is prompt injection (a jailbreak is the related but distinct attack where the user's own prompt tries to talk the model out of its safety behavior directly). The always-on baseline catches known patterns; Cortex AI Guardrails is the opt-in, specialized-LLM layer built specifically to catch sophisticated, zero-day-style injection and jailbreak attempts the baseline wouldn't recognize."
+    },
+    {
+      "id": "snow-50",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch17",
+      "difficulty": "intermediate",
+      "prompt": "A table scores very low on the AI Readiness Score's semantic view readiness subdimension despite having clear, human-readable column names. What does this most likely mean?",
+      "options": [
+        "The table lacks a proper Semantic View defining its metrics, dimensions, relationships, and verified example queries — readable names alone don't make a table legible to an AI agent",
+        "The table has no clustering key defined, which is specifically what semantic view readiness measures",
+        "The table's data hasn't been classified for sensitive columns yet, which is what semantic view readiness measures",
+        "The table is missing a resource monitor, which blocks semantic view readiness from being scored at all"
+      ],
+      "correctIndex": 0,
+      "explain": "Semantic view readiness scores whether consumption-ready tables have a proper Semantic View — primary keys, relationships, metrics, descriptions, verified queries — not whether column names happen to be readable. A table can look perfectly clear to a human and still be missing the structured, governed semantic layer an AI agent actually needs."
+    }
+  ]
+}
