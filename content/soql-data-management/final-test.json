@@ -1,0 +1,443 @@
+{
+  "questions": [
+    {
+      "id": "soql-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "What does the `__c` suffix at the end of a SOQL field or object API name indicate?",
+      "options": [
+        "It marks the object or field as custom, created by an admin or developer rather than shipped with Salesforce",
+        "It marks the field as a required field that must always be populated before a record can save",
+        "It marks the object as a relationship name used only inside a parent-to-child subquery's FROM clause",
+        "It marks the field as read-only and not updatable through the API",
+        "It marks the object as belonging to a managed package installed from the AppExchange",
+        "It marks the field as an aggregate result column returned by COUNT, SUM, AVG, MIN, or MAX"
+      ],
+      "correctIndex": 0,
+      "explain": "Every custom object and custom field gets an API name ending in `__c` — `Project__c`, `Status__c`, `Budget__c` — whether the custom thing is the object, the field, or a custom field added onto a standard object like Account. Standard fields such as Id, Name, and CreatedDate carry no suffix at all.",
+      "distractorExplain": "Option C describes `__r`, not `__c` — the relationship name you use in dot notation or a child subquery's FROM clause switches a custom lookup's suffix from `__c` to `__r`. `__c` is reserved for naming the field or object itself; `__r` is reserved for traversing it. Mixing the two up is exactly the mistake that produces Salesforce's 'No such column' error."
+    },
+    {
+      "id": "soql-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "code": "SELECT * FROM Opportunity",
+      "prompt": "A T-SQL developer runs this in a Salesforce query tool. What happens, and why?",
+      "options": [
+        "It fails immediately, because SOQL requires every field to be named explicitly — there is no `SELECT *` in SOQL at all",
+        "It runs fine and returns every field on the Opportunity object, the same as in T-SQL",
+        "It runs but returns only the Id field, since that's SOQL's default when no fields are specified",
+        "It fails only because Opportunity specifically has too many fields for a wildcard to resolve"
+      ],
+      "correctIndex": 0,
+      "explain": "SOQL has no `SELECT *`, permanently and by design, tied to API cost and governor limits — every query must name its fields explicitly, such as `SELECT Id, Name, Amount, StageName FROM Opportunity`. This isn't a per-object limitation; it applies to every object, no matter how few or many fields it has."
+    },
+    {
+      "id": "soql-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: unlike T-SQL's TOP, which sits right after SELECT, SOQL's LIMIT is always written as the very ________ clause in the query.",
+      "acceptedAnswers": ["last", "final", "last clause", "very last", "very last clause"],
+      "explain": "T-SQL's TOP sits at the front of the query, next to SELECT. SOQL's LIMIT does the same job — capping the number of records returned — but is always the final clause, after WHERE and ORDER BY. Writing LIMIT up near SELECT out of T-SQL habit simply fails to parse."
+    },
+    {
+      "id": "soql-04",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about how SOQL genuinely differs from T-SQL, per Lesson 4.",
+      "options": [
+        "SOQL has no SELECT *; every field must be named explicitly",
+        "SOQL has no arbitrary JOIN keyword; only predefined relationships can be traversed",
+        "SOQL supports UPDATE, DELETE, and INSERT statements, just like T-SQL, for simple single-table cases",
+        "Governor limits exist because Salesforce runs on shared, multi-tenant infrastructure that one query shouldn't be able to degrade",
+        "A single SOQL query can return an unlimited number of rows without any special handling"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "SOQL has no SELECT * and no arbitrary JOIN — it can only traverse relationships Salesforce already knows about. Governor limits exist specifically to protect shared, multi-tenant infrastructure from any one query. SOQL is read-only: there is no SOQL UPDATE, DELETE, or INSERT at all; changing data requires DML through Apex, the API, Data Loader, or Workbench. And a query can't return unlimited rows without special bulk-query handling — that's the same underlying governor-limit reasoning that rules out SELECT *."
+    },
+    {
+      "id": "soql-05",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about SOQL aggregation, per Lessons 7 through 9.",
+      "options": [
+        "COUNT() must be the only item in the SELECT list, while COUNT(field) can appear alongside other aggregates",
+        "WHERE can filter directly on an aggregate function's result, the same way HAVING does",
+        "Every plain field in an aggregate query's SELECT list must also appear in GROUP BY, unless it's wrapped in an aggregate function",
+        "HAVING filters groups after aggregation, using aggregate expressions or fields that appear in GROUP BY",
+        "Aggregate functions like AVG and SUM treat a null field value as zero rather than skipping that row"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "COUNT() returns a plain integer and must stand alone in SELECT; COUNT(field) counts non-null values and can sit next to SUM, AVG, and friends. Any plain, non-aggregated field in the SELECT list has to be in GROUP BY, or the query fails. HAVING is exactly for filtering already-aggregated groups. WHERE runs before any aggregation happens, so it cannot reference an aggregate function at all — that's HAVING's job. And aggregates skip null values entirely rather than counting them as zero, the same behavior T-SQL's aggregates have."
+    },
+    {
+      "id": "soql-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "SELECT StageName, Type, COUNT(Id)\nFROM Opportunity\nGROUP BY StageName",
+      "prompt": "This query fails. Why, and what's one way to fix it?",
+      "options": [
+        "Type is a plain field that's neither wrapped in an aggregate nor listed in GROUP BY — add Type to GROUP BY, or wrap it in an aggregate function",
+        "COUNT(Id) can't be combined with GROUP BY at all in SOQL",
+        "StageName must be wrapped in an aggregate function because it's a picklist field",
+        "GROUP BY can only reference one field at a time in SOQL, so StageName alone is the real problem"
+      ],
+      "correctIndex": 0,
+      "explain": "The rule is the same as T-SQL's: every field in the SELECT list must either be wrapped in an aggregate function or appear in GROUP BY. Type is neither here — it's selected plainly but never grouped — so the query is rejected. Adding `Type` to `GROUP BY StageName, Type` (or removing it from SELECT) fixes it."
+    },
+    {
+      "id": "soql-07",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: to group closed-won revenue by fiscal quarter across multiple years without quarter 1 of one year merging with quarter 1 of another, GROUP BY must include both FISCAL_QUARTER(CloseDate) and ________(CloseDate).",
+      "acceptedAnswers": ["FISCAL_YEAR", "FISCAL_YEAR()"],
+      "explain": "Grouping by FISCAL_QUARTER(CloseDate) alone collapses quarter 1 of every year into a single group, since the function only extracts the quarter number, not which year it belongs to. Adding FISCAL_YEAR(CloseDate) to the GROUP BY keeps each year's quarters separate."
+    },
+    {
+      "id": "soql-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "SELECT Name, (SELECT LastName FROM Contact)\nFROM Account",
+      "prompt": "This query fails. Why, and what's the one-word fix?",
+      "options": [
+        "The subquery's FROM must use the child relationship name \"Contacts\" (plural), not the object name \"Contact\"",
+        "Account has no relationship to Contact at all in a standard Salesforce org",
+        "A parent-to-child subquery can't appear inside a SELECT list in SOQL",
+        "LastName isn't a valid field on the Contact object"
+      ],
+      "correctIndex": 0,
+      "explain": "A parent-to-child subquery's inner FROM names the child relationship name, not the child object's API name. Contact's relationship name off Account is the plural \"Contacts\". Writing `FROM Contact` there is exactly the mistake that catches people who've just learned `FROM Account` and `FROM Contact` as outer-query object names."
+    },
+    {
+      "id": "soql-09",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about SOQL relationship queries, per Lessons 13 and 14.",
+      "options": [
+        "SOQL allows at most five levels of child-to-parent relationship traversal in a single query",
+        "A semi-join's subquery can select any field, such as Name or Amount, to compare against the outer object's Id",
+        "A semi-join contributes no columns to the result — it only decides which outer records come back",
+        "SOQL supports correlated subqueries, where the inner query refers back to the outer row being evaluated",
+        "If an intermediate lookup in a dot-notation chain is empty, the entire record is dropped from the results"
+      ],
+      "correctIndices": [0, 2],
+      "explain": "Dot-notation traversal is capped at five levels of child-to-parent hops; a sixth is rejected outright. A semi-join (WHERE Id IN subquery) filters which outer records appear but brings back none of the subquery's own columns, which is exactly why it's called semi. The subquery in a semi- or anti-join must select a single Id or lookup field, not an arbitrary field like Name — selecting Name would fail. SOQL has no correlated subqueries at all. And an empty link in a dot-notation chain doesn't drop the record; the chained field simply comes back null, the way a LEFT JOIN would behave."
+    },
+    {
+      "id": "soql-10",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a custom lookup field's own API name ends in __c, but when you traverse that same relationship with dot notation to reach the parent's fields, the suffix changes to ________.",
+      "acceptedAnswers": ["__r", "_r", "the __r suffix"],
+      "explain": "`__c` names the field that stores the relationship (the Id). `__r` names the relationship you traverse to reach the parent record's fields, as in `Account__r.Industry__c`. The two suffixes are never interchangeable."
+    },
+    {
+      "id": "soql-11",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Match each requirement to the relationship-query technique that correctly satisfies it, per Chapter 3.",
+      "left": [
+        "Bring back an Account's Name plus a nested list of all its Contacts, in one query",
+        "Get a Contact's own Name plus its parent Account's Industry, flattened onto the same row",
+        "Return every Account that has at least one Closed Won Opportunity, with no Opportunity fields in the result",
+        "Reach a field three relationships away, like Opportunity.Account.Owner.Manager.Name"
+      ],
+      "right": [
+        "Dot-notation chaining",
+        "Parent-to-child subquery",
+        "Child-to-parent dot notation",
+        "Semi-join (WHERE Id IN subquery)"
+      ],
+      "correctMap": [1, 2, 3, 0],
+      "explain": "Nesting a child list inside a parent row needs a parent-to-child subquery, naming the child relationship in its FROM. Flattening one parent field onto a child's row needs only child-to-parent dot notation, no subquery. Filtering by a related object's data while returning none of its columns is exactly what a semi-join does. And reaching a field several relationships up in one flat query is dot-notation chaining, the SOQL substitute for repeated T-SQL joins."
+    },
+    {
+      "id": "soql-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A customer calls in from phone number 555-0100, but the rep doesn't know whether they're an existing Account, Contact, or Lead. Which query language should the rep reach for, and why?",
+      "options": [
+        "SOSL, with FIND {5550100} IN PHONE FIELDS RETURNING Account, Contact, Lead — because the rep doesn't know which object or field holds the match and needs to search several objects in one request",
+        "SOQL, because WHERE Phone = '555-0100' works identically across Account, Contact, and Lead inside one query",
+        "SOSL, but only after first running three separate SOQL queries to narrow down which object to search",
+        "SOQL, using a parent-to-child subquery that joins Account, Contact, and Lead together"
+      ],
+      "correctIndex": 0,
+      "explain": "SOQL always starts from one known object and one known field. SOSL exists for exactly this situation — a piece of text with no known home — and FIND ... RETURNING can check Account, Contact, and Lead in a single statement, which SOQL has no way to do."
+    },
+    {
+      "id": "soql-13",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a single SOSL search, no matter how many objects are named in RETURNING, returns at most ________ records in total.",
+      "acceptedAnswers": ["2000", "2,000"],
+      "explain": "SOSL caps the total result at 2,000 records across every object named in RETURNING, combined. A short search term across ALL FIELDS can hit that cap easily, which is why narrowing the scope or filtering per object matters."
+    },
+    {
+      "id": "soql-14",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Put these steps of Data Loader's Export wizard in the correct order.",
+      "items": [
+        "Choose Export in Data Loader and log in",
+        "Choose the object to query, then a CSV file location and name",
+        "Build the query by picking fields and, optionally, adding conditions",
+        "Click Finish so Data Loader runs the query and writes the results to the CSV file"
+      ],
+      "explain": "The export wizard always runs in this order: choose Export and authenticate, pick the object and where the CSV will land, build the underlying SOQL query through the field and condition pickers, then finish and let Data Loader run it and write the file."
+    },
+    {
+      "id": "soql-15",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Data Loader's Insert, Update, Upsert, and Delete operations, per Chapter 5.",
+      "options": [
+        "An Insert row must not include an Id, since Salesforce generates one for each new record itself",
+        "In an Update, a field that is not in the CSV file, or not mapped, keeps its current value rather than being cleared",
+        "Upsert requires every row in the CSV to already carry a Salesforce Id, the same as a plain Update",
+        "Hard Delete bypasses the Recycle Bin entirely and is permanent, with no undo",
+        "With \"Insert Null Values\" turned on, a blank CSV cell is simply ignored, leaving the existing field value alone"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Insert rows never carry an Id — Salesforce assigns it. An Update only writes the columns you actually map; anything left out keeps its current value. Hard Delete specifically skips the Recycle Bin and can't be undone, which is why it needs its own separate permission. Upsert is the opposite of needing a Salesforce Id — it matches on a chosen field, commonly an External ID, which is exactly what lets a load run with no Salesforce Ids in the file at all. And \"Insert Null Values\" turned on does the opposite of being ignored — it makes a blank cell actively overwrite and clear the existing value."
+    },
+    {
+      "id": "soql-16",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "A billing system sends a customer file every night with a customer number but no Salesforce Ids. The same job must run every night without ever creating duplicate Accounts. Which Data Loader operation fits, and what does the Account object need first?",
+      "options": [
+        "Upsert, matched on a custom field marked as an External ID that stores the billing system's customer number",
+        "Update, using the billing system's customer number directly in place of a Salesforce Id",
+        "Insert, run nightly, since Data Loader automatically detects and skips rows that already exist",
+        "Export, since only read operations are considered safe to run on an unattended nightly schedule"
+      ],
+      "correctIndex": 0,
+      "explain": "Upsert is built exactly for this: matched against an External ID field holding the other system's key, a repeated run updates the records already loaded instead of creating duplicates, with no Salesforce Id ever required in the file."
+    },
+    {
+      "id": "soql-17",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: Hard Delete uses the Bulk API and requires the \"________\" user permission, which is not granted by default.",
+      "acceptedAnswers": ["Bulk API Hard Delete", "Bulk API Hard Delete permission"],
+      "explain": "Hard Delete permanently bypasses the Recycle Bin, so Salesforce gates it behind the Bulk API Hard Delete permission, which is deliberately not granted by default — a safeguard against an accidental, unrecoverable mass delete."
+    },
+    {
+      "id": "soql-18",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Match each item to the description that correctly fits it, per Chapter 6.",
+      "left": [
+        "Data Loader",
+        "Workbench",
+        "Data Import Wizard",
+        "A nightly 60,000-row upsert from an ERP system"
+      ],
+      "right": [
+        "Browser-based community tool, best for quick ad hoc queries and small loads",
+        "Built into Setup, limited to 50,000 records, import-only — no export, no delete, no Opportunities or Cases",
+        "Desktop application and official Salesforce tool, built for large and repeatable loads",
+        "Belongs in Data Loader, ideally as an upsert keyed on an External ID so re-runs don't duplicate data"
+      ],
+      "correctMap": [2, 0, 1, 3],
+      "explain": "Data Loader is the official desktop tool built for volume and repeatable jobs. Workbench is the free, browser-based tool for quick, ad hoc work. The Data Import Wizard is built into Setup but capped at 50,000 records and import-only, with Opportunities and Cases unsupported entirely. A recurring large sync is exactly the case Data Loader's upsert-on-External-ID pattern exists for."
+    },
+    {
+      "id": "soql-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "You have a 120,000-row file of Opportunities to load. Why is the Data Import Wizard the wrong tool here, on two separate counts, and what should you use instead?",
+      "options": [
+        "120,000 exceeds the wizard's 50,000-record limit, and the wizard doesn't support loading Opportunities at all — use Data Loader instead",
+        "The wizard only supports exports, not inserts, so it can never load any new records",
+        "The wizard works fine for Opportunities, but only up to 10,000 records, so splitting the file into smaller batches would fix it",
+        "The wizard requires a sandbox connection, and Opportunities can only ever be loaded directly in production"
+      ],
+      "correctIndex": 0,
+      "explain": "The Import Wizard caps out at 50,000 records per import, and its supported object list never includes Opportunities or Cases at all — two independent reasons this job doesn't fit, each enough on its own to rule the wizard out. A job this size, on this object, belongs in Data Loader."
+    },
+    {
+      "id": "soql-20",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the Data Import Wizard supports up to ________ records per import.",
+      "acceptedAnswers": ["50000", "50,000"],
+      "explain": "50,000 records is the Import Wizard's hard volume limit, which, combined with its restricted object list and import-only operations, is exactly why anything bigger or broader moves to Data Loader."
+    },
+    {
+      "id": "soql-21",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "What is the key difference between a Salesforce record's 15-character Id and its 18-character Id?",
+      "options": [
+        "The 15-character Id is case-sensitive, while the 18-character Id adds a 3-character checksum suffix encoding capitalization, making it case-insensitive",
+        "Both forms are case-sensitive; the 18-character form is simply a longer, preferred display format with no functional difference",
+        "The 15-character Id identifies the record's object type via its key prefix, while the 18-character Id identifies which specific record it is",
+        "The two Ids refer to different records entirely; the 18-character Id is generated only when a duplicate is detected",
+        "The 18-character Id is used only by the API, while the 15-character Id is used only inside Apex code",
+        "The 15-character Id is used for standard objects, and the 18-character Id is used only for custom objects"
+      ],
+      "correctIndex": 0,
+      "explain": "Both forms share the same first 15 characters and refer to the same record. The 15-character form is case-sensitive, so two Ids differing only in capitalization are technically different values. The 18-character form adds a 3-character checksum suffix that encodes which characters were uppercase, making the full 18-character value stay unique even when a tool, like Excel's VLOOKUP, ignores case.",
+      "distractorExplain": "Option B keeps the idea that the two forms are related but gets the mechanism backwards — the 18-character form isn't merely a cosmetic, longer display version. Its checksum suffix genuinely makes it case-insensitive in a way the 15-character form is not, which is exactly why joining two exports on 15-character Ids in a case-blind tool can silently match two different records, while the 18-character form keeps them apart."
+    },
+    {
+      "id": "soql-22",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about data quality tools, per Chapter 7.",
+      "options": [
+        "A duplicate rule can Allow, Block, or Report a save when its matching rule finds a likely duplicate",
+        "Fuzzy matching can recognize near-identical values like \"Acme Corp\" and \"Acme Corporation\", while a plain GROUP BY on Name only catches exact matches",
+        "Once a duplicate rule reports 300 suspected Account duplicates, they should be merged automatically without review",
+        "A validation rule's formula is written so it evaluates to TRUE specifically when the data is valid and ready to save",
+        "Validation rules also run on saves that come through the API and Data Loader, not only through the browser"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "Duplicate rules decide what happens on a match — Allow (with an optional alert), Block, or Report. Fuzzy matching catches near-identical spellings that an exact GROUP BY would miss entirely. Reported duplicates are a work list for human review, not an automatic merge list, since two same-named Accounts could genuinely be different companies. A validation rule's logic is inverted from what people expect: TRUE means the data is invalid and the save gets blocked, not the other way around. And validation rules fire on every save path, including API and Data Loader inserts, not just the browser."
+    },
+    {
+      "id": "soql-23",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a validation rule's formula is written so it evaluates to ________ specifically when the data is invalid, which is what blocks the save and shows the error message.",
+      "acceptedAnswers": ["TRUE", "true"],
+      "explain": "The logic is inverted from what most people expect at first: TRUE means bad data. When the formula evaluates to TRUE, Salesforce blocks the save and displays the rule's error message; FALSE lets the save through."
+    },
+    {
+      "id": "soql-24",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "code": "AND(\n  ISPICKVAL(StageName, \"Closed Won\"),\n  ISBLANK(Amount)\n)\nError message: Enter an Amount before marking an Opportunity Closed Won.",
+      "prompt": "A rep tries to set an Opportunity's StageName to \"Closed Won\" while Amount is still blank. What happens, and why?",
+      "options": [
+        "The save is blocked and the error message is shown, because both conditions are true, so the formula evaluates to TRUE",
+        "The save succeeds, because ISBLANK(Amount) being true cancels out ISPICKVAL being true",
+        "The save is blocked only the first time; Data Loader automatically bypasses this rule on any later load",
+        "The rule only fires when a user edits the record directly in the browser, so it would not block a Data Loader update doing the same thing"
+      ],
+      "correctIndex": 0,
+      "explain": "AND() returns TRUE only when every argument is TRUE. Here StageName really is 'Closed Won' and Amount really is blank, so both ISPICKVAL and ISBLANK return TRUE, AND() returns TRUE, and the save is blocked with the stated error message. Validation rules run the same way regardless of whether the save comes from the browser, the API, or Data Loader."
+    },
+    {
+      "id": "soql-25",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "foundational",
+      "prompt": "Put these four stages of planning a data migration in the correct order, per Lesson 33.",
+      "items": [
+        "Analyze the source: profile row counts, blank columns, duplicates, and reliable keys",
+        "Decide what NOT to migrate: exclude stale records, duplicates, junk, and old history",
+        "Map the source to Salesforce: build a field mapping document reviewed by the people who own the data",
+        "Rehearse: run a full trial load in a sandbox before touching production"
+      ],
+      "explain": "Profiling the source comes first, since you can't plan around data you haven't looked at. Deciding what to leave out comes next, because migrating everything isn't a goal and every included record must be mapped and validated. Mapping comes after the exclusion decision is made. Rehearsing in a sandbox always comes last, catching mapping mistakes and unexpected automation before production ever sees the load."
+    },
+    {
+      "id": "soql-26",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "You must load 50,000 Contacts whose source rows carry the source system's customer key but no Salesforce Account Id. What should be done to the Account object first, and how should the Contact file reference its parent?",
+      "options": [
+        "Add an External ID field to Account, upsert the Accounts on it first, then map the Contact file's parent column to the Account relationship's External ID field, such as Account:Legacy_Id__c",
+        "Load the Contacts first with AccountId left blank, then run a second update pass to fill it in once the Accounts exist",
+        "Look up each new Account's Salesforce Id manually in Setup and paste it into the Contact file before loading",
+        "Skip the Account relationship entirely, since Contacts can simply be loaded as private records with no AccountId"
+      ],
+      "correctIndex": 0,
+      "explain": "The External ID technique is exactly built for this: load (upsert) the parent Accounts first, storing the source system's key in an External ID field, then map the child Contact file's parent column to that field using the `Account:Legacy_Id__c` form. Salesforce resolves the real new parent Id for each row — no manual Id lookup ever required, and parents always load before children that depend on them."
+    },
+    {
+      "id": "soql-27",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about post-migration validation, per Lesson 36.",
+      "options": [
+        "Comparing source and Salesforce record counts alone is enough on its own to prove a migration succeeded",
+        "An anti-join using NOT IN with a subquery can find parent records, like Accounts, that have no matching child records",
+        "Running validation queries as a user with restricted sharing can silently show a smaller count than the real total",
+        "Finding Contacts with AccountId = null is automatic proof that the migration is broken",
+        "Comparing aggregate totals, like SUM(Amount) grouped by StageName, catches problems that a plain row count would hide"
+      ],
+      "correctIndices": [1, 2, 4],
+      "explain": "Record counts alone can hide real problems — two different sets of rows can still produce the same count. An anti-join (NOT IN with a subquery) is exactly how you find Accounts with no Contacts or similar gaps. Because SOQL respects sharing, running checks as a restricted user can understate the true count, which is why validation should run as a user who can see everything. A null AccountId isn't automatically wrong — some Accounts or Contacts legitimately have no link, so each result needs judgment against what the source says should be true. And comparing aggregate totals alongside counts catches value-level problems a bare count would miss entirely."
+    },
+    {
+      "id": "soql-28",
+      "type": "fill-in",
+      "chapter": "ch09",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Summit Ridge's capstone project relies on a custom field called Legacy_Id__c, marked as an ________, to match records during upsert without ever needing to know a Salesforce Id.",
+      "acceptedAnswers": ["External ID", "External Id", "external id"],
+      "explain": "Legacy_Id__c is the capstone's backbone precisely because it's flagged as an External ID — it lets every upsert match records using the ERP's own customer key, with no Salesforce Id ever required in a load file."
+    },
+    {
+      "id": "soql-29",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "In the capstone's load order — create Accounts, relink Contacts, fix LeadSource, then delete surplus Leads — why does the Lead delete run last rather than first?",
+      "options": [
+        "Delete is the least reversible step, so it runs only after every other change has been verified to land exactly on its prediction",
+        "Leads must be deleted before new Accounts can be created, due to a platform-level dependency",
+        "Delete operations always run slower than Insert or Update, so Data Loader schedules them last automatically",
+        "The surplus Leads contain data the Account-creation step depends on, so they must still exist until that step finishes"
+      ],
+      "correctIndex": 0,
+      "explain": "Every other step in the plan — creating Accounts, relinking Contacts, fixing LeadSource — can be checked and, if something's wrong, corrected with another load. A delete can't be walked back the same way (even a normal Delete's Recycle Bin recovery is time-limited and imperfect once related activity history is involved), so it deliberately runs last, after everything else has already been validated against its prediction."
+    },
+    {
+      "id": "soql-30",
+      "type": "sequencing",
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Put these five steps of the capstone's project plan in the correct order, per Lesson 37.",
+      "items": [
+        "Extract: query the data out with SOQL and save a CSV backup of everything about to change",
+        "Clean: standardize values, flag duplicate survivors, and match orphan records in a working copy",
+        "Stage: build the load files in dependency order, parents before children",
+        "Load: run Data Loader in the sandbox, reading success and error files after every run",
+        "Validate: re-run the baseline queries and confirm every number lands exactly where predicted"
+      ],
+      "explain": "The plan always runs Extract, Clean, Stage, Load, Validate in that order: back up and query the real data first, clean a working copy without touching Salesforce, build load files respecting parent-before-child order, run the loads in a sandbox while reading every result file, and finally re-check the baseline numbers against the predictions written down before any load ran."
+    }
+  ]
+}
