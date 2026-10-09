@@ -47,7 +47,13 @@ function parseSalaryTiers(salaryRange?: string) {
     });
 }
 
-export default function PathDetailRedesign({ path }: { path: CareerPath }) {
+export default function PathDetailRedesign({
+  path,
+  hasInterviewPrep,
+}: {
+  path: CareerPath;
+  hasInterviewPrep?: boolean;
+}) {
   const allCourseSlugs = path.stages.flatMap((s) => s.courseSlugs ?? []);
   const tiers = parseSalaryTiers(path.salaryRange);
 
@@ -627,6 +633,14 @@ export default function PathDetailRedesign({ path }: { path: CareerPath }) {
               <Link href={startHref} className="mt-5 inline-block rounded-[2px] bg-gold px-6 py-3 text-sm font-semibold text-crimson-deep hover:bg-gold-pale transition-colors">
                 Start this path →
               </Link>
+              {hasInterviewPrep && (
+                <Link
+                  href={`/app/interview-prep/${path.slug}`}
+                  className="mt-3 block rounded-[2px] border border-gold-pale/40 px-6 py-3 text-sm font-semibold text-gold-pale transition-colors hover:border-gold-pale hover:bg-crimson-deep/60"
+                >
+                  Practice interview questions →
+                </Link>
+              )}
             </div>
           </aside>
         </div>
