@@ -1,0 +1,498 @@
+{
+  "questions": [
+    {
+      "id": "aml-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "In scikit-learn's three-role object model, what is a transformer?",
+      "options": [
+        "An estimator that implements `transform`, learning something from data via `fit` and then applying it to reshape or recode a table (for example StandardScaler, SimpleImputer, OneHotEncoder)",
+        "An estimator that implements `predict`, turning features into a final answer",
+        "Any object that can be saved to disk with joblib and reloaded later",
+        "A model-selection class, such as GridSearchCV, that picks the best set of hyperparameters",
+        "A helper function that only exists inside a ColumnTransformer and cannot be used standalone",
+        "An object whose constructor arguments are called parameters rather than hyperparameters"
+      ],
+      "correctIndex": 0,
+      "explain": "scikit-learn organizes objects into three roles: an estimator learns via fit; a transformer is an estimator that also has transform, reshaping data (StandardScaler, SimpleImputer, OneHotEncoder); a predictor is an estimator that also has predict. Transformers learn properties of the data and apply them; they do not need y.",
+      "distractorExplain": "Option B describes a predictor, not a transformer — LogisticRegression and RandomForestClassifier add `predict` (and usually `score`) rather than `transform`. Mixing up the two roles is exactly the distinction this lesson draws."
+    },
+    {
+      "id": "aml-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "scaler = StandardScaler()\nX_train_s = scaler.fit_transform(X_train_i)\nX_test_s = scaler.transform(imp.transform(X_test))",
+      "prompt": "Why is `scaler.transform(...)` used on the test data here instead of `scaler.fit_transform(...)`?",
+      "options": [
+        "Calling fit_transform on the test set would let the scaler learn its mean and spread partly from test rows, contaminating the test set with information it shouldn't have — the train-test leakage pattern",
+        "transform() runs faster than fit_transform(), so it is purely a performance optimization with no effect on correctness",
+        "fit_transform() only works on training data by syntax restriction; scikit-learn raises an error if it is called on any other DataFrame",
+        "transform() guarantees the output stays a pandas DataFrame, while fit_transform() always returns a NumPy array"
+      ],
+      "correctIndex": 0,
+      "explain": "The rule is fit on training data only, then transform everywhere else. Fitting the scaler on the test set would let test rows influence their own preprocessing numbers, which is exactly the train-test contamination form of leakage the fundamentals course warned about."
+    },
+    {
+      "id": "aml-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: by default, ColumnTransformer ________ any column that isn't listed in one of its transformer tuples, unless you set remainder=\"passthrough\".",
+      "acceptedAnswers": [
+        "drops",
+        "drops it",
+        "drops them",
+        "removes it",
+        "removes"
+      ],
+      "explain": "ColumnTransformer drops any column not mentioned in one of its (name, transformer, columns) triples by default. remainder=\"passthrough\" appends untouched columns at the end instead; the lesson recommends listing every column explicitly so nothing is silently dropped or passed through."
+    },
+    {
+      "id": "aml-04",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each scikit-learn term to what it actually is, per Lessons 2 and 4.",
+      "left": [
+        "Estimator",
+        "Transformer",
+        "Predictor",
+        "Pipeline"
+      ],
+      "right": [
+        "An estimator that also implements transform, reshaping a table (e.g. StandardScaler)",
+        "A single object chaining transformers and a final estimator, fit and predicted as one unit",
+        "Any object that learns from data by calling fit",
+        "An estimator that also implements predict, turning features into an answer"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "An estimator is any object that learns via fit. A transformer is an estimator that adds transform (StandardScaler, SimpleImputer). A predictor is an estimator that adds predict (LogisticRegression, RandomForestClassifier). A Pipeline chains transformers and a final estimator into one object with the interface of its last step."
+    },
+    {
+      "id": "aml-05",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of building, saving, and reloading a churn pipeline in the correct order, per Lessons 4 and 5.",
+      "items": [
+        "Combine the ColumnTransformer preprocessor and the classifier into one Pipeline object",
+        "Call pipeline.fit(X_train, y_train) so every transformer and the model are fit in sequence",
+        "Save the entire fitted pipeline with joblib.dump, not just the final classifier",
+        "Reload it with joblib.load in a fresh Python process and confirm predictions match"
+      ],
+      "explain": "A Pipeline is assembled first, then fit as one unit so every transformer and the model are trained in sequence. The whole fitted pipeline, preprocessing included, is saved with joblib.dump. The real test of persistence is reloading it in a fresh Python process, with no leftover notebook state, and confirming predictions are identical."
+    },
+    {
+      "id": "aml-06",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about data leakage and Pipelines, per Lessons 4 and 10.",
+      "options": [
+        "Passing a Pipeline to cross_val_score re-fits every transformer inside it on each fold's own training rows",
+        "Selecting the \"best\" features with SelectKBest on the whole dataset before cross-validating can make a worthless model look like it scores around 70% accuracy on pure noise",
+        "Imputing or scaling outside a pipeline carries exactly the same leakage risk as feature selection outside a pipeline, so the resulting score distortion is equally large in practice",
+        "Fitting a scaler on the full dataset before splitting into train/test always produces a large, easily detected jump in test accuracy",
+        "A Pipeline's predict method pushes raw rows through the fitted transformers and into the model, so you can feed it new, unprocessed data directly"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "cross_val_score clones and re-fits a pipeline's transformers on each training fold. The pure-noise demonstration showed SelectKBest run on the whole dataset first inflating accuracy to about 70% versus an honest 50% inside a pipeline. A pipeline accepts raw rows and runs them through every fitted step automatically. The danger from leakage is not uniform: simple imputers and scalers barely moved the score in these lessons, while label-using steps like feature selection caused the dramatic distortion — so claiming equal risk, or a guaranteed large jump, overstates what the lessons actually showed."
+    },
+    {
+      "id": "aml-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "print(confusion_matrix(y_test, pred))\n# [[176  15]\n#  [ 43  16]]",
+      "prompt": "Given this confusion matrix (rows are actual class 0 then 1; columns are predicted 0 then 1), what is the recall for the churned class?",
+      "options": [
+        "16 / (16 + 43), approximately 0.271",
+        "16 / (16 + 15), approximately 0.516",
+        "(16 + 176) / 250, approximately 0.768",
+        "43 / (43 + 16), approximately 0.729"
+      ],
+      "correctIndex": 0,
+      "explain": "Recall = TP / (TP + FN). Here TP = 16 (bottom-right) and FN = 43 (bottom-left, actual churners predicted as stayed), giving 16/59 ≈ 0.271 — exactly the weak recall this lesson uses to show accuracy's blind spot."
+    },
+    {
+      "id": "aml-08",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about F1 and AUC, per Lesson 7.",
+      "options": [
+        "F1 is the harmonic mean of precision and recall, so excellent precision alone cannot hide poor recall the way a plain average could",
+        "AUC is the probability that a randomly chosen positive example is scored higher than a randomly chosen negative example",
+        "A model that always outputs the exact same constant probability for every row scores a perfect 1.0 AUC",
+        "F1 and AUC can rank two models differently, because F1 judges performance at one fixed threshold while AUC judges the ranking across every threshold",
+        "roc_curve should be computed from hard 0/1 class predictions rather than from predict_proba scores"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "The harmonic mean drags F1 toward the smaller of precision and recall. AUC's concrete meaning is exactly that ranking probability. Because F1 needs a cutoff and AUC sweeps every cutoff, the two can disagree on which model is \"better\", as the lesson showed with logistic regression (higher AUC) versus a forest (higher F1 at the default threshold). A constant-probability model scores 0.5 AUC, not 1.0, since it provides no ranking information at all. ROC curves need probabilities, not hard predictions, since hard predictions correspond to only a single threshold."
+    },
+    {
+      "id": "aml-09",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: on five illustrative home sales, MAE was $28,000 for a set of predictions, while ________ was $45,607 for those exact same predictions — the gap exists because squaring each error before averaging lets one large miss dominate.",
+      "acceptedAnswers": [
+        "RMSE",
+        "root mean squared error"
+      ],
+      "explain": "MAE averages the plain size of each miss. RMSE squares each miss before averaging and then takes the square root, so a single large error (the one home missed by $100,000) pulls RMSE well above MAE — a signal that a few big errors are hiding in the average."
+    },
+    {
+      "id": "aml-10",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each classification metric to its definition.",
+      "left": [
+        "Accuracy",
+        "Precision",
+        "Recall",
+        "AUC"
+      ],
+      "right": [
+        "TP / (TP + FP) — when the model says positive, how often is it right",
+        "The share of all predictions that were correct",
+        "The probability a random positive is scored higher than a random negative",
+        "TP / (TP + FN) — the share of real positives the model actually found"
+      ],
+      "correctMap": [1, 0, 3, 2],
+      "explain": "Accuracy is the overall share correct. Precision is TP/(TP+FP), the reliability of a positive call. Recall is TP/(TP+FN), the share of real positives caught. AUC is the probability a random positive outranks a random negative, independent of any one threshold."
+    },
+    {
+      "id": "aml-11",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of 5-fold cross-validation in the order they actually happen, per Lesson 10.",
+      "items": [
+        "Split the training data into 5 equal, stratified folds",
+        "Hold out fold 1, then train the pipeline fresh on folds 2 through 5",
+        "Score the freshly trained pipeline on the held-out fold 1",
+        "Repeat, holding out a different fold each time, until every fold has served as the held-out exam once",
+        "Report the mean and standard deviation across the 5 resulting scores"
+      ],
+      "explain": "k-fold cross-validation first cuts the data into k folds, then for each fold in turn trains on the remaining k-1 folds and scores on the one held out, repeating until every fold has had a turn. The mean estimates expected performance, and the standard deviation shows how much that estimate can be trusted — never report just one number."
+    },
+    {
+      "id": "aml-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "In Lesson 11's validation curve over max_depth, training accuracy climbs from 0.756 to a perfect 1.000 as depth increases to 20, while validation accuracy peaks at depth 8 (0.841) and then slips to 0.831 by depth 20. What does this pattern indicate?",
+      "options": [
+        "Depths beyond 8 are overfitting — the model keeps memorizing more of the training data without actually generalizing any better",
+        "The dataset is too small for any tree to ever learn the real pattern, regardless of depth",
+        "Both scores are low and close together, which is the signature of underfitting",
+        "Validation accuracy will keep climbing if training continues past depth 20"
+      ],
+      "correctIndex": 0,
+      "explain": "A widening gap between a training score climbing to 1.0 and a validation score that peaks and then falls is the textbook overfitting signature. Depth 8 is the sweet spot here; deeper trees keep fitting training noise without improving generalization."
+    },
+    {
+      "id": "aml-13",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly distinguishes a model's parameters from its hyperparameters in scikit-learn?",
+      "options": [
+        "Parameters are learned by calling fit and are stored in attributes ending with an underscore (like coef_); hyperparameters are settings passed to the constructor and chosen by you, such as C or max_depth",
+        "Parameters are settings passed to the constructor, such as C; hyperparameters are learned by fit and stored in attributes ending with an underscore",
+        "Parameters and hyperparameters are two different names for the exact same thing, and scikit-learn uses them interchangeably",
+        "Parameters only exist for regression models; hyperparameters only exist for classification models",
+        "Hyperparameters are chosen by looking at the training accuracy they produce; parameters are chosen by looking at validation accuracy",
+        "A parameter becomes a hyperparameter once a model is placed inside a Pipeline"
+      ],
+      "correctIndex": 0,
+      "explain": "Parameters (coefficients, split thresholds) are computed by fit and end in a trailing underscore. Hyperparameters (C, max_depth, n_neighbors) are settings you choose before training and read or change with get_params/set_params. Hyperparameters are chosen using validation scores, never training accuracy, since a more flexible setting always fits training data at least as well.",
+      "distractorExplain": "Option B swaps the two definitions exactly backwards — it's the hyperparameter (like C) that is a constructor setting chosen by you, and the parameter (like coef_) that fit learns and stores with a trailing underscore. Getting this backwards is precisely the common beginner mistake this lesson opens by warning against."
+    },
+    {
+      "id": "aml-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "param_grid = {\n    \"n_estimators\": [50, 200],\n    \"max_depth\": [3, 6, None],\n    \"min_samples_leaf\": [1, 5]}\ngs = GridSearchCV(rf, param_grid, cv=cv, scoring=\"f1\")\ngs.fit(X_tr, y_tr)",
+      "prompt": "With cv=5, how many total model fits does this GridSearchCV call perform, including the final refit on all the training data?",
+      "options": [
+        "61 — 12 combinations times 5 folds gives 60 fits during the search, plus one more fit to refit the winner on all training data",
+        "60 — 12 combinations times 5 folds, with no extra refit needed",
+        "12 — one fit per combination, since folds don't require separate fits",
+        "17 — the sum of all listed hyperparameter values across the three lists"
+      ],
+      "correctIndex": 0,
+      "explain": "The grid has 2 x 3 x 2 = 12 combinations. Cross-validating each across 5 folds costs 12 x 5 = 60 fits, and because refit=True is the default, scikit-learn trains one more model on all the training data using the winning combination — 61 fits total. The cost of a grid is always combinations times folds (plus one)."
+    },
+    {
+      "id": "aml-15",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about random search and nested cross-validation, per Lessons 14 and 15.",
+      "options": [
+        "RandomizedSearchCV lets you set the search budget directly with n_iter, rather than being locked into however many combinations a grid multiplies out to",
+        "loguniform should be used for a hyperparameter like C, where the difference between 0.001 and 0.01 matters as much as the difference between 10 and 100",
+        "Nested cross-validation's outer loop estimates the performance of the whole tune-and-fit procedure, and that estimate is typically lower than the inner search's own best_score_",
+        "Nested cross-validation requires a special scikit-learn class, because a GridSearchCV object cannot be passed to cross_val_score",
+        "Bayesian optimization tries every combination independently at random, exactly like RandomizedSearchCV, just under a different name"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "RandomizedSearchCV's n_iter caps the cost directly. loguniform matters for scale-sensitive hyperparameters like C, where a uniform draw would oversample large values. Nested cross-validation measures real-world optimism: in the lesson's demonstration the nested estimate (0.738) sat below best_score_ (0.767). No special class is needed — a GridSearchCV object is itself an estimator and can be passed straight to cross_val_score. Bayesian optimization is explicitly not independent sampling: it fits a model of how score depends on settings and chooses the next trial based on earlier results."
+    },
+    {
+      "id": "aml-16",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: averaged across ten repeated experiments in Lesson 15, the gap between a grid search's best_score_ and the nested cross-validation estimate was about ________ — real, but modest, and not guaranteed on every dataset.",
+      "acceptedAnswers": [
+        "0.036",
+        "3.6%",
+        "0.04",
+        "3.6 percentage points"
+      ],
+      "explain": "Repeating the full experiment on ten seeded datasets gave an average best_score_ of 0.713 against an average nested estimate of 0.677, a gap of about 0.036. The best score beat the nested estimate in 7 of 10 runs, tied in 1, and lost in 2 — real optimism, but modest and dataset-dependent."
+    },
+    {
+      "id": "aml-17",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each tuning or comparison tool to what it actually does.",
+      "left": [
+        "GridSearchCV",
+        "RandomizedSearchCV",
+        "Nested cross-validation",
+        "Paired fold-by-fold comparison"
+      ],
+      "right": [
+        "Subtracts two models' scores fold by fold so each fold's shared difficulty cancels out",
+        "Exhaustively cross-validates every combination in an explicit grid of candidate values",
+        "Wraps an entire tuning search inside an outer cross-validation loop to get an unbiased performance estimate",
+        "Draws a fixed number of hyperparameter combinations from distributions, with the budget set by n_iter"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "GridSearchCV tries every combination in a grid. RandomizedSearchCV samples a fixed n_iter combinations from distributions instead. Nested cross-validation wraps the whole search in an outer loop to estimate the honest performance of tuning itself. A paired fold-by-fold comparison subtracts two models' scores fold by fold so shared difficulty cancels, exposing the real difference."
+    },
+    {
+      "id": "aml-18",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of nested cross-validation in the correct order, per Lesson 15.",
+      "items": [
+        "Hold out one outer fold, keeping it completely separate from the rest",
+        "Run the full grid search, with its own inner cross-validation folds, on the remaining outer-training data",
+        "Score the tuned model the search produced on the held-out outer fold it never saw",
+        "Repeat for every outer fold, then average the outer-fold scores into one honest estimate"
+      ],
+      "explain": "Nested cross-validation holds out an outer fold, runs the complete tuning search (with its own inner folds) only on the remaining data, scores the resulting tuned model on the fold the search never touched, and repeats across every outer fold before averaging — isolating tuning from final evaluation."
+    },
+    {
+      "id": "aml-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "On a 5,000-row illustrative dataset where only 5.3% of rows are positive, a DummyClassifier that always predicts the majority class scores 94.7% accuracy and 0% recall. What does this demonstrate?",
+      "options": [
+        "On imbalanced data, high accuracy can come entirely from the majority class and says nothing about whether the rare class is ever caught",
+        "The DummyClassifier is broken and should never be used as a sanity check",
+        "94.7% accuracy proves the real model's job is nearly done already",
+        "Recall of 0% means the dataset has no positive rows at all"
+      ],
+      "correctIndex": 0,
+      "explain": "The dummy model never predicts the positive class at all, yet still scores 94.7% accuracy simply because the majority class dominates the data. This is exactly why accuracy is the wrong scoreboard for imbalanced problems, and why a dummy baseline should be the first number any imbalanced project writes down."
+    },
+    {
+      "id": "aml-20",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about resampling and leakage, per Lesson 18.",
+      "options": [
+        "Running SMOTE on the whole training set before cross-validating lets validation folds contain near-copies of rows the model trained on, inflating scores",
+        "An imblearn Pipeline's resampling step runs during both fit and predict, so test rows get resampled too",
+        "RandomUnderSampler keeps every minority row but throws away a large share of majority rows",
+        "SMOTE creates entirely new synthetic minority points by interpolating between a minority row and one of its nearest minority neighbors",
+        "Resampling strategies mainly slide a model along its existing precision-recall curve rather than improving its underlying ranking ability, as shown by average precision staying nearly flat across strategies"
+      ],
+      "correctIndices": [0, 2, 3, 4],
+      "explain": "Resampling before cross-validating inflated recall from an honest 0.888 to a fantasy 0.983 in the lesson's demonstration, because synthetic points leaked near-copies into validation folds. An imblearn Pipeline's sampler acts only during fit; predict skips it entirely, so test and validation data are never resampled. RandomUnderSampler keeps all minority rows and drops majority rows down to match. SMOTE builds new points along the line between a minority row and a nearest minority neighbor. Across five resampling strategies, average precision barely moved while recall and precision traded off, showing resampling mostly repositions the operating point rather than improving the ranker."
+    },
+    {
+      "id": "aml-21",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: setting class_weight=\"________\" on a classifier sets each class's weight to n_samples / (n_classes * class_count), automatically giving the rare class a much larger weight than the common class.",
+      "acceptedAnswers": [
+        "balanced"
+      ],
+      "explain": "class_weight=\"balanced\" computes each class's weight from n_samples / (n_classes * class_count), so a rare class with few rows gets a large weight and the common class gets a small one — in the lesson's example, about 0.53 for the common class and 9.52 for the rare one."
+    },
+    {
+      "id": "aml-22",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each missing-data approach to what it actually does, per Lesson 20.",
+      "left": [
+        "SimpleImputer(strategy=\"median\")",
+        "add_indicator=True",
+        "KNNImputer",
+        "HistGradientBoostingClassifier"
+      ],
+      "right": [
+        "Accepts NaN directly and learns a best split direction for missing values, without needing an imputer at all",
+        "Fills a numeric gap using that column's median from the training fold",
+        "Fills a gap using values from the nearest similar rows instead of one fixed number",
+        "Appends a 0/1 column per feature marking which rows had a missing value, recovering signal plain filling hides"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "SimpleImputer with strategy=\"median\" fills gaps with the training fold's median. add_indicator=True appends a missingness flag column per feature, which lifted AUC from 0.760 to 0.798 in the lesson because the flag itself carried churn signal. KNNImputer fills gaps from similar rows rather than one fixed value. HistGradientBoostingClassifier accepts NaN directly, letting some tree-based models skip imputation altogether."
+    },
+    {
+      "id": "aml-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "In the Lesson 21 churn walkthrough, contacting the riskiest 20% of test customers (ranked by predicted probability) reached a group that actually churned at 64.4%, against a 27.1% base rate. What does this tell the retention team?",
+      "options": [
+        "Targeting the top-ranked 20% concentrates churners more than twice above the base rate and captures nearly half of all churners, a concrete business win even though the model's default 0.5-threshold recall was poor",
+        "The model is useless, because it still misses some of the churners within the top 20%",
+        "The 64.4% figure proves the model is 64.4% accurate overall",
+        "Ranking customers by probability is mathematically identical to using the default 0.5 threshold"
+      ],
+      "correctIndex": 0,
+      "explain": "Contacting the top 160 riskiest test customers reached a group where 64.4% actually churned (versus a 27.1% base rate) and captured 47.5% of all churners — a concrete, defensible business statement, even though a plain 0.5-threshold recall of 0.447 looked weak on its own."
+    },
+    {
+      "id": "aml-24",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "TransformedTargetRegressor(\n    regressor=pipe, func=np.log1p, inverse_func=np.expm1)",
+      "prompt": "In the Lesson 22 price-prediction walkthrough, what does wrapping the pipeline in this TransformedTargetRegressor actually do?",
+      "options": [
+        "It trains the model on the log-transformed price, then automatically converts predictions back to dollars with the inverse function, so MAE is still reported in real dollars",
+        "It permanently stores prices as log values in the DataFrame, requiring every later analysis to remember to exponentiate them",
+        "It replaces MAE with a log-scaled error metric that can no longer be compared in dollars",
+        "It transforms the input features, not the target, before they reach the model"
+      ],
+      "correctIndex": 0,
+      "explain": "TransformedTargetRegressor fits the wrapped regressor on func(y) — here log1p — and automatically applies inverse_func (expm1) to predictions, so everything downstream, including MAE, stays in real dollars. The lesson found this helped gradient boosting slightly but slightly hurt ridge, a reminder to test rather than assume."
+    },
+    {
+      "id": "aml-25",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the Lesson 23 fraud detection walkthrough.",
+      "options": [
+        "With a 0.67% fraud rate, average precision (PR-AUC) is a more sensitive comparison metric than ROC AUC",
+        "class_weight=\"balanced\" improved the logistic regression's PR-AUC compared to the plain logistic regression in this walkthrough",
+        "Reviewing the top 2% of test transactions by predicted probability caught roughly half of all fraud cases",
+        "Sample weights for the gradient boosting model were computed from each cross-validation fold's own training labels, not from the whole training set at once",
+        "A model that ranks transactions no better than random chance would score an average precision near 1.0"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "With fraud this rare, PR-AUC is explicitly called out as more sensitive than ROC AUC. Reviewing the top 2% of test transactions caught 44 of 83 fraud cases, a recall of 53%. compute_sample_weight was called inside the fold loop on each fold's own training labels to avoid leakage. class_weight=\"balanced\" actually lowered PR-AUC for logistic regression (0.167 versus 0.231 for the plain model) in this walkthrough, the opposite of helping. A chance-level ranker would score near the base rate (about 0.007), not near 1.0."
+    },
+    {
+      "id": "aml-26",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 24, a model card's numbers should always be generated from ________ rather than typed in by hand, so the documented results can never drift from what actually produced them.",
+      "acceptedAnswers": [
+        "code",
+        "the code",
+        "running code"
+      ],
+      "explain": "The model card template's placeholders are filled with str.format from a dictionary of facts computed by actual code — AUC, recall, a data fingerprint, library versions — so the card can never silently drift from the real results the way a hand-typed number could."
+    },
+    {
+      "id": "aml-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "In the capstone, an offer costs 10 per customer and a missed cancellation costs 100. Lesson 27 finds the cost-minimizing decision threshold empirically at 0.11 using out-of-fold training predictions. Why does this number make theoretical sense?",
+      "options": [
+        "If an offer always saves the customer, contacting them pays off whenever the cancel probability exceeds offer-cost divided by missed-cancel-cost, 10/100 = 0.10, which is almost exactly what the empirical search found",
+        "0.11 is simply the dataset's overall cancellation rate and has no connection to the cost assumptions",
+        "The threshold should always be set to 0.5 regardless of cost, so 0.11 indicates a bug in the search",
+        "A lower threshold always minimizes cost, so 0.11 was chosen only because it was the smallest value tried"
+      ],
+      "correctIndex": 0,
+      "explain": "Under the optimistic assumption that an offer always saves the customer, contacting pays off once the cancel probability exceeds offer-cost / missed-cancel-cost = 10/100 = 0.10. The empirically searched threshold of 0.11, found purely by sweeping out-of-fold predictions on training data, lines up almost exactly with that theoretical value — a reassuring sanity check, not a coincidence."
+    },
+    {
+      "id": "aml-28",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Put these capstone steps in the order the three-lesson capstone actually follows.",
+      "items": [
+        "Frame the decision and its costs, write success criteria, and seal away a stratified test set",
+        "Build one leakage-safe preprocessing pipeline and compare several models with cross-validation",
+        "Choose a cost-based decision threshold using out-of-fold predictions on the training data only",
+        "Evaluate the saved pipeline on the sealed test set exactly once, and quantify uncertainty with a bootstrap",
+        "Write the model card and package the project as a portfolio presentation"
+      ],
+      "explain": "Lesson 25 frames the problem, writes success criteria before any modeling, and seals a stratified test set. Lesson 26 builds a leakage-safe pipeline and compares models by cross-validation on training data only. Lesson 27 chooses a cost-based threshold from out-of-fold training predictions, evaluates the sealed test set exactly once with a bootstrap for uncertainty, and finishes with the model card and portfolio packaging."
+    },
+    {
+      "id": "aml-29",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each capstone term to what it actually is, per Lessons 26 and 27.",
+      "left": [
+        "Average precision (PR-AUC)",
+        "Out-of-fold predictions",
+        "Bootstrap resampling",
+        "Model card"
+      ],
+      "right": [
+        "Scores every training row using a model that never saw that row during training, enabling threshold choice without touching the test set",
+        "The main metric chosen in the capstone because only 11% of customers cancel",
+        "A document generated from code, capturing data, method, test results, and honest limitations",
+        "Resamples the test set with replacement thousands of times to build a confidence interval around a reported score"
+      ],
+      "correctMap": [1, 0, 3, 2],
+      "explain": "Average precision was the capstone's headline metric because cancellations are rare (11%). Out-of-fold predictions, from cross_val_predict, score each training row with a model that never trained on it, which is how the threshold was chosen without peeking at the test set. Bootstrap resampling of the test set built a 95% interval around the reported average precision. The model card is the code-generated document capturing data, method, results, and limitations."
+    },
+    {
+      "id": "aml-30",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "The capstone's test-set average precision came out to 0.333, noticeably higher than the cross-validated training estimate of 0.258. What is the correct way to interpret this gap, per Lesson 27?",
+      "options": [
+        "With only 133 positive cases in the test set, that gap is plausibly just sampling luck, so the cross-validated figure is the more honest headline number to report",
+        "The gap proves the model actually improved between training and test evaluation",
+        "Test-set scores are always more trustworthy than cross-validated scores, so 0.333 should replace 0.258 as the reported result",
+        "The gap means the test set leaked into training and the whole project must be redone"
+      ],
+      "correctIndex": 0,
+      "explain": "With only 133 positives in the test set, a single average-precision estimate is noisy, and the lesson explicitly treats the higher test number as plausible luck rather than real improvement. The cross-validated 0.258, averaged over many folds, is the more honest headline, with the bootstrap interval reported alongside it to show the uncertainty."
+    }
+  ]
+}

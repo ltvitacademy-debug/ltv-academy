@@ -1,0 +1,470 @@
+{
+  "questions": [
+    {
+      "id": "ads-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "What does gradient boosting primarily reduce by sequentially fitting shallow trees to the ensemble's current errors, compared to a random forest's independent averaging of many deep trees?",
+      "options": [
+        "Bias",
+        "Variance",
+        "Irreducible noise in the data itself",
+        "The number of features the model needs",
+        "The amount of training data required",
+        "The learning rate itself"
+      ],
+      "correctIndex": 0,
+      "explain": "Boosting mainly reduces bias: by sequentially fitting weak, shallow trees to the ensemble's remaining errors, it builds up complex patterns a single small tree could never capture on its own. Bagging (a random forest) instead reduces variance, by averaging many independent, deep trees whose individual noise cancels out.",
+      "distractorExplain": "Option B names the role bagging plays, not boosting. A random forest averages many independent, overfit trees to cancel out their individual variance; gradient boosting's trees are not independent at all — each one is fit specifically to the errors the sequence has made so far, which is a bias-reduction mechanism, not a variance-reduction one. Getting the two backwards is exactly the mix-up Lesson 5 warns against."
+    },
+    {
+      "id": "ads-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "model = xgb.XGBClassifier(\n    n_estimators=500, learning_rate=0.05, max_depth=3,\n    subsample=0.8, colsample_bytree=0.8, reg_lambda=1.0,\n    eval_metric=\"auc\", early_stopping_rounds=30,\n    random_state=0)\nmodel.fit(X_fit, y_fit, eval_set=[(X_val, y_val)], verbose=False)",
+      "prompt": "This XGBoost model requests up to 500 trees with early_stopping_rounds=30. Training actually runs for 147 rounds, with round 116 recorded as the best validation AUC. How many trees does the fitted model use when you call predict_proba?",
+      "options": [
+        "116 — the best round XGBoost kept, not the 147 rounds it took to confirm nothing improved, and not the full 500 requested",
+        "147, since that's how many rounds actually ran before training stopped",
+        "500, since that's what n_estimators requested",
+        "30, the value of early_stopping_rounds"
+      ],
+      "correctIndex": 0,
+      "explain": "Early stopping lets XGBoost keep training past the best round just to confirm nothing improves for early_stopping_rounds more rounds (which took it to round 147 here), but the saved model that predict_proba actually uses is the one from the best validation round — 116 — not the full 500 requested trees and not the 147 rounds it took to confirm no further improvement."
+    },
+    {
+      "id": "ads-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about LightGBM and CatBoost, per Lesson 3.",
+      "options": [
+        "LightGBM grows trees leaf-wise, always splitting whichever leaf reduces loss the most, which makes num_leaves its main complexity control",
+        "CatBoost converts categorical columns into numbers using an \"ordered\" target-statistic scheme designed to avoid leaking a row's own label into its own encoding",
+        "Because LightGBM's trees are lopsided from leaf-wise growth, max_depth is a stronger complexity control there than it is in XGBoost",
+        "CatBoost requires categorical columns to be one-hot encoded before training, the same as XGBoost does",
+        "On the illustrative churn data, XGBoost, LightGBM and CatBoost scored practically tied test AUCs, with differences far smaller than the split-to-split noise"
+      ],
+      "correctIndices": [0, 1, 4],
+      "explain": "LightGBM's leaf-wise growth makes num_leaves the main knob, since lopsided trees make max_depth a weaker control than in XGBoost, not a stronger one. CatBoost's headline feature is native categorical handling via cat_features and an ordered target-statistic encoding, so it needs no one-hot encoding at all. Repeated across five splits, the three libraries' average AUCs (0.836, 0.835, 0.835) differed far less than the roughly 0.006 split-to-split standard deviation, meaning accuracy alone should not drive the choice between them."
+    },
+    {
+      "id": "ads-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: because LightGBM grows trees leaf-wise instead of level-wise, max_depth becomes a weaker complexity control, and ________ becomes its main complexity knob instead.",
+      "acceptedAnswers": ["num_leaves", "num_leaves parameter", "the num_leaves parameter"],
+      "explain": "Since leaf-wise growth produces lopsided trees, max_depth no longer bounds complexity the way it does in a level-wise grower. num_leaves is LightGBM's main complexity control instead, and Lesson 3 warns to keep it small on small data since a leaf-wise tree with many leaves overfits quickly."
+    },
+    {
+      "id": "ads-05",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of tuning a boosted model in the order Lesson 4 recommends.",
+      "items": [
+        "Fix a moderate learning rate and let early stopping (or xgb.cv) choose the number of trees",
+        "Tune tree shape with max_depth and min_child_weight",
+        "Tune randomness with subsample and colsample_bytree",
+        "Tune regularization with reg_lambda, reg_alpha and gamma",
+        "If it still matters, lower the learning rate and retrain with proportionally more trees for a small final gain"
+      ],
+      "explain": "Lesson 4's tuning order spends effort where it pays off first: learning rate and tree count trade off directly, so fix a moderate rate and let early stopping or cross-validation choose the count. Only after that do you tune tree shape, then randomness, then regularization, and finally — only if it still matters — lower the learning rate for a small final gain. On the churn data, step 1 alone lifted test AUC from 0.788 to 0.827, while random search afterward could not reliably beat that."
+    },
+    {
+      "id": "ads-06",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Match each time-series component to what it actually is, per Lesson 6.",
+      "left": [
+        "Trend",
+        "Seasonality",
+        "Cycles",
+        "Noise (residual)"
+      ],
+      "right": [
+        "A pattern that repeats at a fixed, known calendar period, like a holiday peak every December",
+        "The long-run direction of the series — up, down, or flat",
+        "Rises and falls with no fixed length, easily confused with seasonality but without a calendar period",
+        "What's left after trend, seasonality and cycles are removed, ideally looking random"
+      ],
+      "correctMap": [1, 0, 2, 3],
+      "explain": "Trend is the long-run direction. Seasonality repeats at a fixed, known calendar period. Cycles rise and fall with no fixed length, which is what makes them easy to confuse with seasonality — seasonality has a calendar period, cycles do not. Noise is whatever remains once the other three components are removed."
+    },
+    {
+      "id": "ads-07",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "code": "print(\"sales ADF p:\", round(adfuller(s)[1], 3))\nprint(\"sales KPSS p:\",\n      kpss(s, regression=\"c\", nlags=\"auto\")[1])",
+      "prompt": "Running this on the monthly sales series gives ADF p = 0.999 and KPSS p = 0.01. What do these two results, taken together, actually tell you?",
+      "options": [
+        "Both tests agree the series is non-stationary — ADF fails to reject its non-stationary null, and KPSS rejects its stationary null",
+        "The two tests disagree, so the series' stationarity is ambiguous and no conclusion can be drawn",
+        "Both tests agree the series is stationary, since a KPSS p-value near 0.01 is small enough to confirm stationarity on its own",
+        "The ADF result alone is conclusive, and the KPSS result can be safely ignored since its null hypothesis is reversed"
+      ],
+      "correctIndex": 0,
+      "explain": "ADF's null hypothesis is that the series is non-stationary, so a high p-value (0.999) fails to reject that null. KPSS's null hypothesis is the opposite — that the series is stationary — so a low p-value (0.01) rejects that null. Both tests, read correctly with their opposite null hypotheses, land on the same conclusion: the series is not stationary."
+    },
+    {
+      "id": "ads-08",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the four baselines from Lesson 8, applied to the illustrative daily sales series.",
+      "options": [
+        "The mean baseline assumes nothing ever changes over time, and it performed worst because the series had climbed well above its historical average",
+        "The naive baseline repeats the last observed training value for the entire forecast horizon",
+        "The drift baseline is naive plus a straight line through the first and last training points, so it follows a steady trend",
+        "The seasonal naive baseline scored the best (lowest) MAE on this series because it captures the weekly pattern",
+        "A fancier model only needs to beat the mean baseline, the weakest of the four, to be considered worth its added complexity"
+      ],
+      "correctIndices": [0, 1, 2, 3],
+      "explain": "Mean, naive, drift and seasonal naive behave exactly as described: mean assumes no change and was off by nearly 100 units a day; naive repeats the last value; drift adds a straight-line trend through the endpoints; and seasonal naive, which wiggles with the weekly pattern, scored the best MAE (16.13) of the four. The rule of thumb is to report and beat the best simple baseline, not the weakest — beating the mean baseline proves nothing."
+    },
+    {
+      "id": "ads-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "A default Prophet() model fit on 702 days of training history scores a much worse MAE (24.2) than seasonal naive (16.13), and printing m.seasonalities shows only ['weekly']. What's the correct fix, per Lesson 10?",
+      "options": [
+        "Pass yearly_seasonality=True explicitly, since Prophet only auto-enables yearly seasonality once training history spans at least two years",
+        "Switch to weekly_seasonality=False, since the weekly component must be the one causing the error",
+        "Add more random noise to the training data so Prophet can detect the yearly cycle",
+        "Prophet cannot model yearly seasonal patterns at all, so switch to ARIMA instead"
+      ],
+      "correctIndex": 0,
+      "explain": "By default, Prophet decides which seasonalities to include automatically, and it only switches on yearly seasonality once training history spans at least two years. At 702 days, this training set falls just short of that, so the yearly wave was silently left out. Passing yearly_seasonality=True explicitly moved the MAE from 24.2 down to 6.71 on the same data — the single biggest lesson in the chapter about checking m.seasonalities before trusting a forecast."
+    },
+    {
+      "id": "ads-10",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: starting from simple exponential smoothing's level, Holt's method adds a trend, and Holt-Winters adds a ________ component on top of both.",
+      "acceptedAnswers": ["seasonal", "seasonality", "a seasonal component"],
+      "explain": "Exponential smoothing builds up in three steps: simple exponential smoothing tracks a level, Holt's method adds a trend on top, and Holt-Winters adds a seasonal pattern on top of both. On the illustrative sales series, only once seasonal_periods=7 was added did the MAE drop sharply, from 16.63 (Holt) to 6.86 (Holt-Winters)."
+    },
+    {
+      "id": "ads-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "gbr = GradientBoostingRegressor(random_state=0).fit(train[X], train[\"y\"])\nprint(\"naive MAE  \", mean_absolute_error(test[\"y\"], test[\"lag_1\"]))\nprint(\"GBR MAE    \", mean_absolute_error(test[\"y\"], gbr.predict(test[X])))\n# naive MAE   15.07\n# GBR MAE     17.16",
+      "prompt": "A gradient-boosted model trained on lag and calendar features scores a worse MAE (17.16) than simply repeating yesterday's value (15.07), on a trending daily sales series. What's the actual cause, per Lesson 11?",
+      "options": [
+        "The test period's sales values exceed anything seen in training, and a tree can only output values it saw averaged in training, so it cannot extrapolate the trend into new territory",
+        "The model was trained on a randomly shuffled split instead of a time-based one",
+        "The lag_1 and lag_7 features leaked the target value into its own features",
+        "Gradient boosting cannot be applied to regression problems, only classification"
+      ],
+      "correctIndex": 0,
+      "explain": "The test period reaches sales values around 438, while the highest value seen in training was about 417. A tree-based model can only predict values that are averages of outcomes it saw during training, so it has no way to output something higher than its training range — it cannot follow a trend into new territory. Modeling the change from a rolling average, rather than the raw level, fixed this and dropped the error to about 8.79."
+    },
+    {
+      "id": "ads-12",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of a rolling-origin backtest in the correct order, per Lesson 12.",
+      "items": [
+        "Pick an origin date and train only on data that comes before it",
+        "Forecast the next h periods from that training data alone",
+        "Record the error between the forecast and the actual values in that window",
+        "Slide the origin forward and repeat the train-forecast-record cycle",
+        "Average the recorded errors across every origin, and report both the average and the spread"
+      ],
+      "explain": "A rolling-origin backtest trains only on data before a chosen origin, forecasts forward, and records the error — then slides the origin forward and repeats. Lesson 12 showed why the final average matters: a single holdout window made a linear model look like the clear winner, but averaging five rolling origins flipped the verdict, revealing that the 'dumb' seasonal naive forecast was actually better overall."
+    },
+    {
+      "id": "ads-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "scikit-learn's default English stop-word list includes the word 'not'. What happens when CountVectorizer(stop_words='english') processes the review 'Not a good battery'?",
+      "options": [
+        "It becomes 'good battery', which reverses the sentence's actual negative meaning",
+        "It becomes 'not good battery', since negators are automatically protected from stop-word removal",
+        "It raises an error, since 'not' cannot be tokenized by the default analyzer",
+        "It becomes an empty token list, since every remaining word is also a stop word"
+      ],
+      "correctIndex": 0,
+      "explain": "The 318-word default stop-word list includes 'not', so stop-word removal strips it along with 'a', leaving 'good battery' — the opposite of what the customer actually said. For sentiment tasks specifically, negation is signal, so Lesson 13 recommends skipping the stop-word filter or editing the list to keep negators, even though removing stop words is usually harmless for topic-style tasks."
+    },
+    {
+      "id": "ads-14",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about TF-IDF and bag-of-words, per Lessons 13-14.",
+      "options": [
+        "TF-IDF multiplies term frequency by inverse document frequency, so a word appearing in nearly every document gets a smaller weight than a rare, distinctive one",
+        "A vectorizer should be fit on the training data only, then used to transform the test set, to avoid leaking test vocabulary and document frequencies",
+        "Bag-of-words preserves word order, which is why it can tell \"dog bites man\" apart from \"man bites dog\"",
+        "Setting ngram_range=(1, 2) adds two-word phrases as features, recovering a little of the word-order information plain bag-of-words loses",
+        "A CountVectorizer's document-term matrix is typically dense, storing every zero-count cell explicitly in memory"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "TF-IDF down-weights words that appear everywhere and up-weights rare, informative ones; and the one rule that prevents leakage is fitting the vectorizer on training data only. Bag-of-words throws away word order entirely — it cannot distinguish \"dog bites man\" from \"man bites dog\" — which is exactly why n-grams exist, to recover a little of that lost order. The resulting matrix is sparse, not dense, since any one document uses only a tiny fraction of the full vocabulary."
+    },
+    {
+      "id": "ads-15",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: cosine similarity compares two document vectors by measuring the ________ between them, rather than their raw magnitude.",
+      "acceptedAnswers": ["angle", "the angle"],
+      "explain": "Cosine similarity measures the angle between two vectors: 1 means they point in exactly the same direction, 0 means no overlap at all. That is why a short document and a long document discussing the same topic can still score a high similarity — the comparison ignores length and looks only at direction."
+    },
+    {
+      "id": "ads-16",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A text classifier trained on 60 support tickets scores 0.667 accuracy on one 15-ticket test split, while 5-fold cross-validation gives scores ranging from 0.67 to 0.83 with a mean of 0.78. What's the correct takeaway, per Lesson 15?",
+      "options": [
+        "With only 60 examples, the fold-to-fold spread is wide enough that small accuracy differences between model variants are likely just noise, not real improvements",
+        "The single test-split score of 0.667 is the more trustworthy number, since cross-validation always overstates real performance",
+        "The classifier must be broken, since no two folds produced exactly the same score",
+        "Cross-validation proves the model has learned every ticket queue equally well, with no weak spots"
+      ],
+      "correctIndex": 0,
+      "explain": "One tiny 15-ticket test set can swing by nearly seven accuracy points on a single misclassified ticket, so Lesson 15 cross-validates instead. The resulting 0.67-to-0.83 spread is the real message: on data this small you cannot reliably distinguish a 0.78 model from a 0.82 one, which is exactly what happened when adding stop-word removal moved the mean to 0.70 and raising C moved it to 0.80 — both differences within the noise, not real improvements."
+    },
+    {
+      "id": "ads-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Refitting the same LDA topic model on a 22-message corpus with a different random seed changes which words land in each topic, with 'battery' moving between topics depending on the seed. What does Lesson 17 say this demonstrates?",
+      "options": [
+        "Topics are exploratory suggestions, not facts — stability across different seeds is something you should check, not assume",
+        "The LDA implementation has a bug that should be reported to scikit-learn",
+        "Topic modeling requires labeled training data to work correctly, which this corpus lacks",
+        "NMF would have produced identical, seed-independent topics on the exact same tiny corpus"
+      ],
+      "correctIndex": 0,
+      "explain": "LDA gave blurrier topics than NMF on this tiny 22-message corpus, and the themes changed when only the random seed changed. That instability is not a bug to fix by tuning — it's a reminder that topic models are exploratory, and themes that appear every time you refit with a different seed are more trustworthy than ones that flicker. Both NMF and LDA are unsupervised and need no labels at all."
+    },
+    {
+      "id": "ads-18",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Match each recommender-systems term to what it actually is, per Lesson 18.",
+      "left": [
+        "Explicit feedback",
+        "Implicit feedback",
+        "Cold start",
+        "User-item matrix"
+      ],
+      "right": [
+        "The grid of rows (users) and columns (items) whose cells hold interactions, mostly empty",
+        "Behavior such as clicks or purchases — abundant, but ambiguous about intent",
+        "A user telling you their opinion directly, such as a star rating",
+        "The problem of having no history to work from for a brand-new user or item"
+      ],
+      "correctMap": [2, 1, 3, 0],
+      "explain": "Explicit feedback is the user directly stating an opinion, like a rating. Implicit feedback is behavior — clicks, purchases — which is abundant but ambiguous, since a missing click doesn't mean dislike. Cold start is having no history for a new user or item. The user-item matrix is the grid of interactions that every recommender starts from, and whose empty cells it tries to fill in."
+    },
+    {
+      "id": "ads-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "item_sim = cosine_similarity(clicks.T)   # 30 x 30\nnp.fill_diagonal(item_sim, 0)\nscores = clicks @ item_sim",
+      "prompt": "In item-based collaborative filtering, what does multiplying the click matrix by the item-item similarity matrix (clicks @ item_sim) actually compute for each user-item score?",
+      "options": [
+        "The sum of that candidate item's similarity to every item the user has already clicked",
+        "The number of other users who clicked that exact candidate item",
+        "The average star rating other users gave that candidate item",
+        "A random tiebreaker score used only when two items are equally popular"
+      ],
+      "correctIndex": 0,
+      "explain": "clicks @ item_sim is the whole item-based recommender in one line: for each user, each candidate item's score is the sum of its similarities to every item that user has already clicked. On the illustrative data, user 0's recommendations all came from items similar to the taste-group-0 items they had already clicked, exactly as the matrix multiplication implies."
+    },
+    {
+      "id": "ads-20",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about content-based recommendation, per Lesson 20.",
+      "options": [
+        "It can score a brand-new item that has never been clicked, because its score comes from text similarity, not interaction history",
+        "A user profile is built by summing the TF-IDF vectors of every item that user has clicked",
+        "It automatically accounts for an item's quality or popularity, beyond just the wording of its description",
+        "It tends to recommend more of what a user already likes, which is why it rarely surprises anyone (the \"filter bubble\" limitation)",
+        "It requires no item description data at all, working purely off the click matrix like collaborative filtering does"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Content-based recommendation scores a brand-new item fine, since its TF-IDF vector needs no click history at all, and a user's profile is literally the sum of the TF-IDF vectors of items they clicked. Its real limitations are the filter bubble (it only finds more of the same) and having no sense of quality or popularity — two equally good-sounding descriptions score the same even if one item is far better loved. It depends entirely on having item description data, unlike collaborative filtering."
+    },
+    {
+      "id": "ads-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "An item-item collaborative filter scores precision@5 = 0.123 and recall@5 = 0.617, clearly beating the popularity baseline's 0.070 and 0.350. Per Lesson 21, what should you conclude before declaring the collaborative filter a success?",
+      "options": [
+        "It clears the popularity baseline on these offline metrics, but offline metrics are a proxy for past behavior — confirm the gain with an online A/B test before declaring victory",
+        "Offline precision@5 and recall@5 alone are sufficient proof the model should ship immediately",
+        "Since it already beat popularity, catalog coverage no longer needs to be checked",
+        "A bigger offline gap over the popularity baseline always translates into a proportionally bigger revenue gain in production"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 21's two cautions are to always beat the popularity baseline, and to remember that offline metrics only measure how well you predict past behavior already shaped by the old system — not the real-world effect. The real test of a recommender is an online experiment measuring actual clicks, conversions, or revenue, which is why the lesson insists on confirming offline wins with an online test before declaring victory."
+    },
+    {
+      "id": "ads-22",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly describes what permutation importance actually measures?",
+      "options": [
+        "How much a model's held-out performance score drops when one feature's values are randomly shuffled, breaking that feature's link to the target",
+        "How much each feature reduced the splitting criterion across all trees during training — the same thing impurity-based importance measures",
+        "The causal effect of changing a feature's real-world value on the outcome it predicts",
+        "The raw correlation between a feature and the target label, computed directly from the training data",
+        "The number of times a feature appears anywhere as a split point in the ensemble",
+        "The SHAP value for that feature, averaged across every row in the test set"
+      ],
+      "correctIndex": 0,
+      "explain": "Permutation importance shuffles one column on held-out data and measures how much worse the model's score gets as a result. A big drop means the model relies on that feature; no drop means it does not. Because the shuffling happens on data the model hasn't memorized, this avoids the bias toward high-cardinality or continuous columns that impurity-based importance carries.",
+      "distractorExplain": "Option B describes impurity-based (built-in) feature importance, not permutation importance — exactly the distinction Lesson 23 is built around. Impurity importance is measured on training data and favors continuous or high-cardinality features because they offer more places to split, which is why it ranked a pure noise column above a real predictor in the lesson's example. Permutation importance avoided that exact mistake by shuffling on held-out data instead of totaling training-time splits."
+    },
+    {
+      "id": "ads-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "code": "impurity = pd.Series(rf.feature_importances_, index=features)\nperm = permutation_importance(rf, X_test, y_test, scoring=\"roc_auc\",\n                              n_repeats=20, random_state=0)\n# random_noise: impurity 0.187, permutation -0.001",
+      "prompt": "A random forest's impurity-based importance ranks a column called random_noise (known to have zero real relationship to churn) above support_tickets, while permutation importance gives random_noise an importance of about zero. What explains the disagreement?",
+      "options": [
+        "Impurity importance is measured on training data and is biased toward continuous features with many possible split points, even when those splits end up fitting noise rather than real signal",
+        "Permutation importance is simply unreliable and should not be trusted over impurity importance",
+        "random_noise must actually be correlated with churn somehow, and permutation importance failed to detect it",
+        "The random forest was trained incorrectly, since a correctly trained model would never use a noise column at all"
+      ],
+      "correctIndex": 0,
+      "explain": "The forest used the continuous random_noise column to carve up the training data simply because it offered many possible split points, not because it carried real signal — exactly the bias impurity-based importance is prone to. Permutation importance, computed on held-out test data by shuffling each column, correctly gave the noise column an importance near zero, matching how the data was actually built."
+    },
+    {
+      "id": "ads-24",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: for any single prediction, SHAP's base value plus the sum of every feature's signed contribution always equals ________.",
+      "acceptedAnswers": [
+        "the model's output",
+        "the model's actual output",
+        "the model's prediction",
+        "model's output for that row"
+      ],
+      "explain": "That additivity is the whole point of SHAP: base value plus contributions always sums exactly to the model's actual output for that row (in log-odds, for the gradient-boosting classifier in Lesson 24). For customer 0, the base value of -1.072 plus five feature contributions summed to -1.08, matching the model's own decision_function output exactly."
+    },
+    {
+      "id": "ads-25",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the fairness analysis in Lesson 26.",
+      "options": [
+        "Removing the 'group' column from the model's features did not close the selection-rate gap, because income and credit history acted as proxies for group",
+        "Equalizing selection rates across groups automatically also equalizes TPR, FPR and precision across those same groups",
+        "Among approved customers, precision was nearly equal across groups even though the overall selection rates differed sharply",
+        "A four-fifths impact-ratio rule is a legally binding standard that applies identically in every country and industry",
+        "Fixing one fairness metric, like equal TPR, can leave other metrics, like selection rate or precision, unequal — because the groups have different underlying outcome rates"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "Even with 'group' excluded as a feature, income and credit history carried the same information as a proxy, so the 64% vs 27% selection gap appeared anyway. Precision came out nearly equal (0.668 vs 0.659) even with very different selection rates — one definition of fairness held while another didn't. And equalizing one metric, like TPR, left selection rates and precision unequal, because the two groups' underlying repayment rates differ — equalizing every fairness definition at once is generally impossible. The four-fifths rule is only a screening heuristic, not a universal legal standard."
+    },
+    {
+      "id": "ads-26",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these parts of presenting a model result in the order Lesson 25 recommends.",
+      "items": [
+        "Headline: state the recommendation in one sentence, with the number",
+        "Evidence: give two or three drivers in plain language, plus one example customer",
+        "Action: say who to contact, by when, and how success will be measured",
+        "Caveats: state what the model was trained on, where it may fail, and what will trigger a review"
+      ],
+      "explain": "Lesson 25's four-part structure leads with the decision, not the mechanics: the headline recommendation first, then the plain-language evidence behind it, then the concrete action it implies, and finally the caveats that keep the presentation honest about what the model cannot claim."
+    },
+    {
+      "id": "ads-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "A calendar-only model (trend plus yearly season, no promotion or holiday flags) scores almost the same backtest MAE as the naive baseline (93.7 vs 95.7), while adding promotion and holiday flags drops the MAE to 30.5. What does this tell you about the forecast, per Lesson 28?",
+      "options": [
+        "Almost the entire forecasting gain comes from knowing the planned promotion and holiday calendar, not from the trend or seasonal pattern alone",
+        "The trend and seasonal components are useless and should be removed from the model entirely",
+        "The naive baseline is actually the best model available for this series",
+        "Calendar features and promotion features each contribute roughly equal, separate shares of the total gain"
+      ],
+      "correctIndex": 0,
+      "explain": "The calendar-only variant, with only trend and season, scored essentially the same as naive (93.7 vs 95.7) — almost no improvement at all. The whole jump to 30.5 MAE came from adding the planned promotion and holiday flags. That is both a useful business insight and a caveat in the same breath: the forecast's accuracy depends entirely on having an accurate promotion plan to feed it."
+    },
+    {
+      "id": "ads-28",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the capstone's results across Lessons 27-29.",
+      "options": [
+        "In the rolling-origin backtest, the regression-on-log-demand model beat the naive baseline by about 68%, while detrend-plus-boosting beat it by about 55%",
+        "The detrended boosting model won every single backtest window, making it the clear overall winner",
+        "Both the regression's coefficients and the machine-learning model's SHAP values independently estimated a promotion lift of roughly 30%",
+        "The sealed test set was used exactly once, at the end, to report an honest final score without changing the chosen model afterward",
+        "The naive baseline's sealed-test MAE (181.5) was far worse than its backtest average (95.7) because the final training week happened to be unusually quiet"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "Against naive's 95.7 MAE, regression scored 30.5 (about 68% better) and boosting scored 43.1 (about 55% better) in the backtest. Boosting only won the very first backtest window and lost the rest, so it was not the overall winner. The regression's coefficient (31.1% lift) and the boosting model's SHAP-derived estimate (30.5% lift) independently agreed on roughly a 30% promotion effect. The sealed test set was deliberately touched only once, at the very end. The naive baseline's sealed-test score was worse specifically because the last training week was a promotion week with an unusually high value (902 units), which naive then repeated for the whole quarter — the opposite of \"unusually quiet.\""
+    },
+    {
+      "id": "ads-29",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per the capstone's rules set in Lesson 27, the sealed final test set is used to evaluate the chosen model exactly ________, and the result is reported honestly rather than adjusting the model afterward.",
+      "acceptedAnswers": ["once", "one time", "a single time"],
+      "explain": "The capstone's third success criterion, written down before any modeling began, was to touch the sealed test set once, at the end, and report whatever it shows — no going back to tweak the model after seeing that score, which is exactly what Lesson 29 then followed through on."
+    },
+    {
+      "id": "ads-30",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Put these stages of the capstone project in the order Lessons 27-29 actually followed.",
+      "items": [
+        "Frame the problem as a decision, horizon and metric, then seal the final test weeks before any modeling",
+        "Establish simple baselines (naive, seasonal naive) with a rolling-origin backtest on the development set",
+        "Build candidate models and compare them against the baselines using that same backtest",
+        "Evaluate the chosen model exactly once on the sealed test set",
+        "Translate the forecast into a business decision, and present the drivers, recommendation and limitations"
+      ],
+      "explain": "Lesson 27 framed the decision, horizon and metric and sealed the last 13 weeks before any modeling began. Lesson 27 also established the naive and seasonal-naive baselines with a rolling-origin backtest. Lesson 28 built and backtested the regression and boosting candidates against those baselines. Lesson 29 opened the sealed test set exactly once, then turned the result into an order-quantity recommendation complete with drivers and stated limitations."
+    }
+  ]
+}
