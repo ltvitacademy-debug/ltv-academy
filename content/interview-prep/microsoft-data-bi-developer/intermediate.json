@@ -1,0 +1,1450 @@
+{
+  "questions": [
+    {
+      "id": "msbi-int-001",
+      "questionCode": "LTV-MSBI-INT-001",
+      "title": "ROW_NUMBER vs. RANK vs. DENSE_RANK",
+      "prompt": "Explain the difference between ROW_NUMBER(), RANK(), and DENSE_RANK() in SQL Server. If two products are tied for the highest price, what number does each function give the row right after them?",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "Window Functions"],
+      "modelAnswer": "All three are ranking window functions used with OVER(ORDER BY ...), and all three number rows based on the order you specify, but they disagree on what happens with ties. ROW_NUMBER() always assigns a unique, sequential integer to every row, even when two rows are tied on the ORDER BY column -- one of the tied rows arbitrarily gets the lower number. RANK() gives tied rows the same number, but then skips ahead by the size of the tie: if two rows tie for rank 1, the next distinct row gets rank 3, not 2, because RANK() is really counting 'how many rows came before or tied with me, plus one.' DENSE_RANK() also gives tied rows the same number, but the next distinct value gets the very next integer with no gap -- it's counting distinct values, not rows. So for two products tied for the most expensive: ROW_NUMBER gives them 1 and 2 (arbitrarily), RANK gives them both 1 and the next product gets 3, and DENSE_RANK gives them both 1 and the next product gets 2.",
+      "professionalAnswer": "I'd walk through it with a concrete example because the difference only shows up when there's a tie. Say I'm ranking products by ListPrice and two products are tied for the top price. ROW_NUMBER() doesn't know about ties at all -- it just hands out 1, 2, 3, 4 in order, so the two tied products arbitrarily get 1 and 2. RANK() respects the tie -- both get rank 1 -- but it still 'reserves' a slot for each of them, so the next product down is rank 3, not 2. DENSE_RANK() is the one that feels most natural for something like a pricing tier: both tied products get 1, and the next distinct price is simply 2, no gap. In practice I reach for ROW_NUMBER() constantly for deduplication -- partition by the natural key, order by something like an ID, and anything with RowNum greater than 1 is a duplicate I can delete. I reach for RANK() when ties should genuinely cost a position, like a sales leaderboard where two reps tied for 2nd really does mean nobody is 3rd. And I reach for DENSE_RANK() when I just want the next distinct tier number and don't want gaps confusing anyone reading the report.",
+      "example": "SELECT Name, ListPrice,\n       ROW_NUMBER() OVER (ORDER BY ListPrice DESC) AS RowNum,\n       RANK()       OVER (ORDER BY ListPrice DESC) AS Rank_,\n       DENSE_RANK() OVER (ORDER BY ListPrice DESC) AS DenseRank_\nFROM Production.Product\nORDER BY ListPrice DESC;\n-- If two products tie for the top ListPrice:\n-- RowNum:     1, 2, 3, 4...  (ties broken arbitrarily)\n-- Rank_:      1, 1, 3, 4...  (skips to 3 after the tie)\n-- DenseRank_: 1, 1, 2, 3...  (no gap after the tie)",
+      "commonMistakes": [
+        "Saying ROW_NUMBER() can produce duplicate numbers for ties (it never can -- it's always unique)",
+        "Mixing up which function skips numbers after a tie (it's RANK, not DENSE_RANK)",
+        "Forgetting that ROW_NUMBER() requires ORDER BY inside OVER() -- without it, row order is undefined",
+        "Not realizing all three still need PARTITION BY to restart numbering per group"
+      ],
+      "keyPoints": [
+        "ROW_NUMBER() always produces unique numbers, ties broken arbitrarily",
+        "RANK() gives ties the same number and skips ahead by the tie size afterward",
+        "DENSE_RANK() gives ties the same number with no gap for the next distinct value",
+        "Choice depends on whether the business question treats a tie as 'costing' a rank"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly describes ROW_NUMBER's uniqueness behavior", "weight": 25 },
+        { "criterion": "Correctly describes RANK's gap-after-tie behavior", "weight": 25 },
+        { "criterion": "Correctly describes DENSE_RANK's no-gap behavior", "weight": 25 },
+        { "criterion": "Gives a realistic scenario for choosing one over another", "weight": 25 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "rank-dense-rank", "label": "Review: RANK and DENSE_RANK" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-002",
+      "questionCode": "LTV-MSBI-INT-002",
+      "title": "Top-2-per-group with a window function",
+      "prompt": "Write a T-SQL query against AdventureWorks2012's Production.Product table that returns the two highest-priced products in each color, without using a correlated subquery.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "Window Functions"],
+      "modelAnswer": "The idiomatic way to solve 'top N per group' in T-SQL is PARTITION BY plus ROW_NUMBER(), wrapped in a CTE so the ranking column can be filtered afterward. PARTITION BY Color restarts the numbering at 1 for each color, and ORDER BY ListPrice DESC makes 1 the most expensive product in that color. You can't filter directly on ROW_NUMBER() in the same SELECT's WHERE clause because window functions are logically evaluated after WHERE -- that's why the CTE (or a subquery) is necessary.",
+      "professionalAnswer": "This is the classic 'top N per group' problem, and the pattern I reach for every time is a CTE with ROW_NUMBER() partitioned by the grouping column. I avoid a correlated subquery with TOP 2 inside it because that approach re-executes once per outer row and doesn't scale well. Instead, I compute the rank once in a CTE, then just filter WHERE RankInColor <= 2 in the outer query. The one gotcha I always mention out loud in an interview: you cannot write WHERE ROW_NUMBER() OVER (...) <= 2 directly in the same SELECT, because the WHERE clause is logically evaluated before window functions are computed -- that's exactly why the CTE wrapper is required, not just a style preference.",
+      "example": "WITH Ranked AS (\n    SELECT Name, Color, ListPrice,\n           ROW_NUMBER() OVER (PARTITION BY Color ORDER BY ListPrice DESC) AS RankInColor\n    FROM Production.Product\n)\nSELECT Name, Color, ListPrice\nFROM Ranked\nWHERE RankInColor <= 2\nORDER BY Color, RankInColor;\n-- The CTE is required because ROW_NUMBER() can't be filtered in the same SELECT's WHERE clause.",
+      "commonMistakes": [
+        "Trying to filter WHERE ROW_NUMBER() <= 2 directly in the same SELECT (not legal -- window functions evaluate after WHERE)",
+        "Forgetting PARTITION BY and ranking across the whole table instead of per color",
+        "Using TOP 2 with a correlated subquery per group, which is correct but far less efficient on large tables",
+        "Omitting ORDER BY inside OVER(), which leaves 'top' undefined"
+      ],
+      "keyPoints": [
+        "PARTITION BY restarts the ranking per group (per color here)",
+        "A CTE or subquery is required to filter on the window function's result",
+        "ORDER BY DESC inside OVER() makes rank 1 the highest price",
+        "This pattern generalizes to any 'top N per group' business question"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Uses ROW_NUMBER() with correct PARTITION BY and ORDER BY", "weight": 30 },
+        { "criterion": "Wraps it in a CTE/subquery to filter correctly", "weight": 30 },
+        { "criterion": "Query is syntactically valid and returns exactly 2 rows per color", "weight": 25 },
+        { "criterion": "Explains why filtering can't happen in the same SELECT's WHERE clause", "weight": 15 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "row-number", "label": "Review: ROW_NUMBER" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-003",
+      "questionCode": "LTV-MSBI-INT-003",
+      "title": "What MERGE actually does",
+      "prompt": "A coworker wants to sync a staging table into a permanent dimension table using separate UPDATE, INSERT, and DELETE statements. Explain what the MERGE statement does instead, and what each of its three WHEN clauses corresponds to.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["T-SQL", "ETL"],
+      "modelAnswer": "MERGE combines insert, update, and delete logic into a single statement based on a join between a target table and a source. You join target and source ON some matching key, then handle three scenarios: WHEN MATCHED runs when a row exists in both target and source -- typically an UPDATE, equivalent to an INNER JOIN match. WHEN NOT MATCHED BY TARGET runs when a row exists in source but not target -- typically an INSERT, equivalent to the unmatched side of a LEFT JOIN from source. WHEN NOT MATCHED BY SOURCE runs when a row exists in target but not source -- typically a DELETE (or an update to mark it inactive), equivalent to the unmatched side of a LEFT JOIN from target. All of this happens in one atomic statement instead of three separate ones with separate matching logic.",
+      "professionalAnswer": "I'd tell them MERGE is exactly the three statements they're already writing, just unified around one join so you don't have to repeat the matching logic three times and risk it drifting out of sync between statements. I always explain it by mapping it back to joins, because that's the mental model people already have: WHEN MATCHED is your INNER JOIN case -- the row is in both places, so update it. WHEN NOT MATCHED BY TARGET is the new rows showing up in the source that haven't landed in the target yet -- insert them. WHEN NOT MATCHED BY SOURCE is rows that used to be in the target but have disappeared from the source -- that's your delete, or sometimes a soft-delete flag instead. For warehouse loads specifically, I like MERGE because the whole sync is one atomic operation -- there's no window where the target is left half-updated if something fails partway through.",
+      "example": "MERGE Production.Product AS target\nUSING StagingProduct AS source\n    ON target.ProductID = source.ProductID\nWHEN MATCHED THEN\n    UPDATE SET target.ListPrice = source.ListPrice\nWHEN NOT MATCHED BY TARGET THEN\n    INSERT (ProductID, Name, ListPrice)\n    VALUES (source.ProductID, source.Name, source.ListPrice)\nWHEN NOT MATCHED BY SOURCE THEN\n    DELETE;\n-- One atomic statement instead of three separate UPDATE/INSERT/DELETE statements.",
+      "commonMistakes": [
+        "Confusing WHEN NOT MATCHED BY TARGET (new rows to insert) with WHEN NOT MATCHED BY SOURCE (stale rows to delete)",
+        "Forgetting MERGE requires a semicolon terminator in SQL Server",
+        "Not realizing MERGE is still just a join under the hood -- overcomplicating the explanation",
+        "Using MERGE for a simple single-table update when a plain UPDATE would be simpler and clearer"
+      ],
+      "keyPoints": [
+        "MERGE unifies insert, update, and delete around one source-to-target join",
+        "WHEN MATCHED = INNER JOIN case (update)",
+        "WHEN NOT MATCHED BY TARGET = new row in source (insert)",
+        "WHEN NOT MATCHED BY SOURCE = row missing from source (delete)",
+        "The whole sync happens in one atomic statement"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains what MERGE replaces and why it's useful", "weight": 30 },
+        { "criterion": "Correctly maps all three WHEN clauses to their scenarios", "weight": 45 },
+        { "criterion": "Connects the WHEN clauses to join semantics (INNER/LEFT JOIN unmatched sides)", "weight": 25 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "merge-statement", "label": "Review: The MERGE Statement" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-004",
+      "questionCode": "LTV-MSBI-INT-004",
+      "title": "Write a MERGE to sync a staging table into a dimension",
+      "prompt": "Write a MERGE statement that syncs a StagingCustomer table into a DimCustomer table: update existing customers' names, insert new customers, and leave customers who disappeared from staging alone (do not delete them).",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "ETL", "Data Warehousing"],
+      "modelAnswer": "This requires only two of MERGE's three WHEN clauses -- WHEN MATCHED for updates and WHEN NOT MATCHED BY TARGET for inserts -- and deliberately omitting WHEN NOT MATCHED BY SOURCE, since the requirement is to leave disappeared customers untouched rather than deleting them. Omitting a WHEN clause simply means MERGE does nothing for that scenario.",
+      "professionalAnswer": "The key thing here is recognizing that MERGE's three WHEN clauses are each optional -- you only write the ones you need. Since the requirement explicitly says not to delete customers who vanish from staging, I just don't write a WHEN NOT MATCHED BY SOURCE clause at all. MERGE doesn't require all three; leaving one out means that scenario simply does nothing, which is exactly the 'leave them alone' behavior requested. This comes up constantly in dimension loads -- you often want to sync new and changed records without ever purging history just because a source feed temporarily dropped a row.",
+      "example": "MERGE DimCustomer AS target\nUSING StagingCustomer AS source\n    ON target.CustomerID = source.CustomerID\nWHEN MATCHED THEN\n    UPDATE SET target.CustomerName = source.CustomerName\nWHEN NOT MATCHED BY TARGET THEN\n    INSERT (CustomerID, CustomerName)\n    VALUES (source.CustomerID, source.CustomerName);\n-- No WHEN NOT MATCHED BY SOURCE clause -- customers missing from staging are left untouched.",
+      "commonMistakes": [
+        "Adding a WHEN NOT MATCHED BY SOURCE DELETE clause when the requirement explicitly says not to delete",
+        "Forgetting the trailing semicolon, which SQL Server requires after MERGE",
+        "Updating columns that didn't change, instead of only the ones the requirement calls for (CustomerName)",
+        "Joining on the wrong key (e.g. a surrogate key that doesn't exist yet in staging) instead of the natural/business key"
+      ],
+      "keyPoints": [
+        "WHEN clauses in MERGE are each optional -- omit the ones you don't need",
+        "Omitting WHEN NOT MATCHED BY SOURCE means disappeared rows are left alone, not deleted",
+        "Join on the business/natural key that staging and the dimension share",
+        "MERGE still requires a terminating semicolon in SQL Server"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct WHEN MATCHED update logic", "weight": 30 },
+        { "criterion": "Correct WHEN NOT MATCHED BY TARGET insert logic", "weight": 30 },
+        { "criterion": "Correctly omits any delete logic per the requirement", "weight": 25 },
+        { "criterion": "Valid, runnable MERGE syntax with correct join predicate", "weight": 15 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "merge-statement", "label": "Review: The MERGE Statement" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-005",
+      "questionCode": "LTV-MSBI-INT-005",
+      "title": "Transactions: BEGIN, COMMIT, ROLLBACK",
+      "prompt": "Explain what a transaction is in SQL Server, what COMMIT does that running the statements without a transaction wouldn't, and what exactly ROLLBACK undoes.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "Transactions"],
+      "modelAnswer": "A transaction groups one or more statements into a single all-or-nothing unit. BEGIN TRANSACTION marks the start of that group. Until COMMIT runs, the changes are provisional -- visible in the current session but not yet permanently saved, and still subject to being undone. COMMIT TRANSACTION makes every change inside the group permanent, all at once. ROLLBACK TRANSACTION undoes every change made since the matching BEGIN TRANSACTION, as if none of it had ever happened. The reason this matters: a multi-step change (like moving stock from one location to another with two separate UPDATE statements) can fail halfway through if run as two independent statements, leaving the data in an inconsistent state. Wrapping both statements in a transaction guarantees either both succeed or neither does.",
+      "professionalAnswer": "I usually explain this with the classic example: moving inventory from warehouse A to warehouse B is really two UPDATEs -- subtract from A, add to B. If I just run those as two separate statements and the second one fails, I've got stock that's vanished into nowhere. A transaction fixes that by treating both statements as one all-or-nothing unit. BEGIN TRANSACTION starts the clock; until I COMMIT, those changes are provisional -- I can see them in my own session, but they're not durably saved and SQL Server can still throw them away. COMMIT makes them permanent. ROLLBACK is the safety net -- if something goes wrong partway through, it undoes everything back to the BEGIN, cleanly, as if I'd never run anything at all. The discipline I bring to it professionally is keeping transactions as short as possible, because every lock held inside one is held until COMMIT or ROLLBACK runs.",
+      "example": "BEGIN TRANSACTION;\n\nUPDATE Production.ProductInventory\nSET Quantity = Quantity - 10\nWHERE ProductID = 1 AND LocationID = 1;\n\nUPDATE Production.ProductInventory\nSET Quantity = Quantity + 10\nWHERE ProductID = 1 AND LocationID = 2;\n\nCOMMIT TRANSACTION;\n-- Both UPDATEs succeed together, or neither takes effect.",
+      "commonMistakes": [
+        "Thinking changes inside a transaction are already permanent before COMMIT runs",
+        "Forgetting that ROLLBACK undoes everything since BEGIN TRANSACTION, not just the most recent statement",
+        "Leaving a transaction open for a long time, holding locks and blocking other users unnecessarily",
+        "Not pairing every BEGIN TRANSACTION with a guaranteed COMMIT or ROLLBACK, even on the error path"
+      ],
+      "keyPoints": [
+        "A transaction is an all-or-nothing group of statements",
+        "Changes are provisional until COMMIT makes them permanent",
+        "ROLLBACK undoes everything since the matching BEGIN TRANSACTION",
+        "Transactions exist to prevent partial, inconsistent multi-step changes"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains what a transaction groups together", "weight": 25 },
+        { "criterion": "Correctly explains what COMMIT does and the provisional state before it", "weight": 25 },
+        { "criterion": "Correctly explains the scope of what ROLLBACK undoes", "weight": 25 },
+        { "criterion": "Gives a realistic scenario showing why this matters", "weight": 25 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "transactions", "label": "Review: Transactions" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-006",
+      "questionCode": "LTV-MSBI-INT-006",
+      "title": "Diagnosing a deadlock between two ETL jobs",
+      "prompt": "Two nightly stored procedures occasionally fail with a deadlock error when they run at overlapping times, each updating the same two tables. Explain what a deadlock is, how SQL Server resolves it automatically, and two concrete things you'd change to prevent it from recurring.",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["T-SQL", "Transactions", "Troubleshooting"],
+      "modelAnswer": "Blocking happens whenever one transaction needs a lock another transaction already holds, and simply waits -- this is normal and expected. A deadlock is the special case where Transaction A is waiting on a lock held by Transaction B, while B is simultaneously waiting on a lock held by A -- neither can ever proceed. SQL Server detects this automatically and picks one transaction as the 'deadlock victim,' rolling it back and raising an error, while the other transaction proceeds normally. To prevent recurrence: (1) access the two tables in the same order in both procedures -- a common deadlock cause is two transactions locking the same two tables in opposite order; and (2) keep transactions as short as possible, doing only what genuinely needs to be atomic inside BEGIN/COMMIT, so locks are held for the shortest possible window and the overlap that triggers the deadlock has a smaller chance of occurring.",
+      "professionalAnswer": "I'd start by reassuring whoever's asking that blocking itself isn't a bug -- it's how isolation is enforced any time two transactions genuinely need the same data at the same moment. A deadlock is the specific, more serious case: A is waiting on a lock B holds, B is waiting on a lock A holds, and neither can ever win -- it's a true standoff. SQL Server doesn't just hang forever; it detects the cycle and picks a 'deadlock victim' to roll back automatically, which is why the application sees an error and needs to retry. For the actual fix, the first thing I'd check is whether both procedures touch the two tables in a different order -- that's the single most common cause, and standardizing the access order so both procedures always touch, say, Table A before Table B usually eliminates it outright. Second, I'd look at whether either transaction is doing more than it needs to inside BEGIN/COMMIT -- unrelated reads, validation logic -- and trim the transaction down to just the atomic part, since shorter transactions hold locks for less time and collide less often.",
+      "commonMistakes": [
+        "Treating a deadlock the same as ordinary blocking -- blocking is normal, a deadlock is a genuine, unresolvable standoff",
+        "Assuming SQL Server will just hang forever instead of recognizing it auto-detects and resolves deadlocks",
+        "Fixing the symptom by adding a retry loop in the application without addressing the inconsistent table access order",
+        "Making a transaction longer by adding error handling or logging inside it, which increases lock duration"
+      ],
+      "keyPoints": [
+        "Blocking is normal; a deadlock is two transactions waiting on each other with no way out",
+        "SQL Server auto-detects deadlocks and rolls back a chosen 'victim' transaction",
+        "The victim's application should retry the transaction",
+        "Accessing tables in a consistent order across procedures prevents most deadlocks",
+        "Shortening transactions reduces how long locks are held and how often collisions occur"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly distinguishes blocking from a deadlock", "weight": 25 },
+        { "criterion": "Correctly explains SQL Server's automatic deadlock resolution", "weight": 25 },
+        { "criterion": "Proposes consistent table access order as a concrete fix", "weight": 25 },
+        { "criterion": "Proposes shortening transactions as a concrete fix", "weight": 25 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "concurrency-blocking", "label": "Review: Concurrency and Blocking" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-007",
+      "questionCode": "LTV-MSBI-INT-007",
+      "title": "Choosing a clustering key for a new fact-staging table",
+      "prompt": "You're designing a new staging table that will be loaded nightly and queried immediately afterward by ProductID ranges. A table can have only one clustered index. Explain the difference between a clustered and nonclustered index, and what makes a good choice of clustering key.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["T-SQL", "Indexing", "Performance Tuning"],
+      "modelAnswer": "A clustered index determines the actual physical order rows are stored in on disk -- which is exactly why a table can have only one: data can only be physically sorted one way. A nonclustered index is a separate structure that holds a sorted copy of the indexed column(s) plus a pointer back to the actual row, and a table can have many of them. Looking up a row through the clustering key is fastest, since SQL Server navigates directly to the physical location; looking up through a nonclustered index takes one extra step -- find the index entry, then follow the pointer back to the row. A good clustering key is narrow (a small data type, since every nonclustered index secretly stores the clustering key as its row pointer), unique (no ambiguity about physical order), and ever-increasing (so new rows append at the end instead of forcing existing rows to physically shuffle). Given the staging table is loaded nightly and then range-queried by ProductID, an ever-increasing identity key for the clustered index, with a nonclustered index on ProductID to support the range queries, is the more defensible design than clustering directly on ProductID.",
+      "professionalAnswer": "I'd frame this as two separate decisions. First: what should the table's physical row order be -- that's the clustered index, and I only get one shot at it. Second: what other lookup patterns do I need to support cheaply -- that's where nonclustered indexes come in, and I can have several. For a staging table that's loaded nightly, I actually lean toward an ever-increasing identity column as the clustering key rather than ProductID directly, even though ProductID is the column people will query by. The reason is load performance: an ever-increasing key means new rows always append at the end of the physical order, so the nightly load doesn't cause page splits from inserting into the middle of existing data. Then I add a nonclustered index on ProductID to support the range queries -- yes, that costs one extra pointer-following step per lookup compared to clustering directly on ProductID, but it's a much smaller cost than the load-time page-splitting I'd get from clustering on a column that isn't naturally ordered or unique.",
+      "commonMistakes": [
+        "Assuming more indexes are always better without considering the nightly load's insert cost",
+        "Choosing a wide, non-unique column as the clustering key, which bloats every nonclustered index that secretly carries it as a pointer",
+        "Forgetting a table can have only one clustered index, and trying to 'cluster' on two different columns",
+        "Not connecting the ever-increasing key recommendation to the specific nightly-load write pattern described in the scenario"
+      ],
+      "keyPoints": [
+        "Clustered index = physical row order, one per table",
+        "Nonclustered index = separate structure with a pointer back to the row, many allowed",
+        "Good clustering key: narrow, unique, ever-increasing",
+        "Design choice should weigh load (insert) pattern against query (read) pattern"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the clustered vs. nonclustered distinction", "weight": 30 },
+        { "criterion": "Correctly lists the three traits of a good clustering key", "weight": 30 },
+        { "criterion": "Applies the tradeoff to the specific nightly-load scenario given", "weight": 30 },
+        { "criterion": "Recommends a nonclustered index to support the ProductID range queries", "weight": 10 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "clustered-vs-nonclustered", "label": "Review: Clustered vs. Nonclustered Indexes" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-008",
+      "questionCode": "LTV-MSBI-INT-008",
+      "title": "A query got slow after it used to be fast",
+      "prompt": "A report query that filters WHERE YEAR(OrderDate) = 2013 used to run instantly and now takes minutes as the table has grown. There is an index on OrderDate. Diagnose why the index isn't helping, and rewrite the WHERE clause so it is.",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "Performance Tuning", "Indexing"],
+      "modelAnswer": "The predicate is non-SARGable: wrapping the OrderDate column in the YEAR() function forces SQL Server to compute YEAR(OrderDate) for every single row before it can compare against 2013, which means the index on the raw OrderDate column can't be used -- it stores actual dates, not year-extracted values. This was barely noticeable on a small table (a full scan of a few hundred rows is instant either way), but as the table grows into the millions of rows, the same non-SARGable predicate turns a sub-second query into one that takes minutes. The fix is to rewrite the condition so the column itself is left untouched, and transform the comparison value instead: WHERE OrderDate >= '2013-01-01' AND OrderDate < '2014-01-01'. This asks the identical logical question but lets SQL Server use the index on OrderDate to jump directly to the matching range.",
+      "professionalAnswer": "This is a textbook SARGability problem, and the giveaway is right there in the WHERE clause -- there's a function wrapped around the column. Any time I see YEAR(SomeDateColumn), UPPER(SomeColumn), or similar, my first instinct is: the index on that raw column can't be used, because SQL Server would have to transform every row's value before it could compare it, and an index doesn't store transformed values. The reason it 'used to be fast' is simply table size -- a full scan is invisible on a small table and brutal on a large one, so this kind of bug often doesn't show up until data volume grows past some threshold. The fix is always the same shape: stop transforming the column, and transform the comparison value instead. Instead of asking 'what year is this date in,' I ask 'is this date within the 2013 calendar year range' -- same answer, but now the raw OrderDate column is untouched in the comparison, so the existing index can be used for a range scan instead of a full scan.",
+      "example": "-- NON-SARGABLE: forces a full scan even with an index on OrderDate\nWHERE YEAR(OrderDate) = 2013;\n\n-- SARGABLE rewrite: the column itself is untouched, index can be used\nWHERE OrderDate >= '2013-01-01' AND OrderDate < '2014-01-01';",
+      "commonMistakes": [
+        "Blaming the index itself ('the index must be corrupt/fragmented') instead of the predicate wrapping the column",
+        "Rewriting to BETWEEN '2013-01-01' AND '2013-12-31' and accidentally excluding rows with a time component on Dec 31",
+        "Not recognizing other common non-SARGable patterns like UPPER(column) = 'X' or a leading-wildcard LIKE '%text'",
+        "Assuming the problem only appears with YEAR() and missing that any function on the column causes the same issue"
+      ],
+      "keyPoints": [
+        "SARGable means the predicate can use an index directly; non-SARGable forces a full scan",
+        "Wrapping the column in a function (YEAR, UPPER, etc.) makes a predicate non-SARGable",
+        "Fix by transforming the comparison value instead of the column",
+        "The performance gap only becomes visible as table size grows"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies the predicate as non-SARGable and explains why", "weight": 35 },
+        { "criterion": "Correctly explains why this matters more as the table grows", "weight": 15 },
+        { "criterion": "Provides a correct, equivalent SARGable rewrite", "weight": 35 },
+        { "criterion": "Rewrite correctly handles the full year's date range without off-by-one errors", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "sargable-predicates", "label": "Review: SARGable vs. Non-SARGable WHERE Clauses" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-009",
+      "questionCode": "LTV-MSBI-INT-009",
+      "title": "Temp table, table variable, or CTE?",
+      "prompt": "You need to hold an intermediate result set of about 500,000 rows, reuse it across three separate statements in a stored procedure, and would benefit from adding your own index to it. Which of #temp table, @table variable, or CTE would you choose, and why would the other two be worse choices here?",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "Performance Tuning"],
+      "modelAnswer": "A #temp table is the right choice. It's a real, physically-stored table in tempdb, so SQL Server maintains real statistics on it (row counts), which lets the optimizer build a much smarter plan for a large result set, and you can explicitly add your own indexes to it. A table variable would be the wrong choice here: it also lives in tempdb, but historically has no maintained statistics, so on older compatibility levels the optimizer may assume just one row and badly under-allocate resources for 500,000 rows -- and while you can add inline PRIMARY KEY/UNIQUE constraints, you can't add arbitrary indexes the way you can on a #temp table. A CTE would also be the wrong choice: it isn't physically stored at all -- it's inlined into the query -- so referencing it in three separate statements could mean SQL Server re-runs its underlying query multiple times, and you can't add an index to something that was never materialized.",
+      "professionalAnswer": "Given the three constraints in the question -- large row count, reused across multiple statements, and wanting an index -- a #temp table wins on all three. The decision rule I use: CTEs are for one-time readability or recursion, not for reuse -- a CTE doesn't store anything, it's re-inlined at every reference, so touching it from three separate statements risks the underlying query running three separate times. Table variables are for small result sets inside a procedure where I want to avoid plan recompiles -- but historically they carry no real statistics, so the optimizer can badly misjudge a large one. A #temp table is the one option that's physically stored with real statistics the optimizer can use, and the only one of the three where I can explicitly add an index after the fact. For 500,000 rows reused three times, I'm reaching for #temp every time.",
+      "example": "-- Right choice for this scenario: physically stored, real statistics, indexable\nCREATE TABLE #ActiveOrders (OrderID INT, CustomerID INT, OrderTotal MONEY);\n\nINSERT INTO #ActiveOrders\nSELECT OrderID, CustomerID, OrderTotal FROM Sales.SalesOrderHeader WHERE Status = 'Active';\n\nCREATE INDEX IX_Temp_CustomerID ON #ActiveOrders (CustomerID);\n-- Now reused across three statements with an index the optimizer can actually use.",
+      "commonMistakes": [
+        "Choosing a CTE for something reused across multiple statements, not realizing it may re-run its query each time",
+        "Choosing a table variable for a large result set, assuming it always performs the same as a temp table",
+        "Not mentioning that #temp tables maintain real statistics while table variables historically don't",
+        "Forgetting that CTEs can't be indexed at all, since nothing is actually materialized"
+      ],
+      "keyPoints": [
+        "#Temp tables are physically stored with maintained statistics and can be indexed",
+        "Table variables historically lack statistics, risking a poor plan on large sets",
+        "CTEs are inlined, not stored, and may re-execute their query on every reference",
+        "Choice depends on size, reuse, and whether an index is needed"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly chooses the #temp table for this scenario", "weight": 25 },
+        { "criterion": "Correctly explains why a table variable would be worse here", "weight": 30 },
+        { "criterion": "Correctly explains why a CTE would be worse here", "weight": 30 },
+        { "criterion": "Provides valid, relevant example code", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "temp-tables-vs-variables-vs-ctes", "label": "Review: Temp Tables vs. Table Variables vs. CTEs" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-010",
+      "questionCode": "LTV-MSBI-INT-010",
+      "title": "Raising a custom business-rule error",
+      "prompt": "Write T-SQL that checks whether a discount percentage exceeds 50% and, if so, raises a custom error using the modern recommended syntax. Then show how you would log an error inside a CATCH block and still let it propagate to the caller.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "Error Handling"],
+      "modelAnswer": "THROW is the modern, recommended way to raise a custom error, taking an error number, a message, and a state, and raising it exactly as if SQL Server had generated it itself. For a business rule like a discount cap, you check the condition and THROW a custom error if it's violated. To log an error and still propagate it, use THROW with no arguments inside a CATCH block -- it re-raises the exact error that was just caught, unmodified, after whatever logging or cleanup logic runs first. RAISERROR is the older syntax, still common in existing code, with a different argument shape (message, severity, state) -- recognize it, but prefer THROW for new code.",
+      "professionalAnswer": "For the business rule check itself, I'd write a simple IF that tests the discount, and THROW a custom error number with a clear message if it's violated -- that's the modern, recommended way, and it's a one-liner. The more interesting half of this question is re-throwing from a CATCH block, because that's a pattern people often get wrong: they either swallow the error silently after logging it, or they try to reconstruct it with a new THROW statement and lose the original error details. The clean way is TRY/CATCH around the risky operation, log whatever you need to inside CATCH, and then just write THROW with no arguments -- that re-raises the exact error that was caught, unmodified, so the caller still sees the real failure instead of a sanitized stand-in.",
+      "example": "-- Business rule check\nIF @DiscountPercent > 50\n    THROW 50000, 'Discount cannot exceed 50 percent.', 1;\n\n-- Logging then re-throwing the original error\nBEGIN TRY\n    UPDATE Sales.SpecialOffer SET DiscountPct = @DiscountPercent WHERE SpecialOfferID = @ID;\nEND TRY\nBEGIN CATCH\n    INSERT INTO ErrorLog (ErrorMessage, LoggedAt) VALUES (ERROR_MESSAGE(), GETDATE());\n    THROW; -- re-raises the exact caught error, unmodified\nEND CATCH",
+      "commonMistakes": [
+        "Using RAISERROR for new code instead of the modern, recommended THROW",
+        "Writing a new THROW statement inside CATCH instead of bare THROW, which loses the original error's details",
+        "Forgetting THROW's argument order is (error number, message, state) -- a different shape than RAISERROR's",
+        "Swallowing the error entirely after logging it, instead of re-throwing so the caller knows it failed"
+      ],
+      "keyPoints": [
+        "THROW is the modern, recommended way to raise a custom error",
+        "Bare THROW inside CATCH re-raises the exact original error",
+        "RAISERROR is the older syntax, still seen in legacy code",
+        "Logging an error doesn't have to mean swallowing it"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly uses THROW to raise a custom business-rule error", "weight": 30 },
+        { "criterion": "Correctly uses TRY/CATCH with bare THROW to re-raise after logging", "weight": 40 },
+        { "criterion": "Explains the difference between THROW and RAISERROR", "weight": 20 },
+        { "criterion": "Code is syntactically valid T-SQL", "weight": 10 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "raiserror-throw", "label": "Review: RAISERROR and THROW" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-011",
+      "questionCode": "LTV-MSBI-INT-011",
+      "title": "Diagnosing a performance problem under deadline pressure",
+      "prompt": "Tell me about a time you had to track down a slow query or a failing ETL job under time pressure. How did you approach diagnosing it, and how did you communicate progress to whoever was waiting on the fix?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Communication", "Troubleshooting", "T-SQL"],
+      "modelAnswer": "A strong answer uses a structured approach: first isolate the actual symptom (which query, which job step, when it started happening versus when it was fine), then form a specific hypothesis before changing anything (e.g. 'the predicate on OrderDate looks non-SARGable' or 'this package step has no checkpoint so every retry starts from scratch'), test that hypothesis cheaply (check the execution plan, check the job history), and only then apply a fix. Equally important under deadline pressure is proactive, specific communication -- not 'still looking into it' every hour, but 'I've confirmed it's a missing index on X, applying the fix now, expect it resolved in 15 minutes' -- so stakeholders can make their own decisions about what to do in the meantime.",
+      "professionalAnswer": "I'd describe a real situation concretely: what broke, how I noticed, and the actual diagnostic steps I took in order -- not jumping straight to a fix before confirming the cause. I'd emphasize that I checked the obvious things first (recent changes, data volume growth, whether this ever worked) before assuming something exotic was wrong, and that I gave the person waiting on it a clear, specific update rather than vague reassurance -- something like 'I've narrowed it to a non-SARGable predicate in the nightly load query, testing the fix now, should have it confirmed within the hour' instead of just 'working on it.' I'd close with what I changed afterward so it wouldn't happen again -- a monitoring alert, a code review checklist item -- because recovering from one incident well is good, but preventing the repeat is what actually builds trust with the team.",
+      "commonMistakes": [
+        "Describing only the technical fix with no mention of how the situation was communicated under pressure",
+        "Jumping to 'I just reindexed everything' without explaining how the root cause was actually diagnosed",
+        "Giving a vague, non-specific story instead of a real situation with a concrete before/after",
+        "Leaving out what changed afterward to prevent the same issue recurring"
+      ],
+      "keyPoints": [
+        "Describes a real, specific incident rather than a generic answer",
+        "Shows a structured diagnostic approach: isolate symptom, form hypothesis, test cheaply, then fix",
+        "Demonstrates proactive, specific communication under pressure",
+        "Mentions a follow-up change made to prevent recurrence"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Describes a specific, real situation rather than a generic answer", "weight": 25 },
+        { "criterion": "Shows a structured, methodical diagnostic approach", "weight": 30 },
+        { "criterion": "Demonstrates clear, proactive communication under pressure", "weight": 25 },
+        { "criterion": "Mentions a concrete follow-up to prevent recurrence", "weight": 20 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-012",
+      "questionCode": "LTV-MSBI-INT-012",
+      "title": "SSIS event handlers and OnError bubbling",
+      "prompt": "A package has a Sequence container with three Execute SQL tasks inside it. One of the tasks fails but has no OnError event handler of its own. Explain where that OnError event goes, and why a single package-level OnError handler is often enough to catch failures anywhere in the package.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["SSIS", "Error Handling"],
+      "modelAnswer": "Every executable in SSIS -- the package itself, a container, or a task -- raises events as it runs, including OnError the moment something goes wrong. An event handler is a workflow you build on the Event Handlers tab, scoped to a specific executable and a specific event, that runs in response. If a task raises OnError and that task has no OnError handler of its own, the event doesn't disappear -- it bubbles up to the next container in the hierarchy. In this scenario: the failing task escalates to the Sequence container; if the Sequence container also has no OnError handler, it escalates further to the package itself. If the package has an OnError handler, that's where it finally runs. This is exactly why one package-level OnError handler is often sufficient to catch failures anywhere in a package, without wiring an individual handler onto every single task.",
+      "professionalAnswer": "I'd explain this as escalation, because that's the mental model that makes it click. Every task, container, and the package itself can raise an OnError event, and an event handler is just a second, hidden control flow scoped to one specific executable and one specific event -- built with the same Toolbox, same tasks, same design surface as regular Control Flow. If the failing Execute SQL task has no handler of its own, the event doesn't vanish -- it bubbles up one level, to the Sequence container. If the Sequence container doesn't have a handler either, it keeps bubbling, all the way up to the package. So in practice, I almost never wire an OnError handler onto every single task -- I put one OnError handler at the package level, drop a Send Mail task on it, and that one handler catches failures from anywhere in the package tree, because anything unhandled downstream escalates straight to it.",
+      "commonMistakes": [
+        "Assuming an unhandled error just silently disappears instead of bubbling up the container hierarchy",
+        "Thinking you need to wire an OnError handler onto every single task individually",
+        "Confusing the Event Handlers tab with a dialog box or checkbox, rather than a full design surface",
+        "Not realizing the Event Handlers tab uses the same Toolbox and containers as regular Control Flow"
+      ],
+      "keyPoints": [
+        "Every executable (package, container, task) can raise events like OnError",
+        "An unhandled event bubbles up to the next container in the hierarchy",
+        "The Event Handlers tab is a full design surface scoped to one executable and event",
+        "One package-level OnError handler is often enough to catch failures anywhere"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains event bubbling up the container hierarchy", "weight": 35 },
+        { "criterion": "Correctly traces the specific scenario (task -> Sequence -> package)", "weight": 30 },
+        { "criterion": "Explains why one package-level handler is often sufficient", "weight": 25 },
+        { "criterion": "Correctly describes the Event Handlers tab as its own design surface", "weight": 10 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": { "courseSlug": "ssis-development", "lessonSlug": "event-handlers", "label": "Review: Event Handlers" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-013",
+      "questionCode": "LTV-MSBI-INT-013",
+      "title": "A package fails halfway through a five-task load",
+      "prompt": "A package runs five Bulk Insert tasks in sequence, each loading a different dimension table. The fourth one fails due to a bad connection. Without any restart strategy, fixing the connection means re-running all five tasks from scratch. Explain how checkpoints solve this, the three package properties involved, and one real limitation of checkpoint restart granularity.",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["SSIS", "Error Handling", "ETL"],
+      "modelAnswer": "SSIS writes progress information to a checkpoint file as the package runs; if the package fails, that file records exactly how far it got, and rerunning the package picks up from the point of failure instead of the beginning. Three package properties turn this on: SaveCheckpoints (set to True to actually write the checkpoint file -- the master switch), CheckpointFileName (the file path checkpoint data is written to), and CheckpointUsage (Never / Always / IfExists -- IfExists is the setting used most often, restarting from the checkpoint if the file exists, otherwise starting clean). FailPackageOnFailure must also be set to True on each task or container you want to serve as a restart point, or its failure won't register correctly for checkpoint purposes. The key limitation: a package can only restart at the control flow level -- the task host container is the smallest atomic unit that can be a restart point. You cannot restart partway through a single Data Flow task; if it fails five minutes into a ten-minute load, the whole task reruns from its own beginning. If finer restart granularity matters, the answer is to split the work into multiple smaller Data Flow tasks in Control Flow.",
+      "professionalAnswer": "I'd walk through exactly why re-running from scratch is wasteful here -- tasks one through three already succeeded, so redoing them isn't just slow, it's also risky if any of those loads aren't safely repeatable. Checkpoints fix this by having SSIS write a progress file as it runs, so a rerun can skip what already succeeded and pick up exactly where it failed. Turning it on takes three properties on the package itself: SaveCheckpoints as the master on/off switch, CheckpointFileName for where that file lives, and CheckpointUsage set to IfExists, which is the one I use almost every time -- restart from the checkpoint if it's there, otherwise just run clean. The part people miss is FailPackageOnFailure -- without setting that to True on each task, its failure doesn't actually register as a valid restart point. As for the limitation, this is the one I always flag proactively in an interview: restart only works at the control-flow level, so you can't resume partway through a single Data Flow task -- if a ten-minute data flow dies at minute nine, it reruns the whole ten minutes. If that granularity matters, the fix isn't inside the data flow at all -- it's splitting the work into several smaller Data Flow tasks in Control Flow so each one is cheap to rerun entirely.",
+      "commonMistakes": [
+        "Forgetting FailPackageOnFailure must be set to True for a task to register as a valid restart point",
+        "Assuming checkpoints can restart mid-Data-Flow-task, when the real granularity limit is the task host container",
+        "Mixing up CheckpointUsage's three settings (Never/Always/IfExists) and when each applies",
+        "Not knowing that For Loop and Foreach Loop containers don't checkpoint their individual iterations"
+      ],
+      "keyPoints": [
+        "Checkpoint file records progress so a rerun resumes from the point of failure",
+        "Three properties: SaveCheckpoints, CheckpointFileName, CheckpointUsage (IfExists is most common)",
+        "FailPackageOnFailure must be True on a task/container for it to count as a restart point",
+        "Restart granularity is limited to the control-flow (task host) level, never mid-Data-Flow-task",
+        "Splitting work into smaller Data Flow tasks is the workaround for finer restart granularity"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains what the checkpoint file does and why it's useful here", "weight": 25 },
+        { "criterion": "Correctly names and explains all three package properties", "weight": 30 },
+        { "criterion": "Correctly explains FailPackageOnFailure's role", "weight": 15 },
+        { "criterion": "Correctly identifies the task-host-level restart granularity limitation and its workaround", "weight": 30 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "ssis-development", "lessonSlug": "checkpoints-and-restartability", "label": "Review: Checkpoints & Restartability" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-014",
+      "questionCode": "LTV-MSBI-INT-014",
+      "title": "Configuring a Lookup for an incremental load",
+      "prompt": "You're building an incremental load: fact rows carry a ProductID, and you need to tag each incoming row as either 'existing product' or 'new product' by checking it against the Product dimension. Describe how you'd configure a Lookup transformation to do this, including cache mode and how unmatched rows are handled.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["SSIS", "ETL", "Data Flow"],
+      "modelAnswer": "Drop a Lookup transformation into the data flow after the source, pointed at the Product dimension as its reference dataset, joining on ProductID. On the General page, choose a cache mode: Full cache loads the entire Product dimension into memory once before the Lookup runs -- fast per-row lookups, more memory, and the cache reflects a single point in time, which is appropriate here since the dimension is relatively stable during one load. On the Columns page, drag ProductID from Available Input Columns to its match in Available Lookup Columns to build the join. By default, unmatched rows are treated as errors, so on the General page you must explicitly set 'Specify how to handle rows with no matching entries' to 'Redirect rows to no match output.' This gives you two usable outputs: the Match output (existing products) and the No Match output (new products) -- exactly the 'existing vs. new' split the incremental load needs, each routed to its own downstream destination or transformation.",
+      "professionalAnswer": "This is the classic SSIS incremental-load pattern, so I'd walk through it output by output. The Lookup goes right after the source, joined to the Product dimension on ProductID. For cache mode, I'd default to Full cache unless the dimension is enormous or needs to reflect same-run changes, because it's the fastest option for repeated per-row lookups and the dimension typically isn't changing mid-load. The step people forget is on the General page: by default, a row with no match is treated as an error, not as a legitimate 'this is new' signal -- so I have to explicitly switch that setting to 'Redirect rows to no match output.' Once that's set, the Lookup gives me exactly two outputs to route downstream: Match output, which are rows that already exist in the dimension, and No Match output, which are the new products -- I can send those down a separate path, maybe through a dimension-insert step, before the fact load continues. This exact pattern is also how incremental loads detect new vs. existing rows generally, not just for products.",
+      "example": "-- Conceptual SSIS configuration, not T-SQL:\n-- 1. Lookup transformation, Connection page -> Product dimension table, join on ProductID\n-- 2. General page -> Cache mode: Full cache\n-- 3. General page -> 'Specify how to handle rows with no matching entries' -> Redirect rows to no match output\n-- 4. Route Lookup Match Output -> existing-product path\n-- 5. Route Lookup No Match Output -> new-product path (e.g. insert into dimension first)",
+      "commonMistakes": [
+        "Forgetting that unmatched rows are treated as errors by default -- not configured to flow to No Match output automatically",
+        "Choosing No cache when Full cache would be both faster and sufficient for a relatively stable dimension",
+        "Not realizing the Lookup only returns the first match if the reference dataset has duplicates -- it never fans out",
+        "Joining on a case-sensitive column without normalizing casing first, since Lookup joins are case sensitive"
+      ],
+      "keyPoints": [
+        "Lookup transformation joins data flow rows to a reference dataset, row by row",
+        "Full cache loads the whole reference set into memory once; fastest for stable dimensions",
+        "Unmatched rows must be explicitly redirected to the No Match output, not left as errors",
+        "Match and No Match outputs map directly onto 'existing' vs. 'new' row handling"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly configures the Lookup's join against the Product dimension", "weight": 25 },
+        { "criterion": "Chooses and justifies an appropriate cache mode", "weight": 25 },
+        { "criterion": "Correctly explains the need to redirect unmatched rows to No Match output", "weight": 30 },
+        { "criterion": "Correctly maps Match/No Match outputs to existing/new product handling", "weight": 20 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "ssis-development", "lessonSlug": "lookup-transformation", "label": "Review: Lookup Transformation" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-015",
+      "questionCode": "LTV-MSBI-INT-015",
+      "title": "Lookup transformation cache modes",
+      "prompt": "Explain the three cache modes available on an SSIS Lookup transformation -- Full cache, Partial cache, and No cache -- and the tradeoff each one makes between performance and data freshness.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["SSIS", "Data Flow", "Performance Tuning"],
+      "modelAnswer": "Full cache queries the entire reference dataset once and loads it into memory before the Lookup runs -- fast per-row lookups, but uses more memory and the cache reflects a single point in time. Partial cache caches rows incrementally as they're looked up during execution, caching both matches and non-matches, with least-frequently-used rows evicted once the cache fills up. No cache queries the reference dataset live for every single lookup, with no caching at all -- the slowest option, but always current. Full cache uses an OLE DB connection manager or a Cache connection manager (which lets a prebuilt cache be shared across multiple packages); Partial cache and No cache always query live through an OLE DB connection manager.",
+      "professionalAnswer": "I think of these three modes as a straight line from fastest-but-stalest to slowest-but-freshest. Full cache front-loads the entire reference table into memory before any row flows through -- it's the fastest option for repeated lookups, but the data is frozen at whatever it was when the cache was built, and it costs memory proportional to the reference table's size. No cache is the opposite extreme: every lookup is a live query against the source, so it's always current, but it's the slowest option because there's a round trip per row. Partial cache sits in between -- it caches rows on demand as they're actually looked up, evicting the least-recently-used ones once it fills up, which is a reasonable middle ground when the reference set is too large to fully cache but you still want to avoid re-querying rows you've already seen. In practice, I default to Full cache for relatively small, stable dimension tables, and I'd only reach for No cache if the reference data is genuinely changing mid-run and that freshness actually matters to the business logic.",
+      "commonMistakes": [
+        "Thinking Partial cache caches the whole reference set upfront like Full cache does, just in smaller batches",
+        "Assuming No cache is never the right choice, when it's actually correct whenever freshness matters more than speed",
+        "Forgetting Full cache can use a Cache connection manager to share a prebuilt cache across multiple packages",
+        "Not mentioning the memory cost tradeoff that comes with Full cache"
+      ],
+      "keyPoints": [
+        "Full cache: entire reference set loaded once, fastest, frozen at one point in time",
+        "Partial cache: caches incrementally as rows are looked up, evicts least-used rows",
+        "No cache: always queries live, slowest, always current",
+        "Choice trades performance against freshness based on reference data volatility"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains Full cache behavior and tradeoff", "weight": 30 },
+        { "criterion": "Correctly explains Partial cache behavior and tradeoff", "weight": 30 },
+        { "criterion": "Correctly explains No cache behavior and tradeoff", "weight": 30 },
+        { "criterion": "Gives a sensible recommendation for when to use each", "weight": 10 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": { "courseSlug": "ssis-development", "lessonSlug": "lookup-transformation", "label": "Review: Lookup Transformation" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-016",
+      "questionCode": "LTV-MSBI-INT-016",
+      "title": "Designing an incremental load control flow",
+      "prompt": "Design the control flow and data flow for an incremental load of a sales fact table from a source system: only new or changed rows should be processed, not a full reload every night. Describe which components you'd use and how they fit together.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["SSIS", "ETL", "Data Flow"],
+      "modelAnswer": "The data flow starts with an OLE DB Source pulling rows from the source system, typically filtered to only rows changed since the last load (using a watermark column like ModifiedDate, or a change-tracking mechanism). A Lookup transformation then checks each incoming row against the existing fact or staging table on its business key, configured to redirect unmatched rows to the No Match output instead of treating them as errors. A Conditional Split (or simply routing the Lookup's two outputs separately) then divides rows into 'new' (Lookup No Match -- route to an insert destination) and 'existing but possibly changed' (Lookup Match -- route to an OLE DB Command or a staging table merged in afterward with a MERGE statement). The control flow wraps this Data Flow task with an Execute SQL Task beforehand to capture the current watermark value, and typically an Execute SQL Task afterward to update the watermark for next time, so each run only picks up what's genuinely new since the last successful load.",
+      "professionalAnswer": "I'd describe this the way I'd actually build it. First, in Control Flow, an Execute SQL Task reads the last successful watermark value (say, the maximum ModifiedDate already loaded) into a package variable. Then a Data Flow task does the real work: an OLE DB Source query filtered to WHERE ModifiedDate > the watermark variable, so I'm only ever pulling what's changed since last time -- not a full table scan every night. That feeds into a Lookup against the existing fact or staging table on the business key, configured to redirect no-match rows instead of erroring. From there I split into two paths -- new rows (Lookup No Match) go straight to an insert destination, and existing-but-changed rows (Lookup Match) go to an OLE DB Command for a targeted update, or get staged and merged with a MERGE statement afterward, which is often cleaner than row-by-row OLE DB Command updates for larger volumes. Back in Control Flow, after the Data Flow task succeeds, a final Execute SQL Task updates the stored watermark to the maximum ModifiedDate just processed, so the next run picks up exactly where this one left off.",
+      "commonMistakes": [
+        "Reloading the entire source table every night instead of filtering by a watermark column",
+        "Forgetting to update the watermark value after a successful load, causing the same rows to reprocess every time",
+        "Leaving the Lookup's unmatched-row handling at its error default instead of redirecting to No Match output",
+        "Using row-by-row OLE DB Command updates for a very large changed-row volume instead of staging and using MERGE"
+      ],
+      "keyPoints": [
+        "A watermark column (or change tracking) limits the source query to only new/changed rows",
+        "A Lookup against the existing table identifies which rows are new vs. already present",
+        "New and existing rows route to different downstream paths (insert vs. update/merge)",
+        "The watermark must be updated after a successful load so the next run doesn't reprocess old rows"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly uses a watermark or change-tracking mechanism to limit the source extract", "weight": 25 },
+        { "criterion": "Correctly uses a Lookup to distinguish new from existing rows", "weight": 25 },
+        { "criterion": "Correctly routes new vs. changed rows to appropriate downstream handling", "weight": 25 },
+        { "criterion": "Includes updating the watermark after a successful run", "weight": 25 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "ssis-development", "lessonSlug": "incremental-loads-with-ssis", "label": "Review: Incremental Loads With SSIS" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-017",
+      "questionCode": "LTV-MSBI-INT-017",
+      "title": "The Slowly Changing Dimension transformation wizard",
+      "prompt": "Explain what the SSIS Slowly Changing Dimension transformation does, and how it treats a column marked as a 'Changing attribute' (Type 1) differently from a column marked as an 'Historical attribute' (Type 2).",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["SSIS", "Data Warehousing", "ETL"],
+      "modelAnswer": "The Slowly Changing Dimension transformation is a wizard-driven data flow component that compares incoming source rows against an existing dimension table and automatically generates the outputs needed to apply Type 1 and Type 2 changes, instead of hand-writing that comparison logic. During setup, you map each dimension column to a change type. A column marked as a 'Changing attribute' (Type 1) gets overwritten in place when it changes -- the transformation routes those rows to a 'Changing Attributes Updates Output' that feeds a straightforward update of the existing row, with no history kept. A column marked as an 'Historical attribute' (Type 2) triggers versioning when it changes -- the transformation routes those rows to an 'Historical Attributes Inserts Output,' which is wired to close out the old row (expiring it) and insert a brand-new row representing the new version, preserving the old row as history.",
+      "professionalAnswer": "I'd describe the SCD transformation as a wizard that saves you from hand-coding the comparison logic between incoming source rows and the existing dimension. Walking through the wizard, the key step is marking each dimension column with a change type. Anything marked a 'Changing attribute' is treated as Type 1 -- when that column's value differs from what's already in the dimension, the wizard routes that row to its Changing Attributes Updates Output, which just overwrites the existing row in place, no history. Anything marked an 'Historical attribute' is treated as Type 2 -- when that column changes, the row goes to the Historical Attributes Inserts Output instead, and the wizard wires up the logic to expire the old row and insert a new versioned row, so the history is preserved. In practice I've found the wizard useful for getting a working SCD pattern quickly, but it's also known for being slower on large dimensions than a hand-rolled T-SQL MERGE-based Type 2 pattern, so for bigger warehouses I'll sometimes use the wizard to prototype the logic and then reimplement it as a set-based MERGE for production performance.",
+      "commonMistakes": [
+        "Mixing up which output (Changing Attributes vs. Historical Attributes) corresponds to Type 1 vs. Type 2",
+        "Assuming the wizard handles Type 2's surrogate key generation without any additional configuration",
+        "Not knowing the SCD transformation is often slower on large dimensions than a hand-written MERGE pattern",
+        "Forgetting that each dimension column is individually mapped to a change type, not the whole dimension at once"
+      ],
+      "keyPoints": [
+        "The wizard compares incoming rows to the existing dimension and classifies changes automatically",
+        "'Changing attribute' columns = Type 1 behavior = overwrite in place, no history",
+        "'Historical attribute' columns = Type 2 behavior = expire old row, insert a new version",
+        "Each column is individually mapped to a change type during setup"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the overall purpose of the SCD transformation", "weight": 25 },
+        { "criterion": "Correctly explains Changing attribute (Type 1) behavior", "weight": 35 },
+        { "criterion": "Correctly explains Historical attribute (Type 2) behavior", "weight": 35 },
+        { "criterion": "Shows awareness of column-level mapping granularity", "weight": 5 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "ssis-development", "lessonSlug": "scd-transformation", "label": "Review: The Slowly Changing Dimension Transformation" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-018",
+      "questionCode": "LTV-MSBI-INT-018",
+      "title": "An OnError handler that isn't catching anything",
+      "prompt": "A developer builds an OnError event handler on a specific Data Flow task, but a different task in the same package fails and no email alert goes out. Explain the most likely reason, referencing how event handler scoping works.",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["SSIS", "Error Handling", "Troubleshooting"],
+      "modelAnswer": "An event handler is scoped to a specific executable, chosen in the 'Executable' dropdown on the Event Handlers tab -- in this case, that one Data Flow task, and nothing else. The task that actually failed is a different executable, and since it has no OnError handler of its own, its OnError event bubbles up to the next container above it, not sideways to a handler built on a sibling task. Unless that bubbling path eventually reaches a container or the package itself that does have an OnError handler, the event never triggers the email alert at all. The fix is to move the handler (or add an equivalent one) to a container that's actually an ancestor of the failing task -- most robustly, at the package level, so any unhandled failure anywhere in the tree bubbles all the way up to it.",
+      "professionalAnswer": "The first question I'd ask is: which executable is that OnError handler actually scoped to? Handlers aren't global -- they're built against one specific entry in the Executable dropdown, and this one was built against a Data Flow task that isn't the one that failed. Since the failing task has no handler of its own, its OnError event bubbles upward through its own container hierarchy, not sideways into a handler sitting on an unrelated sibling task. So unless the failing task's ancestors happen to include something with its own OnError handler, the bubbling path dead-ends with nothing listening, and no email ever fires. My fix would be to either add a matching handler to the failing task directly, or -- the more robust move -- delete the narrowly-scoped handler and rebuild it at the package level instead, so it catches bubbled-up failures from anywhere in the package, not just one specific task.",
+      "commonMistakes": [
+        "Assuming any OnError handler in the package catches any error anywhere, regardless of scope",
+        "Thinking the handler is broken or misconfigured rather than simply scoped to the wrong executable",
+        "Not realizing bubbling only goes up the ancestor chain, never sideways to a sibling's handler",
+        "Fixing it by duplicating the handler on every task instead of placing one at a shared ancestor or the package level"
+      ],
+      "keyPoints": [
+        "Event handlers are scoped to one specific executable, chosen explicitly",
+        "An unhandled event bubbles up its own ancestor chain, never sideways to a sibling",
+        "A handler on the wrong task simply never fires for a different task's failure",
+        "Placing the handler at the package level is the robust fix"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies the scoping mismatch as the root cause", "weight": 40 },
+        { "criterion": "Correctly explains that bubbling only goes up the ancestor chain, not sideways", "weight": 35 },
+        { "criterion": "Proposes a correct, robust fix (package-level handler)", "weight": 25 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": { "courseSlug": "ssis-development", "lessonSlug": "event-handlers", "label": "Review: Event Handlers" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-019",
+      "questionCode": "LTV-MSBI-INT-019",
+      "title": "Designing restart strategy across a multi-package ETL run",
+      "prompt": "You're designing a nightly ETL run of six packages, where package 4 both uses checkpoints for restartability and wraps part of its work in a transaction. What's the risk in combining checkpoints and transactions in the same package, and how would you structure the package to avoid it?",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["SSIS", "Architecture", "ETL"],
+      "modelAnswer": "Checkpoints and transactions can actively fight each other: if a container both uses a transaction and sits within a checkpoint's reach, a restart from the checkpoint file can replay a transaction that already committed successfully the first time, producing duplicated or inconsistent results. Microsoft's own guidance is explicit that using both together in the same package 'could cause unexpected results.' The safer architecture is to keep checkpoints and transactions in separate parts of the package rather than layering one directly on top of the other -- for example, put the transactional logic in a Sequence container that either succeeds completely or is excluded from the checkpoint's restart boundary entirely, and let checkpoint-based restart apply only to the non-transactional steps around it.",
+      "professionalAnswer": "This is one of those SSIS gotchas that doesn't show up until you hit it in production. The risk is that checkpoints and transactions solve overlapping but different problems -- checkpoints are about 'where do I resume,' and transactions are about 'did this already commit' -- and when they overlap on the same container, a restart can resume at a point where the transaction had already committed the first time, so the package replays work that's already durably saved, which can mean double-inserts or other inconsistent results. Microsoft's own docs are blunt that combining the two in the same package 'could cause unexpected results,' so I take that as a hard design constraint, not a suggestion. My approach would be to physically separate them in the package: keep the transactional logic self-contained in its own Sequence container, and design the checkpoint boundaries so that container is either entirely inside or entirely outside any restart point -- never split in a way where a restart could land in the middle of work the transaction already committed.",
+      "commonMistakes": [
+        "Assuming checkpoints and transactions are fully compatible and can be layered freely",
+        "Not recognizing that a restart replaying an already-committed transaction is the specific failure mode",
+        "Proposing to just disable transactions entirely instead of isolating them from the checkpoint boundary",
+        "Treating this as a minor edge case rather than a real production risk Microsoft explicitly warns about"
+      ],
+      "keyPoints": [
+        "Checkpoints and transactions can conflict: a restart can replay an already-committed transaction",
+        "Microsoft explicitly warns combining them in one package can cause unexpected results",
+        "The fix is architectural: keep transactional logic separate from checkpoint restart boundaries",
+        "Restart granularity itself is limited to the control-flow (task host) level regardless"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies the checkpoint/transaction conflict risk", "weight": 35 },
+        { "criterion": "Explains the specific failure mode (replaying an already-committed transaction)", "weight": 30 },
+        { "criterion": "Proposes a concrete architectural separation to avoid the risk", "weight": 35 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "ssis-development", "lessonSlug": "checkpoints-and-restartability", "label": "Review: Checkpoints & Restartability" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-020",
+      "questionCode": "LTV-MSBI-INT-020",
+      "title": "How cascading parameters actually work",
+      "prompt": "Explain how a three-level cascading parameter setup (Country, then State, then City) works in SSRS. Where does the actual filtering logic live, and why must the parameters appear in a specific order?",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["SSRS", "Parameters"],
+      "modelAnswer": "A cascading parameter setup isn't a single property you flip on -- it's a chain of separate datasets, each one filtered by the parameter chosen before it. There's no one dialog showing the whole chain; it's spread across each dataset's own Filters tab. The State dataset's Filters tab has an Expression (the column being tested), an Operator, and a Value of [@CountryParameter] -- the current value of the Country parameter. The City dataset's Filters tab similarly references [@StateParameter]. Three parameters, three datasets, three filters, each pointed at the parameter one level up. Order matters because the order parameters appear under the Parameters node in the Report Data pane is the order the reader is prompted for them at runtime -- and because the State dataset's filter references the Country parameter's value, Country must be prompted (and therefore listed) before State, and State before City. A parameter can't reference a value that hasn't been chosen yet.",
+      "professionalAnswer": "The thing I always clarify first is that 'cascading parameters' isn't one setting -- it's an illusion created by three separate filtered datasets working together. Each level in the chain gets its own dataset, and the actual filtering logic lives on that dataset's Filters tab: Expression, Operator, and a Value that's a reference to the parameter chosen one level up, like [@CountryParameter]. So the State dataset's query returns every state, but its Filters tab narrows that down to just the states belonging to whichever country was picked. The ordering requirement trips people up constantly -- the order under the Parameters node in the Report Data pane is literally the order the reader gets prompted, and since the State dataset's filter depends on knowing the Country parameter's value already, Country has to come first in that list, or the report tries to filter on a parameter the reader hasn't answered yet.",
+      "commonMistakes": [
+        "Thinking cascading parameters are a single checkbox or property instead of a chain of filtered datasets",
+        "Putting the filter logic in the report body instead of on each dataset's own Filters tab",
+        "Getting the parameter order wrong in the Report Data pane, breaking the dependency chain",
+        "Assuming the mechanism changes for multi-value parameters, when the cascading logic itself is identical (just = vs. In)"
+      ],
+      "keyPoints": [
+        "Cascading parameters are built from a chain of separate, filtered datasets, not one setting",
+        "Each dataset's Filters tab references the parameter chosen one level up",
+        "Parameter order in the Report Data pane controls both prompt order and dependency resolution",
+        "A parameter can't reference a value that hasn't been chosen yet, so order is not cosmetic"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains that cascading is built from chained, filtered datasets", "weight": 35 },
+        { "criterion": "Correctly describes where the filter logic actually lives (Filters tab)", "weight": 30 },
+        { "criterion": "Correctly explains why parameter order matters", "weight": 35 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": { "courseSlug": "ssrs-development", "lessonSlug": "cascading-parameters", "label": "Review: Cascading Parameters" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-021",
+      "questionCode": "LTV-MSBI-INT-021",
+      "title": "Building the dataset filter for a cascading parameter",
+      "prompt": "You're adding a Department-to-Employee cascading parameter pair to a report. Describe exactly what you'd configure on the Employee dataset's Filters tab so the employee list narrows to the selected department.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": ["SSRS", "Parameters"],
+      "modelAnswer": "On the Employee dataset's Dataset Properties, open the Filters tab and add a filter with three parts: Expression set to the column from the Employee dataset that identifies its department (e.g. [DepartmentID]), Operator set to '=' (a single-value parameter comparison), and Value set to the parameter reference [@DepartmentParameter] -- the current value of the Department parameter. This narrows the Employee dataset's full query result down to only the rows belonging to whichever department was selected. For this to work at runtime, Department must appear before Employee under the Parameters node in the Report Data pane, so the Department value is already known when the Employee dataset's query (and its filter) runs.",
+      "professionalAnswer": "I'd configure it exactly the way the mechanism is designed to work: open the Employee dataset's Properties, go to the Filters tab, and add one filter row. Expression is whatever column in the Employee dataset holds the department identifier -- DepartmentID, most likely. Operator is '=' since this is a single-value parameter. Value is [@DepartmentParameter], which pulls in whatever the reader picked for Department. That's the entire mechanism -- no code, no stored procedure logic required, just a filter on the dataset itself. The one thing I'd double check afterward is parameter order in the Report Data pane: Department needs to be listed above Employee, otherwise the Employee dataset's filter would be trying to reference a parameter value that hasn't been selected yet.",
+      "example": "-- Not a code artifact, but the Filters tab configuration, expressed as a rule:\n-- Expression: [DepartmentID]\n-- Operator:   =\n-- Value:      [@DepartmentParameter]\n-- (Equivalent conceptually to: SELECT * FROM EmployeeDataset WHERE DepartmentID = @DepartmentParameter)",
+      "commonMistakes": [
+        "Trying to write the filter logic into the dataset's SQL query instead of (or in addition to) the Filters tab",
+        "Using 'In' as the Operator for a single-value parameter instead of '='",
+        "Forgetting to place Department above Employee in the Parameters node order",
+        "Referencing the wrong column -- filtering on EmployeeID instead of the department-identifying column"
+      ],
+      "keyPoints": [
+        "The Filters tab is where cascading logic actually lives, not the dataset query itself",
+        "Expression / Operator / Value map to column / comparison / parameter reference",
+        "A single-value parameter uses '=' as the Operator",
+        "Parameter order in the Report Data pane must place Department before Employee"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies the Filters tab as where this is configured", "weight": 30 },
+        { "criterion": "Correctly specifies Expression, Operator, and Value", "weight": 40 },
+        { "criterion": "Mentions the required parameter order dependency", "weight": 30 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": { "courseSlug": "ssrs-development", "lessonSlug": "cascading-parameters", "label": "Review: Cascading Parameters" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-022",
+      "questionCode": "LTV-MSBI-INT-022",
+      "title": "What makes a subscription 'data-driven'",
+      "prompt": "Explain what distinguishes a data-driven subscription from a standard subscription in SSRS, and what two things the subscription's query result set actually controls.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["SSRS", "Subscriptions"],
+      "modelAnswer": "A standard subscription has one fixed set of delivery settings. A data-driven subscription instead queries a subscriber database each time it runs, and uses whatever comes back to determine the recipients, the delivery settings, and the report parameter values for that run -- the mechanism to use when who gets a report, or what parameters they see it with, changes over time and shouldn't require manually editing a subscription every time it does. This requires defining a dataset (a data source plus a query) before the subscription can be built at all. Two facts about that query's result set matter more than anything else: columns determine what you're allowed to map to delivery settings and parameters (an email subscription needs a column of email addresses), and rows determine how many deliveries get generated -- ten thousand rows means ten thousand separate deliveries, one per row.",
+      "professionalAnswer": "The simplest way I'd put it: a standard subscription is baked-in and static -- same recipient, same settings, every time it fires. A data-driven subscription instead runs a query against a subscriber database at execution time and builds the delivery list fresh, every single run, from whatever that query returns. That's the right tool whenever the recipient list or the parameter values genuinely change over time -- think a report that needs to go to whichever regional manager owns a territory this month, without anyone manually touching the subscription. The two things I'd emphasize about the query results: columns decide what you're even allowed to map to delivery fields -- no email column means you can't map an email field -- and rows decide volume, literally one delivery per row, so a 10,000-row query produces 10,000 separate deliveries. Before I'd ever paste a query into the subscription wizard, I'd run it in SSMS first and sanity-check both the columns and the row count, because debugging it inside the wizard's query-timeout window is painful.",
+      "commonMistakes": [
+        "Thinking a data-driven subscription has a fixed recipient list like a standard subscription does",
+        "Forgetting that rows in the query result directly equal the number of deliveries generated",
+        "Not testing the subscription's query in SSMS first before pasting it into the wizard",
+        "Forgetting that data-driven subscriptions require advanced permissions and aren't available for reports in My Reports by default"
+      ],
+      "keyPoints": [
+        "A data-driven subscription queries a subscriber database at run time, unlike a standard subscription's fixed settings",
+        "Requires a dataset (data source + query) before it can be configured",
+        "Result set columns determine what can be mapped to delivery settings/parameters",
+        "Result set rows determine the number of deliveries generated, one per row"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly contrasts data-driven vs. standard subscriptions", "weight": 30 },
+        { "criterion": "Correctly explains the role of the dataset/query", "weight": 20 },
+        { "criterion": "Correctly explains what columns control", "weight": 25 },
+        { "criterion": "Correctly explains what rows control (one delivery per row)", "weight": 25 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": { "courseSlug": "ssrs-development", "lessonSlug": "data-driven-subscriptions", "label": "Review: Data-Driven Subscriptions" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-023",
+      "questionCode": "LTV-MSBI-INT-023",
+      "title": "A data-driven subscription sent the wrong number of emails",
+      "prompt": "A data-driven subscription was supposed to send one report to each of 40 regional managers, but it actually generated 120 deliveries. What would you check first, and what's the most likely explanation?",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["SSRS", "Subscriptions", "Troubleshooting"],
+      "modelAnswer": "The first thing to check is the subscription's underlying query, run directly in SQL Server Management Studio -- because rows in that result set directly determine how many deliveries get generated, one per row. If 120 deliveries went out instead of the expected 40, the query is almost certainly returning 120 rows, not 40 -- most likely because of a join that fans out (e.g. joining managers to a table where each manager has multiple records, like one row per territory or one row per month, producing three rows per manager instead of one). The fix is to correct the query so it returns exactly one row per intended recipient -- often by aggregating, deduplicating, or tightening the join -- rather than trying to fix anything inside the subscription wizard itself, since the wizard only consumes whatever rows the query hands it.",
+      "professionalAnswer": "My first move is always to pull the subscription's query out and run it directly in SSMS, because the wizard is just a dumb consumer of whatever rows that query returns -- one delivery per row, no exceptions. 120 deliveries for 40 intended recipients is a strong signal the query is returning 3 rows per manager instead of 1, and the most common cause I'd look for is a join that fans out -- maybe the query joins managers to a territories or monthly-summary table where each manager legitimately has three related rows, and nobody deduplicated or aggregated before handing that result to the subscription. Once I confirm the row count problem in SSMS, the fix is entirely in the query -- tightening the join, adding a DISTINCT, or aggregating down to one row per manager -- not anything inside the subscription wizard itself, which has no logic of its own to blame here.",
+      "commonMistakes": [
+        "Looking for the bug inside the subscription wizard's settings instead of the underlying query",
+        "Assuming the delivery count is unrelated to the query's row count",
+        "Not testing the query independently in SSMS before re-examining the wizard configuration",
+        "Fixing it by manually limiting deliveries rather than correcting the row-level root cause in the query"
+      ],
+      "keyPoints": [
+        "Delivery count always equals the query's row count -- one delivery per row",
+        "A 3x delivery count strongly suggests a fan-out join producing multiple rows per intended recipient",
+        "Diagnose by running the query directly in SSMS, outside the subscription wizard",
+        "The fix belongs in the query (dedup/aggregate/tighten join), not in the subscription wizard"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies checking the query's row count as the first step", "weight": 35 },
+        { "criterion": "Correctly diagnoses a likely fan-out join as the cause", "weight": 35 },
+        { "criterion": "Proposes a correct fix located in the query, not the wizard", "weight": 30 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "ssrs-development", "lessonSlug": "data-driven-subscriptions", "label": "Review: Data-Driven Subscriptions" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-024",
+      "questionCode": "LTV-MSBI-INT-024",
+      "title": "Nested groups and interactive sort in the Grouping pane",
+      "prompt": "You need a tablix grouped by Category, with Subcategory nested under it, and you want report viewers to be able to click a column header to re-sort the detail rows by price at runtime. Describe how you'd set this up using the Grouping pane and Interactive Sorting.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["SSRS", "Report Design"],
+      "modelAnswer": "In the Grouping pane's Row Groups section, drag Category in first to create the parent group, then drag Subcategory underneath it (not beside it) so it becomes a child group, nested and indented under Category -- a child group repeats once per parent instance, which is exactly the Category-then-Subcategory hierarchy needed. This is a fixed, design-time grouping structure, separate from sorting. To let viewers re-sort the detail rows by price at runtime, right-click the price column's text box, choose Text Box Properties, go to Interactive Sorting, check 'Enable interactive sorting on this text box,' choose 'Detail rows' (not Groups), and set 'Sort by' to the price field. This adds a clickable header button without touching the report's fixed design-time sort order, and the two can coexist -- a sensible default order plus a runtime override per column.",
+      "professionalAnswer": "I'd build the grouping first, independent of sorting, because they're genuinely separate concerns even though people often conflate them. In the Grouping pane's Row Groups, I drag Category down first -- that's the parent. Then I drag Subcategory underneath Category specifically, not beside it, which is what makes it a child rather than a sibling -- the visual cue is the indentation, and functionally a child group repeats once per parent instance, which is exactly the nested hierarchy I want. One practical tip I always mention: when dragging fields into the Grouping pane, I'm careful not to drag across other report items on the design surface, since that can accidentally select those items and deselect the data region I'm working on. For the interactive sort, that's a completely separate step on the price column specifically -- right-click its text box, Text Box Properties, Interactive Sorting tab, check the enable box, choose Detail rows since I want to sort the actual data rows rather than the groups, and point Sort by at the price field. That gives viewers a clickable header without changing the report's own default sort order underneath it.",
+      "commonMistakes": [
+        "Dragging Subcategory beside Category instead of underneath it, creating an adjacent group instead of a child group",
+        "Confusing interactive sort (a runtime, viewer-controlled feature) with the report's fixed design-time sort order",
+        "Choosing 'Groups' instead of 'Detail rows' in Interactive Sorting when the intent is to sort the actual data rows",
+        "Dragging a field across other report items on the design surface, accidentally deselecting the intended data region"
+      ],
+      "keyPoints": [
+        "Dragging a field underneath another in the Grouping pane creates a nested child group",
+        "Design-time sort and interactive sort are separate, coexisting mechanisms",
+        "Interactive sorting is enabled per text box via Text Box Properties",
+        "Choosing 'Detail rows' vs. 'Groups' in Interactive Sorting changes what actually gets re-sorted"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly builds the Category/Subcategory parent-child grouping", "weight": 35 },
+        { "criterion": "Correctly configures Interactive Sorting on the price column", "weight": 35 },
+        { "criterion": "Correctly distinguishes design-time sort from interactive sort", "weight": 30 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "ssrs-development", "lessonSlug": "grouping-and-sorting", "label": "Review: Grouping & Sorting" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-025",
+      "questionCode": "LTV-MSBI-INT-025",
+      "title": "A cascading parameter chain throws an error at runtime",
+      "prompt": "A report with Country, State, and City cascading parameters throws an error the moment it's opened, before the reader has selected anything. A colleague says they just added the three parameters and their dataset filters but didn't check the order in the Parameters node. Diagnose the likely cause.",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["SSRS", "Parameters", "Troubleshooting"],
+      "modelAnswer": "The most likely cause is exactly the thing the colleague flagged: the order parameters appear under the Parameters node in the Report Data pane determines the order the reader is prompted for them, and that order has to match the dependency chain -- Country before State before City. If State (or its dataset's query) ends up evaluated before Country has a value, its filter is trying to reference [@CountryParameter] before that parameter has been set, which produces an error immediately rather than waiting for the reader to interact with anything. The fix is to reorder the parameters in the Report Data pane's Parameters node so Country comes first, State second, City third, matching the actual dependency chain each dataset's Filters tab relies on.",
+      "professionalAnswer": "Given that the colleague already flagged they skipped checking the parameter order, that's exactly where I'd look first, because this is the single most common cause of a cascading parameter chain failing immediately rather than waiting for reader interaction. Each dataset's Filters tab in a cascading chain references the parameter one level up -- State's filter references [@CountryParameter], City's references [@StateParameter]. If the Parameters node in the Report Data pane doesn't list them in that same dependency order, the report can try to evaluate a dataset's filter against a parameter that hasn't been given a value yet, which throws an error right at open time instead of gracefully prompting step by step. The fix is mechanical: open the Parameters node, confirm Country sits above State, and State sits above City, reordering them if they don't.",
+      "commonMistakes": [
+        "Assuming the error must be in the dataset query's SQL syntax rather than parameter ordering",
+        "Not realizing an error at report-open time (vs. after a selection) is itself a strong clue pointing at ordering",
+        "Fixing it by removing the cascading filters instead of simply reordering the Parameters node",
+        "Confusing the fix for this with Allow multiple values settings, which is unrelated"
+      ],
+      "keyPoints": [
+        "Parameter order in the Report Data pane must match the dependency chain",
+        "An error at open time (before any selection) is a strong signal of an ordering problem",
+        "Each dataset's filter references the parameter one level up, which must already have a value",
+        "The fix is reordering the Parameters node, not touching the filter logic itself"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies parameter order as the likely root cause", "weight": 45 },
+        { "criterion": "Correctly explains why this produces an error at open time", "weight": 30 },
+        { "criterion": "Proposes the correct, minimal fix (reordering the Parameters node)", "weight": 25 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": { "courseSlug": "ssrs-development", "lessonSlug": "cascading-parameters", "label": "Review: Cascading Parameters" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-026",
+      "questionCode": "LTV-MSBI-INT-026",
+      "title": "Explaining a report change timeline to a non-technical stakeholder",
+      "prompt": "A sales manager asks why adding one more parameter to an existing SSRS report -- 'just let me filter by region too' -- is going to take more than a quick five-minute change. How would you explain this to someone with no technical background?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Communication", "SSRS"],
+      "modelAnswer": "A strong answer translates the technical reality into terms the stakeholder cares about without being condescending: explain that a new parameter isn't just a dropdown on the screen -- it usually means changing the underlying dataset's query to accept and filter by the new value, checking whether any existing parameters need to cascade from or into the new one, re-testing the report with real data to make sure nothing else broke, and in some cases updating any subscriptions or other reports that share the same dataset. Framing it concretely -- 'it's less like flipping a switch and more like adding a new ingredient to a recipe that's already being served to other tables' -- helps non-technical stakeholders understand why 'just one filter' touches more than the screen they're looking at, while still giving them a realistic timeline instead of a vague 'it's complicated.'",
+      "professionalAnswer": "I'd avoid jargon entirely and anchor the explanation in what they already understand: the report they see is the last step in a chain, and changing what they see usually means changing something earlier in that chain too. Adding a region filter isn't just adding a box on the screen -- it means going back to where the report gets its data and teaching that query how to filter by region, then checking whether region needs to interact with any filters that already exist (does picking a region change what shows up in another dropdown?), then actually testing it with real data to make sure the numbers still add up correctly, not just that the dropdown appears. I'd give them a concrete estimate rather than just 'it's complicated' -- something like 'I can have this ready and tested by Thursday' -- because non-technical stakeholders generally don't need the mechanics, they need to know it's being handled and roughly when.",
+      "commonMistakes": [
+        "Using technical jargon (dataset, Filters tab, cascading parameters) without translating it",
+        "Being dismissive or implying the request itself was unreasonable",
+        "Not giving any concrete timeline, leaving the stakeholder with only 'it's complicated'",
+        "Over-explaining every technical step instead of focusing on what the stakeholder actually needs to know"
+      ],
+      "keyPoints": [
+        "Translates technical work into terms a non-technical stakeholder understands",
+        "Explains that a UI-level change usually requires underlying data/query changes",
+        "Mentions testing and checking interactions with existing filters, not just adding a control",
+        "Gives a concrete, realistic timeline rather than a vague answer"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Explains the technical reality without jargon", "weight": 35 },
+        { "criterion": "Connects the explanation to what the stakeholder actually cares about", "weight": 25 },
+        { "criterion": "Mentions testing/validation as part of why it takes longer than expected", "weight": 20 },
+        { "criterion": "Provides or implies a concrete, realistic timeline", "weight": 20 }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": { "courseSlug": "ssrs-development", "lessonSlug": "report-parameters", "label": "Review: Report Parameters" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-027",
+      "questionCode": "LTV-MSBI-INT-027",
+      "title": "What CALCULATE actually does",
+      "prompt": "Explain what the DAX CALCULATE function does, in one sentence, and then explain what happens by default when CALCULATE's filter argument targets a column that already has an active filter from a slicer.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": ["Power BI", "DAX"],
+      "modelAnswer": "CALCULATE evaluates an expression inside a modified filter context -- that's the whole function in one sentence, but nearly everything advanced in DAX is built on top of it. Its syntax is CALCULATE(<expression>, <filter1>, <filter2>, ...), where the expression is almost always a measure or an aggregation, and the filters narrow or change the filter context it's evaluated in. When a filter argument targets a column that isn't already filtered, the new filter is simply added. When the column is already filtered -- say, by a slicer -- CALCULATE's filter overwrites the existing one by default, rather than combining with it. This overwrite behavior is intentional: it's what lets you force an expression to ignore what a user selected and substitute your own condition instead.",
+      "professionalAnswer": "I'd explain CALCULATE as the function that changes the rules an expression is evaluated under -- everything else in DAX that feels 'advanced,' from time intelligence to percent-of-total, is really just CALCULATE with a particular kind of filter passed into it. The syntax is simple: an expression first, then any number of filter arguments. The behavior that trips people up is what happens when a filter argument targets a column that's already filtered elsewhere, like a slicer on the report page. By default, CALCULATE doesn't combine with that existing filter -- it overwrites it entirely for that one expression. So if I write Blue Revenue = CALCULATE(SUM(Sales[SalesAmount]), 'Product'[Color] = \"Blue\"), and the report page already has a slicer set to 'Red,' that measure still shows blue-only revenue, because my CALCULATE filter replaced the slicer's filter rather than intersecting with it. That's deliberate and powerful -- but it's also the single most common source of 'why is my measure ignoring the slicer' confusion, which is exactly why KEEPFILTERS exists for the cases where you want the opposite behavior.",
+      "example": "Blue Revenue = CALCULATE(SUM(Sales[SalesAmount]), 'Product'[Color] = \"Blue\")\n-- Even with a report-level slicer on Product[Color] set to \"Red\",\n-- this measure still returns blue-only revenue, because CALCULATE's\n-- filter overwrites the slicer's filter on that same column by default.",
+      "commonMistakes": [
+        "Describing CALCULATE only as 'a SUM with a filter' instead of the general filter-context-modification mechanism it is",
+        "Assuming a CALCULATE filter always combines with existing filters instead of overwriting them by default",
+        "Forgetting the filter argument can be a Boolean expression, a table expression (FILTER), or a filter modifier function",
+        "Not recognizing that time-intelligence functions and percent-of-total patterns are just CALCULATE under the hood"
+      ],
+      "keyPoints": [
+        "CALCULATE evaluates an expression inside a modified filter context",
+        "The filter argument can be a simple condition, a table expression, or a filter modifier",
+        "By default, a CALCULATE filter overwrites an existing filter on the same column, not combines with it",
+        "This overwrite behavior is what makes CALCULATE powerful for overriding user selections"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Gives a correct one-sentence definition of CALCULATE", "weight": 30 },
+        { "criterion": "Correctly explains the default overwrite behavior on an already-filtered column", "weight": 40 },
+        { "criterion": "Provides a correct, relevant example", "weight": 30 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": { "courseSlug": "power-bi", "lessonSlug": "calculate", "label": "Review: CALCULATE Explained" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-028",
+      "questionCode": "LTV-MSBI-INT-028",
+      "title": "Writing a percent-of-total measure",
+      "prompt": "Write a DAX measure that shows each product category's sales as a percentage of total sales across the whole table, regardless of what category filter is currently applied on the report page.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": ["Power BI", "DAX"],
+      "modelAnswer": "This is the classic percent-of-total pattern, built with DIVIDE and REMOVEFILTERS. The numerator respects whatever's currently filtered (one category, if that's what's selected). The denominator wraps the same total-sales expression in CALCULATE with REMOVEFILTERS() as the filter argument, which strips away every active filter, giving the grand total across the entire table regardless of what's selected. Dividing the filtered numerator by the unfiltered denominator produces each row's share of the whole.",
+      "professionalAnswer": "I'd build this as two layers. First, I already have (or create) a plain Total Sales measure that just does SUM(Sales[SalesAmount]) and naturally respects whatever filter context it's placed in -- one category if that's what the visual is sliced by. Then the percent-of-total measure wraps that same aggregation twice: once left alone as the numerator, and once inside CALCULATE with REMOVEFILTERS() as the denominator, which strips away every filter and gives me the grand total no matter what's selected. I always use DIVIDE instead of a plain '/' operator, specifically because DIVIDE handles a zero denominator gracefully instead of throwing a divide-by-zero error, which matters the moment someone filters down to a category with literally zero total sales in it.",
+      "example": "%Sales =\nDIVIDE(\n    [Total Sales],\n    CALCULATE([Total Sales], REMOVEFILTERS())\n)\n-- Numerator respects the current filter (e.g. one category);\n-- denominator strips all filters via REMOVEFILTERS(), giving the grand total.\n-- DIVIDE avoids a divide-by-zero error if the filtered total is 0.",
+      "commonMistakes": [
+        "Using a plain '/' operator instead of DIVIDE, risking a divide-by-zero error",
+        "Forgetting to wrap REMOVEFILTERS() inside CALCULATE -- it only has an effect as a CALCULATE filter argument",
+        "Using ALL() instead of REMOVEFILTERS() without understanding the subtle scoping differences between them",
+        "Computing the denominator from a hardcoded total instead of dynamically removing filters, breaking if the data changes"
+      ],
+      "keyPoints": [
+        "REMOVEFILTERS() inside CALCULATE strips all active filters for the grand total",
+        "The numerator is left as a plain measure so it respects the current filter context",
+        "DIVIDE is preferred over '/' because it handles a zero denominator gracefully",
+        "This pattern generalizes to any percent-of-total calculation"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly uses CALCULATE with REMOVEFILTERS() for the denominator", "weight": 35 },
+        { "criterion": "Correctly leaves the numerator respecting the current filter context", "weight": 25 },
+        { "criterion": "Uses DIVIDE rather than a plain division operator", "weight": 20 },
+        { "criterion": "Produces syntactically valid, correct DAX", "weight": 20 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "power-bi", "lessonSlug": "calculate-modifiers", "label": "Review: CALCULATE Filter Modifiers" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-029",
+      "questionCode": "LTV-MSBI-INT-029",
+      "title": "Context transition in a calculated column",
+      "prompt": "A calculated column on a Customer table classifies each customer as 'High' or 'Low' value by calling CALCULATE(SUM(Sales[SalesAmount]), ALLEXCEPT(Customer, Customer[CustomerKey])) and comparing it to 2500. Explain how this can possibly work, given that a calculated column only ever sees row context.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": ["Power BI", "DAX"],
+      "modelAnswer": "This works because of context transition: whenever CALCULATE evaluates an expression inside row context, DAX converts that row context into an equivalent filter context, restricted to just that row's values. For one specific customer row, the row context (this one CustomerKey) becomes a filter context, as if the whole model had been filtered down to just that customer. ALLEXCEPT(Customer, Customer[CustomerKey]) then removes any other filters on the Customer table while deliberately keeping the filter context transition just created on CustomerKey. SUM(Sales[SalesAmount]) now sums only that one customer's sales, because the filter context -- via the relationship between Customer and Sales -- has narrowed the Sales table down to just their rows. Every row in the Customer table repeats this independently, one customer at a time.",
+      "professionalAnswer": "This is exactly the kind of formula that looks impossible until you know about context transition, so I'd walk through it row by row. DAX is evaluating this calculated column for one specific customer at a time -- that's row context, nothing more. The moment CALCULATE appears inside that row context, DAX triggers context transition: it takes 'the row I'm currently on' and converts it into 'a filter restricting everything to just this row's CustomerKey.' ALLEXCEPT then does cleanup -- it strips any other filters that might be hanging around on the Customer table, while specifically preserving that CustomerKey filter context transition just created. So by the time SUM(Sales[SalesAmount]) runs, the filter context has narrowed the related Sales table down to exactly one customer's transactions, through the relationship between the two tables. The IF then just compares that number to 2500. Nothing exotic is happening -- it's the standard shape of 'row context triggers CALCULATE triggers filter context,' which explains a whole category of DAX formulas that otherwise look like they're reading another table's data from inside row context by magic.",
+      "example": "Customer Segment =\nIF (\n    CALCULATE (\n        SUM ( Sales[SalesAmount] ),\n        ALLEXCEPT ( Customer, Customer[CustomerKey] )\n    ) < 2500,\n    \"Low\", \"High\"\n)\n-- CALCULATE triggers context transition: the current row's CustomerKey\n-- becomes a one-value filter context, letting SUM reach into the related Sales table.",
+      "commonMistakes": [
+        "Thinking a calculated column can never reference another table's aggregated data, missing that context transition is exactly what makes it possible",
+        "Forgetting that context transition happens automatically for an implicit CALCULATE wrapped around any measure reference, too",
+        "Misexplaining ALLEXCEPT as removing the CustomerKey filter instead of preserving it while removing everything else",
+        "Not recognizing the trigger condition precisely: CALCULATE evaluated inside row context"
+      ],
+      "keyPoints": [
+        "Context transition converts the current row context into an equivalent one-row filter context",
+        "It's triggered whenever CALCULATE evaluates an expression inside row context",
+        "A measure reference inside row context triggers it automatically too, via an implicit CALCULATE",
+        "ALLEXCEPT keeps the context-transition filter while removing other filters on the same table"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly defines context transition and its trigger condition", "weight": 35 },
+        { "criterion": "Correctly walks through what happens for one customer row in this formula", "weight": 40 },
+        { "criterion": "Correctly explains ALLEXCEPT's role in preserving the context transition", "weight": 25 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "power-bi", "lessonSlug": "context-transition", "label": "Review: Context Transition" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-030",
+      "questionCode": "LTV-MSBI-INT-030",
+      "title": "A measure is ignoring the report's slicer selections",
+      "prompt": "A measure called 'West Region Sales' was written as CALCULATE(SUM(Sales[SalesAmount]), Geography[Region] = \"West\"). When a user applies a slicer on Geography[State] set to multiple East Coast states, the measure still shows West region totals instead of narrowing further. Explain why, and how you'd fix it if the intent is for the measure to respect both the hardcoded region condition and the slicer together.",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": ["Power BI", "DAX", "Troubleshooting"],
+      "modelAnswer": "This is a column mismatch, not a CALCULATE overwrite problem in the way it first appears -- the measure filters Geography[Region], while the slicer filters Geography[State], a different column entirely, so there's nothing for CALCULATE to overwrite; the measure's filter on Region and the slicer's filter on State both remain active simultaneously, and the combination (West region AND East Coast states) likely returns an empty or near-empty result, which can look like the measure is 'ignoring' the slicer when it's actually honoring an impossible intersection. The real fix depends on intent: if Region and State should interact at all, the model likely needs the measure's logic reconsidered -- for instance, if the actual intent was ever for CALCULATE to override a same-column filter, KEEPFILTERS would make a new filter combine with (intersect) an existing one on the same column instead of overwriting it, but that only applies when both filters target the same column, which isn't the case here. The practical fix is recognizing the filters are on different columns and adjusting the DAX to filter on the column that's actually meant to interact with the slicer, or removing the hardcoded Region condition if State should be the only filter that matters.",
+      "professionalAnswer": "The first thing I'd check is whether the measure's filter and the slicer's filter are even on the same column, because that's the detail that changes the whole diagnosis. Here they're not -- the measure hardcodes Geography[Region] = \"West\", and the slicer is on Geography[State]. CALCULATE's overwrite-by-default behavior only kicks in when a new filter targets a column that's already filtered; since Region and State are different columns, both filters stay active at the same time, which means the measure is actually doing exactly what it's coded to do -- show West region sales, further restricted to whichever East Coast states happen to also be in the West region (probably none, hence a confusing near-empty or unexpected result). This is a case where I'd go back to the business requirement rather than reach for KEEPFILTERS, because KEEPFILTERS solves same-column conflicts, and this isn't one. If the real intent was for the slicer to be the only thing controlling region/state filtering, I'd remove the hardcoded Region condition from the measure entirely rather than trying to patch the filter interaction.",
+      "example": "-- The problem: two different columns filtered simultaneously, not a same-column overwrite\nWest Region Sales = CALCULATE(SUM(Sales[SalesAmount]), Geography[Region] = \"West\")\n-- Slicer filters Geography[State] (East Coast states) -- a different column,\n-- so both filters stay active together, likely producing an empty intersection.\n\n-- If the true intent is for the slicer alone to control the result:\nRegion Sales = SUM(Sales[SalesAmount]) -- no hardcoded CALCULATE filter at all",
+      "commonMistakes": [
+        "Assuming the measure 'isn't respecting' the slicer because of CALCULATE's overwrite behavior, when the real issue is two different columns both staying active",
+        "Reaching for KEEPFILTERS as a fix without checking whether the two filters even target the same column",
+        "Not recognizing that an unexpected near-empty result can be the system behaving correctly against a flawed assumption",
+        "Fixing the symptom by changing the slicer instead of questioning whether the hardcoded Region filter belongs in the measure at all"
+      ],
+      "keyPoints": [
+        "CALCULATE's overwrite-vs-combine behavior only applies to filters on the same column",
+        "A measure filtering one column and a slicer filtering a different column both stay active together",
+        "An unexpected result can mean the filters are correctly combining into an impossible intersection",
+        "The fix should match actual business intent, not just reflexively apply KEEPFILTERS or REMOVEFILTERS"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies that Region and State are different columns, both staying active", "weight": 40 },
+        { "criterion": "Correctly explains why this isn't a CALCULATE overwrite scenario", "weight": 30 },
+        { "criterion": "Proposes a fix grounded in actual business intent rather than a reflexive KEEPFILTERS/REMOVEFILTERS patch", "weight": 30 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "power-bi", "lessonSlug": "calculate-modifiers", "label": "Review: CALCULATE Filter Modifiers" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-031",
+      "questionCode": "LTV-MSBI-INT-031",
+      "title": "Using USERELATIONSHIP for a role-playing date dimension",
+      "prompt": "Your model has one Date table related to a Sales fact table three ways -- Order Date, Ship Date, and Due Date -- but only the Order Date relationship is active by default. Write a measure that sums sales by Ship Date instead.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": ["Power BI", "DAX", "Data Modeling"],
+      "modelAnswer": "Only one relationship between two tables can be active by default, so with three date relationships on the same Sales table, only Order Date is active unless a measure explicitly reaches for another one. USERELATIONSHIP, used as a CALCULATE filter argument, activates a specific normally-inactive relationship for just that one calculation -- it doesn't change which relationship is active model-wide, only for the expression it's wrapped around.",
+      "professionalAnswer": "This is the standard role-playing dimension pattern -- one Date table, several relationships to the same fact table, but only one of them can be the 'default' active relationship. For Ship Date sales, I wrap the plain SUM in CALCULATE and pass USERELATIONSHIP(Sales[ShipDateKey], 'Date'[DateKey]) as the filter argument. That tells DAX, for this one measure only, to use the Ship Date relationship instead of whichever one is active by default -- it doesn't touch the model's actual active/inactive relationship settings, it just reaches past them for this specific calculation. I'd build a parallel measure for Due Date the same way if needed, each one activating its own relationship, while a plain Total Sales measure continues to use the Order Date relationship since that's the one marked active.",
+      "example": "Sales by Ship Date =\nCALCULATE(\n    SUM(Sales[SalesAmount]),\n    USERELATIONSHIP(Sales[ShipDateKey], 'Date'[DateKey])\n)\n-- Activates the Ship Date relationship for this one calculation only;\n-- the model's actual active relationship (Order Date) is untouched.",
+      "commonMistakes": [
+        "Trying to make the Ship Date relationship active at the model level instead of using USERELATIONSHIP per measure",
+        "Forgetting USERELATIONSHIP must be passed as a CALCULATE filter argument, not called on its own",
+        "Mixing up which table/column pair to pass -- it must match the actual inactive relationship's two columns",
+        "Assuming USERELATIONSHIP changes the relationship permanently rather than just for the one calculation"
+      ],
+      "keyPoints": [
+        "Only one relationship between two tables can be active by default",
+        "USERELATIONSHIP activates a specific inactive relationship for one calculation only",
+        "It's always used as a CALCULATE filter argument",
+        "This is the standard mechanism behind role-playing dimensions"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly uses CALCULATE with USERELATIONSHIP as the filter argument", "weight": 40 },
+        { "criterion": "Correctly identifies the right table/column pair for the Ship Date relationship", "weight": 30 },
+        { "criterion": "Explains that this doesn't change the model's active relationship permanently", "weight": 30 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "power-bi", "lessonSlug": "calculate-modifiers", "label": "Review: CALCULATE Filter Modifiers" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-032",
+      "questionCode": "LTV-MSBI-INT-032",
+      "title": "Deciding between an active and an inactive relationship",
+      "prompt": "You're modeling a Sales fact table with three date roles (Order, Ship, Due) all relating to one Date table. Only one relationship can be active by default. How do you decide which one to make active, and how do you handle the other two in your measures?",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Power BI", "Data Modeling", "Architecture"],
+      "modelAnswer": "Since only one relationship between the Date table and Sales can be active, the design decision is to make active whichever date role most reports will filter and slice by default without extra configuration -- typically Order Date, since most sales analysis (trends, totals, year-over-year) is naturally anchored to when the order was placed. The other two relationships (Ship Date, Due Date) are created as inactive relationships, and any measure that specifically needs to report by Ship Date or Due Date uses USERELATIONSHIP inside a CALCULATE to activate the relevant one just for that calculation. This keeps the default, unqualified experience (dragging Date onto a visual with no special measure) working correctly for the most common case, while still supporting the less common date roles through dedicated measures rather than duplicating the Date table three times.",
+      "professionalAnswer": "The decision I'd make is: pick whichever date role is the default lens most people will actually use day to day, and that's almost always Order Date for a sales model -- most trend analysis, most 'how are we doing this quarter' questions, are implicitly about when the order happened. That one gets the active relationship, so a plain visual with Date on one axis and a Sales measure on the other just works with no special DAX. Ship Date and Due Date become inactive relationships to the same Date table -- I don't duplicate the Date table three times just to get three active relationships, because that fragments the model and breaks time-intelligence functions that expect one canonical date table. Instead, I write dedicated measures for the less common cases -- Sales by Ship Date, Sales by Due Date -- each using CALCULATE with USERELATIONSHIP to reach past the default. That gives report builders the simple default behavior for the common case, and explicit, discoverable measures for the specific cases, without duplicating the model.",
+      "commonMistakes": [
+        "Duplicating the Date table three times to get three active relationships, fragmenting the model and breaking time intelligence",
+        "Making the least commonly used date role (e.g. Due Date) the active one instead of the most common (Order Date)",
+        "Not building dedicated measures for the inactive relationships, leaving them effectively unusable",
+        "Forgetting that only one relationship between two tables can be active, and trying to activate more than one"
+      ],
+      "keyPoints": [
+        "Only one relationship between two tables can be active by default",
+        "Make the most commonly needed date role the active relationship",
+        "Model the other date roles as inactive relationships to the same Date table",
+        "Use USERELATIONSHIP in dedicated measures to reach the inactive relationships when needed"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the one-active-relationship constraint", "weight": 20 },
+        { "criterion": "Proposes a sensible, justified choice for which relationship to make active", "weight": 35 },
+        { "criterion": "Correctly explains handling the other roles via inactive relationships + USERELATIONSHIP", "weight": 35 },
+        { "criterion": "Avoids the anti-pattern of duplicating the Date table", "weight": 10 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "power-bi", "lessonSlug": "active-inactive", "label": "Review: Active vs. Inactive Relationships" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-033",
+      "questionCode": "LTV-MSBI-INT-033",
+      "title": "Star schema or snowflake for the product hierarchy?",
+      "prompt": "You're designing a warehouse where the product hierarchy (Product -> Subcategory -> Category) is large and slowly changing. Explain the tradeoff between a star schema and a snowflake schema for this dimension, and give one concrete reason you might snowflake it anyway even though Microsoft's default guidance favors denormalization.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Data Warehousing", "Data Modeling", "Architecture"],
+      "modelAnswer": "A star schema denormalizes the product hierarchy into one flat Product dimension table, with category and subcategory names repeated in every row -- that redundancy keeps the dimension exactly one join away from the fact table, which is the entire performance case for the star shape, at the cost of more storage and a hierarchy that must live in columns of one table. A snowflake schema normalizes the hierarchy into Product, Subcategory, and Category tables, each referencing the one above it -- less redundant storage and a naturally split hierarchy, at the cost of more joins and generally slower query performance. Microsoft's own guidance defaults to denormalized star dimensions, but snowflaking is still the right call in specific situations: for instance, if a separate sales-target fact table is stored at the subcategory grain while the main sales fact table is stored at the product grain, both need to join to the right level of the same hierarchy -- a snowflaked Subcategory table gives both fact tables a clean join target at their own grain, which a single flat Product table can't offer as cleanly.",
+      "professionalAnswer": "I'd frame this as a tradeoff between query-time joins and storage/maintenance, because that's really what's at stake. Star schema wins on query performance -- one join to reach any attribute, full stop, which is why Microsoft's own dimensional modeling guidance defaults to denormalized dimensions. Snowflake wins when the dimension is large enough that the redundant storage actually matters, or -- and this is the reason I'd actually reach for it here -- when I have two fact tables living at different grains within the same hierarchy. If my main sales fact table is at the product level but I also have a sales-target fact table at the subcategory level, I need a clean join target at the subcategory grain specifically. A single flat Product dimension doesn't give me that cleanly; a snowflaked Subcategory table does. In practice, I'd often split the difference: keep the ETL and storage layer normalized for maintainability, but expose a denormalized view to the reporting layer so Power BI still gets the one-join performance benefit without me paying the storage cost of a fully flattened table during the load.",
+      "commonMistakes": [
+        "Treating snowflake vs. star as a different table classification rather than a normalization choice for dimensions specifically",
+        "Not identifying a concrete business reason to snowflake, only repeating the generic storage-savings tradeoff",
+        "Missing the multi-grain-fact-table scenario, which is the strongest practical reason to snowflake",
+        "Assuming Microsoft's guidance means star is always correct, missing the specific exceptions it calls out"
+      ],
+      "keyPoints": [
+        "Star schema: fully denormalized dimensions, fewer joins, faster queries, more storage",
+        "Snowflake schema: normalized dimensions, more joins, less storage, naturally split hierarchy",
+        "Microsoft's default guidance favors denormalized star dimensions",
+        "A concrete exception: multiple fact tables at different grains needing a clean join target at the shared hierarchy level"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the star schema's structure and tradeoff", "weight": 25 },
+        { "criterion": "Correctly explains the snowflake schema's structure and tradeoff", "weight": 25 },
+        { "criterion": "States Microsoft's default guidance favoring star schemas", "weight": 15 },
+        { "criterion": "Gives a concrete, valid reason to snowflake anyway", "weight": 35 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "data-modeling-and-data-warehousing", "lessonSlug": "star-schema-vs-snowflake-schema", "label": "Review: Star Schema vs. Snowflake Schema" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-034",
+      "questionCode": "LTV-MSBI-INT-034",
+      "title": "The mechanics of SCD Type 2",
+      "prompt": "Explain exactly what happens to the data when a Type 2 slowly changing dimension attribute is updated -- for example, when a salesperson is reassigned from one sales region to another. Why does Type 2 require a surrogate key?",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "sql",
+      "skills": ["Data Warehousing", "Data Modeling"],
+      "modelAnswer": "A Type 2 change is two operations, in order: first, UPDATE the existing row -- its EndDate (or ExpirationDate) is set to the date the change took effect, and its IsCurrent flag flips from TRUE to FALSE, permanently preserving it as history. Second, INSERT a brand-new row with a new surrogate key (never reused), the same natural key (it's still the same salesperson), the new attribute value (the new sales region), a StartDate equal to the old row's EndDate, and IsCurrent set to TRUE. There are now two rows for the same salesperson -- that's the entire point. A new surrogate key is required because the natural key is now duplicated across two rows; if dimension rows were identified only by their natural key, the warehouse couldn't tell which version a given fact should join to. The surrogate key makes each version uniquely addressable: fact rows loaded before the change point to the old surrogate key, fact rows loaded after point to the new one.",
+      "professionalAnswer": "I'd walk through it as two statements that together represent one business event. First, I update the existing row -- not delete it -- setting its EndDate to when the change happened and flipping IsCurrent to false, so it becomes permanent, closed-out history. Second, I insert a brand-new row for the same salesperson, same natural key, but a new surrogate key, the new region, a StartDate that picks up exactly where the old row's EndDate left off, and IsCurrent set to true. Both of these should run as one transaction, since they represent a single logical event. The reason the surrogate key is non-negotiable here: once I have two rows sharing the same natural key, I need something else to disambiguate them, and that's exactly what the surrogate key is for -- fact rows loaded before the reassignment keep pointing at the old surrogate key, and anything loaded after points at the new one, so historical reports naturally show the right region for sales that happened under the old assignment.",
+      "example": "UPDATE DimSalesperson\nSET    ExpirationDate = '2024-05-23',\n       IsCurrentFlag   = 0\nWHERE  SalespersonKey = 296;\n\nINSERT INTO DimSalesperson\n  (BusinessKey, SalesRegionKey, EffectiveDate, ExpirationDate, IsCurrentFlag)\nVALUES (758596752, 5, '2024-05-23', '9999-12-31', 1);\n-- Both statements represent one business event and should run in a single transaction.",
+      "commonMistakes": [
+        "Describing Type 2 as deleting the old row instead of updating it and preserving it as history",
+        "Forgetting the new row needs a brand-new surrogate key, not a reused or regenerated one",
+        "Not explaining why the natural key alone is insufficient once two versions exist",
+        "Running the UPDATE and INSERT as two unrelated statements instead of one transaction representing one business event"
+      ],
+      "keyPoints": [
+        "Type 2 change = UPDATE the old row (close it out) + INSERT a new versioned row",
+        "The old row's EndDate/IsCurrent gets set; it's preserved, never deleted",
+        "The new row gets a brand-new surrogate key, same natural key, new attribute value",
+        "A surrogate key is required because the natural key becomes duplicated across versions"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly describes the UPDATE step (closing out the old row)", "weight": 30 },
+        { "criterion": "Correctly describes the INSERT step (new version, new surrogate key)", "weight": 30 },
+        { "criterion": "Correctly explains why a surrogate key is required", "weight": 30 },
+        { "criterion": "Provides correct, illustrative SQL", "weight": 10 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "data-modeling-and-data-warehousing", "lessonSlug": "scd-type-2", "label": "Review: SCD Type 2" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-035",
+      "questionCode": "LTV-MSBI-INT-035",
+      "title": "Writing the SCD Type 2 UPDATE and INSERT pair",
+      "prompt": "An employee (BusinessKey 112233, current surrogate key 58) moves from DepartmentKey 3 to DepartmentKey 7 on 2025-02-14. Write the UPDATE and INSERT statements that correctly apply this as a Type 2 change against a DimEmployee table with columns EmployeeKey, BusinessKey, DepartmentKey, EffectiveDate, ExpirationDate, and IsCurrentFlag.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "sql",
+      "skills": ["Data Warehousing", "Data Modeling", "T-SQL"],
+      "modelAnswer": "The existing row (EmployeeKey 58) must be updated to close it out: set ExpirationDate to the change date and IsCurrentFlag to 0. A new row must be inserted with the same BusinessKey (112233), the new DepartmentKey (7), an EffectiveDate equal to the old row's new ExpirationDate (2025-02-14), a far-future ExpirationDate (e.g. 9999-12-31) marking it as the open-ended current version, and IsCurrentFlag set to 1. The new row gets a new surrogate EmployeeKey, generated automatically (e.g. via IDENTITY) rather than reused from the old row.",
+      "professionalAnswer": "I'd write this as the standard two-statement Type 2 pattern, both representing one business event. First, close out the existing row -- EmployeeKey 58 -- by setting its ExpirationDate to 2025-02-14 and flipping IsCurrentFlag to 0. Second, insert the new version: same BusinessKey since it's still the same person, the new DepartmentKey of 7, EffectiveDate starting exactly where the old row's ExpirationDate ended, a far-future ExpirationDate like 9999-12-31 to mark it as the current open-ended version, and IsCurrentFlag set to 1. I'd let the new EmployeeKey come from an IDENTITY column rather than picking a number myself, since surrogate keys should never be reused or manually assigned. I'd also wrap both statements in a transaction, since they represent one atomic business event -- the reassignment -- and shouldn't ever be allowed to apply only halfway.",
+      "example": "BEGIN TRANSACTION;\n\nUPDATE DimEmployee\nSET    ExpirationDate = '2025-02-14',\n       IsCurrentFlag   = 0\nWHERE  EmployeeKey = 58;\n\nINSERT INTO DimEmployee (BusinessKey, DepartmentKey, EffectiveDate, ExpirationDate, IsCurrentFlag)\nVALUES (112233, 7, '2025-02-14', '9999-12-31', 1);\n\nCOMMIT TRANSACTION;\n-- EmployeeKey for the new row comes from an IDENTITY column, never reused from the old row.",
+      "commonMistakes": [
+        "Setting the new row's EffectiveDate to a different date than the old row's ExpirationDate, leaving a gap or overlap",
+        "Manually assigning a new surrogate key instead of letting an IDENTITY column generate it",
+        "Forgetting to flip IsCurrentFlag to 0 on the old row, leaving two rows both marked current",
+        "Running the UPDATE and INSERT outside a transaction, risking a half-applied change"
+      ],
+      "keyPoints": [
+        "The old row is updated to close it out, never deleted",
+        "The new row's EffectiveDate matches the old row's new ExpirationDate exactly",
+        "The new row gets IsCurrentFlag = 1 and a far-future ExpirationDate",
+        "Both statements should run as one transaction representing one business event"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly writes the UPDATE closing out the old row", "weight": 35 },
+        { "criterion": "Correctly writes the INSERT for the new versioned row", "weight": 35 },
+        { "criterion": "Dates line up correctly between old ExpirationDate and new EffectiveDate", "weight": 20 },
+        { "criterion": "Wraps both statements in a transaction", "weight": 10 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "data-modeling-and-data-warehousing", "lessonSlug": "scd-type-2", "label": "Review: SCD Type 2" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-036",
+      "questionCode": "LTV-MSBI-INT-036",
+      "title": "When to consolidate flags into a junk dimension",
+      "prompt": "Your sales fact table has accumulated eight separate one-off flag dimensions: order status, payment method, rush-order flag, gift-wrap flag, and four others, each with two or three rows. Explain what a junk dimension is, how it's built, and when consolidating these flags into one would be the wrong move.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Data Warehousing", "Data Modeling"],
+      "modelAnswer": "A junk dimension is a single dimension table that consolidates several small, unrelated, low-cardinality attributes into one table in place of many separate ones -- a deliberate catch-all for miscellaneous flags, not a designed business entity. It's built mechanically as the Cartesian product of every value in every attribute being combined, with one surrogate key column identifying each unique combination: two attributes with three values each produce nine rows, one per combination. After consolidation, the fact table's eight foreign keys collapse into one, narrowing the fact table and reducing the join count for any report filtering on those flags. Good candidates share three traits: many of them, few attributes each (often just one column), and low cardinality. It would be the wrong move if any of the eight attributes has real, independent business meaning that analysts need to filter or slice on their own terms (that belongs in a real dimension, not junked), or if the combined cardinality would explode -- eight attributes with even modest value counts each can multiply out to a number of rows larger than anything that's actually useful, at which point the junk dimension becomes worse than what it replaced.",
+      "professionalAnswer": "I'd first confirm these eight really are junk-dimension candidates and not just under-designed real dimensions -- the tell is low cardinality, few columns each, and no independent business meaning on their own. Order status, payment method, and the rush/gift-wrap flags fit that profile well. Mechanically, I'd build the junk dimension as the Cartesian product of every combination across the attributes being combined -- if I combine, say, order status (3 values) and delivery status (3 values), I get nine rows, one surrogate key per combination. That replaces two foreign keys on the fact table with one, which both narrows the fact table and simplifies the field list for anyone browsing the model in Power BI. Where I'd stop and push back: if combining all eight attributes together would multiply out to tens of thousands of rows, that's a sign the combined cardinality has grown too large and the junk dimension has become counterproductive -- at that point, I'd either junk a smaller subset of the truly low-cardinality flags together and leave the rest as their own dimensions, or reconsider whether a couple of these 'flags' are actually business entities people want to filter by in their own right, which would disqualify them from being junked at all.",
+      "commonMistakes": [
+        "Consolidating an attribute with genuine independent business meaning into the junk dimension, making it harder for analysts to filter on it directly",
+        "Not recognizing that the row count grows multiplicatively (Cartesian product), not additively, as more attributes are combined",
+        "Junking a single flag on its own instead of reserving the technique for consolidating many small ones",
+        "Missing that this is specifically a fact-table-narrowing technique -- it reduces foreign keys, not just the number of dimension tables"
+      ],
+      "keyPoints": [
+        "A junk dimension consolidates several small, unrelated, low-cardinality attributes into one table",
+        "It's built as the Cartesian product of every combination of the consolidated attributes' values",
+        "Good candidates: many of them, few attributes each, low cardinality",
+        "Wrong to junk an attribute with independent business meaning, or when combined cardinality explodes"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly defines a junk dimension and its purpose", "weight": 25 },
+        { "criterion": "Correctly explains the Cartesian-product construction mechanic", "weight": 25 },
+        { "criterion": "Correctly identifies the traits of a good candidate", "weight": 25 },
+        { "criterion": "Correctly identifies when consolidation would be the wrong move", "weight": 25 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "data-modeling-and-data-warehousing", "lessonSlug": "junk-dimensions", "label": "Review: Junk Dimensions" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-037",
+      "questionCode": "LTV-MSBI-INT-037",
+      "title": "Modeling a many-to-many relationship with a bridge table",
+      "prompt": "A sale can legitimately be credited to two or three salespeople who worked the deal together, and any one salesperson is credited on many sales. Design how you'd model this relationship between the Sale fact table and the Salesperson dimension, and explain why the table you build to resolve it is itself a factless fact table.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Data Warehousing", "Data Modeling", "Architecture"],
+      "modelAnswer": "This is a genuine many-to-many relationship -- no amount of clever fact-table design turns it into a clean one-to-many, because a sale really can have multiple salespeople and a salesperson really is credited on multiple sales. The fix is a bridge table (also called a join table): instead of one foreign key on the Sale fact table pointing straight at the Salesperson dimension, the fact relates to a 'Sale Salesperson' bridge table storing one row per valid sale-salesperson combination, and the bridge table relates to the Salesperson dimension -- two clean one-to-many relationships standing in for the one many-to-many relationship. For a sale split three ways, the bridge table gets three rows, each pointing at the same SaleID and a different SalespersonID. The bridge table is itself a factless fact table because it contains nothing but foreign keys -- SaleID and SalespersonID, no measures to sum -- so a row only records that an association happened; the only thing it supports is a count of rows, which is the exact definition of a factless fact table.",
+      "professionalAnswer": "I'd recognize up front that this relationship is genuinely many-to-many, not a modeling mistake to be designed away -- some sales really do get split across multiple salespeople. The standard resolution is a bridge table sitting between the Sale fact and the Salesperson dimension: instead of the fact table pointing directly at Salesperson, it points at a 'Sale Salesperson' bridge table, which in turn points at Salesperson. That turns one many-to-many relationship into two clean one-to-many relationships, which is something both the warehouse and Power BI's relationship model can actually represent cleanly. Concretely, if a sale is split three ways, the bridge table gets three rows for that one SaleID, each with a different SalespersonID. The thing I'd call out unprompted, because it's a detail that signals real understanding: look at what columns that bridge table actually has -- just the two foreign keys, nothing to sum or average. That makes it a factless fact table by definition -- it records that an association occurred, and the only measurement it supports is literally counting rows, which is exactly what you'd use it for if someone asked 'how many salespeople were involved in this sale' or 'how many sales did this person touch.'",
+      "commonMistakes": [
+        "Trying to force a one-to-many relationship by picking just one 'primary' salesperson per sale, losing real information",
+        "Adding measure columns to the bridge table, missing that a factless fact table by definition has none",
+        "Not recognizing the bridge table resolves the many-to-many into two one-to-many relationships, describing it vaguely instead",
+        "Forgetting that a three-way split sale produces three separate bridge rows, not one row with three salesperson columns"
+      ],
+      "keyPoints": [
+        "Some relationships are genuinely many-to-many and can't be modeled as one-to-many",
+        "A bridge table resolves this into two clean one-to-many relationships",
+        "One row per valid combination (e.g. three rows for a three-way split sale)",
+        "A bridge table with only foreign keys is a factless fact table -- countable, not summable"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies this as a genuine many-to-many relationship", "weight": 20 },
+        { "criterion": "Correctly designs the bridge table and its two one-to-many relationships", "weight": 35 },
+        { "criterion": "Correctly describes the row-per-combination behavior for a split sale", "weight": 20 },
+        { "criterion": "Correctly explains why the bridge table is a factless fact table", "weight": 25 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "data-modeling-and-data-warehousing", "lessonSlug": "bridge-tables-for-many-to-many", "label": "Review: Bridge Tables for Many-to-Many Relationships" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-038",
+      "questionCode": "LTV-MSBI-INT-038",
+      "title": "Sales totals doubled after adding a salesperson bridge table",
+      "prompt": "After introducing a Sale-Salesperson bridge table to correctly model multiple salespeople per sale, the total sales amount shown in a Power BI report is now higher than the actual total revenue. Diagnose why, and explain how you'd fix the measure.",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Data Warehousing", "Power BI", "Troubleshooting"],
+      "modelAnswer": "This is a classic fan-out trap: once the Sale fact table is related (even indirectly, through the bridge table) to a table where one sale can appear multiple times -- once per credited salesperson -- any measure that sums SalesAmount through that relationship path double- or triple-counts sales that were split across multiple salespeople, because the filter context now matches multiple bridge rows per sale. A sale split three ways gets its SalesAmount counted three times once the bridge table's relationships are in the picture, inflating the total. The fix is to make sure the core Total Sales measure aggregates at the fact table's own grain, independent of the bridge table relationship -- for example, by ensuring the measure doesn't inadvertently traverse the bridge table's one-to-many direction when computing a grand total, or by using a measure that explicitly sums distinct sales (e.g. via a FILTER or a dedicated 'total revenue' measure built directly off the Sale fact table without passing through the bridge), while a separate 'sales by salesperson' measure is expected to show the split amounts per salesperson and isn't the one being used for a grand total.",
+      "professionalAnswer": "This is the fan-out trap, and it's almost always the first thing that goes wrong the moment a bridge table enters a model. The mechanism is straightforward once you see it: a sale split across three salespeople now has three rows in the bridge table pointing back at the same SaleID. If a 'Total Sales' measure's filter context flows through that bridge table relationship -- say, because the report visual includes a Salesperson field alongside the total -- SQL Server (or the VertiPaq engine) effectively counts that one sale's SalesAmount three times, once per bridge row. The totals aren't actually wrong in isolation -- summing by salesperson is correct, each salesperson really is credited with that sale -- but a report-wide grand total that flows through the same path inflates. The fix is to keep a dedicated grand-total measure that's computed at the Sale fact table's own grain and doesn't traverse the bridge table at all, so overall revenue is always counted once per sale regardless of how many salespeople it's split across, while the per-salesperson breakdown measure is understood to legitimately double-count at the summary level by design.",
+      "commonMistakes": [
+        "Assuming the data itself is wrong (duplicate fact rows) instead of recognizing the fan-out happens through the relationship, not the underlying fact table",
+        "Trying to fix it by deduplicating the fact table, which would break the legitimate per-salesperson breakdown",
+        "Not recognizing this is the same fan-out risk inherent to any bridge table or many-to-many relationship",
+        "Fixing the per-salesperson measure instead of recognizing the grand-total measure is the one that needs to avoid the bridge table path"
+      ],
+      "keyPoints": [
+        "A bridge table legitimately creates multiple rows per sale when it's split across salespeople",
+        "Any measure whose filter context flows through the bridge table double-counts split sales",
+        "A per-salesperson breakdown correctly counts each sale once per credited person -- that's by design",
+        "A grand-total measure needs to be computed at the fact table's own grain, independent of the bridge table"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies the fan-out / double-counting mechanism caused by the bridge table", "weight": 40 },
+        { "criterion": "Correctly distinguishes the legitimate per-salesperson count from the inflated grand total", "weight": 30 },
+        { "criterion": "Proposes a correct fix for the grand-total measure", "weight": 30 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "data-modeling-and-data-warehousing", "lessonSlug": "bridge-tables-for-many-to-many", "label": "Review: Bridge Tables for Many-to-Many Relationships" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-039",
+      "questionCode": "LTV-MSBI-INT-039",
+      "title": "Presenting the full Microsoft BI stack to stakeholders",
+      "prompt": "You built a capstone project moving raw data through SQL Server, into a warehouse via SSIS, then out through both an SSRS paginated report and a Power BI dashboard connected to the same warehouse. Tell me how you'd present this architecture to a hiring manager who wants to understand not just what you built, but why you made the design choices you did.",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Architecture", "Communication", "SSIS", "SSRS", "Power BI", "Data Warehousing"],
+      "modelAnswer": "A strong answer walks through the pipeline end to end in plain language and justifies each tool choice by the problem it solves: SQL Server holds the raw/staging data because it's the reliable system of record; SSIS handles the ETL because it can run on a schedule, handle incremental loads, and recover from partial failures via checkpoints rather than requiring a full reload every time; the warehouse is modeled as facts and dimensions (star schema) specifically so both downstream tools can query it efficiently without each one reinventing its own data shape; SSRS serves the paginated, fixed-layout reporting need (something that prints predictably and matches a line-item format); Power BI serves the interactive, self-service exploration need. The key point to make explicit: connecting both SSRS and Power BI to the same warehouse, rather than each tool having its own separate extract, means the two tools can never disagree with each other -- a single source of truth was a deliberate design decision, not an accident.",
+      "professionalAnswer": "I'd walk a hiring manager through it as a story with a reason behind every tool, not just a list of technologies. Raw data lands in SQL Server because I need a reliable, transactional place to stage it. SSIS does the heavy lifting of moving and reshaping that data into the warehouse -- and I'd specifically mention the incremental load design and the checkpoint-based restartability, because that shows I was thinking about what happens when something fails at 2am, not just the happy path. The warehouse itself is a star schema, which I'd justify by saying it keeps both downstream tools fast and simple to query, since neither SSRS nor Power BI has to do the modeling work themselves. Then the split at the end -- SSRS for the fixed, printable paginated report and Power BI for the interactive dashboard -- I'd frame as matching the tool to the actual use case rather than picking a favorite: some stakeholders need something that prints exactly the same way every time, others need to slice and explore. And the detail I'd make sure lands: both of those report tools point at the same warehouse, not separate copies of the data, specifically so nobody ever has to ask 'why does the Power BI number not match the SSRS number' -- that's a single source of truth, and it was a deliberate decision, not a coincidence.",
+      "commonMistakes": [
+        "Listing the tools used without explaining why each one was chosen for its specific role",
+        "Not mentioning the deliberate single-source-of-truth decision (both tools hitting the same warehouse)",
+        "Describing only the happy path, without mentioning error handling or incremental load design decisions",
+        "Being too technical/jargon-heavy for a hiring-manager-level explanation of 'why,' not just 'what'"
+      ],
+      "keyPoints": [
+        "Each tool choice (SQL Server, SSIS, warehouse, SSRS, Power BI) is tied to a specific reason",
+        "The warehouse's star schema design serves both downstream reporting tools efficiently",
+        "Connecting both report tools to the same warehouse was a deliberate single-source-of-truth decision",
+        "Mentions resilience design (incremental loads, checkpoints) as evidence of production-mindedness"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Explains the end-to-end architecture clearly and in appropriate language for the audience", "weight": 25 },
+        { "criterion": "Justifies each major tool choice with a specific reason", "weight": 30 },
+        { "criterion": "Explicitly calls out the single-source-of-truth design decision", "weight": 25 },
+        { "criterion": "Demonstrates production-mindedness (resilience, incremental loads) rather than only describing the happy path", "weight": 20 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "microsoft-bi-capstone", "lessonSlug": "architecture-planning", "label": "Review: Architecture Planning" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "msbi-int-040",
+      "questionCode": "LTV-MSBI-INT-040",
+      "title": "When integrating two tools didn't go as planned",
+      "prompt": "Tell me about a time -- in your capstone project or elsewhere -- when connecting two different parts of a BI stack (for example, getting both SSRS and Power BI to read cleanly from the same warehouse) didn't work the way you expected on the first try. What went wrong, and how did you work through it?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Architecture", "Communication", "SSRS", "Power BI", "Troubleshooting"],
+      "modelAnswer": "A strong answer describes a specific, real integration snag rather than a vague generality -- for example, discovering that a report built against the warehouse's staging shape broke once the warehouse was properly modeled into facts and dimensions, or that SSRS and Power BI needed slightly different connection configurations (credentials, gateway, or query folding behavior) to hit the same warehouse cleanly. It explains the diagnostic process (comparing what each tool actually received versus expected, checking connection strings/permissions, verifying the underlying query), the fix applied, and -- just as important -- what was learned about designing for multiple consumers from the start next time, such as building the warehouse's reporting layer with both tools' needs in mind up front rather than retrofitting one after the other was already built.",
+      "professionalAnswer": "I'd pick one specific, real snag rather than a generic 'integration is hard' answer. A good one: I'd gotten the Power BI dashboard working fine against the warehouse, but when I pointed the SSRS paginated report at the same tables, the report either returned different numbers or needed a different connection setup -- maybe different credentials, or a dataset query written to expect the warehouse's old pre-modeling shape instead of the finished star schema. I'd explain how I tracked it down -- comparing the exact query SSRS was running against what I expected, checking that both tools were actually pointed at the same database and the same finished tables, not an earlier staging version I'd forgotten to clean up. Once I found the mismatch, the fix itself was usually small, but the real lesson I'd emphasize is the one that matters for how I'd approach the next project: design the warehouse's final shape with every planned consumer in mind from day one, instead of building it for whichever tool I happened to connect first and then discovering the second tool's assumptions didn't match.",
+      "commonMistakes": [
+        "Giving a vague, generic answer about 'integration being hard' instead of a specific, concrete incident",
+        "Describing only the fix without explaining the diagnostic process that found the actual mismatch",
+        "Not extracting a forward-looking lesson about designing for multiple consumers from the start",
+        "Blaming a tool itself ('Power BI is just buggy') instead of identifying the actual configuration or design mismatch"
+      ],
+      "keyPoints": [
+        "Describes a specific, real integration problem rather than a generic statement",
+        "Shows a clear diagnostic process for finding the actual mismatch",
+        "Explains the concrete fix that was applied",
+        "Extracts a forward-looking lesson about designing for multiple consumers up front"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Describes a specific, real incident rather than a generic answer", "weight": 30 },
+        { "criterion": "Shows a clear, logical diagnostic process", "weight": 30 },
+        { "criterion": "Describes a concrete, correct fix", "weight": 20 },
+        { "criterion": "Extracts a genuine forward-looking lesson", "weight": 20 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": { "courseSlug": "microsoft-bi-capstone", "lessonSlug": "connecting-ssrs-and-power-bi-to-the-same-warehouse", "label": "Review: Connecting SSRS & Power BI to the Same Warehouse" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z"
+    }
+  ]
+}
