@@ -25,6 +25,16 @@ next environment, right through to Production. The further a pipeline automates 
 the faster changes ship, but also the more a team has to trust its automated tests, since fewer
 humans are manually re-checking each release.
 
+Named out in full, a real pipeline usually has one more stop than the simplified Commit → Build →
+Test → Deploy diagram above suggests:
+
+![A full pipeline, stage by stage: Code Commit (a developer pushes a change to Git), Automated Tests (the test suite runs against the new code), Build (the change is packaged into a deployable artifact), Deploy to Staging (the same artifact goes to a production-like environment first), Deploy to Production (only after staging looks healthy).](/courses/how-it-teams-work/ch01/05-releases-deployments-and-cicd/full-pipeline-named.png)
+
+**Staging** is a separate, production-like environment that sits between automated testing and
+the real thing — close enough to Production in configuration and data shape to catch problems
+automated tests alone might miss, without putting real users at risk if something's still wrong.
+Not every team runs a separate staging environment, but most that handle real customer data do.
+
 ## The release checklist
 
 Having a pipeline doesn't mean a release has no judgment calls left in it. A real release still

@@ -49,6 +49,17 @@ viewer's assigned territory" and "changing the filter updates every chart on the
 two seconds." A story isn't complete until its acceptance criteria are all met — that's the
 difference between "I think this is done" and a shared, checkable definition of done.
 
+## From backlog to something real
+
+Put the whole chain together and a story's actual journey looks like this:
+
+![From backlog to shippable increment: the Product Backlog holds every idea and request in priority order, Sprint Planning chooses a subset into the Sprint Backlog for this sprint only, Sprint Work runs analysis, design, build, test, and review over 1-2 weeks with a daily 15-minute sync, producing a Shippable Increment — working software ready to release, every single sprint.](/courses/how-it-teams-work/ch01/02-scrum-sprints-and-user-stories/backlog-to-increment.png)
+
+Notice the last box: **shippable increment**, not "finished feature" or "code that compiles."
+Scrum's actual promise is that at the end of every sprint, the team has something that could be
+released right now, even if the business chooses to hold it for a later launch — "could ship
+today" is a higher bar than "the ticket is marked Done."
+
 ## Key terms
 
 | Term | Meaning |

@@ -44,6 +44,18 @@ teammate reads the pull request and checks the approach, not just whether it run
 second set of eyes before the change moves anywhere, and it's normal for a reviewer to send work
 back for changes before it's allowed to merge.
 
+## Who's actually responsible at each stage
+
+Each environment also has a different person — or kind of person — in the driver's seat:
+
+![Who's actually involved, one environment, one owner: Dev is owned by the developer who wrote the change, QA by a QA engineer or an automated test suite, UAT by the business stakeholder who requested the change, and Production by everyone — real users, and whoever's on call if it breaks.](/courses/how-it-teams-work/ch01/04-sdlc-dev-qa-uat-and-production/environment-ownership.png)
+
+This is a useful map for a new hire specifically: if a change is broken in Dev, that's the
+developer's own problem to fix before it goes anywhere. If it's broken in QA, that's a QA
+engineer's or a test suite's job to have caught. If the business rejects it in UAT, that's not a
+bug — it's a sign the requirements, not the code, need another look. And once something is in
+Production, it's everyone's problem, which is exactly why the chain exists in the first place.
+
 ## Why the chain matters, even when it feels slow
 
 A junior engineer's first instinct is often "my change works on my machine, why can't it just go

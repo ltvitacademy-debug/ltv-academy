@@ -29,6 +29,19 @@ something outside their control, is a signal the team needs to look at, not just
 Teams usually flag a blocked card visually — a red marker, a "Blocked" tag — so it's obvious at a
 glance which cards need help rather than just time.
 
+## Reading a card's status at a glance
+
+A column tells you where a card is. A good board also tells you how that card is actually doing,
+usually through a small status label on the card itself:
+
+![What a card's status tells you: Ready (prioritized and ready for someone to pick up), In Progress (actively being worked by its one owner), Off Track (behind where it should be, needs attention, not panic), Blocked (can't move forward until something outside the owner's control resolves), Done (meets its acceptance criteria, no further work needed).](/courses/how-it-teams-work/ch01/03-kanban-boards-and-work-management/card-status.png)
+
+"Off Track" and "Blocked" look similar but mean different things worth keeping straight. Off
+Track means the work is simply taking longer than planned — normal, and usually just needs more
+time or a closer look. Blocked means the work has hit a hard stop entirely outside the owner's
+control — a pending approval, a broken test environment, a dependency on another team — and no
+amount of the owner's own effort moves it forward until that's resolved.
+
 ## Why work-in-progress limits exist
 
 A Kanban column often has a **WIP limit** — a cap on how many cards can sit in that column at

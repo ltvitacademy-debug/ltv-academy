@@ -26,6 +26,17 @@ database migration with a fixed source and target schema, a vendor contract with
 delivery date. The cost of that rigidity is that a requirement discovered wrong in month four
 (after design and half the build are already done) is expensive to fix.
 
+The five-phase version above is the simplified shape. A sixth phase almost always follows Release
+in practice:
+
+![The full Waterfall chain, six phases including after launch: Requirements (define what the system must do), Design (plan the technical solution), Development (build the system), Testing (verify it works correctly), Deployment (release it to production), Maintenance (fix issues and support it for as long as it's live).](/courses/how-it-teams-work/ch01/01-agile-vs-waterfall/waterfall-six-phases.png)
+
+**Maintenance** is everything that happens after launch — bug fixes, minor enhancements, and
+ongoing support — for as long as the system stays in use. It's easy to forget when a Waterfall
+plan is first pitched, but it's usually the longest phase of a system's entire life, which is
+exactly why "who maintains this after launch" is a question worth asking before a project starts,
+not after.
+
 ## Agile: short cycles, repeated
 
 Agile instead breaks the same work into short, repeating cycles — typically one to two weeks. In
@@ -38,6 +49,11 @@ the product take shape — most product development, most internal tooling, most
 business users will react to once they can click around in it. The cost is less predictability
 up front: a stakeholder asking "when will the whole thing be done" gets a rougher answer than they
 would from a Waterfall plan.
+
+The cycle doesn't run once — it chains forward, sprint after sprint, each one picking up where the
+last sprint's retrospective left off:
+
+![Sprint after sprint: Sprint 1 plans, builds, reviews, and adapts, then feeds its lessons into Sprint 2, which runs the same cycle again informed by that retrospective, then Sprint 3 repeats it once more — this chaining forward is what "iterative" actually looks like in practice.](/courses/how-it-teams-work/ch01/01-agile-vs-waterfall/sprint-after-sprint.png)
 
 ## Hybrid approaches: most real companies
 
