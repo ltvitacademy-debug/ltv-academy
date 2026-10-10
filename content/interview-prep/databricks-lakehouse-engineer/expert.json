@@ -4511,6 +4511,252 @@
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
       "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "responseFormat": "text",
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z",
+      "id": "dble-exp-079",
+      "questionCode": "LTV-DBLE-EXP-079",
+      "title": "Designing a Petabyte-Scale Telemetry Ingestion Path with Zerobus",
+      "prompt": "Your organization needs to ingest IoT telemetry at genuinely massive scale -- potentially petabytes per day, from thousands of concurrent devices -- directly into the lakehouse, with the lakehouse as the sole destination. Design the ingestion approach using Zerobus Ingest, explain the specific engineering properties that let it scale this way, and identify the one real limitation you'd need to architect around.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "skills": [
+        "Databricks",
+        "Zerobus Ingest",
+        "System Design",
+        "Streaming at Scale"
+      ],
+      "modelAnswer": "At this scale, I'd use Zerobus Ingest specifically because the lakehouse is the sole destination -- that's exactly the case it eliminates a message bus for, removing the Kafka-plus-Structured-Streaming hop entirely and letting devices write straight to a target Delta table via the Zerobus SDK, authenticated with OAuth and validated against the table schema on each write.\n\nThree specific engineering properties are why this scales to genuinely massive volumes rather than just moderate ones. First, dynamic partitioning: ordering is guaranteed at the stream connection level rather than a fixed partition level, so compute can be added and removed elastically as load changes, rather than being bound to a partition count decided up front. Second, Zeroparser, an open-sourced, single-pass, zero-allocation Rust protobuf decoder sustaining roughly 1 GB/sec per CPU core with fully dynamic descriptors -- no compile-time schema is required, which matters when thousands of devices might have slightly different field sets. Third, a latency-optimized write-ahead log that keeps clients lean: push, get an acknowledgment, free the buffer -- the same low-latency, durable handoff that historically made teams choose Kafka, without requiring Kafka. Databricks' own published benchmark against NASA's real NEOWISE dataset -- 1 petabyte in 24 hours, 12 GB/s sustained, 12 million rows per second, into a single table, with zero pre-configuration -- is a real, not synthetic, proof point for designing at this scale.\n\nThe one real limitation I'd architect around today: Zerobus does not natively support Change Data Feed on its target table. If any downstream consumer at this scale needs CDF -- for example, syncing curated telemetry into an operational database -- I'd plan for the documented workaround from day one: a second streaming hop that reads the Zerobus target table and writes it into a CDF-enabled copy, rather than discovering this gap after the ingestion path is already in production.",
+      "professionalAnswer": "I'd design this around Zerobus from the start, precisely because the lakehouse is the only destination -- that's its exact use case, removing the message-bus hop entirely so devices write straight into a Delta table through the SDK.\n\nWhat actually lets it hold up at petabyte scale is three specific engineering choices: dynamic partitioning that scales elastically at the connection level instead of a fixed partition count; Zeroparser, their open-sourced Rust protobuf decoder that's fast and doesn't need a compile-time schema, which matters with thousands of slightly different device payloads; and a lean write-ahead log that gives you the same durable, low-latency guarantee Kafka is known for, without needing Kafka. Their own NEOWISE benchmark against real NASA telescope data -- a petabyte in 24 hours at 12 GB/s -- is the real proof point I'd cite, since it's genuine production-shaped data, not a synthetic test.\n\nThe one thing I'd flag to the team up front, not after we've built everything: Zerobus doesn't give you native Change Data Feed on the table it writes to. If anything downstream needs CDF -- say, syncing curated data into Lakebase -- I'd build the second-hop workaround (reading the Zerobus table and writing a CDF-enabled copy) into the architecture from day one, instead of treating it as a surprise gap we discover in production.",
+      "example": "# Architecture at scale:\n# Thousands of devices --[Zerobus SDK, OAuth]--> Delta target table (Bronze)\n#   --[streaming hop, since Zerobus has no native CDF]--> CDF-enabled copy\n#   --[continuous sync]--> Lakebase, for any operational consumer\n# Benchmark reference: 1PB/24hr, 12GB/s sustained, 12M rows/sec, NEOWISE dataset",
+      "commonMistakes": [
+        "Defaulting to a Kafka-plus-Structured-Streaming design out of habit, ignoring that the lakehouse-only destination is exactly Zerobus's use case",
+        "Citing generic 'it's fast' claims instead of the three specific engineering properties (dynamic partitioning, Zeroparser, the WAL)",
+        "Not identifying the CDF limitation as something to architect around proactively",
+        "Treating the NEOWISE benchmark as synthetic or irrelevant, rather than real production-shaped proof"
+      ],
+      "keyPoints": [
+        "Zerobus eliminates the message-bus hop when the lakehouse is the sole destination",
+        "Scales via dynamic partitioning, the Zeroparser Rust decoder, and a latency-optimized WAL",
+        "Real benchmark: 1PB/24hr, 12GB/s sustained, 12M rows/sec on real NASA NEOWISE data",
+        "The real limitation to architect around: no native CDF, requiring a second streaming hop"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly designs the Zerobus-based ingestion architecture",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly explains all three scaling engineering properties",
+          "weight": 30
+        },
+        {
+          "criterion": "Cites the real benchmark accurately",
+          "weight": 15
+        },
+        {
+          "criterion": "Proactively identifies and architects around the CDF limitation",
+          "weight": 20
+        },
+        {
+          "criterion": "Clear, accurate overall explanation",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "advanced-databricks-specialization",
+        "lessonSlug": "zerobus-ingest",
+        "label": "Review: Zerobus Ingest"
+      }
+    },
+    {
+      "responseFormat": "text",
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z",
+      "id": "dble-exp-080",
+      "questionCode": "LTV-DBLE-EXP-080",
+      "title": "Designing a Stateful Real-Time Mode Pipeline Without a Separate Streaming Engine",
+      "prompt": "You need to build a sub-second operational pipeline that counts how many connected devices are currently active within each of several monitored zones, writing live counts to an operational database, without introducing a separate engine like Apache Flink. Design this using Real-Time Mode (RTM) for Spark Declarative Pipelines, including how you'd handle the fact that a device leaving a zone produces no explicit 'left' event.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "skills": [
+        "Databricks",
+        "Real-Time Mode",
+        "Spark Declarative Pipelines",
+        "Stateful Streaming"
+      ],
+      "modelAnswer": "This is exactly the use case Real-Time Mode exists for: sub-second, in-the-loop decisions, without standing up Flink as a second engine alongside the batch pipeline. I'd build it with pyspark.pipelines (dp), using two primitives. First, declare an external sink -- RTM is built for operational delivery, so results write straight to an operational system (Lakebase, in this case) via dp.create_sink, rather than landing in an analytical table. Second, define an @dp.update_flow targeting that sink, with the RTM switch set in its spark_conf: pipelines.trigger set to 'RealTime', combined with the pipeline-level real-time-mode flag, which moves the flow onto the continuous engine. The trigger.interval here is not a micro-batch size -- it only governs how often state and offsets get checkpointed, since in RTM the underlying execution is a long-running continuous process, not discrete micro-batches.\n\nCounting active devices per zone requires state, so I'd implement this as a single keyed stateful operator using the Arbitrary Stateful Processing API, transformWithState, through a StatefulProcessor keyed by zone. It would hold a MapState mapping each device id to its last-seen timestamp, refreshed on every incoming position. To handle a device leaving a zone with no explicit event -- there's genuinely nothing to react to -- I'd use staleness-based eviction: a recurring processing-time timer sweeps the MapState, evicting any device not seen within a short TTL, and re-emits the refreshed count so a zone that empties naturally clears itself. Critically, I'd register that sweep timer idempotently -- only arming a new timer if one isn't already pending in a ValueState -- because handleInputRows fires once per incoming row in RTM, and naively arming a timer on every row would pile up thousands of redundant timers very quickly.\n\nThe entire design stays inside one shuffle and one stateful operator on the real-time path (groupBy(zone).transformWithState(...)), which is deliberately the kind of design RTM is strong at -- a single hop, not a chain of separate stateful stages.",
+      "professionalAnswer": "I'd reach for RTM here precisely because this is the use case it was built to remove Flink for. The shape is two pieces: declare an external sink, in this case straight to Lakebase since RTM is meant for operational delivery, and write an @dp.update_flow targeting it with pipelines.trigger set to RealTime in its spark_conf -- that's the actual switch onto the continuous engine. I'd make sure the team understands trigger.interval here isn't a batch size, it just controls checkpoint cadence, since RTM runs as a long-running continuous process underneath.\n\nFor the actual counting logic, since this needs real state, I'd use transformWithState with a StatefulProcessor keyed by zone, holding a MapState of device-to-last-seen-time. The genuinely tricky part is handling a device silently leaving a zone -- there's no 'left' event at all, so I'd handle that with a TTL-based sweep timer that evicts anything not seen recently and re-emits the count. And I'd be careful to only register one pending sweep timer at a time, since RTM calls the handler once per row, and naively arming a new timer every row would be a real bug that piles up thousands of stale timers. The whole thing stays as one shuffle, one stateful operator -- that's intentional, since that's exactly the shape RTM is designed to handle well.",
+      "example": "class ZoneCounter(StatefulProcessor):\n    def init(self, handle):\n        self._devices = handle.getMapState(\"devices\", KEY_SCHEMA, VAL_SCHEMA)\n        self._timer = handle.getValueState(\"sweepTimer\", TIMER_SCHEMA)\n\n    def handleInputRows(self, key, rows, timerValues):\n        now = timerValues.getCurrentProcessingTimeInMs()\n        for r in rows:\n            self._devices.updateValue(Row(deviceId=r.deviceId), Row(last_ms=now))\n        active = self._sweep(now)\n        self._ensure_timer(now)  # idempotent: only one pending timer\n        yield self._count_row(key[0], active)",
+      "commonMistakes": [
+        "Defaulting to Flink or another separate engine out of habit instead of RTM",
+        "Treating pipelines.trigger.interval as a micro-batch size rather than a checkpoint cadence",
+        "Reacting to an explicit 'left zone' event that doesn't actually exist, instead of staleness-based eviction",
+        "Registering a new timer on every incoming row, causing timer buildup instead of idempotent registration",
+        "Splitting the counting logic across multiple stateful operators instead of one keyed operator in a single shuffle"
+      ],
+      "keyPoints": [
+        "RTM is built for exactly this: sub-second, in-the-loop decisions, without a separate engine like Flink",
+        "dp.create_sink plus @dp.update_flow with pipelines.trigger: RealTime is the complete authoring shape",
+        "trigger.interval governs checkpoint cadence, not batch size, under RTM",
+        "transformWithState with staleness-based eviction and idempotent timers handles state with no explicit 'left' event"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly designs the sink + update_flow RTM authoring shape",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly explains trigger.interval's actual role under RTM",
+          "weight": 15
+        },
+        {
+          "criterion": "Correctly designs the stateful transformWithState solution",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly identifies staleness-based eviction and idempotent timer registration",
+          "weight": 20
+        },
+        {
+          "criterion": "Clear, accurate overall explanation",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": {
+        "courseSlug": "advanced-databricks-specialization",
+        "lessonSlug": "real-time-mode-spark-declarative-pipelines",
+        "label": "Review: Real-Time Mode for Spark Declarative Pipelines"
+      }
+    },
+    {
+      "responseFormat": "text",
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z",
+      "id": "dble-exp-081",
+      "questionCode": "LTV-DBLE-EXP-081",
+      "title": "Building a Production Document Intelligence Pipeline with Agent Bricks",
+      "prompt": "Your organization receives thousands of vendor invoices as PDFs weekly, currently unqueryable and manually reviewed. Design a production pipeline using Agent Bricks' Document Intelligence pattern to turn these into governed, structured Delta tables, including the medallion layers, the orchestration, and what becomes possible once this data is structured.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "skills": [
+        "Databricks",
+        "Agent Bricks",
+        "Document Intelligence",
+        "Lakeflow Jobs"
+      ],
+      "modelAnswer": "I'd build this as the same medallion pattern used everywhere else in this course, applied to unstructured PDFs instead of structured events. Bronze: Auto Loader ingests raw invoice PDF bytes from a Unity Catalog Volume as they land, exactly the ingestion pattern from earlier in this course. Silver: an incremental streaming table calls ai_parse_document against the Bronze layer, extracting raw text, table structure, and layout from each PDF -- turning an opaque file into usable content, but not yet structured fields. Gold: a second incremental streaming table calls ai_extract against the Silver layer with a declared schema (invoice number, vendor name, line-item totals, due date), pulling out the specific typed columns the business actually needs to query.\n\nRather than hand-writing all three layers from scratch, I'd consider using the 'Use Agent' authoring shortcut to generate a first-draft Declarative Pipeline from a natural-language description of the desired schema, then review and refine the generated pyspark.pipelines code directly, the same review discipline as reviewing a Lakeflow Designer output.\n\nFor orchestration, I'd wire this into a Lakeflow Job with the standard three-task reference pattern: an Ingest task (Auto Loader into Bronze), a Parse and Extract task (the Declarative Pipeline building Silver and Gold, depending on Ingest succeeding), and a Refresh Dashboard task depending on Parse and Extract succeeding, so a downstream BI report only refreshes once Gold is actually current -- the same fan-out dependency pattern taught in Chapter 4.\n\nOnce invoice data is structured and governed in Gold, five real categories of use case open up: an AI agent or chatbot can query invoice data directly via SQL instead of re-parsing a PDF on every question; the data becomes searchable and filterable in ways raw PDF text never was; it joins cleanly with the rest of the lakehouse's structured data (vendor master data, GL postings) under the same Unity Catalog governance; and a BI dashboard can report directly against Gold instead of requiring manual review of individual PDFs.",
+      "professionalAnswer": "I'd treat this as a completely standard medallion build, just with an unusual Bronze source. Auto Loader brings the raw PDFs into Bronze from a volume like always. Silver is where ai_parse_document turns each PDF into usable parsed content -- text, tables, layout -- as an incremental streaming table. Gold is where ai_extract pulls the actual fields we care about -- invoice number, vendor, line items, due date -- against a schema we declare, also incremental.\n\nFor the actual authoring, I might start with the 'Use Agent' shortcut to generate a first pass of the pipeline from a plain description of what we want extracted, then review that generated code the same way I'd review any new pipeline before it goes to production -- it's real pyspark.pipelines code, not a black box.\n\nFor orchestration I'd use the standard three-task Lakeflow Job pattern: Ingest, then Parse and Extract once Ingest succeeds, then Refresh Dashboard once Parse and Extract succeeds -- the same fan-out dependency structure we'd use for any other pipeline. And the real payoff once this is live: instead of someone manually opening a PDF to answer 'what's our total spend with this vendor this quarter,' that's just a SQL query against the Gold table now, and it can feed a dashboard, a chatbot, or a search tool directly.",
+      "example": "-- Gold layer, once built:\nSELECT vendor_name, SUM(line_item_total) AS total_spend\nFROM gold.invoices\nWHERE invoice_date >= '2026-07-01'\nGROUP BY vendor_name\nORDER BY total_spend DESC;\n-- Previously required manually opening PDFs one at a time.",
+      "commonMistakes": [
+        "Treating this as a new architecture rather than the same medallion pattern applied to a new source type",
+        "Running ai_extract before ai_parse_document, or skipping the Silver layer entirely",
+        "Building the pipeline as a one-off batch job instead of an incremental streaming pattern that handles new invoices automatically",
+        "Missing the orchestration layer entirely and not chaining dashboard refresh to pipeline completion",
+        "Not naming the concrete downstream use cases this structured data actually unlocks"
+      ],
+      "keyPoints": [
+        "Bronze (raw PDF bytes via Auto Loader), Silver (ai_parse_document), Gold (ai_extract against a declared schema)",
+        "'Use Agent' can generate a first-draft pipeline as real, reviewable pyspark.pipelines code",
+        "Standard three-task Lakeflow Job orchestration: Ingest -> Parse and Extract -> Refresh Dashboard",
+        "Unlocks chatbots/agents, search, unified analytics, and dashboards against previously unqueryable documents"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly designs the Bronze/Silver/Gold medallion layers for documents",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly describes the three-task orchestration pattern",
+          "weight": 25
+        },
+        {
+          "criterion": "Mentions the 'Use Agent' authoring shortcut and review discipline",
+          "weight": 15
+        },
+        {
+          "criterion": "Names concrete, realistic downstream use cases this unlocks",
+          "weight": 20
+        },
+        {
+          "criterion": "Clear, accurate overall explanation",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "advanced-databricks-specialization",
+        "lessonSlug": "agent-bricks-document-intelligence",
+        "label": "Review: Agent Bricks & Document Intelligence"
+      }
+    },
+    {
+      "responseFormat": "text",
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z",
+      "id": "dble-exp-082",
+      "questionCode": "LTV-DBLE-EXP-082",
+      "title": "Why Genie ZeroOps Must Run Inside the Platform to Verify a Fix Safely",
+      "prompt": "A VP asks why your team can't just build an internal tool using a generic external coding agent, with API credentials to your Databricks workspace, to replicate what Genie ZeroOps does -- detecting and fixing broken pipelines automatically. Walk through ZeroOps's full four-step process, and explain specifically why the Verify step is the one that an externally-hosted agent cannot safely replicate, even with full API access.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "skills": [
+        "Databricks",
+        "Genie ZeroOps",
+        "Unity Catalog",
+        "Production Operations"
+      ],
+      "modelAnswer": "I'd walk through all four steps, because the VP's question is really about one specific step, and showing the other three first makes clear that API access alone would actually get you reasonably far on three of them -- just not the fourth. Detect requires continuous access to platform observability, including catching silent failures that show up in data quality metrics before anything throws an actual error; an external agent with API access could plausibly poll logs and metrics, though it would likely choke on very large Spark logs the way generic coding agents are known to. Assess requires the full Unity Catalog lineage dependency graph to trace a failure back to a code bug, an upstream schema change, or bad data introduced elsewhere; again, with sufficient API access, an external tool could query that lineage data. Remediate is agentic code generation using the team's real development workflow (GitHub PRs, Jira tickets) as context -- also plausible for an external tool with the right integrations.\n\nVerify is where this breaks down architecturally, not just practically. Verification means testing the proposed fix against real production data in an isolated environment, and that's precisely the step where production data can't be freely handed to an external tool -- either you deny the agent real data access, in which case it can't actually verify anything meaningful, or you grant real access, in which case you've created a genuine risk of real side effects against production during the 'test.' ZeroOps solves this specifically because it's part of the Databricks Data + AI Platform itself: its sandbox uses zero-copy clones -- a table clone built from metadata, not duplicated data -- combined with scoped permissions and network isolation, so the proposed fix runs against a true copy of production data without ever touching production, and nothing is applied until a human approves it. An externally-hosted agent, no matter how good its credentials are, cannot replicate zero-copy cloning and network-isolated sandboxing without effectively becoming part of the platform's own storage and compute layer -- which is exactly what 'build an external tool' is trying to avoid building in the first place.\n\nThe honest answer to the VP: you could plausibly approximate three of the four ZeroOps steps with enough engineering effort and API access, but the fourth step, Verify, is specifically the one requiring platform-native sandboxing that an external tool structurally cannot provide without rebuilding a meaningful chunk of what Databricks already built.",
+      "professionalAnswer": "I'd actually concede ground on three of the four steps before making the real point, because it's more convincing that way. Detect, Assess, and Remediate -- with enough API access and engineering effort, an external tool could get reasonably close: poll observability data, query Unity Catalog lineage, generate a fix using GitHub/Jira context. I wouldn't pretend those are impossible for an external tool to approximate.\n\nVerify is where I'd draw the real line. Verifying a fix means testing it against actual production data in an isolated environment, and that's exactly the step where handing an external tool real production data access is genuinely dangerous -- either it doesn't get real access and can't actually verify anything, or it does get real access and now has the ability to cause real side effects during what's supposed to be a safe test. ZeroOps gets around this because it's built into the platform itself -- it uses zero-copy clones, which are metadata-based table clones, not real data duplication, plus scoped permissions and network isolation, so the fix runs against a real copy of production data that can never reach production itself, and nothing ships without a human approving it.\n\nSo my answer to the VP would be: building the first three steps externally is a real, if expensive, possibility. Building the fourth safely means either accepting real risk to production data, or essentially rebuilding Databricks' own sandboxing and zero-copy clone infrastructure from scratch -- at which point you haven't actually avoided building a platform-native tool, you've just built a worse version of one.",
+      "example": "# What an external tool CAN plausibly approximate:\n# Detect (poll logs/metrics), Assess (query lineage via API), Remediate (generate a PR)\n# What it structurally cannot replicate without becoming platform-native:\n# Verify -- zero-copy clone + scoped permissions + network isolation, tested against\n# real data with zero risk to production, approved by a human before anything applies",
+      "commonMistakes": [
+        "Claiming none of ZeroOps's four steps could ever be approximated externally, which overstates the case",
+        "Missing that the real architectural barrier is specifically the Verify step, not the whole process generically",
+        "Not naming zero-copy cloning, scoped permissions, and network isolation as the specific sandbox mechanisms",
+        "Treating 'API access to Databricks' as equivalent to 'running inside the platform's governed sandbox'"
+      ],
+      "keyPoints": [
+        "Detect, Assess, and Remediate could plausibly be approximated by a well-integrated external tool",
+        "Verify is the step that genuinely requires platform-native sandboxing",
+        "Zero-copy clones, scoped permissions, and network isolation are the concrete mechanisms that make safe verification possible",
+        "Replicating Verify externally means either real production risk or rebuilding platform-native infrastructure"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly walks through all four ZeroOps steps",
+          "weight": 25
+        },
+        {
+          "criterion": "Honestly assesses which steps an external tool could plausibly approximate",
+          "weight": 20
+        },
+        {
+          "criterion": "Correctly and specifically explains why Verify cannot be safely replicated externally",
+          "weight": 35
+        },
+        {
+          "criterion": "Clear, accurate overall explanation",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": {
+        "courseSlug": "advanced-databricks-specialization",
+        "lessonSlug": "genie-code-and-zeroops",
+        "label": "Review: Genie Code & Genie ZeroOps"
+      }
     }
   ]
 }

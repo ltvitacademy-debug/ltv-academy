@@ -202,4 +202,42 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
     ],
   },
+  {
+    n: 8,
+    title: "Agentic Data Engineering & What's New",
+    lessons: [
+      L(35, "agentic-data-engineering-paradigm", "Agentic Data Engineering: The New Paradigm", {
+        contentDir: "ch08/35-agentic-data-engineering-paradigm",
+        // videoUrl/durationLabel pending
+      }),
+      L(36, "zerobus-ingest", "Zerobus Ingest", {
+        contentDir: "ch08/36-zerobus-ingest",
+        // videoUrl/durationLabel pending
+      }),
+      L(37, "lakebase", "Lakebase", {
+        contentDir: "ch08/37-lakebase",
+        // videoUrl/durationLabel pending
+      }),
+      L(38, "auto-loader-file-events", "Auto Loader With File Events", {
+        contentDir: "ch08/38-auto-loader-file-events",
+        // videoUrl/durationLabel pending
+      }),
+      L(39, "real-time-mode-spark-declarative-pipelines", "Real-Time Mode for Spark Declarative Pipelines", {
+        contentDir: "ch08/39-real-time-mode-spark-declarative-pipelines",
+        // videoUrl/durationLabel pending
+      }),
+      L(40, "lakeflow-designer", "Lakeflow Designer", {
+        contentDir: "ch08/40-lakeflow-designer",
+        // videoUrl/durationLabel pending
+      }),
+      L(41, "agent-bricks-document-intelligence", "Agent Bricks & Document Intelligence", {
+        contentDir: "ch08/41-agent-bricks-document-intelligence",
+        // videoUrl/durationLabel pending
+      }),
+      L(42, "genie-code-and-zeroops", "Genie Code & Genie ZeroOps", {
+        contentDir: "ch08/42-genie-code-and-zeroops",
+        // videoUrl/durationLabel pending
+      }),
+    ],
+  },
 ];

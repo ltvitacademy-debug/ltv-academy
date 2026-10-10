@@ -594,6 +594,157 @@
       "prompt": "Fill in the blank: completing Advanced Databricks Specialization closes out the Advanced stage, and with it, the entire Databricks / Lakehouse Engineer path — a total of ________ courses across both stages.",
       "acceptedAnswers": ["nine", "9"],
       "explain": "The Job Ready stage (T-SQL Development, Data Engineering Foundations, Data Factory, Azure Databricks & Delta Lake) plus the Advanced stage (Advanced Databricks Specialization, Kafka & Event Streaming, Airflow, Terraform & Bicep, Data Engineering Career & Capstone) together make nine courses, both stages complete."
+    },
+    {
+      "id": "advdatabricks-41",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "A team is ingesting high-volume IoT telemetry whose only destination is the lakehouse. Per the lesson on Zerobus Ingest, what does Zerobus eliminate from the traditional architecture, and what does it keep?",
+      "options": [
+        "It eliminates the message bus (Kafka or similar) and the separate Spark Structured Streaming job that reads from it, while keeping the same durable, acknowledged write guarantee that made teams prefer Kafka",
+        "It eliminates Unity Catalog governance entirely, writing data outside any catalog or schema",
+        "It eliminates the Delta table as the destination, writing instead to a proprietary Zerobus-only format",
+        "It eliminates Spark entirely, including Spark's role in Declarative Pipelines elsewhere in this course",
+        "It eliminates the producing application, generating synthetic event data automatically",
+        "It eliminates the need for OAuth or any other authentication on the client"
+      ],
+      "correctIndex": 0,
+      "explain": "Zerobus removes the middle hop (message bus plus a dedicated streaming job) that's pure overhead when the lakehouse is the only destination, while preserving the same durable, low-latency, acknowledged-write guarantee that historically made Kafka the default choice.",
+      "distractorExplain": "Option B is the common misconception: Zerobus still writes through ordinary Unity Catalog GRANTs on the target table, exactly like any other write path in this course. It does not bypass governance -- it just removes the message-bus hop, not the catalog layer underneath it."
+    },
+    {
+      "id": "advdatabricks-42",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "A fraud-scoring application needs a driver's live location reflected in Lakebase within a few hundred milliseconds. A dashboard elsewhere in the same system only needs to be 'basically live.' Per the lesson on Lakebase, which sync method should each use, and why?",
+      "options": [
+        "The fraud-scoring app should use the ForeachWriter real-time mode (~200-300ms), accepting the cost of managing its own streaming query; the dashboard can use the simpler, managed continuous sync pipeline (~10-15s lag)",
+        "Both should use the managed continuous sync pipeline, since its 10-15 second lag is fast enough for any use case",
+        "Both should use ForeachWriter, since there is no reason to ever choose the managed continuous sync pipeline",
+        "Neither method can achieve sub-second latency; Lakebase is only suitable for daily batch reporting"
+      ],
+      "correctIndex": 0,
+      "explain": "This is a genuine trade-off, not a strictly-better option: ForeachWriter buys true sub-second freshness at the cost of managing your own streaming query and checkpoint, which is worth it for fraud scoring but unnecessary overhead for a dashboard that the simpler, managed continuous sync pipeline already serves well."
+    },
+    {
+      "id": "advdatabricks-43",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: unlike classic notifications, which require one dedicated cloud queue per Auto Loader stream, File Events creates a single, Databricks-managed queue per ________, shared across every stream that reads from it.",
+      "acceptedAnswers": ["external location", "an external location", "the external location"],
+      "explain": "File Events sets up one queue/subscription per external location rather than per stream, which is exactly what avoids the cloud-provider ceiling on notification resources per storage container (100 on AWS/GCP, 500 on Azure)."
+    },
+    {
+      "id": "advdatabricks-44",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "code": "@dp.update_flow(\n    name=\"positions_flow\",\n    target=\"lakebase_sink\",\n    spark_conf={\"pipelines.trigger\": \"RealTime\",\n                \"pipelines.trigger.interval\": \"5 minutes\"},\n)\ndef positions_flow():\n    ...",
+      "prompt": "Select every true statement about Real-Time Mode (RTM) for Spark Declarative Pipelines, given the flow above.",
+      "options": [
+        "pipelines.trigger: \"RealTime\" is the switch that moves this flow onto the continuous engine",
+        "pipelines.trigger.interval here governs how often state and source offsets are checkpointed, not a micro-batch size",
+        "The stateless DataFrame code inside an RTM flow is written no differently than it would be for a micro-batch flow",
+        "RTM requires writing to an analytical Delta table as its target; it cannot target an operational sink like Lakebase",
+        "RTM eliminates the need for a separate engine like Apache Flink for sub-second, in-the-loop decisions"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "The trigger config is the real RTM switch, and the interval controls checkpoint cadence, not batch size, since RTM's 'batch' is long-running. The DataFrame code itself is unchanged from micro-batch authoring. RTM is specifically built for operational delivery to sinks like Lakebase, not restricted to analytical tables -- which also eliminates the need for a separate engine like Flink."
+    },
+    {
+      "id": "advdatabricks-45",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Per the lesson on Genie Code and Genie ZeroOps, why can a generic external coding agent not safely perform the 'Verify' step of a production fix, even if it correctly diagnosed the root cause?",
+      "options": [
+        "Verification requires testing the proposed fix against real production data in an isolated environment, and that data can't be safely handed to an external tool -- either access is denied, or granting it risks real side effects against production",
+        "Generic coding agents are architecturally incapable of generating any code that resembles a bug fix",
+        "Verification is purely a cost constraint with no real technical barrier behind it",
+        "Unity Catalog blocks all read access to production tables for any agent, internal or external",
+        "The Verify step does not actually exist in Genie ZeroOps's process",
+        "Generic agents can perform Verify equally well; ZeroOps offers no real advantage at this step"
+      ],
+      "correctIndex": 0,
+      "explain": "Production data is sensitive and governed -- an external agent either can't get genuinely safe access to it, or if it did, could cause real side effects testing against it. ZeroOps solves this specifically by running inside the platform, using zero-copy clones, scoped permissions, and network isolation, so the fix is verified against real data without ever touching production.",
+      "distractorExplain": "Option D overstates the barrier: Unity Catalog governance is exactly what makes safe access possible for an agent running inside the platform (like ZeroOps) -- the real problem is handing that same access to a tool running outside the platform's governed, sandboxed boundary, not an absolute block on all reads."
+    },
+    {
+      "id": "advdatabricks-46",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 8 capability to what it actually does.",
+      "left": ["Zerobus Ingest", "Lakebase", "File Events", "Lakeflow Designer"],
+      "right": [
+        "A fully managed, serverless Postgres database synced from Delta for low-latency operational workloads",
+        "Direct event-to-Delta-table ingestion with no message bus in the middle",
+        "An AI-first visual canvas that generates real, inspectable pipeline code with zero translation loss",
+        "A Databricks-managed, single-queue-per-external-location replacement for classic cloud notifications"
+      ],
+      "correctMap": [1, 0, 3, 2],
+      "explain": "Zerobus Ingest writes events directly to Delta with no message bus. Lakebase is the managed Postgres database synced from Delta for operational workloads. File Events is the managed, single-queue-per-location notification service. Lakeflow Designer is the visual, AI-first canvas generating real code."
+    },
+    {
+      "id": "advdatabricks-47",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the Document Intelligence pipeline in the order they actually run, per the lesson on Agent Bricks & Document Intelligence.",
+      "items": [
+        "Auto Loader ingests raw document bytes from a Unity Catalog Volume into a Bronze table",
+        "An incremental streaming table calls ai_parse_document to build the Silver layer",
+        "An incremental streaming table calls ai_extract against a declared schema to build the Gold layer",
+        "A Lakeflow Job's Refresh Dashboard task runs once the Gold table has been updated"
+      ],
+      "explain": "The medallion pattern applies unchanged: Bronze holds raw bytes from Auto Loader, Silver is built by parsing with ai_parse_document, Gold is built by extracting typed fields with ai_extract, and a downstream dashboard task refreshes only once Gold is current."
+    },
+    {
+      "id": "advdatabricks-48",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "A business analyst builds a transformation visually in Lakeflow Designer, and a data engineer then needs to take it further. What does the 'zero translation loss' claim actually change about that handoff, compared to a traditional proprietary no-code ETL tool?",
+      "options": [
+        "The engineer can open and directly review, refine, or optimize the real pyspark.pipelines code Designer generated, instead of reverse-engineering or rewriting the analyst's work from an opaque proprietary format",
+        "The handoff is eliminated entirely, since the analyst's visual pipeline runs forever without any engineer ever reviewing it",
+        "The engineer must still manually retype the entire pipeline from scratch, since Designer produces no usable code at all",
+        "Zero translation loss means the analyst's pipeline can only ever run inside Designer's own proprietary runtime"
+      ],
+      "correctIndex": 0,
+      "explain": "Because Designer's visual output is real, inspectable pyspark.pipelines code rather than an opaque proprietary format, the engineer picks up exactly what the analyst built and can review or extend it directly -- nothing is lost or guessed at in translation."
+    },
+    {
+      "id": "advdatabricks-49",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Genie Code closes the gap a generic coding agent can't by learning how a specific team builds features, trains models, and evaluates candidates -- this team-specific knowledge is called the Genie ________.",
+      "acceptedAnswers": ["Ontology", "Genie Ontology"],
+      "explain": "Genie Ontology is the team-specific layer of Genie Code's expertise, learning a given team's own patterns so it follows them instead of falling back on irrelevant generic defaults."
+    },
+    {
+      "id": "advdatabricks-50",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "expert",
+      "prompt": "Select every true statement about why agentic data engineering (Zerobus, Lakebase, File Events, RTM, Designer, Agent Bricks, Genie Code, and Genie ZeroOps) became possible now rather than years earlier, per this chapter.",
+      "options": [
+        "AI agents require complete end-to-end context (lineage, governance) to act safely, which only exists once ingestion, transformation, and orchestration are already unified under one governed platform",
+        "A generic coding agent can write flawless code and still fail a data engineering task if it doesn't know which upstream definition of a business term is canonical -- a gap only a platform-native agent with lineage access can close",
+        "Genie ZeroOps can only safely verify a fix against real production data because it runs inside the same governed platform, using sandboxed zero-copy clones, rather than as an external tool",
+        "None of these capabilities depend on Unity Catalog governance existing first; they would work identically on an ungoverned, fragmented tool stack",
+        "Lakeflow already unifying ingestion and transformation under Unity Catalog (taught in earlier chapters of this course) is what made the agentic layer in this chapter possible, not a replacement for it"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Every new capability in this chapter depends on the unified, governed foundation this course already built in Chapters 1-7 -- agents need lineage and governance context to act safely, a platform-native agent can resolve ambiguous business terms a generic one can't, and ZeroOps's sandboxed verification specifically requires running inside that same governed platform. None of this would work on a fragmented, ungoverned stack, which is exactly the opposite of option D's claim."
     }
   ]
 }

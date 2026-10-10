@@ -3251,6 +3251,122 @@
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
       "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "responseFormat": "text",
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z",
+      "id": "dble-int-059",
+      "questionCode": "LTV-DBLE-INT-059",
+      "title": "What Agentic Data Engineering Actually Means",
+      "prompt": "A colleague says 'agentic data engineering is just marketing for AI autocomplete in a notebook.' Explain what Databricks actually means by the term, why a generic coding agent falls short on data engineering work specifically, and what has to exist on the platform before an agent can safely author, operate, or troubleshoot a pipeline.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "skills": [
+        "Databricks",
+        "Lakeflow",
+        "Unity Catalog",
+        "AI Agents"
+      ],
+      "modelAnswer": "Agentic data engineering, in Databricks' own definition, is the shift from manually hand-coding and monitoring pipelines to using autonomous AI agents that understand enterprise context to author, operate, and troubleshoot data workflows. Those are three distinct responsibilities, not one: authoring is writing or generating pipeline logic, operating is keeping it running correctly day to day, and troubleshooting is diagnosing and fixing it when something breaks.\n\nA generic coding agent can genuinely fall short here even when its code is syntactically flawless. The classic failure mode: an agent can write perfectly correct Python and still produce the wrong answer if it doesn't know which upstream definition of a business term, like 'revenue,' is the canonical one across three different schemas. That's not a coding problem, it's a context problem, and no amount of code-generation skill fixes it.\n\nWhat has to exist first is a single, unified, governed foundation -- in Databricks' case, Unity Catalog providing lineage and governance underneath Lakeflow's unified ingestion, transformation, and orchestration. Agents can't function safely in a vacuum; they require complete end-to-end context to act safely, securely, and accurately. That's why purpose-built agents like Genie Code and Genie ZeroOps are built directly into the platform that already holds this governance and lineage data, rather than shipped as a separate tool with API access bolted on from outside.",
+      "professionalAnswer": "I'd push back gently on 'just marketing' with a concrete example rather than a definition. Picture an AI coding agent asked to fix a revenue pipeline. It can write flawless PySpark, but if there are three different 'revenue' columns across different schemas and it doesn't know which one is actually canonical for this report, it'll confidently produce a wrong number -- and that's not a skill gap in the agent's coding ability, it's a context gap.\n\nThat's the real distinction behind agentic data engineering: it's not 'AI writes code for you,' it's 'an agent that actually has the lineage, governance, and business context to know which code is right.' And that only works if there's a single governed foundation underneath it -- which is exactly why this capability showed up now and not five years ago. You need Unity Catalog's lineage and governance already unifying your ingestion and transformation before an agent can safely operate on top of it. Without that foundation, you're back to a generic coding assistant guessing at context it was never given.",
+      "example": "# A generic coding agent might write this, confidently, and still be wrong:\nrevenue_df = spark.table(\"finance.revenue_raw\")  # wrong table --\n# the canonical definition actually lives in finance.revenue_gold,\n# a fact only Unity Catalog lineage + governance context would surface",
+      "commonMistakes": [
+        "Treating agentic data engineering as synonymous with 'an AI chatbot that writes SQL'",
+        "Assuming any coding agent with repo access has equivalent context to a platform-native agent",
+        "Missing that authoring, operating, and troubleshooting are three distinct capabilities, not one",
+        "Not connecting the need for agent context back to Unity Catalog's lineage and governance role"
+      ],
+      "keyPoints": [
+        "Agentic data engineering shifts authoring, operating, and troubleshooting from manual to AI-assisted",
+        "A generic coding agent can write correct code and still fail without business/lineage context",
+        "Agents require a unified, governed foundation (Unity Catalog + Lakeflow) to act safely",
+        "This is why purpose-built platform-native agents exist instead of external coding assistants"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly defines agentic data engineering and its three verbs",
+          "weight": 25
+        },
+        {
+          "criterion": "Explains the 'flawless code, wrong answer' failure mode of generic agents",
+          "weight": 30
+        },
+        {
+          "criterion": "Identifies the unified governed foundation as a prerequisite",
+          "weight": 30
+        },
+        {
+          "criterion": "Clear, accurate overall explanation",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "advanced-databricks-specialization",
+        "lessonSlug": "agentic-data-engineering-paradigm",
+        "label": "Review: Agentic Data Engineering: The New Paradigm"
+      }
+    },
+    {
+      "responseFormat": "text",
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z",
+      "id": "dble-int-060",
+      "questionCode": "LTV-DBLE-INT-060",
+      "title": "Auto Loader File Events vs. Classic Notifications",
+      "prompt": "Your team is on Auto Loader's classic notification mode today and has been warned you're approaching the per-storage-container limit on notification resources. Explain what that limit actually is, why it exists, and how migrating to Auto Loader with File Events solves it without giving up the performance of notifications.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "skills": [
+        "Databricks",
+        "Auto Loader",
+        "Cloud Storage",
+        "Streaming"
+      ],
+      "modelAnswer": "Classic notification mode gives each Auto Loader stream its own dedicated cloud notification resource -- an SNS topic and SQS queue on AWS, or the Event Grid equivalent on Azure -- so that new files are discovered via events instead of repeated directory listing. The catch is that cloud providers cap how many of these notification resources can exist per storage container: 100 jobs on AWS/GCP, 500 on Azure. Since each stream needs its own, a team running many ingestion streams against the same storage account can genuinely hit that ceiling.\n\nFile Events resolves this by changing the architecture, not by relaxing the limit. Instead of one queue per stream, Databricks creates and manages a single notification resource per external location, and every stream reading from that location shares it: a Databricks-managed service reads and caches the notification events, and each Auto Loader stream incrementally reads from that shared cache using cloudFiles.useManagedFileEvents. That sidesteps the cloud provider's per-container cap entirely, since you're no longer creating one resource per stream -- you're sharing one resource across many streams. You get the simplicity of not managing per-stream notification infrastructure and the performance of event-driven discovery, instead of the directory-listing-vs-classic-notifications trade-off that used to force a choice.",
+      "professionalAnswer": "I'd explain the limit concretely: with classic notifications, every single Auto Loader stream gets its own dedicated queue, and AWS/GCP only allow 100 of those per storage container, Azure allows 500. If you've got dozens of bronze tables each with their own stream pointed at the same storage account, you can genuinely run out of room.\n\nFile Events fixes this by flipping the ownership model -- instead of one queue per stream, Databricks sets up and manages exactly one queue per external location, and every stream sharing that location reads from the same managed cache instead of its own dedicated resource. So you're not hitting the cap anymore because you're not creating new cloud resources per stream at all. The migration itself is pretty low-friction too -- it's one option, cloudFiles.useManagedFileEvents set to true, and new external locations actually have this on by default already. You get the same event-driven performance you had with classic notifications, minus the per-stream resource management and minus the risk of hitting that cloud ceiling as you add more streams.",
+      "example": "stream_df = (spark.readStream.format(\"cloudFiles\")\n    .option(\"cloudFiles.format\", \"json\")\n    .option(\"cloudFiles.useManagedFileEvents\", True)  # the migration\n    .load(volume_path)\n    .writeStream\n    .option(\"checkpointLocation\", checkpoint_path)\n    .table(target_table)\n)",
+      "commonMistakes": [
+        "Assuming the fix is simply requesting a higher cloud-provider quota instead of changing the architecture",
+        "Not realizing new external locations already have File Events on by default",
+        "Confusing File Events with directory listing mode, when it actually keeps notification-level performance",
+        "Forgetting that cloudFiles.backfillInterval becomes irrelevant once managed File Events is enabled"
+      ],
+      "keyPoints": [
+        "Classic notifications require one dedicated queue per stream, capped at 100 (AWS/GCP) or 500 (Azure) per container",
+        "File Events creates one Databricks-managed queue per external location, shared across streams",
+        "cloudFiles.useManagedFileEvents is the migration switch",
+        "File Events keeps notification-level performance while removing per-stream resource management"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly states the classic-notification per-container limit and why it exists",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains the single-queue-per-external-location architecture of File Events",
+          "weight": 35
+        },
+        {
+          "criterion": "Identifies the correct migration option/approach",
+          "weight": 20
+        },
+        {
+          "criterion": "Clear, accurate overall explanation",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "advanced-databricks-specialization",
+        "lessonSlug": "auto-loader-file-events",
+        "label": "Review: Auto Loader With File Events"
+      }
     }
   ]
 }

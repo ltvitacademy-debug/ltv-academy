@@ -1,0 +1,60 @@
+{
+  "lesson": "real-time-mode-spark-declarative-pipelines",
+  "questions": [
+    {
+      "q": "What problem does Real-Time Mode (RTM) solve, and what does it eliminate the need for?",
+      "options": [
+        "Sub-second, in-the-loop latency for Declarative Pipelines, eliminating the need for a separate specialized engine like Apache Flink",
+        "It eliminates the need for Unity Catalog governance on streaming tables",
+        "It solves batch ETL cost, with no relation to latency at all",
+        "It eliminates the need to ever use Kafka as a source"
+      ],
+      "answer": 0,
+      "explain": "RTM targets p99 latency in the tens-to-low-hundreds of milliseconds inside the same declarative model, removing the need to bolt on a second engine like Flink for use cases like fraud scoring or live personalization."
+    },
+    {
+      "q": "What single configuration line, set at the flow level, switches a flow into Real-Time Mode?",
+      "options": [
+        "spark_conf={\"pipelines.trigger\": \"RealTime\"} inside the @dp.update_flow decorator",
+        "dp.create_sink(mode=\"realtime\")",
+        "spark.conf.set(\"spark.sql.shuffle.partitions\", 1)",
+        "trigger(availableNow=True) on a writeStream call"
+      ],
+      "answer": 0,
+      "explain": "pipelines.trigger: \"RealTime\" set via spark_conf on the @dp.update_flow decorator (combined with the pipeline-level realTimeMode.enabled setting) is the switch that moves a flow onto the continuous engine."
+    },
+    {
+      "q": "Once RTM is on, what does pipelines.trigger.interval actually control?",
+      "options": [
+        "How often state and source offsets are checkpointed — it is not a micro-batch size, since RTM's 'batch' is long-running and processes data as it arrives",
+        "The exact micro-batch size processed on each trigger, identical to classic trigger(processingTime=...)",
+        "The maximum number of concurrent Lakebase sinks allowed",
+        "The TTL for all stateful timers across every flow in the pipeline"
+      ],
+      "answer": 0,
+      "explain": "This is explicitly called out as a common point of confusion: in RTM, the interval only governs checkpoint cadence for state and offsets, not how often results are produced — the underlying batch is long-running."
+    },
+    {
+      "q": "In the aircraft-tracking demo's stateful ZoneCounter processor, why does _ensure_timer only register a sweep timer if one isn't already pending?",
+      "options": [
+        "Because handleInputRows fires once per row in RTM, so naively registering a timer on every row would pile up thousands of redundant timers",
+        "Because Spark only allows one timer to exist in the entire pipeline at any time",
+        "Because registering more than one timer would corrupt the MapState",
+        "Because timers are deprecated in favor of a fixed polling loop"
+      ],
+      "answer": 0,
+      "explain": "Since handleInputRows is invoked per row in RTM, keeping exactly one pending timer in a ValueState (rather than registering a new one per row) avoids piling up redundant timers."
+    },
+    {
+      "q": "Why does the ZoneCounter processor use a staleness-based eviction sweep instead of reacting to an explicit 'aircraft left the zone' event?",
+      "options": [
+        "Because an aircraft crossing out of a zone generates no 'leave' event at all — there's nothing to react to, so a recurring TTL-based sweep evicts aircraft not seen recently",
+        "Because Kafka does not support delete events of any kind",
+        "Because explicit leave events exist but are considered too expensive to process",
+        "Because MapState cannot store timestamps, only counts"
+      ],
+      "answer": 0,
+      "explain": "There's no 'leave' event to react to when an aircraft exits a zone — the sweep pattern evicts anything not seen within a short TTL and re-emits the refreshed count, letting an emptied zone clear itself automatically."
+    }
+  ]
+}

@@ -4390,6 +4390,238 @@
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
       "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "responseFormat": "text",
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z",
+      "id": "dble-adv-072",
+      "questionCode": "LTV-DBLE-ADV-072",
+      "title": "Choosing a Lakebase Sync Method Under Real Latency Requirements",
+      "prompt": "You're deciding how to sync a Delta table into Lakebase for two different consumers: a live operational dashboard that just needs to feel current, and a fraud-scoring service that reacts to a customer's location in near real time. Explain both available sync methods, their real measured latencies, and which one you'd choose for each consumer and why.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "skills": [
+        "Databricks",
+        "Lakebase",
+        "Streaming",
+        "System Design"
+      ],
+      "modelAnswer": "Lakebase offers two genuinely different sync paths from Delta, and they are not interchangeable despite both ending at the same destination. The first is a managed continuous sync pipeline, configured through the UI or SDK with a declared primary key and Sync Mode set to Continuous -- Databricks manages the pipeline end to end, and the measured lag is 10-15 seconds. The second is a real-time mode via a ForeachWriter, where a streaming DataFrame writes directly to the Lakebase table through writeStream.foreach(writer); this is a hand-managed streaming query with its own checkpoint, and the measured latency drops to 200-300 milliseconds.\n\nFor the operational dashboard, 10-15 seconds is essentially invisible to a human looking at a screen, and the managed continuous sync pipeline is the obviously correct choice: less code, less to operate, and the UI-configured primary key is all that's needed. For the fraud-scoring service, 10-15 seconds is an eternity -- a decision about a transaction has to react to very recent location data, and 200-300 milliseconds is the only one of the two options that's plausible for an in-the-loop decision. That means accepting the real cost of the ForeachWriter path: it's a streaming query the team now owns and has to monitor, with its own checkpoint location and batch-size/interval tuning, rather than something Databricks fully manages for you.\n\nThe actual architectural principle here is that the choice is a genuine trade-off between operational simplicity and latency, not a strictly-better option -- you pay complexity to buy milliseconds, and you should only pay that cost where the use case actually needs it.",
+      "professionalAnswer": "I'd frame this as picking the right tool for each latency budget, not reaching for the fanciest option everywhere. For the dashboard, I'd use the managed continuous sync pipeline -- pick Continuous mode, declare a primary key, and let Databricks run it. Its 10-15 second lag is completely invisible to someone glancing at a dashboard, and I get that for basically zero operational overhead on my side.\n\nFor the fraud-scoring service, that same 10-15 second lag is actually dangerous -- fraud decisions need to react to very fresh data. That's where I'd reach for the ForeachWriter real-time mode instead, which gets down to 200-300 milliseconds. The honest trade-off I'd flag to the team: that path means I now own a real streaming query -- my own checkpoint, my own batch size and interval tuning, my own monitoring if it falls behind. I wouldn't default to that path for the dashboard just because it's 'better' in the abstract; the extra operational weight only pays for itself where the latency genuinely matters.",
+      "example": "from lakebase_foreachwriter import LakebaseForeachWriter\n\nwriter = LakebaseForeachWriter(\n    username=\"svc-fraud\", password=\"...\", table=\"driver_locations\",\n    df=location_stream, host=\"prod.lakebase.dns.databricks.com\",\n    mode=\"insert\", batch_size=1000, batch_interval_ms=100,\n)\nquery = (\n    location_stream.writeStream.foreach(writer)\n    .option(\"checkpointLocation\", \"/Volumes/main/ops/checkpoints/fraud_sync\")\n    .start()\n)",
+      "commonMistakes": [
+        "Defaulting to ForeachWriter everywhere because it's faster, ignoring the operational cost it adds",
+        "Assuming the managed continuous sync pipeline can be tuned down below its real 10-15 second floor",
+        "Forgetting that ForeachWriter requires the team to manage its own checkpoint and streaming query lifecycle",
+        "Treating 'sync to Lakebase' as a single, undifferentiated feature rather than two distinct methods with different trade-offs"
+      ],
+      "keyPoints": [
+        "Managed continuous sync pipeline: UI/SDK-configured, primary-key based, ~10-15 second lag",
+        "ForeachWriter real-time mode: hand-managed streaming query, ~200-300ms latency",
+        "The choice is a genuine trade-off between operational simplicity and latency, not strictly one-better",
+        "Match the sync method to the actual latency requirement of each specific consumer"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly describes both sync methods and their real latencies",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly matches each consumer to the appropriate method with sound reasoning",
+          "weight": 35
+        },
+        {
+          "criterion": "Names the real operational cost trade-off of the faster method",
+          "weight": 20
+        },
+        {
+          "criterion": "Clear, accurate overall explanation",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "advanced-databricks-specialization",
+        "lessonSlug": "lakebase",
+        "label": "Review: Lakebase"
+      }
+    },
+    {
+      "responseFormat": "text",
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z",
+      "id": "dble-adv-073",
+      "questionCode": "LTV-DBLE-ADV-073",
+      "title": "Why Zerobus Ingest Still Needs a Workaround for Change Data Feed",
+      "prompt": "A teammate wants to sync data ingested through Zerobus Ingest into Lakebase using Change Data Feed, and is confused why enabling delta.enableChangeDataFeed directly on the Zerobus target table doesn't work as expected. Explain the real limitation here and the documented workaround.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "skills": [
+        "Databricks",
+        "Zerobus Ingest",
+        "Delta Lake",
+        "Change Data Feed"
+      ],
+      "modelAnswer": "The real limitation, as of this writing, is that Zerobus Ingest does not support Change Data Feed natively on the table it writes to directly -- setting delta.enableChangeDataFeed on that table doesn't give you a working CDF stream of the inserts Zerobus is producing, because Zerobus's write path isn't integrated with CDF generation the way an ordinary Structured Streaming or batch write is.\n\nThe documented workaround is to add one more hop: read the Zerobus target table as a stream with spark.readStream.table(), and write it into a second Delta table that does have CDF enabled, using an ordinary writeStream.format('delta') call with a checkpoint location. That second table is a completely normal Delta table from Spark's point of view, so delta.enableChangeDataFeed works on it exactly as expected, and a downstream Lakebase sync pipeline can consume CDF from that second table rather than from the original Zerobus target.\n\nIt's worth being direct that this is a real, current product gap, not a workaround that will always be necessary -- but today, Zerobus Ingest plus CDF plus Lakebase sync is a three-table chain (Zerobus target -> CDF-enabled copy -> Lakebase), not a two-table one.",
+      "professionalAnswer": "I'd tell them straight: this isn't a config mistake, it's a real current limitation. Zerobus Ingest, as it stands today, just doesn't produce Change Data Feed on the table it writes to directly, no matter what table property you set.\n\nThe workaround that actually works is adding a hop: stand up a second Delta table, stream-read the Zerobus target table into it with a normal writeStream, and enable CDF on that second table instead. Since that second table is written by ordinary Structured Streaming, not by Zerobus, CDF behaves exactly the way it always does, and that's the table you point your Lakebase sync pipeline at. So the real chain becomes three tables, not two: the Zerobus target, a CDF-enabled copy of it, and then Lakebase. I'd flag to the team that this is a known gap rather than something to keep re-debugging -- worth checking Databricks' release notes periodically in case native CDF support lands later.",
+      "example": "# the workaround, not the fix\ndf = spark.readStream.table(\"catalog.schema.rideshare_events\")  # Zerobus target\n(df.writeStream\n   .format(\"delta\")\n   .option(\"checkpointLocation\", \"/Volumes/catalog/schema/streaming_checkpoints\")\n   .table(\"catalog.schema.rideshare_events_processed\"))\n\n# only now does this actually work:\n# ALTER TABLE catalog.schema.rideshare_events_processed\n#   SET TBLPROPERTIES (delta.enableChangeDataFeed = true);",
+      "commonMistakes": [
+        "Assuming setting delta.enableChangeDataFeed on the Zerobus target table itself will work",
+        "Not realizing a second, ordinary streaming hop is required before CDF becomes usable",
+        "Treating this as a permanent architectural law rather than a current, named product gap",
+        "Pointing the Lakebase sync pipeline at the original Zerobus table instead of the CDF-enabled copy"
+      ],
+      "keyPoints": [
+        "Zerobus Ingest does not natively support CDF on its own target table",
+        "The workaround streams the Zerobus table into a second, ordinary Delta table with CDF enabled",
+        "Downstream consumers (like a Lakebase sync pipeline) should point at the CDF-enabled copy, not the original",
+        "This is a real, current, named limitation, not a configuration error"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies that this is a real Zerobus limitation, not a config mistake",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly describes the documented two-table workaround",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly points downstream consumers at the right table",
+          "weight": 20
+        },
+        {
+          "criterion": "Clear, accurate overall explanation",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "advanced-databricks-specialization",
+        "lessonSlug": "zerobus-ingest",
+        "label": "Review: Zerobus Ingest"
+      }
+    },
+    {
+      "responseFormat": "text",
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z",
+      "id": "dble-adv-074",
+      "questionCode": "LTV-DBLE-ADV-074",
+      "title": "Reviewing a Lakeflow Designer-Generated Pipeline",
+      "prompt": "A business analyst on your team used Lakeflow Designer to build a data prep pipeline visually, and has asked you, the data engineer, to review it before it goes into production. Explain what you'd actually expect to find when you open what Designer generated, why that's different from reviewing output from a traditional proprietary no-code ETL tool, and what your review responsibility actually looks like.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "skills": [
+        "Databricks",
+        "Lakeflow Designer",
+        "Code Review",
+        "Data Engineering"
+      ],
+      "modelAnswer": "What I'd expect to find is real, inspectable pyspark.pipelines code -- the same authoring surface used for any hand-written Declarative Pipeline in this course -- not an opaque, proprietary internal representation that only Designer's own UI can interpret. That's the core 'zero translation loss' claim Designer makes: every visual data prep step natively generates production-ready code under the hood, so the pipeline the analyst built visually and the pipeline I'd review as code are the exact same artifact, not two different representations of similar intent.\n\nThat's a genuinely different review experience from a traditional proprietary no-code tool, where my job as an engineer would effectively be reverse-engineering what the visual tool actually did, then either trusting a black box in production or rewriting the logic from scratch in a 'real' pipeline before I'd sign off on it. With Designer, I'm reviewing actual code: checking whether the generated transformations match the business logic the analyst intended, whether the sinks and flows are wired correctly, whether governance (GRANTs, lineage) looks right, and whether anything needs optimization -- the same review I'd do for a hand-written pipeline from a junior engineer.\n\nMy review responsibility is specifically to catch things the analyst, who isn't a data engineer, wouldn't have been positioned to catch: performance implications of a particular join strategy, whether expectations/data-quality constraints are present where they should be, and whether the pipeline fits correctly into the team's existing orchestration and naming conventions -- not to rewrite the pipeline from scratch, since the generated code is already real and usable.",
+      "professionalAnswer": "I'd walk in expecting to see actual pyspark.pipelines code, not some black-box export I have to guess at. That's the whole point of Designer's 'zero translation loss' promise -- whatever the analyst dragged and dropped on the canvas generated the same real code I'd write by hand, so my review is a normal code review, not archaeology.\n\nCompared to a traditional no-code tool, that's a big deal -- with those, I'd basically have to reverse-engineer the tool's internal logic before I could trust it in production, or just rewrite the thing myself from scratch. Here I can actually read what Designer produced and evaluate it the way I'd evaluate a junior engineer's pull request: does the transformation logic actually match what the business wants, are the sinks and flows wired up correctly, is there a missing data-quality expectation somewhere, does a join look like it'll scale. My job isn't to distrust the output by default or rebuild it -- it's to apply the same engineering judgment I'd apply to any new pipeline entering production, just starting from a draft that happens to have come from a visual canvas instead of a text editor.",
+      "example": "# what Designer generates is literally this, reviewable like any other pipeline:\nfrom pyspark import pipelines as dp\n\n@dp.table()\ndef customer_orders_filtered():\n    return (\n        spark.read.table(\"bronze_orders\")\n        .filter(\"order_status = 'completed'\")\n        .join(spark.read.table(\"dim_customers\"), \"customer_id\")\n    )",
+      "commonMistakes": [
+        "Treating Designer's output as a black box that shouldn't be reviewed like normal code",
+        "Assuming the engineer must rewrite the pipeline from scratch rather than reviewing the generated code directly",
+        "Missing that 'zero translation loss' is the specific claim that makes code-level review possible at all",
+        "Skipping governance/performance review on the theory that an AI-assisted tool already handled it"
+      ],
+      "keyPoints": [
+        "Designer generates real, inspectable pyspark.pipelines code, not a proprietary black box",
+        "Zero translation loss means the visual pipeline and the reviewable code are the same artifact",
+        "Review should focus on business-logic correctness, performance, and governance, same as any other pipeline",
+        "The engineer's job is review and refinement, not reverse-engineering or full rewrites"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains what Designer actually generates (real code, not a black box)",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly contrasts this with a traditional proprietary no-code tool",
+          "weight": 25
+        },
+        {
+          "criterion": "Describes a realistic, concrete engineering review process",
+          "weight": 30
+        },
+        {
+          "criterion": "Clear, accurate overall explanation",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "advanced-databricks-specialization",
+        "lessonSlug": "lakeflow-designer",
+        "label": "Review: Lakeflow Designer"
+      }
+    },
+    {
+      "responseFormat": "text",
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "updatedAt": "2026-10-09T00:00:00.000Z",
+      "id": "dble-adv-075",
+      "questionCode": "LTV-DBLE-ADV-075",
+      "title": "What Genie Code Can Do That a Generic Coding Assistant Can't",
+      "prompt": "A stakeholder asks why your team should use Databricks' Genie Code instead of a generic external AI coding assistant pointed at the same repository. Explain the two sources of Genie Code's expertise, and give a concrete example of a question it could answer that a generic coding assistant genuinely could not.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "skills": [
+        "Databricks",
+        "Genie Code",
+        "MLflow",
+        "AI Agents"
+      ],
+      "modelAnswer": "Genie Code's expertise comes from two distinct places, and both matter for the comparison. The first is Databricks itself: over a decade of running production ML with customers, encoded into Genie Code as applied judgment -- correcting for class imbalance, checking feature quality, and other practitioner habits a seasoned engineer would apply automatically. The second is the specific team's own Genie Ontology: Genie Code learns how that particular team builds features, trains models, and evaluates candidates, and follows those established patterns instead of falling back on generic defaults that might be technically reasonable but organizationally wrong.\n\nA concrete example of something a generic coding assistant genuinely cannot do: Genie Code is natively integrated with the Databricks ML stack, so it can read a team's actual MLflow experimentation and observability data -- runs, artifacts, model lineage, quality and system metrics -- and answer a question like 'how do I improve GPU utilization during training?' grounded in that team's own actual training runs, not generic advice about GPU utilization in the abstract. A generic coding assistant pointed at the same repo has no access to that MLflow run history or lineage at all; it could only offer textbook advice, not an answer informed by what this team's models have actually been doing.\n\nThe deeper point for the stakeholder: this isn't about Genie Code being a 'smarter' model. It's about having access to context (Genie Ontology, MLflow integration, compute awareness) that a model running outside the platform structurally cannot obtain, no matter how capable it is.",
+      "professionalAnswer": "I'd give them the two-source answer and then make it concrete with an example, because the abstract version doesn't land as well. First source: Databricks' own decade-plus of production ML experience baked into Genie Code, things like automatically flagging class imbalance or checking feature quality -- habits a senior practitioner has internalized. Second source: our own team's Genie Ontology, which learns how we specifically build features and evaluate models, so it doesn't default to generic patterns that don't match how we actually work.\n\nFor a concrete example, I'd point to MLflow integration. Genie Code can read our actual experimentation data -- our runs, our artifacts, our lineage, our metrics -- and answer something like 'how do I improve GPU utilization during training?' using our own real training history. A generic AI coding assistant pointed at the same GitHub repo has zero access to that MLflow data; it can only give textbook advice about GPU utilization that has nothing to do with what our models have actually been doing. That's the real differentiator I'd lead with -- it's not that Genie Code is a better model, it's that it has access to context a model running outside the platform simply can't get to.",
+      "example": "# What Genie Code can ground an answer in, that a generic assistant cannot:\n# \"How do I improve GPU utilization during training?\"\n# -> reads this team's actual MLflow runs, artifacts, lineage, and system metrics\n# -> answers based on THIS team's real training history, not generic GPU advice",
+      "commonMistakes": [
+        "Framing the comparison as 'Genie Code uses a smarter model,' rather than access to context",
+        "Forgetting Genie Ontology is team-specific, not a generic Databricks-wide knowledge base",
+        "Not naming a concrete integration point (like MLflow) when asked for a specific example",
+        "Assuming a generic assistant with repo access has equivalent context to a platform-native agent"
+      ],
+      "keyPoints": [
+        "Genie Code's expertise comes from Databricks' own production experience plus the team's own Genie Ontology",
+        "It's natively integrated with MLflow (runs, artifacts, lineage, metrics) and Model Serving",
+        "A generic coding assistant lacks access to that experimentation and lineage data entirely",
+        "The differentiator is platform-native context access, not raw model capability"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly names both sources of Genie Code's expertise",
+          "weight": 30
+        },
+        {
+          "criterion": "Gives a concrete, correct example a generic assistant could not replicate",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly frames the differentiator as context access, not model quality",
+          "weight": 20
+        },
+        {
+          "criterion": "Clear, accurate overall explanation",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "advanced-databricks-specialization",
+        "lessonSlug": "genie-code-and-zeroops",
+        "label": "Review: Genie Code & Genie ZeroOps"
+      }
     }
   ]
 }
