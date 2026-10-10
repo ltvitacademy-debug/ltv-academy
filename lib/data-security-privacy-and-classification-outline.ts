@@ -40,8 +40,8 @@ export const GOV_DATA_SECURITY_PRIVACY_AND_CLASSIFICATION_CHAPTERS: ChapterMeta[
       L(7, "data-classification-concepts", "Data Classification Concepts", { contentDir: "ch02/07-data-classification-concepts" }),
       L(8, "classification-schemes-and-labels", "Classification Schemes and Labels", { contentDir: "ch02/08-classification-schemes-and-labels" }),
       L(9, "discovering-sensitive-data", "Discovering Sensitive Data", { contentDir: "ch02/09-discovering-sensitive-data" }),
-      L(10, "applying-classifications", "Applying Classifications"),
-      L(11, "classification-governance", "Classification Governance"),
+      L(10, "applying-classifications", "Applying Classifications", { contentDir: "ch02/10-applying-classifications" }),
+      L(11, "classification-governance", "Classification Governance", { contentDir: "ch02/11-classification-governance" }),
     ],
   },
   {
