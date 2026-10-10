@@ -1,0 +1,60 @@
+{
+  "lesson": "event-driven-case-study",
+  "questions": [
+    {
+      "q": "In Step 1 of the case study, why does the Order status change to 'Ready to Ship' automatically produce an event with no custom publish code?",
+      "options": [
+        "Because Flow always publishes a custom event automatically",
+        "Because the WMS polls Salesforce every few seconds",
+        "Because Order__c is a platform event object",
+        "Because Change Data Capture is enabled on Order__c, and CDC automatically emits a change event on any raw field update"
+      ],
+      "answer": 3,
+      "explain": "CDC automatically publishes a change event whenever an enabled object's field changes, with no Apex or Flow of yours doing the publishing — exactly the mechanism from Lesson 4."
+    },
+    {
+      "q": "Why does the Apex trigger in Step 2 publish a new `Fulfillment_Requested__e` event instead of letting the WMS subscribe directly to the Order CDC channel?",
+      "options": [
+        "CDC events cannot be subscribed to by external systems at all",
+        "Pub/Sub API cannot subscribe to CDC channels under any circumstances",
+        "A purpose-built event lets the WMS receive exactly the fields it needs in a clean, stable schema, rather than filtering down a raw CDC payload itself",
+        "Custom platform events are always delivered faster than CDC events"
+      ],
+      "answer": 2,
+      "explain": "Deriving a purpose-built event gives the external WMS a minimal, stable contract — the schema-design trade-off from Lesson 9 — rather than exposing Salesforce's internal Order schema directly across the org boundary."
+    },
+    {
+      "q": "Why does the case study use Pub/Sub API for the WMS's subscription rather than lightning/empApi?",
+      "options": [
+        "Because empApi is deprecated and no longer works",
+        "Because Pub/Sub API is required for all CDC events",
+        "Because empApi only works with standard-volume events",
+        "Because the WMS is an external, non-Salesforce client, and Pub/Sub API is built for exactly that use case, while empApi wraps a connection for code running inside Salesforce's own UI layer"
+      ],
+      "answer": 3,
+      "explain": "lightning/empApi is for LWCs running inside Salesforce; an external system like the WMS is exactly the client Pub/Sub API was built for, per Lesson 13."
+    },
+    {
+      "q": "Why does the WMS's own subscriber logic need to track which event `id` values it has already acted on?",
+      "options": [
+        "Because Salesforce requires it for billing purposes",
+        "Because Pub/Sub API cannot deliver events more than once",
+        "Because the WMS has no database of its own",
+        "Because at-least-once delivery means the same event could be delivered twice, and reserving inventory twice for one order would be a real, costly duplicate-processing bug"
+      ],
+      "answer": 3,
+      "explain": "Inventory reservation is not naturally idempotent, so the WMS needs the idempotency tracking pattern from Lesson 10 to avoid double-reserving inventory on a duplicate delivery."
+    },
+    {
+      "q": "What trade-off does the case study acknowledge about adding an Apex trigger in Step 2 to derive a custom event rather than exposing CDC directly?",
+      "options": [
+        "It introduces no trade-off at all; it is strictly better in every case",
+        "It eliminates the need for any monitoring in the rest of the pipeline",
+        "It removes the need for idempotency handling anywhere downstream",
+        "It costs one extra moving part in exchange for a cleaner, more stable schema — defensible here because the subscriber is an external system maintained by a different team"
+      ],
+      "answer": 3,
+      "explain": "The case study explicitly frames this as a trade-off: an extra component (the trigger) in exchange for schema stability across an org boundary — defensible here, but not automatically the right call in every scenario."
+    }
+  ]
+}
