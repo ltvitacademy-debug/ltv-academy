@@ -2,13 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getCareerPath } from "@/lib/career-paths";
-import {
-  getAllSampleResumeParams,
-  getSampleResume,
-  getSampleResumeLevels,
-  RESUME_LEVEL_LABELS,
-  type SampleResumeLevel,
-} from "@/lib/sampleResumes";
+import { getAllSampleResumeParams, getSampleResume, getSampleResumeLevels } from "@/lib/sampleResumes";
 import ResumeView from "@/components/careers/ResumeView";
 import ResumeProtection from "@/components/careers/ResumeProtection";
 
@@ -23,9 +17,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug, level } = await params;
   const path = getCareerPath(slug);
-  const label = RESUME_LEVEL_LABELS[level as SampleResumeLevel];
-  if (!path || !label) return {};
-  return { title: `Sample ${label} Resume — ${path.title}` };
+  const resume = getSampleResume(slug, level);
+  if (!path || !resume) return {};
+  return { title: `Sample ${resume.levelLabel} Resume — ${path.title}` };
 }
 
 export default async function SampleResumePage({
@@ -37,8 +31,7 @@ export default async function SampleResumePage({
   const path = getCareerPath(slug);
   if (!path) notFound();
 
-  const levelKey = level as SampleResumeLevel;
-  const resume = getSampleResume(slug, levelKey);
+  const resume = getSampleResume(slug, level);
   if (!resume) notFound();
 
   const levels = getSampleResumeLevels(slug);
@@ -57,27 +50,35 @@ export default async function SampleResumePage({
         <span>Sample resume</span>
       </nav>
 
-      <p className="eyebrow mb-3">Sample resume · {RESUME_LEVEL_LABELS[levelKey]}</p>
+      <p className="eyebrow mb-3">Sample resume · {resume.levelLabel}</p>
       <h1 className="display text-3xl sm:text-4xl">{path.title}</h1>
       <p className="mt-3 max-w-2xl text-stone">
-        A fictional graduate, John Doe, showing what you can credibly claim after finishing{" "}
-        {levelKey === "job-ready" ? "this path's Job Ready stage" : "this path, including its Advanced stage"}.
-        Every detail is made up — treat this as a template to adapt, not a record of a real person.
+        A fictional graduate, John Doe, showing what you can credibly claim after reaching the{" "}
+        {resume.levelLabel} stage of this path. Every detail — the name, the contact information, the
+        employer, the dates — is made up. Treat this as a template to adapt, not a record of a real person.
+      </p>
+      <p className="mt-3 max-w-2xl text-stone">
+        This is also one possible configuration, not the only correct answer. Two people who finish the
+        same courses will reasonably write different resumes — different lab choices, different phrasing,
+        a different order of emphasis. What should stay constant is the discipline underneath it: every
+        bullet traces back to something specific you actually built or practiced in the coursework, named
+        tools and artifacts stand in for vague claims, and nothing is padded with experience you don&apos;t
+        have yet.
       </p>
 
       {levels.length > 1 && (
         <div className="mt-6 flex gap-2">
           {levels.map((l) => (
             <Link
-              key={l}
-              href={`/careers/${path.slug}/resume/${l}`}
+              key={l.key}
+              href={`/careers/${path.slug}/resume/${l.key}`}
               className={`rounded-[2px] border px-4 py-1.5 text-sm font-semibold transition-colors ${
-                l === levelKey
+                l.key === level
                   ? "border-crimson bg-crimson text-parchment"
                   : "border-ink/15 bg-white/50 text-ink hover:border-crimson/40"
               }`}
             >
-              {RESUME_LEVEL_LABELS[l]}
+              {l.label}
             </Link>
           ))}
         </div>

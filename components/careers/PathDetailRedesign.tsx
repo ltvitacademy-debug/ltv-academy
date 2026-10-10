@@ -3,7 +3,6 @@ import type { CareerPath } from "@/lib/career-paths";
 import { getCareerPath } from "@/lib/career-paths";
 import { getCourse, lessonCount } from "@/lib/courses";
 import { COURSE_CERTIFICATIONS, certificationsForCourses } from "@/lib/course-certifications";
-import { RESUME_LEVEL_LABELS, type SampleResumeLevel } from "@/lib/sampleResumes";
 
 function CourseLogo({ slug, className = "h-6 w-6" }: { slug: string; className?: string }) {
   const logo = COURSE_CERTIFICATIONS[slug]?.logo;
@@ -55,7 +54,7 @@ export default function PathDetailRedesign({
 }: {
   path: CareerPath;
   hasInterviewPrep?: boolean;
-  sampleResumeLevels?: SampleResumeLevel[];
+  sampleResumeLevels?: { key: string; label: string }[];
 }) {
   const allCourseSlugs = path.stages.flatMap((s) => s.courseSlugs ?? []);
   const tiers = parseSalaryTiers(path.salaryRange);
@@ -664,11 +663,11 @@ export default function PathDetailRedesign({
                 <div className="mt-5 flex flex-col gap-2">
                   {sampleResumeLevels.map((level) => (
                     <Link
-                      key={level}
-                      href={`/careers/${path.slug}/resume/${level}`}
+                      key={level.key}
+                      href={`/careers/${path.slug}/resume/${level.key}`}
                       className="inline-block rounded-[2px] border border-crimson/40 bg-parchment px-6 py-2.5 text-sm font-semibold text-crimson-deep hover:bg-crimson hover:text-parchment transition-colors"
                     >
-                      View the {RESUME_LEVEL_LABELS[level]} resume →
+                      View the {level.label} resume →
                     </Link>
                   ))}
                 </div>
