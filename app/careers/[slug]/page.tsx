@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { CAREER_PATHS, getCareerPath } from "@/lib/career-paths";
 import { hasInterviewBank } from "@/lib/interviewPrep";
+import { getSampleResumes } from "@/lib/sampleResumes";
 import PathDetailRedesign from "@/components/careers/PathDetailRedesign";
 
 export function generateStaticParams() {
@@ -31,5 +32,11 @@ export default async function CareerPathPage({
   const path = getCareerPath(slug);
   if (!path) notFound();
 
-  return <PathDetailRedesign path={path} hasInterviewPrep={hasInterviewBank(path.slug)} />;
+  return (
+    <PathDetailRedesign
+      path={path}
+      hasInterviewPrep={hasInterviewBank(path.slug)}
+      sampleResumes={getSampleResumes(path.slug)}
+    />
+  );
 }
