@@ -1,0 +1,60 @@
+{
+  "lesson": "case-study-salesforce-and-a-financial-system",
+  "questions": [
+    {
+      "q": "Why does this lesson say a \"usually right\" balance is not acceptable for the Harborline Capital integration, unlike the inventory number in Lesson 1's ERP case study?",
+      "options": [
+        "A wrong loan balance is a compliance and customer-trust problem, not just an inconvenience, so the data's currency has to be explicit and defensible rather than approximately right",
+        "Financial data changes less often than inventory data, so staleness is actually easier to tolerate",
+        "Salesforce cannot technically store financial data of any kind",
+        "Loan officers never look at balance information in Salesforce"
+      ],
+      "answer": 0,
+      "explain": "The stakes differ: a stale inventory number has a cheap, acceptable fallback, while a wrong loan balance is an auditable compliance problem. Financial integrations need an explicit, defensible answer for exactly how current the data is."
+    },
+    {
+      "q": "Why does this lesson recommend an event-driven Platform Events design over Salesforce polling the ledger system on a schedule?",
+      "options": [
+        "Polling is technically impossible against any financial system",
+        "Platform Events guarantee zero duplicate messages, which polling cannot do",
+        "Polling either wastes calls when nothing changed or misses changes between polls, while the ledger publishing events as they happen lets Salesforce react to its actual change history",
+        "Event-driven designs never need a subscriber or any handling logic in Salesforce"
+      ],
+      "answer": 2,
+      "explain": "Polling on a fixed schedule is a poor fit for change-driven data: it either calls needlessly or misses changes between polls. An event-driven design lets the source system announce changes as they occur."
+    },
+    {
+      "q": "What delivery guarantee does this lesson say event-driven systems like Platform Events typically provide, and why does that matter for a financial handler?",
+      "options": [
+        "Exactly-once delivery, so duplicate processing is not a concern",
+        "At-least-once delivery, meaning the same event can be delivered and processed more than once, which could double-count a payment if the handler isn't designed to prevent that",
+        "At-most-once delivery, meaning some events may never arrive and this is considered acceptable",
+        "No delivery guarantee at all, so the pattern should never be used for financial data"
+      ],
+      "answer": 1,
+      "explain": "At-least-once delivery means duplicates are possible but a message is never silently dropped. For a financial balance update, an unhandled duplicate could double-count a payment, which is exactly why idempotency is required."
+    },
+    {
+      "q": "In this lesson's design, what does making the event handler idempotent actually achieve?",
+      "options": [
+        "It prevents the ledger system from ever sending a duplicate event in the first place",
+        "It guarantees the Salesforce subscriber is never down",
+        "It removes the need for any replay ID or resume strategy",
+        "It makes processing the same event twice produce the same end state as processing it once, by checking a unique transaction identifier before applying a change"
+      ],
+      "answer": 3,
+      "explain": "Idempotency doesn't stop duplicate delivery -- that's not fully preventable with at-least-once delivery. It makes duplicate delivery harmless by checking whether a given transaction identifier has already been applied before acting on it again."
+    },
+    {
+      "q": "What does this lesson say a review board will specifically probe about this integration's resilience?",
+      "options": [
+        "What happens if the subscriber is down and a backlog builds up, including whether the subscriber has a resume strategy using a replay ID rather than assuming nothing is ever missed",
+        "Whether the font used in the loan record layout is accessible",
+        "Whether Harborline's loan officers prefer light mode or dark mode in Salesforce",
+        "How many custom fields exist on the Loan object"
+      ],
+      "answer": 0,
+      "explain": "A reviewer will specifically ask about the subscriber-down scenario and whether a resume strategy using the stored replay ID exists, since Platform Events retain only a limited replay window and an assumption that nothing is ever missed is not defensible."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "case-study-salesforce-and-a-data-warehouse",
+  "questions": [
+    {
+      "q": "Why does this lesson say Cascade Outfitters' warehouse integration can tolerate a staleness window of hours, unlike the ERP and financial-system case studies in Lessons 1-2?",
+      "options": [
+        "Because the consumer is a batch-refreshed analytics dashboard, not a live user screen or a compliance-sensitive balance, so a short, bounded delay has no real cost",
+        "Because data warehouses are technically incapable of receiving real-time data",
+        "Because Salesforce does not allow any analytics integration to run more than once a day",
+        "Because Cascade Outfitters has no analytics team"
+      ],
+      "answer": 0,
+      "explain": "The acceptable staleness window is a property of the consumer, not the technology. A dashboard refreshed a few times a day genuinely doesn't need sub-second data, which is why this integration can use a cheaper, eventually-consistent design than Lessons 1-2's operational integrations."
+    },
+    {
+      "q": "What specific gap does a scheduled delta sync (querying by LastModifiedDate) have that this lesson says Change Data Capture closes?",
+      "options": [
+        "Delta sync costs more API capacity than a full extract",
+        "A record created, updated, and deleted again entirely between two scheduled sync runs can be missed, because nothing matching the query remains by the time it runs",
+        "Delta sync can only run once per calendar year",
+        "Change Data Capture requires the warehouse to poll Salesforce instead of the other way around"
+      ],
+      "answer": 1,
+      "explain": "A scheduled delta query only sees whatever state a record is in at query time. A record that cycles through create, update, and delete entirely between two runs leaves nothing for that later query to find, so it's silently missed -- the exact gap CDC closes by reacting to each change as it happens."
+    },
+    {
+      "q": "Why does this lesson say a full extract approach doesn't scale for Cascade Outfitters' warehouse feed?",
+      "options": [
+        "A full extract is actually the cheapest possible approach at any org size",
+        "Re-exporting every row on every run wastes API capacity and warehouse load on records that mostly didn't change, and the job grows slower as the org grows",
+        "Full extracts are not technically possible against Salesforce",
+        "A full extract is required by Salesforce's terms of service for any analytics use case"
+      ],
+      "answer": 1,
+      "explain": "Re-extracting the full dataset every run re-processes records that didn't change at all, which wastes capacity and load without benefit, and gets worse every month as the org's data volume grows -- unlike delta sync or CDC, which only move what actually changed."
+    },
+    {
+      "q": "According to this lesson, what does \"eventual consistency\" guarantee, and how is it framed for this case study?",
+      "options": [
+        "That the warehouse will reflect a given Salesforce change soon, without a fixed per-event deadline -- framed as the deliberately correct design for this consumer, not a weaker compromise",
+        "That the warehouse will always be perfectly in sync with Salesforce within one second",
+        "That the warehouse will never reflect a Salesforce change until a human manually approves it",
+        "That eventual consistency is only acceptable for test environments, never production analytics"
+      ],
+      "answer": 0,
+      "explain": "Eventual consistency promises the change will show up soon without a fixed per-event deadline. The lesson frames this as the deliberately correct tradeoff for a dashboard consumer that doesn't need stronger guarantees, not a lesser design forced by limitations."
+    },
+    {
+      "q": "Beyond choosing CDC, what does this lesson say a warehouse feed design still needs to address?",
+      "options": [
+        "Nothing further -- CDC alone fully solves the integration with no other design work needed",
+        "A way to detect subscriber backlog, a periodic reconciliation check against Salesforce, and an explicit plan for what happens if a subscriber outage outlasts Salesforce's change-event retention window",
+        "A requirement that all warehouse queries run synchronously against live Salesforce data",
+        "A rule that the warehouse may never store more than one day of historical data"
+      ],
+      "answer": 1,
+      "explain": "A CDC feed is not fire-and-forget: the design still needs backlog detection, periodic reconciliation to catch silent drift, and an explicit answer for what happens if a subscriber is down longer than the retained change-event window, so an outage doesn't quietly become permanent data loss."
+    }
+  ]
+}
