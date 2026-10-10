@@ -1,0 +1,60 @@
+{
+  "lesson": "chaining-queueable-jobs",
+  "questions": [
+    {
+      "q": "How does a Queueable job chain into a follow-up job?",
+      "options": [
+        "Its execute method calls System.enqueueJob again, submitting a new Queueable instance as its last action",
+        "By annotating the class with @future(chain=true)",
+        "Chaining isn't possible with Queueable Apex — only Batch Apex supports it",
+        "By calling Database.executeBatch from inside execute"
+      ],
+      "answer": 0,
+      "explain": "A Queueable job chains by calling System.enqueueJob again from inside its own execute method, submitting the next job in the sequence."
+    },
+    {
+      "q": "What is the chain-depth rule for Developer Edition and Trial orgs?",
+      "options": [
+        "Chains are completely disabled in Developer and Trial orgs",
+        "The default maximum stack depth is 5 (the original job plus four chained re-queues), though this default can be overridden",
+        "Developer orgs allow unlimited chain depth, unlike production orgs",
+        "Chain depth is capped at exactly 2 in every org type, no exceptions"
+      ],
+      "answer": 1,
+      "explain": "Production orgs have no hard-enforced chain-depth limit, but Developer Edition and Trial orgs default to a maximum stack depth of 5 — the original job plus four chained re-queues — which Salesforce's docs note can be overridden for specific use cases."
+    },
+    {
+      "q": "Why does chaining code typically check Test.isRunningTest() before calling System.enqueueJob again?",
+      "options": [
+        "Because chaining a Queueable job inside an already-running test context produces an error, so the check skips the chain call during tests",
+        "Test.isRunningTest() is required syntax on every Queueable class regardless of chaining",
+        "It has nothing to do with chaining — it's only used to disable logging",
+        "Because System.enqueueJob doesn't exist in test context at all"
+      ],
+      "answer": 0,
+      "explain": "Enqueuing a second asynchronous job from inside a job already running in a test's execution context throws an error. The standard workaround checks Test.isRunningTest() and skips the chain call during tests."
+    },
+    {
+      "q": "What does the optional delay parameter on System.enqueueJob(queueable, delay) do?",
+      "options": [
+        "It sets a minimum delay, from 0 to 10 minutes, before the chained job becomes eligible to run (ignored during tests)",
+        "It permanently pauses the job until manually resumed from Setup",
+        "It sets the batch chunk size for the next job in the chain",
+        "It determines how many times the job will retry on failure"
+      ],
+      "answer": 0,
+      "explain": "The delay overload sets a minimum wait, 0 to 10 minutes, before the chained job becomes eligible to run — useful for throttling or waiting on an external system to settle. The delay is ignored when running inside a test."
+    },
+    {
+      "q": "What is the real risk of a Queueable chain with no explicit stopping condition?",
+      "options": [
+        "It can rapidly consume the org's shared daily limit on asynchronous Apex executions, which is shared across every future method, Queueable job, Batch Apex run, and Scheduled Apex execution",
+        "It will cause a compile-time error the moment the class is saved",
+        "It has no real risk, since chains automatically stop after exactly 5 links in every org",
+        "It only risks slowing down synchronous Apex, never asynchronous Apex"
+      ],
+      "answer": 0,
+      "explain": "A chain with no stopping condition — or no throttling — can burn through the org's shared daily asynchronous Apex execution limit, which affects every other future method, Queueable job, Batch Apex run, and Scheduled Apex execution in the org for the rest of the day."
+    }
+  ]
+}

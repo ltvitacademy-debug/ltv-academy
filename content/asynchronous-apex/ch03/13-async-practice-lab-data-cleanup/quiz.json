@@ -1,0 +1,60 @@
+{
+  "lesson": "async-practice-lab-data-cleanup",
+  "questions": [
+    {
+      "q": "In StaleLeadCleanupBatch, what is Database.Stateful used for?",
+      "options": [
+        "To allow the batch class to make HTTP callouts",
+        "To carry leadsArchived and leadsFailed across every chunk, so finish reports an accurate org-wide total rather than just the last chunk's numbers",
+        "To increase the default chunk size from 200 to 2,000",
+        "To let the start method return an Iterable instead of a QueryLocator"
+      ],
+      "answer": 1,
+      "explain": "Database.Stateful preserves leadsArchived and leadsFailed as instance variables across every chunk's transaction, letting finish report the true running totals instead of whatever only the final chunk happened to see."
+    },
+    {
+      "q": "Why does the lab use Database.update(toUpdate, false) instead of a plain update toUpdate; statement?",
+      "options": [
+        "Database.update(list, false) deletes the records instead of updating them",
+        "The false argument disables all validation rules for the DML operation",
+        "There's no actual difference between the two syntaxes",
+        "Passing false as the second argument allows partial success — some records in the list succeed even if others in the same chunk fail, instead of the whole DML operation rolling back"
+      ],
+      "answer": 3,
+      "explain": "Database.update(list, false) sets 'all or nothing' to false, allowing partial success: some Leads in the chunk can succeed while others fail, rather than one bad record rolling back the entire chunk's DML."
+    },
+    {
+      "q": "Why does the batch class's start method filter for IsConverted = false and the date/activity conditions directly in SOQL, rather than filtering inside execute?",
+      "options": [
+        "SOQL filtering in start is required syntax and cannot be done any other way",
+        "Filtering inside execute is not technically possible in Batch Apex",
+        "Doing the real record-selection logic in start's query keeps execute's per-chunk logic simple, since execute only ever sees Leads that already qualify",
+        "It has no effect on the design — the filters could be placed anywhere with identical results"
+      ],
+      "answer": 2,
+      "explain": "Doing the filtering in start's SOQL query means execute's per-record work stays simple and focused, since every record passed into execute has already been confirmed to match the cleanup criteria."
+    },
+    {
+      "q": "After running Database.executeBatch(new StaleLeadCleanupBatch(), 200), which query from this lesson checks the job's progress and error count?",
+      "options": [
+        "SELECT Id FROM Lead WHERE Archived__c = true LIMIT 1",
+        "SELECT Status, NumberOfErrors, TotalJobItems, JobItemsProcessed FROM AsyncApexJob WHERE Id = :jobId",
+        "SELECT CronExpression FROM CronTrigger WHERE Id = :jobId",
+        "SELECT COUNT(Id) FROM AsyncApexJob"
+      ],
+      "answer": 1,
+      "explain": "Querying AsyncApexJob by the job Id returned from Database.executeBatch, selecting Status, NumberOfErrors, TotalJobItems, and JobItemsProcessed, is the monitoring technique from Lesson 9 used here to verify the job's progress and outcome."
+    },
+    {
+      "q": "The lesson keeps the batch's chunk size at the default of 200. Why is that a reasonable choice for this specific job?",
+      "options": [
+        "200 is the only legal chunk size Batch Apex supports",
+        "A larger chunk size would be illegal for a QueryLocator-based start method",
+        "Because Database.Stateful requires exactly 200 records per chunk",
+        "Each record's per-chunk work is lightweight — setting two fields and one DML update, with no callouts or nested per-record queries — so there's no reason to shrink the chunk size"
+      ],
+      "answer": 3,
+      "explain": "A smaller chunk size is worth considering when per-record work inside execute is heavy (multiple callouts, nested queries). Here, each record's work is lightweight, so the default 200 is a reasonable, uncomplicated choice."
+    }
+  ]
+}

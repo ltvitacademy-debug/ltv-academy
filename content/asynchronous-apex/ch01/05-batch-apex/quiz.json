@@ -1,0 +1,60 @@
+{
+  "lesson": "batch-apex",
+  "questions": [
+    {
+      "q": "What three methods does a class implementing Database.Batchable<sObject> need to provide?",
+      "options": [
+        "init, process, cleanup",
+        "start, execute, finish",
+        "begin, run, end",
+        "collect, batch, complete"
+      ],
+      "answer": 1,
+      "explain": "Database.Batchable<sObject> requires start (collects the records), execute (does the per-chunk work), and finish (runs once after all chunks complete)."
+    },
+    {
+      "q": "What is the default number of records passed to each call of execute in Batch Apex?",
+      "options": [
+        "50",
+        "500",
+        "200",
+        "2,000"
+      ],
+      "answer": 2,
+      "explain": "Batch Apex processes records in chunks of 200 by default. That default can be overridden with a second argument to Database.executeBatch, up to a maximum of 2,000 when start returns a Database.QueryLocator."
+    },
+    {
+      "q": "A batch job processes 1,000 records at the default chunk size, and the third chunk's execute call throws an unhandled exception. What happens?",
+      "options": [
+        "The entire job is aborted immediately and none of the five chunks' changes are kept",
+        "Only the third chunk's changes roll back; the already-committed first and second chunks stay committed, and the fourth and fifth chunks still run",
+        "The whole job silently restarts from the first chunk",
+        "All five chunks share one transaction, so this scenario is impossible"
+      ],
+      "answer": 1,
+      "explain": "Each call to execute is its own separate transaction. An unhandled exception in one chunk only rolls back that chunk — earlier committed chunks stay committed, and later chunks still run."
+    },
+    {
+      "q": "What does start return in a Batch Apex class?",
+      "options": [
+        "A Database.QueryLocator or an Iterable of the records to process",
+        "A List<AsyncApexJob> representing the job's progress",
+        "The chunk size that execute should use",
+        "Nothing — start is a void method with no return value"
+      ],
+      "answer": 0,
+      "explain": "start runs once and returns either a Database.QueryLocator (built from a SOQL query) or an Iterable<sObject>, giving the batch framework the full set of records to process across chunks."
+    },
+    {
+      "q": "When start returns a Database.QueryLocator, what job-wide limit applies regardless of chunk size?",
+      "options": [
+        "The total records that QueryLocator can retrieve across the whole job is capped at 10,000",
+        "The job can only run once per calendar day",
+        "finish cannot run more than once",
+        "No records at all can be updated inside execute"
+      ],
+      "answer": 0,
+      "explain": "Unlike per-chunk limits that reset with each execute transaction, the total number of records a QueryLocator-based start can retrieve across the entire batch job is capped at 10,000 — a job-wide limit."
+    }
+  ]
+}

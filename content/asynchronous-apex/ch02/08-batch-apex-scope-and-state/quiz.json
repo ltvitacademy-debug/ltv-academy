@@ -1,0 +1,60 @@
+{
+  "lesson": "batch-apex-scope-and-state",
+  "questions": [
+    {
+      "q": "By default, is a Batch Apex job's instance variable value reliably preserved from one chunk's execute call to the next?",
+      "options": [
+        "Yes — all instance variables always persist across every chunk automatically",
+        "Only static variables persist by default; instance variables never do, even with Database.Stateful",
+        "No — Batch Apex is stateless by default, so instance variables aren't guaranteed to carry their value between chunk transactions",
+        "It depends on the batch chunk size specified in Database.executeBatch"
+      ],
+      "answer": 2,
+      "explain": "Batch Apex is stateless by default — each chunk's execute call is a separate transaction, and instance variables aren't reliably preserved between them unless the class implements Database.Stateful."
+    },
+    {
+      "q": "What does adding Database.Stateful to a batch class's declaration do?",
+      "options": [
+        "It increases the default chunk size from 200 to 2,000",
+        "It allows the batch job to make HTTP callouts",
+        "It forces every chunk to run in a single shared transaction instead of separate ones",
+        "It preserves instance member variables' values across all of the job's chunk transactions"
+      ],
+      "answer": 3,
+      "explain": "Database.Stateful is a marker interface that tells the platform to preserve instance member variables' values across every transaction in the batch job, instead of resetting them each chunk."
+    },
+    {
+      "q": "A batch class declares 'public static Integer counter = 0;' instead of an instance variable, and implements Database.Stateful. What's the problem?",
+      "options": [
+        "There is no problem; static and instance variables behave identically under Database.Stateful",
+        "Database.Stateful preserves instance member variables, not static variables — a static field isn't what this interface is meant to preserve",
+        "Static variables cannot be declared in a Batch Apex class at all",
+        "Database.Stateful only works with String fields, never Integer fields"
+      ],
+      "answer": 1,
+      "explain": "Database.Stateful specifically preserves instance member variables across transactions. A static variable follows its own separate rules and shouldn't be relied on to carry state between chunks this way."
+    },
+    {
+      "q": "Which scenario is a good concrete reason to add Database.Stateful to a batch class?",
+      "options": [
+        "Updating each record in scope based only on fields already present on that same record, with no shared total needed",
+        "Database.Stateful is required on every Batch Apex class regardless of use case",
+        "Accumulating a running count of records processed, to report an accurate total in finish",
+        "Avoiding the default chunk size of 200 records"
+      ],
+      "answer": 2,
+      "explain": "Database.Stateful is specifically useful when a value — like a running total of records processed, or an accumulating list of failures — needs to survive from one chunk to the next so finish can report it accurately."
+    },
+    {
+      "q": "If every chunk's work in a batch job is fully independent, with no running total or shared counter needed, what's the recommended default?",
+      "options": [
+        "Always add Database.Stateful anyway, just in case requirements change later",
+        "Switch to Queueable Apex instead, since Batch Apex cannot run without Database.Stateful",
+        "Use a static variable instead of Database.Stateful for better performance",
+        "Leave the class stateless — Database.Stateful adds complexity with no actual benefit in that case"
+      ],
+      "answer": 3,
+      "explain": "When no value genuinely needs to persist across chunks, a stateless batch is simpler and has nothing extra to reason about — Database.Stateful should be reserved for jobs that actually need to carry a value between transactions."
+    }
+  ]
+}

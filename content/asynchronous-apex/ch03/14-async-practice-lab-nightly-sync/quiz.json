@@ -1,0 +1,60 @@
+{
+  "lesson": "async-practice-lab-nightly-sync",
+  "questions": [
+    {
+      "q": "Why does this lab use Queueable Apex rather than Batch Apex for the nightly sync's actual work?",
+      "options": [
+        "Batch Apex cannot make HTTP callouts under any circumstances",
+        "Queueable Apex is required any time Scheduled Apex is involved",
+        "The nightly volume is small and bounded, and the job needs a callout and job tracking — exactly the profile the decision framework points toward Queueable Apex for, rather than Batch Apex's large-volume use case",
+        "Batch Apex can only run once per calendar month"
+      ],
+      "answer": 2,
+      "explain": "This job's nightly record volume is small and bounded (a few hundred Accounts), unlike Lesson 13's unbounded Lead cleanup — but it needs an HTTP callout and job tracking, which is exactly the shape Lesson 12's framework matches to Queueable Apex rather than Batch Apex."
+    },
+    {
+      "q": "Why does AccountNightlySyncJob implement Database.AllowsCallouts in addition to Queueable?",
+      "options": [
+        "Database.AllowsCallouts is required on every Queueable class regardless of what it does",
+        "Because execute makes a real HTTP callout, and Database.AllowsCallouts is required for a Queueable class to be allowed to do that",
+        "It's needed to let the job carry state across chunks",
+        "It's needed so System.enqueueJob returns a non-null job Id"
+      ],
+      "answer": 1,
+      "explain": "A Queueable class that performs callouts must implement Database.AllowsCallouts, exactly as Lesson 4 covered — without it, the callout inside execute would throw a runtime error."
+    },
+    {
+      "q": "What role does NightlyAccountSyncSchedule play in this design?",
+      "options": [
+        "It directly performs the HTTP callouts itself, replacing the need for a Queueable job",
+        "It is a Batch Apex class that processes the Accounts in chunks",
+        "It has no functional purpose and exists only for naming clarity",
+        "It implements Schedulable and its execute method enqueues AccountNightlySyncJob, so the schedule decides when the sync runs while the Queueable job decides what work actually happens"
+      ],
+      "answer": 3,
+      "explain": "NightlyAccountSyncSchedule implements Schedulable, and its execute method calls System.enqueueJob to hand the real work off to the Queueable AccountNightlySyncJob — the schedule-then-enqueue pattern this lesson teaches."
+    },
+    {
+      "q": "What does leaving Needs_External_Sync__c set to true after a failed callout accomplish?",
+      "options": [
+        "It permanently blocks that Account from ever being synced",
+        "It creates a simple, built-in retry: the Account stays flagged and will naturally be picked up again on the next night's scheduled run",
+        "It triggers an immediate retry within the same transaction",
+        "It has no effect, since the field is read-only after insert"
+      ],
+      "answer": 1,
+      "explain": "Only clearing the flag on a confirmed successful (200) response means a failed callout leaves the Account flagged for sync, so it's automatically retried the next time the scheduled job runs — without any extra retry logic needed."
+    },
+    {
+      "q": "Which query from this lesson confirms the nightly schedule actually registered, and when it will next run?",
+      "options": [
+        "SELECT Id, Name FROM Account WHERE Needs_External_Sync__c = true",
+        "SELECT Status FROM AsyncApexJob WHERE JobType = 'Future'",
+        "SELECT CronJobDetail.Name, CronExpression, NextFireTime, State FROM CronTrigger WHERE CronJobDetail.Name = 'Nightly Account Sync'",
+        "SELECT COUNT(Id) FROM Lead"
+      ],
+      "answer": 2,
+      "explain": "Querying CronTrigger joined to CronJobDetail by job name, selecting CronExpression, NextFireTime, and State, is the SOQL equivalent of checking the Scheduled Jobs Setup page from Lesson 9 — confirming the schedule registered and showing when it fires next."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "testing-asynchronous-apex",
+  "questions": [
+    {
+      "q": "What does Test.startTest() / Test.stopTest() do to a future method, Queueable job, or Batch Apex execution queued inside that block?",
+      "options": [
+        "It permanently disables the asynchronous work so it never runs during the test",
+        "It causes the queued asynchronous work to actually run, synchronously, at the moment Test.stopTest() is called",
+        "It schedules the work to run exactly 24 hours after the test finishes",
+        "It has no effect on asynchronous work at all"
+      ],
+      "answer": 1,
+      "explain": "Any future method call, Queueable job, or Batch Apex execution queued between Test.startTest() and Test.stopTest() runs synchronously at the moment stopTest() is called, letting the test assert on its results without waiting on a real clock."
+    },
+    {
+      "q": "Why shouldn't a test assertion depend on the Id returned by System.enqueueJob?",
+      "options": [
+        "System.enqueueJob doesn't exist in test context, causing a compile error",
+        "The returned Id is always a hardcoded placeholder value in tests",
+        "System.enqueueJob returns null when called inside a running test, so assertions should check the job's actual outcome instead",
+        "Test methods cannot call System.enqueueJob at all"
+      ],
+      "answer": 2,
+      "explain": "System.enqueueJob returns null inside a running test, so a test shouldn't rely on getting back a real job Id — instead, it should assert on the outcome of the job's work, such as a record field that the job updates."
+    },
+    {
+      "q": "How does this lesson recommend testing Scheduled Apex, given that execute typically just enqueues other work?",
+      "options": [
+        "By waiting in real time for the scheduled time to arrive before running the test",
+        "Scheduled Apex cannot be tested under any circumstances",
+        "By asserting that AsyncApexJob.NumberOfErrors equals zero immediately after System.schedule is called",
+        "By asserting against CronTrigger that the schedule registered with the expected CronExpression, rather than asserting on a job result"
+      ],
+      "answer": 3,
+      "explain": "Since Scheduled Apex's execute typically just enqueues other work, the test asserts against CronTrigger that the schedule registered correctly with the expected CronExpression — testing the registration, not a job result. The underlying enqueued work is better tested with a direct unit test of that job."
+    },
+    {
+      "q": "Why does chaining code (from Lesson 7) check Test.isRunningTest() before calling System.enqueueJob again inside execute?",
+      "options": [
+        "Test.isRunningTest() speeds up test execution time",
+        "Because enqueuing a second asynchronous job from inside a job that is itself running in a test's execution context throws an error, so the check skips the chain call during tests",
+        "It has nothing to do with testing — it only affects production behavior",
+        "Chaining is impossible to test under any circumstances, guard or no guard"
+      ],
+      "answer": 1,
+      "explain": "Enqueuing a second job from inside a job already running in a test's context throws an error. Checking Test.isRunningTest() lets production chaining code skip the chain call specifically when running inside a test, so the first job can still be tested on its own."
+    },
+    {
+      "q": "In a Batch Apex test, when does the batch job's work actually execute?",
+      "options": [
+        "The batch job never actually runs during a test — only its syntax is checked",
+        "Each chunk runs exactly 200 milliseconds after the test method starts",
+        "All of the job's chunks run synchronously when Test.stopTest() is called, inside the Test.startTest()/Test.stopTest() block surrounding Database.executeBatch",
+        "The batch job runs asynchronously in the background, after the test method has already finished and reported a result"
+      ],
+      "answer": 2,
+      "explain": "Just like future methods and Queueable jobs, a Batch Apex job started inside Test.startTest()/Test.stopTest() has every one of its chunks run synchronously at the moment Test.stopTest() is called, letting the test assert on the results immediately afterward."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "error-handling-in-asynchronous-apex",
+  "questions": [
+    {
+      "q": "Why is error handling especially important to design deliberately in asynchronous Apex, compared to synchronous Apex?",
+      "options": [
+        "Asynchronous jobs cannot throw exceptions at all, so errors must be simulated manually",
+        "There's no user actively watching the page when an asynchronous job runs, so an unhandled exception has no immediate audience unless the job logs or reports it itself",
+        "Governor limits don't apply to asynchronous Apex, so errors are less likely",
+        "Asynchronous Apex automatically emails every error to the org's admin by default"
+      ],
+      "answer": 1,
+      "explain": "A synchronous transaction's exception surfaces immediately to the user watching the page. An asynchronous job has no such audience by the time it actually runs, so failures only get noticed if the job itself logs or reports them."
+    },
+    {
+      "q": "Why wrap each record's processing in its own try/catch inside execute, rather than one try/catch around the entire chunk?",
+      "options": [
+        "So that one record's failure doesn't block the rest of the chunk from being processed — the loop continues and only the failed record is skipped and logged",
+        "Per-record try/catch is required syntax for Database.Batchable to compile",
+        "It has no practical benefit over a single chunk-wide try/catch",
+        "It prevents the batch job from creating an AsyncApexJob record"
+      ],
+      "answer": 0,
+      "explain": "Catching exceptions per-record means a single bad record doesn't abort processing for the rest of the chunk — the loop keeps going, and only the record that actually failed gets logged and excluded from the update."
+    },
+    {
+      "q": "What's the advantage of logging a failure to a custom object like Async_Job_Error__c instead of only a debug log statement?",
+      "options": [
+        "Custom object records are durable and queryable after the fact, letting someone investigate specific failures long after the job ran",
+        "Debug logs are automatically emailed to admins, making custom objects redundant",
+        "Custom objects run faster than debug statements inside a loop",
+        "There's no real advantage — debug logs persist indefinitely by default"
+      ],
+      "answer": 0,
+      "explain": "A debug log line is easy to miss and doesn't persist for long-term review. A custom object record is durable and queryable with ordinary SOQL, letting someone investigate exactly which records failed and why, well after the job ran."
+    },
+    {
+      "q": "What does bc.getJobId() return inside a Database.Batchable method like finish?",
+      "options": [
+        "The current job's own AsyncApexJob Id, usable to query the authoritative job status and error count",
+        "The Id of the Apex class implementing Database.Batchable",
+        "A randomly generated Id with no relationship to the running job",
+        "The Id of the user who called Database.executeBatch"
+      ],
+      "answer": 0,
+      "explain": "The BatchableContext parameter passed into every Batchable method exposes getJobId(), returning the current job's own AsyncApexJob Id — letting finish query the authoritative, job-wide status and error count."
+    },
+    {
+      "q": "Which of these is a correct description of using finish for error reporting in Batch Apex?",
+      "options": [
+        "finish runs once after all chunks complete, making it a natural place to query the job's final status and send a summary notification such as an email",
+        "finish runs before start, so it cannot report on anything that happened during execute",
+        "finish is only available if the class implements Database.Stateful",
+        "finish cannot query AsyncApexJob under any circumstances"
+      ],
+      "answer": 0,
+      "explain": "finish runs exactly once, after every chunk has completed, which makes it the right place to query AsyncApexJob for the job's final status and error count and send a summary notification, such as an email to an admin."
+    }
+  ]
+}

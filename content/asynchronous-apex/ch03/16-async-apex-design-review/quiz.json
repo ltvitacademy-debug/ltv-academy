@@ -1,0 +1,60 @@
+{
+  "lesson": "async-apex-design-review",
+  "questions": [
+    {
+      "q": "Why does this lesson argue a design review is necessary even when a design compiles and passes a quick test?",
+      "options": [
+        "Because asynchronous bugs often only show up under real production volume, months after a quick sandbox test with a handful of records passed",
+        "Because Apex code never actually compiles correctly the first time",
+        "Because Salesforce requires a formal design review before any code can be deployed",
+        "Because quick tests are technically forbidden for asynchronous Apex"
+      ],
+      "answer": 0,
+      "explain": "A design that works fine against a small test dataset can still fail at real production volume — asynchronous Apex's failure modes (limits, chaining, error handling) tend to surface under load, not in a quick functional test."
+    },
+    {
+      "q": "A proposed design calls a future method, passing the full Contact sObject as a parameter. What does running this through the design-review checklist immediately reveal?",
+      "options": [
+        "The design is fine as described and needs no changes",
+        "Future methods cannot accept an sObject parameter at all — this design won't compile, and should either pass the Id and re-query, or switch to Queueable Apex",
+        "The design only fails if the org has more than 100 Contacts",
+        "sObjects are allowed in future methods only if annotated with @future(sobject=true)"
+      ],
+      "answer": 1,
+      "explain": "Future methods only accept primitive types, arrays of primitives, or collections of primitives (Lesson 3) — passing a Contact sObject directly won't compile. The fix is passing the Id and re-querying inside the method, or switching to Queueable Apex, which can accept the sObject directly."
+    },
+    {
+      "q": "Per the checklist's 'Limits budget' item, what should a reviewer check for a recurring job or a chain?",
+      "options": [
+        "Whether anyone has calculated the design's share of the shared daily asynchronous execution limit, especially at full production volume",
+        "Whether the Apex class name follows a specific naming convention",
+        "Whether the job uses exactly 200 as its batch chunk size",
+        "Whether the job was written using camelCase or snake_case variable names"
+      ],
+      "answer": 0,
+      "explain": "The limits-budget checklist item asks whether the design's consumption of the shared daily asynchronous execution limit (Lesson 11) has actually been calculated — a design that looks fine in a sandbox can become an outage risk at full production scale."
+    },
+    {
+      "q": "According to the checklist's 'Chaining safety' item, what should a reviewer confirm about any chained Queueable design?",
+      "options": [
+        "That there's an explicit stopping condition checked before each chain call, and that Test.isRunningTest() guards the chain call",
+        "That the chain never goes deeper than exactly one link",
+        "That the chain only runs between midnight and 6 AM",
+        "That every chained job implements Database.Stateful"
+      ],
+      "answer": 0,
+      "explain": "Chaining safety (Lesson 7) requires an explicit stopping condition checked before each System.enqueueJob call to prevent runaway chains, and a Test.isRunningTest() guard so the chaining code can actually be tested."
+    },
+    {
+      "q": "A reviewed design has a Scheduled Apex job whose execute method loops directly over 3 million Account records with no Batch Apex involved. Which checklist item does this most clearly fail?",
+      "options": [
+        "Tool choice — Scheduled Apex's execute method runs under synchronous-style limits and isn't built to process millions of records directly; this volume calls for Batch Apex",
+        "This design passes every checklist item as described",
+        "Only the chaining-safety item is relevant here, since no chaining is involved",
+        "Only the test-coverage item applies, since the other six items don't apply to Scheduled Apex"
+      ],
+      "answer": 0,
+      "explain": "Scheduled Apex's execute method runs under governor limits comparable to a synchronous transaction, so looping directly over millions of records there fails the tool-choice checklist item — this volume needs Batch Apex, which the scheduled job should instead kick off."
+    }
+  ]
+}

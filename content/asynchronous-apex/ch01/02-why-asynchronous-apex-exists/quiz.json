@@ -1,0 +1,60 @@
+{
+  "lesson": "why-asynchronous-apex-exists",
+  "questions": [
+    {
+      "q": "Why can't a trigger make an HTTP callout directly?",
+      "options": [
+        "Triggers run inside a pending DML transaction, and callouts aren't allowed from that kind of synchronous context",
+        "Triggers don't support any Apex code execution at all",
+        "HTTP callouts require a Visualforce page to initiate them",
+        "There is no actual restriction — triggers can call out directly with no issue"
+      ],
+      "answer": 0,
+      "explain": "Salesforce blocks callouts from a context with an open DML transaction, like a trigger, so the platform never leaves a database transaction open while waiting on a slow external HTTP call."
+    },
+    {
+      "q": "What is a mixed DML error?",
+      "options": [
+        "A syntax error caused by mixing SOQL and SOSL in the same method",
+        "An error thrown when a single transaction performs DML on a setup object (like User) and a non-setup object (like Account) together",
+        "An error thrown whenever a batch size larger than 200 is specified",
+        "An error that only occurs when running Apex tests, never in production"
+      ],
+      "answer": 1,
+      "explain": "Salesforce disallows combining DML on setup objects (such as User or GroupMember) with DML on regular objects (such as Account) inside one transaction, throwing a mixed DML error."
+    },
+    {
+      "q": "A requirement is to update every Contact across an org with two million Contacts missing a required field. Why can't this run in a single synchronous transaction, no matter how the code is written?",
+      "options": [
+        "Synchronous transactions have a small, fixed governor-limit budget that can't scale up to cover that volume of records in one transaction",
+        "Apex cannot query more than 10 Contacts total across the org's lifetime",
+        "Updating a Contact record is technically impossible in Apex",
+        "Synchronous Apex can only run during business hours"
+      ],
+      "answer": 0,
+      "explain": "A single synchronous transaction's governor limits (SOQL queries, DML rows, heap, CPU time) are fixed and relatively small — they cannot be stretched to cover millions of records, which is exactly the problem Batch Apex's per-chunk transactions solve."
+    },
+    {
+      "q": "Even when a secondary task like sending a confirmation email technically fits inside governor limits, why might a developer still move it off the main synchronous transaction?",
+      "options": [
+        "To keep the user-facing save or page load fast, instead of making the user wait on work that doesn't need to finish before their action completes",
+        "Because governor limits don't apply to email-sending code at all",
+        "Because synchronous Apex cannot send emails under any circumstance",
+        "Because asynchronous jobs are always billed separately from synchronous ones"
+      ],
+      "answer": 0,
+      "explain": "Even work that fits comfortably inside governor limits can still slow down the user's save or page load. Pushing non-essential work asynchronously lets the user's action finish immediately while the extra work completes a moment later."
+    },
+    {
+      "q": "Which of the four reasons covered in this lesson maps most directly onto needing Scheduled Apex specifically?",
+      "options": [
+        "Needing to avoid a mixed DML error on a setup object",
+        "Needing a job to run on a recurring cadence rather than in direct response to a user action",
+        "Needing to make a callout from inside a trigger",
+        "Needing to stay under the heap size limit for a single record update"
+      ],
+      "answer": 1,
+      "explain": "Scheduled Apex exists for jobs that need to run on a recurring schedule independent of any specific user action — the other three reasons (callouts from triggers, mixed DML, and large-volume processing) map to future/Queueable methods and Batch Apex instead."
+    }
+  ]
+}
