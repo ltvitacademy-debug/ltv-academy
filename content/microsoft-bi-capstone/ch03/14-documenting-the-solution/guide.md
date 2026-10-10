@@ -1,6 +1,6 @@
 # Lesson 14 — Documenting the Solution
 
-**Chapter 3 · Production Practices · Lesson 14 of 25**
+**Chapter 3 · Production Practices · Lesson 14 of 26**
 
 ## What you'll learn
 

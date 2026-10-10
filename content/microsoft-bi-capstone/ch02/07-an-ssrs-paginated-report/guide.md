@@ -1,6 +1,6 @@
 # Lesson 7 — An SSRS Paginated Report
 
-**Chapter 2 · Building the Full Stack · Lesson 7 of 25**
+**Chapter 2 · Building the Full Stack · Lesson 7 of 26**
 
 ## What you'll learn
 

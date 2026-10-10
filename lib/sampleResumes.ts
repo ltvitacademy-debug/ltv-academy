@@ -41,10 +41,10 @@ export const SAMPLE_RESUMES: Record<string, Partial<Record<SampleResumeLevel, Re
       name: "John Doe",
       contact: CONTACT,
       summary:
-        "Entry-level BI Developer trained in SQL Server, SSIS, SSRS, and Power BI through a hands-on apprenticeship program. " +
-        "Built a complete reporting pipeline end to end — raw source data through SSIS into a dimensional warehouse, served by " +
-        "both an SSRS paginated report and a Power BI dashboard. Looking to bring that same full-stack approach to a Junior BI " +
-        "Developer, SQL Developer, or Report Developer role.",
+        "BI Developer trained in SQL Server, SSIS, SSRS, and Power BI through a hands-on apprenticeship program. Built a " +
+        "complete reporting pipeline end to end — raw source data through SSIS into a dimensional warehouse, served by " +
+        "both an SSRS paginated report and a Power BI dashboard. Bringing that full-stack approach to a BI Developer, SQL " +
+        "Developer, or Report Developer role.",
       skills: [
         "ETL Development (SSIS)",
         "Dimensional Modeling & Data Warehousing",
@@ -52,6 +52,7 @@ export const SAMPLE_RESUMES: Record<string, Partial<Record<SampleResumeLevel, Re
         "Data Visualization & DAX (Power BI)",
         "T-SQL Querying & Database Design",
         "Requirements Gathering & Stakeholder Communication",
+        "Version Control (Git/GitHub)",
       ],
       sections: [
         {
@@ -73,7 +74,7 @@ export const SAMPLE_RESUMES: Record<string, Partial<Record<SampleResumeLevel, Re
                 "Built SSRS paginated reports with report and cascading/multi-value parameters, grouping and sorting, drilldown and drillthrough navigation, and data-driven subscriptions for scheduled delivery.",
                 "Built Power BI data models and reports: Power Query transformations and data cleaning, DAX measures (including CALCULATE and filter context), KPIs, slicers, and drill-down/drill-through navigation.",
                 "Practiced translating business requirements into database, ETL, and reporting designs, then documenting and presenting the finished solution to a non-technical audience.",
-                "Practiced the full software delivery lifecycle — Dev/QA/UAT/Production environments, release and deployment planning, and how a code change moves through a CI/CD pipeline — through a Scrum/Kanban-based project simulation, from a business request through requirements, build, test, and release.",
+                "Practiced the full software delivery lifecycle — Dev/QA/UAT/Production environments, release and deployment planning, and version control with Git (repositories, commits, branches, pull requests) — through a Scrum/Kanban-based project simulation, from a business request through requirements, build, test, and release.",
                 "Built a complete, end-to-end capstone project — raw source data through SQL Server and SSIS into a dimensional warehouse, served by both an SSRS paginated report and a Power BI dashboard — simulating the full scope of a Microsoft BI Developer role.",
               ],
             },
@@ -104,7 +105,7 @@ export const SAMPLE_RESUMES: Record<string, Partial<Record<SampleResumeLevel, Re
               right: "2026",
               sub: "Public portfolio repository for the capstone project",
               bullets: [
-                "Published the SSIS package (WorkOrderETL.dtsx), T-SQL warehouse DDL, and the SSRS report definition as readable files, so the real ETL logic and schema design are verifiable without installing SQL Server.",
+                "Initialized a Git repository for the capstone project and used git add/commit/push to publish it to GitHub, with a .gitignore excluding local settings and test data — the SSIS package (WorkOrderETL.dtsx), T-SQL warehouse DDL, and SSRS report definition all committed as readable files.",
                 "Wrote a README documenting the architecture, and included report and dashboard screenshots plus a short recorded walkthrough for the SSRS and Power BI pieces that aren't viewable directly in a browser.",
               ],
             },
@@ -136,6 +137,7 @@ export const SAMPLE_RESUMES: Record<string, Partial<Record<SampleResumeLevel, Re
         "REST APIs, Custom Connectors & JSON",
         "Environment Strategy, DLP Policies & Application Lifecycle Management",
         "Requirements Gathering & Stakeholder Communication",
+        "Version Control (Git/GitHub)",
       ],
       tools: "SSMS, SSDT/Visual Studio, Power BI Desktop & Service, Power Automate, Dataverse, SharePoint, Microsoft Teams, Outlook, Git",
       sections: [
@@ -162,7 +164,7 @@ export const SAMPLE_RESUMES: Record<string, Partial<Record<SampleResumeLevel, Re
                 "Connected flows to Dataverse and SQL Server, called external REST APIs with HTTP actions, and parsed JSON responses; built a custom connector for a system with no pre-built connector available.",
                 "Organized related flows into child flows for modular, independently testable design, and packaged flows into solutions for deployment across environments using environment variables and connection references.",
                 "Applied governance practices — environment strategy, Data Loss Prevention (DLP) policies, and the Power Platform admin center — and practiced application lifecycle management (ALM) and flow troubleshooting.",
-                "Practiced the full software delivery lifecycle — Dev/QA/UAT/Production environments, release and deployment planning, and how a code change moves through a CI/CD pipeline — through a Scrum/Kanban-based project simulation, from a business request through requirements, build, test, and release.",
+                "Practiced the full software delivery lifecycle — Dev/QA/UAT/Production environments, release and deployment planning, and version control with Git (repositories, commits, branches, pull requests) — through a Scrum/Kanban-based project simulation, from a business request through requirements, build, test, and release.",
                 "Built a complete, end-to-end capstone project — raw source data through SQL Server and SSIS into a dimensional warehouse, served by both an SSRS paginated report and a Power BI dashboard — simulating the full scope of a Microsoft BI Developer role.",
               ],
             },
@@ -195,7 +197,7 @@ export const SAMPLE_RESUMES: Record<string, Partial<Record<SampleResumeLevel, Re
               right: "2026",
               sub: "Public portfolio repository for the capstone project",
               bullets: [
-                "Published the SSIS package (WorkOrderETL.dtsx), T-SQL warehouse DDL, and the SSRS report definition as readable files, so the real ETL logic and schema design are verifiable without installing SQL Server.",
+                "Initialized a Git repository for the capstone project and used git add/commit/push to publish it to GitHub, with a .gitignore excluding local settings and test data — the SSIS package (WorkOrderETL.dtsx), T-SQL warehouse DDL, and SSRS report definition all committed as readable files.",
                 "Wrote a README documenting the architecture, and included report and dashboard screenshots plus a short recorded walkthrough for the SSRS and Power BI pieces that aren't viewable directly in a browser.",
               ],
             },

@@ -1,6 +1,6 @@
 # Lesson 13 — Scheduling & Automation
 
-**Chapter 3 · Production Practices · Lesson 13 of 25**
+**Chapter 3 · Production Practices · Lesson 13 of 26**
 
 ## What you'll learn
 

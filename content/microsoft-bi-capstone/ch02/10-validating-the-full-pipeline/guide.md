@@ -1,6 +1,6 @@
 # Lesson 10 — Validating the Full Pipeline, End to End
 
-**Chapter 2 · Building the Full Stack · Lesson 10 of 25**
+**Chapter 2 · Building the Full Stack · Lesson 10 of 26**
 
 ## What you'll learn
 

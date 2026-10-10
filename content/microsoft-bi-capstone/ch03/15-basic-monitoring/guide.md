@@ -1,6 +1,6 @@
 # Lesson 15 — Basic Monitoring
 
-**Chapter 3 · Production Practices · Lesson 15 of 25**
+**Chapter 3 · Production Practices · Lesson 15 of 26**
 
 ## What you'll learn
 

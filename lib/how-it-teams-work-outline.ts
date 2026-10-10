@@ -38,8 +38,11 @@ export const HOW_IT_TEAMS_WORK_CHAPTERS: ChapterMeta[] = [
       L(4, "sdlc-dev-qa-uat-and-production", "SDLC: Dev, QA, UAT & Production", {
         contentDir: "ch01/04-sdlc-dev-qa-uat-and-production",
       }),
-      L(5, "releases-deployments-and-cicd", "Releases, Deployments & CI/CD", {
-        contentDir: "ch01/05-releases-deployments-and-cicd",
+      L(5, "version-control-with-git", "Version Control with Git", {
+        contentDir: "ch01/05-version-control-with-git",
+      }),
+      L(6, "releases-deployments-and-cicd", "Releases, Deployments & CI/CD", {
+        contentDir: "ch01/06-releases-deployments-and-cicd",
       }),
     ],
   },
@@ -47,8 +50,8 @@ export const HOW_IT_TEAMS_WORK_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "Capstone",
     lessons: [
-      L(6, "real-world-it-project-simulation", "Real-World IT Project Simulation", {
-        contentDir: "ch02/06-real-world-it-project-simulation",
+      L(7, "real-world-it-project-simulation", "Real-World IT Project Simulation", {
+        contentDir: "ch02/07-real-world-it-project-simulation",
       }),
     ],
   },

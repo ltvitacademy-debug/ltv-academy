@@ -1,6 +1,6 @@
 # Lesson 9 — Connecting SSRS & Power BI to the Same Warehouse
 
-**Chapter 2 · Building the Full Stack · Lesson 9 of 25**
+**Chapter 2 · Building the Full Stack · Lesson 9 of 26**
 
 ## What you'll learn
 

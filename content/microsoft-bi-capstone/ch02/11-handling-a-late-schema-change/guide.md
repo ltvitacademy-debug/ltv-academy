@@ -1,6 +1,6 @@
 # Lesson 11 — Handling a Late Schema Change
 
-**Chapter 2 · Building the Full Stack · Lesson 11 of 25**
+**Chapter 2 · Building the Full Stack · Lesson 11 of 26**
 
 ## What you'll learn
 

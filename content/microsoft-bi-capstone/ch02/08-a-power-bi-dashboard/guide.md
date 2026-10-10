@@ -1,6 +1,6 @@
 # Lesson 8 — A Power BI Dashboard
 
-**Chapter 2 · Building the Full Stack · Lesson 8 of 25**
+**Chapter 2 · Building the Full Stack · Lesson 8 of 26**
 
 ## What you'll learn
 

@@ -1,6 +1,6 @@
 # Lesson 1 — Capstone Kickoff & Business Scenario
 
-**Chapter 1 · Capstone Overview · Lesson 1 of 25**
+**Chapter 1 · Capstone Overview · Lesson 1 of 26**
 
 ## What you'll learn
 
@@ -114,7 +114,7 @@ a job search, not just a finished database.
    dimension gets built from.
 3. Write two or three sentences, in your own words, describing what
    "manufacturing work orders" means as a business process — you'll
-   need this exact framing again in Lesson 24 when you present the
+   need this exact framing again in Lesson 25 when you present the
    finished capstone.
 
 ## Check yourself

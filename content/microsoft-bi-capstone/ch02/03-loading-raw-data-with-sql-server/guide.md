@@ -1,6 +1,6 @@
 # Lesson 3 — Loading Raw Data With SQL Server
 
-**Chapter 2 · Building the Full Stack · Lesson 3 of 25**
+**Chapter 2 · Building the Full Stack · Lesson 3 of 26**
 
 ## What you'll learn
 

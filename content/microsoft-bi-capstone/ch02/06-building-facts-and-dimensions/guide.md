@@ -1,6 +1,6 @@
 # Lesson 6 — Building Facts & Dimensions
 
-**Chapter 2 · Building the Full Stack · Lesson 6 of 25**
+**Chapter 2 · Building the Full Stack · Lesson 6 of 26**
 
 ## What you'll learn
 

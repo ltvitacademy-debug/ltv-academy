@@ -1,6 +1,6 @@
 # Lesson 16 — Building Your Resume Around This Project
 
-**Chapter 4 · Job Preparation · Lesson 16 of 25**
+**Chapter 4 · Job Preparation · Lesson 16 of 26**
 
 ## What you'll learn
 
@@ -135,7 +135,7 @@ word; use your own phrasing and be specific about what you actually
 built in Chapters 2 and 3. For at least one bullet, include a real
 technical detail (a table name, a row count from your own SQL Server
 instance, a specific DAX measure) rather than a generic description.
-Save the four bullets — you'll use them again in Lesson 24 when you
+Save the four bullets — you'll use them again in Lesson 25 when you
 present the finished capstone.
 
 ## Check yourself

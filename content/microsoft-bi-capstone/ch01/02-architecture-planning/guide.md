@@ -1,6 +1,6 @@
 # Lesson 2 — Architecture Planning: Raw Data to Reporting
 
-**Chapter 1 · Capstone Overview · Lesson 2 of 25**
+**Chapter 1 · Capstone Overview · Lesson 2 of 26**
 
 ## What you'll learn
 
@@ -127,7 +127,7 @@ dimension on `FactWorkOrder` would either fan the fact table out to a
 finer grain than intended, or force an arbitrary "pick one location"
 rule that doesn't reflect reality. Rather than force it in, this
 architecture leaves it out. That's a scope decision, not a gap — and
-it's one you'll learn to talk about as a strength in Lesson 24.
+it's one you'll learn to talk about as a strength in Lesson 25.
 
 ## How SSRS and Power BI connect
 
@@ -173,7 +173,7 @@ point of building the warehouse in the first place.
 3. Write down, in one sentence, why `StartDateKey`, `EndDateKey`, and
    `DueDateKey` all reference the same `DimDate` table instead of three
    separate date dimensions. You'll want this exact explanation again
-   in Lesson 24.
+   in Lesson 25.
 
 ## Check yourself
 

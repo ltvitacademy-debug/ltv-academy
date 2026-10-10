@@ -1,6 +1,6 @@
 # Lesson 4 — Building the SSIS ETL Package
 
-**Chapter 2 · Building the Full Stack · Lesson 4 of 25**
+**Chapter 2 · Building the Full Stack · Lesson 4 of 26**
 
 ## What you'll learn
 

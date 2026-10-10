@@ -1,6 +1,6 @@
 # Lesson 17 — Portfolio Presentation Strategy
 
-**Chapter 4 · Job Preparation · Lesson 17 of 25**
+**Chapter 4 · Job Preparation · Lesson 17 of 26**
 
 ## What you'll learn
 
@@ -108,7 +108,7 @@ answer to it, not the headline:
    instead of a simple transaction fact.
 
 That structure — problem, approach, proof, tradeoff — is also exactly
-what a strong technical interview answer looks like, which Lesson 19
+what a strong technical interview answer looks like, which Lesson 20
 walks through in detail using this same project.
 
 ## Key terms
@@ -128,7 +128,7 @@ embed. Then write out, in your own words, the four-line
 problem/approach/proof/tradeoff talk-through for a portfolio review —
 using a real design decision from your own build, not the
 accumulating-snapshot example above. Save both; you'll reuse the
-talk-through directly in Lesson 24.
+talk-through directly in Lesson 25.
 
 ## Check yourself
 

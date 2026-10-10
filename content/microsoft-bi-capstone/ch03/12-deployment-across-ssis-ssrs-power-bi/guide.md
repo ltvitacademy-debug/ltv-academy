@@ -1,6 +1,6 @@
 # Lesson 12 — Deployment Across SSIS, SSRS & Power BI
 
-**Chapter 3 · Production Practices · Lesson 12 of 25**
+**Chapter 3 · Production Practices · Lesson 12 of 26**
 
 ## What you'll learn
 
