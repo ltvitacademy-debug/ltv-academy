@@ -1,0 +1,60 @@
+{
+  "lesson": "secure-development-practices",
+  "questions": [
+    {
+      "q": "What does the `with sharing` Apex keyword actually enforce?",
+      "options": [
+        "The running user's record-sharing rules (OWD, role hierarchy, sharing rules) inside that class's queries and DML",
+        "Field-level security for every field on the object",
+        "API rate limits for the running user",
+        "Password complexity rules for the running user"
+      ],
+      "answer": 0,
+      "explain": "`with sharing` enforces record-level sharing rules -- which records the running user can see -- inside that class's logic. It does not, by itself, enforce object or field-level permissions, which is a separate check."
+    },
+    {
+      "q": "By default, does Apex automatically enforce object and field-level security (CRUD/FLS) for the running user?",
+      "options": [
+        "Yes, Apex always enforces CRUD/FLS automatically regardless of any keyword used",
+        "No -- Apex runs in system context by default, so a query or DML statement can succeed even if the running user's profile lacks access to the object or field, unless CRUD/FLS is enforced explicitly",
+        "Only `without sharing` classes skip CRUD/FLS enforcement; `with sharing` classes enforce it automatically",
+        "CRUD/FLS enforcement was removed from the Apex language entirely"
+      ],
+      "answer": 1,
+      "explain": "Sharing and CRUD/FLS are separate checks. Apex runs in system context by default, so CRUD/FLS has to be enforced deliberately -- via WITH USER_MODE, AccessLevel.USER_MODE, WITH SECURITY_ENFORCED, explicit isAccessible()/isCreateable() checks, or Security.stripInaccessible()."
+    },
+    {
+      "q": "What makes the `inherited sharing` keyword useful for a reusable utility class, per this lesson?",
+      "options": [
+        "It permanently disables sharing enforcement for any class that uses it",
+        "It automatically rewrites any SOQL injection vulnerabilities in the class",
+        "It gives the class a safe with-sharing default when it's the actual entry point into Apex, while still running without sharing if explicitly called from an already-without-sharing context",
+        "It is identical in every respect to declaring `without sharing`"
+      ],
+      "answer": 2,
+      "explain": "`inherited sharing` runs as with sharing at entry points (e.g., an @AuraEnabled method called from a Lightning Web Component), but defers to without sharing only when called from a context that was already without sharing -- a safer default for code that might get reused in contexts the original author never anticipated."
+    },
+    {
+      "q": "What is SOQL injection, and what is the standard fix for it?",
+      "options": [
+        "A governor limit violation caused by too many SOQL queries in one transaction; fixed by bulkifying the code",
+        "An error caused by querying a field that doesn't exist on an object",
+        "A deprecated Apex feature that no longer poses any risk",
+        "Building a SOQL query by concatenating unescaped, untrusted user input, which lets an attacker alter the query's behavior; fixed by using bind variables instead of string concatenation"
+      ],
+      "answer": 3,
+      "explain": "SOQL injection is the same category of risk as classic SQL injection -- concatenating untrusted input into a query string lets an attacker change what the query does. Bind variables (:variableName) are the standard fix, with String.escapeSingleQuotes() as a fallback when dynamic SOQL can't be avoided."
+    },
+    {
+      "q": "In the Lab scenario, a `without sharing` class written for a legitimate nightly batch job gets reused 18 months later by a new Lightning Web Component feature. What authorization gap does this reuse create?",
+      "options": [
+        "The support agent's UI feature now bypasses record-sharing rules it was never meant to bypass, because it's calling code that ignores sharing entirely regardless of who invokes it",
+        "No gap is created -- `without sharing` behavior only ever applies to batch jobs, never to UI-triggered calls",
+        "The reuse automatically triggers a SOQL injection vulnerability",
+        "The reuse causes the batch job to stop working entirely"
+      ],
+      "answer": 0,
+      "explain": "Because `without sharing` ignores sharing rules for whoever calls the class, reusing that code from a new, UI-triggered feature silently gives the calling feature the same unrestricted record access the batch job needed -- an authorization gap nobody designed for, and exactly the kind of risk `inherited sharing` is meant to prevent."
+    }
+  ]
+}
