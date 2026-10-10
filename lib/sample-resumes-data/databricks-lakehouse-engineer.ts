@@ -106,7 +106,7 @@ export const RESUMES: PathResumes = {
       "streaming with Kafka, Airflow orchestration, and infrastructure as code with Terraform and Bicep — on top of a T-SQL, " +
       "Python/Spark, Data Factory, and Databricks/Delta Lake foundation. Built a fully governed lakehouse pipeline spanning " +
       "ingestion through orchestration, performance, and security, and preparing for the Databricks DP-750 certification. " +
-      "Targeting Databricks Data Engineer, Senior Data Engineer, or Lakehouse Engineer roles.",
+      "Targeting Databricks Data Engineer or Lakehouse Engineer roles.",
     skills: [
       "Unity Catalog Governance at Scale (Access Control, Lineage, Delta Sharing)",
       "Auto Loader & Ingestion at Scale (Schema Inference/Evolution, File Notification Mode)",

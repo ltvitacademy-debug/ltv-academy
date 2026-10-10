@@ -102,7 +102,7 @@ export const RESUMES: PathResumes = {
       "and advanced Excel, plus Azure Data Factory pipelines, Git/GitHub/CI-CD discipline, and Power Automate for the " +
       "business-process layer around a BI platform. Comfortable owning a dashboard from source system to published " +
       "report, the pipeline that feeds it, and the version-controlled, tested workflow that ships changes to all of it " +
-      "safely. Looking to bring that full-stack BI-engineering approach to a BI Developer, BI Engineer, or Senior BI " +
+      "safely. Looking to bring that full-stack BI-engineering approach to a BI Developer, BI Engineer, or BI " +
       "Analyst role.",
     skills: [
       "T-SQL Querying & Database Design",

@@ -126,8 +126,8 @@ export const RESUMES: PathResumes = {
       "specialization in version control and CI/CD, infrastructure as code, pipeline orchestration, and event " +
       "streaming. Comfortable taking a data pipeline from a Terraform-provisioned resource group through an " +
       "orchestrated Airflow DAG and a Kafka event stream, with every change going through a real pull request and a " +
-      "real CI/CD pipeline before it reaches production. Looking to bring that senior-ready, full-stack approach to a " +
-      "Senior, Lead, or Staff/Principal Data Engineer role.",
+      "real CI/CD pipeline before it reaches production. Looking to bring that full-stack approach to a " +
+      "Data Engineer role.",
     skills: [
       "Azure Data Lake Storage (ADLS Gen2) & Medallion Architecture",
       "Python & PySpark for Data Engineering",

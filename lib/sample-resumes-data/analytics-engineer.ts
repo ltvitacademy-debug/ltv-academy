@@ -100,7 +100,7 @@ export const RESUMES: PathResumes = {
       "orchestration on top of a T-SQL, Snowflake, dbt, and Power BI foundation. Comfortable owning a pipeline end to " +
       "end — from an on-premises source through cloud orchestration, a tested dbt warehouse, and into a report someone " +
       "trusts — and automating the scheduling, retries, and alerting that keep it running unattended. Bringing that " +
-      "full pipeline-ownership approach to an Analytics Engineer, Senior Analytics Engineer, or Data/Analytics " +
+      "full pipeline-ownership approach to an Analytics Engineer or Data/Analytics " +
       "Architect role.",
     skills: [
       "SQL Development & Database Design (T-SQL)",

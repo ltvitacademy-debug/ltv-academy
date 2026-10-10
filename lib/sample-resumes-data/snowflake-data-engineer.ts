@@ -111,7 +111,7 @@ export const RESUMES: PathResumes = {
       "dbt, Azure Data Factory, and Power BI, plus Apache Airflow orchestration, Git/GitHub CI/CD, and Terraform/Bicep " +
       "infrastructure-as-code for the pipeline layer around them. Comfortable owning a pipeline from raw source through " +
       "a tested, documented warehouse model to a scheduled, version-controlled, infrastructure-as-code-provisioned " +
-      "production run. Looking to bring that full-stack-plus-orchestration approach to a Senior Snowflake Engineer, " +
+      "production run. Looking to bring that full-stack-plus-orchestration approach to a Snowflake Engineer, " +
       "Analytics Engineer, or Cloud Data Engineer role.",
     skills: [
       "Cloud Data Warehousing (Snowflake)",

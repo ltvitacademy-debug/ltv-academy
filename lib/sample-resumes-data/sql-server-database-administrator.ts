@@ -232,12 +232,11 @@ export const RESUMES: PathResumes = {
     name: "John Doe",
     contact: CONTACT,
     summary:
-      "SQL Server Database Administrator with the full senior DBA skill set — on-prem administration, performance " +
+      "SQL Server Database Administrator with the full DBA skill set — on-prem administration, performance " +
       "tuning, high availability and disaster recovery, Azure SQL administration toward the DP-300, and PowerShell/" +
-      "DevOps automation — plus real, hands-on exposure to the other database platforms every senior DBA eventually " +
-      "runs into: Oracle, MySQL, and PostgreSQL on the relational side, and MongoDB, Azure Cosmos DB, and Neo4j on " +
-      "the NoSQL side. Bringing that cross-platform judgment to a Database Administrator, Database Engineer, or " +
-      "Principal Database Engineer role.",
+      "DevOps automation — plus real, hands-on exposure to the other database platforms a cross-platform DBA " +
+      "eventually runs into: Oracle, MySQL, and PostgreSQL on the relational side, and MongoDB, Azure Cosmos DB, and Neo4j on " +
+      "the NoSQL side. Bringing that cross-platform judgment to a Database Administrator or Database Engineer role.",
     skills: [
       "T-SQL Development & SQL Server Administration",
       "Performance Tuning (Execution Plans, Index Design, Wait Statistics, Query Store)",

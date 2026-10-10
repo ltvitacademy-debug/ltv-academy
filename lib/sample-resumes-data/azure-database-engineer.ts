@@ -85,7 +85,7 @@ export const RESUMES: PathResumes = {
       "on top of them. Comfortable scripting routine DBA maintenance across a fleet of servers, provisioning Azure SQL " +
       "environments as reviewable code instead of Portal clicks, and shipping an infrastructure change through a real " +
       "pull request and CI/CD gate. Looking to bring that administration-plus-automation approach to a Database " +
-      "Engineer, Senior DBA, or Azure Database Engineer role.",
+      "Engineer or Azure Database Engineer role.",
     skills: [
       "T-SQL Querying & Database Design",
       "Azure SQL Deployment (Database, Managed Instance, VM)",

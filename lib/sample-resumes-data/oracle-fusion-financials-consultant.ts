@@ -143,17 +143,17 @@ export const RESUMES: PathResumes = {
       },
     ],
   },
-  "senior-consultant": {
-    levelLabel: "Senior Financials Consultant",
+  "full-implementation-consultant": {
+    levelLabel: "Oracle Fusion Financials Consultant",
     name: "John Doe",
     contact: CONTACT,
     summary:
-      "Senior Oracle Fusion Financials Consultant trained to own a full implementation end to end — configuring an " +
+      "Oracle Fusion Financials Consultant trained to own a full implementation end to end — configuring an " +
       "Oracle Fusion Financials instance for a two-entity manufacturer, running a month of real Payables, Receivables, " +
       "Fixed Assets, Cash Management, and General Ledger transactions, then diagnosing and resolving a six-problem " +
       "month-end close under a CFO deadline. Comfortable working a support ticket from symptom to root cause to " +
-      "documented fix, and presenting a finished implementation to a non-technical stakeholder. Targeting Senior Oracle " +
-      "Financials Consultant, Oracle Fusion Financials Consultant, or Oracle ERP Analyst roles.",
+      "documented fix, and presenting a finished implementation to a non-technical stakeholder. Targeting Oracle " +
+      "Fusion Financials Consultant or Oracle ERP Analyst roles.",
     skills: [
       "End-to-End Oracle Fusion Implementation (Design → Configuration → Operations → Month-End Close)",
       "Production Support & Root-Cause Troubleshooting (AP, AR, GL, SLA, Assets, Security, Data/Integration)",
