@@ -1,0 +1,60 @@
+{
+  "lesson": "integration-case-study-order-management",
+  "questions": [
+    {
+      "q": "Why does this case study's order-to-fulfillment business process decompose into three separate integration flows rather than one?",
+      "options": [
+        "Because Salesforce requires every business process to use exactly three integrations",
+        "Because three flows is always the correct number for any order-management scenario",
+        "Because the WMS cannot support more than one integration at a time",
+        "Because each flow (order to WMS, status updates back, shipping-rate lookup) has different answers to the four framing questions, pointing toward different patterns for each"
+      ],
+      "answer": 3,
+      "explain": "The three flows have genuinely different initiators, frequencies, volumes, and urgency levels, so each one points toward a different pattern — forcing them into a single uniform pattern would have made at least one of them a poor fit."
+    },
+    {
+      "q": "Why does Flow 1 (order created in Salesforce, sent to the WMS) use an idempotency key based on the order's unique Salesforce ID?",
+      "options": [
+        "To make the flow run faster",
+        "So that a retried publish after an ambiguous failure never risks the WMS picking and fulfilling the same order twice",
+        "Because idempotency keys are required by the REST API specification",
+        "To avoid needing an API version on the WMS's endpoint"
+      ],
+      "answer": 1,
+      "explain": "The idempotency key lets the WMS recognize a retried publish of the same order as a duplicate of an already-handled request, directly applying Lesson 15's idempotency concept to prevent a duplicate fulfillment."
+    },
+    {
+      "q": "Why does Flow 2 (fulfillment status updates flowing back from the WMS) use an event-driven, fire-and-forget pattern rather than synchronous communication?",
+      "options": [
+        "Because status updates are too large in volume for synchronous calls",
+        "Because the WMS cannot make synchronous calls under any circumstances",
+        "Because a rep or customer checking order status doesn't need sub-second updates, and eventual consistency (a status update arriving a few seconds late) is an entirely acceptable trade-off here",
+        "Because fire-and-forget guarantees instant delivery, unlike synchronous calls"
+      ],
+      "answer": 2,
+      "explain": "The urgency answer for status updates tolerates a short delay, making eventual consistency acceptable — exactly the condition under which Lesson 8's event-driven, fire-and-forget pattern is the right fit rather than a tightly coupled synchronous call."
+    },
+    {
+      "q": "Why is Flow 3 (shipping-rate calculation at checkout) the one flow in this case study that justifies synchronous communication?",
+      "options": [
+        "Because the rep is staring at a screen waiting for a number before they can proceed — a genuinely immediate need, unlike the other two flows",
+        "Because shipping rates never change and can be cached forever",
+        "Because synchronous communication is always required for any callout involving money",
+        "Because the shipping carrier's API only supports synchronous calls"
+      ],
+      "answer": 0,
+      "explain": "Flow 3's urgency answer is genuinely immediate — the rep cannot proceed with the quote without the rate right now — which is exactly the condition Lesson 6 identifies as justifying synchronous communication despite its availability-coupling cost."
+    },
+    {
+      "q": "What does this case study say would have gone wrong with a single-minded \"everything must be asynchronous\" instinct applied to all three flows?",
+      "options": [
+        "Nothing; asynchronous patterns are always strictly better for every flow",
+        "It would have violated Salesforce's governor limits for all three flows",
+        "It would have made Flow 1 and Flow 2 more fragile against WMS downtime",
+        "Flow 3's rep would be left staring at a blank screen with no shipping cost and no way to proceed, since that flow genuinely needs an immediate synchronous answer"
+      ],
+      "answer": 3,
+      "explain": "Forcing Flow 3 (the checkout rate lookup) into an asynchronous pattern would leave the rep with no way to complete the quote in the moment, since that specific flow's urgency answer genuinely requires a synchronous, immediate response."
+    }
+  ]
+}
