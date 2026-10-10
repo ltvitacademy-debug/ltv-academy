@@ -1,0 +1,60 @@
+{
+  "lesson": "apex-practice-project-opportunity-automation",
+  "questions": [
+    {
+      "q": "Why does the handler check `opp.StageName == 'Closed Won' && oldOpp.StageName != 'Closed Won'` instead of just `opp.StageName == 'Closed Won'`?",
+      "options": [
+        "Checking the old value too ensures the Task is only created on the actual transition into Closed Won, not on every subsequent update to an already-closed-won Opportunity",
+        "Both conditions are equivalent; the second is redundant",
+        "Apex requires comparing against Trigger.oldMap in every after-update trigger",
+        "Without the old value check, the trigger would not compile"
+      ],
+      "answer": 0,
+      "explain": "Comparing against Trigger.oldMap's previous StageName ensures the follow-up Task is created only once, exactly when the Opportunity newly transitions into Closed Won, not on every later edit to an already-closed-won record."
+    },
+    {
+      "q": "Where does the handler issue its DML insert statement, and why does that placement matter?",
+      "options": [
+        "Inside the for loop, once per matching Opportunity, for simplicity",
+        "In a separate scheduled job, never inside the trigger context",
+        "After the for loop ends, on the whole collected List<Task> at once, so exactly one DML statement runs regardless of batch size",
+        "DML is never issued; Tasks are created declaratively instead"
+      ],
+      "answer": 2,
+      "explain": "Collecting Tasks into a List across the loop and inserting once after the loop keeps the DML statement count constant no matter how many Opportunities are in the trigger batch — the bulkification principle from Lesson 27."
+    },
+    {
+      "q": "What does the `if (!followUpTasks.isEmpty())` guard before the insert accomplish?",
+      "options": [
+        "It prevents the trigger from ever running on bulk updates",
+        "It deletes any existing Tasks first",
+        "It is required syntax with no functional effect",
+        "It avoids issuing an unnecessary DML statement when no Opportunity in this batch actually transitioned to Closed Won"
+      ],
+      "answer": 3,
+      "explain": "Without this guard, an empty insert would still count as a DML statement; checking isEmpty() first avoids wasting a DML statement when there's genuinely nothing to insert."
+    },
+    {
+      "q": "Why is the trigger handler class declared `with sharing` in this project?",
+      "options": [
+        "with sharing is required syntax for all trigger handlers",
+        "So this automation deliberately respects the running user's sharing rules rather than acting with unrestricted system-mode access",
+        "with sharing makes the code run faster",
+        "without sharing is not a valid keyword in Apex"
+      ],
+      "answer": 1,
+      "explain": "with sharing is a deliberate choice here, enforcing the running user's sharing model for this automation rather than defaulting to broader access."
+    },
+    {
+      "q": "If a team wants to add a second, unrelated piece of Opportunity automation later, what does this lesson recommend?",
+      "options": [
+        "Add the new logic to the same OpportunityTriggerHandler method (or handler class), keeping one trigger per object as taught in Lesson 22",
+        "Write a second trigger on Opportunity dedicated to the new automation",
+        "Rewrite the entire automation from scratch in a Flow instead",
+        "Disable the existing trigger before adding new logic"
+      ],
+      "answer": 0,
+      "explain": "Per Lesson 22's one-trigger-per-object principle, new Opportunity automation should extend the existing handler rather than introducing a second trigger on the same object, to keep execution order predictable."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "apex-practice-project-data-cleanup",
+  "questions": [
+    {
+      "q": "For a cleanup task affecting only a few hundred records, what does this lesson recommend?",
+      "options": [
+        "A plain, bulkified anonymous Apex script — it's simpler and entirely sufficient at that scale",
+        "Always write Batch Apex, regardless of volume",
+        "A Scheduled Apex job that runs nightly forever",
+        "Manually editing each record one at a time in the UI"
+      ],
+      "answer": 0,
+      "explain": "At small volume, a straightforward bulkified anonymous Apex script comfortably stays within governor limits and is simpler to write than standing up a full batch class."
+    },
+    {
+      "q": "Why does better bulkification technique fail to fix a cleanup job affecting 80,000 records in one transaction?",
+      "options": [
+        "Bulkification only applies to triggers, never to anonymous Apex",
+        "80,000 is below every governor limit, so this scenario can't actually occur",
+        "The job genuinely doesn't fit inside one transaction's governor limits (50,000 SOQL rows, 10,000 DML rows) regardless of how the code is written",
+        "Bulkification would fix it; the lesson's claim is incorrect"
+      ],
+      "answer": 2,
+      "explain": "Once the affected volume itself exceeds per-transaction limits like the 50,000-row SOQL cap or the 10,000-row DML cap, no amount of query/DML placement technique helps — the job needs to be split across multiple transactions entirely, which is what Batch Apex does."
+    },
+    {
+      "q": "What are the three methods a class implementing `Database.Batchable<SObject>` must define?",
+      "options": [
+        "init(), run(), and complete()",
+        "query(), process(), and done()",
+        "begin(), loop(), and end()",
+        "start(), execute(), and finish()"
+      ],
+      "answer": 3,
+      "explain": "Database.Batchable<SObject> requires start() (defines the records to process), execute() (runs once per batch), and finish() (runs once after all batches complete)."
+    },
+    {
+      "q": "What does `start()` return in a Batch Apex class, and what is it used for?",
+      "options": [
+        "A List<SObject> containing every single record to process at once",
+        "A Database.QueryLocator defining the full record set, which Salesforce then automatically splits into smaller batches",
+        "An Integer representing the total record count",
+        "Nothing; start() is optional and can be left empty"
+      ],
+      "answer": 1,
+      "explain": "start() returns a Database.QueryLocator describing the full job's query, and Salesforce automatically divides the matching records into batches, each later passed to execute()."
+    },
+    {
+      "q": "What is the honest decision rule this lesson gives for choosing between anonymous Apex and Batch Apex for a cleanup task?",
+      "options": [
+        "Estimate the affected record count and whether the job needs to run repeatably — a small one-time fix favors anonymous Apex, while a volume near or over governor limits favors Batch Apex",
+        "Always use Batch Apex, since it's strictly more powerful",
+        "Use anonymous Apex for Contacts and Batch Apex for every other object",
+        "The choice makes no practical difference either way"
+      ],
+      "answer": 0,
+      "explain": "The lesson recommends judging by the realistic affected volume and whether the task is a true one-off, reaching for Batch Apex specifically when volume could approach or exceed per-transaction limits."
+    }
+  ]
+}

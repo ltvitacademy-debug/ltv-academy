@@ -1,0 +1,60 @@
+{
+  "lesson": "trigger-practice-lab",
+  "questions": [
+    {
+      "q": "In the capstone trigger, which phase defaults a blank CloseDate, and why doesn't it need an explicit update statement?",
+      "options": [
+        "The before phase; before triggers can set fields directly on Trigger.new and the platform saves them automatically",
+        "The after phase; after triggers never need DML",
+        "The after phase; the recursion guard saves it instead",
+        "Neither phase — CloseDate is defaulted by a validation rule, not Apex"
+      ],
+      "answer": 0,
+      "explain": "beforeSave() runs in the before phase and sets opp.CloseDate directly on the record in Trigger.new, which the platform persists without a separate DML call."
+    },
+    {
+      "q": "Why does afterUpdate() collect AccountIds into a Set before querying, rather than querying inside the loop over newOpps?",
+      "options": [
+        "Sets are required syntactically by SOQL",
+        "To bulkify: one query with WHERE Id IN handles the whole batch, instead of one query per Opportunity",
+        "Because Trigger.new cannot be looped over more than once",
+        "To avoid using a Map afterward"
+      ],
+      "answer": 1,
+      "explain": "Collecting unique AccountIds first and querying once with IN keeps the handler at one SOQL query regardless of how many Opportunities are in the batch — the bulkification pattern from Lesson 23."
+    },
+    {
+      "q": "What does the static accountsAlreadyMarkedHot Set prevent?",
+      "options": [
+        "It prevents the before phase from running more than once",
+        "It prevents CloseDate from ever being blank",
+        "It prevents the handler from re-querying or re-updating an Account it has already marked Hot within the same transaction",
+        "It prevents Opportunities from being deleted"
+      ],
+      "answer": 2,
+      "explain": "This is the recursion/re-processing guard from Lesson 24, implemented as a per-record Set<Id> rather than a single blunt boolean."
+    },
+    {
+      "q": "In the lab's second scenario — updating an already-Closed-Won Opportunity's Amount field — why does the Account NOT get re-updated?",
+      "options": [
+        "Because the trigger is deactivated after the first run",
+        "Because justWon evaluates false (StageName was already Closed Won before this update), so that Opportunity's AccountId is never added to accountIdsToHeat",
+        "Because Amount changes always bypass triggers",
+        "Because the Account was deleted in the first update"
+      ],
+      "answer": 1,
+      "explain": "justWon only becomes true on the transition into Closed Won; since oldOpp.StageName is already Closed Won, the condition is false and that Account is correctly skipped."
+    },
+    {
+      "q": "Why is OpportunityTrigger written as a single trigger that delegates to OpportunityTriggerHandler, instead of as separate before and after triggers?",
+      "options": [
+        "Separate triggers on the same object run in a guaranteed, predictable order, so it doesn't matter",
+        "Apex does not allow more than one trigger event per trigger",
+        "Handler classes can only be called from a single combined trigger",
+        "One trigger per object keeps execution order explicit in the handler's code rather than left to the platform, per Lesson 22's best practice"
+      ],
+      "answer": 3,
+      "explain": "Consolidating to one trigger per object and routing to a handler is exactly the practice from Lesson 22 — it keeps ordering and logic explicit and testable instead of relying on unguaranteed multi-trigger ordering."
+    }
+  ]
+}

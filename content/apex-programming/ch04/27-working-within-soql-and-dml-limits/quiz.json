@@ -1,0 +1,60 @@
+{
+  "lesson": "working-within-soql-and-dml-limits",
+  "questions": [
+    {
+      "q": "What is the single most common cause of SOQL/DML governor-limit failures in real Apex code?",
+      "options": [
+        "Issuing a SOQL query or a DML statement inside a loop, once per iteration",
+        "Using too many variables in a single method",
+        "Declaring a class without an access modifier",
+        "Using Decimal instead of Double for currency fields"
+      ],
+      "answer": 0,
+      "explain": "Putting a query or DML statement inside a loop means the number of queries/statements scales with the number of records processed, which is exactly what breaches the per-transaction limits at scale."
+    },
+    {
+      "q": "In the fixed pattern, what does `new Map<Id, Account>(accountList)` actually do?",
+      "options": [
+        "It creates an empty Map and ignores accountList entirely",
+        "It deletes every Account in accountList",
+        "It builds a Map keyed automatically by each Account's Id field, from the records in accountList",
+        "It sorts accountList by Name before returning it"
+      ],
+      "answer": 2,
+      "explain": "Passing a list of sObjects to the Map<Id, SObjectType> constructor builds a map automatically keyed by each record's Id, enabling fast .get() lookups without additional queries."
+    },
+    {
+      "q": "Why might code that updates 5 test records work fine in testing but fail on 300 real records in production?",
+      "options": [
+        "Apex code always behaves differently on weekends",
+        "Production orgs have lower governor limits than sandboxes by design",
+        "300 records always triggers a different set of governor limits entirely",
+        "If a query or DML statement sits inside a loop, the count scales with record volume, and 300 iterations can breach a limit that 5 iterations never approached"
+      ],
+      "answer": 3,
+      "explain": "The SOQL/DML-in-a-loop anti-pattern scales linearly with record count, so a small test volume can hide a limit breach that only appears once real-world volumes are large enough."
+    },
+    {
+      "q": "What is the recommended fix for code that builds several Task records inside a loop and needs to insert them?",
+      "options": [
+        "Call insert inside the loop immediately after building each Task",
+        "Build all the Task records into a List across the loop, then call insert once after the loop ends",
+        "Only ever insert one record at a time, since Apex can't insert lists",
+        "Use a SOQL for loop instead of DML entirely"
+      ],
+      "answer": 1,
+      "explain": "Collecting records into a List across the loop and issuing a single DML statement after the loop keeps the DML statement count constant regardless of how many records were built."
+    },
+    {
+      "q": "How does this lesson's fix relate to the bulkification principle from Chapter 3's trigger lessons?",
+      "options": [
+        "It's the same underlying discipline — avoiding per-record queries/DML — generalized from trigger code to any Apex code, since governor limits apply per transaction everywhere",
+        "They are unrelated; bulkification only applies inside triggers",
+        "Bulkification is about security, while this lesson is only about performance",
+        "This lesson's pattern replaces the need for bulkification in triggers"
+      ],
+      "answer": 0,
+      "explain": "Bulkification in triggers and the query-once/DML-once pattern here are the same principle applied generally: governor limits are enforced per transaction, not per object or line of code, so any Apex code needs this discipline."
+    }
+  ]
+}

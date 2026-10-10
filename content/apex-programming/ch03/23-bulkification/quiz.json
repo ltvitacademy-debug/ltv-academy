@@ -1,0 +1,60 @@
+{
+  "lesson": "bulkification",
+  "questions": [
+    {
+      "q": "What is the maximum number of records a single trigger invocation processes in one batch?",
+      "options": [
+        "50",
+        "100",
+        "Unlimited — all records in a DML statement always fire the trigger together",
+        "200"
+      ],
+      "answer": 3,
+      "explain": "Salesforce processes DML in batches of up to 200 records per trigger invocation; a 450-record insert fires the trigger three times (200, 200, 50)."
+    },
+    {
+      "q": "Why does a SOQL query placed inside a for loop over Trigger.new work fine in manual UI testing but fail during a bulk data load?",
+      "options": [
+        "SOQL queries are disabled during manual testing",
+        "Manual testing typically exercises one record, so the query only runs once; a bulk load can run the same trigger with 200 records, running the query 200 times and exceeding governor limits",
+        "Bulk data loads use a different version of Apex",
+        "The query syntax itself is different in bulk operations"
+      ],
+      "answer": 1,
+      "explain": "With one record, one query inside the loop is harmless; with 200 records in the batch, that same loop runs the query 200 times in one transaction, which can exceed the governor limit on SOQL queries."
+    },
+    {
+      "q": "What is the correct bulk-safe pattern for querying related Account records from inside an Opportunity trigger?",
+      "options": [
+        "Query once per Opportunity inside the loop, since each needs its own Account",
+        "Skip querying and rely only on Trigger.oldMap",
+        "Collect AccountIds into a Set, run one SOQL query with WHERE Id IN :accountIds, and store the results in a Map for lookup",
+        "Query all Accounts in the org with no WHERE clause, then filter in Apex"
+      ],
+      "answer": 2,
+      "explain": "Collecting ids into a Set, querying once with IN, and building a Map keeps the number of SOQL queries constant regardless of batch size."
+    },
+    {
+      "q": "Why is a Set<Id> used to collect AccountIds before querying, rather than a List<Id>?",
+      "options": [
+        "A Set automatically removes duplicate Ids, so the same Account isn't queried or counted more than once unnecessarily",
+        "Set is the only collection type SOQL's IN clause accepts",
+        "A List cannot be used in a WHERE Id IN clause",
+        "Sets execute SOQL queries faster than Lists at runtime"
+      ],
+      "answer": 0,
+      "explain": "Many Opportunities can share the same AccountId; a Set naturally deduplicates them, keeping the bulk query efficient regardless of how many Opportunities point to the same Account."
+    },
+    {
+      "q": "Why should a bulkification test insert 200+ records rather than just one?",
+      "options": [
+        "Apex requires exactly 200 records in every test method",
+        "A single-record test can pass even when SOQL/DML sits inside a loop, since the loop only runs once — the bug only appears once the batch is large enough to run it repeatedly",
+        "200 is the minimum number of records Salesforce allows in a test class",
+        "Smaller batches run slower than large ones, so large batches are used to test performance only"
+      ],
+      "answer": 1,
+      "explain": "A bulkification bug is invisible with one record because the loop body only executes once either way; only a large batch exposes that SOQL/DML is running once per record instead of once per transaction."
+    }
+  ]
+}

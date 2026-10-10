@@ -1,0 +1,60 @@
+{
+  "lesson": "integration-practice-project-address-validation",
+  "questions": [
+    {
+      "q": "Why can't a before-save Apex trigger or before-save Flow make a callout to validate an address?",
+      "options": [
+        "Because address validation APIs don't support JSON",
+        "Because a before-save context already has DML pending as part of that same save, and a callout can't run while DML is pending in the same transaction",
+        "Because Flow can never make HTTP callouts under any circumstance",
+        "Because before-save triggers run asynchronously already"
+      ],
+      "answer": 1,
+      "explain": "This is the same transaction-ordering rule from Lesson 7 — a before-save context has pending DML, which blocks any callout in that same transaction."
+    },
+    {
+      "q": "What is Option A in this lesson's design, and when does it fit?",
+      "options": [
+        "An after-insert trigger enqueuing a Queueable; fits bulk API imports",
+        "A Screen Flow with an HTTP Callout action, validating the address while the user is still on the screen before any DML occurs; fits interactive, human-driven entry",
+        "A Batch Apex job run nightly; fits large-volume reconciliation",
+        "A custom Apex SOAP web service; fits legacy systems"
+      ],
+      "answer": 1,
+      "explain": "Option A validates before any save happens at all, using a Screen Flow callout during the interactive session — there's no before-save DML conflict because no save has occurred yet."
+    },
+    {
+      "q": "In Option B, why is it safe for the AddressValidationJob's Queueable to make a callout and then update the Contact, when the original project couldn't do this synchronously?",
+      "options": [
+        "Because the trigger is an after-insert trigger, so the Contact's own creation DML has already committed by the time the Queueable's callout runs",
+        "Because Queueable Apex is exempt from all governor limits",
+        "Because the Contact object has no required fields",
+        "Because Option B never actually performs any DML"
+      ],
+      "answer": 0,
+      "explain": "The after-insert trigger's own DML has already completed before the Queueable even runs, so the callout-then-DML sequence inside the Queueable's own fresh transaction doesn't violate the ordering rule."
+    },
+    {
+      "q": "When does this lesson recommend using Option A, Option B, or both?",
+      "options": [
+        "Option A should always replace Option B entirely",
+        "Option A fits interactive entry where feedback adds value; Option B fits non-interactive creation paths; many real systems need both to cover all creation paths",
+        "Option B should never be used since it introduces a delay",
+        "Both options are functionally identical and interchangeable"
+      ],
+      "answer": 1,
+      "explain": "Option A gives interactive feedback during entry, while Option B catches records created without a user present (like API imports) — many real implementations need both as complementary safety nets."
+    },
+    {
+      "q": "What pattern (from Lesson 18-19) does this entire project illustrate?",
+      "options": [
+        "Fire and Forget",
+        "Request-Reply, since the validation result is needed before the Contact's address is considered verified",
+        "Batch Data Synchronization",
+        "Remote Call-In"
+      ],
+      "answer": 1,
+      "explain": "The validation result is a required answer the process needs before considering the address complete, matching the Request-Reply pattern even though the implementation has to work around the before-save callout constraint."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "avoiding-recursion-in-triggers",
+  "questions": [
+    {
+      "q": "How can a trigger end up firing itself?",
+      "options": [
+        "By declaring too many local variables",
+        "By using Trigger.isExecuting",
+        "By listing more than three trigger events",
+        "By performing DML on the same sObject the trigger is bound to, which is itself a new DML event on that object"
+      ],
+      "answer": 3,
+      "explain": "A trigger's own update/insert/delete on its bound object is a DML event, and that event fires the trigger again — this is how recursion starts."
+    },
+    {
+      "q": "What error does unchecked trigger recursion eventually produce?",
+      "options": [
+        "System.LimitException: Too many SOQL queries",
+        "System.NullPointerException",
+        "System.Exception: Maximum trigger depth exceeded",
+        "DML.RequiredFieldMissing"
+      ],
+      "answer": 2,
+      "explain": "If recursive re-firing isn't stopped, Salesforce eventually aborts the transaction with a maximum trigger depth exceeded error."
+    },
+    {
+      "q": "Why does a static Boolean flag set to true during the first pass remain true when the trigger re-enters via its own update call?",
+      "options": [
+        "It doesn't — each trigger invocation gets a fresh copy of every static variable",
+        "Static variables persist for the duration of the whole transaction, not just one method call, so the flag set earlier is still visible on re-entry",
+        "Boolean values are always true by default in Apex",
+        "The flag is stored in the database between invocations"
+      ],
+      "answer": 1,
+      "explain": "Static variables live for the life of one transaction; a flag set at the start of the first trigger run is still set when that same transaction's recursive call re-enters the handler."
+    },
+    {
+      "q": "What is the main downside of using a single shared static Boolean as a recursion guard, compared with tracking specific record Ids?",
+      "options": [
+        "Booleans are slower to evaluate than Sets",
+        "A plain boolean can't be declared as static at all",
+        "It blocks all re-entry while set, which can skip genuinely new, unrelated records processed later in the same transaction",
+        "Boolean guards only work on the Account object"
+      ],
+      "answer": 2,
+      "explain": "A single shared flag is all-or-nothing — it can't distinguish 'this exact record was already handled' from 'something is already running', so it risks skipping unrelated records that should still be processed."
+    },
+    {
+      "q": "In the static Set<Id> guard pattern, what determines whether a record is reprocessed?",
+      "options": [
+        "Whether its Id is already present in the static Set tracked by the handler",
+        "Whether Trigger.isBefore is true",
+        "Whether the record was the first one in Trigger.new",
+        "Whether more than 200 records are in the batch"
+      ],
+      "answer": 0,
+      "explain": "Checking processedAccountIds.contains(acc.Id) guards per specific record rather than blocking the whole handler, so unrelated records aren't skipped."
+    }
+  ]
+}

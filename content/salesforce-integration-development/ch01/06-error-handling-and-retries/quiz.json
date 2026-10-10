@@ -1,0 +1,60 @@
+{
+  "lesson": "error-handling-and-retries",
+  "questions": [
+    {
+      "q": "What is the key difference between a CalloutException and a non-200 status code response?",
+      "options": [
+        "There is no difference — both are thrown as exceptions",
+        "A CalloutException means the callout itself couldn't complete; a non-200 status means the callout completed but the remote system reported an error, which does not throw an exception",
+        "A non-200 status always throws a CalloutException automatically",
+        "CalloutException only applies to SOAP callouts, never HTTP callouts"
+      ],
+      "answer": 1,
+      "explain": "A CalloutException is thrown for connection-level failures; a non-200 status is a successful HTTP round trip where the error must be checked manually via getStatusCode()."
+    },
+    {
+      "q": "Why is a tight synchronous retry loop a bad approach to handling a failed callout in Apex?",
+      "options": [
+        "Because loops are not permitted inside try/catch blocks",
+        "Because governor limits (like the per-transaction callout count and cumulative timeout) still apply across every attempt, and it blocks the user for however long retries take",
+        "Because CalloutException can never be caught inside a loop",
+        "Because HttpRequest objects cannot be reused across iterations"
+      ],
+      "answer": 1,
+      "explain": "All retries inside one synchronous transaction still count against the same governor limits, and a blocking loop makes the user wait through every attempt."
+    },
+    {
+      "q": "What does the real retry pattern shown in this lesson use to give each retry attempt a fresh set of governor limits?",
+      "options": [
+        "A recursive synchronous method call",
+        "Re-enqueuing a Queueable job with a tracked, capped attempt count",
+        "Increasing the HttpRequest timeout to the maximum on every attempt",
+        "Calling Database.rollback() before each retry"
+      ],
+      "answer": 1,
+      "explain": "Each Queueable execution runs in its own transaction with its own governor limits, and tracking an attempt count lets the retry be capped rather than running forever."
+    },
+    {
+      "q": "Which kind of failure is generally NOT a good candidate for an automatic retry?",
+      "options": [
+        "A connection timeout to the remote system",
+        "A 503 Service Unavailable response",
+        "A 400 Bad Request caused by a malformed payload, since the identical request will fail identically every time",
+        "A transient network interruption"
+      ],
+      "answer": 2,
+      "explain": "A 400 Bad Request usually indicates a problem with the request itself; retrying the same malformed request will keep failing and should instead be logged for a person to fix."
+    },
+    {
+      "q": "After the retry attempt cap is reached in the lesson's Queueable pattern, what happens?",
+      "options": [
+        "The job silently stops with no record of the failure",
+        "The job throws an unhandled exception that halts the entire org's queue",
+        "A durable failure record is created so a human or monitoring process can follow up",
+        "The original Order record is automatically deleted"
+      ],
+      "answer": 2,
+      "explain": "Once the attempt cap is hit, the pattern writes a durable failure record rather than retrying forever or failing silently, giving monitoring (covered in Lesson 23) something to act on."
+    }
+  ]
+}

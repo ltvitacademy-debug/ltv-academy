@@ -1,0 +1,60 @@
+{
+  "lesson": "integration-practice-project-order-sync",
+  "questions": [
+    {
+      "q": "Why does the trigger in this project enqueue a Queueable job instead of making the callout directly?",
+      "options": [
+        "Because triggers cannot reference custom objects",
+        "Because triggers cannot query SOQL",
+        "Because the trigger's own transaction has pending DML context, and callouts can't run while pending DML exists in the same transaction",
+        "Because Queueable Apex is always faster than a direct callout"
+      ],
+      "answer": 2,
+      "explain": "This directly applies the Lesson 7 transaction-ordering rule — the callout is deferred into a separate Queueable transaction rather than conflicting with the trigger's own pending DML."
+    },
+    {
+      "q": "Inside the OrderSyncJob's execute() method, in what order do the callout and the DML update happen, and why?",
+      "options": [
+        "They must happen in two separate Queueable jobs entirely",
+        "The DML and callout happen simultaneously in parallel threads",
+        "DML first, then the callout, since order doesn't matter in async Apex",
+        "Callout first, then the DML update — correctly ordered since the callout completes before any DML is pending in that transaction"
+      ],
+      "answer": 3,
+      "explain": "The callout happens first and completes before the DML update, satisfying the rule that a callout can't happen while DML is pending in the same transaction."
+    },
+    {
+      "q": "What happens in this project's design after the retry attempt cap (3 attempts) is reached?",
+      "options": [
+        "A durable Order_Sync_Failure__c record is created so the failure isn't silently lost",
+        "The original Order__c record is deleted",
+        "The Named Credential is automatically disabled",
+        "The job retries indefinitely with no cap"
+      ],
+      "answer": 0,
+      "explain": "Once the attempt cap is reached, the job writes a durable failure record rather than retrying forever or failing silently, reusing the Lesson 6 retry pattern."
+    },
+    {
+      "q": "Why does this lesson emphasize that the OrderSyncJob's update must be idempotent?",
+      "options": [
+        "Because idempotency is required by the 100-callouts-per-transaction governor limit",
+        "Because the job can retry, and re-running it with the same order shouldn't cause a problem — a plain field overwrite is safe, unlike an operation that would double-count on retry",
+        "Because Queueable Apex automatically runs every job twice",
+        "Because idempotency is only relevant to SOAP callouts"
+      ],
+      "answer": 1,
+      "explain": "Since the job may retry, its side effects need to be safe to repeat — overwriting a status field is safe, but an operation like incrementing a counter would not be."
+    },
+    {
+      "q": "What approach does this lesson suggest for simulating the external order system without a real third-party dependency?",
+      "options": [
+        "Use a Platform Event instead of a callout",
+        "Skip testing the callout entirely",
+        "Point the Named Credential at a request-echoing test service, or write a throwaway Apex REST service in the same org returning a fake status",
+        "Hard-code the fulfillment status directly in the trigger"
+      ],
+      "answer": 2,
+      "explain": "A free echoing test service or a self-built Apex REST endpoint in the same org lets the full round trip be tested without any real external dependency."
+    }
+  ]
+}
