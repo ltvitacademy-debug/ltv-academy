@@ -27,6 +27,8 @@ import { RESUMES as AZURE_FABRIC_DATA_ENGINEER } from "./sample-resumes-data/azu
 import { RESUMES as ORACLE_FUSION_FINANCIALS_CONSULTANT } from "./sample-resumes-data/oracle-fusion-financials-consultant";
 import { RESUMES as SNOWFLAKE_DATA_ENGINEER } from "./sample-resumes-data/snowflake-data-engineer";
 import { RESUMES as AWS_DATA_ENGINEER } from "./sample-resumes-data/aws-data-engineer";
+import { RESUMES as SQL_SERVER_DATABASE_ADMINISTRATOR } from "./sample-resumes-data/sql-server-database-administrator";
+import { RESUMES as DATA_GOVERNANCE } from "./sample-resumes-data/data-governance";
 
 export const SAMPLE_RESUMES: Record<string, PathResumes> = {
   "microsoft-data-bi-developer": MICROSOFT_DATA_BI_DEVELOPER,
@@ -43,6 +45,8 @@ export const SAMPLE_RESUMES: Record<string, PathResumes> = {
   "oracle-fusion-financials-consultant": ORACLE_FUSION_FINANCIALS_CONSULTANT,
   "snowflake-data-engineer": SNOWFLAKE_DATA_ENGINEER,
   "aws-data-engineer": AWS_DATA_ENGINEER,
+  "sql-server-database-administrator": SQL_SERVER_DATABASE_ADMINISTRATOR,
+  "data-governance": DATA_GOVERNANCE,
 };
 
 export function getSampleResume(pathSlug: string, level: string): ResumeData | undefined {
