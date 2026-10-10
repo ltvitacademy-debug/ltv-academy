@@ -1,0 +1,60 @@
+{
+  "lesson": "failure-scenario-review",
+  "questions": [
+    {
+      "q": "What was the actual root cause of Failure 1, where Salesforce saves hung during the ERP's seasonal slowdown?",
+      "options": [
+        "Salesforce itself had a bug unrelated to any integration",
+        "A synchronous, blocking callout was placed on the critical path of a common user action, so a slow ERP response held open Salesforce transaction threads under load",
+        "The ERP was completely offline with no response at all",
+        "The sales surge exceeded Salesforce's total storage limit"
+      ],
+      "answer": 1,
+      "explain": "The symptom (hanging saves) traced back to a synchronous callout on the Opportunity-close path -- once the ERP slowed down, that blocking dependency backed up transaction threads for every rep trying to close a deal."
+    },
+    {
+      "q": "What caused the duplicate customer records described in Failure 2?",
+      "options": [
+        "A sync matched records by customer name instead of a dedicated External ID, so a difference in name capitalization caused the sync to create a second record instead of updating the existing one",
+        "The ERP does not support External ID fields at all",
+        "Salesforce automatically duplicates every Account record every 24 hours",
+        "The Bulk API has a known bug that creates duplicate rows"
+      ],
+      "answer": 0,
+      "explain": "Matching on a human-entered, non-stable field like name meant a simple casing difference caused the sync to treat the same real customer as two different records."
+    },
+    {
+      "q": "What is the recommended structural fix for Failure 2, beyond a one-time cleanup?",
+      "options": [
+        "Manually merge duplicate records every week going forward",
+        "Backfill a proper External ID on both sides using each system's stable key, and remove the name-based matching path so it can't recreate the problem",
+        "Disable the ERP sync permanently",
+        "Rename every Account in Salesforce to match the ERP exactly, one time only"
+      ],
+      "answer": 1,
+      "explain": "A one-time merge only fixes the existing duplicates; the structural fix removes the matching logic that caused the duplication in the first place, so the same mistake can't recur."
+    },
+    {
+      "q": "What specifically caused the sync loop in Failure 3?",
+      "options": [
+        "Both directions of a bidirectional sync fired on 'record changed' with no mechanism to recognize and skip a change that originated from the other side of the sync itself",
+        "The ERP and Salesforce were running on incompatible API versions",
+        "A single sync job was scheduled to run twice per day instead of once",
+        "The Account object had no Last Modified field"
+      ],
+      "answer": 0,
+      "explain": "Without loop prevention, each side's sync-triggered update looked indistinguishable from a genuine user change, so each update re-triggered the opposite-direction sync endlessly."
+    },
+    {
+      "q": "What kind of mechanism does this lesson describe as the well-known fix for a bidirectional sync loop?",
+      "options": [
+        "Tagging sync-originated updates (e.g., a flag or a dedicated integration user) so each side can recognize and skip a change it only just caused itself",
+        "Running both directions of the sync less frequently so the loop takes longer to notice",
+        "Disabling one direction of the sync permanently with no replacement",
+        "Increasing the Apex callout limit to accommodate the extra sync traffic"
+      ],
+      "answer": 0,
+      "explain": "Loop prevention works by letting each side distinguish 'a change a real user made' from 'a change my own sync just caused,' so it can skip re-propagating the latter."
+    }
+  ]
+}

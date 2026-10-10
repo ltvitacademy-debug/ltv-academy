@@ -1,0 +1,60 @@
+{
+  "lesson": "crm-plus-data-warehouse-extraction-and-volume",
+  "questions": [
+    {
+      "q": "What does PK Chunking do for a large Bulk API extraction job?",
+      "options": [
+        "It automatically splits a large query into multiple smaller batches, each scoped to a range of the object's record IDs, so the job processes the object in manageable pieces",
+        "It encrypts the extracted data automatically",
+        "It converts a Bulk API job into a synchronous REST call",
+        "It permanently deletes records after they are extracted"
+      ],
+      "answer": 0,
+      "explain": "PK Chunking breaks a very large extraction into smaller ID-range-scoped batches, which matters once an object grows large enough that a single unchunked query becomes its own bottleneck."
+    },
+    {
+      "q": "Why does query selectivity still matter inside a Bulk API job, even though Bulk API is designed for large volumes?",
+      "options": [
+        "Bulk API queries are never actually executed against the underlying database",
+        "Selectivity only matters for DML operations, never for queries",
+        "Bulk API automatically adds an index to every field used in a filter",
+        "The Bulk API changes how results are delivered and paginated, not how efficiently the underlying query can be evaluated -- a non-selective filter still does the same expensive underlying work"
+      ],
+      "answer": 3,
+      "explain": "Running asynchronously through Bulk API doesn't exempt a query from needing an efficient, selective filter -- the underlying evaluation cost is the same regardless of which API delivers the results."
+    },
+    {
+      "q": "What is the CDC retention window, and why does it matter for Doverfield's warehouse sync?",
+      "options": [
+        "It's the amount of time Salesforce retains deleted records before permanently purging them",
+        "It's a setting that controls how many fields CDC can track per object",
+        "It's the bounded period during which a CDC event remains available for a subscriber to replay -- if a subscriber is down longer than this window, those changes are permanently unrecoverable through CDC alone",
+        "It has no practical effect on subscriber design"
+      ],
+      "answer": 2,
+      "explain": "CDC doesn't retain events indefinitely -- a subscriber that falls behind or goes down for longer than the retention window permanently loses the ability to replay those specific changes through CDC, which is exactly the design risk this lesson calls out."
+    },
+    {
+      "q": "What does Doverfield use to close the gap left when its CDC subscriber's downtime exceeds the retention window?",
+      "options": [
+        "Nothing -- the lost changes are considered acceptable and are never recovered",
+        "The scheduled reconciliation job from Lesson 10, used as a backstop that catches exactly the kind of gap a CDC outage leaves behind",
+        "Re-running the original CDC events manually from Salesforce's audit trail",
+        "Switching permanently from CDC to a full extract for all future syncs"
+      ],
+      "answer": 1,
+      "explain": "Reconciliation is explicitly reused here as CDC's own safety net -- a periodic comparison catches the specific gap the retention window created, the same way it catches ordinary sync drift."
+    },
+    {
+      "q": "Why does Doverfield's extraction job deliberately filter on indexed fields like SystemModstamp or an External ID?",
+      "options": [
+        "Indexed fields are required for any field to be included in a Bulk API job at all",
+        "Indexed fields are the only fields CDC is able to publish events for",
+        "Filtering on indexed fields removes the need for PK Chunking entirely",
+        "To keep the underlying query efficient and selective, since Bulk API does not exempt a job from needing a selective filter"
+      ],
+      "answer": 3,
+      "explain": "Filtering on an indexed field keeps the query itself efficient regardless of which API executes it -- this is a deliberate selectivity choice, not an incidental one."
+    }
+  ]
+}

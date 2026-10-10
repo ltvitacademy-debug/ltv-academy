@@ -1,0 +1,60 @@
+{
+  "lesson": "case-study-crm-plus-data-warehouse",
+  "questions": [
+    {
+      "q": "Why does an incremental extract filtered only on SystemModstamp fail to catch deleted records?",
+      "options": [
+        "A deleted row no longer exists to be returned by any query, so a query looking for recently-changed rows simply never sees it",
+        "SystemModstamp is updated to a special value when a record is deleted",
+        "Deleted records are automatically re-inserted by Salesforce after 24 hours",
+        "SystemModstamp only applies to custom objects, not standard objects"
+      ],
+      "answer": 0,
+      "explain": "A query filtering on SystemModstamp can only return rows that still exist -- a deleted record is gone, not merely changed, so it never appears in the result set at all."
+    },
+    {
+      "q": "What does Change Data Capture (CDC) publish that a plain incremental SystemModstamp extract does not?",
+      "options": [
+        "CDC publishes only create events, same as an incremental extract",
+        "CDC explicitly publishes delete and undelete events as part of its event stream, in addition to creates and updates",
+        "CDC can only be used on custom objects, never standard objects",
+        "CDC replaces the need for any object permissions"
+      ],
+      "answer": 1,
+      "explain": "CDC's event stream includes delete and undelete operations explicitly, which is exactly what closes the gap a SystemModstamp-only incremental extract leaves open."
+    },
+    {
+      "q": "Why does Doverfield route its high-volume Salesforce data extraction through the Bulk API rather than the standard REST API?",
+      "options": [
+        "The Bulk API is designed for large-volume asynchronous operations, isolating heavy extraction load from the API capacity used by day-to-day transactional and UI traffic",
+        "The standard REST API cannot return more than ten records total",
+        "The Bulk API does not count against any Salesforce API limits",
+        "Bulk API and REST API return data in incompatible formats that cannot both be used in the same org"
+      ],
+      "answer": 0,
+      "explain": "Treating a large extract as a sequence of small synchronous REST calls would compete with the org's regular traffic for the same request capacity -- the Bulk API exists specifically to move large data sets efficiently instead."
+    },
+    {
+      "q": "What is a 'watermark' in the context of an incremental extract job?",
+      "options": [
+        "A visual marking added to exported files to prevent copying",
+        "The timestamp or marker the job uses to know where the previous successful run left off, so the next run only pulls what changed since then",
+        "A Salesforce field that marks a record as read-only",
+        "The maximum number of rows a single Bulk API job can return"
+      ],
+      "answer": 1,
+      "explain": "The watermark is what makes an incremental extract 'incremental' at all -- without a correctly tracked and recovered watermark, the job can't reliably know what's new since last time."
+    },
+    {
+      "q": "In Doverfield's actual design, which objects use CDC versus a scheduled incremental Bulk API pull?",
+      "options": [
+        "All objects use CDC exclusively, with no scheduled pulls at all",
+        "Objects where deletes matter and real-time freshness is worth the complexity (like Opportunity and Account) use CDC, while most other objects use a scheduled incremental pull with periodic full reconciliation for deletes",
+        "All objects use scheduled full extracts only, since CDC was ruled out entirely",
+        "CDC is used only for objects that have no delete events at all"
+      ],
+      "answer": 1,
+      "explain": "Doverfield makes a deliberate, selective trade-off: CDC where real-time freshness and reliable deletes justify the added complexity, and a simpler scheduled incremental pull plus periodic reconciliation everywhere else."
+    }
+  ]
+}

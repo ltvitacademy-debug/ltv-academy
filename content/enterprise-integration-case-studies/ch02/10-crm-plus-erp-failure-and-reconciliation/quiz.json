@@ -1,0 +1,60 @@
+{
+  "lesson": "crm-plus-erp-failure-and-reconciliation",
+  "questions": [
+    {
+      "q": "Why can immediate, unlimited retries make an outage worse rather than better?",
+      "options": [
+        "Retries always consume more Apex callout limits than the original request",
+        "If the target system is already struggling under load, a flood of immediate retries adds more load to the exact system that's already failing, instead of giving it room to recover",
+        "Immediate retries are blocked by Salesforce's platform automatically",
+        "Retries can only be configured to run once per day"
+      ],
+      "answer": 1,
+      "explain": "Retrying immediately and repeatedly piles additional load onto a system that's already struggling, which is the opposite of what's needed -- exponential backoff exists specifically to avoid this."
+    },
+    {
+      "q": "What is a dead-letter queue, and why does Doverfield's design use one?",
+      "options": [
+        "A queue of messages that have already been successfully processed",
+        "A holding area for messages that exhausted their retry attempts without success, so a human or automated alert can investigate rather than the message silently vanishing",
+        "A backup copy of every successful ERP sync message",
+        "A Salesforce feature that disables failed Apex triggers permanently"
+      ],
+      "answer": 1,
+      "explain": "Without a dead-letter queue, a design either retries forever or silently drops the failed message -- the dead-letter queue gives failures a visible, recoverable home instead of either bad outcome."
+    },
+    {
+      "q": "Why is idempotency a precondition for safe retry logic, per this lesson?",
+      "options": [
+        "Idempotency has nothing to do with retry safety",
+        "If an operation isn't idempotent, retrying a call that actually succeeded the first time (but whose confirmation was lost) could create a duplicate record on the retry, rather than safely reapplying the same result",
+        "Idempotent operations cannot be retried at all",
+        "Idempotency only matters for read-only queries, never for writes"
+      ],
+      "answer": 1,
+      "explain": "A retry is only safe if repeating it produces the same outcome as running it once -- upsert on a stable External ID provides exactly that property for Doverfield's order-creation sync."
+    },
+    {
+      "q": "What category of failure does a scheduled reconciliation job catch that retry logic and dead-letter queues don't?",
+      "options": [
+        "Failures where a message was silently lost before reaching the retry logic, or where a bug produced incorrect data without technically triggering a failure",
+        "Failures that occur more than once per second",
+        "Only failures that have already been logged in the dead-letter queue",
+        "Reconciliation jobs catch exactly the same failures as retry logic, just later"
+      ],
+      "answer": 0,
+      "explain": "Reconciliation is a second, independent safety net specifically because some drift never trips the retry/dead-letter mechanisms at all -- it compares actual record state on a periodic cadence instead."
+    },
+    {
+      "q": "What makes Doverfield's retry pattern 'exponential backoff' specifically, rather than simple retry?",
+      "options": [
+        "It retries exactly once, with no further attempts",
+        "It waits a progressively longer interval before each successive retry attempt, up to a capped maximum number of attempts",
+        "It retries only during business hours",
+        "It doubles the number of callouts made on each retry attempt"
+      ],
+      "answer": 1,
+      "explain": "Exponential backoff's defining feature is increasing the wait time between successive attempts, capped at a maximum, rather than retrying at a constant interval or retrying indefinitely."
+    }
+  ]
+}
