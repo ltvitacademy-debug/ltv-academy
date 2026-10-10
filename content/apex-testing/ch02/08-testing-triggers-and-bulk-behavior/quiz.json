@@ -1,0 +1,60 @@
+{
+  "lesson": "testing-triggers-and-bulk-behavior",
+  "questions": [
+    {
+      "q": "Even when a user saves a single record through the UI, how does Trigger.new represent that record inside the trigger?",
+      "options": [
+        "As a single SObject, not a list",
+        "As a list containing exactly one item",
+        "As a map keyed by record Id",
+        "Trigger.new is not populated for single-record saves"
+      ],
+      "answer": 1,
+      "explain": "Trigger.new is always a list, even for a single-record save — which is exactly why bulk operations can hand a trigger 200 records in that same list at once."
+    },
+    {
+      "q": "Why does a trigger with a SOQL query inside a for loop over Trigger.new pass a single-record test but fail against a 200-record bulk insert?",
+      "options": [
+        "With one record, the loop issues only one query, which is fine; with 200 records it issues 200 queries, which can exceed the per-transaction SOQL limit",
+        "Single-record tests use different governor limits than bulk tests",
+        "Apex triggers cannot process more than one record without an explicit bulk flag",
+        "The loop only executes on even-numbered record counts"
+      ],
+      "answer": 0,
+      "explain": "SOQL-in-a-loop issues one query per record in Trigger.new — with a single record that's one query (fine), but with 200 records it's 200 queries, which can breach the synchronous 100-query-per-transaction governor limit."
+    },
+    {
+      "q": "In the bulk test example, why does insert accounts (a single DML statement on a list of 200 records) matter for proving bulk safety, as opposed to inserting them one at a time in a loop?",
+      "options": [
+        "It doesn't matter — inserting one at a time in a loop would prove the same thing",
+        "Inserting in a loop is faster and therefore preferred",
+        "A single DML statement on all 200 records fires the trigger once with all 200 in Trigger.new, which is what actually exercises the bulk code path",
+        "Apex does not allow inserting more than 50 records in a single statement"
+      ],
+      "answer": 2,
+      "explain": "Inserting all 200 records in one DML statement fires the trigger exactly once with all 200 in Trigger.new simultaneously — inserting them one at a time in a loop would fire the trigger 200 separate times with one record each, never exercising the actual bulk code path."
+    },
+    {
+      "q": "Besides testing a large batch like 200 records, what other record counts does this lesson recommend testing a trigger against?",
+      "options": [
+        "Only ever test with exactly 200 records",
+        "Only negative record counts",
+        "Record counts are irrelevant as long as assertions are present",
+        "Exactly 1 record and 0 records (an empty list), to catch regressions in the simple path and edge cases"
+      ],
+      "answer": 3,
+      "explain": "A rigorous trigger test suite also checks the normal single-record case and an empty list, to make sure the bulk-safe rewrite didn't break the simple path or throw on empty input."
+    },
+    {
+      "q": "What is the general fix for a trigger handler that issues a SOQL query inside a loop over Trigger.new?",
+      "options": [
+        "Remove all SOQL queries from the trigger entirely",
+        "Collect the relevant Ids into a Set first, then issue a single bulk SOQL query (often into a Map) outside the loop",
+        "Wrap the loop in a try/catch block",
+        "Reduce the trigger's batch size to 1"
+      ],
+      "answer": 1,
+      "explain": "The bulk-safe pattern collects the Ids needed across all records first, then issues one SOQL query (commonly building a Map) outside the loop, instead of querying once per record inside it."
+    }
+  ]
+}

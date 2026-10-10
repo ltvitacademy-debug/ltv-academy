@@ -1,0 +1,60 @@
+{
+  "lesson": "testing-asynchronous-apex",
+  "questions": [
+    {
+      "q": "Why is testing asynchronous Apex (@future, Queueable, Batch) harder than testing synchronous code without special handling?",
+      "options": [
+        "Asynchronous Apex cannot be unit tested under any circumstances",
+        "Async code doesn't run immediately — it's enqueued to run later, so a test might finish checking results before the job has actually executed",
+        "Asynchronous methods are not allowed to perform DML",
+        "Async Apex always requires SeeAllData=true"
+      ],
+      "answer": 1,
+      "explain": "Async Apex runs later, outside the enqueuing transaction — without special handling, a test method could finish and assert on results before the job ever actually ran."
+    },
+    {
+      "q": "What happens to a Queueable job enqueued with System.enqueueJob between Test.startTest() and Test.stopTest()?",
+      "options": [
+        "It is silently discarded and never runs",
+        "It runs in parallel with the rest of the test method",
+        "It only runs if Test.isRunningTest() returns true",
+        "It runs synchronously, to completion, at the point Test.stopTest() executes"
+      ],
+      "answer": 3,
+      "explain": "Async work enqueued between startTest and stopTest is held and then run synchronously in full the moment stopTest() executes, before the test method proceeds past that line."
+    },
+    {
+      "q": "A test calls Database.executeBatch(new AccountCleanupBatch()) inside a Test.startTest()/Test.stopTest() block, with 50 Account records inserted beforehand. What can the test assume once Test.stopTest() returns?",
+      "options": [
+        "All batches of the job have run to completion, regardless of scope size, so all 50 records should reflect the batch's effects",
+        "Only the first batch chunk has processed",
+        "The batch job has been scheduled but not yet started",
+        "Nothing — batch jobs cannot be tested this way at all"
+      ],
+      "answer": 0,
+      "explain": "Test.stopTest() runs enqueued batch jobs to completion (all batches) before returning control to the test method, so all 50 records should already reflect the batch job's work."
+    },
+    {
+      "q": "What does Test.isRunningTest() return, and when is it appropriate to use?",
+      "options": [
+        "It returns the number of currently running tests; use it to count test executions",
+        "It always returns false inside @isTest methods",
+        "It returns true when running inside a test context; it's a last resort for branching around genuinely untestable logic, not a general design pattern",
+        "It is required in every test class to enable rollback"
+      ],
+      "answer": 2,
+      "explain": "Test.isRunningTest() returns true inside a test context. It's meant sparingly, for genuinely untestable edge cases — routinely branching application logic on it means the test isn't exercising the real production code path."
+    },
+    {
+      "q": "Besides forcing async work to run synchronously, what other purpose does Test.startTest()/Test.stopTest() serve?",
+      "options": [
+        "It disables all code coverage requirements for the block",
+        "It deletes all records inserted before startTest() was called",
+        "It automatically mocks any HTTP callouts without needing Test.setMock",
+        "It gives the code inside the block a fresh set of governor limits, separate from setup code that ran before startTest()"
+      ],
+      "answer": 3,
+      "explain": "As covered earlier in the course, code between startTest() and stopTest() is given its own fresh governor-limit context, separate from whatever limits were consumed by setup code running before startTest()."
+    }
+  ]
+}
