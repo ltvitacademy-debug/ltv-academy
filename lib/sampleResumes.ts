@@ -97,6 +97,20 @@ export const SAMPLE_RESUMES: Record<string, Partial<Record<SampleResumeLevel, Re
           ],
         },
         {
+          heading: "GitHub Portfolio",
+          entries: [
+            {
+              left: "github.com/johndoe-biexample/work-order-bi-pipeline",
+              right: "2026",
+              sub: "Public portfolio repository for the capstone project",
+              bullets: [
+                "Published the SSIS package (WorkOrderETL.dtsx), T-SQL warehouse DDL, and the SSRS report definition as readable files, so the real ETL logic and schema design are verifiable without installing SQL Server.",
+                "Wrote a README documenting the architecture, and included report and dashboard screenshots plus a short recorded walkthrough for the SSRS and Power BI pieces that aren't viewable directly in a browser.",
+              ],
+            },
+          ],
+        },
+        {
           heading: "Education",
           entries: [{ left: "High School Diploma — Washington High School", right: "Atlanta, GA · 2020" }],
         },
@@ -169,6 +183,20 @@ export const SAMPLE_RESUMES: Record<string, Partial<Record<SampleResumeLevel, Re
                 "Built a Power BI dashboard on the same warehouse tables surfacing scrap rate by product and location, identifying where quality issues concentrate.",
                 "Connected a Power BI data alert to a Power Automate flow so a scrap-rate threshold crossing posts to Microsoft Teams automatically, instead of waiting for someone to check the dashboard.",
                 "Documented the finished pipeline and set up a scheduled refresh so reports stay current without manual intervention.",
+              ],
+            },
+          ],
+        },
+        {
+          heading: "GitHub Portfolio",
+          entries: [
+            {
+              left: "github.com/johndoe-biexample/work-order-bi-pipeline",
+              right: "2026",
+              sub: "Public portfolio repository for the capstone project",
+              bullets: [
+                "Published the SSIS package (WorkOrderETL.dtsx), T-SQL warehouse DDL, and the SSRS report definition as readable files, so the real ETL logic and schema design are verifiable without installing SQL Server.",
+                "Wrote a README documenting the architecture, and included report and dashboard screenshots plus a short recorded walkthrough for the SSRS and Power BI pieces that aren't viewable directly in a browser.",
               ],
             },
           ],
