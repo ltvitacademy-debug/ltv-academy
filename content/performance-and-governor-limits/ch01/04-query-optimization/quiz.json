@@ -1,0 +1,60 @@
+{
+  "lesson": "query-optimization",
+  "questions": [
+    {
+      "q": "What does \"selectivity\" mean for a SOQL query filter?",
+      "options": [
+        "The fraction of the table's rows the filter is expected to match — lower is more selective and cheaper to serve through an index",
+        "Whether the query uses SELECT * or names specific fields",
+        "Whether the query is written in a trigger versus a class",
+        "The number of relationship levels the query traverses"
+      ],
+      "answer": 0,
+      "explain": "Selectivity is about how much of the table a filter narrows down to. A highly selective filter matches a small slice of rows, which is exactly what makes an index worth using."
+    },
+    {
+      "q": "On a standard-indexed field, what is the approximate selectivity threshold for the first million records in a table?",
+      "options": [
+        "Under 100% — any filter on a standard index is always considered selective",
+        "Under 5% of the first million records (that's the custom-index threshold instead)",
+        "There is no threshold for standard indexes, only for custom indexes",
+        "Under 30% of the first million records"
+      ],
+      "answer": 3,
+      "explain": "Salesforce's query optimizer treats a standard-indexed filter as selective if it targets under 30% of the first million rows (dropping to 15% beyond that, capped at 1 million rows total)."
+    },
+    {
+      "q": "Why does WHERE CALENDAR_YEAR(CloseDate) = 2026 typically defeat an index on CloseDate, while WHERE CloseDate >= 2026-01-01 AND CloseDate <= 2026-12-31 does not?",
+      "options": [
+        "CALENDAR_YEAR() is not valid SOQL syntax and would simply fail to compile",
+        "Wrapping the field in a function means the optimizer can no longer use the index on the bare field directly, while a plain range comparison on the unmodified field can still use the index",
+        "Date fields can never be indexed in Salesforce under any circumstance",
+        "The two queries return different results, so the comparison isn't meaningful"
+      ],
+      "answer": 1,
+      "explain": "Wrapping an indexed field in a function generally defeats the index because the optimizer can't match the function's output back to the index's stored values — rewriting the same intent as a bare-field range comparison lets the index apply."
+    },
+    {
+      "q": "What does the Developer Console's Query Plan tool actually show you?",
+      "options": [
+        "The exact number of milliseconds a query took to execute on the last run",
+        "A list of every governor limit consumed by the current Execute Anonymous window",
+        "The optimizer's real chosen execution plan and estimated cost for a query, including whether it's using an index or falling back to a table scan",
+        "A visual diagram of all objects and their relationships in the org"
+      ],
+      "answer": 2,
+      "explain": "The Query Plan tool exposes the optimizer's actual decision — its cost estimate and whether the chosen path is index-driven or a TableScan — rather than leaving you to guess based on selectivity math alone."
+    },
+    {
+      "q": "Why is naming only the fields a transaction actually needs part of query optimization, separate from selectivity?",
+      "options": [
+        "Because unnecessary fields increase heap usage and, for relationship queries, every additional traversed relationship adds real cost, regardless of how selective the filter itself is",
+        "Because SOQL enforces a hard limit of 5 fields per SELECT clause",
+        "Because unused fields are automatically stripped by the platform and have no actual cost",
+        "Because field selection has no measurable effect on performance in Salesforce"
+      ],
+      "answer": 0,
+      "explain": "A query can be perfectly selective and still waste resources if it pulls far more fields (or relationship data) than the operation uses — that cost shows up in heap size and data volume, independent of whether an index was used."
+    }
+  ]
+}

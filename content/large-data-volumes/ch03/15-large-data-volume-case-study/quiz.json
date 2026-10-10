@@ -1,0 +1,60 @@
+{
+  "lesson": "large-data-volume-case-study",
+  "questions": [
+    {
+      "q": "In the Meridian Logistics case study, what specific detail about the billing batch job's failures points to parent (account) skew as the cause?",
+      "options": [
+        "The failures happen at random across all accounts with no pattern",
+        "The failures are consistently concentrated on the same handful of large national accounts",
+        "The failures only happen on records created in the last 24 hours",
+        "The failures only happen when the Status__c field is blank"
+      ],
+      "answer": 1,
+      "explain": "Lock-related failures consistently tied to the same handful of large accounts is the signature of parent skew — those accounts have accumulated a disproportionate share of child Shipment__c records, creating lock contention during concurrent updates."
+    },
+    {
+      "q": "What is the recommended first step for the billing batch job's lock failures, before considering serial mode?",
+      "options": [
+        "Immediately requesting a custom index on AccountId",
+        "Deleting all Shipment__c records for the affected accounts",
+        "Disabling the role hierarchy entirely",
+        "Reorganizing the job's batches to group records by AccountId"
+      ],
+      "answer": 3,
+      "explain": "Per Lesson 9's guidance, reorganizing batches to group by parent ID is the first fix to try for lock contention caused by skew, before escalating to serial mode."
+    },
+    {
+      "q": "Why is the slow role reorganization (Symptom 3) specifically a sharing-recalculation problem rather than a record-locking problem like Symptom 2?",
+      "options": [
+        "Because role moves never interact with sharing at all",
+        "Because Symptom 3 is actually identical to Symptom 2 and has the same root cause",
+        "Because every individual role move is triggering a full sharing recalculation against millions of Shipment__c records, one move at a time, rather than contention over a single parent's lock",
+        "Because role reorganizations always fail outright and never complete"
+      ],
+      "answer": 2,
+      "explain": "Symptom 3's slowness comes from the cost of sharing recalculation scaling with data volume and being triggered repeatedly, once per role move — a different mechanism than the lock contention behind Symptom 2, even though both are write-path problems."
+    },
+    {
+      "q": "Why does this lesson argue that fixing all three immediate symptoms without addressing the lack of any archiving process is incomplete?",
+      "options": [
+        "Because years of closed-out, never-archived Shipment__c records keep padding the active working set that every other fix is fighting against, so the same problems would resurface worse as volume keeps growing",
+        "Because archiving is legally required by Salesforce's terms of service",
+        "Because Big Objects cannot be created unless archiving has already occurred",
+        "Because the billing job can only run against archived data"
+      ],
+      "answer": 0,
+      "explain": "Without archiving, the active data set keeps growing, which makes query selectivity worse, skew worse, and sharing recalculation more expensive over time — fixing the three symptoms without addressing this means the same problems reappear, worse, later."
+    },
+    {
+      "q": "In the recommended sequenced remediation plan, what is the first step, and why?",
+      "options": [
+        "Immediately switch the billing job to serial mode, since that's the fastest fix",
+        "Establish an archiving process for closed-out Shipment__c records, since shrinking the active working set makes every other fix more effective and should happen before re-evaluating the other symptoms",
+        "Request a new Big Object with no further analysis",
+        "Delete the entire Shipment__c object and rebuild it from scratch"
+      ],
+      "answer": 1,
+      "explain": "The plan sequences archiving first because it shrinks the active data set that every other fix (batch reorganization, custom index/skinny table evaluation, deferred sharing calculation) is working against — tackling it first makes the later fixes more effective and sometimes unnecessary at the same scale."
+    }
+  ]
+}

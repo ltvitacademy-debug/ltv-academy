@@ -1,0 +1,60 @@
+{
+  "lesson": "bulk-processing",
+  "questions": [
+    {
+      "q": "How many times does a Salesforce trigger fire for a single DML operation that affects 200 records?",
+      "options": [
+        "200 times, once per record",
+        "It depends on whether the records were inserted via the UI or the API",
+        "Once, with Trigger.new holding the full collection of all 200 records",
+        "Twice — once for validation and once for the actual save"
+      ],
+      "answer": 2,
+      "explain": "A trigger fires once per transaction regardless of batch size, with Trigger.new holding the entire collection of records being processed together."
+    },
+    {
+      "q": "Why does a trigger with SOQL or DML inside a per-record loop often pass every manual test but fail in production?",
+      "options": [
+        "Because manual UI testing almost always saves one record at a time, so the loop never actually executes more than once until a real bulk operation (Data Loader, bulk API, a mass Flow update) sends many records through it at once",
+        "Because the Developer Console silently raises governor limits during testing",
+        "Because triggers are disabled by default in sandboxes",
+        "Because SOQL queries behave differently in production than in a sandbox"
+      ],
+      "answer": 0,
+      "explain": "A single-record save only ever runs the loop body once, so the per-record query or DML call never multiplies — the bug is invisible until a genuinely bulk operation sends many records through the same trigger invocation at once."
+    },
+    {
+      "q": "In the bulkified AccountTrigger example, how many total SOQL queries are issued regardless of whether Trigger.new holds 1 record or 200?",
+      "options": [
+        "One query per Account, same as the non-bulkified version",
+        "Zero, because bulkification eliminates the need for any query",
+        "It depends on how many Contacts exist, not how many Accounts are in the trigger",
+        "Exactly one — the query runs once against the whole collected set of IDs, not once per Account"
+      ],
+      "answer": 3,
+      "explain": "The entire point of bulkification is a flat cost: collecting IDs into a Set and querying once outside the loop means exactly one SOQL query runs no matter how many records are in the batch."
+    },
+    {
+      "q": "What is the tell-tale sign that a helper method (not a trigger directly) is written in a bulk-safe way?",
+      "options": [
+        "It uses only local variables and no SOQL at all",
+        "Its signature accepts a collection (like List<Account>), and any query or DML inside it happens once per call, not once per element of that list",
+        "It is marked with the @future annotation",
+        "It always returns a Boolean indicating success or failure"
+      ],
+      "answer": 1,
+      "explain": "A bulk-safe method is designed around processing a whole batch: it takes a collection as its parameter, and its governor-limit-consuming work (queries, DML) runs once per invocation rather than once per item in that collection."
+    },
+    {
+      "q": "In the original non-bulkified AccountTrigger example, which two governor limits would be at the most direct and immediate risk if 150+ Accounts, each with multiple Contacts, were updated in one transaction?",
+      "options": [
+        "Maximum heap size and maximum callout timeout",
+        "Total number of email invocations and total number of future calls",
+        "Total SOQL queries issued (100 synchronous) and total DML statements issued (150)",
+        "There is no risk, since Apex automatically converts loop-based DML into bulk DML"
+      ],
+      "answer": 2,
+      "explain": "One SOQL query per Account quickly approaches the 100-query synchronous ceiling, and one update DML statement per Contact (nested inside the Account loop) quickly approaches the 150-DML-statement ceiling — exactly the two limits this lesson's governor-limits recap (Lesson 2) covered."
+    }
+  ]
+}

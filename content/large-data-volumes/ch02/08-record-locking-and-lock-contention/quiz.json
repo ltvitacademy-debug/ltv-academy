@@ -1,0 +1,60 @@
+{
+  "lesson": "record-locking-and-lock-contention",
+  "questions": [
+    {
+      "q": "What is a Salesforce record lock actually protecting against?",
+      "options": [
+        "Unauthorized users viewing a record's field history",
+        "A record exceeding its storage size limit",
+        "A formula field returning an incorrect value",
+        "Two concurrent transactions modifying the same record (or its locked parent) in ways that would corrupt data or produce an inconsistent result"
+      ],
+      "answer": 3,
+      "explain": "A lock is a transactional-consistency guarantee: it prevents two in-flight transactions from making conflicting concurrent changes to the same record or its locked parent."
+    },
+    {
+      "q": "Why does parent (account) skew from Lesson 7 directly increase lock contention?",
+      "options": [
+        "Because skewed parents are automatically excluded from the Recycle Bin",
+        "Because skewed records are stored in a separate, slower database table",
+        "Because certain child-record operations briefly lock the parent, and with tens of thousands of children under one parent, far more concurrent transactions end up trying to lock that same parent at the same time",
+        "Because parent skew disables all record locking on the affected object"
+      ],
+      "answer": 2,
+      "explain": "When child records are spread across many different parents, concurrent transactions rarely compete for the same lock. When too many children share one parent, a much larger share of concurrent transactions collide on that single parent's lock."
+    },
+    {
+      "q": "What happens when a transaction's lock-wait period expires before the lock it needs is released?",
+      "options": [
+        "The transaction automatically retries indefinitely until it succeeds",
+        "The operation fails, commonly surfaced as an UNABLE_TO_LOCK_ROW error",
+        "The lock is forcibly transferred to the waiting transaction",
+        "The record is permanently deleted to resolve the conflict"
+      ],
+      "answer": 1,
+      "explain": "If the lock isn't released within the wait period, the operation fails with a lock-related error, commonly UNABLE_TO_LOCK_ROW, rather than waiting indefinitely or forcing the lock."
+    },
+    {
+      "q": "A bulk data load fails a record due to a lock timeout. What is true about how that specific failure is handled?",
+      "options": [
+        "The record is marked failed and must be explicitly resubmitted — a lock timeout on a record is not automatically retried the way a failing batch overall might be requeued",
+        "It is automatically retried as part of the same batch with no action needed",
+        "The entire job is immediately and permanently cancelled",
+        "The record is silently skipped and never reported as an error"
+      ],
+      "answer": 0,
+      "explain": "A record that fails due to a lock timeout needs explicit resubmission — either in a separate batch or via the integration/data-load tool's own retry logic — it isn't automatically retried the way the platform may requeue a struggling batch a limited number of times."
+    },
+    {
+      "q": "Why does this lesson say bulk data loads expose lock contention far more than everyday, one-record-at-a-time usage, even though the underlying locking behavior is identical?",
+      "options": [
+        "Because bulk loads use a completely different, less reliable locking mechanism",
+        "Because bulk loads are not subject to record locking at all",
+        "Because everyday usage always uses serial processing, which bulk loads never do",
+        "Because a high-volume, concentrated load creates far more opportunities for concurrent transactions to collide on the same skewed parent's lock at the same moment, compared to the low odds of that happening in ordinary single-user usage"
+      ],
+      "answer": 3,
+      "explain": "The locking mechanism itself doesn't change — what changes is the sheer number of simultaneous transactions a bulk load creates, which multiplies the chances that several of them will try to lock the same heavily-skewed parent at once."
+    }
+  ]
+}

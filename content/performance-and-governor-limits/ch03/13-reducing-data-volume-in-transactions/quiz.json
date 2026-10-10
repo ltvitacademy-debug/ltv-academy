@@ -1,0 +1,60 @@
+{
+  "lesson": "reducing-data-volume-in-transactions",
+  "questions": [
+    {
+      "q": "What is the difference between \"operation count\" and \"data volume per operation\" as two separate optimization axes?",
+      "options": [
+        "They are the same thing described with two different names",
+        "Operation count only applies to DML, while data volume only applies to SOQL",
+        "Data volume per operation refers only to the number of transactions in a day, not a single transaction's content",
+        "Operation count is how many queries or DML statements a transaction issues; data volume per operation is how much data (fields, rows, related records) each one actually moves"
+      ],
+      "answer": 3,
+      "explain": "A transaction can be perfectly bulkified (low operation count) while still selecting far more fields or rows than it needs per operation — these are genuinely separate things to optimize, as this lesson's two code examples show."
+    },
+    {
+      "q": "In the two Account query examples, why does the first version use more heap even though both versions issue exactly one SOQL query?",
+      "options": [
+        "The first version selects many unused fields and an entire related Contacts subquery, pulling unnecessary data into heap, while the second selects only the fields the code actually reads",
+        "The first version issues two queries while the second issues only one",
+        "SOQL automatically allocates more heap to any query with a WHERE IN clause",
+        "There is no actual difference in heap usage between the two versions"
+      ],
+      "answer": 0,
+      "explain": "Both queries have the same operation count (one query each), but the first selects far more fields and an unused child relationship, which increases the data volume pulled into heap without any benefit to the code that only reads two fields."
+    },
+    {
+      "q": "What problem does deliberately chunking a large data volume job (such as with Batch Apex) solve?",
+      "options": [
+        "It permanently increases the governor limits available to any single transaction",
+        "It lets a large workload be processed in smaller pieces, each running as its own transaction with its own fresh governor limit budget, instead of forcing the entire volume through one transaction's limits",
+        "It eliminates the need for SOQL queries entirely",
+        "It converts all DML statements into callouts, which have a separate limit"
+      ],
+      "answer": 1,
+      "explain": "Chunking (as Batch Apex does by design) splits a large volume of work across multiple transactions, each getting its own fresh limit allotment, rather than requiring the entire workload to fit inside one transaction's fixed budget."
+    },
+    {
+      "q": "In the Batch Apex example, what is true about each call to the execute() method?",
+      "options": [
+        "All calls to execute() share one single transaction and one single limit budget across the entire batch job",
+        "execute() is called exactly once regardless of how many records start() returns",
+        "Each call to execute() runs as its own transaction, with its own fresh governor limit allotment, typically processing a manageable chunk rather than the entire result set at once",
+        "execute() runs synchronously within the same transaction that invoked the batch job"
+      ],
+      "answer": 2,
+      "explain": "One of Batch Apex's defining characteristics is that each execute() invocation is its own transaction with a fresh limit budget, which is exactly what makes it suited to processing more records than a single transaction's limits would otherwise allow."
+    },
+    {
+      "q": "Why can a transaction be \"unhealthy\" from a data volume standpoint even if it hasn't crossed any governor limit yet?",
+      "options": [
+        "Because any query that doesn't use every selected field automatically throws an exception",
+        "Because unhealthy transactions are always reported as hard failures regardless of actual limit usage",
+        "This situation is purely theoretical and has no real consequence in practice",
+        "Because unnecessary data volume (unused fields, oversized relationship subqueries) still consumes real heap and resources, and the margin before actually crossing a limit shrinks as data or automation grows, even without any code changes"
+      ],
+      "answer": 3,
+      "explain": "A query pulling unnecessary data isn't failing today, but it's consuming real headroom for no benefit — exactly the kind of soft inefficiency from Lesson 10 that can tip into an actual hard failure as data volume or automation grows, per Lesson 6's scalability concerns."
+    }
+  ]
+}

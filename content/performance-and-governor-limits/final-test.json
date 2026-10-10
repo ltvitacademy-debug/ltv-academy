@@ -1,0 +1,306 @@
+{
+  "questions": [
+    {
+      "id": "pgl-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "What is a Salesforce governor limit?",
+      "options": [
+        "A hard, enforced ceiling on a specific resource (such as SOQL queries or DML statements) within a single transaction, that throws an exception and rolls back the transaction if crossed",
+        "A soft warning that gets logged but does not stop a transaction from completing",
+        "A per-user storage quota measured in megabytes of data",
+        "A setting an administrator can permanently disable in Setup",
+        "A limit that only applies to Visualforce pages, never to Apex",
+        "A monthly cap on the number of users who can log into an org"
+      ],
+      "correctIndex": 0,
+      "explain": "A governor limit is a hard, enforced per-transaction ceiling on a specific resource. Crossing it throws an exception and rolls back the entire transaction — it is not a soft warning or a storage quota.",
+      "distractorExplain": "Option B describes a warning or soft failure, not a governor limit. Governor limits are hard failures: crossing one throws an exception and rolls back the transaction entirely, rather than just logging a note and continuing."
+    },
+    {
+      "id": "pgl-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "A trigger issues one SOQL query per record inside a for loop over Trigger.new. It passes every manual single-record test. Why does it still fail once 200 records are updated via a Data Loader batch?",
+      "options": [
+        "Because the per-record query multiplies with batch size, risking the 100-query synchronous SOQL limit, while a single-record test never exercises more than one iteration of the loop",
+        "Because Data Loader batches are automatically exempt from all governor limits",
+        "Because triggers only fire correctly when invoked from the UI, never from the API",
+        "Because 200 records always exceeds the DML row limit regardless of how the code is written"
+      ],
+      "correctIndex": 0,
+      "explain": "A per-record query inside a loop costs one query per record processed. A single-record test only ever runs the loop body once, so the bug is invisible until genuine bulk volume (like a 200-record Data Loader batch) multiplies that cost toward the 100-query ceiling."
+    },
+    {
+      "id": "pgl-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Salesforce's Execution Governors and Limits reference, the total number of SOQL queries a single synchronous Apex transaction can issue is ________.",
+      "acceptedAnswers": ["100", "100 queries"],
+      "explain": "Synchronous Apex is capped at 100 total SOQL queries per transaction (asynchronous Apex gets a higher ceiling of 200), per Salesforce's own governor limits documentation."
+    },
+    {
+      "id": "pgl-04",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each term to its correct meaning.",
+      "left": ["Multi-tenancy", "Bulkification", "Selectivity", "Transaction"],
+      "right": [
+        "The fraction of a table's rows a query filter is expected to match",
+        "Writing code that handles a whole collection of records in one pass instead of one at a time",
+        "Many customers' orgs sharing the same underlying Salesforce infrastructure",
+        "The full, atomic chain of automation executing together from one user action or API call"
+      ],
+      "correctMap": [2, 1, 0, 3],
+      "explain": "Multi-tenancy is the shared-infrastructure model that makes governor limits necessary. Bulkification is writing code to handle a collection in one pass. Selectivity is the fraction of rows a filter matches, which drives whether an index gets used. A transaction is the full atomic chain of automation sharing one governor limit budget."
+    },
+    {
+      "id": "pgl-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "advanced",
+      "prompt": "On a 2.5-million-row Account table with a standard index on Industry, which filter is most likely to still be treated as selective by the query optimizer?",
+      "options": [
+        "WHERE Industry = 'Aerospace', if Aerospace accounts are a small slice of the 2.5 million rows, well under the roughly 525,000-row combined threshold for this table size",
+        "WHERE Industry != 'Technology', since negations are always more selective than positive matches",
+        "WHERE Industry LIKE '%Tech%', since a wildcard search is always more selective than an exact match",
+        "Selectivity is irrelevant once a table exceeds 1 million rows, since indexes stop working entirely past that point"
+      ],
+      "correctIndex": 0,
+      "explain": "A standard-indexed filter stays selective if it targets under 30% of the first million rows and 15% beyond that — on 2.5 million rows, that's roughly 525,000. A filter matching a genuinely small slice, like one specific industry among many, is the one likely to stay under that threshold, unlike a negation or a leading wildcard."
+    },
+    {
+      "id": "pgl-06",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every pattern that can defeat an index even on a field that is actually indexed.",
+      "options": [
+        "Wrapping the field in a function, such as CALENDAR_YEAR(CloseDate) = 2026",
+        "Using a leading wildcard, such as LastName LIKE '%son'",
+        "Using a negation, such as Industry != 'Technology'",
+        "Comparing the bare field directly to a literal value with a plain equality check",
+        "Using a trailing wildcard, such as LastName LIKE 'John%'"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Wrapping a field in a function, using a leading wildcard, and using a negation all typically prevent the optimizer from using an index, even when the field itself is indexed. A plain bare-field equality check and a trailing wildcard are both patterns the index CAN generally still support."
+    },
+    {
+      "id": "pgl-07",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the standard Apex bulkification pattern in the correct order.",
+      "items": [
+        "Loop over the collection once to gather the Ids or values you need into a Set",
+        "Issue a single SOQL query filtered against that whole Set",
+        "Loop over the query results (or the original collection) to build the records that need changes",
+        "Issue a single DML statement against the full collection of changed records"
+      ],
+      "explain": "Bulkification follows a consistent shape: collect what you need into a Set first, query once against that whole Set, build up the needed changes, then perform exactly one DML statement for the entire batch — never querying or performing DML inside the original per-record loop."
+    },
+    {
+      "id": "pgl-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A query that is comfortably selective today, on an Account table with 80,000 rows, might stop being selective in two years with no code changes at all. Why?",
+      "options": [
+        "Because selectivity thresholds are expressed as a fraction (or capped count) of total table rows, so the same filter's selectivity can shift purely from the table's row count growing — a scalability concern, not a bug in the query itself",
+        "Because Salesforce automatically removes indexes from tables older than one year",
+        "Because SOQL syntax rules change with every new Salesforce release",
+        "Because governor limits themselves double in strictness every year"
+      ],
+      "correctIndex": 0,
+      "explain": "Selectivity is about what fraction of the table a filter matches, so pure data growth — with the filter and the code completely unchanged — can push the same query past the selectivity threshold, which is exactly why scalability (Lesson 6) is a distinct concern from one-time performance correctness."
+    },
+    {
+      "id": "pgl-09",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Salesforce's Apex debugging documentation, an individual debug log is capped at ________ MB, after which older lines are truncated to fit.",
+      "acceptedAnswers": ["20", "20 MB"],
+      "explain": "Salesforce's debug log documentation sets a 20 MB per-log cap. A log that would exceed this is truncated by removing older lines, which can happen anywhere in the log, not just at the start."
+    },
+    {
+      "id": "pgl-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Why is a debug log's CUMULATIVE_LIMIT_USAGE section more reliable than reading the Apex source code to estimate governor limit usage?",
+      "options": [
+        "It reports the platform's own measured usage for that specific real execution, rather than an estimate based on reading code that might be affected by other automation sharing the same transaction",
+        "Because reading source code is always technically impossible in Salesforce",
+        "Because CUMULATIVE_LIMIT_USAGE only appears for transactions that already failed",
+        "Because governor limits do not actually apply unless a debug log is being captured"
+      ],
+      "correctIndex": 0,
+      "explain": "CUMULATIVE_LIMIT_USAGE reflects the platform's real, measured count for that specific transaction's execution, which captures contributions from any other automation sharing the same transaction — something reading one class's source code in isolation cannot reveal."
+    },
+    {
+      "id": "pgl-11",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each diagnostic tool to what it is primarily used for.",
+      "left": ["Query Plan tool", "Execute Anonymous", "Logs tab Execution Overview", "Event Monitoring"],
+      "right": [
+        "Capturing org-wide user and system activity continuously, without a trace flag",
+        "Showing the optimizer's real chosen execution plan and whether it used an index or a table scan",
+        "Breaking down where a transaction's elapsed time went, by category, from a captured debug log",
+        "Running a block of Apex immediately to test a specific hypothesis in isolation, without deploying anything"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "The Query Plan tool reveals the optimizer's actual chosen plan. Execute Anonymous runs isolated test code without deployment. The Logs tab's Execution Overview breaks elapsed time down by category from a captured log. Event Monitoring captures org-wide activity continuously, independent of any trace flag."
+    },
+    {
+      "id": "pgl-12",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Event Monitoring, per this course.",
+      "options": [
+        "Event Log Files are delivered asynchronously, so an event can take up to roughly an hour to become available",
+        "Real-Time Event Monitoring is built on platform events, for catching activity as it happens rather than waiting on log file delivery",
+        "Developer Edition orgs get free access to all Event Monitoring log types, but with only 1-day data retention",
+        "A debug log and Event Monitoring capture exactly the same scope of data and are fully interchangeable",
+        "Event Log File data is retrieved through a standard object called EventLogFile"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Event Log Files are asynchronous with up to roughly an hour's delay, Real-Time Event Monitoring uses platform events for immediate activity, Developer Edition gets free but short (1-day) retention, and EventLogFile is the standard object for retrieving log file data. A debug log and Event Monitoring are not interchangeable — one is per-transaction and deliberately captured, the other is org-wide and always-on."
+    },
+    {
+      "id": "pgl-13",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "What does the Apex CPU time governor limit actually measure, and what is explicitly excluded from counting against it?",
+      "options": [
+        "It measures actual Apex execution time on Salesforce's servers; time spent waiting on the database for DML, SOQL, or SOSL execution does not count against it",
+        "It measures total wall-clock time including all database and network wait time, with nothing excluded",
+        "It measures only the time spent rendering the Lightning page in the browser",
+        "It measures the number of lines of Apex code in a class, not any actual execution time",
+        "It measures callout wait time exclusively, and ignores all other Apex execution",
+        "It measures the total size of the compiled Apex bytecode for a transaction"
+      ],
+      "correctIndex": 0,
+      "explain": "CPU time specifically measures actual Apex execution time on the server. Time the transaction spends waiting on the database for DML, SOQL, or SOSL (or waiting on a callout) is explicitly excluded from this count.",
+      "distractorExplain": "Option B describes total wall-clock time with nothing excluded, which is the opposite of how the CPU time limit actually works — database and SOQL/DML wait time is specifically excluded from the CPU time count, which is why a transaction can run for several real seconds and still be well under its CPU time ceiling."
+    },
+    {
+      "id": "pgl-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Why does the \"one trigger per object, delegating to a handler class\" pattern help with performance, specifically?",
+      "options": [
+        "It consolidates all of an object's trigger logic into one predictable place, avoiding the duplicated queries and DML, and unpredictable execution order, that come from several independent triggers on the same object",
+        "It automatically converts all synchronous logic into asynchronous Apex",
+        "It permanently increases the governor limits available to that object",
+        "It eliminates the need for bulkification entirely, since handler classes are exempt from governor limits"
+      ],
+      "correctIndex": 0,
+      "explain": "Multiple independent triggers on one object have no guaranteed order and often duplicate work (separate queries, separate DML) that a single consolidated trigger delegating to one handler class avoids, directly reducing redundant governor-limit cost."
+    },
+    {
+      "id": "pgl-15",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a trigger recursion guard is typically implemented as a ________ variable, because it needs to persist for the life of one transaction and reset automatically on the next.",
+      "acceptedAnswers": ["static"],
+      "explain": "A static variable persists for the duration of a single transaction and resets on the next, separate transaction — exactly the scope a recursion guard needs to prevent a trigger from reprocessing records it already handled."
+    },
+    {
+      "id": "pgl-16",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Apex code reads from an org cache partition without first calling contains() to check whether the key exists, and assumes the value is always present. What is the actual risk, given how Platform Cache works?",
+      "options": [
+        "Because Platform Cache uses LRU eviction and an explicit time-to-live, the value may no longer be present when read, causing a null reference error the code didn't anticipate",
+        "There is no real risk, since Platform Cache values never expire or get evicted once written",
+        "The code will fail to compile, since contains() is required Apex syntax",
+        "Org cache is read-only, so this pattern would have thrown an error on the original put() call instead"
+      ],
+      "correctIndex": 0,
+      "explain": "Platform Cache's LRU eviction and time-to-live mean a cached value is not guaranteed to still be present on a later read — skipping the contains() check risks a null reference error that may not appear in testing but will eventually appear in production once an eviction happens."
+    },
+    {
+      "id": "pgl-17",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each caching or data-volume concept to its correct description.",
+      "left": ["Session cache", "Org cache", "Field selection", "Chunking"],
+      "right": [
+        "Naming only the fields and relationships a SOQL query's consuming code actually reads",
+        "Splitting a large workload across multiple transactions, each with its own fresh governor limit budget",
+        "A Platform Cache scope tied to one specific user's current session",
+        "A Platform Cache scope shared across every user and session in the org"
+      ],
+      "correctMap": [2, 3, 0, 1],
+      "explain": "Session cache is scoped to one user's session. Org cache is shared org-wide. Field selection means naming only the fields actually used, reducing heap. Chunking splits a large job across multiple transactions, each getting its own fresh governor limit budget, as Batch Apex does."
+    },
+    {
+      "id": "pgl-18",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about reducing data volume within a transaction.",
+      "options": [
+        "A transaction can be fully bulkified (one query, one DML statement) and still have a data volume problem if that one query selects far more fields or rows than it needs",
+        "Selecting unused fields and an unused child relationship subquery increases heap usage without any benefit",
+        "Operation count (how many queries) and data volume per operation (how much each query returns) are the exact same thing",
+        "Batch Apex's execute() method runs each chunk as its own transaction with its own fresh governor limit allotment",
+        "Reducing data volume per operation is only relevant for asynchronous Apex, never for synchronous Apex"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "A single, bulkified query can still pull unnecessary data volume (unused fields, an unused subquery) into heap for no benefit — this is a separate axis from operation count, not the same thing, and it applies equally to synchronous and asynchronous Apex. Batch Apex's execute() does run each chunk as its own transaction with a fresh limit budget."
+    },
+    {
+      "id": "pgl-19",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of the performance troubleshooting method in the order this course teaches them.",
+      "items": [
+        "Reproduce the problem with specific evidence, such as a captured debug log, rather than a vague description",
+        "Classify the failure as a hard failure (a thrown limit exception) or a soft failure (succeeded, but using an unhealthy share of its budget)",
+        "Locate where the time or limit usage actually went, using the Execution Overview or CUMULATIVE_LIMIT_USAGE",
+        "Form a specific, testable hypothesis grounded in known anti-patterns",
+        "Test the hypothesis in isolation before applying any fix, then re-measure afterward to confirm it worked"
+      ],
+      "explain": "The method runs reproduce, classify, locate, hypothesize, then test-and-reapply: confirming the real problem with evidence first, determining whether it's a hard or soft failure, finding where the cost is concentrated, forming a specific testable guess, and finally testing and re-measuring rather than assuming a fix worked."
+    },
+    {
+      "id": "pgl-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "In the course's closing practice lab, a CaseTrigger queries Account and CaseComment once per Case inside a loop, then inserts a new CaseComment inside that same loop. Which two governor limits does this most directly risk as Case batch size grows, and why?",
+      "options": [
+        "Total SOQL queries issued and total DML statements issued, because both the Account/CaseComment queries and the CaseComment insert scale linearly with the number of Cases instead of staying flat",
+        "Maximum heap size and maximum callout timeout, because looping always consumes heap regardless of what's inside the loop",
+        "Total number of records retrieved by Database.getQueryLocator and total number of email invocations, since this trigger uses neither mechanism",
+        "There is no real governor limit risk here, since each individual query and DML statement is simple"
+      ],
+      "correctIndex": 0,
+      "explain": "Two per-Case queries and a per-Case insert all scale linearly with batch size in the unfixed trigger, directly threatening the SOQL query ceiling and the DML statement ceiling — exactly the two limits a correctly bulkified rewrite (one query each, one batched insert) would keep flat regardless of batch size."
+    }
+  ]
+}

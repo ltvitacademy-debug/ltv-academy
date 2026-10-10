@@ -1,0 +1,60 @@
+{
+  "lesson": "performance-practice-lab",
+  "questions": [
+    {
+      "q": "In the CaseTrigger practice scenario, what is the core anti-pattern, and which lesson does it trace back to?",
+      "options": [
+        "SOQL queries against Account and CaseComment run once per Case inside the loop, instead of once for the whole batch — the Lesson 3 bulkification anti-pattern",
+        "The trigger uses a non-selective filter on a custom field, which is a Lesson 4 query optimization problem",
+        "The trigger is missing a recursion guard, which is a Lesson 11 problem",
+        "The trigger doesn't use Platform Cache, which is a Lesson 12 problem"
+      ],
+      "answer": 0,
+      "explain": "Both queries (against Account and against CaseComment) run inside the per-Case loop rather than once for the whole batch — this is specifically the SOQL-in-a-loop bulkification problem from Lesson 3, not a selectivity, recursion, or caching issue."
+    },
+    {
+      "q": "Why is the Account query's WHERE Id = :c.AccountId condition a bulkification problem rather than a selectivity problem?",
+      "options": [
+        "Because filtering on Id is actually non-selective and defeats the standard index",
+        "Because Account does not support filtering by Id at all",
+        "Because selectivity only applies to custom fields, never to the Id field",
+        "Because filtering on Id is already maximally selective — the real problem is that the query runs once per Case instead of once for the whole batch, which is purely about operation count, not how selective any single query's filter is"
+      ],
+      "answer": 3,
+      "explain": "A filter on Id is inherently highly selective, so selectivity isn't the issue here at all — the problem is purely that this already-selective query gets run once per record instead of once per batch, which is the Lesson 3 concern, not Lesson 4's."
+    },
+    {
+      "q": "Which two governor limits does the original CaseTrigger most directly risk when closing a large batch of Cases at once?",
+      "options": [
+        "Maximum heap size and maximum cumulative callout timeout",
+        "Total number of records retrieved by Database.getQueryLocator and total number of callouts",
+        "Total number of SOQL queries issued and total number of DML statements issued",
+        "Maximum CPU time only, with no risk to any other limit"
+      ],
+      "answer": 2,
+      "explain": "Two queries run per Case (against Account and CaseComment) directly threaten the SOQL query ceiling, and the per-Case insert of a new CaseComment directly threatens the DML statement ceiling — both scale linearly with batch size in the unfixed version."
+    },
+    {
+      "q": "In a correctly bulkified rewrite of this trigger, how should the query count against Account and CaseComment behave as the number of Cases in Trigger.new grows from 1 to 50?",
+      "options": [
+        "It should grow linearly with the number of Cases, just like the original version",
+        "It should stay flat — one query against Account and one against CaseComment regardless of whether there are 1 or 50 Cases",
+        "It should grow, but at half the rate of the original version",
+        "Query count is unrelated to bulkification and wouldn't change either way"
+      ],
+      "answer": 1,
+      "explain": "The entire goal of bulkification (Lesson 3) is a flat operation count regardless of batch size — a correctly fixed version issues exactly one query against each object no matter how many Cases are being processed together."
+    },
+    {
+      "q": "What does completing this course's final lesson demonstrate, beyond memorizing specific governor limit numbers?",
+      "options": [
+        "The ability to recognize non-bulkified code on sight, identify which specific limits it threatens and why, diagnose a live issue with real tools, and fix the actual root cause rather than a symptom",
+        "The ability to recite every governor limit number in the course from memory with no further application",
+        "The ability to disable governor limits entirely for a specific Apex class",
+        "The ability to write Apex code without ever using SOQL or DML"
+      ],
+      "answer": 0,
+      "explain": "The course's actual goal, stated in this closing lesson, is a repeatable way of thinking about performance — recognizing patterns, diagnosing with real tools, and fixing root causes — not simply memorizing a table of numbers."
+    }
+  ]
+}

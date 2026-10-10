@@ -1,0 +1,60 @@
+{
+  "lesson": "performance-case-study",
+  "questions": [
+    {
+      "q": "What were the three separate contributing causes behind the case study's intermittent \"Too many SOQL queries: 101\" error?",
+      "options": [
+        "A single typo in the OpportunityTrigger that was fixed by adding one missing semicolon",
+        "A per-record SOQL query inside the OpportunityTrigger loop, a Get Records element inside a Flow loop sharing the same transaction, and rising Opportunity volume making the existing anti-patterns cross the limit now",
+        "A corrupted debug log that misreported the actual query count",
+        "An expired Salesforce license that disabled half the org's automation"
+      ],
+      "answer": 1,
+      "explain": "The case study deliberately combines a trigger-level anti-pattern, a Flow-level anti-pattern sharing the same transaction, and a scalability trend making both worse over time — exactly the kind of multi-cause bug real performance work often involves."
+    },
+    {
+      "q": "Why would fixing only the OpportunityTrigger, and leaving the Flow's Get Records element inside its loop untouched, likely have left the bug only partially resolved?",
+      "options": [
+        "Because Flow automation runs in a completely separate transaction from Apex, so fixing the trigger alone would have fully solved it",
+        "Because Flows cannot cause governor limit exceptions under any circumstances",
+        "Because Flow and Apex share the same transaction and the same cumulative governor limit budget, so the Flow's per-iteration queries would still be adding to the same total that caused the original exception",
+        "Because the Flow's queries don't count toward any governor limit at all"
+      ],
+      "answer": 2,
+      "explain": "Since Flow and Apex share one transaction's cumulative limit budget (per Lesson 5), leaving the Flow's loop-based querying in place would still contribute to the same total, even after the trigger itself was fixed."
+    },
+    {
+      "q": "What did the symptom pattern — \"only on large deals,\" \"getting worse over time\" — suggest before any code was even read?",
+      "options": [
+        "Nothing meaningful; symptom patterns are not useful evidence until code has been reviewed",
+        "That the issue was caused entirely by a platform-wide Salesforce outage",
+        "That the fix must involve purchasing additional storage, unrelated to code",
+        "\"Only large deals\" pointed toward a cost that scales with related-record count (a per-record loop), and \"getting worse over time\" pointed toward a scalability trend crossing a limit that used to have headroom"
+      ],
+      "answer": 3,
+      "explain": "A per-record loop's cost scales with how many related records exist, matching \"only large deals,\" and a scalability trend (Lesson 6) explains why a previously-tolerable anti-pattern starts failing as data volume grows — both are diagnostic clues before reading any code."
+    },
+    {
+      "q": "In the bulkified OpportunityTrigger fix, what data structure is built to avoid querying Contacts once per Opportunity?",
+      "options": [
+        "A Map<Id, List<Contact>> keyed by AccountId, built from one query against the full set of collected AccountIds",
+        "A separate Queueable job that runs once per Opportunity",
+        "A nested for loop that still queries once per Opportunity, just written differently",
+        "A static variable that caches the first Opportunity's Contacts for reuse on all others"
+      ],
+      "answer": 0,
+      "explain": "The fix collects all relevant AccountIds into a Set, queries Contacts once for that whole set, and organizes the results into a Map keyed by AccountId so each Opportunity's related Contacts can be looked up without any additional query."
+    },
+    {
+      "q": "Why does the case study insist on re-measuring with a fresh debug log after applying both fixes, rather than assuming they worked?",
+      "options": [
+        "Because Salesforce requires a debug log to be attached to every deployment by policy",
+        "Because confirming a fix with real evidence (a fresh CUMULATIVE_LIMIT_USAGE reading) follows the same evidence-based discipline as reproducing the original problem, rather than assuming success without verification",
+        "Because re-measurement is only necessary when the first fix attempt fails",
+        "Because debug logs automatically revert code changes that don't improve performance"
+      ],
+      "answer": 1,
+      "explain": "The same evidence-based discipline that applied to reproducing the problem (Lesson 10, step 1) applies to confirming the fix — re-measuring with real data rather than assuming the fix worked closes the loop properly."
+    }
+  ]
+}

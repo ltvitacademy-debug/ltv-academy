@@ -1,0 +1,60 @@
+{
+  "lesson": "transaction-limits",
+  "questions": [
+    {
+      "q": "What actually defines the boundary of a single Salesforce transaction?",
+      "options": [
+        "Exactly one trigger and nothing else, by definition",
+        "A fixed 10-second wall-clock window regardless of what automation runs",
+        "Whatever code appears in a single Apex class file",
+        "The full set of operations — validation rules, multiple triggers, Flow automation, and any Apex they invoke — executing together as one atomic unit from a single user action or API call"
+      ],
+      "answer": 3,
+      "explain": "A transaction is everything that runs together atomically from one triggering action — which is almost always much more than the one trigger or class a developer is looking at, including cascading Flows, workflow, and related-object automation."
+    },
+    {
+      "q": "A trigger that clearly issues only 5 SOQL queries throws \"Too many SOQL queries: 101\" on certain records. What does this most likely mean?",
+      "options": [
+        "The trigger's 5 queries are each being counted 20 times due to a platform bug",
+        "The 101 total reflects cumulative usage across everything else that ran in the same transaction (other triggers, Flows, workflow), not just this one trigger's 5 queries",
+        "The error is unrelated to governor limits and is actually a syntax error",
+        "Salesforce randomly multiplies query counts on certain record types"
+      ],
+      "answer": 1,
+      "explain": "Governor limit exceptions report the transaction's cumulative total, not any single method's contribution — so a trigger issuing only 5 queries can still be the final straw in a transaction where other automation already used the other 96."
+    },
+    {
+      "q": "What happens to governor limit budgets when work is deferred into a Queueable job via System.enqueueJob()?",
+      "options": [
+        "The Queueable shares the exact same limit budget as the transaction that enqueued it",
+        "Queueable jobs are exempt from all governor limits",
+        "The Queueable runs in its own separate transaction with a fresh, asynchronous limit allotment (such as 200 SOQL queries and 60,000 ms CPU time), independent of what the original transaction had already consumed",
+        "Enqueuing a job doubles the synchronous transaction's existing limits"
+      ],
+      "answer": 2,
+      "explain": "Asynchronous Apex like a Queueable executes in its own transaction, starting with a completely fresh governor limit budget at the higher asynchronous ceilings — it doesn't inherit whatever the triggering synchronous transaction had already spent."
+    },
+    {
+      "q": "Why is reading only the line number in a limit exception's stack trace often not enough to actually fix the problem?",
+      "options": [
+        "Because the exception reflects the whole transaction's cumulative usage, so the real fix may require understanding everything else (other triggers, Flows, workflow) that ran in the same transaction, not just the line that happened to cross the threshold",
+        "Because Salesforce stack traces never include accurate line numbers",
+        "Because limit exceptions are always false positives caused by platform instability",
+        "Because the line number only matters for asynchronous Apex, never for triggers"
+      ],
+      "answer": 0,
+      "explain": "The line that crosses a limit is often just unlucky timing — the last operation in a transaction whose total was already close to the ceiling from other automation entirely. Fixing it well means reconstructing the whole chain, a skill this course builds further in Chapter 2."
+    },
+    {
+      "q": "Why does moving heavy work to asynchronous Apex (Future, Queueable, Batch) help with governor limit problems, specifically?",
+      "options": [
+        "It eliminates governor limits entirely for any code it touches",
+        "It runs the code outside of Salesforce's infrastructure entirely",
+        "It converts all SOQL queries into free, unlimited operations",
+        "It gives that work a fresh, separate transaction with its own higher limit ceilings, rather than making the underlying work itself cheaper"
+      ],
+      "answer": 3,
+      "explain": "Asynchronous contexts don't make a query or DML statement cost less — they give the deferred work its own transaction boundary with a fresh, typically larger limit allotment, separate from whatever the original synchronous transaction had already consumed."
+    }
+  ]
+}

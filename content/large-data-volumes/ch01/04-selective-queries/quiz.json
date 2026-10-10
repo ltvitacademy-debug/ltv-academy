@@ -1,0 +1,60 @@
+{
+  "lesson": "selective-queries",
+  "questions": [
+    {
+      "q": "What does it mean for a filter condition to be \"selective\" in Salesforce's query optimizer?",
+      "options": [
+        "It only runs during business hours",
+        "It only applies to custom objects, never standard objects",
+        "It always returns exactly one record",
+        "It's estimated to match a small enough fraction of the object's total records that using an index is worth it"
+      ],
+      "answer": 3,
+      "explain": "Selectivity is about how narrow a slice of the object's rows a filter is expected to match — narrow enough, and the optimizer judges an index worth using; too broad, and it won't bother."
+    },
+    {
+      "q": "Why is the custom-index selectivity threshold stricter than the standard-index threshold?",
+      "options": [
+        "Custom indexes don't actually exist and this is a common misconception",
+        "Custom indexes are a documented Salesforce design choice that requires a narrower, more selective filter before the optimizer will use them, roughly 10%/5% versus the standard index's roughly 30%/15%",
+        "Custom indexes are always slower than standard indexes regardless of selectivity",
+        "There is no difference — both indexes use identical thresholds"
+      ],
+      "answer": 1,
+      "explain": "Salesforce's published guidance treats custom indexes as needing a narrower filter (roughly 10% of the first million records, 5% beyond) compared to standard indexes (roughly 30%/15%) before the optimizer will use them."
+    },
+    {
+      "q": "A filter uses `LIKE '%smith%'` against an indexed Name field. Why does this fail to be selective, regardless of how few records actually contain \"smith\"?",
+      "options": [
+        "Because Name fields can never be filtered on at all",
+        "Because LIKE operators are only allowed in reports, not SOQL",
+        "Because a leading wildcard means the match could start anywhere in the value, and the index (ordered by the start of the value) can't be used to narrow that search",
+        "Because wildcards automatically disable all indexes org-wide"
+      ],
+      "answer": 2,
+      "explain": "An index is ordered by the beginning of a field's value, so a leading wildcard search can't use that ordering to narrow the search — the optimizer treats it as unselective no matter how rare the actual matching value is."
+    },
+    {
+      "q": "Which of these filter patterns is explicitly called out as unselective, even when the field itself is indexed?",
+      "options": [
+        "A negative operator such as != or NOT LIKE",
+        "An equality filter on an indexed picklist field with a rare value",
+        "A range filter on an indexed date field",
+        "An IN clause with a short, specific list of indexed field values"
+      ],
+      "answer": 0,
+      "explain": "Negative operators (!=, NOT LIKE, EXCLUDES) require evaluating what a value isn't, which an index can't shortcut, so they're treated as unselective regardless of the field's indexing or the real-world rarity of the excluded value."
+    },
+    {
+      "q": "A business requirement genuinely needs a negative filter condition (e.g., Status__c != 'Closed') against an LDV-scale object. What does this lesson recommend as a practical mitigation?",
+      "options": [
+        "Remove all indexes from the object so the optimizer behaves consistently",
+        "Switch the object to a Big Object, which ignores selectivity rules entirely",
+        "There is no mitigation — negative filters can never be used on LDV-scale objects for any reason",
+        "Add an additional, genuinely selective condition alongside the negative filter, even if logically redundant, so the optimizer has something useful to narrow on first"
+      ],
+      "answer": 3,
+      "explain": "Since the negative condition itself can't be made selective, pairing it with a separate, genuinely selective condition (even if redundant from a pure business-logic standpoint) gives the optimizer something to narrow on before it evaluates the unselective part."
+    }
+  ]
+}

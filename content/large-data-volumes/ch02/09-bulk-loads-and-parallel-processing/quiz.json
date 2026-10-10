@@ -1,0 +1,60 @@
+{
+  "lesson": "bulk-loads-and-parallel-processing",
+  "questions": [
+    {
+      "q": "Why does Salesforce's Bulk API default to parallel mode rather than serial mode?",
+      "options": [
+        "Because parallel mode maximizes throughput, which is the main reason to use Bulk API for large loads — serial mode is reserved for when parallel processing actually causes unresolved lock problems",
+        "Because serial mode is deprecated and no longer available",
+        "Because parallel mode is immune to record locking entirely",
+        "Because serial mode only works with Big Objects"
+      ],
+      "answer": 0,
+      "explain": "Parallel mode is the fast option and the default starting point; Salesforce's own guidance treats serial mode as a fallback for when lock contention under parallel mode can't be solved another way, since serial mode trades away most of that throughput benefit."
+    },
+    {
+      "q": "What is the recommended first fix for lock-timeout failures during a parallel-mode load, before switching to serial mode?",
+      "options": [
+        "Immediately disable all triggers on the target object",
+        "Reduce the job to a single record per API call",
+        "Delete the skewed parent record entirely",
+        "Reorganize the load's batches to group records by their parent ID, so records for the same parent land in the same batch instead of being scattered across concurrently-running batches"
+      ],
+      "answer": 3,
+      "explain": "Grouping records by parent ID when building batches sharply reduces how many different, simultaneously-running batches compete for the same parent's lock, which is the actual mechanism causing lock-timeout failures."
+    },
+    {
+      "q": "At what level is Bulk API's concurrency mode (parallel vs. serial) set?",
+      "options": [
+        "Per individual record",
+        "Per Apex trigger",
+        "At the job level — switching to serial mode means creating a separate, distinct job, not flipping a flag mid-job",
+        "Per Salesforce user license"
+      ],
+      "answer": 2,
+      "explain": "Concurrency mode is a job-level setting, so moving to serial mode requires a separate job configured that way, distinct from the parallel jobs already running."
+    },
+    {
+      "q": "Which operation does Salesforce's own guidance name as one likely to need serial mode from the start, rather than waiting for lock failures to prove it?",
+      "options": [
+        "Updating a picklist field's label",
+        "Updating record ownership on objects using a private sharing model",
+        "Creating a new report type",
+        "Running a Query Plan check"
+      ],
+      "answer": 1,
+      "explain": "Salesforce names ownership updates under private sharing, user creation, user role updates, and territory hierarchy updates as operations likely to need serial mode, because they touch wide-reaching shared structures that create heavy lock and recalculation effects."
+    },
+    {
+      "q": "Why does this lesson caution against assuming sandbox testing fully predicts lock-contention behavior in production?",
+      "options": [
+        "Because every org's specific data model, ownership distribution, and automation differ, so Salesforce itself can't predict in advance exactly when lock contention will occur — testing needs to reflect production's actual data shape and volume",
+        "Because sandboxes never run Bulk API jobs at all",
+        "Because sandboxes automatically disable record locking",
+        "Because Bulk API only works in production orgs"
+      ],
+      "answer": 0,
+      "explain": "Lock contention depends on an org's specific skew and data shape, which a sandbox may not accurately mirror unless it's built to reflect production's real volume and distribution — a load that worked fine elsewhere isn't a reliable guarantee."
+    }
+  ]
+}

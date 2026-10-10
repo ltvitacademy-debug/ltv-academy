@@ -1,0 +1,60 @@
+{
+  "lesson": "optimizing-triggers-and-flows",
+  "questions": [
+    {
+      "q": "What problem does the \"one trigger per object\" pattern specifically solve?",
+      "options": [
+        "It eliminates the need for governor limits entirely on that object",
+        "It allows the object to bypass validation rules",
+        "Unpredictable execution order and multiplied governor limit cost from multiple independent triggers on the same object, by consolidating all logic into a single trigger that delegates to a handler class",
+        "It automatically converts synchronous triggers into asynchronous ones"
+      ],
+      "answer": 2,
+      "explain": "Multiple independent triggers on the same object have no guaranteed order and each may duplicate queries or DML, multiplying the real cost of a single transaction — one trigger delegating to a handler class consolidates and controls that."
+    },
+    {
+      "q": "In the recursion example, why does update toUpdate; inside an after-update trigger risk infinite or wasteful recursion?",
+      "options": [
+        "Because update statements are not allowed inside after-update triggers at all",
+        "Because that DML statement fires the same object's after-update trigger again, which can reprocess records that were already handled in the same transaction",
+        "Because it exceeds the DML row limit on the very first execution",
+        "Because recursion only happens in before-triggers, never in after-triggers"
+      ],
+      "answer": 1,
+      "explain": "Any DML on the same object inside its own trigger re-invokes that trigger, so without a guard, logic that updates a field and saves can keep re-triggering itself on the records it just changed."
+    },
+    {
+      "q": "Why is a static variable the right scope for a recursion guard?",
+      "options": [
+        "Because static variables persist for the life of a single transaction but reset automatically on the next separate transaction, which matches exactly the scope needed to prevent re-entry within one transaction",
+        "Because static variables persist permanently across all future transactions in the org",
+        "Because static variables are the only way to declare a Boolean in Apex",
+        "Because static variables automatically disable governor limits when set to true"
+      ],
+      "answer": 0,
+      "explain": "A recursion guard needs to block re-entry only within the current transaction, and reset for the next one — exactly how a static variable behaves in Apex's execution context."
+    },
+    {
+      "q": "Why can a poorly-built Flow cause the exact same kind of governor limit problem as a non-bulkified trigger?",
+      "options": [
+        "Because Flow automation is actually executed as hidden Apex code behind the scenes with its own separate limits",
+        "Because Flows are exempt from governor limits, so this is never actually a real risk",
+        "Because Flow can only process one record at a time, unlike Apex triggers",
+        "Because Flow runs inside the same transaction and against the same governor limits as Apex, so a Get Records or DML element placed inside a Flow loop consumes limit budget per iteration, just like SOQL or DML inside an Apex loop"
+      ],
+      "answer": 3,
+      "explain": "Flow shares the same transaction and governor limit budget as Apex. A Get/Create/Update Records element inside a loop is the declarative equivalent of SOQL or DML inside an Apex loop, with the same per-record cost multiplication."
+    },
+    {
+      "q": "Why might a governor limit exception that appears to come from a trigger actually be caused by a Flow instead?",
+      "options": [
+        "Because Flows always run after every trigger has already thrown its own separate exception",
+        "Because Salesforce mislabels all Flow errors as Apex trigger errors by default",
+        "Because Flow and Apex share the same transaction boundary (per Lesson 5), so a Flow consuming limit budget inefficiently can be the real cause even though the exception's stack trace points at a trigger running later in the same transaction",
+        "This can never happen; Flow errors are always reported separately from Apex errors"
+      ],
+      "answer": 2,
+      "explain": "Because Flow and Apex share one transaction and one cumulative governor limit budget, a Flow that wastefully consumes that budget earlier in the transaction can be the real root cause of an exception that surfaces later, in a trigger that looks unrelated."
+    }
+  ]
+}
