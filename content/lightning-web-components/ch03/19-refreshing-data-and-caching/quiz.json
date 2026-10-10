@@ -1,0 +1,60 @@
+{
+  "lesson": "refreshing-data-and-caching",
+  "questions": [
+    {
+      "q": "Why doesn't a successful imperative Apex write automatically refresh a separately wired custom Apex read?",
+      "options": [
+        "Because imperative calls are always slower than wired calls",
+        "Because the wire service has no way to know that an unrelated imperative call changed the data it is caching",
+        "Because wired reads are refreshed only once per day by the platform",
+        "Because imperative calls are not allowed to modify any data a wire adapter depends on"
+      ],
+      "answer": 1,
+      "explain": "The wire service caches results for the specific configuration it was given; it has no visibility into an entirely separate imperative call changing the underlying data, which is exactly the gap refreshApex() and notifyRecordUpdateAvailable() exist to close."
+    },
+    {
+      "q": "What must a component store from its wired Apex function in order for `refreshApex()` to work correctly?",
+      "options": [
+        "Only the data property of the result",
+        "Only the error property of the result",
+        "The entire result object the wire function receives, containing both data and error",
+        "Nothing needs to be stored; refreshApex() works automatically on any wired property"
+      ],
+      "answer": 2,
+      "explain": "refreshApex() needs the whole object the wire function received (both data and error) to know what configuration to re-fetch. Storing only result.data is a common mistake that breaks the refresh silently."
+    },
+    {
+      "q": "What is `notifyRecordUpdateAvailable()` used for?",
+      "options": [
+        "Re-running a wired custom Apex method's configuration, bypassing its cache",
+        "Telling LDS to refresh its cache for specific record Ids across every component using those records through getRecord",
+        "Deleting a record and all of its child records",
+        "Subscribing a component to a Lightning Message Channel"
+      ],
+      "answer": 1,
+      "explain": "notifyRecordUpdateAvailable() is used when an LDS-managed record changes through something other than LDS itself (such as a custom Apex update) -- it tells LDS to refresh its cache for that record everywhere it's wired."
+    },
+    {
+      "q": "What is the current guidance regarding `getRecordNotifyChange()`?",
+      "options": [
+        "It is the current recommended function and should always be used instead of notifyRecordUpdateAvailable()",
+        "It is deprecated; notifyRecordUpdateAvailable() is the current replacement, and it considers record data wired by all instantiated components",
+        "It was removed from the platform entirely and no longer exists in any form",
+        "It performs the exact same role as refreshApex(), just with a different name"
+      ],
+      "answer": 1,
+      "explain": "getRecordNotifyChange() is deprecated. notifyRecordUpdateAvailable() is the current replacement and has broader behavior, considering record data wired by all instantiated components rather than the narrower deprecated call."
+    },
+    {
+      "q": "If a record changes entirely through LDS itself (e.g. via updateRecord), what additional refresh step is needed for other components with that record wired via getRecord?",
+      "options": [
+        "refreshApex() must be called manually",
+        "notifyRecordUpdateAvailable() must be called manually",
+        "Nothing extra is needed -- LDS's own shared cache already keeps every component wired to that record in sync automatically",
+        "Every component must be reloaded from scratch"
+      ],
+      "answer": 2,
+      "explain": "When a change goes entirely through LDS, LDS's shared cache already propagates the update to every component wired to that record -- the extra refresh tools in this lesson are specifically for changes that happen outside LDS's own write path."
+    }
+  ]
+}

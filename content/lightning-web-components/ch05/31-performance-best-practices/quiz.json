@@ -1,0 +1,60 @@
+{
+  "lesson": "performance-best-practices",
+  "questions": [
+    {
+      "q": "What did Salesforce's own performance testing find about rendering large lists in LWC?",
+      "options": [
+        "List size has no measurable effect on rendering performance",
+        "Rendering large record counts (in the thousands) directly into the DOM measurably slows the page down, while lists of roughly 50 rows or fewer render quickly",
+        "Only lists with fewer than 5 rows render correctly at all",
+        "Large lists only cause problems when combined with @wire"
+      ],
+      "answer": 1,
+      "explain": "Salesforce's own testing found list size matters a great deal -- large lists (in the thousands of rows) rendered at once measurably slow the page, while lists around 50 rows or fewer render quickly."
+    },
+    {
+      "q": "Why is `lwc:if={showAdvancedFilters}` described as a legitimate performance tool, not just a UI pattern?",
+      "options": [
+        "Because content inside a false conditional block isn't instantiated into the DOM at all, so a child component inside it doesn't run its lifecycle hooks or fetch data until the condition becomes true",
+        "Because lwc:if automatically compresses the component's JavaScript bundle",
+        "Because lwc:if prevents the component from ever being included in the deployed package",
+        "Because lwc:if disables CSS rendering for hidden content"
+      ],
+      "answer": 0,
+      "explain": "A conditional block that's currently false doesn't exist in the DOM, meaning any child component inside it doesn't instantiate, doesn't run connectedCallback(), and doesn't trigger any data fetching -- deferring real work, not just hiding it visually."
+    },
+    {
+      "q": "Why is unconditional, expensive work inside `renderedCallback()` a performance risk, separate from the infinite-loop risk covered in Lesson 14?",
+      "options": [
+        "renderedCallback() only runs once per component, so this isn't actually a risk",
+        "renderedCallback() runs after every render, not just the first one, so unconditional expensive work there repeats on every single re-render",
+        "renderedCallback() runs on a server, making any client-side cost irrelevant",
+        "Expensive work is never allowed inside any lifecycle hook"
+      ],
+      "answer": 1,
+      "explain": "Because renderedCallback() fires after every render (not just the first), doing expensive work there unconditionally means that cost repeats every time the component re-renders -- the same guard pattern used for correctness also protects performance."
+    },
+    {
+      "q": "What is the LWC equivalent of Apex's 'no SOQL or DML inside a loop' discipline, as described in this lesson?",
+      "options": [
+        "Each child component in a rendered list should independently fetch its own data via its own Apex call",
+        "Fetch everything a list needs in one batched call before rendering, and pass the already-fetched data down into child components rather than letting each child fetch its own slice",
+        "Avoid using for:each entirely for any list longer than 10 items",
+        "Only use @wire, never imperative calls, to avoid any performance risk"
+      ],
+      "answer": 1,
+      "explain": "Fetching data once per row (one Apex call per list item) multiplies a single reasonable request into many individual round trips -- the fix mirrors Apex bulkification: fetch once, in bulk, and distribute the data down to children."
+    },
+    {
+      "q": "When does caching a getter's result in a plain field, rather than leaving the computation inside the getter, become the right fix?",
+      "options": [
+        "Always -- getters should never be used for any computation",
+        "When the getter does meaningful work (like sorting or filtering a sizeable array) and is referenced from a template that re-renders frequently, making the repeated computation measurably expensive",
+        "Only when the getter is marked @api",
+        "Only when the getter returns a boolean value"
+      ],
+      "answer": 1,
+      "explain": "Since a getter recomputes every time it's read, a computationally expensive getter referenced from a frequently re-rendering template can add measurable cost -- at that point, caching the derived result in a plain field (recomputed only when its real inputs change) is the appropriate fix."
+    }
+  ]
+}
