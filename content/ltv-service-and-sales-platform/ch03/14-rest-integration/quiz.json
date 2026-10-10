@@ -1,0 +1,60 @@
+{
+  "lesson": "rest-integration",
+  "questions": [
+    {
+      "q": "Why is the ApplianceMakers Warranty Network integration built as an outbound Apex callout rather than an inbound REST endpoint?",
+      "options": [
+        "Because Salesforce cannot expose inbound REST endpoints",
+        "Because inbound integrations require a different programming language",
+        "Because Salesforce is the caller and the manufacturer's system is the callee -- Salesforce initiates the request",
+        "Because outbound callouts don't require any authentication"
+      ],
+      "answer": 2,
+      "explain": "This is an outbound integration: Solstice's org calls out to the manufacturer's API, making it an Apex HTTP callout rather than an exposed inbound endpoint."
+    },
+    {
+      "q": "Why does `req.setEndpoint()` use `callout:ApplianceMakers_Warranty/claims` instead of a literal URL?",
+      "options": [
+        "The callout: prefix is required syntax for routing the request through a Named Credential, keeping the real URL and auth secret out of the Apex code",
+        "It's just a stylistic preference with no functional effect",
+        "Literal URLs are not supported by the Http class",
+        "It makes the callout run synchronously instead of asynchronously"
+      ],
+      "answer": 0,
+      "explain": "The callout:Name syntax routes the request through a Named Credential, which is how the real endpoint URL and authentication secret are kept out of the Apex source code."
+    },
+    {
+      "q": "What does `JSON.deserializeUntyped()` return, as used in `submitClaim`?",
+      "options": [
+        "A strongly-typed Apex wrapper class instance",
+        "An untyped Map<String, Object> / List<Object> structure that must be cast field by field",
+        "A raw HttpResponse object",
+        "Nothing -- it is a void method"
+      ],
+      "answer": 1,
+      "explain": "JSON.deserializeUntyped() returns an untyped Map/List structure, appropriate for this small, simple response rather than defining a full typed wrapper class."
+    },
+    {
+      "q": "Why does `submitClaim` explicitly check `res.getStatusCode()` instead of relying on a thrown exception to detect failure?",
+      "options": [
+        "Because Apex callouts always throw an exception on any non-200 status, making the check redundant",
+        "Because getStatusCode() is required syntax with no functional purpose",
+        "Because exceptions cannot be thrown from Queueable context",
+        "Because http.send() does not throw an exception for a 4xx or 5xx HTTP status -- a response describing failure is still a successful callout from Apex's point of view"
+      ],
+      "answer": 3,
+      "explain": "A callout that receives a 400 or 500 response doesn't throw an Apex exception on its own -- the code must check the status code itself and raise its own exception when the call wasn't actually successful."
+    },
+    {
+      "q": "Why is `WarrantyClaimSubmissionQueueable` (from Lesson 11) allowed to call `ManufacturerWarrantyClient.submitClaim()`?",
+      "options": [
+        "Because that Queueable implements Database.AllowsCallouts, which is required for a class to legally make an HTTP callout from async context",
+        "Because all Apex classes can make callouts by default",
+        "Because the method name starts with 'submit'",
+        "Because Warranty_Claim__c has a special callout permission field"
+      ],
+      "answer": 0,
+      "explain": "Only a class that implements Database.AllowsCallouts (or runs outside restricted contexts like a trigger) may make HTTP callouts -- that Queueable already declared it in Lesson 11, which is what makes this callout legal."
+    }
+  ]
+}

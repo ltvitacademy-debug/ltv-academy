@@ -1,0 +1,60 @@
+{
+  "lesson": "named-credentials-and-error-handling",
+  "questions": [
+    {
+      "q": "In the current Salesforce model, what is the difference between an External Credential and a Named Credential?",
+      "options": [
+        "They are two names for exactly the same thing",
+        "The Named Credential holds the secret; the External Credential holds only the URL",
+        "External Credentials are used only in Flow, Named Credentials only in Apex",
+        "The External Credential holds authentication parameters and secret-storage configuration; the Named Credential holds the callout endpoint URL and references the External Credential"
+      ],
+      "answer": 3,
+      "explain": "The current two-piece model separates authentication (External Credential) from the endpoint URL (Named Credential, which references the External Credential) -- the older single-definition style is deprecated."
+    },
+    {
+      "q": "Why does the ApplianceMakers Warranty integration use a Named Principal rather than a Per-User principal?",
+      "options": [
+        "Named Principal is required for all outbound callouts",
+        "The manufacturer's API doesn't need to know which individual Solstice employee submitted a claim, only that Solstice submitted it -- one shared identity is appropriate",
+        "Per-User principals are not supported in Apex callouts",
+        "Named Principal is faster than Per-User in every case"
+      ],
+      "answer": 1,
+      "explain": "Named Principal uses one shared identity for all users making the callout, which fits since the external system only needs to know Solstice submitted the claim, not which employee."
+    },
+    {
+      "q": "What distinguishes `ManufacturerWarrantyTransientException` from `ManufacturerWarrantyRejectedException` in this lesson's design?",
+      "options": [
+        "A transient exception represents a failure worth retrying (e.g. a timeout); a rejected exception represents a failure that will recur identically on retry and needs human attention instead",
+        "They are functionally identical, just named differently for readability",
+        "Rejected exceptions are always retried; transient exceptions are never retried",
+        "Transient exceptions can only be thrown from Batch Apex"
+      ],
+      "answer": 0,
+      "explain": "The two subtypes let the Queueable react differently: retry for a transient failure like a timeout, but flag for manual review on a rejected failure like an invalid serial number that won't succeed on retry."
+    },
+    {
+      "q": "Why does the Queueable's retry logic use a capped `attemptsRemaining` counter instead of retrying indefinitely?",
+      "options": [
+        "Apex does not allow any loops in Queueable classes",
+        "Retrying more than once is against Salesforce's terms of service",
+        "An indefinitely retried job against a prolonged outage would keep re-enqueuing and could eventually run into the shared 24-hour asynchronous Apex limit",
+        "attemptsRemaining is required syntax with no functional effect"
+      ],
+      "answer": 2,
+      "explain": "A capped retry count prevents an extended external outage from causing indefinite re-enqueuing, which would also risk exhausting the org's shared async Apex limit."
+    },
+    {
+      "q": "Why does catching `ManufacturerWarrantyRejectedException` and `ManufacturerWarrantyTransientException` separately matter, instead of one broad `catch (Exception e)`?",
+      "options": [
+        "Separate catches run faster than one broad catch",
+        "It lets the handler make a genuinely different decision -- give up and flag for a human vs. retry -- based on which specific failure occurred",
+        "Apex does not allow catching a general Exception type",
+        "It has no real benefit; it's purely a style preference"
+      ],
+      "answer": 1,
+      "explain": "The whole point of the exception subtypes is that the calling code can react differently depending on the specific failure, which a single broad catch block couldn't distinguish."
+    }
+  ]
+}

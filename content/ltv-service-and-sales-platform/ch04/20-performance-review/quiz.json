@@ -1,0 +1,60 @@
+{
+  "lesson": "performance-review",
+  "questions": [
+    {
+      "q": "Why did the 50-record bulk test from Lesson 10 pass even though the original `beforeInsert` logic wasn't actually bulk-safe at every volume?",
+      "options": [
+        "Because the trigger handler was already fully refactored at that point",
+        "Because 50 queries is still under the 100-query synchronous governor limit, even though one query per record doesn't scale -- a larger volume like 200 would exceed that limit",
+        "Because Apex ignores governor limits during tests",
+        "Because the handler never actually queries anything"
+      ],
+      "answer": 1,
+      "explain": "At 50 records, one query per record in the loop totals 50 queries -- within the 100-query limit -- which is why it passed despite not being a genuinely bulk-safe pattern; at 200 records it would exceed the limit."
+    },
+    {
+      "q": "What is the specific refactor this lesson applies to make the claim coverage check bulk-safe?",
+      "options": [
+        "Remove the coverage check entirely",
+        "Move the check to a nightly Batch Apex job instead of the trigger",
+        "Switch the query from SOQL to SOSL",
+        "Query once for the whole batch into a Map<Id, Service_Contract__c> keyed by Asset Id, then look up each claim's contract from the map inside the loop instead of querying per record"
+      ],
+      "answer": 3,
+      "explain": "The fix is the standard query-outside-the-loop refactor: one batched query building a Map, then an in-memory lookup inside the loop rather than a query per record."
+    },
+    {
+      "q": "Why does the Case to Installation Job Flow from Lesson 6 also need a performance review, per this lesson?",
+      "options": [
+        "Because Flow cannot be bulkified under any circumstances",
+        "Because Flows are always slower than Apex regardless of design",
+        "Because a Get Records element can still issue its query per flow interview (per record) unless written with batch-aware patterns, the same per-record query risk as Apex",
+        "Because Flow does not support record-triggered automation"
+      ],
+      "answer": 2,
+      "explain": "Even though the platform bulkifies Flow across records in one transaction, a Get Records element can still run once per interview/record, mirroring the same per-record query concern flagged in the trigger."
+    },
+    {
+      "q": "What does this lesson recommend as the first step of a performance review, rather than reasoning about bulk safety in the abstract?",
+      "options": [
+        "Deliberately bulk-loading realistic data volume into a scratch org and observing what actually breaks or slows down",
+        "Reading the Apex Developer Guide's governor limits page one more time",
+        "Rewriting all Apex classes from scratch",
+        "Disabling all triggers during the review"
+      ],
+      "answer": 0,
+      "explain": "The lesson recommends actually loading realistic bulk volume and observing behavior, rather than only reasoning about correctness abstractly."
+    },
+    {
+      "q": "Why does the performance review conclude `StaleInstallationJobBatch` from Lesson 11 is already structurally safe at any volume?",
+      "options": [
+        "Because it never queries any data",
+        "Because it runs only once per year",
+        "Because it is written in a special bulk-only syntax unavailable to triggers",
+        "Because Batch Apex's chunking exists specifically to process large record sets across separate transactions, unlike a single synchronous transaction"
+      ],
+      "answer": 3,
+      "explain": "Batch Apex's whole design splits work into chunks across transactions specifically to handle large volumes safely, which is why the review only checks its scope size rather than flagging a fundamental bulk-safety problem."
+    }
+  ]
+}
