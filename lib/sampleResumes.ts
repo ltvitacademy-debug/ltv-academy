@@ -7,8 +7,8 @@ import path from "path";
 export type SampleResume = { label: string; href: string };
 
 const RESUME_FILES: { file: string; label: string }[] = [
-  { file: "job-ready-resume.docx", label: "Job-Ready resume (.docx)" },
-  { file: "advanced-resume.docx", label: "Advanced resume (.docx)" },
+  { file: "job-ready-resume.pdf", label: "View the Job-Ready resume" },
+  { file: "advanced-resume.pdf", label: "View the Advanced resume" },
 ];
 
 export function getSampleResumes(pathSlug: string): SampleResume[] {

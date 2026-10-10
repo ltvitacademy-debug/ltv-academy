@@ -666,10 +666,11 @@ export default function PathDetailRedesign({
                     <a
                       key={r.href}
                       href={r.href}
-                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="inline-block rounded-[2px] border border-crimson/40 bg-parchment px-6 py-2.5 text-sm font-semibold text-crimson-deep hover:bg-crimson hover:text-parchment transition-colors"
                     >
-                      Download: {r.label} →
+                      {r.label} →
                     </a>
                   ))}
                 </div>
