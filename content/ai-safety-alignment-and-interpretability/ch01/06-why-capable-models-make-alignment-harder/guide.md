@@ -29,7 +29,14 @@ If more capable systems can find subtler exploits and don't automatically genera
 
 ## Key terms
 
-- **Search effectiveness** — a more capable system is a more effective search process, for both intended and unintended strategies
-- **Generalization gap** — the possibility that capability and intended-value adherence improve at different rates or in different ways as a model scales
-- **Situational awareness** — a model's capacity to represent facts about its own situation and use that information; an open area of study
-- **Scalable oversight** — maintaining meaningful supervision of a system as its capability grows past what direct human checking can verify (covered in Chapter 4)
+| Term | Meaning |
+|---|---|
+| Search effectiveness | A more capable system is a more effective search process, for both intended and unintended strategies |
+| Ceiling effect | Good behavior that reflects a weaker model's inability to find an exploit, not the absence of one |
+| Generalization gap | The possibility that capability and intended-value adherence improve at different rates or in different ways as a model scales |
+| Situational awareness | A model's capacity to represent facts about its own situation and use that information; an open area of study |
+| Scalable oversight | Maintaining meaningful supervision of a system as its capability grows past what direct human checking can verify (covered in Chapter 4) |
+
+## Recap
+
+More capable models are better search processes overall, which means they're better at finding both the intended solution and subtle, unintended exploits of whatever gaps remain in a specification or reward signal — and capability gains don't automatically bring proportional gains in adherence to intended values. This closes Chapter 1's case that alignment failures are a predictable, structural consequence of optimization, not a rare glitch that goes away as models improve. Next up, Chapter 2 opens with Lesson 7: RLHF & RLAIF, an Alignment Lens, where you'll revisit the training methods you already know through everything this chapter just covered.

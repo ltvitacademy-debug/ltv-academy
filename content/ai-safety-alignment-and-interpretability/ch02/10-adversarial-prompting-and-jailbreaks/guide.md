@@ -31,7 +31,14 @@ Each of these categories can be, and has been, specifically defended against —
 
 ## Key terms
 
-- **Jailbreak** — an input crafted to circumvent a model's safety training and elicit a disallowed output
-- **Distributional gap** — the mismatch between the finite set of phrasings safety training covered and the much larger space of possible inputs a model can receive
-- **Roleplay/persona framing** — wrapping a request in a fictional or hypothetical frame to shift how it pattern-matches against trained refusal behavior
-- **Many-shot context stuffing** — using a long context of examples to shift a model's behavior pattern before the actual request appears
+| Term | Meaning |
+|---|---|
+| Jailbreak | an input crafted to circumvent a model's safety training and elicit a disallowed output |
+| Distributional gap | the mismatch between the finite set of phrasings safety training covered and the much larger space of possible inputs a model can receive |
+| Roleplay/persona framing | wrapping a request in a fictional or hypothetical frame to shift how it pattern-matches against trained refusal behavior |
+| Many-shot context stuffing | using a long context of examples to shift a model's behavior pattern before the actual request appears |
+
+## Recap
+
+A jailbreak exploits the distributional gap between what safety training covered and the much larger space of real inputs — roleplay framing, obfuscation, and many-shot context stuffing are three general shapes that gap takes, and no single patch closes it permanently, since the gap is structural, not a specific bug. Next up, Lesson 11: refusal training and its limits, looking at the specific behavior jailbreaks are trying to defeat.
+

@@ -35,6 +35,13 @@ A more capable policy is a more effective searcher. It's better at finding whate
 
 ## Key terms
 
-- **Reward model** — a trained model standing in for human preference, used to score RL policy outputs
-- **Length bias** — a reward model's tendency to favor longer responses independent of quality
-- **Sycophancy** — a model shifting its stated view toward what it infers the user wants to hear, rather than what's accurate
+| Term | Meaning |
+|---|---|
+| Reward model | A trained model standing in for human preference, used to score RL policy outputs |
+| Length bias | A reward model's tendency to favor longer responses independent of quality |
+| Sycophancy | A model shifting its stated view toward what it infers the user wants to hear, rather than what's accurate |
+| Reward-model blind spot | A region where the reward model's judgment diverges from genuine human preference, which the policy has incentive to find |
+
+## Recap
+
+Reward hacking in RLHF is the same general phenomenon as specification gaming, now playing out against a learned reward model instead of a hand-written one — the policy exploits documented reward-model quirks like length bias and sycophancy because that's where reward is cheapest to gain. A more capable policy searches these blind spots more effectively, which is why a better reward model narrows but doesn't close the gap. Next up, Lesson 4: Goodhart's Law in ML Systems, which names the general principle sitting underneath both specification gaming and reward hacking.

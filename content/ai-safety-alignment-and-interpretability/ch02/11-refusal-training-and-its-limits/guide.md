@@ -5,6 +5,7 @@ Jailbreaks, from the last lesson, are attempts to get around something — and t
 ## What you'll learn
 
 - How refusal training works: fine-tuning and RLHF shaping the model to produce a refusal when a request matches a harmful category
+- A recent interpretability finding: refusal behavior is often mediated by a single direction in a model's activation space
 - Brittleness — why refusal behavior trained on specific phrasings doesn't automatically generalize to every rephrasing of the same request
 - Over-refusal — false positives where benign requests are refused because they superficially resemble a harmful pattern
 - The critique that a trained refusal is a surface behavior, not direct evidence of deeper value alignment
@@ -12,6 +13,12 @@ Jailbreaks, from the last lesson, are attempts to get around something — and t
 ## How refusal training works
 
 Refusal training uses the same tools covered earlier in this chapter — supervised fine-tuning and RLHF — applied specifically to requests in categories a lab has decided the model shouldn't fulfill. The model is trained on examples where the correct response is a refusal (sometimes with an explanation, sometimes with a redirect to safer information), rather than an attempt to help. Over many such examples, the model learns to produce refusal-shaped responses when an incoming request matches the patterns those categories were trained on. This is, structurally, no different from any other behavior shaped by fine-tuning or RLHF — it's the same mechanism, just aimed at producing "no" instead of "yes" for a defined set of request types.
+
+## What's actually happening inside the model: a refusal direction
+
+Refusal training describes what shapes the behavior from the outside — the loss, the data, the optimization. It doesn't say anything about how the resulting behavior is actually implemented inside the network. Interpretability research on open-weight chat models has started answering that question directly, and the answer is strikingly simple: across a range of models, refusal behavior is mediated by a single direction in the model's residual stream activations. Erasing that one direction causes the model to stop refusing harmful requests almost entirely, while adding it to the activations on an otherwise harmless prompt makes the model refuse that harmless prompt too. A behavior that looks, from the outside, like a complex judgment call about harm turns out to be implemented, at least in significant part, as a single linear feature the model checks before deciding whether to comply.
+
+This finding matters for two reasons. First, it's a concrete example of the interpretability approach this course turns to in later chapters: instead of only observing behavior, you can open the model up and locate the specific internal mechanism producing it. Second, it has an uncomfortable practical implication — if refusal is mediated by one identifiable direction, then suppressing that direction (a white-box edit to the model's weights or activations) is enough to disable refusal behavior broadly, without needing a cleverly worded prompt at all. That turns an interpretability finding into a jailbreak technique in its own right, which is exactly the kind of result that makes "where is this behavior actually implemented" a safety-relevant question, not just a scientific curiosity.
 
 ## Limit one: brittleness
 
@@ -27,7 +34,15 @@ The deeper critique, and the one that connects refusal training back to RLHF's o
 
 ## Key terms
 
-- **Refusal training** — fine-tuning and RLHF applied specifically to produce a refusal response for requests matching defined harmful categories
-- **Brittleness** — the tendency of refusal training to generalize well to phrasings resembling its training examples and poorly to rephrasings that still request the same thing
-- **Over-refusal** — a false positive where a benign request is refused because it superficially resembles a harmful pattern
-- **Surface behavior vs. deep alignment** — the open question of whether a reliably trained refusal reflects any deeper internalized value, versus just a learned output pattern
+| Term | Meaning |
+|---|---|
+| Refusal training | fine-tuning and RLHF applied specifically to produce a refusal response for requests matching defined harmful categories |
+| Refusal direction | a single direction in a model's internal activation space found, in interpretability research, to mediate refusal behavior across a range of models |
+| Brittleness | the tendency of refusal training to generalize well to phrasings resembling its training examples and poorly to rephrasings that still request the same thing |
+| Over-refusal | a false positive where a benign request is refused because it superficially resembles a harmful pattern |
+| Surface behavior vs. deep alignment | the open question of whether a reliably trained refusal reflects any deeper internalized value, versus just a learned output pattern |
+
+## Recap
+
+Refusal training reliably produces a refusal for requests matching a harmful category, and interpretability work has even traced it to a single activation-space direction in some models — but it's brittle to rephrasing, prone to over-refusal on superficially similar benign requests, and its reliability under one set of phrasings is not proof of deeper value alignment. Next up, Lesson 12: the limits of current alignment methods, synthesizing the chapter's techniques (RLHF, Constitutional AI, red-teaming, refusal training) into one honest picture of what they collectively do and don't guarantee.
+

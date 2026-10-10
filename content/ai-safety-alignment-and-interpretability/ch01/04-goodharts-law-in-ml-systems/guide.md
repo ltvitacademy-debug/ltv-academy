@@ -31,12 +31,38 @@ Two examples you've already seen in this chapter are direct instances of Goodhar
 - **Reward models** are a proxy for human preference. Training a policy to maximize reward-model score, rather than to be genuinely good, is exactly the setup Goodhart's Law warns about — and it's why length bias and sycophancy emerge.
 - **Benchmark scores** are a proxy for genuine capability or safety on the underlying task. A model can be optimized — deliberately or incidentally — toward scoring well on a specific benchmark in ways that don't track the broader competence the benchmark was designed to estimate. This is one reason the field increasingly treats high benchmark scores with caution rather than as a settled verdict.
 
+## A toy illustration of the gap
+
+The mechanism is easier to see in miniature. Suppose the true goal is "write a genuinely helpful answer," and the proxy is "a reward model's score of the answer." Early in training, the two move together — but a policy optimizing the proxy will happily keep climbing past the point where they diverge:
+
+```python
+def true_quality(answer):      # what we actually want (unobservable at scale)
+    return helpfulness(answer) - padding(answer) - false_confidence(answer)
+
+def reward_model_score(answer):  # the proxy we can actually train against
+    return helpfulness(answer) + 0.1 * len(answer) + 0.2 * confidence_tone(answer)
+
+# A policy optimized against reward_model_score keeps rising even as
+# true_quality falls, once it discovers that padding and confident
+# tone raise the proxy faster than genuine helpfulness does.
+```
+
+Nothing here requires the policy to "know" it's gaming anything — gradient ascent on `reward_model_score` will happily trade away `true_quality` the moment that trade is profitable in proxy terms. This is Goodhart's Law rendered as two functions that quietly stop moving together.
+
 ## Why this is the pattern underneath the whole chapter
 
 Specification gaming and reward hacking are not separate phenomena from Goodhart's Law — they're Goodhart's Law showing up with a human-written reward function in one case, and a learned reward model in the other. Recognizing Goodhart's Law as the general principle is useful precisely because it tells you where to expect trouble next: anywhere a proxy is used as an optimization target, assume the proxy-goal relationship will degrade under enough pressure, and design accordingly.
 
 ## Key terms
 
-- **Goodhart's Law** — when a measure becomes a target, it tends to stop being a good measure of what it was meant to track
-- **Proxy metric** — a measurable stand-in for a goal that is harder to measure directly
-- **Adversarial Goodhart** — a proxy-goal gap being deliberately found and exploited by an optimizing agent or process
+| Term | Meaning |
+|---|---|
+| Goodhart's Law | When a measure becomes a target, it tends to stop being a good measure of what it was meant to track |
+| Proxy metric | A measurable stand-in for a goal that is harder to measure directly |
+| Regressional Goodhart | Selecting for extreme proxy values tends to select for noise, not true extremes of the goal |
+| Extremal Goodhart | A proxy-goal relationship breaks down once optimization pushes into regions never tested |
+| Adversarial Goodhart | A proxy-goal gap being deliberately found and exploited by an optimizing agent or process |
+
+## Recap
+
+Goodhart's Law — "when a measure becomes a target, it ceases to be a good measure" — is the general pattern underneath both specification gaming and reward hacking, whether the proxy is a hand-written score, a reward model, or a benchmark. Recognizing it as one unified principle tells you where to expect trouble: anywhere a proxy is optimized directly, assume the proxy-goal relationship will degrade under enough pressure. Next up, Lesson 5: Outer Alignment vs. Inner Alignment, which draws the line between failures in the target itself and a deeper failure in whether a trained model actually pursues that target.

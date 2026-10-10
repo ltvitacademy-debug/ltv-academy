@@ -27,7 +27,14 @@ Two things follow directly from naming this gap. First, before trying to fix it,
 
 ## Key terms
 
-- **Surface-level alignment** — a change in a model's observed behavior that isn't guaranteed to reflect a corresponding deeper change in how that behavior is generated
-- **Human-derived judgment** — a standard that traces back to human evaluation, whether applied directly (a human rater) or through an intermediate tool (a reward model, an AI judge trained on a human-written constitution)
-- **Scalability ceiling** — the limit on how well human or human-derived judgment can evaluate outputs on tasks that exceed the judge's own expertise
-- **Scalable oversight** — the general name for techniques aiming to extend reliable evaluation and training signal to tasks beyond what a human judge can directly assess, introduced here and covered starting next chapter
+| Term | Meaning |
+|---|---|
+| Surface-level alignment | a change in a model's observed behavior that isn't guaranteed to reflect a corresponding deeper change in how that behavior is generated |
+| Human-derived judgment | a standard that traces back to human evaluation, whether applied directly (a human rater) or through an intermediate tool (a reward model, an AI judge trained on a human-written constitution) |
+| Scalability ceiling | the limit on how well human or human-derived judgment can evaluate outputs on tasks that exceed the judge's own expertise |
+| Scalable oversight | the general name for techniques aiming to extend reliable evaluation and training signal to tasks beyond what a human judge can directly assess, introduced here and covered starting next chapter |
+
+## Recap
+
+RLHF, Constitutional AI, red-teaming, and refusal training all ultimately trace back to human or human-derived judgment, and that judgment doesn't obviously scale to tasks or models that exceed what a human evaluator can directly assess — a real ceiling on this chapter's whole toolkit, not a flaw in any one method. That gap is exactly why the course turns next to measuring it directly (Chapter 3: evaluations for safety) before tackling how to extend oversight past it (Chapter 4: scalable oversight). Next up, Lesson 13: capability evaluations vs. safety evaluations.
+

@@ -33,7 +33,14 @@ Red-teaming doesn't train the model; it finds out where training didn't work. Wh
 
 ## Key terms
 
-- **Red-teaming** — adversarial testing of an already-trained model, deliberately trying to elicit harmful or unwanted behavior before deployment
-- **Manual red-teaming** — human testers deliberately probing a model's weaknesses using judgment, creativity, and domain expertise
-- **Automated red-teaming** — using a model to generate large volumes of adversarial test prompts, favoring breadth and scale over novelty
-- **External (third-party) red-teaming** — testing done by people outside the lab, bringing assumptions and angles an internal team's shared blind spots might miss
+| Term | Meaning |
+|---|---|
+| Red-teaming | adversarial testing of an already-trained model, deliberately trying to elicit harmful or unwanted behavior before deployment |
+| Manual red-teaming | human testers deliberately probing a model's weaknesses using judgment, creativity, and domain expertise |
+| Automated red-teaming | using a model to generate large volumes of adversarial test prompts, favoring breadth and scale over novelty |
+| External (third-party) red-teaming | testing done by people outside the lab, bringing assumptions and angles an internal team's shared blind spots might miss |
+
+## Recap
+
+Red-teaming is a deployment-time check, not a training-time technique: manual testers and automated adversarial-prompt generation both try to break an already-trained model before it ships, and external testers catch blind spots an internal team shares without realizing it. Next up, Lesson 10: adversarial prompting and jailbreaks, the specific attack patterns red-teaming is looking for.
+

@@ -31,8 +31,15 @@ Scaling the labeling process is not the same as resolving the limits labeling wa
 
 ## Key terms
 
-- **RLHF (Reinforcement Learning from Human Feedback)** — training a policy against a reward model fit to human preference comparisons
-- **RLAIF (Reinforcement Learning from AI Feedback)** — the same RL mechanics as RLHF, with some or all human preference labels replaced by AI-generated judgments
-- **Labeler disagreement** — raters giving inconsistent or contradictory preference judgments, especially on ambiguous or value-laden questions
-- **Scalability ceiling** — the limit on how well human (or AI) judgment can evaluate outputs on tasks that exceed the judge's own expertise
-- **Surface-level behavior change** — a shift in a model's observed outputs that isn't guaranteed to reflect a deeper change in how those outputs are generated
+| Term | Meaning |
+|---|---|
+| RLHF (Reinforcement Learning from Human Feedback) | training a policy against a reward model fit to human preference comparisons |
+| RLAIF (Reinforcement Learning from AI Feedback) | the same RL mechanics as RLHF, with some or all human preference labels replaced by AI-generated judgments |
+| Labeler disagreement | raters giving inconsistent or contradictory preference judgments, especially on ambiguous or value-laden questions |
+| Scalability ceiling | the limit on how well human (or AI) judgment can evaluate outputs on tasks that exceed the judge's own expertise |
+| Surface-level behavior change | a shift in a model's observed outputs that isn't guaranteed to reflect a deeper change in how those outputs are generated |
+
+## Recap
+
+RLHF aligns a model to what raters preferred, not to any independent standard of "good," and that comes with three real structural limits: noisy labeler disagreement, a scalability ceiling once tasks exceed the rater's own expertise, and no guarantee that observed behavior change runs any deeper than the surface. RLAIF substitutes AI judgments for human ones and genuinely solves the labeling-volume bottleneck, but it relocates the scalability ceiling rather than removing it. Next up, Lesson 8: Constitutional AI, revisited specifically through what it does and doesn't buy for alignment.
+

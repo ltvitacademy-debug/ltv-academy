@@ -1,0 +1,60 @@
+{
+  "lesson": "applying-activation-patching-to-your-own-model",
+  "questions": [
+    {
+      "q": "What does activation patching test, mechanically?",
+      "options": [
+        "Whether two models have the same number of parameters",
+        "Whether a model can be quantized without losing accuracy",
+        "Whether a model's weights are stored in float16 or float32",
+        "Whether swapping an internal activation from a clean run into a corrupted run's forward pass changes the output, as causal evidence for what that activation carries"
+      ],
+      "answer": 3,
+      "explain": "Patching splices a captured activation from a clean run into a corrupted run at the same layer and position; if the output flips, that activation causally carried the relevant information."
+    },
+    {
+      "q": "Why does this lesson use raw PyTorch forward hooks instead of TransformerLens for SQL Pete?",
+      "options": [
+        "SQL Pete has no residual stream to hook into",
+        "PyTorch hooks are always faster than TransformerLens",
+        "TransformerLens's maintained model coverage does not include the Qwen2 family that Qwen2.5-Coder-1.5B-Instruct is built on",
+        "TransformerLens only works on encoder-only models"
+      ],
+      "answer": 2,
+      "explain": "TransformerLens's supported architectures list Qwen3, not the Qwen2 family SQL Pete is based on, so loading it through HookedTransformer risks failing or silently mis-mapping weights — raw register_forward_hook calls on the underlying transformers model work regardless."
+    },
+    {
+      "q": "In the clean/corrupted pair used for SQL Pete, what is the minimal pair?",
+      "options": [
+        "Two completely unrelated questions about different schemas",
+        "A generation where the model names a real column correctly, versus a near-identical generation where it hallucinates a column name instead",
+        "The same question asked in English versus asked in SQL",
+        "The SFT-only checkpoint versus the RLHF checkpoint"
+      ],
+      "answer": 1,
+      "explain": "A minimal pair differs only in the one behavior under test — here, correct column naming versus hallucination — so that whatever activation differs between the two runs is a candidate cause of that specific difference."
+    },
+    {
+      "q": "What real pitfall does the lesson warn about when combining custom hooks with the transformers library?",
+      "options": [
+        "Forward hooks cannot be removed once registered",
+        "Hooks only work on CPU, not GPU",
+        "Setting output_hidden_states=True installs internal hooks on every layer, and combining that with your own patching hooks on the same layers can cause mutual recursion or silent NaN outputs",
+        "Custom hooks are deprecated in the latest PyTorch release"
+      ],
+      "answer": 2,
+      "explain": "Recent transformers versions add their own forward hooks when output_hidden_states=True is set; running custom hooks on the same layers at the same time can cause recursion errors or silent NaNs, so the lesson recommends keeping output_hidden_states off during patching."
+    },
+    {
+      "q": "What is attribution patching used for, and what is its tradeoff?",
+      "options": [
+        "It requires no forward passes at all",
+        "It's a gradient-based approximation that can screen many components cheaply from one clean pass, one corrupted pass, and one backward pass, but is less reliable on large activations like a full residual stream",
+        "It only works after a model has already been fully interpreted",
+        "It replaces exact activation patching entirely and should always be used instead"
+      ],
+      "answer": 1,
+      "explain": "Attribution patching approximates the effect of patching many components at once far more cheaply than exact patching, which is useful for narrowing down candidates, but the approximation degrades on large activations, so exact patching is still needed to confirm a finding."
+    }
+  ]
+}

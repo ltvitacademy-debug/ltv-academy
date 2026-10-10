@@ -21,7 +21,7 @@ A course assignment tells you what to build and what "correct" looks like. A res
 
 ## The lab's three questions, already scoped
 
-- **Project 1:** "Across randomized instances of one four-table join, does a PPO agent choosing from six plan hints beat SQL Server's default plan on logical reads and elapsed time?" — specific, falsifiable by running 200 held-out episodes, and scoped to one query template.
+- **Project 1:** "Across randomized instances of one four-table join, does a PPO agent choosing from five plan hints beat SQL Server's default plan on logical reads and elapsed time?" — specific, falsifiable by running 200 held-out episodes, and scoped to one query template.
 - **Project 2:** "Trained on roughly 500 labeled pairs, does a `distilbert-base-uncased` reward model rank the human-preferred cleaned record higher than the alternative, and where does it fail?" — specific, falsifiable by held-out pair accuracy, scoped to one rubric.
 - **Project 3:** "Does RLHF on top of an SFT model measurably improve execution-correctness accuracy for SQL Pete, without introducing new hallucinated columns or tables?" — specific, falsifiable by a before/after evaluation, scoped to one assistant and two schemas.
 

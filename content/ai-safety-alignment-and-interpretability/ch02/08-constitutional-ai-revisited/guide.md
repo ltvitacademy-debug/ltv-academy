@@ -31,7 +31,14 @@ Two critiques are worth holding onto, genuinely and without softening them. Firs
 
 ## Key terms
 
-- **Constitution** — a written, explicit set of principles a model is trained to follow, rather than an implicit standard inferred only from preference comparisons
-- **Supervised stage (critique and revision)** — the first training stage, where the model critiques and revises its own outputs against the constitution to produce supervised fine-tuning data
-- **RL stage (RLAIF)** — the second training stage, where an AI model judges response pairs against the constitution to train a reward model, and the policy is optimized against it
-- **Transparency of principles** — the advantage of training against a written, readable standard rather than only an implicit pattern inside a reward model
+| Term | Meaning |
+|---|---|
+| Constitution | a written, explicit set of principles a model is trained to follow, rather than an implicit standard inferred only from preference comparisons |
+| Supervised stage (critique and revision) | the first training stage, where the model critiques and revises its own outputs against the constitution to produce supervised fine-tuning data |
+| RL stage (RLAIF) | the second training stage, where an AI model judges response pairs against the constitution to train a reward model, and the policy is optimized against it |
+| Transparency of principles | the advantage of training against a written, readable standard rather than only an implicit pattern inside a reward model |
+
+## Recap
+
+Constitutional AI makes RLAIF concrete: a written constitution drives a supervised critique-and-revision stage, then an RL stage where an AI judge scores responses against that same constitution. It buys real scalability and a legible, inspectable standard — but the constitution's wording still reflects its authors' own judgment calls, and the method doesn't make reward hacking disappear. Next up, Lesson 9: red-teaming a model, the adversarial-testing side of catching what training alone didn't catch.
+

@@ -32,7 +32,13 @@ We are previewing these terms, not explaining them in full — that's the job of
 
 ## Key terms
 
-- **Capability** — how effectively a system achieves the objective it is actually pursuing
-- **Alignment** — the degree to which a system's actual objective matches what its designers intend
-- **Outer alignment** — whether the specified or trained-toward objective is the right one (previewed here, covered in Lesson 5)
-- **Inner alignment** — whether the resulting model actually internalizes that objective (previewed here, covered in Lesson 5)
+| Term | Meaning |
+|---|---|
+| Capability | How effectively a system achieves the objective it is actually pursuing |
+| Alignment | The degree to which a system's actual objective matches what its designers intend |
+| Outer alignment | Whether the specified or trained-toward objective is the right one (previewed here, covered in Lesson 5) |
+| Inner alignment | Whether the resulting model actually internalizes that objective (previewed here, covered in Lesson 5) |
+
+## Recap
+
+Alignment and capability are different axes: capability measures how effectively a system pursues its actual objective, while alignment measures whether that objective matches what its designers intended. That gap can open in two places, outer and inner alignment, which this course will unpack in detail. Next up, Lesson 2: Specification Gaming, where you'll see a documented, concrete example of that gap being exploited.

@@ -1,34 +1,44 @@
 # Third-Party & External Evaluations
 
-A lab grading its own model's safety is not a neutral act, even when everyone involved is acting in good faith. Financial incentive, competitive pressure, and simple closeness to the product all push in the same direction: toward results that look reassuring. This lesson covers why independent, external evaluation has become a standard part of frontier model releases, and what it can and can't actually guarantee.
+Sandbagging and evaluation gaming in the last lesson both raise the same underlying question: how much should you trust an evaluation run by the same organization that built the model, has a financial interest in its success, and controls what gets published about it? This lesson covers the structural answer the field has converged on — independent, external evaluation — and the real organizations and agreements that make it work in practice.
 
 ## What you'll learn
 
-- Why self-evaluation by the lab that built the model has structural limits, regardless of intent
-- What organizations like METR, the UK AI Safety Institute, and Apollo Research actually do
-- How pre-deployment testing agreements between labs and government institutes work
-- What access and time constraints limit even well-resourced external evaluators
+- Why internal self-assessment has an inherent conflict-of-interest problem, even with good intentions
+- The real third-party evaluators operating today: METR, Apollo Research, and government institutes like UK AISI and US AISI
+- What a pre-deployment testing agreement actually grants an external evaluator
+- The real, documented limits of third-party evaluation as it exists right now
 
-## The structural problem with grading your own work
+## Why self-assessment has a structural problem
 
-A lab evaluating its own model has every reasonable technical skill needed to do it well, and still faces a conflict that technical skill can't resolve. Commercial pressure to ship favors interpretations of ambiguous eval results that lean toward "safe to release." Closeness to the product can create blind spots that an outsider would catch immediately. None of this requires bad faith — it's a structural property of being both the builder and the grader of the same thing, and it's the reason every mature safety-critical industry eventually develops independent inspection separate from the manufacturer.
+A lab evaluating its own model has every incentive to want a favorable result — commercial pressure to ship, reputational pressure to appear responsible, and genuine difficulty being objective about something the lab itself built and is proud of. None of this requires bad faith; it's a structural conflict of interest that exists regardless of how careful or well-intentioned the people running the evaluation are. An external evaluator, with no stake in the model's commercial success and no role in building it, doesn't share that same incentive structure, which is why external evaluation results carry weight that internal-only results can't fully replicate on their own.
 
-## What independent evaluators actually do
+## Real external evaluators operating today
 
-METR (Model Evaluation and Threat Research) builds and runs autonomy and agentic-capability evaluations, often under time-limited pre-release access to frontier models, and publishes its own assessment rather than one filtered through the lab's communications team. The UK AI Safety Institute and similar government bodies run their own dangerous-capability testing on models before and after release, with legal and institutional independence from the companies being evaluated. Apollo Research focuses specifically on deceptive and strategic behavior, including the kind of situational-awareness and sandbagging questions covered in the previous lesson. Each organization brings a different lens, and none of them is simply re-running the lab's own test suite.
+**METR** (Model Evaluation and Threat Research) is a nonprofit that runs pre-deployment dangerous-capability evaluations in partnership with frontier labs, focused on long-horizon agentic tasks — autonomous replication, AI R&D acceleration, and cyberattack capability. Its evaluations have covered models from multiple labs under negotiated access arrangements, and it publishes its task standard and elicitation methodology openly so its methods can be scrutinized rather than taken on faith.
 
-## How pre-deployment access agreements work
+**Apollo Research** focuses on deceptive alignment and scheming-related evaluations — including the in-context scheming work referenced in the last lesson — and has partnered directly with labs including OpenAI on evaluating frontier models for deceptive behavior before and after training interventions meant to reduce it.
 
-Several frontier labs have voluntarily granted external evaluators limited pre-release access to unreleased models, specifically so dangerous-capability testing can happen before, not just after, a model reaches the public. This is a meaningful step beyond pure self-regulation, but it is still voluntary and lab-controlled: the lab decides which evaluators get access, what access level they get (API-only versus something closer to raw model access), and how much time the evaluators have before a release date that the lab, not the evaluator, sets.
+**UK AISI** (the UK AI Security Institute, formerly the UK AI Safety Institute) and its US counterpart are government bodies that run their own pre-deployment evaluations of frontier models, covering cyber, CBRN, and autonomous/misalignment-related risks, and bring a kind of institutional authority and national-security expertise that a private nonprofit evaluator doesn't have on its own. UK AISI has also released Inspect, an open-source framework for running model evaluations, specifically so the broader field — not just AISI itself — can build and run evaluations on common, scrutinized infrastructure rather than everyone inventing their own tooling from scratch.
 
-## The real limits even well-resourced evaluators face
+## What a pre-deployment testing agreement actually grants
 
-External evaluators typically do not get model weights, meaning they can't run their own fine-tuning-based sandbagging checks or deep interpretability analysis. Time is usually compressed into days or weeks ahead of a launch, not the months a thorough evaluation might actually need. And evaluators generally see one model snapshot, not the full history of training decisions that produced it. External evaluation substantially improves on pure self-assessment, but it is not the same thing as full, unconstrained, adversarial access — and treating an external eval's clean result as a complete guarantee would be its own kind of overconfidence.
+Meaningful external evaluation requires more access than just an API key. Based on what AISI has described publicly about its own practice, a real pre-deployment agreement typically needs: access to a "helpful-only" version of the model with standard safety training not yet applied (so the evaluator can see the model's underlying capability, not just its guardrailed behavior), the ability to toggle safeguards on and off, fine-tuning access to test how easily safety behavior can be removed or capability can be elicited, and direct technical discussion with the model's developers about what's actually running underneath the API. Without these, an external evaluator is testing the same guardrailed surface a regular user sees — which can still be useful, but doesn't answer the deeper capability and safety questions this chapter has been building toward.
+
+## The real limits of third-party evaluation right now
+
+Third-party evaluation is valuable, not a solved certification process. AISI itself has been explicit that the science of model evaluation isn't mature enough yet for an external evaluation to serve as a safety "certification" — a clean result is evidence, not a guarantee. Access is also uneven and sometimes contested: evaluators have reported that collaborating on evaluations requires significant engineering effort from the lab's side, timelines before a release are often tight, and the degree of real pre-deployment access varies a great deal between labs and between models. None of this makes external evaluation pointless — it remains one of the most effective structural checks against both self-assessment bias and the sandbagging and gaming concerns from the last lesson — but it's accurate to describe it as an important, developing practice rather than a finished safety guarantee.
 
 ## Key terms
 
-- **Self-evaluation** — a lab assessing the safety of its own model, which carries a structural conflict of interest regardless of the evaluators' individual good faith
-- **Third-party evaluator** — an organization independent of the lab that built the model, such as METR, the UK AI Safety Institute, or Apollo Research, conducting its own assessment
-- **Pre-deployment access agreement** — a voluntary arrangement granting an external evaluator limited access to an unreleased model specifically for safety testing before public release
-- **API-only access** — a constrained form of model access, available over an interface, that doesn't include model weights or internal activations
-- **Evaluator independence** — the degree to which an evaluating organization's findings, funding, and conclusions are free from control by the lab being evaluated
+| Term | Meaning |
+|---|---|
+| Conflict of interest (self-assessment) | The structural incentive problem created when the organization that builds a model is also the one evaluating its own safety |
+| METR | A nonprofit that runs pre-deployment dangerous-capability evaluations for frontier labs, focused on long-horizon agentic risks |
+| Apollo Research | A third-party evaluator focused on deceptive alignment and scheming-related evaluations of frontier models |
+| UK/US AISI | Government AI safety institutes that run their own pre-deployment evaluations and, in the UK's case, publish open-source evaluation tooling (Inspect) |
+| Helpful-only model access | A pre-safety-training version of a model given to an external evaluator so they can assess underlying capability rather than guardrailed behavior |
+
+## Recap
+
+External evaluators like METR, Apollo Research, and government institutes address the structural conflict-of-interest problem in self-assessment, but meaningful evaluation depends on real access — helpful-only models, toggleable safeguards, fine-tuning — and the field itself describes this as a developing practice, not a finished certification. The final lesson of this chapter, "Building a Small Safety Eval Suite," turns from reading and designing evaluations in the abstract to actually building and running one.

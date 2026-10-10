@@ -1,0 +1,60 @@
+{
+  "lesson": "the-logit-lens",
+  "questions": [
+    {
+      "q": "What does the logit lens technique do, precisely?",
+      "options": [
+        "It trains a brand-new classifier from scratch on each layer's activations",
+        "It applies the transformer's own final unembedding matrix and layer norm to an intermediate residual-stream activation, as if the model stopped there",
+        "It only works on the model's attention weights, never the residual stream",
+        "It removes the unembedding matrix entirely and replaces it with random weights"
+      ],
+      "answer": 1,
+      "explain": "The logit lens reuses the model's own final-step computation (layer norm plus unembedding) on an earlier layer's residual stream to see what prediction that layer's state would produce."
+    },
+    {
+      "q": "What did nostalgebraist's original logit-lens analysis of GPT-2 find about how predictions form across layers?",
+      "options": [
+        "Predictions form gradually: early layers often give unreadable or near-random guesses, middle layers reach a plausible guess, and later layers progressively sharpen it into the final output",
+        "Predictions remain identical to the input token all the way through the final layer",
+        "Predictions appear fully correct starting from the very first layer",
+        "Predictions get progressively worse the deeper into the model you look"
+      ],
+      "answer": 0,
+      "explain": "The key finding was gradual sharpening: a vague or unreadable guess early, converging toward the model's actual final prediction as depth increases."
+    },
+    {
+      "q": "What is the core assumption the logit lens relies on, and why is it a potential problem?",
+      "options": [
+        "It assumes the vocabulary size is always exactly 50,000 tokens",
+        "It assumes every layer has the exact same number of parameters, which is trivially true",
+        "It assumes the model was trained without any regularization",
+        "It assumes the final layer's unembedding matrix is also a valid decoder for intermediate layers' representational geometry, which may not hold if that geometry shifts across depth"
+      ],
+      "answer": 3,
+      "explain": "If the residual stream's representational basis changes somewhat across layers, applying the final-layer decoder to an earlier layer may measure a mismatch rather than that layer's own faithful prediction."
+    },
+    {
+      "q": "How does the tuned lens address the logit lens's main limitation?",
+      "options": [
+        "By requiring the entire model to be retrained from scratch",
+        "By deleting the unembedding matrix entirely and never decoding to vocabulary space",
+        "By training a separate small affine probe for each layer specifically to decode that layer's own residual stream, rather than reusing the final layer's unembedding as-is",
+        "By only ever looking at the very last layer of the model"
+      ],
+      "answer": 2,
+      "explain": "The tuned lens trains a per-layer affine probe tailored to each layer's own geometry, and was shown to be more predictive and reliable than directly reusing the final unembedding."
+    },
+    {
+      "q": "What is the recommended way to interpret a logit-lens trace, according to this lesson?",
+      "options": [
+        "As a definitive, causal explanation of the model's intention at every layer",
+        "As a replacement for ever needing to look at attention patterns or probing results",
+        "As proof that the model has no internal computation before the final layer",
+        "As a useful, cheap window into how a prediction evolves across depth, read with skepticism rather than as a literal causal readout of intent"
+      ],
+      "answer": 3,
+      "explain": "The lesson explicitly cautions against over-claiming: the logit lens is a useful exploratory signal about depth-wise prediction evolution, not a settled causal account, especially at early layers."
+    }
+  ]
+}

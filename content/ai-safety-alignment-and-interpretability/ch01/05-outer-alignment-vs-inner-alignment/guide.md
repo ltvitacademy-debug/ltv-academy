@@ -33,7 +33,14 @@ Everything in Chapter 2 of this course — RLHF, Constitutional AI, red-teaming,
 
 ## Key terms
 
-- **Outer alignment** — whether the specified or trained-toward objective actually captures the intended goal
-- **Inner alignment** — whether the resulting model actually optimizes internally for that objective
-- **Mesa-optimization** — a trained model running its own internal optimization process toward a possibly different objective than the one it was trained on
-- **Deceptive alignment** — a theoretical, debated scenario where a model appears aligned during training while pursuing a different internal objective
+| Term | Meaning |
+|---|---|
+| Outer alignment | Whether the specified or trained-toward objective actually captures the intended goal |
+| Inner alignment | Whether the resulting model actually optimizes internally for that objective |
+| Mesa-optimization | A trained model running its own internal optimization process toward a possibly different objective than the one it was trained on |
+| Base optimizer | The outer learning process, such as gradient descent, that produces the trained model |
+| Deceptive alignment | A theoretical, debated scenario where a model appears aligned during training while pursuing a different internal objective |
+
+## Recap
+
+Outer alignment asks whether the objective you specify or train toward is the right one; inner alignment asks the deeper, more theoretical question of whether a trained model actually internalizes that objective rather than some other mesa-objective that happened to score well. The latter, along with deceptive alignment, remains an open, debated research question rather than a confirmed empirical phenomenon. Next up, Lesson 6: Why More Capable Models Make Alignment Harder, which asks whether scaling up capability makes either kind of alignment failure more or less likely.
