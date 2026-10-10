@@ -10,6 +10,7 @@ import {
   type SampleResumeLevel,
 } from "@/lib/sampleResumes";
 import ResumeView from "@/components/careers/ResumeView";
+import ResumeProtection from "@/components/careers/ResumeProtection";
 
 export function generateStaticParams() {
   return getAllSampleResumeParams();
@@ -83,6 +84,7 @@ export default async function SampleResumePage({
       )}
 
       <div className="mt-10 rounded-[2px] border-2 border-ink/15 bg-white/70 p-8 sm:p-10">
+        <ResumeProtection />
         <ResumeView resume={resume} />
       </div>
 

@@ -106,10 +106,11 @@ export const SAMPLE_RESUMES: Record<string, Partial<Record<SampleResumeLevel, Re
       name: "John Doe",
       contact: CONTACT,
       summary:
-        "BI Developer with 3+ years of experience building and maintaining Microsoft BI solutions — SQL Server, SSIS, SSRS, " +
-        "and Power BI — and extending them with Power Automate to remove manual reporting and approval work. Comfortable " +
-        "owning a project from source system to finished dashboard, and increasingly the automation layer that keeps it " +
-        "running without someone babysitting it.",
+        "BI professional trained through an advanced, two-stage apprenticeship program covering SQL Server, SSIS, SSRS, " +
+        "and Power BI, plus Power Automate for the business process automation layer around them. Comfortable owning a " +
+        "reporting pipeline from source system to finished dashboard, and the flows, approvals, and alerts that keep it " +
+        "running without someone babysitting it. Looking to bring that full-stack-plus-automation approach to a BI " +
+        "Developer, SQL/Power BI Developer, or Data Automation Analyst role.",
       skills: [
         "ETL Development (SSIS)",
         "Dimensional Modeling & Data Warehousing",
@@ -124,54 +125,6 @@ export const SAMPLE_RESUMES: Record<string, Partial<Record<SampleResumeLevel, Re
       ],
       tools: "SSMS, SSDT/Visual Studio, Power BI Desktop & Service, Power Automate, Dataverse, SharePoint, Microsoft Teams, Outlook, Git",
       sections: [
-        {
-          heading: "Professional Experience",
-          entries: [
-            {
-              lead: "Build and maintain 11 production Power Automate flows covering scheduled reporting, approval routing, and data-quality monitoring across the BI team's reporting suite.",
-            },
-            {
-              left: "BI Developer (Promoted) — Oakmont Grocery",
-              right: "Aug 2028 – Present",
-              sub: "Atlanta, GA",
-              bullets: [
-                "Designed an approval workflow in Power Automate for late schema-change requests from source teams, routing each request to the data team lead before anything touches production ETL — replacing an informal, easy-to-miss email chain.",
-                "Monitor dataflow refresh failures with a dedicated Power Automate trigger and branched notification logic, cutting the average time to catch a failed nightly refresh from “whenever someone notices a stale report” to under 15 minutes.",
-                "Built a custom connector and a small Dataverse-backed intake app so non-technical stakeholders can submit new report requests without opening a ticket in the data team's queue.",
-                "Repackaged the team's growing set of flows into solutions and set up a dev-to-test-to-production promotion path with environment variables and connection references, so a flow no longer has to be rebuilt by hand in each environment.",
-                "Set a Data Loss Prevention policy separating business connectors (SharePoint, Outlook, Power BI) from non-business ones after a near-miss where a test flow combined SQL Server with a personal email connector.",
-                "Secured flow-to-database connections with a dedicated service account and connection references instead of personal credentials, closing a gap flagged during an internal security review.",
-                "Mentored two apprenticeship-program graduates joining the team, including walking them through the same manufacturing work order pipeline this role originally started from.",
-              ],
-            },
-            {
-              left: "Associate BI Developer — Oakmont Grocery",
-              right: "Jul 2026 – Aug 2028",
-              sub: "Atlanta, GA",
-              bullets: [
-                "Took ownership of the end-to-end SQL Server → SSIS → dimensional warehouse → SSRS/Power BI pipeline for the manufacturing and inventory reporting suite, extending it from a single capstone project into a production system supporting multiple business units.",
-                "Replaced three manually distributed SSRS reports with a Power Automate scheduled flow that generates and emails parameter-driven report snapshots to regional managers every Monday morning, eliminating a recurring manual task.",
-                "Built a Power BI data alert and a connected Power Automate flow that posts to Microsoft Teams when on-time production rate drops below a set threshold, so operations leads find out the same day instead of during a weekly review.",
-                "Built a scheduled flow against SQL Server that flags rows failing basic data-quality checks (nulls in required fields, out-of-range dates) and routes them to a Teams channel before they reach the warehouse, instead of being caught downstream in a report.",
-                "Split a sprawling single flow into smaller child flows for request validation, data lookup, and notification, making each piece independently testable and far easier to debug than the original monolithic version.",
-                "Added an HTTP action to pull shipment status from a carrier's REST API and parse the JSON response into the warehouse's staging table overnight, replacing a manual status lookup someone had been doing by hand every morning.",
-              ],
-            },
-          ],
-        },
-        {
-          heading: "Selected Projects",
-          entries: [
-            {
-              left: "Manufacturing Work Order Reporting Pipeline — Capstone Project",
-              right: "2026",
-              sub: "Lifting the Veil IT Academy, Microsoft Data & BI Developer Apprenticeship Program",
-              bullets: [
-                "Built the original end-to-end SQL Server/SSIS/SSRS/Power BI pipeline — including a FactWorkOrder accumulating snapshot fact table and a scrap-rate-by-location Power BI dashboard — that became the direct foundation for the production reporting system above.",
-              ],
-            },
-          ],
-        },
         {
           heading: "Training & Certifications",
           entries: [
@@ -203,10 +156,20 @@ export const SAMPLE_RESUMES: Record<string, Partial<Record<SampleResumeLevel, Re
           ],
         },
         {
-          heading: "Professional Development",
+          heading: "Projects",
           entries: [
             {
-              lead: "Keep up with Power Platform release waves twice a year and bring relevant changes back to the team — most recently reviewing updates to dataflow refresh triggers and solution-aware environment variables.",
+              left: "Manufacturing Work Order Reporting Pipeline — Capstone Project",
+              right: "2026",
+              sub: "Lifting the Veil IT Academy, Microsoft Data & BI Developer Apprenticeship Program",
+              bullets: [
+                "Designed and built an SSIS ETL package to move manufacturing work order data from a SQL Server source system into a staging and warehouse environment, eliminating manual CSV handoffs between production and reporting.",
+                "Modeled an accumulating snapshot fact table (FactWorkOrder) with three role-playing date dimensions for order start, end, and due dates, enabling on-time-vs-late production reporting that didn't exist before.",
+                "Built an SSRS paginated report (WorkOrderProductionSummary) with parameter-driven filtering by date range and product, giving production managers a self-service view instead of an ad hoc SQL request.",
+                "Built a Power BI dashboard on the same warehouse tables surfacing scrap rate by product and location, identifying where quality issues concentrate.",
+                "Connected a Power BI data alert to a Power Automate flow so a scrap-rate threshold crossing posts to Microsoft Teams automatically, instead of waiting for someone to check the dashboard.",
+                "Documented the finished pipeline and set up a scheduled refresh so reports stay current without manual intervention.",
+              ],
             },
           ],
         },
