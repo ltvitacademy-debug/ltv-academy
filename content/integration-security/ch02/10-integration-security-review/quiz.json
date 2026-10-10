@@ -1,0 +1,60 @@
+{
+  "lesson": "integration-security-review",
+  "questions": [
+    {
+      "q": "Why does this lesson frame an integration security review as a recurring discipline rather than a one-time, pre-go-live audit?",
+      "options": [
+        "Because configuration drifts over time even when nothing was wrong at launch -- permission sets loosen, certificates near expiry, IP ranges stop matching actual infrastructure",
+        "Because Salesforce requires a new review every time a password is reset",
+        "Because reviews are only needed if an incident has already occurred",
+        "Because integrations automatically fail every 90 days without a review"
+      ],
+      "answer": 0,
+      "explain": "A review checks whether something already built is still correctly configured, since drift happens on its own over time -- the same logic behind recurring classification review and access recertification elsewhere in governance practice."
+    },
+    {
+      "q": "What does this lesson say is the standard pattern for an inbound webhook or Apex REST endpoint to verify that a request is genuinely from the expected sender?",
+      "options": [
+        "Trusting any request that arrives over HTTPS, since TLS alone proves the sender's identity",
+        "Checking only that the request's IP address resolves to a known hostname",
+        "Verifying a cryptographic signature (commonly an HMAC over the raw request body) computed with a shared signing key, and rejecting mismatches before business logic runs",
+        "No verification is needed if the endpoint is hosted on a Salesforce Site"
+      ],
+      "answer": 2,
+      "explain": "A public inbound endpoint executes for anyone who finds the URL unless it independently verifies the request -- signature verification against the raw body, checked before any business logic runs, is the standard pattern this lesson describes."
+    },
+    {
+      "q": "Why does this lesson warn specifically against computing an HMAC signature over a re-serialized version of the JSON payload instead of the original raw request body?",
+      "options": [
+        "Re-serialization is always faster and therefore always preferred",
+        "Re-serialization can change whitespace or key order, which silently breaks a signature check that was actually valid for the original bytes",
+        "HMAC verification does not work with JSON payloads at all",
+        "Salesforce blocks any Apex code that reads a raw request body"
+      ],
+      "answer": 1,
+      "explain": "This is flagged as a subtle, common implementation bug: the signature was computed over specific bytes, so checking it against a reconstructed version of the payload can fail even when the original request was perfectly legitimate."
+    },
+    {
+      "q": "What risk does this lesson identify with a webhook endpoint hosted behind a Salesforce Site or Experience Cloud guest user profile, independent of whether signature verification is implemented correctly?",
+      "options": [
+        "Guest user profiles cannot be used for any inbound integration",
+        "If the guest user profile has broader object access than the webhook strictly needs, a flaw anywhere in the endpoint's logic executes with that full broader access, not just the webhook's intended data",
+        "Guest users automatically bypass all signature verification",
+        "There is no additional risk beyond the signature check itself"
+      ],
+      "answer": 1,
+      "explain": "The same least-privilege discipline from Lesson 6 applies to the guest user profile behind a public endpoint -- over-broad guest user access is a separate risk from signature verification, since the endpoint's code runs with whatever that guest profile can reach."
+    },
+    {
+      "q": "This lesson recommends ranking review findings by risk rather than just listing them. Which pairing reflects the example priority given in the lesson?",
+      "options": [
+        "A slightly stale monitoring baseline outranks a webhook endpoint with no signature verification at all",
+        "Only identity-pass findings should ever be prioritized; configuration and monitoring findings can be ignored",
+        "All findings should always be treated as equally urgent, regardless of type",
+        "A webhook endpoint with no signature verification at all usually outranks a monitoring baseline that's slightly stale"
+      ],
+      "answer": 3,
+      "explain": "The lesson's example explicitly ranks an unverified public inbound endpoint as higher risk than a merely slightly-stale monitoring baseline -- findings need a specific next action and owner, prioritized by actual risk, not just enumerated."
+    }
+  ]
+}
