@@ -3,6 +3,7 @@ import type { CareerPath } from "@/lib/career-paths";
 import { getCareerPath } from "@/lib/career-paths";
 import { getCourse, lessonCount } from "@/lib/courses";
 import { COURSE_CERTIFICATIONS, certificationsForCourses } from "@/lib/course-certifications";
+import { RESUME_LEVEL_LABELS, type SampleResumeLevel } from "@/lib/sampleResumes";
 
 function CourseLogo({ slug, className = "h-6 w-6" }: { slug: string; className?: string }) {
   const logo = COURSE_CERTIFICATIONS[slug]?.logo;
@@ -50,11 +51,11 @@ function parseSalaryTiers(salaryRange?: string) {
 export default function PathDetailRedesign({
   path,
   hasInterviewPrep,
-  sampleResumes,
+  sampleResumeLevels,
 }: {
   path: CareerPath;
   hasInterviewPrep?: boolean;
-  sampleResumes?: { label: string; href: string }[];
+  sampleResumeLevels?: SampleResumeLevel[];
 }) {
   const allCourseSlugs = path.stages.flatMap((s) => s.courseSlugs ?? []);
   const tiers = parseSalaryTiers(path.salaryRange);
@@ -653,25 +654,22 @@ export default function PathDetailRedesign({
               </div>
             )}
 
-            {sampleResumes && sampleResumes.length > 0 && (
+            {sampleResumeLevels && sampleResumeLevels.length > 0 && (
               <div className="rounded-[2px] border-2 border-ink/15 bg-white/50 p-6 text-center">
                 <p className="display text-xl text-ink">What does this look like on a resume?</p>
                 <p className="mt-2 text-sm text-stone">
-                  Two sample resumes for a fictional graduate, John Doe, showing what you can
-                  credibly claim after finishing this path — one for your first job search, one
-                  further down the ladder.
+                  A sample resume for a fictional graduate, John Doe, showing what you can
+                  credibly claim after finishing this path.
                 </p>
                 <div className="mt-5 flex flex-col gap-2">
-                  {sampleResumes.map((r) => (
-                    <a
-                      key={r.href}
-                      href={r.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                  {sampleResumeLevels.map((level) => (
+                    <Link
+                      key={level}
+                      href={`/careers/${path.slug}/resume/${level}`}
                       className="inline-block rounded-[2px] border border-crimson/40 bg-parchment px-6 py-2.5 text-sm font-semibold text-crimson-deep hover:bg-crimson hover:text-parchment transition-colors"
                     >
-                      {r.label} →
-                    </a>
+                      View the {RESUME_LEVEL_LABELS[level]} resume →
+                    </Link>
                   ))}
                 </div>
               </div>
