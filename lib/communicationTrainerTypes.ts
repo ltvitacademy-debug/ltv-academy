@@ -41,6 +41,7 @@ export type ScopeBreakdownItem = {
   letter: "S" | "C" | "O" | "P" | "E";
   label: string;
   explanation: string; // how THIS specific professional response embodies this step
+  quickReference: string; // the short, general, reusable one-line version of this SCOPE step
 };
 
 export type LanguageUpgrade = {

@@ -4,6 +4,13 @@ import Link from "next/link";
 import { useState } from "react";
 import type { CommunicationExercise } from "@/lib/communicationTrainerTypes";
 
+// Step order follows the learning sequence exactly:
+// 1 read scenario -> 2 beginner response -> 3 why it's weak -> 4 professional
+// response -> 5 SCOPE breakdown -> 6 vocabulary & professional phrasing ->
+// 7 construct your own response -> 8 compare against the model -> 9 verbal
+// rehearsal. "What makes this sound senior?" and "Say it like a senior" are
+// additions layered into that sequence (after SCOPE, and after vocabulary,
+// respectively) — not substitutes for any of the 9 steps.
 const STEP_LABELS = [
   "The scenario",
   "A beginner answer",
@@ -11,10 +18,11 @@ const STEP_LABELS = [
   "The professional answer",
   "SCOPE breakdown",
   "What makes this sound senior?",
-  "Vocabulary",
-  "Language upgrades",
+  "Vocabulary & professional phrasing",
   "Say it like a senior",
-  "Your turn",
+  "Construct your own response",
+  "Compare against the model",
+  "Verbal rehearsal",
 ] as const;
 
 function SayItLikeASenior({ prompts }: { prompts: CommunicationExercise["sayItLikeASenior"] }) {
@@ -78,87 +86,14 @@ function SayItLikeASenior({ prompts }: { prompts: CommunicationExercise["sayItLi
   );
 }
 
-function YourTurn({ exercise }: { exercise: CommunicationExercise }) {
-  const [answer, setAnswer] = useState("");
-  const [revealed, setRevealed] = useState(false);
-  const [checked, setChecked] = useState<boolean[]>(exercise.selfAssessmentRubric.map(() => false));
-
-  return (
-    <div className="space-y-6">
-      <div className="rounded-[2px] border-2 border-ink/15 bg-parchment p-6">
-        <p className="text-xs uppercase tracking-[0.18em] text-stone">{exercise.skillTag}</p>
-        <p className="display mt-2 text-xl">{exercise.situation}</p>
-      </div>
-
-      {!revealed ? (
-        <>
-          <p className="text-sm font-semibold text-stone">
-            Now construct your own full answer — use the SCOPE framework and the vocabulary from this
-            exercise.
-          </p>
-          <textarea
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            placeholder="Write your professional explanation..."
-            rows={6}
-            className="w-full border border-ink/20 bg-white/60 p-4 text-sm text-ink placeholder:text-stone/60 focus:border-crimson focus:outline-none"
-          />
-          <button
-            type="button"
-            onClick={() => setRevealed(true)}
-            className="rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep"
-          >
-            Compare against the professional model
-          </button>
-        </>
-      ) : (
-        <div className="space-y-6">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone">Your answer</p>
-            <p className="mt-1 text-ink">{answer.trim() ? answer : <span className="italic text-stone">(skipped)</span>}</p>
-          </div>
-          <div className="rounded-[2px] border-2 border-crimson bg-gold-pale p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">Professional model answer</p>
-            <p className="mt-1 text-crimson-deep">{exercise.professionalResponse}</p>
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone">Self-assessment — check what your answer actually did</p>
-            <ul className="mt-3 space-y-2">
-              {exercise.selfAssessmentRubric.map((item, i) => (
-                <li key={i}>
-                  <label className="flex cursor-pointer items-start gap-3 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={checked[i]}
-                      onChange={() => {
-                        const next = [...checked];
-                        next[i] = !next[i];
-                        setChecked(next);
-                      }}
-                      className="mt-1"
-                    />
-                    <span className="text-ink">{item}</span>
-                  </label>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3 text-xs text-stone">
-              {checked.filter(Boolean).length} of {exercise.selfAssessmentRubric.length} — no grade, just an honest self-check.
-            </p>
-          </div>
-          <div className="rounded-[2px] border-l-4 border-gold bg-gold-pale/40 p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">Verbal rehearsal</p>
-            <p className="mt-1 text-sm text-ink">{exercise.verbalRehearsalPrompt}</p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function CommunicationTrainer({ exercise }: { exercise: CommunicationExercise }) {
   const [step, setStep] = useState(0);
   const last = STEP_LABELS.length - 1;
+
+  // Lifted to the parent so the "construct" step and "compare" step share
+  // the same answer text.
+  const [answer, setAnswer] = useState("");
+  const [checked, setChecked] = useState<boolean[]>(exercise.selfAssessmentRubric.map(() => false));
 
   return (
     <div>
@@ -218,7 +153,7 @@ export default function CommunicationTrainer({ exercise }: { exercise: Communica
         {step === 4 && (
           <div>
             <p className="eyebrow mb-4">Breaking the answer down with SCOPE</p>
-            <div className="space-y-4">
+            <div className="space-y-5">
               {exercise.scopeBreakdown.map((s) => (
                 <div key={s.letter} className="flex gap-4">
                   <span className="display flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-crimson-deep text-lg text-gold-pale">
@@ -226,7 +161,8 @@ export default function CommunicationTrainer({ exercise }: { exercise: Communica
                   </span>
                   <div>
                     <p className="font-semibold text-ink">{s.label}</p>
-                    <p className="mt-0.5 text-sm text-stone">{s.explanation}</p>
+                    <p className="mt-0.5 text-sm italic text-stone">{s.quickReference}</p>
+                    <p className="mt-1 text-sm text-ink">{s.explanation}</p>
                   </div>
                 </div>
               ))}
@@ -251,10 +187,10 @@ export default function CommunicationTrainer({ exercise }: { exercise: Communica
 
         {step === 6 && (
           <div>
-            <p className="eyebrow mb-1">Vocabulary this answer uses</p>
+            <p className="eyebrow mb-1">Vocabulary & professional phrasing</p>
             <p className="mb-4 text-sm text-stone">
-              Some of these are covered in your coursework; others go beyond it, on purpose — a
-              working professional&apos;s vocabulary isn&apos;t limited to exactly what one course taught.
+              Some terms are covered in your coursework; others go beyond it, on purpose — a working
+              professional&apos;s vocabulary isn&apos;t limited to exactly what one course taught.
             </p>
             <div className="space-y-4">
               {exercise.vocabulary.map((v) => (
@@ -286,12 +222,8 @@ export default function CommunicationTrainer({ exercise }: { exercise: Communica
                 </div>
               ))}
             </div>
-          </div>
-        )}
 
-        {step === 7 && (
-          <div>
-            <p className="eyebrow mb-4">Professional language upgrades</p>
+            <p className="eyebrow mb-4 mt-8">Professional language upgrades</p>
             <div className="space-y-4">
               {exercise.languageUpgrades.map((u, i) => (
                 <div key={i} className="rounded-[2px] border border-ink/15 bg-white/50 p-4">
@@ -306,17 +238,80 @@ export default function CommunicationTrainer({ exercise }: { exercise: Communica
           </div>
         )}
 
-        {step === 8 && (
+        {step === 7 && (
           <div>
             <p className="eyebrow mb-4">Say it like a senior</p>
             <SayItLikeASenior prompts={exercise.sayItLikeASenior} />
           </div>
         )}
 
-        {step === 9 && (
+        {step === 8 && (
           <div>
-            <p className="eyebrow mb-4">Your turn</p>
-            <YourTurn exercise={exercise} />
+            <p className="eyebrow mb-2">Construct your own response</p>
+            <p className="mb-4 text-stone">
+              Using the SCOPE framework and the vocabulary you just studied, write your own full
+              answer to the original scenario — in your own words, not a recitation of the model
+              answer.
+            </p>
+            <div className="rounded-[2px] border-2 border-ink/15 bg-white/50 p-5">
+              <p className="text-xs uppercase tracking-[0.18em] text-stone">{exercise.skillTag}</p>
+              <p className="mt-1 font-semibold text-ink">{exercise.situation}</p>
+            </div>
+            <textarea
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              placeholder="Write your professional explanation..."
+              rows={6}
+              className="mt-4 w-full border border-ink/20 bg-white/60 p-4 text-sm text-ink placeholder:text-stone/60 focus:border-crimson focus:outline-none"
+            />
+          </div>
+        )}
+
+        {step === 9 && (
+          <div className="space-y-6">
+            <p className="eyebrow mb-2">Compare against the professional model</p>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone">Your answer</p>
+              <p className="mt-1 text-ink">{answer.trim() ? answer : <span className="italic text-stone">(nothing written — go back to the previous step if you'd like to try)</span>}</p>
+            </div>
+            <div className="rounded-[2px] border-2 border-crimson bg-gold-pale p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">Professional model answer</p>
+              <p className="mt-1 text-crimson-deep">{exercise.professionalResponse}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone">Self-assessment — check what your answer actually did</p>
+              <ul className="mt-3 space-y-2">
+                {exercise.selfAssessmentRubric.map((item, i) => (
+                  <li key={i}>
+                    <label className="flex cursor-pointer items-start gap-3 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={checked[i]}
+                        onChange={() => {
+                          const next = [...checked];
+                          next[i] = !next[i];
+                          setChecked(next);
+                        }}
+                        className="mt-1"
+                      />
+                      <span className="text-ink">{item}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-3 text-xs text-stone">
+                {checked.filter(Boolean).length} of {exercise.selfAssessmentRubric.length} — no grade, just an honest self-check.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {step === 10 && (
+          <div>
+            <p className="eyebrow mb-2">Verbal rehearsal</p>
+            <div className="rounded-[2px] border-l-4 border-gold bg-gold-pale/40 p-5">
+              <p className="text-ink">{exercise.verbalRehearsalPrompt}</p>
+            </div>
           </div>
         )}
       </div>
