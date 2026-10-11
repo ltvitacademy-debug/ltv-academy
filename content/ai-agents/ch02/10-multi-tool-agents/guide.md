@@ -1,6 +1,6 @@
 # Lesson 10 — Multi-Tool Agents
 
-**Chapter 2 · Tool Calling & Function Design · Lesson 10 of 32**
+**Chapter 2 · Tool Calling & Function Design · Lesson 10 of 38**
 
 ## What you'll learn
 

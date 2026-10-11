@@ -1,6 +1,6 @@
 # Lesson 9 — Tool Selection & Routing
 
-**Chapter 2 · Tool Calling & Function Design · Lesson 9 of 32**
+**Chapter 2 · Tool Calling & Function Design · Lesson 9 of 38**
 
 ## What you'll learn
 

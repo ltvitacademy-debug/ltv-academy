@@ -1,6 +1,6 @@
 # Lesson 7 — Tool Calling in Practice
 
-**Chapter 2 · Tool Calling & Function Design · Lesson 7 of 32**
+**Chapter 2 · Tool Calling & Function Design · Lesson 7 of 38**
 
 ## What you'll learn
 

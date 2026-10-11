@@ -1,6 +1,6 @@
 # Lesson 1 — Agents vs. Simple Chat
 
-**Chapter 1 · What an AI Agent Actually Is · Lesson 1 of 32**
+**Chapter 1 · What an AI Agent Actually Is · Lesson 1 of 38**
 
 ## What you'll learn
 
@@ -56,8 +56,8 @@ tool and stops is more "agentic" than plain chat but far simpler than a
 system that loops for twenty steps, reflects on its own output, and calls
 other agents. Later lessons build up that spectrum deliberately: tool use
 first (Lesson 3), the loop that ties it together (Lesson 2), then — much
-later, in Chapter 3 — planning, multi-agent systems, and reflection.
-Chapter 5 of this course, "When Agents Are Overkill," exists precisely
+later, in Chapter 4 — planning, multi-agent systems, and reflection.
+Chapter 6 of this course, "When Agents Are Overkill," exists precisely
 because more agency isn't automatically better: it's a tradeoff against
 latency, cost, and new ways to fail.
 

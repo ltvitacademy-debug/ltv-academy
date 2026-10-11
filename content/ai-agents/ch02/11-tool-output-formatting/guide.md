@@ -1,6 +1,6 @@
 # Lesson 11 — Tool Output Formatting
 
-**Chapter 2 · Tool Calling & Function Design · Lesson 11 of 32**
+**Chapter 2 · Tool Calling & Function Design · Lesson 11 of 38**
 
 ## What you'll learn
 
@@ -57,7 +57,7 @@ A `tool_result` very often carries content from outside your control —
 a web page, an inbound email, a third-party API response. Anthropic's
 own guidance is direct: **treat that content as untrusted.** An attacker
 who can influence it could embed hidden instructions trying to redirect
-Claude — indirect prompt injection, the subject of Chapter 5, Lesson 26.
+Claude — indirect prompt injection, the subject of Chapter 6, Lesson 32.
 The practical guidance now, while formatting output, is to keep that
 untrusted content inside proper `tool_result` blocks rather than folding
 it into a `system` prompt or a plain `text` block, where it would carry
@@ -73,6 +73,6 @@ more apparent authority than it should.
 
 ## Check yourself
 
-You're ready for Chapter 3 when you can take a bloated, real JSON API
+You're ready for Chapter 4 when you can take a bloated, real JSON API
 response and write the one-line formatted string you'd actually return
 as a `tool_result`.

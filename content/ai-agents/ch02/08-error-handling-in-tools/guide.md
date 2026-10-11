@@ -1,6 +1,6 @@
 # Lesson 8 — Error Handling in Tools
 
-**Chapter 2 · Tool Calling & Function Design · Lesson 8 of 32**
+**Chapter 2 · Tool Calling & Function Design · Lesson 8 of 38**
 
 ## What you'll learn
 

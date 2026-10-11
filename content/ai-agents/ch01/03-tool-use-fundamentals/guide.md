@@ -1,6 +1,6 @@
 # Lesson 3 — Tool Use Fundamentals
 
-**Chapter 1 · What an AI Agent Actually Is · Lesson 3 of 32**
+**Chapter 1 · What an AI Agent Actually Is · Lesson 3 of 38**
 
 ## What you'll learn
 

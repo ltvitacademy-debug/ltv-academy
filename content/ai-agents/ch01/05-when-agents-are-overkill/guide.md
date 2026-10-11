@@ -1,6 +1,6 @@
 # Lesson 5 — When Agents Are Overkill
 
-**Chapter 1 · What an AI Agent Actually Is · Lesson 5 of 32**
+**Chapter 1 · What an AI Agent Actually Is · Lesson 5 of 38**
 
 ## What you'll learn
 

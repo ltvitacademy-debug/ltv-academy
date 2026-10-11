@@ -1,6 +1,6 @@
 # Lesson 2 — The Agent Loop: Plan, Act, Observe
 
-**Chapter 1 · What an AI Agent Actually Is · Lesson 2 of 32**
+**Chapter 1 · What an AI Agent Actually Is · Lesson 2 of 38**
 
 ## What you'll learn
 
@@ -48,10 +48,10 @@ three, not just hope for the first one:
   and stops requesting tools — in the Claude API, this shows up as
   `stop_reason: "end_turn"` instead of `stop_reason: "tool_use"`.
 - **Your code enforces a limit.** A maximum step count, a token/cost
-  budget, or a wall-clock timeout — Chapter 5 of this course ("Agent
+  budget, or a wall-clock timeout — Chapter 6 of this course ("Agent
   Safety & Guardrails") is built around exactly this, because a model
   that never decides it's done will otherwise run forever.
-- **A human intervenes.** Chapter 4 ("Human-in-the-Loop & Approval")
+- **A human intervenes.** Chapter 5 ("Human-in-the-Loop & Approval")
   covers pausing the loop at a checkpoint before a consequential action,
   rather than letting it run unattended to completion.
 

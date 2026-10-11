@@ -650,7 +650,7 @@ export const COURSES: CourseMeta[] = [
     slug: "ai-agents",
     title: "AI Agents",
     tagline:
-      "Tool calling, agent architectures, human-in-the-loop approval, and safety guardrails — moving from a system that answers questions to one that takes actions, safely.",
+      "Tool calling, the Model Context Protocol, agent architectures, human-in-the-loop approval, and safety guardrails — moving from a system that answers questions to one that takes actions, safely.",
     status: "available",
     chapters: AI_AGENTS_CHAPTERS,
     contentBase: "ai-agents",

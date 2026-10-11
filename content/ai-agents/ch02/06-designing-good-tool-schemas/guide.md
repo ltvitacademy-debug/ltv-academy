@@ -1,6 +1,6 @@
 # Lesson 6 — Designing Good Tool Schemas
 
-**Chapter 2 · Tool Calling & Function Design · Lesson 6 of 32**
+**Chapter 2 · Tool Calling & Function Design · Lesson 6 of 38**
 
 ## What you'll learn
 

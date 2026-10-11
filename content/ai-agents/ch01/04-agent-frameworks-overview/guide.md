@@ -1,6 +1,6 @@
 # Lesson 4 — Agent Frameworks, Overview
 
-**Chapter 1 · What an AI Agent Actually Is · Lesson 4 of 32**
+**Chapter 1 · What an AI Agent Actually Is · Lesson 4 of 38**
 
 ## What you'll learn
 
@@ -16,7 +16,7 @@ Lesson 3 covered the whole raw mechanism: a schema, a `tool_use` block, a
 few dozen lines. A framework exists to save you from rewriting the same
 handful of hard parts on every project: the loop itself, state and
 conversation history, retries and error recovery (Lesson 8), multi-agent
-coordination (Chapter 3), and integrations with external tools and data
+coordination (Chapter 4), and integrations with external tools and data
 sources. None of them replace the mechanism — they wrap it.
 
 ## Four real frameworks, as they actually position themselves today
@@ -25,7 +25,7 @@ sources. None of them replace the mechanism — they wrap it.
 and context management that power Claude Code itself, available as a
 library: `npm install @anthropic-ai/claude-agent-sdk` or
 `pip install claude-agent-sdk`. It runs the tool-execution loop for you
-and adds subagents (Lesson 14), hooks, permissions, and native MCP
+and adds subagents (Lesson 20), hooks, permissions, and native MCP
 support. It's Anthropic's own answer to "I want Claude Code's agent loop
 in my own application," not a general multi-vendor abstraction layer.
 
@@ -39,7 +39,7 @@ where you want to see and control exactly how state moves between steps.
 **CrewAI** — a role-based multi-agent framework: you define a "crew" of
 agents, each with a role, a goal, and a set of tools, plus the tasks they
 collaborate on. It optimizes for how fast you can stand up a working
-multi-agent system (Chapter 3), at the cost of less granular control over
+multi-agent system (Chapter 4), at the cost of less granular control over
 exactly how agents hand off work compared to LangGraph's explicit graph.
 
 **AutoGen → AG2 / Microsoft Agent Framework** — AutoGen pioneered the
@@ -60,7 +60,7 @@ schemas, routing, planning, multi-agent coordination, reflection — using
 the raw Claude API directly, the way Lesson 3 did. That choice is
 deliberate: the concepts transfer to whichever framework (or no
 framework) a real job uses, but framework-specific API calls don't
-transfer the other direction. Chapter 3's architecture patterns (ReAct,
+transfer the other direction. Chapter 4's architecture patterns (ReAct,
 planning, orchestrator/worker) are exactly what LangGraph's graphs,
 CrewAI's crews, and the Claude Agent SDK's subagents are each, in their
 own way, built to express.
