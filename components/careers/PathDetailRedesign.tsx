@@ -51,11 +51,13 @@ export default function PathDetailRedesign({
   path,
   hasInterviewPrep,
   hasCommunicationTrainer,
+  hasLearningPlanner,
   sampleResumeLevels,
 }: {
   path: CareerPath;
   hasInterviewPrep?: boolean;
   hasCommunicationTrainer?: boolean;
+  hasLearningPlanner?: boolean;
   sampleResumeLevels?: { key: string; label: string }[];
 }) {
   const allCourseSlugs = path.stages.flatMap((s) => s.courseSlugs ?? []);
@@ -606,6 +608,25 @@ export default function PathDetailRedesign({
                 );
               })}
             </div>
+
+            {hasLearningPlanner && (
+              <Link
+                href={`/app/planner/${path.slug}`}
+                className="group mt-10 flex flex-wrap items-center justify-between gap-4 rounded-[2px] border-2 border-crimson bg-gold-pale p-6 hover:border-crimson-deep"
+              >
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson">Day-by-day schedule</p>
+                  <p className="display mt-1 text-xl text-crimson-deep">Get a real 24-week study plan →</p>
+                  <p className="mt-1 text-sm text-crimson-deep/80">
+                    Every lesson above, scheduled hour by hour — 5 days a week, 2 hours a day, with a practical
+                    activity and deliverable for each session.
+                  </p>
+                </div>
+                <span className="inline-block rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment group-hover:bg-crimson-deep">
+                  View the planner
+                </span>
+              </Link>
+            )}
           </div>
 
           {/* Sidebar */}
