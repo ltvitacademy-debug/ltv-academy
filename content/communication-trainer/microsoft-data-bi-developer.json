@@ -1,67 +1,169 @@
 {
-  "scenarios": [
+  "exercises": [
     {
       "id": "msbi-comm-01",
-      "title": "A report query that's suddenly slow",
+      "title": "A stored procedure that's suddenly 40x slower",
+      "competency": "troubleshooting",
       "skillTag": "T-SQL Performance Tuning",
-      "situation": "A report query that used to run in a couple of seconds is now taking over a minute, and nobody changed the query. How would you troubleshoot it?",
-      "beginnerAnswer": "I'd look at the query and maybe add an index to speed it up.",
-      "professionalAnswer": "I'd turn on the actual execution plan before I change anything, so I'm looking at what SQL Server is actually doing instead of guessing. I'd check whether the plan shows an Index Seek or an Index Scan on the main table — a scan against a table that should only return a handful of rows is the first red flag. From there I'd check whether the WHERE clause is still SARGable, since a function wrapped around a column forces a scan even with the right index in place, and I'd capture SET STATISTICS TIME and IO before and after any change so I can prove the fix actually reduced logical reads and duration instead of just assuming it did.",
-      "vocabulary": [
-        { "term": "Execution plan", "usage": "I'd turn on the actual execution plan and see whether SQL Server is doing an Index Seek or an Index Scan on the main table." },
-        { "term": "SARGable predicate", "usage": "I'd check whether the WHERE clause is still SARGable — a function wrapped around the column would force a scan even with the right index in place." },
-        { "term": "Index Seek vs. Index Scan", "usage": "A scan against a table that should only return a handful of rows is the red flag I'd look for first." },
-        { "term": "SET STATISTICS TIME and IO", "usage": "I'd capture logical reads and duration before and after any change, so I can prove the fix actually helped instead of just assuming it did." }
+      "situation": "A business-critical stored procedure that normally executes in three seconds is now taking two minutes. Explain how you would investigate the problem.",
+      "beginnerResponse": "I would check the SQL query, see if there are any missing indexes, and try to make it run faster.",
+      "whyBeginnerIsWeak": "This jumps straight to a fix — indexing — without any diagnostic step first. It never confirms whether the slowdown is isolated to this procedure or part of a broader server issue, it doesn't name a single tool or piece of evidence it would actually look at, and it has no way to prove afterward that the fix worked. Indexing might not even be the right category of fix: this could just as easily be blocking, a stale statistics problem, or something that only shows up under certain parameter values — and this answer would never find that out.",
+      "professionalResponse": "I'd start by confirming whether this is isolated to this one stored procedure or part of a broader slowdown — if everything is slow, this isn't a query-tuning problem, it's a server-level resource issue, and that changes who needs to be involved and how urgent it is. Assuming it's isolated, I'd turn on the actual execution plan and compare it against what I'd expect: is SQL Server doing an Index Seek where I'd expect one, or has it shifted to an Index Scan? I'd check whether the WHERE clause predicates are still SARGable, since a function wrapped around a column or an implicit conversion can force a scan even with the right index in place. I'd run SET STATISTICS TIME and IO to get real numbers — CPU time, elapsed time, logical reads — and if elapsed time is running much higher than CPU time, that's a strong signal the bottleneck isn't the query's own logic at all, it's blocking: another transaction holding a lock this procedure needs. Beyond what this toolkit alone shows me, in a production environment with Query Store enabled I'd compare this execution's plan directly against its own historical baseline, which is the fastest way to tell whether this is a genuine regression or something that was always this slow under current data volume. I'd also check aggregated wait statistics to see what category of wait — locking, I/O, memory — is actually dominating, and I'd consider whether this is a cardinality estimation problem, where stale statistics led the optimizer to badly misjudge how many rows a step would return, or a parameter sensitivity issue, where the plan cached for one set of parameter values performs badly against very different values passed in later. Once I've isolated the actual cause, I'd apply the matching fix — update statistics, adjust an index, rewrite a predicate, or address the blocking transaction — and validate it by re-running STATISTICS IO and TIME before and after, so I can show the improvement with real numbers instead of just asserting it feels faster.",
+      "scopeBreakdown": [
+        {
+          "letter": "S",
+          "label": "Situation",
+          "explanation": "A business-critical stored procedure that normally runs in three seconds is now taking two minutes — a roughly 40x regression with no known code change."
+        },
+        {
+          "letter": "C",
+          "label": "Clarify",
+          "explanation": "Before touching anything, confirm scope: is this one procedure, or is the whole server degraded? That single question determines whether this is a query-tuning problem or a server-resource problem, and skipping it risks tuning a query that was never the actual cause."
+        },
+        {
+          "letter": "O",
+          "label": "Observe",
+          "explanation": "Gather evidence before forming a theory: the actual execution plan (seek vs. scan), SARGability of the predicates, SET STATISTICS TIME/IO numbers — and, going further than a single-query snapshot, Query Store history, wait statistics, and whether cardinality estimates still look reasonable."
+        },
+        {
+          "letter": "P",
+          "label": "Plan & Perform",
+          "explanation": "Only after the evidence points somewhere specific — a stale plan, a non-SARGable predicate, blocking, a cardinality miss, parameter sensitivity — choose the matching fix: update statistics, adjust an index, rewrite a predicate, or address the blocking transaction."
+        },
+        {
+          "letter": "E",
+          "label": "Evaluate",
+          "explanation": "Re-run STATISTICS IO and TIME after the fix and compare the numbers directly against the baseline captured before changing anything, so the improvement is demonstrated with evidence, not a hunch that it 'feels faster.'"
+        }
       ],
-      "whyStronger": "The beginner answer names an action (add an index) with no diagnosis behind it — it might not even be an indexing problem. The professional answer investigates first, names the specific tool it would use at each step, and validates the result with a measurement instead of a guess.",
-      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "execution-plans", "label": "Reading Execution Plans: Scans vs. Seeks" }
-    },
-    {
-      "id": "msbi-comm-02",
-      "title": "A dashboard showing numbers that don't match",
-      "skillTag": "Power BI / DAX Troubleshooting",
-      "situation": "Two visuals on the same Power BI report page are supposed to show the same total revenue, but they don't match. How would you investigate?",
-      "beginnerAnswer": "I'd check the data and refresh the report to see if that fixes it.",
-      "professionalAnswer": "I'd first check whether both visuals are actually under the same filter context — a slicer or a visual-level filter applied to one part of the page but not the other would fully explain a mismatch without anything being 'wrong.' Next I'd check whether both numbers come from the same measure, since a calculated column is computed once per row at refresh time under row context and won't respond to filters the same way a measure does. If they're pulling from different tables, I'd confirm which relationship between those tables is active — an inactive relationship is silently ignored unless a measure explicitly calls USERELATIONSHIP, which is an easy thing to miss.",
-      "vocabulary": [
-        { "term": "Filter context", "usage": "I'd check whether the two visuals are actually sitting under the same filter context — a slicer or visual-level filter on one but not the other would explain a mismatch." },
-        { "term": "Row context", "usage": "If one number comes from a calculated column, it was computed per-row at refresh time, not re-evaluated by the current filters the way a measure is." },
-        { "term": "Active vs. inactive relationship", "usage": "I'd confirm which relationship between the two tables is active — an inactive one is silently ignored unless a measure calls USERELATIONSHIP." },
-        { "term": "Measures vs. calculated columns", "usage": "I'd check whether both totals are actually measures, since a calculated column won't respond to filters the same way a measure does." }
+      "whatMakesThisSoundSenior": [
+        {
+          "quality": "Technical precision",
+          "description": "Uses correct industry terminology rather than vague language.",
+          "howThisResponseShowsIt": "It names exact mechanisms — SARGable predicates, Index Seek vs. Index Scan, logical reads, blocking, cardinality estimation — instead of saying 'the query' or 'the database' in general terms."
+        },
+        {
+          "quality": "Structured reasoning",
+          "description": "Explains a logical investigation and decision-making process.",
+          "howThisResponseShowsIt": "It follows a clear investigate-before-fixing sequence — confirm scope, examine the plan, measure with STATISTICS TIME/IO, isolate the cause, only then choose a fix — instead of jumping straight to an action."
+        },
+        {
+          "quality": "Business awareness",
+          "description": "Connects technical problems to business impact.",
+          "howThisResponseShowsIt": "It opens by confirming whether this is isolated or system-wide, which is exactly the question that determines how urgent and how costly the problem actually is for the business, not just for this one procedure."
+        },
+        {
+          "quality": "Professional judgment",
+          "description": "Considers evidence, risks, alternatives, and tradeoffs before recommending solutions.",
+          "howThisResponseShowsIt": "It treats indexing, blocking, stale statistics, and parameter sensitivity as competing hypotheses to rule in or out with evidence, rather than assuming the first idea that comes to mind — indexing — is automatically the right one."
+        },
+        {
+          "quality": "Validation",
+          "description": "Explains how success would be measured and verified.",
+          "howThisResponseShowsIt": "It closes by re-running STATISTICS IO and TIME after the fix and comparing the numbers against the captured baseline, so the improvement is proven, not just asserted."
+        }
       ],
-      "whyStronger": "The beginner answer treats this as a data problem and reaches for 'refresh it' as a generic fix. The professional answer treats it as a context problem — the data is probably fine — and checks the three specific DAX mechanics that produce exactly this symptom.",
-      "lessonLink": { "courseSlug": "power-bi", "lessonSlug": "row-vs-filter-context", "label": "Row Context vs. Filter Context" }
-    },
-    {
-      "id": "msbi-comm-03",
-      "title": "A nightly load that used to work now fails partway through",
-      "skillTag": "SSIS / ETL Troubleshooting",
-      "situation": "A nightly SSIS package that's run reliably for months failed partway through last night's load. How would you troubleshoot it before just rerunning it?",
-      "beginnerAnswer": "I'd just rerun the package and see if it works the second time.",
-      "professionalAnswer": "Rerunning it is a diagnosis, not a fix, so I'd start by reading the error message closely enough to sort it into a category — a connection failure, a data type mismatch, or something else — because each one points at a different place to look. I'd check the logging provider output to see exactly which task and which row the package was on when it failed, rather than guessing from the top-level error. I'd also check whether the data flow has an error output that should have redirected bad rows instead of failing outright, and whether checkpoints are configured, so if this does need a retry, I'm restarting from the failed task instead of redoing work that already succeeded.",
       "vocabulary": [
-        { "term": "Failure category", "usage": "I'd read the error message closely enough to sort it into a category first — connection failure, data type mismatch, something else — because each one points at a different fix." },
-        { "term": "Logging provider", "usage": "I'd check the logging provider output to see exactly which task and which row the package was on when it failed, instead of guessing." },
-        { "term": "Error output", "usage": "I'd check whether the data flow has an error output that should have redirected bad rows instead of failing the whole package outright." },
-        { "term": "Checkpoints / restartability", "usage": "If checkpoints are configured, I'd restart from the failed task instead of rerunning the whole package and redoing work that already succeeded." }
+        {
+          "term": "Execution plan",
+          "kind": "prerequisite",
+          "definition": "The tree of physical steps SQL Server actually used to run a query — which operators, in what order, reading from where.",
+          "whyItMatters": "It's the ground truth for diagnosing a query — instead of guessing, you can see exactly what SQL Server chose to do.",
+          "example": "I'd turn on the actual execution plan and check whether SQL Server is doing an Index Seek or an Index Scan on the main table.",
+          "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "execution-plans", "label": "Reading Execution Plans: Scans vs. Seeks" }
+        },
+        {
+          "term": "SARGable predicate",
+          "kind": "prerequisite",
+          "definition": "A WHERE/JOIN condition written so SQL Server can use an index's B-tree directly, instead of having to evaluate every row.",
+          "whyItMatters": "A predicate that looks fine but isn't SARGable — wrapped in a function, for example — silently forces a full scan even when the right index exists.",
+          "example": "I'd check whether the predicate is still SARGable — a function around the column would force a scan even with the right index in place.",
+          "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "sargable-predicates", "label": "SARGable vs. Non-SARGable WHERE Clauses" }
+        },
+        {
+          "term": "SET STATISTICS TIME / IO",
+          "kind": "prerequisite",
+          "definition": "SQL Server commands that print real measurements — CPU time, elapsed time, logical reads — for every query you run while they're switched on.",
+          "whyItMatters": "It turns 'this feels faster' into a provable before-and-after comparison.",
+          "example": "I'd capture STATISTICS TIME and IO before and after any change, so the improvement is demonstrated with real numbers.",
+          "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "set-statistics-time-io", "label": "SET STATISTICS TIME and IO in Practice" }
+        },
+        {
+          "term": "Blocking",
+          "kind": "prerequisite",
+          "definition": "One transaction waiting for a lock that another transaction currently holds — normal, expected database behavior, not automatically a bug.",
+          "whyItMatters": "If elapsed time is much higher than CPU time, blocking — not the query's own logic — is often the real bottleneck.",
+          "example": "If elapsed time is way higher than CPU time, I'd check for blocking before assuming the query itself is inefficient.",
+          "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "concurrency-blocking", "label": "Concurrency and Blocking" }
+        },
+        {
+          "term": "Query Store",
+          "kind": "enrichment",
+          "definition": "A SQL Server feature that automatically retains the history of a query's execution plans and runtime statistics over time, so you can see whether a plan changed and compare current performance against a real historical baseline.",
+          "whyItMatters": "It's the fastest way to prove a genuine regression — 'this plan changed on this date' — instead of guessing from a single snapshot. This T-SQL course covers writing and tuning queries directly in SSMS; Query Store is a server-level administration feature that goes beyond that scope, which is why it isn't one of this course's own lessons but is still worth knowing.",
+          "example": "In a production environment with Query Store enabled, I'd compare this execution's plan directly against its own historical baseline."
+        },
+        {
+          "term": "Wait statistics",
+          "kind": "enrichment",
+          "definition": "Aggregated data on what specific resource — locks, disk I/O, memory, CPU — sessions have actually been waiting on, tracked by SQL Server itself.",
+          "whyItMatters": "It tells you the category of bottleneck across the whole server, not just one query, which keeps you from tuning the wrong thing. Like Query Store, this is server-level diagnostic territory beyond what this course's query-writing focus covers.",
+          "example": "I'd check aggregated wait statistics to see whether locking, I/O, or memory pressure is actually dominating."
+        },
+        {
+          "term": "Cardinality estimation",
+          "kind": "enrichment",
+          "definition": "The optimizer's prediction of how many rows each step of a plan will produce, which it uses to choose join types and operators before the query even runs.",
+          "whyItMatters": "A badly wrong estimate — often caused by stale statistics — can make the optimizer pick a plan that's a poor fit for the real data. This sits one level deeper than the execution-plan reading this course teaches: it's not just what plan SQL Server chose, but why it chose it.",
+          "example": "I'd consider whether this is a cardinality estimation problem, where stale statistics led the optimizer to badly misjudge row counts."
+        },
+        {
+          "term": "Parameter sensitivity (parameter sniffing)",
+          "kind": "enrichment",
+          "definition": "What happens when SQL Server caches a query plan based on the specific parameter values used the first time it compiled, and a later execution with very different values performs badly against that same cached plan.",
+          "whyItMatters": "It's a common, non-obvious cause of 'this query is usually fast but sometimes grinds to a halt' that has nothing to do with indexing or data volume.",
+          "example": "I'd also consider parameter sensitivity — a plan cached for one set of values performing badly against a very different set passed in later."
+        }
       ],
-      "whyStronger": "The beginner answer skips diagnosis entirely and treats 'try again' as the plan. The professional answer reads the failure for information first, names the specific category it points to, and only then decides whether a restart is even the right next step.",
-      "lessonLink": { "courseSlug": "ssis-development", "lessonSlug": "common-failure-patterns", "label": "Common Failure Patterns" }
-    },
-    {
-      "id": "msbi-comm-04",
-      "title": "A report that used to load fast is now timing out",
-      "skillTag": "SSRS / Report Performance",
-      "situation": "A paginated report that used to load in a few seconds is now timing out for users. How would you approach fixing it?",
-      "beginnerAnswer": "I'd try adding caching to the report so it loads faster.",
-      "professionalAnswer": "I'd start with the diagnostic question of whether every report is slow or just this one, because that points at two completely different problems — infrastructure if it's everything, this report's own design if it's just this one. Assuming it's one report, I'd look at dataset query efficiency before anything else: filtering and aggregating at the source instead of pulling everything and filtering inside the report, presorting with ORDER BY on the data source, and tying report parameters to the dataset's query parameters so less data is retrieved in the first place. Caching or a snapshot is something I'd layer in deliberately once the underlying query is actually efficient, not reach for as the first fix.",
-      "vocabulary": [
-        { "term": "Is it every report, or one report?", "usage": "I'd start by asking whether every report is slow or just this one, because that points at two completely different fixes — infrastructure versus this report's design." },
-        { "term": "Dataset query efficiency", "usage": "Before touching caching, I'd tune the dataset query itself — filtering and aggregating at the source instead of pulling everything and filtering inside the report." },
-        { "term": "Caching / snapshots", "usage": "I'd only layer in caching or a snapshot deliberately, once the underlying query is actually efficient, not as the first thing I reach for." }
+      "languageUpgrades": [
+        {
+          "weak": "I would check why the SQL query is slow.",
+          "professional": "I'd establish whether this is isolated to one query or part of a broader resource issue, then examine the actual execution plan and the SARGability of the predicates to find the specific bottleneck.",
+          "whyStronger": "Replaces a vague intention to 'check' with a named diagnostic sequence and specific tools."
+        },
+        {
+          "weak": "I'd add an index to speed it up.",
+          "professional": "I'd confirm an index is actually the bottleneck — via the execution plan and SARGability — before changing the schema, since an unnecessary index carries its own maintenance cost on every write.",
+          "whyStronger": "Treats indexing as a conclusion to validate, not a default reflex, and names the real tradeoff of getting it wrong."
+        },
+        {
+          "weak": "It's probably just slow because of all the data.",
+          "professional": "I'd treat that as a hypothesis to test — checking whether statistics are current and whether the optimizer's cardinality estimates still match reality — rather than writing off the regression as simply unavoidable.",
+          "whyStronger": "Replaces a shrug with a specific, checkable hypothesis instead of an assumption that closes off further investigation."
+        }
       ],
-      "whyStronger": "The beginner answer reaches for caching first, which can mask a slow query without fixing it. The professional answer diagnoses scope first, fixes the actual query, and treats caching as a deliberate layer on top rather than a band-aid.",
-      "lessonLink": { "courseSlug": "ssrs-development", "lessonSlug": "performance-considerations", "label": "Performance Considerations" }
+      "sayItLikeASenior": [
+        {
+          "beginnerStatement": "I'd just rerun the query and see if it's faster.",
+          "suggestedProfessionalVersion": "I'd capture SET STATISTICS TIME and IO on this run first, so I have a real baseline instead of a subjective impression of whether a rerun 'felt' faster."
+        },
+        {
+          "beginnerStatement": "The database is probably just overloaded.",
+          "suggestedProfessionalVersion": "I'd check aggregated wait statistics to see whether locking, I/O, or memory pressure is actually dominating, rather than attributing it to the database being 'overloaded' in general."
+        },
+        {
+          "beginnerStatement": "I'd tell the team it's fixed once it feels fast again.",
+          "suggestedProfessionalVersion": "I'd report the fix as validated once STATISTICS IO and TIME after the change show a measurable improvement over the captured baseline, not based on a subjective sense that it feels faster."
+        }
+      ],
+      "selfAssessmentRubric": [
+        "Did you confirm whether the problem was isolated to one query or part of a broader issue, before proposing a fix?",
+        "Did you name at least two specific diagnostic tools or pieces of evidence you'd actually look at (execution plan, SARGability, STATISTICS TIME/IO, blocking, Query Store, wait statistics, cardinality, parameter sensitivity)?",
+        "Did you present indexing (or any single fix) as a conclusion to validate, rather than an automatic first move?",
+        "Did you explain how you would prove the fix worked, not just that you applied one?",
+        "Did your explanation use at least 3 of the vocabulary terms above correctly and naturally, not just mentioned in passing?"
+      ],
+      "verbalRehearsalPrompt": "Read the professional response above out loud, at a natural pace, as if you were explaining it to a hiring manager who just asked you this question. Then close the page and try explaining it again from memory, in your own words but keeping the SCOPE structure and at least four of the vocabulary terms. Compare how natural the second attempt felt compared to the first."
     }
   ]
 }

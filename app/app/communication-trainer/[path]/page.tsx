@@ -1,19 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CAREER_PATHS, getCareerPath } from "@/lib/career-paths";
-import { loadCommunicationScenarios, hasCommunicationScenarios } from "@/lib/communicationTrainer";
+import { loadCommunicationExercises, hasCommunicationExercises } from "@/lib/communicationTrainer";
 import CommunicationTrainer from "@/components/app/CommunicationTrainer";
 
-const SCOPE_STEPS = [
-  { letter: "S", label: "Situation", text: "Describe the business or technical problem." },
-  { letter: "C", label: "Clarify", text: "Identify missing requirements, symptoms, and constraints." },
-  { letter: "O", label: "Observe", text: "Explain which evidence, logs, metrics, or tools you would examine." },
-  { letter: "P", label: "Plan & Perform", text: "Describe your proposed technical solution and why you chose it." },
-  { letter: "E", label: "Evaluate", text: "Explain how you would test, validate, and communicate the outcome." },
-];
-
 export function generateStaticParams() {
-  return CAREER_PATHS.filter((p) => hasCommunicationScenarios(p.slug)).map((p) => ({ path: p.slug }));
+  return CAREER_PATHS.filter((p) => hasCommunicationExercises(p.slug)).map((p) => ({ path: p.slug }));
 }
 
 export default async function CommunicationTrainerPage({
@@ -25,7 +17,9 @@ export default async function CommunicationTrainerPage({
   const careerPath = getCareerPath(pathSlug);
   if (!careerPath) notFound();
 
-  const scenarios = loadCommunicationScenarios(pathSlug);
+  const exercises = loadCommunicationExercises(pathSlug);
+  if (exercises.length === 0) notFound();
+  const exercise = exercises[0];
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
@@ -38,35 +32,23 @@ export default async function CommunicationTrainerPage({
           {careerPath.title}
         </Link>
         {" · "}
-        <span>Communication trainer</span>
+        <span>Communication Lab</span>
       </nav>
 
-      <p className="eyebrow mb-3">LTV Technical Communication Trainer</p>
+      <p className="eyebrow mb-3">LTV Technical Communication Lab</p>
       <h1 className="display text-3xl sm:text-4xl">
-        {careerPath.title} <span className="text-crimson">scenario practice</span>
+        {careerPath.title} <span className="text-crimson">{exercise.title}</span>
       </h1>
       <p className="mt-4 max-w-2xl text-stone">
-        Technical correctness isn&apos;t the same as explaining your work the way a working
-        professional does. These scenarios aren&apos;t about memorizing jargon — they&apos;re about
-        thinking through a problem out loud with the precision, structure, and vocabulary
-        someone doing this job every day actually uses.
+        This isn&apos;t an exam, and it isn&apos;t Guided Practice — nobody&apos;s checking whether
+        your answer is technically correct. It&apos;s about learning to <em>explain</em> technical
+        work the way an experienced professional does: precise vocabulary, a structured reasoning
+        process, and language that connects the technical problem to what it actually costs the
+        business. Work through each step in order — the teaching comes before the practice.
       </p>
 
-      <div className="mt-8 rounded-[2px] border-2 border-gold bg-gold-pale/40 p-6 sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">A repeatable framework: SCOPE</p>
-        <div className="mt-4 grid gap-4 sm:grid-cols-5">
-          {SCOPE_STEPS.map((step) => (
-            <div key={step.letter}>
-              <p className="display text-2xl text-crimson">{step.letter}</p>
-              <p className="text-sm font-semibold text-ink">{step.label}</p>
-              <p className="mt-1 text-xs text-stone">{step.text}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-10 border-t-2 border-gold pt-8">
-        <CommunicationTrainer scenarios={scenarios} storageKey={`communication-trainer:${pathSlug}`} />
+      <div className="mt-10">
+        <CommunicationTrainer exercise={exercise} />
       </div>
 
       <div className="mt-14 border-t border-ink/15 pt-6">
