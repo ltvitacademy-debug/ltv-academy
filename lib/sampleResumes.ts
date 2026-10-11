@@ -29,6 +29,7 @@ import { RESUMES as SNOWFLAKE_DATA_ENGINEER } from "./sample-resumes-data/snowfl
 import { RESUMES as AWS_DATA_ENGINEER } from "./sample-resumes-data/aws-data-engineer";
 import { RESUMES as SQL_SERVER_DATABASE_ADMINISTRATOR } from "./sample-resumes-data/sql-server-database-administrator";
 import { RESUMES as DATA_GOVERNANCE } from "./sample-resumes-data/data-governance";
+import { RESUMES as QUANTITATIVE_DEVELOPER_RESEARCHER } from "./sample-resumes-data/quantitative-developer-researcher";
 
 export const SAMPLE_RESUMES: Record<string, PathResumes> = {
   "microsoft-data-bi-developer": MICROSOFT_DATA_BI_DEVELOPER,
@@ -47,6 +48,7 @@ export const SAMPLE_RESUMES: Record<string, PathResumes> = {
   "aws-data-engineer": AWS_DATA_ENGINEER,
   "sql-server-database-administrator": SQL_SERVER_DATABASE_ADMINISTRATOR,
   "data-governance": DATA_GOVERNANCE,
+  "quantitative-developer-researcher": QUANTITATIVE_DEVELOPER_RESEARCHER,
 };
 
 export function getSampleResume(pathSlug: string, level: string): ResumeData | undefined {
