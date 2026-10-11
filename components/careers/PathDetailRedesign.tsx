@@ -205,30 +205,62 @@ export default function PathDetailRedesign({
       {/* Career progression stepper */}
       {path.targetJobs.length > 1 && (
         <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <p className="eyebrow mb-3">Career progression</p>
-          <h2 className="display max-w-2xl text-3xl sm:text-4xl">
-            The ladder from here to <em className="text-crimson">{path.targetJobs[path.targetJobs.length - 1]}</em>.
-          </h2>
-          <div className="mt-10 flex flex-wrap items-center gap-x-2 gap-y-6">
-            {path.targetJobs.map((job, i) => (
-              <div key={job} className="flex items-center gap-2">
-                <div className="flex w-28 flex-col items-center text-center">
-                  <span
-                    className={`flex h-14 w-14 items-center justify-center rounded-full border-2 ${
-                      i === currentStepIndex ? "border-gold bg-crimson-deep text-gold-pale" : "border-ink/15 bg-parchment text-stone"
-                    }`}
-                  >
-                    <span className="display text-lg">{i + 1}</span>
-                  </span>
-                  <span className={`mt-2 text-xs leading-tight ${i === currentStepIndex ? "font-semibold text-crimson-deep" : "text-stone"}`}>{job}</span>
-                </div>
-                {i < path.targetJobs.length - 1 && (
-                  <svg width="20" height="12" viewBox="0 0 20 12" fill="none" className="flex-shrink-0 text-gold" aria-hidden="true">
-                    <path d="M1 6h16M12 1l6 5-6 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                )}
+          <div className={certs.length > 0 ? "grid gap-10 lg:grid-cols-[1fr_20rem]" : undefined}>
+            <div>
+              <p className="eyebrow mb-3">Career progression</p>
+              <h2 className="display max-w-2xl text-3xl sm:text-4xl">
+                The ladder from here to <em className="text-crimson">{path.targetJobs[path.targetJobs.length - 1]}</em>.
+              </h2>
+              <div className="mt-10 flex flex-wrap items-center gap-x-2 gap-y-6">
+                {path.targetJobs.map((job, i) => (
+                  <div key={job} className="flex items-center gap-2">
+                    <div className="flex w-28 flex-col items-center text-center">
+                      <span
+                        className={`flex h-14 w-14 items-center justify-center rounded-full border-2 ${
+                          i === currentStepIndex ? "border-gold bg-crimson-deep text-gold-pale" : "border-ink/15 bg-parchment text-stone"
+                        }`}
+                      >
+                        <span className="display text-lg">{i + 1}</span>
+                      </span>
+                      <span className={`mt-2 text-xs leading-tight ${i === currentStepIndex ? "font-semibold text-crimson-deep" : "text-stone"}`}>{job}</span>
+                    </div>
+                    {i < path.targetJobs.length - 1 && (
+                      <svg width="20" height="12" viewBox="0 0 20 12" fill="none" className="flex-shrink-0 text-gold" aria-hidden="true">
+                        <path d="M1 6h16M12 1l6 5-6 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {certs.length > 0 && (
+              <div className="rounded-[2px] border border-ink/15 bg-white/60 p-5 lg:self-start">
+                <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                    <circle cx="12" cy="8" r="5" />
+                    <path d="M8.5 12.5 7 21l5-3 5 3-1.5-8.5" />
+                  </svg>
+                  What this prepares you for
+                </p>
+                <ul className="mt-3 space-y-3">
+                  {certs.map((c) => (
+                    <li key={c.certification} className="flex items-center gap-3 text-sm">
+                      {c.logo ? (
+                        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-parchment shadow-[0_0_0_1px_var(--color-gold)]">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={`/brand/logos/${c.logo}.svg`} alt="" className="h-4 w-4 object-contain" />
+                        </span>
+                      ) : (
+                        <span className="h-7 w-7 flex-shrink-0 rounded-full border border-ink/15" aria-hidden="true" />
+                      )}
+                      <span className="text-ink">{c.certification}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-4 text-xs text-stone">LTV Academy does not issue certifications — this shows the skills these courses cover.</p>
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -601,7 +633,10 @@ export default function PathDetailRedesign({
               </div>
             )}
 
-            {certs.length > 0 && (
+            {/* "What this prepares you for" now lives next to the Career progression ladder above.
+                Only fall back to showing it here for paths with no ladder (targetJobs.length <= 1),
+                so the card is never dropped entirely. */}
+            {certs.length > 0 && path.targetJobs.length <= 1 && (
               <div className="rounded-[2px] border border-ink/15 bg-white/60 p-5">
                 <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
