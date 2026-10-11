@@ -1,0 +1,710 @@
+{
+  "questions": [
+    {
+      "id": "qdev-int-001",
+      "questionCode": "LTV-QDEV-0009",
+      "title": "unique_ptr vs. shared_ptr: Choosing Ownership Semantics",
+      "prompt": "A colleague defaults to std::shared_ptr for every heap-allocated object 'to be safe.' When is that the right call, and when is std::unique_ptr clearly the better choice? Use a MarketDataCache shared by several subsystems as your shared-ownership example.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Smart Pointers",
+        "Ownership Semantics",
+        "Performance"
+      ],
+      "modelAnswer": "std::unique_ptr should be the default, not shared_ptr. unique_ptr has zero runtime overhead versus a raw pointer -- it's purely a compile-time wrapper that calls delete in its destructor -- and it correctly expresses the common case: exactly one piece of code owns this object. shared_ptr is for the genuinely less common case where ownership must be shared among multiple independent owners with no single piece of code that can say 'I'm done with this first' -- a MarketDataCache referenced by a pricing subsystem, a risk subsystem, and a logging subsystem, none of which knows when the others are finished with it, is a legitimate example: the cache should live until the last subscriber drops its reference. That flexibility costs something real: a shared_ptr carries a control block with an atomic reference count, and every copy and destruction performs an atomic increment or decrement -- measurable overhead in a tight loop, and more memory per pointer than a unique_ptr. Defaulting to shared_ptr 'to be safe' usually just means nobody thought carefully about who owns what, and it hides a design question behind reference counting rather than answering it.",
+      "professionalAnswer": "I'd push back gently: shared_ptr isn't a safety net, it's a specific tool for a specific ownership shape, and most code doesn't actually have that shape. If I can point to one piece of code that's clearly responsible for an object's lifetime, unique_ptr is strictly better -- same safety, zero reference-counting cost. I'd reserve shared_ptr for something like a market data cache that three unrelated subsystems all hold onto independently, where there genuinely isn't a single owner. Reaching for shared_ptr everywhere usually means the ownership question was never actually answered, just paved over.",
+      "example": "// Shared ownership genuinely needed -- no single subsystem can say \"delete this\"\nstd::shared_ptr<MarketDataCache> cache = std::make_shared<MarketDataCache>();\nPricingEngine pricer(cache);\nRiskEngine risk(cache);\nLogger logger(cache);\n// cache is destroyed only when pricer, risk, AND logger have all released it",
+      "commonMistakes": [
+        "Defaulting to shared_ptr everywhere instead of unique_ptr, paying reference-counting overhead for no reason",
+        "Believing shared_ptr is 'thread-safe' in general, when only the reference count itself is atomic -- the pointed-to object still needs its own synchronization",
+        "Creating shared_ptr cycles (A holds a shared_ptr to B, B holds one back to A), causing a leak that shared_ptr alone can't detect"
+      ],
+      "keyPoints": [
+        "unique_ptr has zero overhead versus a raw pointer and should be the default",
+        "shared_ptr is for genuine multi-owner scenarios with no single clear owner",
+        "shared_ptr's reference count is atomic, costing real overhead on copy/destroy",
+        "Reference counting is not a substitute for a clear ownership design"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly argues unique_ptr should be the default",
+          "weight": 30
+        },
+        {
+          "criterion": "Identifies a legitimate shared-ownership scenario",
+          "weight": 25
+        },
+        {
+          "criterion": "Explains the real overhead cost of shared_ptr",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity and technical accuracy",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "smart-pointers-and-raii",
+        "label": "Review: Smart Pointers & RAII"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-002",
+      "questionCode": "LTV-QDEV-0010",
+      "title": "Move Constructor, std::move, and What Actually Happens at Runtime",
+      "prompt": "Explain the difference between a copy constructor and a move constructor, what std::move actually does at runtime, and why marking a move constructor noexcept matters.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Move Semantics",
+        "C++ Fundamentals",
+        "Performance"
+      ],
+      "modelAnswer": "A copy constructor duplicates another object's resources -- for a struct holding a std::vector, that means allocating a new buffer and copying every element. A move constructor instead transfers ownership of the other object's internal resources -- for the same vector member, PriceSeries(PriceSeries&& other) : prices(std::move(other.prices)) just chains down to vector's own move constructor, which swaps a few internal pointers (data, size, capacity), leaving `other` empty, with zero element copying. std::move itself does nothing at runtime -- it performs no computation and moves no bytes. It is purely a cast that converts an lvalue into an rvalue reference, which makes the move overload eligible to be selected by overload resolution instead of the copy overload. Marking a move constructor noexcept matters because several standard library optimizations specifically check for it: when std::vector reallocates during growth, it will move its elements into the new buffer instead of copying them only if the element type's move constructor is noexcept; if it isn't, vector falls back to copying for exception-safety reasons (so that a half-moved vector never ends up in a state where it has lost some elements but an exception unwound the operation).",
+      "professionalAnswer": "I'd draw the line like this: copy duplicates, move steals. std::move is just a label -- it tells the compiler 'you're allowed to treat this as disposable,' and the actual transfer happens inside whichever move constructor gets selected as a result, usually just a pointer swap. The noexcept detail trips people up because it feels like a minor annotation, but it directly changes vector's reallocation behavior -- an un-noexcept move constructor on your element type means vector quietly falls back to copying on every growth, silently eating the performance win you thought you had.",
+      "example": "std::vector<double> a = {1.0, 2.0, 3.0};\nstd::vector<double> b = std::move(a);\n// std::move does nothing by itself -- it's a cast.\n// vector's move constructor is what actually transfers the buffer pointer.\n// a is now valid but unspecified -- typically empty.",
+      "commonMistakes": [
+        "Believing std::move performs the transfer itself, rather than just enabling overload resolution to pick the move constructor",
+        "Using a's contents after std::move(a) without reassigning or reconstructing it first",
+        "Forgetting to mark a hand-written move constructor noexcept, silently losing vector's move-on-reallocation optimization"
+      ],
+      "keyPoints": [
+        "Copy constructors duplicate resources; move constructors transfer ownership",
+        "std::move is a cast with no runtime effect of its own",
+        "After being moved from, an object is in a valid but unspecified state",
+        "noexcept on a move constructor enables std::vector to move instead of copy during reallocation"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly distinguishes copy vs. move constructor behavior",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly explains std::move as a cast with no runtime action",
+          "weight": 25
+        },
+        {
+          "criterion": "Explains the noexcept/vector-reallocation interaction correctly",
+          "weight": 30
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "move-semantics",
+        "label": "Review: Move Semantics"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-003",
+      "questionCode": "LTV-QDEV-0011",
+      "title": "std::vector vs. std::list for a Reused, Filtered Intermediate Result",
+      "prompt": "You have 200,000 intermediate order records that will be iterated over, in full, three separate times with different filters. A teammate suggests std::list because 'we might insert into the middle later.' Which container do you choose, and why does cache locality matter more here than the Big-O argument for insertion?",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "STL Containers",
+        "Cache Locality",
+        "Performance"
+      ],
+      "modelAnswer": "std::vector is the right choice here, and the Big-O argument for std::list's O(1) middle insertion is beside the point for a workload that's 95% iteration. std::vector stores its elements contiguously, so each 64-byte cache-line fetch during iteration pulls in several consecutive elements at once -- sequential scans run close to memory bandwidth. std::list is a doubly-linked list where each element is its own separately heap-allocated node, scattered across the heap in whatever order the allocator happened to place them; every `++it` is a pointer chase that's very likely a fresh cache miss, costing roughly 100ns instead of roughly 1-10ns for an L1/L2 hit. Over three full passes across 200,000 elements, that constant-factor cache penalty on every single element dwarfs the theoretical advantage of O(1) insertion -- an advantage that only matters if insertions into the middle are actually frequent and the container is large, not 'might happen later.' The professional default is: reach for std::vector, and only reconsider once you've measured a real, current reason insertion in the middle at scale is the actual bottleneck.",
+      "professionalAnswer": "I'd tell them: let's not design around a 'might' -- right now the measured access pattern is three full scans, and for that, vector wins decisively regardless of what the complexity tables say about insertion. A list's O(1) insertion is real, but every single step of iterating it is a likely cache miss because the nodes are scattered across the heap; vector's contiguous layout means iteration is close to free by comparison. If and when we actually have a workload that's dominated by frequent middle-insertions at real scale, that's the point to revisit it -- and even then I'd want to measure before assuming list wins, because vector with an occasional shift-and-insert often still comes out ahead in practice.",
+      "commonMistakes": [
+        "Choosing a container based on Big-O insertion cost without accounting for cache-locality constant factors",
+        "Designing for a hypothetical future access pattern instead of the actual, current one",
+        "Assuming std::list's O(1) insertion claim translates directly into real-world speed at any container size"
+      ],
+      "keyPoints": [
+        "std::vector's contiguous layout makes sequential iteration cache-friendly",
+        "std::list's scattered nodes make iteration cache-unfriendly despite O(1) insertion",
+        "A workload dominated by iteration should pick vector regardless of insertion complexity",
+        "Measure actual access patterns rather than designing for hypothetical future ones"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly recommends std::vector for this workload",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains cache-line/contiguous-memory reasoning correctly",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly frames why Big-O alone is misleading here",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "choosing-the-right-container",
+        "label": "Review: Choosing the Right Container"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-004",
+      "questionCode": "LTV-QDEV-0012",
+      "title": "Implement a Thread-Safe Trade Counter With std::atomic",
+      "prompt": "Two threads record trades concurrently by incrementing a shared counter. Implement it so there's no data race, without using a mutex, and explain which memory ordering you chose and why.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": [
+        "Atomics",
+        "Memory Ordering",
+        "Concurrency"
+      ],
+      "modelAnswer": "Declare the counter as std::atomic<long> and increment it with fetch_add, which performs the read-add-write as a single indivisible step that no other thread can observe half-finished. For a plain counter where only the final total matters -- nobody needs to know when a particular increment happened relative to other memory -- std::memory_order_relaxed is the correct and fastest choice: it still guarantees atomicity of the increment itself, just without imposing any ordering constraint on surrounding memory operations, which a counter doesn't need. This is faster than a mutex-protected increment because there's no possibility of blocking; the operation either succeeds in one step or, for a compare-exchange-based structure, retries, but fetch_add itself is a single hardware instruction on most platforms and never blocks.",
+      "professionalAnswer": "I'd reach for std::atomic<long> and fetch_add(1, std::memory_order_relaxed) without a second thought here. The reasoning on memory_order_relaxed specifically: relaxed only promises the increment itself can't be torn or lost -- it says nothing about how operations around it get reordered, and for a counter where the only thing that matters is the final total, that's exactly the guarantee I need and nothing more. If I were instead publishing some other piece of data alongside a flag -- 'this data is ready now' -- I'd reach for acquire/release instead, because then the ordering between the data write and the flag actually matters. Picking the weakest ordering that's still correct is the right habit, not reflexively defaulting to seq_cst everywhere.",
+      "example": "#include <atomic>\n\nstd::atomic<long> trade_count{0};\n\nvoid record_trades(int n) {\n    for (int i = 0; i < n; ++i) {\n        trade_count.fetch_add(1, std::memory_order_relaxed);\n    }\n}\n// std::thread a(record_trades, 100000);\n// std::thread b(record_trades, 100000);\n// a.join(); b.join();\n// trade_count now reliably equals 200000",
+      "commonMistakes": [
+        "Using a mutex to protect a simple counter when fetch_add is both simpler and faster",
+        "Reaching for memory_order_seq_cst by default without considering whether relaxed is sufficient and correct",
+        "Still performing trade_count = trade_count + 1 on the atomic without realizing compound read-modify-write needs fetch_add, not separate load/store"
+      ],
+      "keyPoints": [
+        "std::atomic<T>::fetch_add performs an indivisible read-modify-write",
+        "memory_order_relaxed is sufficient when only the final value matters, not timing relative to other memory",
+        "Atomics avoid blocking entirely, unlike a mutex",
+        "Choosing the weakest correct memory ordering is the professional default, not always seq_cst"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly implements the counter with std::atomic and fetch_add",
+          "weight": 40
+        },
+        {
+          "criterion": "Chooses and justifies memory_order_relaxed correctly",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains why this avoids blocking versus a mutex",
+          "weight": 15
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "atomics-and-memory-ordering",
+        "label": "Review: Atomics & Memory Ordering"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-005",
+      "questionCode": "LTV-QDEV-0013",
+      "title": "Bind a C++ Bond Pricer to Python With pybind11",
+      "prompt": "Write the pybind11 binding code that exposes a C++ Bond class (constructor taking face value, coupon rate, and years; a price(yield) method) to Python, with keyword-argument support, and show how it would be called from Python.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": [
+        "pybind11",
+        "Python/C++ Integration",
+        "Bindings"
+      ],
+      "modelAnswer": "Binding a class in pybind11 uses py::class_<T>(m, \"PythonName\"), chaining .def(py::init<...>()) for the constructor with the C++ argument types listed as template parameters, and .def(\"method_name\", &T::method) for each method. py::arg(\"name\") attaches a keyword-argument name to each parameter, both for the constructor and for methods, so Python callers can use Bond(face_value=1000.0, coupon_rate=0.05, years=10) and bond.price(yield=0.04) exactly as if Bond had been written natively in Python. Once the module is compiled (a separate build step), the C++ class behaves like an ordinary Python object, with pybind11 handling all the argument type conversion (double, int) automatically -- no manual reference counting or marshaling code needed on either side.",
+      "professionalAnswer": "This is close to boilerplate once you've done it a few times: py::class_ for the type, .def(py::init<...>()) for the constructor with py::arg names so Python callers get keyword arguments, then one .def(...) line per method you want exposed. The part worth calling out in an interview is that pybind11 is handling the type conversion for you -- double and int cross the boundary with zero manual marshaling -- which is exactly the convenience that breaks down once you want to pass a NumPy array instead of a scalar, which is a fair follow-up question to expect.",
+      "example": "namespace py = pybind11;\n\nclass Bond {\npublic:\n    Bond(double faceValue, double couponRate, int years)\n        : faceValue_(faceValue), couponRate_(couponRate), years_(years) {}\n    double price(double yield) const { /* ... */ return 0.0; }\nprivate:\n    double faceValue_, couponRate_;\n    int years_;\n};\n\nPYBIND11_MODULE(quantlib_cpp, m) {\n    py::class_<Bond>(m, \"Bond\")\n        .def(py::init<double, double, int>(),\n             py::arg(\"face_value\"), py::arg(\"coupon_rate\"), py::arg(\"years\"))\n        .def(\"price\", &Bond::price, py::arg(\"yield\"));\n}\n\n# Python side:\n# import quantlib_cpp as qc\n# bond = qc.Bond(face_value=1000.0, coupon_rate=0.05, years=10)\n# bond.price(yield=0.04)",
+      "commonMistakes": [
+        "Forgetting py::arg(...) names, which breaks keyword-argument calls from Python",
+        "Omitting py::init<...>() and expecting pybind11 to guess the constructor signature",
+        "Assuming this same automatic-conversion approach will work unchanged once a NumPy array parameter is introduced"
+      ],
+      "keyPoints": [
+        "py::class_<T> binds a C++ class; .def(py::init<...>()) binds its constructor",
+        "py::arg(\"name\") enables Python keyword arguments for both constructors and methods",
+        "pybind11 automatically converts scalar types (double, int) across the boundary",
+        "Compiled modules behave like ordinary Python imports once built"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly binds the constructor with py::init and py::arg",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly binds the price method with py::arg",
+          "weight": 25
+        },
+        {
+          "criterion": "Shows correct Python-side usage with keyword arguments",
+          "weight": 25
+        },
+        {
+          "criterion": "Code correctness and PYBIND11_MODULE structure",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "calling-cplusplus-from-python-with-pybind11",
+        "label": "Review: Calling C++ From Python With pybind11"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-006",
+      "questionCode": "LTV-QDEV-0014",
+      "title": "Find and Fix the Dangling Reference",
+      "prompt": "Review this code. It compiles cleanly but has undefined behavior. Identify the bug and fix it.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": [
+        "Dangling Reference",
+        "Object Lifetime",
+        "Debugging"
+      ],
+      "modelAnswer": "The bug is that getBestBid() returns a reference (const double&) to a local variable, best, which is destroyed the moment the function returns -- the caller receives a reference to memory that's already gone, and reading through it is undefined behavior, exactly the same category of bug as returning a raw pointer to a local. It can appear to 'work' in testing because the stack memory often still holds the old bit pattern briefly, which is precisely what makes this bug dangerous rather than merely broken. The fix is to return by value: double getBestBid() const { ... return best; } -- modern C++'s move/copy elision makes this just as cheap as returning a reference would have been if it were actually safe, so there's no performance reason to prefer the broken version.",
+      "professionalAnswer": "This is the classic 'reference to a local' bug, just dressed up as a member function instead of a free function -- same root cause as returning a pointer to a stack variable, just easier to miss because a reference doesn't look like a pointer. The fix is simple: return by value. People sometimes resist that because 'returning by reference avoids a copy,' but for a double that's a non-argument, and even for a larger type, modern C++ makes return-by-value cheap via moves -- there's no real performance reason left to keep the dangerous version.",
+      "example": "class OrderBook {\npublic:\n    const double& getBestBid() const {\n        double best = computeBestBid();  // local variable\n        return best;                      // BUG: reference to a local about to be destroyed\n    }\nprivate:\n    double computeBestBid() const { /* ... */ return 100.25; }\n};",
+      "commonMistakes": [
+        "Mistaking this for a pointer bug only, not recognizing that references have the exact same dangling-lifetime hazard",
+        "Assuming the code is correct because it compiles without warning and may even run without crashing",
+        "'Fixing' it by making best static, which hides the symptom but introduces a shared-state bug across calls instead"
+      ],
+      "keyPoints": [
+        "Returning a reference to a local variable is undefined behavior, identical in nature to returning a dangling pointer",
+        "Undefined behavior can appear to work by coincidence, which is exactly why it's dangerous",
+        "Returning by value is the correct fix and is cheap under modern move semantics",
+        "Making the local static is not a real fix -- it introduces shared mutable state"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies the dangling-reference bug",
+          "weight": 40
+        },
+        {
+          "criterion": "Provides the correct fix (return by value)",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains why this is undefined behavior rather than merely inefficient",
+          "weight": 15
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "the-stack-the-heap-and-object-lifetime",
+        "label": "Review: The Stack, the Heap & Object Lifetime"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-007",
+      "questionCode": "LTV-QDEV-0015",
+      "title": "Diagnosing an Intermittent Data Race",
+      "prompt": "A pricing engine occasionally produces a slightly wrong number under load, but never in single-threaded testing, and the bug doesn't reproduce reliably. How would you confirm this is a data race, and what tool would you reach for before trying to reason about it by eye?",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Data Races",
+        "ThreadSanitizer",
+        "Concurrency Debugging"
+      ],
+      "modelAnswer": "The symptom pattern -- wrong only under concurrent load, never single-threaded, and not reliably reproducible -- is the classic signature of a data race, because a race's outcome depends on the OS scheduler's exact, largely unpredictable interleaving of threads, not on the input data. Reasoning about this by eye across a real codebase is unreliable and slow; the right first move is to rebuild with ThreadSanitizer (-fsanitize=thread) and run the exact same concurrent workload that triggers the bug under that instrumented build. ThreadSanitizer tracks every memory access across threads and reports the precise pair of racing accesses -- which two threads, which memory location, which lines of code -- the moment they actually race during that run, rather than requiring the bug's symptom (the wrong price) to be the thing you chase. Once TSan points at the specific shared variable, the fix is standard: protect it with a mutex, make it a std::atomic if it's a simple value, or restructure so it's no longer shared mutable state. Testing alone can never prove the race is gone, since 'it passed this run' says nothing about the next one; TSan (or careful reasoning about every piece of shared state) is what gives real confidence.",
+      "professionalAnswer": "The moment I hear 'wrong only under load, never single-threaded, not reliably reproducible,' I stop trying to spot it by reading code and go straight to ThreadSanitizer. Rebuild with -fsanitize=thread, run the same concurrent load that triggers it, and let TSan point at the exact racing memory access -- it'll name the two threads and the exact lines. Trying to find a race by code review alone on anything non-trivial is a losing game; the whole point of a data race is that its effect depends on scheduling you can't fully control or predict by inspection.",
+      "commonMistakes": [
+        "Trying to spot the race by code review alone instead of reaching for ThreadSanitizer",
+        "Concluding the bug is fixed because a single test run passed after a change, when the race is schedule-dependent",
+        "Assuming any random-looking wrong number under load must be a floating-point issue rather than considering a race first"
+      ],
+      "keyPoints": [
+        "Intermittent, load-dependent wrongness that never reproduces single-threaded is a classic data-race signature",
+        "ThreadSanitizer (-fsanitize=thread) directly reports the racing memory access and threads involved",
+        "A data race's outcome depends on unpredictable OS scheduling, not deterministic inputs",
+        "Passing a test run is not proof a race is fixed"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies the symptom pattern as a likely data race",
+          "weight": 25
+        },
+        {
+          "criterion": "Names and correctly describes using ThreadSanitizer",
+          "weight": 40
+        },
+        {
+          "criterion": "Explains why testing alone can't prove correctness",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "threads-and-data-races",
+        "label": "Review: Threads & Data Races"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-008",
+      "questionCode": "LTV-QDEV-0016",
+      "title": "Diagnosing a Slow Hot Loop Caused by Allocation",
+      "prompt": "Profiling shows a pricing loop spends most of its time inside std::vector's internal allocator, not inside the actual math. The loop builds a vector of results by push_back-ing one at a time, millions of times per second. What's going on, and how do you fix it?",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Performance",
+        "Heap Allocation",
+        "std::vector"
+      ],
+      "modelAnswer": "Without a prior call to reserve(), std::vector grows by reallocating to a larger buffer and copying (or moving) every existing element into it each time push_back exceeds current capacity -- typically doubling capacity each time. For a loop called millions of times per second, that pattern means repeated heap allocation requests and repeated bulk moves of already-placed elements, which shows up in a profiler as time spent inside the allocator rather than inside the actual pricing math, exactly as described. The fix is to call .reserve(n) once, up front, with a known or reasonably estimated final size, turning the many reallocate-and-copy cycles into a single allocation; push_back calls after that just write into already-allocated capacity with no further allocator involvement. If the vector is rebuilt on every call of a hot function, an additional fix is to allocate it once outside the loop and .clear() and reuse the same buffer on each call -- clear() keeps the already-allocated capacity, so there's no repeated allocate/free cycle across calls either.",
+      "professionalAnswer": "The profiler pointing at the allocator rather than the math is the tell -- that's not a 'the algorithm is slow' problem, it's a 'we're asking the heap for memory way more than we need to' problem. First thing I'd check is whether reserve() was ever called; if the final size is knowable or estimable, one reserve() turns a dozen reallocate-and-copy cycles into exactly one allocation. If this vector gets rebuilt fresh on every call of a hot function, I'd go further and hoist it outside the loop entirely, reusing the same buffer with clear() between calls -- that avoids paying for allocation and deallocation on every single invocation, not just within one pass.",
+      "commonMistakes": [
+        "Blaming the math/algorithm when the profiler is actually pointing at allocator time",
+        "Calling reserve() with a guess that's too small, which still triggers reallocations past that point",
+        "Reallocating a fresh vector on every function call instead of reusing one outside the hot loop"
+      ],
+      "keyPoints": [
+        "push_back without reserve() triggers repeated reallocate-and-copy cycles as capacity is exceeded",
+        "reserve(n) turns that into a single up-front allocation when n is known or estimable",
+        "clear() preserves capacity, letting a buffer be reused across repeated calls without reallocating",
+        "Profiler time inside the allocator, not the math, is the signal to look at allocation pattern first"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses repeated reallocation from push_back without reserve",
+          "weight": 40
+        },
+        {
+          "criterion": "Prescribes reserve() as the primary fix",
+          "weight": 30
+        },
+        {
+          "criterion": "Mentions reusing a buffer across calls via clear() as an additional fix",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "avoiding-allocation-and-copies",
+        "label": "Review: Avoiding Allocation & Copies"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-009",
+      "questionCode": "LTV-QDEV-0017",
+      "title": "REST vs. FIX vs. Native Broker APIs: Choosing a Connectivity Protocol",
+      "prompt": "A trading system needs to connect to a new venue. The venue offers a REST API, a FIX endpoint, and its own native SDK. What tradeoffs would you weigh in choosing among them, and does the strategy code need to know which one was chosen?",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "FIX Protocol",
+        "REST APIs",
+        "Trading Systems",
+        "Connectivity"
+      ],
+      "modelAnswer": "REST is the simplest to integrate -- plain HTTP requests with JSON responses -- but typically has higher latency and no persistent push connection, so fills usually require a separate WebSocket or polling mechanism alongside it. FIX is the institutional standard: a persistent, stateful session with lower latency and well-defined semantics for orders and execution reports, but materially more complex to implement correctly, with session management, sequence numbers, and message recovery after a disconnect all needing careful handling. The venue's native SDK is often the fastest path to get something working for that specific venue, at the cost of locking the integration into that venue's own abstractions, which becomes a real cost the moment a second venue needs to be added. The choice depends on latency requirements and integration timeline: a latency-sensitive HFT venue connection probably justifies FIX's complexity; a lower-frequency or exploratory integration might reasonably start with REST or the native SDK. Critically, none of this should leak into the strategy code -- an OMS abstraction layer sits between the strategy and whichever protocol was chosen, so the strategy calls a stable submit/cancel interface regardless of what's underneath, and switching protocols later (or adding a second venue with a different protocol) touches only the OMS implementation, not every strategy.",
+      "professionalAnswer": "I'd weigh it mostly on latency requirement versus integration effort: REST is the fastest to get working and fine if we're not latency-sensitive on this venue; FIX is more work up front -- session state, sequence numbers, reconnect logic -- but it's the right call if this venue actually needs to be fast. The native SDK is tempting because it's often the quickest path, but I'd be wary of letting that lock us into venue-specific abstractions throughout the codebase. Either way, the strategy code itself shouldn't know or care which protocol we picked -- that decision lives entirely inside the OMS layer, so if we're wrong today, fixing it later doesn't mean touching every strategy that trades on this venue.",
+      "commonMistakes": [
+        "Letting strategy code call a venue's native SDK or REST client directly, bypassing the OMS abstraction",
+        "Choosing FIX reflexively as 'the professional choice' without weighing actual latency requirements against its real integration cost",
+        "Underestimating FIX session management (sequence numbers, reconnect/recovery) as 'just another API to call'"
+      ],
+      "keyPoints": [
+        "REST trades simplicity for higher latency and lacks a persistent push connection on its own",
+        "FIX offers lower latency and institutional standardization at real integration complexity cost",
+        "A native SDK is quick to integrate but creates venue lock-in",
+        "The OMS abstraction layer should isolate the strategy code from whichever protocol is chosen"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly characterizes REST/FIX/native tradeoffs",
+          "weight": 40
+        },
+        {
+          "criterion": "Ties the choice to actual latency requirements, not reflexive preference",
+          "weight": 25
+        },
+        {
+          "criterion": "States that strategy code should remain protocol-agnostic via the OMS layer",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "connecting-to-brokers-and-exchanges",
+        "label": "Review: Connecting to Brokers & Exchanges"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-010",
+      "questionCode": "LTV-QDEV-0018",
+      "title": "Choosing Between a Vectorized and Event-Driven Backtest Engine",
+      "prompt": "A researcher wants to add a trailing stop-loss to their strategy, which has so far been backtested with a fully vectorized pandas implementation. Explain why this specific feature is a problem for the vectorized approach, and what engine design actually handles it cleanly.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Backtesting",
+        "Event-Driven Architecture",
+        "Vectorization"
+      ],
+      "modelAnswer": "A vectorized backtest expresses the whole strategy as array operations computed over the full price history at once -- it implicitly assumes every bar's decision can be computed independently from simple array math (e.g. comparing a fast and slow moving average column-wise). A trailing stop-loss breaks that assumption because it's path-dependent: whether the stop fires on a given bar depends on the sequence of what happened since the position was entered -- specifically, the running maximum (or minimum) price reached since entry -- not on that bar's data in isolation. You can sometimes force path-dependent logic into vectorized form with clever tricks (a cumulative-max column, conditional resets), but past a certain complexity it becomes harder to trust the vectorized code than to simulate the path directly. An event-driven engine handles this cleanly because it iterates through time bar by bar, maintaining ordinary mutable state (the position's entry price, its running high-water mark) as plain variables that get updated each step -- the stop-loss check is just an ordinary if-statement against that running state, exactly the kind of thing a sequential loop expresses naturally and a whole-array operation does not.",
+      "professionalAnswer": "I'd tell the researcher: a trailing stop is exactly the kind of rule that breaks the vectorized model's core assumption, because whether it fires today depends on the path the price took since you entered, not just today's row. You can sometimes hack a cumulative-max column into the vectorized version, but it gets fragile fast, and at that point you're fighting the tool. An event-driven backtest just tracks the position's high-water mark as a normal variable and checks it against the stop level bar by bar -- it's slower, but the logic is natural and obviously correct, which is exactly the tradeoff event-driven engines are for.",
+      "commonMistakes": [
+        "Trying to force increasingly complex path-dependent logic into a vectorized backtest instead of switching engines",
+        "Not recognizing a trailing stop as path-dependent and assuming it's just another column-wise comparison",
+        "Assuming event-driven is strictly 'better' rather than understanding it as a deliberate speed/realism tradeoff"
+      ],
+      "keyPoints": [
+        "Vectorized backtests assume each bar's decision is independent, simple array math",
+        "A trailing stop-loss is path-dependent -- it needs a running high-water mark since entry",
+        "Event-driven engines maintain ordinary mutable state bar by bar, making path-dependent logic natural",
+        "Neither approach is universally better; they trade speed against realism/expressiveness"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies the trailing stop as path-dependent logic",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains why vectorization struggles with path-dependence",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains why event-driven handles it naturally",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "vectorized-vs-event-driven-backtests",
+        "label": "Review: Vectorized vs. Event-Driven Backtests"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-011",
+      "questionCode": "LTV-QDEV-0019",
+      "title": "Explaining a Latency/Correctness Tradeoff to a Non-Technical PM",
+      "prompt": "Your product manager asks why the new pricing path can't just use the fastest possible shortcut you mentioned in standup, and wants it live by Friday. The shortcut trades a small amount of numerical precision for a meaningful latency win. How do you explain the tradeoff and the risk, without the conversation turning technical?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Communication",
+        "Stakeholder Management",
+        "Technical Tradeoffs"
+      ],
+      "modelAnswer": "The right approach is to translate the tradeoff into business terms the PM actually cares about, not into the technical mechanism. Concretely: state what's gained (a specific, meaningful latency number, and what that means competitively -- faster quotes, better fill rates), state what's risked in plain terms (prices could be off by a tiny, usually negligible amount, but in rare edge cases that small error could compound into a real, visible mispricing), and give a concrete recommendation with a reason, not just a worry: for example, ship it behind a flag on a low-risk subset of instruments first, measure the actual error distribution in production, then expand -- rather than a binary yes/no on a hard deadline. This keeps the PM in a position to make an informed business decision (how much risk is acceptable for how much speed) instead of either rubber-stamping something they don't understand or getting lost in floating-point details that aren't actually the decision they need to make.",
+      "professionalAnswer": "I wouldn't try to explain the floating-point mechanics -- that's not actually what they need to decide. I'd say something like: this gets us a real latency win, here's roughly how much, and here's the actual cost -- a small chance of a pricing error that's usually negligible but could occasionally matter. Then I'd give them an actual path forward instead of a flat no: let's ship it on a limited set of instruments first, watch the real error numbers in production, and expand once we've seen it behave. That turns 'can we ship by Friday' into a decision they can actually own, instead of me either blocking them outright or quietly shipping something risky because the deadline pressure won.",
+      "commonMistakes": [
+        "Explaining the technical mechanism in detail instead of the business-relevant tradeoff",
+        "Giving a flat yes or no without offering a staged, risk-managed path forward",
+        "Letting deadline pressure silently ship a risk the PM never actually understood or agreed to"
+      ],
+      "keyPoints": [
+        "Translate technical risk into business terms: what's gained, what's risked, in plain language",
+        "Offer a concrete, staged path forward rather than a binary yes/no under deadline pressure",
+        "Keep the PM able to make an informed decision rather than overwhelming or under-informing them",
+        "Don't let schedule pressure cause a risk to ship without being explicitly understood and accepted"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Translates the tradeoff into plain business terms",
+          "weight": 35
+        },
+        {
+          "criterion": "Proposes a concrete, risk-managed path forward (e.g. staged rollout)",
+          "weight": 35
+        },
+        {
+          "criterion": "Avoids over-technical explanation while staying accurate",
+          "weight": 20
+        },
+        {
+          "criterion": "Professional tone under deadline pressure",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-012",
+      "questionCode": "LTV-QDEV-0020",
+      "title": "Code Review Discipline Under Deadline Pressure",
+      "prompt": "You're reviewing a teammate's pull request that touches the order-submission path, and the release is due in two hours. The code looks mostly fine but you notice a missing null check and a questionable retry loop. How do you handle the review?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Code Review",
+        "Engineering Discipline",
+        "Risk Management"
+      ],
+      "modelAnswer": "The order-submission path is exactly the kind of code where a shortcut under deadline pressure has outsized downside -- a missing null check or a bad retry loop there can mean a duplicated or lost order with real money attached, not a cosmetic bug. The right approach is to separate 'what must be fixed before merge' from 'what can be a fast follow,' rather than treating the deadline as a reason to wave everything through or, at the other extreme, blocking the release over something genuinely minor. A missing null check and a questionable retry loop on an order-submission path are both squarely in the 'must fix before merge' category, because they're correctness issues on money-moving code, not style preferences. I'd flag both specifically and concretely -- not just 'this looks risky' but exactly which input could be null and exactly which retry scenario could duplicate an order -- and offer to pair on the fix immediately rather than just blocking and walking away, since the goal is getting a safe version out in two hours, not winning a review.",
+      "professionalAnswer": "On the order path specifically, I don't compromise on correctness issues just because the clock is ticking -- that's exactly the code where a shortcut turns into a real incident, not an inconvenience. I'd call out the null check and the retry loop specifically, with the exact scenario each one breaks, and immediately offer to pair on the fix rather than just leaving a comment and disappearing -- the goal in the next two hours is a safe release, not a long review thread. If there were lower-stakes issues in the same PR -- a naming nit, a missing comment -- I'd happily let those go as a fast follow so we're not blocking a real deadline over something that genuinely doesn't matter tonight.",
+      "commonMistakes": [
+        "Approving a PR with known correctness issues on money-moving code because of deadline pressure",
+        "Blocking a release over genuinely minor style issues, treating every comment as equally urgent",
+        "Leaving vague feedback ('this seems risky') instead of naming the exact failure scenario"
+      ],
+      "keyPoints": [
+        "Correctness issues on order-submission/money-moving code are not negotiable under deadline pressure",
+        "Separate must-fix-before-merge issues from legitimate fast-follow items",
+        "Give specific, concrete feedback naming the exact failure scenario, not vague concern",
+        "Offer to actively help fix the issue rather than only flagging and blocking"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly treats the correctness issues as non-negotiable given the code path",
+          "weight": 35
+        },
+        {
+          "criterion": "Distinguishes must-fix from fast-follow issues appropriately",
+          "weight": 25
+        },
+        {
+          "criterion": "Gives specific, actionable feedback",
+          "weight": 20
+        },
+        {
+          "criterion": "Shows collaborative problem-solving under time pressure",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-013",
+      "questionCode": "LTV-QDEV-0021",
+      "title": "Handling a Disagreement With a Trader About a Risky Deploy",
+      "prompt": "A trader wants a change to the execution logic pushed live immediately before market open because it should improve fill rates, but you haven't finished testing its interaction with the kill-switch logic. How do you handle the disagreement?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Stakeholder Management",
+        "Risk Management",
+        "Communication"
+      ],
+      "modelAnswer": "The core of this disagreement is a real tradeoff -- a plausible fill-rate improvement versus an unverified interaction with the system's hard risk control -- and the right response is to make that tradeoff explicit rather than simply saying no or simply complying. I'd state clearly, in concrete terms: what's untested specifically (the interaction between the new execution logic and the kill-switch), what could go wrong if it's wrong (a kill-switch that doesn't trigger correctly, or triggers incorrectly, under the new logic), and what the actual cost of waiting is (missing today's session, not missing the opportunity permanently). I'd offer a concrete alternative rather than a flat refusal -- for example, deploy it on a small subset of symbols or size first, with the existing kill-switch logic double-checked against that specific change in a lower-stakes way, or delay by one session to finish the specific test that matters, rather than the whole test suite. The kill-switch is exactly the kind of control that exists precisely for the moment someone is confident a change is fine -- deploying an unverified interaction with it under time pressure is the scenario it's designed to protect against, which is the concrete reason to hold the line rather than defer to urgency alone.",
+      "professionalAnswer": "I wouldn't just say 'no, not tested' and leave it there, because that doesn't actually resolve anything for the trader who has a real, time-sensitive reason to want this live. I'd be specific: here's exactly what's unverified -- how this interacts with the kill-switch -- and here's what breaks if that interaction is wrong, which is the one safety net we have for exactly this kind of situation. Then I'd offer something real: can we ship it on a small slice today while I finish verifying the kill-switch interaction, or is one more session really that costly compared to shipping an unverified change into our hard risk control? Usually once it's framed as 'the kill-switch is specifically the thing protecting us from being wrong about this,' the urgency argument loses most of its force.",
+      "commonMistakes": [
+        "Simply deferring to the trader's urgency and deploying an unverified change to risk-critical logic",
+        "Simply refusing without offering any concrete alternative or path to a faster safe deployment",
+        "Framing the pushback as a personal disagreement rather than a specific, named technical risk"
+      ],
+      "keyPoints": [
+        "Make the specific unverified risk explicit rather than a vague 'not tested' objection",
+        "Explain concretely what could go wrong given the kill-switch is the risk control in question",
+        "Offer a real alternative (partial rollout, targeted test) rather than a flat yes/no",
+        "Hold the line on risk-critical, unverified interactions regardless of business urgency"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Clearly articulates the specific risk (kill-switch interaction)",
+          "weight": 30
+        },
+        {
+          "criterion": "Offers a concrete alternative rather than a flat refusal or compliance",
+          "weight": 35
+        },
+        {
+          "criterion": "Maintains appropriate firmness on a risk-critical control",
+          "weight": 20
+        },
+        {
+          "criterion": "Professional, collaborative tone",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    }
+  ]
+}

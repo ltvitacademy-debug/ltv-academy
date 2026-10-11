@@ -1,0 +1,617 @@
+{
+  "questions": [
+    {
+      "id": "qres-adv-001",
+      "questionCode": "LTV-QRES-0022",
+      "title": "Purging and Embargoing: Why Time Order Isn't Enough",
+      "prompt": "Your labels are 5-day-forward returns, and you're using a time-ordered walk-forward split. Explain precisely why that's still not sufficient, and describe how purging and embargoing fix two separate leaks.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Purged Cross-Validation", "Embargo", "Financial Machine Learning"],
+      "modelAnswer": "A label 'the return from day t to day t+5' gives observation t a label window of [t, t+5]. If a walk-forward split puts days 90-100 in the test set, a training observation at day 97 (which is 'before' the test period starts) still has a label window of [97, 102] -- it reaches 2 days into the test span. Training on it means training on information from inside the test period, laundered through the label, even though the observation's own timestamp is safely before the test boundary. Purging fixes this specific leak by dropping every training observation whose label window overlaps the test span at all, filtering on where each label actually resolves (label_end), not on raw position. Embargoing fixes a separate, additional leak: even training observations positioned right after the test set, whose own labels don't reach backward into the test span, can still receive leaked information forward through serial correlation in returns and through features built from rolling windows (moving averages, rolling volatility). The embargo removes a small buffer of training observations immediately after the test set as a precaution against that, filtered purely on raw distance, with no reference to label_end at all. Both purging and embargoing are necessary because they protect against two different leak directions and two different mechanisms.",
+      "professionalAnswer": "The core issue is that 'day 97 is before the test period' and 'observation 97 is safe to train on' are not the same statement once your label looks forward 5 days. Day 97's label uses data through day 102, which is inside the days-90-to-100 test window -- so training on day 97 is training on test-period information, just laundered through the label instead of through a raw feature. That's exactly what purging removes: any training row whose label window reaches into the test span, filtered using where the label actually resolves, not using the row's own timestamp. Embargoing is a separate fix for a separate problem -- rows sitting right after the test set, which don't have that label-overlap issue, but can still pick up leaked information through serial correlation or rolling-window features built across the boundary. I think of purging as 'does this training row's label reach forward into the test set' and embargoing as 'is this training row sitting too close after the test set, regardless of its label' -- two different filters, two different directions, and scikit-learn implements neither out of the box, so this has to be hand-built as a custom KFold subclass.",
+      "example": "A PurgedKFold implementation filters the 'before' training rows with `before[label_end[before] < test_start]` (purging) and filters the 'after' training rows with `after[after >= test_stop + embargo]` (embargoing) -- two independent filters on the same split.",
+      "commonMistakes": [
+        "Believing a time-ordered walk-forward split is automatically safe once train strictly precedes test by timestamp",
+        "Conflating purging and embargoing as the same fix, rather than two separate mechanisms for two separate leak directions",
+        "Forgetting that scikit-learn has no built-in support for this and assuming TimeSeriesSplit's `gap` parameter is equivalent",
+        "Not recognizing that purging filters on label_end while embargoing filters purely on raw position"
+      ],
+      "keyPoints": [
+        "A forward-looking label window can overlap the test span even when the observation's own timestamp precedes it",
+        "Purging removes training rows whose label window overlaps the test set, filtered by where the label resolves",
+        "Embargoing removes a buffer of training rows immediately after the test set, filtered by raw position only, as a precaution against serial correlation and rolling-window leakage",
+        "These are two distinct fixes for two distinct leak mechanisms, and neither is built into scikit-learn"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains why time order alone fails for overlapping labels", "weight": 30 },
+        { "criterion": "Correctly defines purging and what it filters on", "weight": 25 },
+        { "criterion": "Correctly defines embargoing and distinguishes it from purging", "weight": 25 },
+        { "criterion": "Clarity and precision", "weight": 20 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "machine-learning-for-quant-finance",
+        "lessonSlug": "purged-and-embargoed-cross-validation",
+        "label": "Review: Purged & Embargoed Cross-Validation"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-adv-002",
+      "questionCode": "LTV-QRES-0023",
+      "title": "The Deflated Sharpe Ratio",
+      "prompt": "You tested 300 variations of a strategy during research and the best one posted a Sharpe ratio of 1.8. Explain what the Deflated Sharpe Ratio corrects for, and why a Sharpe of 1.8 might be much less impressive than it looks.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Deflated Sharpe Ratio", "Multiple Testing", "Backtest Validation"],
+      "modelAnswer": "If you generate many zero-skill Sharpe ratio estimates and take the maximum, that maximum isn't centered at zero -- it drifts upward purely from the mechanics of taking a max over more trials, and it drifts further the more the trials' Sharpe ratios vary from each other. A Sharpe of 1.8 found as the best of 300 trials needs to be benchmarked against the expected maximum Sharpe ratio you'd see from 300 zero-skill trials, not against zero. The Deflated Sharpe Ratio (DSR) does exactly this: it's the Probabilistic Sharpe Ratio (which already adjusts a Sharpe estimate for sample length, skewness, and kurtosis of the return distribution) evaluated against that inflated benchmark -- the expected maximum Sharpe ratio across N trials -- instead of against zero. DSR comes back as a probability between 0 and 1: a value near 1 says the 1.8 would be very unlikely to arise purely from 300 zero-skill trials; a value near or below 0.5 says the 1.8 is roughly what you'd expect from pure luck across that many attempts, and shouldn't be trusted as real skill.",
+      "professionalAnswer": "The uncomfortable truth about 'best of 300' is that if you ran 300 strategies that genuinely have zero edge, you'd still expect some of them to post an impressive-looking Sharpe just from sampling variance, and the more you try, the higher that accidental best result tends to be. So a raw Sharpe of 1.8 found as the winner of 300 trials is answering the wrong question if you just compare it to zero. DSR fixes that by computing what the expected best Sharpe ratio would be from 300 zero-skill trials -- a benchmark that rises with both how many trials you ran and how dispersed their Sharpe ratios were -- and then checking whether 1.8 clears that higher bar, not just zero, while also adjusting for the return distribution's skew and kurtosis along the way. If DSR comes back close to 0.5, that 1.8 is basically what pure luck across 300 attempts would have produced anyway, and I wouldn't trust it as real skill regardless of how good the headline number looks.",
+      "example": "expected_max_sharpe(sr_std_across_trials, n_trials=300) rises with both n_trials and the dispersion of the 300 Sharpe ratios -- that inflated value, not zero, is what probabilistic_sharpe_ratio then checks the candidate 1.8 against.",
+      "commonMistakes": [
+        "Comparing the best Sharpe ratio from many trials against zero instead of against the expected maximum under pure luck",
+        "Treating DSR as a replacement for out-of-sample validation rather than a complement to it",
+        "Forgetting DSR also adjusts for skewness and kurtosis of the return distribution, not just the number of trials",
+        "Not realizing this isn't an sklearn function and typically has to be hand-implemented or sourced from a specialized library"
+      ],
+      "keyPoints": [
+        "The maximum Sharpe ratio across many zero-skill trials drifts upward with more trials and more dispersion",
+        "DSR benchmarks a candidate Sharpe against the expected maximum under pure luck, not against zero",
+        "DSR builds on the Probabilistic Sharpe Ratio, which adjusts for sample size, skewness, and kurtosis",
+        "DSR is a probability: near 1 means genuinely surprising skill; near or below 0.5 means consistent with pure luck"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains why the max of many trials drifts upward under pure luck", "weight": 30 },
+        { "criterion": "Correctly describes what DSR benchmarks the candidate Sharpe against", "weight": 30 },
+        { "criterion": "Correctly interprets what a DSR value near 1 vs near 0.5 means", "weight": 25 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "machine-learning-for-quant-finance",
+        "lessonSlug": "the-deflated-sharpe-ratio-and-multiple-testing",
+        "label": "Review: The Deflated Sharpe Ratio & Multiple Testing"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-adv-003",
+      "questionCode": "LTV-QRES-0024",
+      "title": "Bonferroni vs. Benjamini-Hochberg for a Factor Screen",
+      "prompt": "You screened 500 candidate alpha factors and want to decide which ones are statistically significant. Explain the difference between controlling the family-wise error rate (Bonferroni) and controlling the false discovery rate (Benjamini-Hochberg), and which you'd choose here.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Multiple Testing", "False Discovery Rate", "Hypothesis Testing"],
+      "modelAnswer": "With 500 independent tests at alpha=0.05 each and every null hypothesis true, the family-wise error rate (probability of at least one false positive) is 1 - (1-0.05)^500, essentially 1 -- you're almost guaranteed at least one spurious 'significant' factor by chance alone. The Bonferroni correction controls FWER by rejecting only if a test's p-value is below alpha/m (here, 0.05/500 = 0.0001); it's always valid by the union bound, but it's conservative, and as m grows large it loses power to detect real effects, trading false positives for false negatives. Benjamini-Hochberg instead controls the false discovery rate -- the expected proportion of false positives among the hypotheses actually rejected, not the probability of any false positive at all -- by sorting p-values and finding the largest k such that the k-th smallest p-value is below (k/m)*alpha. BH is less conservative and has more power to detect real effects while expected a reasonable share of true discoveries, and when screening hundreds of factors where you genuinely expect some real signal among many candidates, that's usually the more practical choice than Bonferroni's all-or-nothing FWER control. Bonferroni is preferable when even a single false positive would be costly and you're comfortable accepting many missed real effects in exchange.",
+      "professionalAnswer": "Running 500 independent tests at the usual 5% level, you're basically guaranteed at least one false positive by chance alone even if nothing in the data is real -- that's the whole motivation for correcting at all. Bonferroni is the blunt-force fix: divide alpha by 500 and only call something significant if it clears that much stricter bar. It's bulletproof in the sense that it really does control the chance of any false positive, but with 500 tests that threshold gets so tiny that you'll miss a lot of real factors along with the fake ones. Benjamini-Hochberg asks a more useful question for this situation -- not 'is there any false positive at all' but 'of the factors I end up calling significant, what fraction are expected to be false' -- and it has more power because of that softer target. For a factor screen specifically, where I genuinely expect some real signal mixed in among 500 candidates, I'd reach for BH over Bonferroni, because Bonferroni's conservatism would likely bury real factors along with the noise.",
+      "example": "Simulating 1,000 pure-noise strategies at alpha=0.05 flags roughly 50 as 'significant' naively (exactly m*alpha); Bonferroni and BH both push that count down toward zero, with BH typically retaining more of any genuinely real effects mixed into the batch than Bonferroni does.",
+      "commonMistakes": [
+        "Applying no correction at all when screening many factors or strategies simultaneously",
+        "Treating FWER control and FDR control as interchangeable, when they answer genuinely different questions",
+        "Defaulting to Bonferroni out of familiarity even when BH's power advantage is clearly more appropriate",
+        "Not recognizing that both corrections only address the multiple-testing problem, not look-ahead or survivorship bias"
+      ],
+      "keyPoints": [
+        "FWER (Bonferroni): controls the probability of at least one false positive, via p < alpha/m",
+        "FDR (Benjamini-Hochberg): controls the expected proportion of false positives among rejections, with more statistical power",
+        "Bonferroni is conservative and loses power as the number of tests grows",
+        "BH is generally preferred when some true discoveries are expected among many candidates, such as a factor screen"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly defines FWER and the Bonferroni correction", "weight": 30 },
+        { "criterion": "Correctly defines FDR and the Benjamini-Hochberg procedure", "weight": 30 },
+        { "criterion": "Makes and justifies a reasonable choice for the factor-screen scenario", "weight": 25 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "mathematics-for-quantitative-finance",
+        "lessonSlug": "multiple-testing-and-false-discovery",
+        "label": "Review: Multiple Testing & False Discovery"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-adv-004",
+      "questionCode": "LTV-QRES-0025",
+      "title": "Explaining a Model Prediction with SHAP",
+      "prompt": "Write the code to compute SHAP values for a trained tree-based model and explain, for a single prediction, how the individual feature SHAP values relate to the model's output. Then explain how you'd use a SHAP summary plot to sanity-check whether the model's top feature is real signal or noise.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": ["SHAP", "Model Explainability", "Feature Importance"],
+      "code": "import shap\n\nexplainer = shap.TreeExplainer(model)\nshap_values = explainer(X_test)\nshap.summary_plot(shap_values, X_test)",
+      "modelAnswer": "`shap.TreeExplainer(model)` builds a fast, exact explainer for tree-based models (random forest, XGBoost, LightGBM), and calling it on `X_test` returns an `Explanation` object holding one Shapley value per feature per row, plus a baseline value. For any single prediction, the SHAP values for every feature sum exactly to (prediction - baseline): each feature's SHAP value is its fair, game-theoretically averaged marginal contribution to moving the prediction away from the average prediction over the whole dataset, averaged over every possible ordering in which features could be considered. To sanity-check the top feature using a summary plot, look at how its dots are distributed: a feature where high values consistently push the prediction in one direction and low values consistently push it the other way looks like a clean, directional signal. A feature whose SHAP values are scattered on both sides of zero with no relationship to the feature's own value -- contributing positively for some high values and negatively for other similarly high values -- is a strong hint the model is picking up noise rather than a real relationship, even if an aggregate importance metric made it look like the top feature.",
+      "professionalAnswer": "For a tree model I'd reach straight for `shap.TreeExplainer(model)` since it's fast and exact for this model family, then call it on the test set to get an Explanation object -- one Shapley value per feature per row, plus a baseline. The property I always lean on when explaining this to someone is that for any single row, those SHAP values add up exactly to that prediction minus the baseline -- it's a complete, additive accounting of how the model got to that specific number, not just a ranking. For the sanity-check question, I'd pull up `shap.summary_plot` and look specifically at the top feature's dot pattern: if high values of that feature consistently push predictions up and low values consistently push them down, that's a coherent, directional relationship. If the dots are scattered with high and low feature values both pushing predictions in both directions with no pattern, that's the model fitting noise on a feature that happens to rank high by some other importance measure -- and that's exactly the kind of thing I'd want to catch before trusting a backtest built on top of it.",
+      "example": "Older code sometimes calls `explainer.shap_values(X)` instead of `explainer(X)` -- both exist in the current API, but calling the explainer directly is the modern pattern and returns the richer Explanation object with base_values attached.",
+      "commonMistakes": [
+        "Using the slower, general-purpose shap.Explainer when TreeExplainer is available and exact for the model family",
+        "Treating SHAP importance as unconditionally more trustworthy than permutation importance without checking the per-prediction pattern",
+        "Not checking whether the top feature's SHAP values show a coherent directional relationship before trusting it",
+        "Forgetting that SHAP values sum to (prediction - baseline), which is the property that makes them a complete accounting, not just a ranking"
+      ],
+      "keyPoints": [
+        "TreeExplainer gives fast, exact Shapley values for tree-based models",
+        "SHAP values for a single prediction sum exactly to (prediction - baseline)",
+        "A coherent, directional dot pattern in the summary plot suggests real signal",
+        "Scattered, non-directional SHAP values on a top-ranked feature suggest the model is fitting noise"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct SHAP code using TreeExplainer", "weight": 25 },
+        { "criterion": "Correctly explains the additive sum-to-(prediction-baseline) property", "weight": 30 },
+        { "criterion": "Correctly describes how to read a summary plot to catch noise vs. real signal", "weight": 30 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "machine-learning-for-quant-finance",
+        "lessonSlug": "shap-and-model-explanation",
+        "label": "Review: SHAP & Model Explanation"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-adv-005",
+      "questionCode": "LTV-QRES-0026",
+      "title": "Fitting and Forecasting with GARCH(1,1)",
+      "prompt": "Write the code to fit a GARCH(1,1) model to a return series using Python's `arch` package, forecast the conditional variance 10 steps ahead, and explain what the fitted alpha and beta tell you about the series.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": ["GARCH", "Volatility Forecasting", "arch package"],
+      "code": "from arch import arch_model\n\nam = arch_model(returns, vol=\"Garch\", p=1, q=1, mean=\"constant\", dist=\"normal\")\nres = am.fit(disp=\"off\")\nfcast = res.forecast(horizon=10)",
+      "modelAnswer": "`arch_model(returns, vol='Garch', p=1, q=1)` specifies a GARCH(1,1) model where, in this package's convention, `p` is the number of lagged conditional-variance terms and `q` is the number of lagged squared-residual terms -- the opposite labeling from ARIMA's (p,d,q), which is worth stating explicitly to avoid confusion. `res.fit(disp='off')` estimates omega, alpha[1], and beta[1] by maximum likelihood, and `res.forecast(horizon=10)` projects the conditional variance forward 10 periods using the fitted recursion. A high alpha relative to beta means the series reacts strongly to fresh shocks but that reaction fades quickly; a high beta (commonly 0.85-0.95 for real equity data) means volatility is highly persistent -- a turbulent period leaves the market jumpy for a long stretch. The fitted alpha+beta should be checked against 1: if it's comfortably below 1, the process has a well-defined long-run average variance to revert to; if it's close to or above 1, the model's variance forecasts don't mean-revert in any reasonable time frame and the fit should be treated with suspicion.",
+      "professionalAnswer": "The code is straightforward: `arch_model(returns, vol='Garch', p=1, q=1)`, fit it, and call `res.forecast(horizon=10)` for the forward variance path. The thing I always double-check right after fitting is `res.params` -- specifically alpha[1] and beta[1] and whether their sum is comfortably under 1. If beta is high, say 0.9, that tells me volatility shocks are sticky; a bad day doesn't just affect tomorrow, it keeps the variance forecast elevated for a while. If alpha is relatively larger than beta, the model is more reactive to fresh shocks and less about carrying forward old variance. I'd also flag the parameter-naming gotcha out loud, because it's bitten me before: in this package, p is the GARCH (lagged variance) term and q is the ARCH (lagged squared residual) term, which is the reverse of how p and q are used in ARIMA -- easy to mix up if you're moving between the two models in the same afternoon.",
+      "example": "res.summary() prints the full parameter table including standard errors and significance; fcast.variance.tail() shows the forecasted conditional variance path, typically converging toward the model's implied long-run variance omega/(1-alpha-beta) as the horizon grows.",
+      "commonMistakes": [
+        "Mixing up the p/q convention between arch_model's GARCH notation and ARIMA's (p,d,q)",
+        "Not checking alpha+beta<1 before trusting the model's long-run variance forecast",
+        "Forgetting that plain GARCH(1,1) doesn't capture the leverage effect (asymmetric response to negative shocks)",
+        "Fitting on raw returns instead of percentage returns, which can cause numerical fitting issues"
+      ],
+      "keyPoints": [
+        "arch_model(returns, vol='Garch', p=1, q=1) fits GARCH(1,1); p=GARCH lag, q=ARCH lag (opposite of ARIMA convention)",
+        "res.forecast(horizon=10) projects conditional variance forward using the fitted recursion",
+        "beta measures persistence of past variance; alpha measures reaction to a fresh shock",
+        "alpha+beta<1 is required for a well-defined long-run variance"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct arch_model fitting and forecasting code", "weight": 35 },
+        { "criterion": "Correctly interprets alpha and beta", "weight": 30 },
+        { "criterion": "Mentions the p/q naming convention gotcha and the stationarity check", "weight": 20 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "time-series-and-financial-modeling",
+        "lessonSlug": "arch-and-garch-models",
+        "label": "Review: ARCH & GARCH Models"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-adv-006",
+      "questionCode": "LTV-QRES-0027",
+      "title": "Maximizing Sharpe Ratio with scipy.optimize",
+      "prompt": "Write the code to find the maximum-Sharpe-ratio long-only, fully-invested portfolio using `scipy.optimize.minimize`, supplying an analytic gradient. Then explain why this particular optimization needs a multi-start strategy that a standard minimum-variance QP wouldn't.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": ["Portfolio Optimization", "Numerical Optimization", "scipy"],
+      "code": "from scipy.optimize import minimize\nimport numpy as np\n\ndef neg_sharpe(w, mu, Sigma, rf):\n    ret = w @ mu - rf\n    vol = np.sqrt(w @ Sigma @ w)\n    return -ret / vol\n\ncons = {\"type\": \"eq\", \"fun\": lambda w: w.sum() - 1}\nbounds = [(0, 1)] * len(mu)",
+      "modelAnswer": "The negative-Sharpe objective is minimized with `minimize(neg_sharpe, x0, args=(mu, Sigma, rf), jac=neg_sharpe_grad, constraints=[cons], bounds=bounds, method='SLSQP')`, where the analytic gradient is derived via the quotient rule on -(ret)/vol: d_ret = mu and d_vol = (Sigma @ w)/vol, combined as -(d_ret*vol - ret*d_vol)/vol**2. Supplying `jac` explicitly avoids the finite-difference approximation `minimize` otherwise uses, which is both slower and prone to noise here specifically because the Sharpe ratio involves a division by a potentially small volatility, where finite-difference cancellation error is amplified. The reason this needs a multi-start strategy, unlike a minimum-variance portfolio QP, is that minimizing variance subject to linear constraints is a convex quadratic program with a provably unique global minimum, while maximizing the Sharpe ratio is a nonconvex objective -- there's no guarantee of a single global optimum, and SLSQP or any local optimizer can converge to different local optima depending on the starting point. The practical fix is to re-run the optimization from several different starting weight vectors and compare the resulting objective values, rather than trusting a single run's result as the global optimum.",
+      "professionalAnswer": "I'd set this up with SLSQP, the fully-invested equality constraint, and long-only bounds, and I'd always supply the analytic gradient rather than letting scipy approximate it with finite differences -- the Sharpe ratio's division by volatility makes that approximation noisy right where precision matters most, so working out d_ret and d_vol by hand with the quotient rule and passing it as `jac` is worth the extra few lines. The multi-start point is the one I'd bring up unprompted, because it's the thing that actually differs from a minimum-variance portfolio: minimum-variance is a convex QP, so whatever solver you use, there's exactly one global minimum and you'll find it. Maximizing Sharpe ratio is nonconvex, so SLSQP finding *a* solution doesn't mean it found *the* solution -- I'd re-run from several different starting weight vectors and compare the achieved Sharpe ratios before trusting any single result as the actual optimum.",
+      "commonMistakes": [
+        "Not supplying an analytic gradient and relying on a noisy finite-difference approximation for an objective involving division",
+        "Assuming SLSQP's result is automatically the global optimum, as it would be for a convex QP",
+        "Forgetting to check that the equality constraint (weights summing to 1) is satisfied only up to numerical tolerance, not exactly",
+        "Not rescaling variables when they have very different natural scales, which can badly condition the optimization"
+      ],
+      "keyPoints": [
+        "Analytic gradient (via the quotient rule) avoids noisy finite-difference approximation for a ratio-based objective",
+        "SLSQP handles the equality (fully invested) and bound (long-only) constraints directly",
+        "Maximizing Sharpe ratio is a nonconvex objective, unlike a minimum-variance QP",
+        "A multi-start strategy from several initial weight vectors is needed to guard against local optima"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct scipy.optimize.minimize setup with constraints and bounds", "weight": 30 },
+        { "criterion": "Correct or reasonably derived analytic gradient", "weight": 25 },
+        { "criterion": "Correctly explains the convex vs. nonconvex distinction and why multi-start is needed", "weight": 30 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "mathematics-for-quantitative-finance",
+        "lessonSlug": "numerical-optimization-in-python",
+        "label": "Review: Numerical Optimization in Python"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-adv-007",
+      "questionCode": "LTV-QRES-0028",
+      "title": "Backtest Decay: The Strategy Worked in Research, Not Live",
+      "prompt": "A strategy that showed a Sharpe ratio of 1.6 in backtesting has posted a Sharpe close to zero over its first six months live. Walk through how you'd determine whether this is backtest overfitting, and what you'd check first.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Backtest Overfitting", "Probability of Backtest Overfitting", "Model Validation"],
+      "modelAnswer": "Backtest decay -- strong backtested performance eroding once a strategy meets genuinely new, live data -- is close to the single most reliable symptom of overfitting, so the first step is confirming this actually is decay and not a mundane execution problem: check live fills, slippage, and whether the live implementation actually matches the backtested logic exactly. Once that's ruled out, check the research process against the standard red flags: how many free parameters did the strategy have relative to the amount of backtest history (a strategy with many tunable thresholds tested against only a few years of daily data has enormous room to have fit noise); was there a genuine, untouched holdout that influenced no modeling decision, even indirectly; and was the hypothesis stated before or after seeing how various feature and parameter choices performed. A more rigorous diagnostic is the Probability of Backtest Overfitting (PBO), computed via combinatorially symmetric cross-validation: split the backtest history into several subsamples, form every way of combining half into an in-sample set and half into out-of-sample, and for each combination check whether the in-sample-best configuration ranks above or below the out-of-sample median. A high PBO (well above 50%) across these combinations is strong evidence the original selection process was picking up overfitting noise rather than genuine, repeatable skill -- which would mean the live Sharpe near zero isn't an unlucky six months, it's closer to what should have been expected all along.",
+      "professionalAnswer": "Before I even think about overfitting, I'd rule out the boring explanations first -- is live execution actually matching the backtested logic, are fills and slippage roughly what was modeled, is there some operational bug making live look worse than it should. Once that's clean, I'd go through the standard overfitting checklist: how many parameters did we tune relative to how much data we had, was there a real untouched holdout, and was the hypothesis written down before or after we'd already seen a bunch of parameter sweeps. If I want something more rigorous than a checklist, I'd run PBO -- split the backtest history into symmetric in-sample/out-of-sample combinations and check how often the configuration that won in-sample actually underperformed out-of-sample across those combinations. If that number comes back well above 50%, that's a direct, quantitative confirmation that the original selection process was fitting noise, and a near-zero live Sharpe isn't bad luck, it's close to what should have been expected from the start.",
+      "example": "A PBO computed via combinatorially symmetric cross-validation that comes back at, say, 70% means the in-sample-best configuration was a below-median out-of-sample performer in 70% of tested combinations -- strong evidence the backtest's apparent edge was largely an overfitting artifact.",
+      "commonMistakes": [
+        "Jumping straight to 'the strategy must be overfit' without first ruling out live execution or implementation bugs",
+        "Not checking the ratio of tunable parameters to available backtest history",
+        "Treating backtest decay as simply bad luck rather than investigating it with a formal tool like PBO",
+        "Forgetting that even a genuinely leak-free backtest can still decay if the underlying market regime changed"
+      ],
+      "keyPoints": [
+        "First rule out mundane causes: execution mismatch, slippage, implementation bugs",
+        "Check standard overfitting red flags: free-parameter count vs. data length, genuine holdout, pre-registered hypothesis",
+        "PBO (via combinatorially symmetric cross-validation) gives a direct, quantitative overfitting measure",
+        "A high PBO confirms the original in-sample selection was likely picking up noise, not real skill"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Rules out mundane/operational causes before assuming overfitting", "weight": 20 },
+        { "criterion": "Lists the standard backtest-overfitting red flags", "weight": 30 },
+        { "criterion": "Correctly explains PBO as a formal diagnostic", "weight": 35 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "machine-learning-for-quant-finance",
+        "lessonSlug": "detecting-backtest-overfitting",
+        "label": "Review: Detecting Backtest Overfitting"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-adv-008",
+      "questionCode": "LTV-QRES-0029",
+      "title": "A Signal's Importance Is Decaying",
+      "prompt": "A feature that ranked as your model's most important signal a year ago now shows weak, inconsistent Information Coefficient values in recent months, even though the model hasn't been retrained. How do you distinguish 'this signal is genuinely dying' from 'this is a noisy stretch that will pass'?",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Information Coefficient", "Signal Decay", "Non-Stationarity"],
+      "modelAnswer": "The distinguishing diagnostic is to look at the shape of the IC series over rolling windows, not just its recent average: a signal in a temporarily noisy stretch typically shows an IC that's lower than usual but still centered near its historical mean with high variance, while a genuinely decaying signal shows a clear downward trend or a sign reversal that persists across multiple consecutive windows rather than bouncing back. Comparing the recent IC distribution against the full historical IC distribution with a formal test (or simply checking whether the recent window's IC sits outside the bulk of the historical window-by-window distribution) gives more signal than eyeballing a single recent number. It's also worth cross-referencing with rolling feature-importance analysis (permutation importance or SHAP, computed per window) to see whether the decline is specific to this feature's relationship with the target or reflects something broader, like a regime shift affecting the whole model. If both the rolling IC and rolling importance show a sustained, multi-window decline rather than a single bad patch, that's evidence the underlying relationship has genuinely changed -- consistent with the broader point that feature importance and predictive power are not fixed properties of a feature, they're properties of a specific market regime that can expire.",
+      "professionalAnswer": "I wouldn't trust a single recent number either way -- I'd plot the rolling IC over, say, quarterly windows going back as far as I have data, and look at the shape of that series rather than just its most recent value. A noisy-but-not-dead signal usually looks like it's bouncing around its historical average with high variance; a genuinely decaying signal looks like a sustained downward trend or a sign flip that holds across several consecutive windows, not just one. I'd also check rolling feature importance alongside the IC series, because if both are telling the same story over multiple windows, that's a much stronger signal than either one alone. The real tell for me is persistence -- one bad quarter doesn't worry me much, but three or four consecutive quarters of fading IC, especially if it coincides with permutation importance or SHAP showing the same decline, tells me the relationship this feature was capturing has probably moved on, and I'd start planning to retire or rebuild it rather than waiting for it to 'come back.'",
+      "commonMistakes": [
+        "Judging signal health from a single recent number instead of the shape of the rolling IC series over time",
+        "Not distinguishing high-variance noise around a stable mean from a genuine sustained trend or reversal",
+        "Failing to cross-reference IC decay with rolling feature-importance diagnostics",
+        "Waiting indefinitely for a 'comeback' instead of acting on multiple consecutive windows of decline"
+      ],
+      "keyPoints": [
+        "Compare the shape of the rolling IC series, not a single recent value, against its historical distribution",
+        "A noisy stretch shows high variance around a stable mean; genuine decay shows a sustained trend or reversal",
+        "Cross-reference with rolling feature-importance diagnostics (permutation importance, SHAP) for corroboration",
+        "Persistence across multiple consecutive windows is the key signal that distinguishes decay from noise"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Proposes comparing the rolling IC series shape, not a single recent value", "weight": 35 },
+        { "criterion": "Correctly distinguishes noisy variance from a genuine sustained trend/reversal", "weight": 30 },
+        { "criterion": "Proposes cross-referencing with rolling feature importance", "weight": 20 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "machine-learning-for-quant-finance",
+        "lessonSlug": "stability-of-signals-over-time",
+        "label": "Review: Stability of Signals Over Time"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-adv-009",
+      "questionCode": "LTV-QRES-0030",
+      "title": "A Model Is Secretly Overweighting One Market Event",
+      "prompt": "Your triple-barrier-labeled model trains fine, but you suspect a single volatile week is being effectively counted dozens of times because so many overlapping labels touch it. Explain the mechanism and the fix.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Sample Weights", "Overlapping Outcomes", "Financial Machine Learning"],
+      "modelAnswer": "If labels are built from forward-looking windows (as triple-barrier labels are), a single sharp event -- a volatility spike on a given day -- falls inside the label window of every observation whose window covers that day, which could be dozens of consecutive labels. Standard ML algorithms implicitly assume training rows are independent draws, but these overlapping labels are correlated with each other precisely because they share the same underlying event; training as if they were independent causes the model to effectively over-count that single event as though it happened dozens of times, distorting what the model learns as a generalizable pattern. The fix is to compute each label's average uniqueness -- roughly 1 divided by the average concurrency (how many labels' windows cover a given bar) over its own window -- and pass these as `sample_weight` into `.fit()`. A label whose window barely overlaps any other gets a weight near 1; a label whose window heavily overlaps ten others gets a correspondingly smaller weight, so the volatile week's cluster of overlapping labels contributes roughly as much total weight as one independent, unique event should, rather than dozens of times as much.",
+      "professionalAnswer": "This is the overlapping-outcomes problem, and it's a direct consequence of how triple-barrier labels are built: if a volatility spike happens on day 50, it sits inside the label window of every observation whose forward-looking window covers day 50, which is easily a few dozen rows. The model has no way of knowing those dozens of rows are really 'the same event' told dozens of times -- it just sees dozens of independent-looking training examples, and ends up over-weighting whatever pattern that one event happened to produce. The fix is to compute concurrency -- how many labels cover each bar -- and then weight each label by its average uniqueness, roughly the inverse of its average concurrency over its own window, and pass that straight into `sample_weight` for scikit-learn, XGBoost, or LightGBM's `.fit()`. That way a cluster of dozens of heavily overlapping labels around one event collectively contributes about as much as one genuinely unique observation should, instead of dozens of times as much.",
+      "example": "model.fit(X_train, y_train, sample_weight=average_uniqueness(label_starts, label_ends, concurrency)) — the same sample_weight argument works identically across scikit-learn, XGBoost, and LightGBM.",
+      "commonMistakes": [
+        "Assuming overlapping labels are a minor technicality rather than a direct violation of the IID assumption most ML algorithms rely on",
+        "Fixing this only at the cross-validation level (purging) without also addressing the training-weight distortion it causes",
+        "Not realizing the same overlap problem that distorts training also distorts naive cross-validation scores",
+        "Weighting by raw concurrency instead of average uniqueness (the inverse), which would weight the wrong direction"
+      ],
+      "keyPoints": [
+        "Overlapping forward-looking label windows mean a single event is counted by every label whose window covers it",
+        "This violates the IID assumption underlying standard ML training",
+        "Average uniqueness (roughly the inverse of average concurrency) gives each label an appropriate weight",
+        "Pass these weights via sample_weight in .fit() for scikit-learn/XGBoost/LightGBM"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the concurrency/over-counting mechanism", "weight": 35 },
+        { "criterion": "Correctly describes average uniqueness as the fix", "weight": 35 },
+        { "criterion": "Mentions the practical sample_weight implementation", "weight": 15 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "machine-learning-for-quant-finance",
+        "lessonSlug": "sample-weights-and-overlapping-outcomes",
+        "label": "Review: Sample Weights & Overlapping Outcomes"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-adv-010",
+      "questionCode": "LTV-QRES-0031",
+      "title": "Designing a Resilient Market-Data Ingestion Pipeline",
+      "prompt": "Design the ingestion layer for a daily job that pulls price and fundamentals data from a third-party vendor API for 2,000 tickers. What specifically do you need to handle for this to be production-reliable, and what point-in-time pitfall is the most dangerous to miss?",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Data Engineering", "API Integration", "Point-in-Time Data"],
+      "modelAnswer": "A reliable design needs to handle pagination explicitly (most vendors won't return 2,000 tickers' worth of history in one call, and code that assumes a single complete response breaks the first time it hits a size cap), rate limiting (pacing requests to stay under the documented per-minute/per-day cap rather than only handling the happy path), and retries with exponential backoff for transient failures (doubling the wait between attempts so a momentary blip gets retried quickly while a real outage doesn't hammer the vendor at full speed). Beyond the operational concerns, timezone normalization matters: vendor timestamps come in whatever convention the vendor chose, and mixing sources without normalizing to one consistent timezone on ingestion silently misaligns 'same day' data, especially near session boundaries or DST transitions. The single most dangerous pitfall to miss is point-in-time correctness: a vendor's fundamentals table often stores only the latest known value for a reporting period, not what was actually known and reported on the original filing date, and a vendor's 'current constituents' list reflects today's membership, not historical membership -- using either one naively in a backtest introduces lookahead or survivorship bias that makes a strategy look better than any real-time implementation could have performed, and it's a bug that silently produces a plausible-looking (and wrong) result rather than an obvious error.",
+      "professionalAnswer": "I'd design this with three operational layers handled up front, because they'll all bite eventually: pagination (assume no vendor call returns a complete answer in one shot for 2,000 tickers, and check for pagination metadata every time), rate limiting (pace requests to stay under whatever cap the vendor documents, not just handle the happy path), and retries with exponential backoff for the inevitable transient failures, so a flaky connection gets retried fast while a real outage doesn't make things worse by hammering the vendor. On top of that, I'd normalize every incoming timestamp to one consistent timezone at the ingestion boundary, once, rather than re-deriving the right offset downstream every time two sources get combined. But the pitfall I'd actually worry about most isn't any of the operational stuff -- it's point-in-time correctness. A vendor's fundamentals feed often just gives you the latest restated number for a period, not what was actually known on the filing date, and a 'current constituents' list silently excludes everyone who's been delisted since. Both of those produce data that looks completely fine and plausible, which is exactly why they're dangerous -- they don't error out, they just quietly make a backtest look better than any real-time strategy could have actually achieved.",
+      "commonMistakes": [
+        "Designing only for the happy-path single API call and discovering pagination/rate limits in production",
+        "Treating retries as 'just try again immediately' instead of implementing exponential backoff",
+        "Normalizing timezones ad hoc at each call site instead of once at ingestion",
+        "Underestimating point-in-time correctness because the resulting bad data looks completely plausible"
+      ],
+      "keyPoints": [
+        "Handle pagination explicitly rather than assuming one call returns a complete response",
+        "Respect rate limits and implement retries with exponential backoff for transient failures",
+        "Normalize timezones once at the ingestion boundary, not per call site",
+        "Point-in-time correctness (restated fundamentals, historical index membership) is the most dangerous, silent pitfall"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Addresses pagination and rate limiting", "weight": 25 },
+        { "criterion": "Proposes retries with exponential backoff", "weight": 20 },
+        { "criterion": "Addresses timezone normalization at ingestion", "weight": 15 },
+        { "criterion": "Correctly identifies point-in-time correctness as the most dangerous pitfall, with a concrete example", "weight": 30 },
+        { "criterion": "Clarity", "weight": 10 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "working-with-market-data-vendors-and-apis",
+        "label": "Review: Working With Market Data Vendors & APIs"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-adv-011",
+      "questionCode": "LTV-QRES-0032",
+      "title": "Making a Nightly Research Job Safe to Re-Run",
+      "prompt": "You're scheduling a nightly job that refreshes a universe table and recomputes a signal. Explain what 'idempotent' means here, give an example of a job that violates it, and describe how you'd design the job plus its failure handling to be safe for unattended, automatic retries.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Idempotency", "Job Scheduling", "Production Reliability"],
+      "modelAnswer": "A job is idempotent if running it twice -- including an automatic retry after a partial failure -- produces the same end state as running it once, with no duplicated rows, double-counted totals, or corrupted partial writes. A job that appends a new row to a signal table every time it runs violates this: if cron retries it after a timeout that occurred after the row was already written but before the job reported success, the table ends up with a duplicate row, silently corrupting downstream aggregates. The fix is to write/overwrite a dated snapshot (`signal_2024-01-15.parquet`, fully replacing any existing file with that name) or to upsert by key rather than append, so re-running the job just reproduces the same correct state rather than compounding it. For scheduling itself, either an OS-level mechanism (cron, Windows Task Scheduler) or an in-process scheduler like APScheduler works, but whichever is used, `max_instances=1` (or equivalent) should prevent a slow run from overlapping with its own next scheduled trigger, since two overlapping runs writing to the same output file is exactly the kind of thing that breaks idempotency even if each run individually would have been safe. For failure handling, the job needs to log a clear error with enough context to diagnose it without re-running anything, and alert somewhere a human will actually see it (email, Slack webhook, monitoring dashboard) rather than just a log line nobody reads until the next incident.",
+      "professionalAnswer": "Idempotent means I can run this job twice in a row, on purpose or by accident through a retry, and end up with exactly the same correct result both times -- no duplicate rows, no double-counted numbers. The classic way to break this is appending a new row to a table every run; if the job times out right after it wrote the row but before it reported success, and something retries it, now you've got the same day's data in there twice, and nothing about that failure is obvious until someone notices the aggregates look wrong weeks later. My fix is always to write a dated, overwritable snapshot or upsert by key instead of appending -- re-running it just reproduces the same state, it doesn't compound anything. For the scheduling piece, cron or APScheduler both work fine, but I'd always set something like `max_instances=1` so a slow run can't overlap with its own next trigger, because two overlapping writes to the same output is a way to break idempotency even when each individual run was designed correctly. And since nobody's watching this fire at 2am, the job has to make its own failures visible -- a real error message with context in the logs, plus an actual alert somewhere a person will see it, not just a log line that sits there until someone goes looking.",
+      "commonMistakes": [
+        "Designing a job around append-only writes without considering what a retry after partial failure does to the table",
+        "Scheduling a job without a mechanism to prevent overlapping runs (e.g. max_instances)",
+        "Logging failures only to a file nobody actively monitors, with no real alerting",
+        "Assuming 'it worked when I tested it manually once' is equivalent to 'it's safe to run unattended with automatic retries'"
+      ],
+      "keyPoints": [
+        "Idempotent: re-running the job (including after a partial failure) produces the same correct end state, not duplication",
+        "Append-only writes are a common idempotency violation; dated snapshots or key-based upserts fix it",
+        "A concurrency guard (e.g. max_instances=1) prevents overlapping runs from corrupting output",
+        "Unattended jobs need real failure visibility: clear, context-rich logging plus actual alerting, not just a log file"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly defines idempotency and gives a concrete violating example", "weight": 30 },
+        { "criterion": "Proposes a concrete fix (snapshot/upsert) that restores idempotency", "weight": 30 },
+        { "criterion": "Addresses concurrency control and failure alerting for unattended operation", "weight": 25 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "scheduling-and-automating-research-jobs",
+        "label": "Review: Scheduling & Automating Research Jobs"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-adv-012",
+      "questionCode": "LTV-QRES-0033",
+      "title": "Designing a Risk Model Covariance Pipeline for 500 Assets",
+      "prompt": "You need to estimate a usable covariance matrix for a 500-asset equity universe, but you only have 150 days of clean return history. Explain why the sample covariance matrix is unusable here, and design the architecture of a factor-model-based covariance estimate that fixes it.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Covariance Estimation", "Factor Models", "Risk Management"],
+      "modelAnswer": "Estimating the full covariance matrix of N=500 assets requires N*(N+1)/2 ≈ 125,250 distinct numbers (variances plus unique covariances), and with only T=150 observations, far fewer than N, the sample covariance matrix is mathematically singular -- it cannot be inverted at all, which is fatal for anything built on top of it, including mean-variance portfolio optimization, which needs Sigma^-1 directly. The architecture that fixes this reuses a factor-model decomposition: Sigma = B * Sigma_F * B' + D, where B is the N x k matrix of factor loadings (estimated once per asset via regression against a small number k of common factors, such as the first few PCA components or a set of named style factors), Sigma_F is the small k x k covariance matrix of the factors themselves, and D is a diagonal matrix of idiosyncratic variances assumed uncorrelated across assets. This collapses the estimation problem from roughly N*(N+1)/2 free parameters down to roughly N*k (loadings) plus k*(k+1)/2 (factor covariance) plus N (idiosyncratic variances) -- dramatically fewer numbers to estimate from the same 150 observations, and the resulting matrix is automatically full rank because the added diagonal term guarantees invertibility, at the cost of assuming the factor structure is a reasonably good description of how returns actually co-move. In production, this pipeline needs the factor loadings re-estimated on a rolling basis as new data arrives, and a final sanity check (condition number, comparison against the sample covariance's eigenvalues) before the matrix is handed to any downstream optimizer.",
+      "professionalAnswer": "With 500 assets and only 150 days of data, the sample covariance matrix is dead on arrival -- you need N*(N+1)/2 numbers, over 125,000 of them here, and with fewer observations than assets, that matrix comes out singular, meaning you literally cannot invert it, which kills any mean-variance optimization that needs Sigma^-1 directly. The architecture I'd build instead decomposes risk through a small number of common factors: Sigma equals B times the factor covariance times B transpose, plus a diagonal of idiosyncratic variances. B is the loadings matrix, estimated by regressing each asset's returns against the k factors -- maybe PCA components, maybe named style factors, doesn't change the architecture -- and that diagonal idiosyncratic term is what guarantees the final matrix is full rank and invertible, regardless of how few observations you have relative to N. The parameter count drops from N squared-ish down to roughly N times k plus a small k-by-k block, which is something 150 observations can actually support. In production I'd rebuild the loadings on a rolling basis as new data comes in, and I'd always sanity-check the resulting matrix's condition number against the raw sample covariance's before letting any downstream optimizer touch it.",
+      "example": "With 150 assets and 100 observations, a sample covariance matrix came out rank-99 (singular), while the corresponding 3-factor model covariance was full rank 150 with a modest condition number around 93, and was also measurably closer to the true covariance matrix used to generate the synthetic data.",
+      "commonMistakes": [
+        "Not recognizing that N > T mathematically guarantees a singular sample covariance matrix, not just a noisy one",
+        "Jumping straight to shrinkage without first considering whether a factor-model structure is the more natural fix at this N/T ratio",
+        "Forgetting the idiosyncratic diagonal term D is what guarantees the factor-model covariance is invertible",
+        "Not planning for how the factor loadings get re-estimated as new data arrives in production"
+      ],
+      "keyPoints": [
+        "N*(N+1)/2 parameters needed for a full sample covariance; with T<N it's mathematically singular",
+        "Factor-model decomposition Sigma = B*Sigma_F*B' + D collapses the parameter count to roughly N*k",
+        "The diagonal idiosyncratic term D guarantees the factor-model covariance is full rank and invertible",
+        "This trades estimation feasibility for an assumption that the factor structure is a good description of co-movement"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains why the sample covariance is singular at this N/T ratio", "weight": 30 },
+        { "criterion": "Correctly describes the factor-model covariance decomposition and parameter savings", "weight": 35 },
+        { "criterion": "Addresses a reasonable production/rolling-reestimation design", "weight": 20 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "time-series-and-financial-modeling",
+        "lessonSlug": "risk-models-and-covariance-estimation",
+        "label": "Review: Risk Models & Covariance Estimation"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-adv-013",
+      "questionCode": "LTV-QRES-0034",
+      "title": "Writing an Honest Performance Report",
+      "prompt": "You've finished researching a strategy with a gross Sharpe of 0.9 that falls to 0.5 net of realistic transaction costs. Walk me through how you'd structure the write-up and what your opening paragraph would actually say.",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Research Communication", "Performance Reporting", "Research Integrity"],
+      "modelAnswer": "A credible performance report follows a predictable structure built for three different readers -- a portfolio manager deciding whether to allocate capital, a risk manager checking fit against existing exposures, and a future version of the researcher trying to remember why a decision was made: an abstract (hypothesis, method, headline net result, and the one caveat that matters most), data and methodology, results (gross and net always shown side by side, never blended into one number), risk analysis, a limitations section, and an appendix for anything a careful reader might want but a first-pass reader doesn't need. The opening paragraph should lead with the net Sharpe of 0.5, not the more flattering gross 0.9, precisely because a reader who anchors on the gross number first will be primed to feel let down by the real one -- leading with the honest number avoids that and establishes trust immediately. It should also name the single most important caveat in that same opening paragraph rather than burying it in an appendix, since a report that makes a reader hunt for the catch reads as less credible than one that states it upfront.",
+      "professionalAnswer": "I'd structure it the way any research desk expects: abstract, data and methodology, results, risk analysis, limitations, and an appendix for the extra detail a first-pass reader doesn't need. The opening paragraph is the part I'd be most deliberate about -- I'd lead with 0.5, the net Sharpe, not 0.9, because if I open with the gross number the reader anchors on it and then feels like the real result is a letdown when they hit the net figure three paragraphs later. Leading with the honest number instead means there's no letdown, just a clear, credible statement of what this strategy actually does after costs. I'd also put the single biggest caveat right there in that same opening paragraph, not in an appendix six pages later -- a report that makes someone dig for the catch reads as less trustworthy than one that just states it upfront, and in my experience that upfront honesty is what actually builds confidence with a skeptical reader rather than undermining it.",
+      "example": "An abstract modeled on this pattern: 'This strategy is a [design] across [universe], using [method] and [validation scheme] on [date range] data. Gross Sharpe is 0.9; net of realistic transaction costs, Sharpe falls to 0.5. The main caveat: [the single most important risk or limitation].'",
+      "commonMistakes": [
+        "Leading the report or its abstract with the more flattering gross number instead of the net result",
+        "Burying the most important caveat in an appendix instead of stating it in the opening paragraph",
+        "Reporting a single blended metric instead of always showing gross and net side by side",
+        "Writing a limitations section that lists nothing substantive, which damages credibility rather than protecting it"
+      ],
+      "keyPoints": [
+        "Standard structure: abstract, data/methodology, results, risk analysis, limitations, appendix",
+        "Lead with the net result, not the more flattering gross number",
+        "State the single most important caveat in the opening, not buried in an appendix",
+        "Always show gross and net side by side, never a single blended metric"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Proposes the correct standard report structure", "weight": 25 },
+        { "criterion": "Correctly argues for leading with the net result over the gross number", "weight": 35 },
+        { "criterion": "Correctly argues for surfacing the key caveat upfront rather than burying it", "weight": 25 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "quant-research-and-trading-capstone",
+        "lessonSlug": "writing-the-performance-report",
+        "label": "Review: Writing the Performance Report"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-adv-014",
+      "questionCode": "LTV-QRES-0035",
+      "title": "Defending a Strategy Against 'Isn't This Just Overfit?'",
+      "prompt": "You're presenting an 18-year backtest to a skeptical risk committee. Someone asks, 'How do you know this isn't overfit to 18 years of history?' Give your actual answer, including the honest caveat you'd volunteer without being pushed.",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Research Communication", "Overfitting", "Stakeholder Management"],
+      "modelAnswer": "A strong answer treats this question as the expected first question, not an attack, and has a real, specific answer ready rather than a defensive one: the backtest was validated using purged (and ideally embargoed or combinatorial) walk-forward cross-validation, which trains only on data available at each point in time and removes training observations whose labels would otherwise leak information from the test period -- so the reported performance is a genuine out-of-sample number, not a number produced by fitting on the full history and reporting the in-sample fit. The caveat worth volunteering unprompted, rather than waiting to be pushed into admitting it: 18 years is still one historical path, and a strategy validated out-of-sample on one path can still fail when the next path -- the actual future -- turns out differently; out-of-sample testing meaningfully reduces overfitting risk, it does not eliminate the risk that the market regime itself changes going forward. Naming that limitation unprompted, rather than only when pressed, is itself part of a credible answer, because it signals the researcher understands the limits of their own method rather than overselling it.",
+      "professionalAnswer": "I'd treat this as exactly the question I should be ready for, not as an attack -- if anything, I'd be more worried if nobody asked it. My real answer is that the backtest used purged walk-forward cross-validation, which only ever trains on information that would have actually been available at each point in time and specifically removes training rows whose labels would otherwise leak test-period information -- so the number I'm showing is a genuine out-of-sample result, not something produced by fitting on the whole history and reporting how well it fits itself. And then, without waiting to be pushed on it, I'd add the honest caveat myself: 18 years is still one historical path. Validating out-of-sample on that one path reduces the risk this is overfit, it doesn't eliminate the risk that the actual future just turns out to be a different regime than anything in those 18 years. I think naming that limitation before anyone asks is what actually makes the rest of the answer credible -- it tells the room I understand exactly where the method's guarantees stop, rather than oversell it.",
+      "commonMistakes": [
+        "Responding defensively, as if the question were an attack rather than the expected first question",
+        "Giving a vague answer ('we were careful') instead of naming the specific validation methodology used",
+        "Failing to volunteer the real remaining limitation (one historical path) unprompted",
+        "Overclaiming that out-of-sample validation eliminates overfitting risk entirely rather than just reducing it"
+      ],
+      "keyPoints": [
+        "Treat the question as expected, not an attack",
+        "Name the specific methodology used (purged walk-forward cross-validation) and why it produces a genuine out-of-sample number",
+        "Volunteer the real remaining limitation unprompted: one historical path still doesn't guarantee future performance",
+        "Frame out-of-sample validation as risk-reducing, not risk-eliminating"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Responds non-defensively and treats the question as expected", "weight": 20 },
+        { "criterion": "Names a specific, correct methodology as the real answer", "weight": 35 },
+        { "criterion": "Volunteers the honest remaining limitation unprompted", "weight": 30 },
+        { "criterion": "Clarity and professionalism", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "quant-research-and-trading-capstone",
+        "lessonSlug": "defending-your-research-to-a-skeptical-audience",
+        "label": "Review: Defending Your Research to a Skeptical Audience"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-adv-015",
+      "questionCode": "LTV-QRES-0036",
+      "title": "Reasoning Live Through an Open-Ended Research Case",
+      "prompt": "An interviewer says, 'A colleague shows you a strategy with a backtested Sharpe ratio of 3.0. What's your reaction?' Walk through how you'd actually structure your answer live, in the room.",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Case Interviews", "Research Judgment", "Communication"],
+      "modelAnswer": "A strong answer uses a steady structure rather than winging it: first clarify the objective (is 3.0 gross or net of costs, over what sample period and universe -- don't assume), then state the relevant assumption explicitly (a Sharpe that high is unusual for a diversified strategy; a believable range for a typical systematic equity strategy is far lower), then walk through the likely culprits in order of probability -- look-ahead bias (does every feature use only information available at that point in time), survivorship bias (was the universe built from today's surviving assets projected backward), overfitting via extensive, untracked parameter search, and unmodeled or unrealistic transaction costs -- then name what could go wrong even after ruling out the obvious bugs (an unusually clean effect can still be real but fragile, and might not survive contact with live markets), and finally conclude with a clear recommendation: don't trust the number until each specific failure mode has been checked and ruled out, and treat the appropriately skeptical first reaction as the correct technical answer, not a lack of enthusiasm.",
+      "professionalAnswer": "I'd walk through this out loud in a fixed order rather than reacting with a single gut response. First I'd clarify: is that 3.0 gross or net, and over what period and universe -- I wouldn't just accept the number at face value. Then I'd state plainly that a Sharpe of 3.0 is an unusual number; most diversified systematic strategies land well below that, so this should trigger scrutiny before celebration, not after. From there I'd walk through the likely culprits roughly in order of how often I actually see them -- look-ahead bias first, survivorship bias second, then an extensive, untracked parameter search, then unrealistic or missing transaction-cost modeling. I'd also say explicitly that even after ruling out all of those, an unusually clean backtest can still be a real-but-fragile effect that won't survive live trading. And I'd close with an actual recommendation, not just a list of concerns: don't trust the 3.0 until each of those specific things has been checked, and I'd say that the skeptical reaction itself is the right answer here, not a lack of enthusiasm about the result.",
+      "commonMistakes": [
+        "Reacting with excitement to a high Sharpe ratio instead of treating it as the signal to investigate",
+        "Listing possible issues without a structure, rather than working through clarify-assumptions-structure-risks-recommendation in order",
+        "Forgetting to ask whether the number is gross or net before reacting to it at all",
+        "Not concluding with an actual, specific recommendation"
+      ],
+      "keyPoints": [
+        "Clarify gross vs. net and the sample period/universe before reacting",
+        "State that an unusually high Sharpe should trigger scrutiny, with a believable benchmark range",
+        "Walk through likely culprits in order: look-ahead bias, survivorship bias, overfitting via parameter search, cost modeling",
+        "Conclude with a clear, specific recommendation rather than an open-ended list of concerns"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Uses a clear, structured five-step reasoning process", "weight": 30 },
+        { "criterion": "Correctly lists the likely culprits for an implausibly high Sharpe ratio", "weight": 35 },
+        { "criterion": "Concludes with a specific, actionable recommendation", "weight": 20 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "quant-research-and-trading-capstone",
+        "lessonSlug": "research-presentations-and-case-interviews",
+        "label": "Review: Research Presentations & Case Interviews"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    }
+  ]
+}

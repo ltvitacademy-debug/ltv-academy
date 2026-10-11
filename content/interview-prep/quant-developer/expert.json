@@ -1,0 +1,772 @@
+{
+  "questions": [
+    {
+      "id": "qdev-exp-001",
+      "questionCode": "LTV-QDEV-0037",
+      "title": "Lock-Free vs. Wait-Free, and the ABA Problem in Production",
+      "prompt": "Explain the difference between lock-free and wait-free guarantees precisely, and describe the ABA problem well enough that a junior engineer could explain why a passing test suite doesn't rule it out.",
+      "category": "technical-knowledge",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "Lock-Free Programming",
+        "Wait-Free Algorithms",
+        "ABA Problem"
+      ],
+      "modelAnswer": "Lock-free guarantees that the system as a whole always makes progress: at every point in time, at least one thread is able to complete a step, even if other threads are paused at the worst possible moment (suspended by the OS, or simply slow) -- but any individual thread can still be starved indefinitely by repeated CAS failures if it keeps losing the race to other threads. Wait-free is strictly stronger: it guarantees every thread finishes in a bounded number of steps regardless of what any other thread does, eliminating even individual starvation -- genuinely wait-free algorithms exist but are rarer and substantially harder to construct than lock-free ones, so most practical 'lock-free' library code is lock-free, not wait-free, and conflating the two overstates the guarantee actually being made. The ABA problem: a thread reads a pointer value A from a shared location, gets suspended by the scheduler before acting on it, and while suspended, another thread pops the node at A, frees it, and a subsequent allocation happens to reuse that exact same address for a brand-new, logically different node -- when the original thread wakes up and performs its compare-exchange, the address still reads as A, so the CAS succeeds even though the actual object backing that address has completely changed. A test suite won't reliably catch this because it requires a specific, narrow timing window combined with the allocator reusing a freed address quickly -- both schedule- and allocator-dependent, meaning the bug can pass thousands of test runs and then occur once in production under a specific load pattern. The standard real fixes are tagging pointers with a monotonically incrementing version counter (so the CAS compares both the address and the tag) or using hazard pointers to prevent an address from being reused while another thread might still be examining it.",
+      "professionalAnswer": "I'd be precise about the distinction because it genuinely matters: lock-free means the system always makes progress somewhere, but a specific thread can still lose every CAS race and spin indefinitely in principle; wait-free means every single thread is guaranteed to finish in bounded steps no matter what, which is a meaningfully stronger and much harder guarantee to build. On ABA, the way I'd explain it to a junior engineer is: the CAS is only checking 'does this address still hold the value I expect,' not 'is this still logically the same object' -- and if the object was freed and a new one got allocated at the exact same address in between, the CAS is fooled. It passes tests because it needs a specific suspend-then-reallocate timing window that your test suite almost never happens to hit, which is exactly why it's dangerous -- it's the kind of bug that shows up once in production under real load and nowhere in CI.",
+      "commonMistakes": [
+        "Using 'lock-free' and 'wait-free' interchangeably, overstating the actual guarantee",
+        "Believing a passing test suite rules out an ABA bug, rather than understanding it as a timing- and allocator-dependent hazard",
+        "Fixing ABA by only checking the pointer value without adding a version tag or hazard-pointer protection"
+      ],
+      "keyPoints": [
+        "Lock-free guarantees system-wide progress but allows individual thread starvation",
+        "Wait-free guarantees every thread finishes in bounded steps, a strictly stronger property",
+        "ABA occurs when an address is freed and reallocated between a thread's read and its CAS",
+        "Testing is unreliable for catching ABA because it depends on a narrow, schedule-dependent timing window",
+        "Version-tagged pointers or hazard pointers are the standard real fixes"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Precisely distinguishes lock-free from wait-free",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly explains the ABA mechanism",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains why testing doesn't reliably catch it",
+          "weight": 25
+        },
+        {
+          "criterion": "Names a correct real-world fix",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "lock-free-ideas-overview",
+        "label": "Review: Lock-Free Ideas Overview"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-exp-002",
+      "questionCode": "LTV-QDEV-0038",
+      "title": "Why True Parallelism in Python Requires Dropping Below the Interpreter",
+      "prompt": "Explain why the GIL means a pure-Python function can't get real multi-core speedup from threads alone, and why Numba, Cython, and a C++ extension each solve this differently -- including why multiprocessing is not a universal substitute.",
+      "category": "technical-knowledge",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "GIL",
+        "Numba",
+        "Multiprocessing",
+        "Python/C++ Integration"
+      ],
+      "modelAnswer": "CPython's Global Interpreter Lock ensures only one thread executes Python bytecode at a time, regardless of how many OS threads exist or how many cores are available -- so std::thread-style concurrency applied to pure Python-interpreted code doesn't yield real multi-core speedup for CPU-bound work; the threads still take turns on one core's worth of actual Python execution. Numba's @njit compiles a function to native machine code ahead of running it, and critically, that compiled code executes outside the GIL's bytecode-interpretation loop entirely -- with parallel=True/prange, it can genuinely use multiple cores because there's no interpreted Python bytecode left in the hot path for the GIL to serialize. Cython similarly compiles to C and, with the `nogil` context explicitly released around C-level code, can run true multi-core work for the same reason. A C++ extension via pybind11 is the same idea taken further: the C++ code runs natively and can explicitly release the GIL (py::gil_scoped_release) while it executes, letting other Python threads (or the C++ code's own internal threading) proceed concurrently. Multiprocessing sidesteps the GIL differently -- not by escaping it, but by using separate OS processes, each with its own Python interpreter and its own GIL, so they genuinely run in parallel across cores -- but that comes at the cost of inter-process communication overhead (pickling data across process boundaries) and no shared memory by default, which is why it's not a universal substitute: a workload that needs tight, low-latency sharing of large data between parallel workers pays a real serialization cost multiprocessing-based parallelism that neither Numba's nor a GIL-released C++ extension's threads pay.",
+      "professionalAnswer": "The one-sentence version: the GIL only serializes interpreted Python bytecode, so the fix in every case is to get out of the interpreter entirely, not to add more threads around it. Numba and Cython both compile to native code that runs outside the bytecode loop, so parallel=True or an explicit nogil block can actually use multiple cores. A C++ extension does the same thing by hand -- it can explicitly drop the GIL while it runs. Multiprocessing is a genuinely different trick: it doesn't escape the GIL, it just gives every worker its own interpreter and its own GIL in a separate process -- which does get you real parallelism, but you're now paying to serialize data across process boundaries instead, so it's not a free replacement for the compiled-code approach when workers need to share a lot of data quickly.",
+      "commonMistakes": [
+        "Assuming std::thread-style multithreading alone gives multi-core speedup for pure Python CPU-bound code",
+        "Believing Numba/Cython's speedup comes only from compilation, missing that the GIL release is what also enables true multi-core scaling",
+        "Treating multiprocessing as interchangeable with a GIL-releasing compiled extension, ignoring its serialization overhead"
+      ],
+      "keyPoints": [
+        "The GIL serializes execution of interpreted Python bytecode across threads",
+        "Compiled code (Numba/Cython/C++) can run outside the GIL's bytecode loop, enabling real parallelism",
+        "pybind11 extensions can explicitly release the GIL during native execution",
+        "Multiprocessing achieves parallelism via separate interpreters/processes, at the cost of serialization overhead",
+        "No single approach is a universal substitute; the right choice depends on data-sharing needs"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains the GIL's effect on threaded pure-Python code",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly explains why Numba/Cython/C++ can escape it",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly explains multiprocessing's different mechanism and cost",
+          "weight": 30
+        },
+        {
+          "criterion": "Clarity and technical precision",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "when-python-is-too-slow",
+        "label": "Review: When Python Is Too Slow"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-exp-003",
+      "questionCode": "LTV-QDEV-0039",
+      "title": "Sketch a Lock-Free Single-Producer Stack Push",
+      "prompt": "Implement the push operation for a lock-free singly-linked stack using compare_exchange_weak, and explain precisely what happens when two threads call push() at nearly the same time -- including why the retry is correct rather than just 'probably fine.'",
+      "category": "hands-on",
+      "difficulty": "expert",
+      "responseFormat": "code",
+      "skills": [
+        "Lock-Free Data Structures",
+        "Compare-And-Swap",
+        "Atomics"
+      ],
+      "modelAnswer": "The push builds the new node, sets its next pointer to the current head, then attempts a compare_exchange_weak on the atomic head: if head still equals what new_node->next was set to (meaning nobody changed it since we read it), the CAS atomically swaps head to point at new_node and succeeds; if head has changed, compare_exchange_weak automatically refreshes new_node->next to the now-current head and returns false, and the loop retries with that updated value. When two threads call push() at nearly the same time: both read the same old head, both build their new node pointing at it, and both attempt the CAS -- but compare_exchange_weak on a given atomic location is itself guaranteed atomic and only one of the two CAS attempts can actually succeed at the hardware level, because the hardware serializes access to that single memory location for the compare-and-swap instruction. The thread whose CAS succeeds has correctly linked its node in as the new head; the thread whose CAS fails sees that head no longer matches what it expected (because the other thread already changed it), has new_node->next automatically updated to the new current head by the failed call itself, and loops back to retry the CAS with fresh information -- it is not applying a stale decision, it's re-deciding based on the current state every single time through the loop. This is why the retry is actually correct and not just 'probably fine': the only way a thread's CAS succeeds is if head is unchanged from the value it just observed, so a failed attempt never corrupts the stack, it simply means someone else got there first and the loop must re-read and re-try, converging on a consistent, race-free final linked structure.",
+      "professionalAnswer": "I'd walk through it instruction by instruction because that's really the only way to be confident it's correct rather than hand-wavy: build the node, point it at the current head, try to CAS head from that same value to the new node. If another thread's push beat us to it, our CAS simply fails -- and crucially, compare_exchange_weak itself refreshes our new_node->next to whatever head actually is now, so our very next retry is working off current, correct information, not stale data. The hardware guarantees that of any two threads racing a CAS on the same atomic location, at most one can win in a given attempt -- that's the actual atomicity guarantee doing the work here, not luck or scheduling. That's exactly why I'd push back on calling this 'probably fine' -- it's provably correct given that single-location CAS atomicity, which is the whole foundation the entire lock-free approach rests on.",
+      "example": "#include <atomic>\nstruct Node { int value; Node* next; };\nstd::atomic<Node*> head{nullptr};\n\nvoid push(int value) {\n    Node* new_node = new Node{value, nullptr};\n    new_node->next = head.load(std::memory_order_relaxed);\n    while (!head.compare_exchange_weak(\n               new_node->next, new_node,\n               std::memory_order_release,\n               std::memory_order_relaxed)) {\n        // CAS failed: new_node->next was refreshed to the current head by\n        // compare_exchange_weak itself -- just retry with fresh information\n    }\n}",
+      "commonMistakes": [
+        "Believing the retry loop is a workaround for a race rather than the provably correct mechanism itself",
+        "Forgetting that compare_exchange_weak refreshes the 'expected' argument on failure, and manually re-reading head instead (not wrong, but redundant/error-prone if done incorrectly)",
+        "Assuming compare_exchange_weak can spuriously fail even when the comparison matches (true on some platforms) without accounting for that in the loop -- which the while loop already correctly handles by retrying regardless"
+      ],
+      "keyPoints": [
+        "The CAS atomically checks 'is head still what I observed' and swaps only if so",
+        "Hardware guarantees at most one of two racing CAS attempts on the same location succeeds",
+        "A failed CAS automatically refreshes the expected value, so the retry uses current, not stale, state",
+        "Correctness follows provably from single-location CAS atomicity, not from probabilistic reasoning"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly implements the CAS retry loop",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly explains what happens when two threads race the CAS",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains precisely why the retry loop is provably correct",
+          "weight": 25
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "lock-free-ideas-overview",
+        "label": "Review: Lock-Free Ideas Overview"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-exp-004",
+      "questionCode": "LTV-QDEV-0040",
+      "title": "Tune a Numba Function: Nopython Failures and the parallel=True Decision",
+      "prompt": "A @njit function fails to compile in nopython mode because it calls a pandas method inside the loop, and separately, a teammate wants to add parallel=True to a different, already-compiling @njit function without measuring anything first. Fix both situations and justify your parallel=True decision with reasoning, not just a guess.",
+      "category": "hands-on",
+      "difficulty": "expert",
+      "responseFormat": "code",
+      "skills": [
+        "Numba",
+        "JIT Compilation",
+        "Performance Tuning"
+      ],
+      "modelAnswer": "Nopython mode only understands a specific, limited subset of Python -- NumPy arrays, scalar numeric types, basic control flow, and an allow-listed set of NumPy functions -- not pandas objects or methods at all; calling a pandas method inside an @njit function will fail to compile (or silently fall back to slow object mode on older Numba without nopython=True explicitly set). The fix is to restructure so the numeric core -- the part made of arrays, loops, and arithmetic -- is pulled into its own small @njit function that takes raw NumPy arrays (e.g. df['price'].values) as input, while the pandas-specific orchestration (reading the DataFrame, calling .values, writing results back into a column) stays in ordinary Python around it. For the parallel=True decision: it is not automatically a win, because it adds real thread-management overhead, and it only pays off when the per-iteration workload is large enough to be worth distributing across cores -- the correct process is to benchmark the single-threaded @njit version against the parallel=True + prange version on the actual production-sized input, warming up both first since the first call to any @njit function pays a one-time compilation cost that would otherwise contaminate the measurement, and only keep parallel=True if the measured wall-clock time is actually lower on realistic data, not small test inputs where thread-scheduling overhead can dominate and make it slower.",
+      "professionalAnswer": "The pandas-in-nopython failure is one of the most common Numba mistakes, and the fix is always the same shape: pull just the numeric core -- the actual array math -- into its own tiny @njit function that only touches NumPy arrays, and keep anything that touches a DataFrame directly outside of it in regular Python. On parallel=True, I wouldn't just add it and move on -- I'd insist on an actual before/after benchmark on real, production-sized input, with both versions warmed up first so the one-time compilation cost doesn't pollute the numbers. I've seen parallel=True lose to the plain single-threaded version on smaller workloads because the thread-scheduling overhead ate the whole gain -- it's not a free switch, it's a measured decision, every time.",
+      "example": "# Before: fails to compile in nopython mode (pandas call inside @njit)\n@njit\ndef bad(df):\n    total = 0.0\n    for i in range(len(df)):\n        total += df.iloc[i]['price']   # pandas access -- not understood by nopython mode\n    return total\n\n# Fix: pull the numeric core into its own @njit function over raw arrays\n@njit\ndef sum_prices(prices):          # prices: a NumPy array, not a DataFrame\n    total = 0.0\n    for i in range(len(prices)):\n        total += prices[i]\n    return total\n\ntotal = sum_prices(df['price'].values)   # pandas orchestration stays in plain Python\n\n# parallel=True decision: measure, don't guess\nimport time\n@njit\ndef sum_single(x):\n    out = 0.0\n    for i in range(len(x)): out += x[i]\n    return out\n\n@njit(parallel=True)\ndef sum_parallel(x):\n    out = 0.0\n    for i in numba.prange(len(x)): out += x[i]\n    return out\n\n# warm up both, then time both on realistic production-sized input before deciding",
+      "commonMistakes": [
+        "Calling pandas methods directly inside an @njit function expecting it to compile",
+        "Adding parallel=True without benchmarking on realistic, production-sized input",
+        "Benchmarking without a warm-up call, letting one-time compilation cost distort the comparison"
+      ],
+      "keyPoints": [
+        "nopython mode doesn't understand pandas objects/methods at all",
+        "The fix is isolating the numeric core into a small @njit function over raw NumPy arrays",
+        "parallel=True adds real thread-management overhead and isn't automatically faster",
+        "Correct benchmarking requires warm-up calls and realistic input size before deciding"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly fixes the nopython-mode/pandas compilation failure",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains why parallel=True needs measurement, not assumption",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes a correct benchmarking methodology (warm-up, realistic input)",
+          "weight": 25
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "numba-and-jit-compilation",
+        "label": "Review: Numba & JIT Compilation"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-exp-005",
+      "questionCode": "LTV-QDEV-0041",
+      "title": "Diagnosing a Duplicated Live Order From a Missing Idempotent Client Order ID",
+      "prompt": "A live strategy occasionally ends up with double the intended position size after a brief network blip to the broker. Walk through the exact failure sequence, how you'd confirm it from logs, and the fix -- including why the fix must live in the OMS, not in the strategy code.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "Idempotent Submission",
+        "Order Management",
+        "Production Incidents"
+      ],
+      "modelAnswer": "The failure sequence: the OMS sends an order submission request to the broker, the broker receives and processes it successfully, but the acknowledgment response is lost or delayed on the way back (the network blip) before the OMS's request times out; from the OMS's point of view, it genuinely does not know whether the order was placed, so if its retry logic simply resubmits the same order with no deduplication key, the broker -- having no way to recognize this as a retry of an already-processed order -- treats it as a brand-new order and fills it too, doubling the position. Confirming this from logs means looking for two broker-side order confirmations (or two separate fills) corresponding to what the OMS log shows as a single logical submission attempt with a retry in between, with the retry's timestamp lining up with the original request's timeout window, not with any new strategy decision. The fix is a client order ID: a unique ID generated once per logical order and attached to every submission attempt for that order, which the broker treats as a deduplication key -- resubmitting with the same client order ID has no additional effect beyond the first successful submission, because the broker recognizes the duplicate and simply returns the existing order's status rather than creating a second one. This must live in the OMS, not the strategy, because the strategy's job is deciding what to trade, and every order submission path through this system needs this guarantee uniformly -- putting it in the OMS means it's correct by construction for every strategy that ever calls submit(), rather than relying on every individual strategy author to remember to generate and pass a dedup key correctly, which is exactly the kind of correctness-critical, cross-cutting logic that belongs centralized rather than duplicated and inconsistently reimplemented.",
+      "professionalAnswer": "I'd reconstruct it from logs first: look for a single logical submission in the OMS's own record that has a retry in it, and line that retry's timing up with the original request's timeout -- if the broker shows two separate fills or confirmations against what should have been one order, and the gap between them matches a plausible network timeout rather than a new strategy signal, that's the smoking gun. The mechanism is exactly what you'd expect: the order went through, the acknowledgment got lost, we retried not knowing that, and the broker had no way to know it was a retry rather than a brand new order. The fix is a client order ID attached to every attempt for the same logical order, so the broker itself de-duplicates it. And I'd be firm that this lives in the OMS, not scattered into every strategy -- every single strategy that ever submits an order needs this guarantee, and the only way to make sure none of them forget it is to make it impossible to bypass at the one place all orders actually go through.",
+      "commonMistakes": [
+        "Assuming the broker will reject an obviously-duplicate order without a client order ID to actually tell it that",
+        "Implementing idempotent retry logic inside individual strategies instead of centrally in the OMS",
+        "Treating this as a one-off bug fix rather than confirming the missing dedup key as the systemic root cause"
+      ],
+      "keyPoints": [
+        "A lost acknowledgment after a successful submission leaves the OMS genuinely unsure whether the order went through",
+        "Without a dedup key, a naive retry is indistinguishable to the broker from a new order",
+        "A client order ID lets the broker recognize and safely no-op a duplicate retry",
+        "This logic belongs centrally in the OMS so every strategy gets the guarantee uniformly, not by individual implementation"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly reconstructs the exact failure sequence",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes a concrete way to confirm it from logs",
+          "weight": 20
+        },
+        {
+          "criterion": "Correctly prescribes a client-order-ID fix",
+          "weight": 25
+        },
+        {
+          "criterion": "Explains why the fix belongs in the OMS, not the strategy",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "connecting-to-brokers-and-exchanges",
+        "label": "Review: Connecting to Brokers & Exchanges"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-exp-006",
+      "questionCode": "LTV-QDEV-0042",
+      "title": "Diagnosing an ABA Bug in a Hand-Rolled Lock-Free Structure That Passed Every Test",
+      "prompt": "A hand-rolled lock-free free-list (a pool of reusable buffers linked via CAS) has run flawlessly in testing and in production for months, then corrupts data exactly once under a specific burst of load. Walk through how you'd investigate this, why it evaded detection for so long, and the real fix versus a superficial one.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "ABA Problem",
+        "Lock-Free Data Structures",
+        "Production Debugging"
+      ],
+      "modelAnswer": "Given the profile -- flawless for months, then a one-time corruption under a specific burst -- I'd treat ABA as the leading hypothesis before anything else, precisely because that's its signature: it requires a thread to read a node's address, get suspended at exactly the wrong moment, and have another thread free that node and have the allocator hand the identical address back out for a different node, all within a narrow window that's far more likely to actually occur under bursty, high-contention load than under steady, moderate load. I'd investigate by first ruling out simpler explanations (a genuine data race elsewhere, found via ThreadSanitizer, or a straightforward logic bug) and then specifically instrumenting the free-list's CAS sites to log the address and a monotonically-incrementing allocation generation number every time a node is freed and reallocated, so that if the corruption recurs under a reproduced burst-load test, the logs can show whether the same address was reused with a different generation number right around the corruption -- that's the direct confirmation. A superficial fix would be adding more testing, more load, or 'being more careful' around the free-list -- none of which addresses the actual hazard, since the bug is inherently about a timing window that tests may simply never hit again, even under the same load profile. The real fix is structural: tag every pointer stored in the free-list with a version counter that increments every time the slot is reused, and make the CAS compare both the address and the tag together (a 'tagged pointer' or double-width CAS), so a stale read with a matching address but a stale tag correctly fails the CAS instead of succeeding -- or, alternatively, adopt hazard pointers, which prevent a node from being freed back to the allocator at all while any thread might still be examining it. Given how easy it is to get this subtly wrong even with the fix, the follow-up recommendation is to replace the hand-rolled free-list with a reviewed, widely-used lock-free pool implementation rather than patching the hand-rolled version and hoping the new version is actually correct.",
+      "professionalAnswer": "The pattern -- fine for months, one corruption under a specific burst -- is close to a textbook ABA fingerprint, so that's where I'd start, not where I'd end up after ruling everything else out first. I'd want to instrument the actual CAS sites with a generation counter on every free/reallocate, so if we can reproduce the burst in a controlled test, the logs directly show an address getting reused with the generation number having moved -- that's the proof, not a guess. What I wouldn't accept as a fix is 'let's add more tests' or 'let's run it under more load' -- that's treating a structural hazard like it's a coverage gap, and it'll just fail again on a different burst someday. The actual fix is tagging every pointer with a version counter the CAS checks alongside the address, or moving to hazard pointers so an address literally can't be reused while anyone might still be looking at it. And honestly, at that point I'd push to replace the hand-rolled structure with a reviewed library implementation rather than trust a patched version of code that already proved subtle enough to hide a bug for months.",
+      "commonMistakes": [
+        "Treating 'it passed months of testing' as evidence the structure is correct rather than evidence the timing window is rare",
+        "Fixing the symptom with more testing/monitoring instead of the structural ABA hazard itself",
+        "Assuming a simple null-check or extra validation addresses ABA, when the actual defect is address reuse fooling the CAS comparison itself"
+      ],
+      "keyPoints": [
+        "A one-time failure after months of flawless operation under a specific burst is a classic ABA fingerprint",
+        "Confirmation requires instrumenting CAS sites with a generation/version counter, not just more testing",
+        "A superficial fix (more tests, more monitoring) doesn't address the underlying timing hazard",
+        "The structural fix is version-tagged pointers or hazard pointers; replacing with a reviewed library is the safer long-term move"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies ABA as the leading hypothesis and why",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes a concrete, valid way to confirm it",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly distinguishes a superficial fix from the real structural fix",
+          "weight": 30
+        },
+        {
+          "criterion": "Clarity and depth",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 11,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "lock-free-ideas-overview",
+        "label": "Review: Lock-Free Ideas Overview"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-exp-007",
+      "questionCode": "LTV-QDEV-0043",
+      "title": "Investigating Why a Live Strategy's Realized Volatility Is Twice the Backtest's",
+      "prompt": "A live strategy's realized daily P&L volatility is running at roughly 1.8x what the backtest predicted, over several weeks -- not one bad day. It hasn't breached the kill switch. Walk through how you'd investigate whether this is noise, a real problem, and what the likely categories of root cause are.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "Strategy Monitoring",
+        "Backtest-to-Live Gap",
+        "Risk Analysis"
+      ],
+      "modelAnswer": "First, I'd rule out short-sample noise properly rather than assuming the ratio itself is meaningful: a volatility ratio computed over a few weeks has real sampling variance, and a short sample containing even one or two larger-than-typical days can move a realized-vs-expected ratio substantially without the underlying process actually being different -- I'd check whether the elevated ratio is being driven by a small number of outlier days or is genuinely spread evenly across the sample, since those point to very different investigations. If it's genuinely sustained and broad-based, not a few outlier days, I'd work through the standard categories of backtest-to-live gap in order of likelihood: execution-realism gaps (the backtest's fill/slippage/transaction-cost assumptions were too optimistic, so live P&L swings more per trade than the backtest modeled), a regime change (market volatility itself has genuinely risen since the backtest period, which isn't a strategy bug at all but a fact about current conditions the backtest window didn't cover), a data or feature-computation discrepancy between the backtest's data pipeline and the live system's (subtly different timestamps, a different data vendor, or a lookback window computed slightly differently live vs. in the backtest), or, less commonly but seriously, an actual bug in the live execution path -- a sizing calculation error, a position that's not being flattened when expected, or a signal computed on stale data live that the backtest never experienced. I'd investigate roughly in that order because execution realism and regime are both common, benign-ish explanations worth ruling out first, cheaply, before assuming something is broken; a live-vs-backtest data/logic diff is the next most likely, and requires comparing the exact inputs feeding both systems on the same historical dates; and a live-only execution bug is the most serious and the one I'd want confirmed, not assumed, via the operational log before escalating.",
+      "professionalAnswer": "The first thing I do is make sure I'm not chasing noise -- a few weeks is a short sample, and I'd check whether this ratio is being driven by a handful of rough days or is spread evenly across the whole period, because those lead to completely different investigations. If it's genuinely broad and sustained, I work through it roughly cheapest-to-rule-out first: is the backtest's cost/slippage model just too rosy compared to what we're actually paying live, has market volatility itself genuinely gone up since the backtest window, is there a subtle difference between what data the backtest saw and what the live system is actually computing on, and only after those are checked do I start suspecting an actual bug in the live execution path -- a sizing error or a position not flattening correctly. I'd want the operational log to actually confirm whichever one it is, not just assume the scariest explanation because that's the one that feels most urgent.",
+      "commonMistakes": [
+        "Treating a short-sample ratio as conclusively meaningful without checking whether a few outlier days are driving it",
+        "Jumping straight to 'the strategy is broken' without first ruling out execution-realism gaps or regime change",
+        "Not comparing the exact live vs. backtest data/feature pipeline for subtle discrepancies before suspecting a logic bug"
+      ],
+      "keyPoints": [
+        "Short-sample volatility ratios carry real sampling noise and need outlier-day inspection first",
+        "Execution-realism gaps (overly optimistic backtest cost/slippage assumptions) are a common, benign cause",
+        "A genuine market regime change is a real possibility, not a strategy defect",
+        "Data/feature pipeline discrepancies between backtest and live systems should be checked before assuming a logic bug",
+        "An actual live-execution bug should be confirmed via the operational log, not assumed first"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly addresses whether this could be short-sample noise first",
+          "weight": 25
+        },
+        {
+          "criterion": "Lists plausible root-cause categories in a sensible investigation order",
+          "weight": 40
+        },
+        {
+          "criterion": "Treats confirmation via data/logs as necessary before concluding a root cause",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity and depth",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "monitoring-live-strategies",
+        "label": "Review: Monitoring Live Strategies"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-exp-008",
+      "questionCode": "LTV-QDEV-0044",
+      "title": "A Use-After-Free That Only Crashes in Production, Never Under AddressSanitizer in CI",
+      "prompt": "A pricing service crashes roughly once a week in production with a segfault, but running the exact same binary under AddressSanitizer in CI, with the same test suite, never reproduces it. Walk through why ASan might not be catching this, and your plan to find it anyway.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "AddressSanitizer",
+        "Use-After-Free",
+        "Production Debugging"
+      ],
+      "modelAnswer": "ASan instruments every memory access in the binary it's compiled into and will reliably catch a use-after-free the moment it actually occurs during a run -- so if a CI run using ASan never reproduces the crash, the most likely explanation isn't that ASan is failing to catch a bug it's exposed to, it's that CI's test suite and traffic pattern simply never exercises the exact code path or timing window that triggers the bug in production. This is especially likely for a concurrency-flavored use-after-free -- one thread frees an object while another thread, mid-use, still holds a raw pointer or reference into it -- because that requires a specific, narrow interleaving of threads that CI's lighter, more deterministic test load may rarely or never hit, while production's real, bursty, higher-concurrency traffic hits it roughly once a week. My plan: first, confirm the crash really is memory corruption and not something else, by getting a core dump from an actual production crash and examining it with gdb for a corrupted vtable or heap-corruption pattern consistent with use-after-free. Second, rather than hoping CI's existing test suite eventually reproduces it, build a dedicated stress-test harness that replays production-like concurrent load at higher intensity and for longer duration than any CI test currently does, specifically targeting the subsystems most likely to hold cross-thread raw references, and run that harness under ASan (and ThreadSanitizer, since a use-after-free this hard to reproduce often has a data race as its root cause -- a race over when an object's owner considers it safe to delete). Third, if that still doesn't reproduce it, add targeted logging or an in-process canary (e.g. a known sentinel value in freed memory with a deliberately delayed, logged reallocation) around the specific suspect subsystem to narrow down which object's lifetime is actually mismanaged, informed by whatever the core dump pointed at.",
+      "professionalAnswer": "My first reaction to 'ASan in CI never reproduces it' isn't 'ASan is broken' -- ASan catches a use-after-free the instant it happens, full stop, so if it's not firing, the honest conclusion is CI simply never hits the triggering path. For something this intermittent, that almost always means a specific thread-interleaving timing window that production's real, bursty concurrent load hits occasionally and our comparatively tame CI test suite basically never does. So my plan isn't to keep running the same CI suite under ASan and hoping -- it's to build a stress harness that actually replays production-like concurrency, run that under both ASan and ThreadSanitizer since this smells like a race underneath the use-after-free, and get an actual core dump from a real production crash to point the investigation at the right subsystem rather than guessing blind.",
+      "commonMistakes": [
+        "Concluding ASan is unreliable or 'doesn't catch this kind of bug' rather than recognizing CI simply isn't exercising the trigger path",
+        "Continuing to run the existing CI suite repeatedly under ASan instead of building a harness that reproduces production-like concurrent load",
+        "Treating this as purely a memory bug and not considering that a data race over object lifetime is often the actual root cause underneath"
+      ],
+      "keyPoints": [
+        "ASan reliably catches a use-after-free it actually observes; non-reproduction means the path isn't exercised, not that ASan failed",
+        "Concurrency-triggered memory bugs often require a specific thread-interleaving window CI's load profile may rarely hit",
+        "A dedicated stress harness replaying production-like concurrency is more productive than repeating the existing CI suite",
+        "ThreadSanitizer alongside ASan is appropriate since a data race over object lifetime often underlies this kind of use-after-free"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly reasons about why ASan doesn't reproduce the bug in CI",
+          "weight": 30
+        },
+        {
+          "criterion": "Proposes building a realistic stress/concurrency harness rather than repeating CI",
+          "weight": 30
+        },
+        {
+          "criterion": "Connects the use-after-free to a likely underlying data race and proposes ThreadSanitizer",
+          "weight": 25
+        },
+        {
+          "criterion": "Describes a concrete core-dump/triage step",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "memory-bugs-and-sanitizers",
+        "label": "Review: Memory Bugs & Sanitizers"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-exp-009",
+      "questionCode": "LTV-QDEV-0045",
+      "title": "Design a Low-Latency Pricing Library End to End",
+      "prompt": "Design a C++ pricing library that must reprice a book of several thousand instruments within a tight, repeated time budget (e.g. on every market-data tick). Cover data layout, allocation strategy, and threading, and justify each major decision against the latency goal specifically, not just 'because it's faster.'",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "Low-Latency Systems",
+        "Data-Oriented Design",
+        "System Architecture"
+      ],
+      "modelAnswer": "Data layout: store instrument state as struct-of-arrays rather than array-of-structs, since the repricing hot path scans the same one or two fields (e.g. underlying price, strike) across thousands of instruments on every tick -- SoA means every cache-line fetch during that scan is fully useful, directly reducing the number of cache misses per repricing pass, which matters enormously when the whole operation must repeat on every tick. Allocation strategy: zero heap allocation inside the repricing hot path -- every buffer the repricing pass writes into is allocated once at startup (or resized only on a book-composition change, which is rare and can tolerate a slower path) and reused tick after tick; this specifically avoids both the allocator's own latency and its tail-latency unpredictability, since a heap allocator can occasionally take far longer than its typical case (e.g. during a less-common code path inside the allocator itself), which is exactly the kind of rare-but-large latency spike a tight repeated budget cannot absorb even if it's rare. Threading: if the per-instrument repricing work is independent (which it typically is, given no interaction between separately priced instruments on a single tick), a fixed thread pool sized to available cores processes the book in SoA-friendly contiguous chunks per worker, avoiding both one-thread-per-tick overhead and, just as importantly, any synchronization primitive that could block inside the hot path -- cross-thread coordination, if needed at all, should use lock-free handoff (e.g. each worker writing to its own pre-allocated output slice, no shared mutable state requiring a lock) rather than a mutex, since the latency goal rules out anything with even rare blocking potential. Every one of these choices is justified specifically against 'repeat this on every tick within a tight budget,' not generically against 'make it fast' -- a looser latency budget would change several of these tradeoffs (e.g. tolerating occasional allocation, or AoS for convenience where SoA's benefit is marginal).",
+      "professionalAnswer": "I'd justify every decision against the actual constraint -- repeat, tight budget, every tick -- not just 'this is generally faster.' SoA because the hot path only ever touches one or two fields across thousands of instruments per tick, and that specific access pattern is exactly where SoA's cache-line efficiency matters most. Zero allocation in the hot path, full stop, because the real danger of a heap allocator here isn't its typical-case cost, it's its occasional, unpredictable tail latency -- which a budget that has to hold on every single tick can't absorb even occasionally. And for threading, I'd want a fixed pool with each worker owning a pre-allocated, non-shared output slice -- no mutex anywhere in the hot path, because even a lock that's almost always fast is a lock that occasionally isn't, and 'occasionally' is disqualifying when this has to repeat correctly on every tick.",
+      "commonMistakes": [
+        "Justifying design choices as generically 'faster' rather than specifically against the repeated, tight-budget constraint",
+        "Allowing any heap allocation inside the hot repricing path, even infrequent-seeming allocation",
+        "Using a mutex anywhere in the hot path on the assumption that its typical-case cost is low enough"
+      ],
+      "keyPoints": [
+        "Struct-of-arrays layout matches the hot path's actual per-tick field-scanning access pattern",
+        "Zero allocation in the hot path avoids both typical allocator cost and unpredictable tail latency",
+        "A fixed thread pool with lock-free, non-shared per-worker output avoids blocking in the hot path",
+        "Every design decision is justified against the specific repeated/tight-budget constraint, not generic speed"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly designs and justifies the data layout against the actual access pattern",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly designs and justifies a zero-allocation hot path",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly designs threading without blocking primitives in the hot path",
+          "weight": 30
+        },
+        {
+          "criterion": "Explicitly ties each decision to the latency constraint, not generic speed",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 12,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "cpu-caches-and-data-layout",
+        "label": "Review: CPU Caches & Data Layout"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-exp-010",
+      "questionCode": "LTV-QDEV-0046",
+      "title": "Design an Idempotent, Fault-Tolerant OMS for Multi-Venue Order Routing",
+      "prompt": "Design the order-management layer for a system that routes orders to several venues, must survive a venue connection dropping mid-session, and must never double-fill or silently lose an order. What are the core mechanisms, and where does each one specifically earn its place?",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "Order Management Systems",
+        "Fault Tolerance",
+        "Idempotency"
+      ],
+      "modelAnswer": "Three mechanisms form the core, each addressing a distinct failure mode. First, a unique client order ID generated once per logical order and attached to every submission attempt, including retries after a dropped connection -- this is what prevents a double-fill specifically from the 'request succeeded but the acknowledgment was lost' scenario, since the venue can recognize a retry with the same ID and avoid creating a second order; without this, any retry logic is unsafe by construction. Second, a durable, persisted order-state record (not just in-memory state) written before the order is submitted and updated as each lifecycle event (acknowledged, partially filled, filled, rejected) arrives -- this is what prevents silently losing an order if the OMS process itself crashes or restarts mid-session, since on restart it can reconcile its persisted state against what each venue reports rather than starting from a blank slate that's forgotten any order it had in flight. Third, an explicit reconciliation routine run on reconnect to each venue -- querying the venue for the actual status of any order the OMS's persisted state still shows as open or uncertain, and resolving discrepancies (an order the OMS thought was working but the venue shows filled, or vice versa) before allowing new orders to flow to that venue again -- this is what specifically handles the 'connection dropped mid-session' requirement, since a dropped connection means the OMS genuinely doesn't know what happened to in-flight orders during the gap, and only asking the venue directly resolves that uncertainty correctly rather than guessing. Each of these addresses a different, specific failure mode -- a lost acknowledgment, a crashed process, and a dropped connection -- and all three are necessary together; any one alone leaves a real gap the others were specifically designed to close.",
+      "professionalAnswer": "I'd build this around three distinct mechanisms, and I'd be explicit about which failure mode each one is actually there for, because it's easy to think one of them 'covers' the others when it doesn't. Client order IDs solve the lost-acknowledgment problem specifically -- a safe retry needs this, full stop. Persisting order state to durable storage, not just memory, solves the OMS-process-crashes problem -- if the service restarts, it needs to know what it had in flight, not start blank. And an explicit reconciliation step on reconnect solves the dropped-connection problem specifically -- after a gap, the OMS genuinely doesn't know what happened during it, so it has to ask the venue directly what actually occurred rather than assume its last-known state is still accurate. All three matter because they're solving genuinely different failure scenarios, not overlapping versions of the same one.",
+      "commonMistakes": [
+        "Relying only on client order IDs and assuming that alone covers process crashes or dropped connections too",
+        "Keeping order state only in memory, losing in-flight order tracking on a process restart",
+        "Resuming order flow to a reconnected venue without first reconciling uncertain in-flight orders"
+      ],
+      "keyPoints": [
+        "Client order IDs solve the lost-acknowledgment/safe-retry problem specifically",
+        "Durable, persisted order state solves the process-crash/restart problem specifically",
+        "Explicit reconciliation on reconnect solves the dropped-connection uncertainty problem specifically",
+        "The three mechanisms address distinct failure modes and are all necessary together"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly specifies client order IDs and the failure mode they address",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly specifies durable order-state persistence and its failure mode",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly specifies reconciliation on reconnect and its failure mode",
+          "weight": 30
+        },
+        {
+          "criterion": "Clearly distinguishes the three mechanisms rather than conflating them",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 11,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "connecting-to-brokers-and-exchanges",
+        "label": "Review: Connecting to Brokers & Exchanges"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-exp-011",
+      "questionCode": "LTV-QDEV-0047",
+      "title": "Design a Research-to-Production Pipeline With Reproducibility and Deployment Gates",
+      "prompt": "Design the pipeline that takes a strategy from a researcher's Python notebook to a production system that trades real capital, where the production path may involve porting hot code to C++. What has to be true at each stage before the strategy is allowed to advance, and why does reproducibility specifically need to be designed in, not assumed?",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "MLOps for Trading",
+        "Reproducibility",
+        "Deployment Pipelines"
+      ],
+      "modelAnswer": "Reproducibility needs to be designed in because a notebook's results depend on things that are easy to leave implicit and hard to recover later -- the exact data snapshot used, random seeds for any simulation or model fitting, library versions, and the exact sequence of cells actually run (not the notebook's current top-to-bottom state, which often diverges from what was actually executed during exploration). Without explicitly pinning and recording all of these -- a data version, a logged seed, a locked dependency environment, and ideally a script-based re-run rather than manual notebook execution -- 'reproduce the backtest result' becomes genuinely impossible months later, which blocks both honest validation and any later debugging of a production discrepancy against the research claim. The pipeline stages, each gated by a specific requirement: (1) research validation -- the strategy's backtest must use realistic transaction-cost and slippage assumptions, out-of-sample validation, and a documented, reproducible build (pinned data/seed/environment) before it's taken seriously as a candidate at all; (2) engineering review -- if any hot path is being ported to C++, the port must be validated against the Python reference implementation on identical inputs (same data, same seed) with results compared to a tight numerical tolerance, not just 'looks about right,' since the entire point of a reproducible research result is lost if the production port silently computes something different; (3) paper trading / forward testing -- the full production path, including the ported code and the OMS, runs against live market data with no real capital, and its behavior is compared against what the backtest predicted (volatility, trade frequency, fill assumptions) before being trusted; (4) staged live deployment -- small size or a subset of instruments first, with the kill-switch and monitoring from day one, not added later, expanding only as live behavior continues to match expectations. Each gate exists specifically to catch a different way the research-to-production transition can silently go wrong -- a result nobody can reproduce, a port that computes something subtly different, a backtest that didn't model real execution, or a live system trading at full size before anyone confirmed it behaves as expected.",
+      "professionalAnswer": "The part I'd insist on that's easy to skip under time pressure is reproducibility, specifically because notebooks make it easy to lose track of exactly what produced a given result -- which data snapshot, which random seed, which library versions, and whether the cells were actually run in the order the notebook now shows. I'd want that locked down -- pinned data version, logged seeds, a locked environment, ideally a script-based rerun -- before a strategy is even taken seriously as a candidate, because without it you can't actually verify the result later, which undermines everything downstream. From there, I'd gate each stage on something specific: a C++ port gets checked against the Python reference on identical inputs within a tight numerical tolerance, not eyeballed; paper trading has to actually match the backtest's predicted behavior before going live; and live deployment starts small, with the kill switch live from day one, not bolted on after the fact once it's already trading real size.",
+      "commonMistakes": [
+        "Assuming a notebook's results are automatically reproducible without pinning data, seeds, and environment explicitly",
+        "Validating a C++ port only by 'it looks about right' rather than a tight numerical comparison against the Python reference on identical inputs",
+        "Deploying to full live size before confirming paper-trading behavior matches backtest expectations, or before the kill switch is in place"
+      ],
+      "keyPoints": [
+        "Reproducibility requires explicitly pinning data version, random seeds, and dependency environment",
+        "A C++ port must be validated against the Python reference on identical inputs within numerical tolerance",
+        "Paper trading gates live deployment by comparing real behavior to backtest expectations",
+        "Live deployment should start small with monitoring/kill-switch active from day one, not added later"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains why reproducibility must be explicitly designed in",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly gates the C++ port against the Python reference",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly designs paper-trading and staged live-deployment gates",
+          "weight": 30
+        },
+        {
+          "criterion": "Clarity and completeness of the pipeline",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 12,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "when-to-move-code-from-python-to-cplusplus",
+        "label": "Review: When to Move Code From Python to C++"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-exp-012",
+      "questionCode": "LTV-QDEV-0048",
+      "title": "Design a High-Throughput Concurrent Order Book Engine",
+      "prompt": "Design the core data structure and concurrency model for an order book engine that must support very high-frequency updates (adds, cancels, modifies) from a single feed thread while multiple strategy threads read the current book state concurrently. Justify your choice between a lock-free design and a mutex-based design for this specific read/write shape.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "Order Book Design",
+        "Concurrency Models",
+        "Lock-Free Data Structures"
+      ],
+      "modelAnswer": "The read/write shape here -- one writer (the feed thread applying updates), many readers (strategy threads consuming current state) -- is specifically the kind of asymmetric access pattern where a naive mutex-based design is costly: if every strategy-thread read requires acquiring the same lock the single writer also needs, readers serialize against each other unnecessarily (since reads don't logically conflict with each other, only with a concurrent write) and, worse, the latency-critical writer can be blocked waiting on a reader that's slow to release the lock, which is exactly backwards from the latency priority (the feed thread updating the book is almost always the side that must never be delayed). Given a single writer, a reasonable design uses a lock-free technique built for exactly this: either a sequence-lock (seqlock) pattern, where the writer increments a sequence counter before and after updating, and readers read the counter, read the data, then re-check the counter unchanged -- retrying if it changed mid-read, which never blocks the writer at all -- or a double-buffered snapshot, where the writer builds the next version of the book state in a separate buffer and atomically swaps a single pointer/index that readers dereference, so readers always see a complete, consistent snapshot and the writer never waits on any reader. Both avoid a reader ever blocking the writer, which is the one property a mutex-based design cannot give you without extra structure (e.g. a reader-writer lock still allows deep reader contention to delay a writer waiting to acquire exclusive access). The real engineering cost is complexity and memory: double-buffering needs the writer to reconstruct (or incrementally update a full copy of) the book state each update, which can be expensive for a large book changing very frequently, and a seqlock requires readers to tolerate and correctly retry a torn read, which is subtle to get exactly right. The honest tradeoff to state explicitly: if update frequency and reader count are both genuinely extreme, the lock-free approach's complexity is justified by removing writer-blocking entirely; if the actual measured contention is modest, a straightforward reader-writer lock (or even a plain mutex) may be simpler, more maintainable, and fast enough -- this decision should be made from measurement of the actual read/write rates, not from the assumption that 'order books are always latency-critical enough to need lock-free.'",
+      "professionalAnswer": "The access pattern -- one writer that must never be delayed, many readers -- is exactly the case where I'd push back hardest on a plain mutex, because the thing I care most about here is specifically that no reader can ever hold up the one writer, and a straightforward mutex doesn't give you that guarantee on its own. My default design is either a seqlock, where the writer just bumps a counter around its update and readers detect and retry a torn read, or double-buffering with an atomic pointer swap, where readers always see a complete consistent snapshot and the writer never waits on anyone. Both genuinely guarantee the writer is never blocked by a reader, which a reader-writer lock still can't fully promise under contention. But I wouldn't reach for this automatically -- if we actually measure the update rate and reader count and they're both modest, I'd rather ship the simpler reader-writer lock and move on; the lock-free version earns its real complexity cost only when the measured numbers actually demand it.",
+      "commonMistakes": [
+        "Defaulting to a plain mutex for a single-writer/many-reader shape, allowing readers to block the latency-critical writer",
+        "Assuming lock-free is always the right answer for an order book without measuring actual contention first",
+        "Choosing a seqlock or double-buffer approach without correctly handling the reader-side retry/torn-read logic"
+      ],
+      "keyPoints": [
+        "A single-writer/many-reader shape specifically disadvantages a plain mutex by letting readers block the writer",
+        "A seqlock lets the writer proceed unblocked while readers detect and retry a torn read",
+        "Double-buffering with an atomic pointer swap gives readers a consistent snapshot with no writer blocking",
+        "The lock-free approach's complexity should be justified by measured contention, not assumed by default"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies why a plain mutex is disadvantaged for this read/write shape",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly proposes and explains a seqlock or double-buffer design",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly frames the complexity/measurement tradeoff rather than assuming lock-free is always right",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity and depth",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 12,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "lock-free-ideas-overview",
+        "label": "Review: Lock-Free Ideas Overview"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-exp-013",
+      "questionCode": "LTV-QDEV-0049",
+      "title": "Leading a Team Through a Latency-Critical Legacy Rewrite",
+      "prompt": "You're asked to lead a rewrite of a legacy, single-threaded C++ pricing engine that's become a latency bottleneck, while it continues trading live and cannot have downtime. How do you plan the rewrite and manage the stakeholders who depend on it continuing to work?",
+      "category": "behavioral",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "Technical Leadership",
+        "Legacy Systems",
+        "Stakeholder Management"
+      ],
+      "modelAnswer": "The core planning principle is that a live, revenue-generating system under a 'cannot have downtime' constraint rules out a big-bang rewrite-and-swap, no matter how tempting it is to just start clean -- the risk of an undetected behavioral difference surfacing in production, on real capital, is unacceptable. I'd plan an incremental, parallel-run strategy instead: identify the specific hot path actually causing the latency problem (profiling first, not assumption, since 'legacy' doesn't automatically mean 'everything is slow') and rewrite that piece first, behind a flag that lets it run in shadow mode -- computing results alongside the legacy path without acting on them -- so its output can be directly compared against the legacy system's real output on real live inputs over an extended period before it's ever trusted to make an actual decision. Only once shadow-mode comparison shows sustained agreement (within a defined, justified tolerance) do I cut over that specific piece, keeping the legacy code path available as an instant fallback for a defined period after cutover, not deleted immediately. On stakeholder management: traders and risk depend on this system working every single day, so I'd commit to concrete checkpoints (what's been validated, what hasn't, current risk level) on a predictable cadence rather than a vague 'rewrite in progress,' and I'd be explicit and specific about what could go wrong at each cutover point and what the rollback plan is -- stakeholders trust a plan they can see the safety net in, not a confident assurance with no visible fallback. I'd also resist pressure to rewrite faster than the shadow-mode validation period actually supports, because the entire value of this careful approach evaporates if the validation step gets rushed under schedule pressure.",
+      "professionalAnswer": "Big-bang rewrite is off the table the moment 'cannot have downtime' and 'trades real capital' are both true -- so my plan is incremental: find the actual hot path causing the latency problem through profiling, not assumption, rewrite that piece, and run it in shadow mode comparing its output against the live legacy system's real output before it's ever allowed to actually act. I only cut over once that comparison has held up over a real stretch of live data, and I keep the old path as an immediate fallback for a while after, not delete it on day one of the cutover. For the stakeholders who depend on this working every day, I give them specific, recurring checkpoints -- what's validated, what's still pending, what the rollback plan is at each step -- because what builds trust here isn't confidence, it's a visible safety net they can see for themselves. And if anyone pushes to go faster than the shadow-mode validation actually supports, that's exactly the pressure I'd push back on, because rushing that step is where this kind of rewrite actually goes wrong.",
+      "commonMistakes": [
+        "Planning a full rewrite-and-swap instead of an incremental, shadow-mode-validated approach for a live revenue system",
+        "Rewriting broadly instead of first profiling to confirm the actual hot path causing the latency problem",
+        "Deleting the legacy fallback immediately at cutover instead of keeping it available for a defined period"
+      ],
+      "keyPoints": [
+        "A live, no-downtime, real-capital system rules out a big-bang rewrite",
+        "Profile first to confirm the actual hot path before rewriting broadly",
+        "Shadow-mode comparison against live legacy output validates correctness before any cutover",
+        "Keep the legacy path as an immediate fallback for a defined period post-cutover",
+        "Give stakeholders specific, recurring checkpoints rather than vague progress assurances"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly rules out a big-bang rewrite given the constraints",
+          "weight": 25
+        },
+        {
+          "criterion": "Describes a concrete incremental/shadow-mode validation plan",
+          "weight": 35
+        },
+        {
+          "criterion": "Describes a concrete rollback/fallback strategy",
+          "weight": 20
+        },
+        {
+          "criterion": "Describes concrete, specific stakeholder communication practice",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 11,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-exp-014",
+      "questionCode": "LTV-QDEV-0050",
+      "title": "Resolving a Correctness-vs-Speed Disagreement With a Senior Researcher",
+      "prompt": "A senior quant researcher insists a production pricing path use the full, exact numerical method from their research, which is too slow to meet the production latency budget. You believe a well-validated approximation would meet the budget with negligible error. How do you resolve this disagreement productively?",
+      "category": "behavioral",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "Cross-Functional Collaboration",
+        "Technical Disagreement",
+        "Numerical Methods"
+      ],
+      "modelAnswer": "I'd treat this as a disagreement to be resolved with evidence, not seniority or confidence on either side, and I'd start by making sure we agree on what 'negligible error' actually means in context before arguing about the approximation itself -- what error tolerance does the downstream use of this price actually require (risk reporting, hedging decisions, client-facing quotes), since that's the researcher's domain expertise and exactly the right question to defer to them on. Once that tolerance is explicit and agreed, I'd propose a concrete, falsifiable test rather than continuing to argue in the abstract: run both the exact method and the proposed approximation across a representative, wide range of real historical market conditions -- including stressed/extreme scenarios, not just typical days, since that's precisely where an approximation is most likely to break down -- and measure the actual error distribution against the agreed tolerance. If the approximation holds up within tolerance across that full range including stress scenarios, I'd expect that evidence to move the conversation, because it's no longer my judgment versus theirs, it's a shared, inspectable result; if it doesn't hold up in some regime, that's genuinely important information neither of us had before, and the right next step might be a hybrid (approximation in normal conditions, falling back to the exact method only when inputs are in a less certain regime, if production timing allows that fallback at all) rather than either side simply winning the argument. Throughout, I'd be explicit that the researcher's domain judgment about what error actually matters for the downstream use is something I genuinely need and am not trying to override with an engineering preference for speed -- the disagreement is resolvable because it's actually about an empirical question, not a values conflict.",
+      "professionalAnswer": "I wouldn't try to win this on confidence or seniority in either direction -- I'd anchor it on a question the researcher is actually the right person to answer: what error tolerance does this price genuinely need to meet for how it's used downstream? Once we agree on that number, the disagreement becomes testable instead of argued: run the exact method and my proposed approximation across a wide range of real market conditions, deliberately including stressed and extreme scenarios, not just normal days, and look at the actual error distribution against that tolerance. If my approximation holds up across that full range, that's not me winning an argument, that's evidence doing the work. If it doesn't hold up in some regime, that's a genuinely useful finding, and maybe the right answer is a hybrid -- fast approximation most of the time, falling back to the exact method only when we're in a regime we can't trust it in. I try to make clear throughout that I actually need their judgment on what error matters here -- this isn't speed versus correctness as a values fight, it's an empirical question we can just go answer together.",
+      "commonMistakes": [
+        "Treating the disagreement as a matter of asserting engineering preference (speed) against research authority (correctness) rather than an empirical question",
+        "Testing the approximation only on typical/normal market conditions, missing stress scenarios where approximations most often fail",
+        "Dismissing the researcher's domain judgment about what error tolerance actually matters for the downstream use"
+      ],
+      "keyPoints": [
+        "Establish the actual required error tolerance for the downstream use before arguing about the approximation",
+        "Propose a concrete, falsifiable empirical test rather than continuing an abstract disagreement",
+        "Test across a wide range of conditions including stress/extreme scenarios, not just typical cases",
+        "Consider a hybrid fallback approach if the evidence shows the approximation fails in some regime",
+        "Respect the researcher's domain expertise on error tolerance while resolving the question empirically"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Frames the disagreement as an empirical, testable question",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly establishes error tolerance via the researcher's domain expertise first",
+          "weight": 25
+        },
+        {
+          "criterion": "Proposes a rigorous test including stress scenarios",
+          "weight": 25
+        },
+        {
+          "criterion": "Shows genuine collaborative resolution, not a win/lose framing",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 11,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    }
+  ]
+}

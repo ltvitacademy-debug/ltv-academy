@@ -1,0 +1,824 @@
+{
+  "questions": [
+    {
+      "id": "qdev-adv-001",
+      "questionCode": "LTV-QDEV-0022",
+      "title": "Choosing Memory Ordering for a Lock-Free Price Publisher",
+      "prompt": "A market-data thread publishes a struct of several related fields (bid, ask, last-trade size) that a strategy thread reads. Walk through why memory_order_relaxed is unsafe here, why seq_cst would be safe but possibly wasteful, and how you'd actually implement the handoff with acquire/release.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Memory Ordering",
+        "Atomics",
+        "Concurrency"
+      ],
+      "modelAnswer": "With multiple related fields, memory_order_relaxed on each individual store only guarantees that store itself can't be torn -- it says nothing about the order in which a reading thread observes the writes to the different fields, and the compiler/CPU are free to reorder relaxed operations relative to each other. A strategy thread could observe a new ask alongside a stale bid, or vice versa -- individually non-corrupted values that are mutually inconsistent, which is often worse than an obviously wrong value because it looks plausible. memory_order_seq_cst would be safe: it establishes a single global order every thread agrees on, so a consumer that sees the last write also sees everything before it. But it's the strongest, most expensive ordering, and paying for a global total order across all threads is usually unnecessary just to publish one producer's data to one or more consumers. The correct middle ground is a release store on a 'ready' flag (or sequence counter) after all the relaxed field writes, paired with an acquire load on that same flag before a consumer reads the fields: the release establishes that everything written before it (the relaxed field stores) is visible to any thread that performs the matching acquire and observes the new value. This gives exactly the ordering guarantee needed -- a safe publish/consume handoff -- without paying for a global sequential-consistency guarantee the use case doesn't require.",
+      "professionalAnswer": "The failure mode I'd flag immediately with pure relaxed stores on multiple fields is tearing across fields, not within one -- you can get a perfectly valid-looking bid paired with a stale ask, and that's arguably more dangerous than an obviously garbage value because nothing looks wrong. seq_cst fixes it completely but it's a bigger hammer than this needs -- a global ordering guarantee across every thread in the system just to publish one struct. What I'd actually ship is relaxed stores on the individual fields, then a release store on a ready flag once they're all written, and an acquire load on that flag before the consumer reads anything -- that's the textbook producer/consumer handoff and it gives you exactly the guarantee you need, no more.",
+      "example": "std::atomic<double> bid, ask;\nstd::atomic<bool> ready{false};\n\n// publisher\nbid.store(newBid, std::memory_order_relaxed);\nask.store(newAsk, std::memory_order_relaxed);\nready.store(true, std::memory_order_release);   // publish point\n\n// consumer\nif (ready.load(std::memory_order_acquire)) {     // acquire point\n    double b = bid.load(std::memory_order_relaxed);\n    double a = ask.load(std::memory_order_relaxed);\n    // guaranteed consistent: both reflect the publisher's writes before release\n}",
+      "commonMistakes": [
+        "Using relaxed ordering on every field and assuming that alone keeps multi-field updates consistent",
+        "Defaulting to seq_cst everywhere without considering the real cost of a global ordering guarantee",
+        "Forgetting the acquire load must pair with the specific release store, not just any atomic read"
+      ],
+      "keyPoints": [
+        "memory_order_relaxed gives atomicity per operation, not ordering between operations",
+        "Multi-field relaxed updates risk readers seeing an inconsistent combination of fields",
+        "seq_cst is always correct but pays for a global ordering guarantee that's often unnecessary",
+        "A release store paired with an acquire load on a ready flag is the standard safe, efficient handoff"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains why relaxed alone is unsafe for multi-field data",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly characterizes seq_cst as safe but potentially unnecessary cost",
+          "weight": 20
+        },
+        {
+          "criterion": "Correctly implements/explains the acquire/release handoff",
+          "weight": 35
+        },
+        {
+          "criterion": "Clarity and technical precision",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "atomics-and-memory-ordering",
+        "label": "Review: Atomics & Memory Ordering"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-002",
+      "questionCode": "LTV-QDEV-0023",
+      "title": "Templates and Concepts vs. Virtual Dispatch for a Pricing Library",
+      "prompt": "You're designing a pricing library that needs to support several instrument types (bonds, options, swaps) with a common pricing interface. When would you reach for templates with C++20 concepts instead of an abstract base class with virtual functions, and what's the real runtime cost difference?",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Templates",
+        "C++20 Concepts",
+        "Polymorphism",
+        "Performance"
+      ],
+      "modelAnswer": "Virtual dispatch resolves which function to call at runtime through a vtable lookup -- a small but real, non-zero cost per call, and it also tends to defeat inlining, since the compiler usually can't know at compile time which override will actually run. Templates resolve 'which pricer logic for this type' entirely at compile time: for every concrete type a template function or class is instantiated with, the compiler generates a completely separate, specialized version of the code, with no vtable, no indirect call, and often enough context for the compiler to inline aggressively. For a pricing library's hot path -- repricing the same instrument type millions of times in a risk run -- that compile-time resolution and inlining potential is a real, measurable win. The tradeoff is that templates require the full set of concrete types to be known at compile time (you can't easily hold a std::vector<Instrument*> of genuinely different pricer types the way you can with virtual dispatch and a common base), and overusing templates increases compiled binary size since every instantiation is a separate copy of the generated code. C++20 concepts don't change this tradeoff, but they make it much more usable: a concept like `template <Priceable T> double price(const T& instrument)` gives a clear, readable, compiler-checked constraint and a comprehensible error message if some type doesn't satisfy it, instead of the old pre-concepts experience of a wall of unreadable errors from deep inside the template body.",
+      "professionalAnswer": "The real question I'd ask is: do I need runtime polymorphism -- a heterogeneous collection of different instrument types processed through one interface -- or do I know the concrete type at compile time and I'm just trying to avoid writing the same pricing logic five times? If it's the latter, templates with a concept constraining what 'priceable' means give me zero-overhead dispatch and the compiler can actually inline the pricing math, which matters a lot in a hot risk-run loop. If I genuinely need to hold a mixed bag of bonds and options in one container and price whatever's in it without knowing the type ahead of time, that's exactly the shape virtual dispatch is for, and I'd accept the small per-call cost for that flexibility. Concepts don't change which one wins that tradeoff -- they just make the templated version far more readable and give usable compiler errors instead of a wall of template noise.",
+      "commonMistakes": [
+        "Choosing virtual dispatch purely out of habit without needing runtime polymorphism",
+        "Overusing templates for every type parameterization, inflating binary size without a real performance need",
+        "Believing C++20 concepts change the runtime performance characteristics, rather than just improving error messages and readability"
+      ],
+      "keyPoints": [
+        "Virtual dispatch has a real per-call vtable-lookup cost and tends to block inlining",
+        "Templates resolve dispatch at compile time with no vtable, enabling aggressive inlining",
+        "Templates require concrete types known at compile time; virtual dispatch supports heterogeneous runtime collections",
+        "C++20 concepts improve template usability/readability, not raw runtime performance"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains the virtual-dispatch vs. template performance tradeoff",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly identifies when each approach is actually appropriate",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly characterizes what concepts add (and don't add)",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "templates-and-generic-programming",
+        "label": "Review: Templates & Generic Programming"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-003",
+      "questionCode": "LTV-QDEV-0024",
+      "title": "False Sharing: When No Logical Race Still Costs You Performance",
+      "prompt": "Two threads each update their own, logically unrelated atomic counter at high frequency, with no shared data between them in the algorithm's design -- yet performance is far worse than expected, scaling poorly with more threads. What's the likely cause, and how do you confirm and fix it?",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "False Sharing",
+        "CPU Caches",
+        "Cache Lines"
+      ],
+      "modelAnswer": "This is the classic signature of false sharing: if the two threads' counters happen to be laid out close enough in memory to land in the same 64-byte CPU cache line, every write by one thread invalidates the other core's cached copy of that entire line, even though there's no actual logical race -- the two counters are, correctly, never touched by the wrong thread. The CPUs end up fighting over cache-line ownership (via the cache-coherence protocol) on every write, producing expensive cross-core cache traffic that looks exactly like lock contention from a performance-measurement standpoint, despite there being no lock and no race at all. Confirming it typically means checking the memory layout: are the two atomics adjacent members of the same struct, or adjacent elements of the same array? A hardware-performance-counter tool (e.g. perf c2c on Linux) can directly show cache-line contention between specific cores. The fix is to pad each atomic (or each thread's piece of state) out to its own cache line -- typically using alignas(64) on the member, or inserting explicit padding bytes -- so each thread's data genuinely lives on a separate cache line and the cores stop contending over cache-line ownership for no logical reason.",
+      "professionalAnswer": "The giveaway is 'no shared data, yet scaling badly with more threads' -- that pattern specifically points at false sharing rather than a real race, because a real race would usually show up as wrong answers, not just bad scaling. I'd check whether the two counters are sitting right next to each other in memory -- adjacent struct fields or adjacent array slots are the usual culprit -- and if I want hard confirmation rather than just a hunch, perf c2c on Linux will directly show cache-line contention between the specific cores involved. The fix is just padding: alignas(64) on each one, or an explicit padding member between them, so each thread's counter has the whole cache line to itself and the cores stop invalidating each other's cache for data they never actually share logically.",
+      "commonMistakes": [
+        "Assuming any multi-threaded performance problem must be a lock or a logical data race",
+        "Not checking the actual memory layout/adjacency of the two pieces of 'unrelated' state",
+        "Padding by guesswork without confirming the cache-line size assumption (commonly but not universally 64 bytes) on the target hardware"
+      ],
+      "keyPoints": [
+        "False sharing causes cache-line contention with no logical data race present",
+        "Cache-coherence traffic from false sharing looks like lock contention in measurements",
+        "perf c2c (or equivalent) can directly confirm cache-line contention between cores",
+        "Padding each thread's data to its own cache line (e.g. alignas(64)) is the standard fix"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses false sharing as the cause",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains the cache-coherence mechanism behind it",
+          "weight": 25
+        },
+        {
+          "criterion": "Describes a concrete way to confirm it",
+          "weight": 20
+        },
+        {
+          "criterion": "Prescribes the correct fix (padding/alignment)",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "cpu-caches-and-data-layout",
+        "label": "Review: CPU Caches & Data Layout"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-004",
+      "questionCode": "LTV-QDEV-0025",
+      "title": "Implement a Minimal Thread Pool for Pricing a Batch of Options",
+      "prompt": "Implement a fixed-size thread pool with a submit() method and a shared task queue, suitable for pricing a batch of a thousand options in parallel. Explain your choice of synchronization primitives and how shutdown is handled safely.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": [
+        "Thread Pools",
+        "Concurrency",
+        "Task Parallelism"
+      ],
+      "modelAnswer": "The pool starts a fixed number of worker threads in its constructor -- typically close to std::thread::hardware_concurrency() -- and keeps them alive for the pool's lifetime, avoiding the per-task thread creation/teardown cost that doesn't scale past a handful of jobs. Each worker loops: acquire the mutex, wait on a condition_variable until either the queue is non-empty or a stop flag is set, pop a task, release the lock, then run the task outside the lock so other workers aren't blocked while it executes. submit() locks the mutex, pushes the task, and calls notify_one() to wake exactly one waiting worker -- not notify_all(), since only one worker needs to handle one new task. Shutdown sets a stop flag under the same lock, calls notify_all() so every worker wakes up and checks the stop condition, and then joins every worker thread in the destructor; workers only exit once the stop flag is set AND the queue is empty, so in-flight tasks still get drained rather than abandoned. Using a thread pool rather than one std::thread per option avoids a thousand OS threads, each with their own stack, competing for far more context switches than the machine has cores to actually run concurrently.",
+      "professionalAnswer": "This is close to the textbook thread-pool shape: fixed worker threads created once, a shared queue protected by a mutex, a condition_variable so workers sleep instead of spin when there's no work. The one detail worth calling out explicitly in an interview is the shutdown sequence -- set a stop flag under the lock, notify_all so every sleeping worker wakes up and re-checks its predicate, then join everyone, and make sure the exit condition is 'stop AND queue empty,' not just 'stop,' so you don't abandon tasks that were already queued. I'd also point out why this matters for pricing a thousand options specifically: creating a thousand real OS threads for that would be actively counterproductive -- the overhead of creating and context-switching between that many threads would dwarf the actual pricing math.",
+      "example": "class ThreadPool {\npublic:\n    explicit ThreadPool(size_t n) {\n        for (size_t i = 0; i < n; ++i) workers_.emplace_back([this]{ worker_loop(); });\n    }\n    void submit(std::function<void()> task) {\n        { std::lock_guard<std::mutex> lk(m_); tasks_.push(std::move(task)); }\n        cv_.notify_one();\n    }\n    ~ThreadPool() {\n        { std::lock_guard<std::mutex> lk(m_); stop_ = true; }\n        cv_.notify_all();\n        for (auto& w : workers_) w.join();\n    }\nprivate:\n    void worker_loop() {\n        while (true) {\n            std::function<void()> task;\n            { std::unique_lock<std::mutex> lk(m_);\n              cv_.wait(lk, [this]{ return stop_ || !tasks_.empty(); });\n              if (stop_ && tasks_.empty()) return;\n              task = std::move(tasks_.front()); tasks_.pop(); }\n            task();\n        }\n    }\n    std::vector<std::thread> workers_;\n    std::queue<std::function<void()>> tasks_;\n    std::mutex m_; std::condition_variable cv_; bool stop_ = false;\n};",
+      "commonMistakes": [
+        "Spawning one std::thread per option instead of a bounded pool, causing scheduling overhead to dominate",
+        "Using notify_all() on every submit() when notify_one() is sufficient and cheaper",
+        "Checking only the stop flag on shutdown instead of 'stop AND queue empty', abandoning queued tasks"
+      ],
+      "keyPoints": [
+        "A fixed-size pool amortizes thread-creation cost across many tasks",
+        "mutex + condition_variable lets workers sleep instead of busy-wait for work",
+        "Tasks run outside the lock so workers don't block each other during execution",
+        "Safe shutdown requires draining queued work, not just signaling stop"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correct thread pool structure (fixed workers, shared queue)",
+          "weight": 30
+        },
+        {
+          "criterion": "Correct use of mutex/condition_variable including predicate-based wait",
+          "weight": 30
+        },
+        {
+          "criterion": "Correct, safe shutdown sequence that drains the queue",
+          "weight": 25
+        },
+        {
+          "criterion": "Explains why a pool beats one-thread-per-task for this workload",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "thread-pools-and-task-based-parallelism",
+        "label": "Review: Thread Pools & Task-Based Parallelism"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-005",
+      "questionCode": "LTV-QDEV-0026",
+      "title": "Refactor Array-of-Structs to Struct-of-Arrays for a Risk Calculation",
+      "prompt": "A risk engine stores a million positions as std::vector<Position> where Position has price, quantity, symbol_id, and a dozen other fields, and the hot path only needs to sum price * quantity across all of them. Refactor the layout and explain the real performance mechanism behind the improvement.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": [
+        "Cache Locality",
+        "Data-Oriented Design",
+        "Performance"
+      ],
+      "modelAnswer": "The array-of-structs (AoS) layout means every element fetched into cache for the price*quantity sum also drags in all the other unused fields of Position that happen to share its cache line, wasting a large fraction of the memory bandwidth actually spent -- for a struct with a dozen fields, most of each 64-byte cache line fetched may be for fields this specific hot path never touches. Refactoring to struct-of-arrays (SoA) -- separate contiguous std::vector<double> price and std::vector<int> quantity, with the other fields in their own arrays -- means the sum loop touches only the bytes it actually needs: every byte brought into cache is a price or a quantity value this exact computation uses. This can mean dramatically fewer actual cache-line fetches for the same logical computation, which is the real mechanism (not instruction count) behind the typical measured speedup. The tradeoff to flag: if another part of the codebase routinely needs 'look up position 442 and read every field about it,' that access pattern favors AoS instead, since all fields of one record are then adjacent; SoA wins specifically when the dominant access pattern is 'scan one or two fields across many records,' which is exactly what this risk sum is.",
+      "professionalAnswer": "The mechanism I'd explain is bandwidth, not instruction count -- every cache-line fetch in the AoS version pulls in a dozen fields you don't need for this specific sum, so most of the memory traffic is wasted. Splitting into struct-of-arrays means the sum loop only ever touches price and quantity arrays, so every byte fetched is a byte actually used. I'd also flag the real tradeoff honestly: if somewhere else in the codebase we regularly need 'give me everything about position 442,' that pattern wants AoS, so a full SoA refactor isn't free -- it's a bet that the scan-one-field-at-a-time pattern dominates, which for a risk engine summing exposure across a million positions, it almost certainly does.",
+      "example": "// Before: array-of-structs\nstruct Position { double price; int quantity; int symbol_id; /* ...12 more fields... */ };\nstd::vector<Position> positions;\n\n// After: struct-of-arrays -- only the fields the hot path needs are contiguous\nstruct Positions {\n    std::vector<double> price;\n    std::vector<int> quantity;\n    // other fields live in their own parallel arrays\n};\nPositions positions;\n\ndouble totalExposure() {\n    double total = 0.0;\n    for (size_t i = 0; i < positions.price.size(); ++i)\n        total += positions.price[i] * positions.quantity[i];\n    return total;\n}",
+      "commonMistakes": [
+        "Refactoring the entire codebase to SoA without checking whether other hot paths need full-record access (which favors AoS)",
+        "Attributing the speedup to 'fewer instructions' rather than the actual mechanism, reduced cache-line/bandwidth waste",
+        "Splitting fields inconsistently, leaving index alignment between the parallel arrays fragile and error-prone"
+      ],
+      "keyPoints": [
+        "AoS wastes cache-line bandwidth when only one or two fields are needed per element",
+        "SoA makes every fetched byte relevant to a field-scanning hot path",
+        "The real mechanism is memory bandwidth/cache-line utilization, not instruction count",
+        "AoS still wins for access patterns that need all fields of one record together"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly refactors to struct-of-arrays",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains the real cache-bandwidth mechanism behind the speedup",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly identifies the tradeoff/when AoS would still win",
+          "weight": 25
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "cpu-caches-and-data-layout",
+        "label": "Review: CPU Caches & Data Layout"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-006",
+      "questionCode": "LTV-QDEV-0027",
+      "title": "std::async vs. a Thread Pool: A Real Pitfall",
+      "prompt": "A developer replaces a hand-rolled thread pool with a loop of std::async calls, one per option, expecting equivalent performance for pricing a thousand options. What goes wrong, and how would you fix it while keeping the code simple?",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": [
+        "std::async",
+        "Thread Pools",
+        "Concurrency Pitfalls"
+      ],
+      "modelAnswer": "std::async(std::launch::async, ...) tends to create a brand-new OS thread per call unless the implementation chooses otherwise, which means calling it in a loop a thousand times reintroduces exactly the one-thread-per-task scaling problem a thread pool exists to avoid: a thousand thread creations and teardowns, with the OS scheduler context-switching between far more threads than there are cores to run them. There's also a subtler hazard: calling std::async without specifying std::launch::async leaves the implementation free to run the task lazily, possibly on whatever thread eventually calls .get() -- which can silently defeat the concurrency the developer was expecting, with no compile error or obvious symptom beyond it just not actually being faster. The fix that keeps the code simple is to batch: either submit the thousand pricing calls to an actual thread pool (reusing a fixed set of workers), or, if a one-off future-based API is genuinely wanted, chunk the thousand options into hardware_concurrency()-sized batches and call std::async once per batch rather than once per option, so the real OS-thread count stays bounded regardless of how many options there are.",
+      "professionalAnswer": "The bug here is subtle because it compiles and even works -- it's just not actually fast, and sometimes not even actually concurrent. std::async in a tight loop tends to spin up a real OS thread per call, so a thousand calls is basically the one-thread-per-task problem wearing a different hat. I'd point out the other trap too: if you don't explicitly pass std::launch::async, the standard allows the implementation to just defer the work and run it lazily on .get() -- so you can write code that looks parallel and isn't, with no error telling you so. My fix keeps the async/future API if that's what they want, but batches the options into chunks -- one async call per chunk of, say, hardware_concurrency() worth of options, not one per option -- so the actual number of OS threads created stays bounded.",
+      "example": "// Problem: one real OS thread per option, same scaling issue as raw std::thread\nstd::vector<std::future<double>> futures;\nfor (auto& opt : options)   // 1000 options\n    futures.push_back(std::async(std::launch::async, price_option, opt));\n\n// Fix: chunk into hardware_concurrency()-sized batches\nsize_t n_workers = std::thread::hardware_concurrency();\n// divide 'options' into n_workers chunks, one std::async call per chunk,\n// each call pricing its whole chunk sequentially inside the task",
+      "commonMistakes": [
+        "Assuming std::async automatically behaves like a thread pool under the hood",
+        "Omitting std::launch::async and unknowingly allowing lazy, possibly non-concurrent execution",
+        "Not batching work, so the number of real OS threads created scales with the number of tasks instead of the number of cores"
+      ],
+      "keyPoints": [
+        "std::async with std::launch::async typically creates a new OS thread per call",
+        "Omitting the launch policy allows the implementation to defer execution, possibly non-concurrently",
+        "Calling std::async per-item in a large loop reproduces the one-thread-per-task scaling problem",
+        "Chunking work into hardware_concurrency()-sized batches keeps real thread count bounded"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses the per-call thread-creation problem",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly identifies the lazy-execution hazard without launch::async",
+          "weight": 25
+        },
+        {
+          "criterion": "Proposes a correct, simple batching fix",
+          "weight": 30
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "thread-pools-and-task-based-parallelism",
+        "label": "Review: Thread Pools & Task-Based Parallelism"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-007",
+      "questionCode": "LTV-QDEV-0028",
+      "title": "Diagnosing a Deadlock From Inconsistent Lock Ordering",
+      "prompt": "Two functions each lock two mutexes, A then B in one function and B then A in the other. Under load, the system occasionally hangs completely. Diagnose the bug and give two different valid fixes.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Deadlock",
+        "Mutexes",
+        "Concurrency Debugging"
+      ],
+      "modelAnswer": "This is a classic deadlock from inconsistent lock ordering: if thread 1 locks A and is about to lock B, while thread 2 simultaneously locks B and is about to lock A, each thread ends up waiting forever for a lock the other thread is holding -- neither can proceed, and neither will ever release what it's holding, because releasing happens after the second lock succeeds. This only manifests under load because it requires both threads to interleave into that specific window at nearly the same time; most of the time one thread acquires both locks before the other starts, which is exactly why it 'occasionally hangs' rather than hanging reliably, and why it's easy to miss in light testing. Two valid fixes: first, enforce a single, consistent global lock ordering everywhere in the codebase (e.g. always lock the mutex with the lower memory address, or the lower of two assigned numeric IDs, first) so it's structurally impossible for two threads to try to acquire the same pair of locks in opposite order. Second, use std::lock(mutexA, mutexB) (or std::scoped_lock with both mutexes passed together), which acquires both locks together using a deadlock-avoidance algorithm internally, regardless of which order the two calling functions originally wrote them in.",
+      "professionalAnswer": "The signature -- hangs sometimes, not always, under load, never in light testing -- is exactly what inconsistent lock ordering looks like, so that's the first thing I'd check: are there two code paths locking the same two mutexes in opposite order? Once confirmed, I have two fixes I'd actually consider, not just one: pick a fixed, global ordering convention for these two mutexes everywhere in the codebase, or just use std::scoped_lock with both mutexes passed in together, which handles the ordering problem for you internally regardless of what order the call sites happen to list them in. I'd lean toward std::scoped_lock when it's a localized fix, and the global-ordering convention when the same two mutexes get locked together in many different places across the codebase.",
+      "commonMistakes": [
+        "Trying to 'fix' it by adding a sleep or retry instead of addressing the actual lock-ordering inconsistency",
+        "Assuming a deadlock is a crash, when it's actually a permanent hang with no error or stack unwind",
+        "Fixing only one of the two call sites instead of establishing a consistent rule across the whole codebase"
+      ],
+      "keyPoints": [
+        "Deadlock requires two threads each waiting on a lock the other already holds",
+        "Inconsistent lock ordering across different code paths is the classic cause",
+        "It manifests intermittently because the exact interleaving window is timing-dependent",
+        "std::scoped_lock (or std::lock) with both mutexes together avoids ordering issues automatically"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses inconsistent lock ordering as the deadlock cause",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains why the symptom is intermittent",
+          "weight": 20
+        },
+        {
+          "criterion": "Gives a correct global-ordering-convention fix",
+          "weight": 20
+        },
+        {
+          "criterion": "Gives a correct std::scoped_lock/std::lock fix",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "mutexes-locks-and-condition-variables",
+        "label": "Review: Mutexes, Locks & Condition Variables"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-008",
+      "questionCode": "LTV-QDEV-0029",
+      "title": "Diagnosing a Cache-Unfriendly Hot Path in Production",
+      "prompt": "A pricing library's throughput dropped noticeably after a refactor that added several new fields to the main Instrument struct, even though the hot loop's actual arithmetic didn't change. Walk through how you'd confirm the cause and what you'd do about it.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "CPU Caches",
+        "Performance Regression",
+        "Data Layout"
+      ],
+      "modelAnswer": "Since the arithmetic is unchanged but throughput dropped after the struct grew, the first hypothesis should be cache-line pressure rather than a logic bug: adding fields to Instrument made each instance larger, so fewer instances fit per 64-byte cache line (or per cache level overall), meaning the hot loop that iterates over instances now needs more cache-line fetches -- and potentially more cache misses out to a slower cache level or RAM -- to process the same number of elements it processed before. I'd confirm this with a profiler that reports cache events specifically (e.g. perf stat with cache-misses and L1-dcache-load-misses counters, or Linux perf record with cache-miss sampling), comparing before/after the refactor on identical input, rather than guessing from the struct diff alone. If the cache-miss rate increased materially and correlates with the throughput drop, the fix depends on access pattern: if the hot loop only reads a couple of the struct's fields (e.g. price and quantity) and the new fields were added for an unrelated feature, splitting into struct-of-arrays -- or even just moving the new, rarely-hot fields into a separate, less frequently accessed struct referenced by pointer -- restores locality for the fields that actually matter on the hot path, without reverting the new feature.",
+      "professionalAnswer": "The fact that the math didn't change but the struct got bigger is the tell -- I'd go straight to a cache-miss hypothesis before suspecting a logic regression. I'd confirm it with perf stat's cache-miss counters, before and after, on the same input, rather than just eyeballing the struct diff and assuming. If the numbers confirm it, the fix isn't to revert the new fields -- it's to ask whether the hot loop actually needs them in the same struct it's scanning. If it only ever touches price and quantity on this path, pulling those into their own tightly packed array, or just pushing the new fields out into a separate struct referenced by pointer, gets the locality back without undoing the feature that needed the new fields in the first place.",
+      "commonMistakes": [
+        "Assuming a performance regression must be a logic bug when the arithmetic is confirmed unchanged",
+        "Reverting the new fields outright instead of restructuring access to preserve both the feature and the performance",
+        "Guessing at the cause from the struct diff instead of measuring cache-miss rates directly"
+      ],
+      "keyPoints": [
+        "Larger structs reduce how many instances fit per cache line, increasing cache misses on iteration",
+        "Hardware performance counters (e.g. perf stat cache-miss metrics) confirm this rather than guesswork",
+        "The fix targets the hot loop's actual field usage, not a wholesale revert of the new feature",
+        "Splitting rarely-hot fields into a separate struct can restore locality without losing functionality"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly hypothesizes cache-line/struct-size cause given unchanged arithmetic",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes a concrete way to confirm with cache-miss measurement",
+          "weight": 30
+        },
+        {
+          "criterion": "Proposes a fix targeted at actual hot-path field usage",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "cpu-caches-and-data-layout",
+        "label": "Review: CPU Caches & Data Layout"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-009",
+      "questionCode": "LTV-QDEV-0030",
+      "title": "Diagnosing a Floating-Point Precision Bug in a Pricing Calculation",
+      "prompt": "A Black-Scholes implementation produces a price that's correct to several decimal places for most inputs, but is noticeably wrong for options very near expiry (tiny time-to-expiry) or very deep in/out of the money. What's the likely cause, and how would you confirm and fix it?",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Floating-Point Arithmetic",
+        "Numerical Stability",
+        "Pricing Bugs"
+      ],
+      "modelAnswer": "The failure pattern -- fine for 'normal' inputs, wrong specifically at extreme parameter values -- points at numerical instability rather than a formula bug, since a genuine formula error would typically be wrong everywhere, not just at the edges. A very small time-to-expiry makes terms like vol * sqrt(timeToExpiry) in d1/d2 approach zero, which can make d1 and d2 very large in magnitude (deeply in/out of the money) or very sensitive to tiny input changes (near expiry) -- both are classic setups for catastrophic cancellation, where subtracting two nearly equal large floating-point numbers amplifies the relative error of each into a much larger error in the result, or for a loss of precision when a very small denominator divides a value whose own precision is limited by double's roughly 15-17 significant decimal digits. I'd confirm this by comparing the double-precision result against a long-double or arbitrary-precision (e.g. a reference implementation in Python's decimal or mpmath) computation of the exact same formula at the same inputs -- if the gap grows specifically as time-to-expiry shrinks or moneyness becomes extreme, that confirms numerical instability rather than a logic error. Fixes depend on the specific term: reformulating the computation to avoid subtracting near-equal large quantities directly (an algebraically equivalent but numerically stabler form), or applying known asymptotic approximations for the deep ITM/OTM and near-expiry regimes instead of evaluating the general formula where it's numerically fragile.",
+      "professionalAnswer": "Correct everywhere except the extremes is almost never a formula typo -- that pattern says numerical stability, not logic. Near-zero time-to-expiry and deep in/out-of-the-money are exactly the regimes where Black-Scholes' d1/d2 terms either blow up or get dominated by subtracting two numbers that are nearly equal, which is a textbook setup for catastrophic cancellation in double precision. To confirm it, I'd run the same formula at higher precision -- long double, or a Python mpmath reference -- at the problematic inputs, and see if the double-precision answer's error specifically tracks the extremity of the input. If it does, the fix is either an algebraically rearranged, numerically stabler version of the formula, or switching to a known asymptotic approximation in that specific regime instead of forcing the general formula through a numerically fragile corner.",
+      "commonMistakes": [
+        "Assuming any wrong-looking price must be a formula/logic bug rather than considering numerical stability",
+        "Testing only 'normal' inputs and missing that the bug is specifically concentrated at extreme parameter values",
+        "Fixing it by blindly switching everything to higher precision rather than understanding and addressing the actual unstable term"
+      ],
+      "keyPoints": [
+        "Correctness that degrades specifically at extreme inputs points to numerical instability, not a formula error",
+        "Catastrophic cancellation occurs when subtracting nearly equal large floating-point values",
+        "Comparing against a higher-precision reference computation confirms the instability",
+        "Fixes target the specific unstable term: algebraic rearrangement or regime-specific approximations"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly reframes the problem as numerical instability, not a formula bug",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly identifies catastrophic cancellation as the mechanism",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes a valid way to confirm with a higher-precision reference",
+          "weight": 20
+        },
+        {
+          "criterion": "Gives a plausible, targeted fix",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 9,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-010",
+      "questionCode": "LTV-QDEV-0031",
+      "title": "Designing the Python/C++ Boundary for a Pricing Library",
+      "prompt": "You're designing a pricing library used by Python-based research notebooks and a latency-sensitive C++ production system. Walk through how you'd structure the boundary so the same core pricing logic serves both, and the specific mistake that would make the Python-facing binding slow.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "pybind11",
+        "System Design",
+        "Python/C++ Integration"
+      ],
+      "modelAnswer": "The core pricing math should live in plain C++ with no Python awareness at all -- a library that takes and returns native C++ types (or NumPy-compatible array views), usable directly by the production system with zero overhead. A thin pybind11 layer then exposes that same core to Python, meaning research notebooks and production share one tested implementation instead of a Python prototype that quietly drifts from a separately-maintained C++ 'real' version -- a common and costly source of research/production mismatch. The specific mistake that kills Python-facing performance is binding and calling the core function once per scalar instead of once per batch: if a notebook needs to price ten thousand options, calling a pybind11 function ten thousand times pays the function-call and type-conversion overhead ten thousand times, which can dominate the actual computation for a cheap-per-call function. The fix is to expose a vectorized binding that accepts a NumPy array (py::array_t<double>) and internally loops in C++ over the whole batch in one call -- paying the Python/C++ boundary-crossing cost exactly once per batch rather than once per element, which is the same 'port the loop, not the inner step' principle that governs any Python/C++ boundary design, pricing library or otherwise.",
+      "professionalAnswer": "My design principle here is: one core C++ library, no Python awareness baked into it, used directly by production and exposed to Python through a thin pybind11 layer -- never two separately maintained implementations, because those drift and researchers end up testing against something production doesn't actually run. The mistake I'd specifically watch for in review is a binding that takes one option at a time -- that's fine for an occasional one-off call, but the moment a notebook wants to price a few thousand options, you're paying real per-call overhead thousands of times. I'd insist the Python-facing binding takes a NumPy array and loops inside C++ for the whole batch in one call across the boundary, which is the same principle as everywhere else at this boundary: cross it once per batch, not once per element.",
+      "commonMistakes": [
+        "Maintaining a separate Python prototype and C++ production implementation that silently drift apart",
+        "Binding a per-scalar function and calling it in a Python loop for batches, paying boundary overhead per element",
+        "Assuming any pybind11 binding is automatically fast regardless of how it's called"
+      ],
+      "keyPoints": [
+        "One shared C++ core serves both research and production, avoiding implementation drift",
+        "A thin pybind11 layer exposes the same tested core to Python",
+        "Per-element binding calls pay function-call/conversion overhead per call, which adds up badly at scale",
+        "Vectorized bindings (accepting whole arrays) cross the boundary once per batch, not once per element"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly designs a shared core with a thin Python binding layer",
+          "weight": 30
+        },
+        {
+          "criterion": "Identifies the per-scalar-call performance mistake correctly",
+          "weight": 35
+        },
+        {
+          "criterion": "Prescribes vectorized batch binding as the fix",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "when-to-move-code-from-python-to-cplusplus",
+        "label": "Review: When to Move Code From Python to C++"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-011",
+      "questionCode": "LTV-QDEV-0032",
+      "title": "Designing a Market-Data Ingestion Pipeline Between a Feed Thread and a Strategy Thread",
+      "prompt": "Design the handoff between a thread that receives market-data ticks over the network and a strategy thread that reacts to them, where the strategy must never be allowed to block the feed thread even momentarily. What structure do you use, and why does a mutex-protected queue risk violating that constraint?",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Lock-Free Queues",
+        "Market Data",
+        "System Design"
+      ],
+      "modelAnswer": "A mutex-protected queue risks violating the 'never block the feed thread' constraint because any lock, by definition, can make the feed thread wait if the strategy thread happens to be holding it at the wrong moment -- even a short critical section, under OS scheduling, can occasionally be preempted mid-lock, stalling the feed thread for an unpredictable amount of time at exactly the moment a new tick needs to be enqueued. For this specific shape -- one producer (the feed thread), one consumer (the strategy thread) -- the standard, justified use of a lock-free structure applies: a single-producer/single-consumer (SPSC) ring buffer built on std::atomic indices (a write index the producer owns and advances, a read index the consumer owns and advances, with the atomic operations' acquire/release semantics establishing that the consumer sees a fully-written slot before it reads it). The feed thread never calls anything that can block -- in the worst case, if the strategy has fallen behind and the ring buffer is full, the feed thread either drops the newest tick (and logs/counts the drop) or overwrites the oldest with the newest, a defined policy decided in advance, rather than blocking to wait for the consumer to catch up. Given how notoriously hard hand-rolled lock-free code is to get exactly right, the professional default is to use a reviewed, widely-used SPSC queue implementation rather than writing the CAS/ring-buffer logic from scratch, reserving a hand-rolled version for the rare case where an existing library has been measured and ruled out.",
+      "professionalAnswer": "The constraint 'never block the feed thread' basically rules out a mutex by definition -- a lock can always make you wait, even briefly, and briefly is exactly what we can't afford on the ingestion side. This is precisely the single-producer/single-consumer case that justifies a lock-free structure: an atomic-index ring buffer where the feed thread only ever writes and advances its own index, never waiting on anything the consumer is doing. I'd also decide up front what happens if the strategy falls behind and the buffer fills -- drop the newest tick, or overwrite the oldest -- rather than letting that be an undefined edge case. And I wouldn't write the CAS logic myself without a strong reason; a reviewed SPSC queue implementation is the right default, because this exact kind of code is where subtle bugs famously pass every test and fail once in production.",
+      "commonMistakes": [
+        "Using a mutex-protected queue and assuming a 'short' critical section can never meaningfully stall the feed thread",
+        "Not deciding in advance what happens when the consumer falls behind and the buffer fills",
+        "Hand-rolling CAS-based lock-free logic without strong justification instead of using a reviewed library"
+      ],
+      "keyPoints": [
+        "Any mutex can make the feed thread wait, violating a hard never-block constraint",
+        "SPSC is a legitimate, commonly justified case for a lock-free structure",
+        "A defined overflow policy (drop-newest or overwrite-oldest) must be decided in advance, not left implicit",
+        "Prefer a reviewed, battle-tested lock-free queue implementation over a hand-rolled one"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly rules out a mutex-based queue given the constraint",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly proposes an SPSC lock-free ring buffer as the structure",
+          "weight": 35
+        },
+        {
+          "criterion": "Addresses the overflow/backpressure policy explicitly",
+          "weight": 20
+        },
+        {
+          "criterion": "Notes preference for a reviewed library over hand-rolled lock-free code",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "lock-free-ideas-overview",
+        "label": "Review: Lock-Free Ideas Overview"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-012",
+      "questionCode": "LTV-QDEV-0033",
+      "title": "Designing a Kill-Switch and Alerting System for a Live Strategy",
+      "prompt": "Design the monitoring layer for a newly-live systematic strategy: what triggers an automatic kill switch versus what only pages a human, and why is conflating the two in either direction dangerous?",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Risk Management",
+        "Monitoring",
+        "Production Systems"
+      ],
+      "modelAnswer": "The design splits on one question: is this a hard, pre-committed limit where the right response is always the same regardless of context (kill switch), or a signal that needs human judgment to interpret (alert)? Hard limits -- maximum daily loss, maximum drawdown, maximum position size -- belong in the kill switch: these are numbers decided and committed to in advance, specifically so nobody has to make a judgment call in the moment a bad day actually happens, when human hesitation (\"let's wait and see\") tends to make losses worse. The kill switch's job is to halt new order submission and, depending on the policy, flatten existing positions the instant one of these is breached, with zero discretion involved. Softer anomalies -- unusually low volume, a data feed running a few minutes late, a single large but not limit-breaching trade -- belong in an alert that pages a human promptly without auto-stopping the strategy, because an automatic stop has its own real cost: it can miss a genuine opportunity or badly time an exit on what might be perfectly normal noise. Conflating the two in either direction is dangerous: auto-stopping on every minor anomaly trains the team to distrust and eventually disable the kill switch (defeating its purpose for the genuinely hard limits), while only ever alerting and never auto-stopping on genuinely hard limits reintroduces exactly the human-hesitation-in-a-crisis failure mode the kill switch exists to remove. The operational log underneath both should record every risk check performed -- not just breaches -- so a postmortem can reconstruct exactly what the system saw and when, not just what eventually triggered.",
+      "professionalAnswer": "I'd design around one clear rule: anything we've pre-committed to as a hard number -- max daily loss, max drawdown, max position size -- goes in the kill switch, no exceptions, no judgment call allowed in the moment. Everything softer -- volume looking off, a feed running late, one unusually large trade that didn't breach anything -- goes to a human as an alert, because auto-stopping on every one of those would train everyone to ignore or disable the kill switch over time, which defeats the whole point for the limits that actually matter. The failure mode I'd specifically watch for is a team that's nervous about false positives walking back a hard limit into 'just alert us instead' -- that's exactly reintroducing the human hesitation in a real crisis that the kill switch was built to remove in the first place.",
+      "commonMistakes": [
+        "Auto-stopping on every minor anomaly, eroding trust in the kill switch over time",
+        "Converting a genuinely hard limit into 'just alert a human' to reduce false positives, reintroducing hesitation risk",
+        "Logging only breaches instead of every risk check, making postmortems harder to reconstruct accurately"
+      ],
+      "keyPoints": [
+        "Hard, pre-committed limits (daily loss, drawdown, position size) belong in an automatic kill switch",
+        "Softer anomalies belong in a human-facing alert, not an automatic stop",
+        "Auto-stopping on everything erodes trust in the kill switch for genuinely hard limits",
+        "Only-ever-alerting on hard limits reintroduces the human-hesitation failure mode the kill switch removes"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly distinguishes kill-switch criteria from alert criteria",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains the danger of conflating the two in both directions",
+          "weight": 30
+        },
+        {
+          "criterion": "Mentions comprehensive operational logging",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "monitoring-live-strategies",
+        "label": "Review: Monitoring Live Strategies"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-013",
+      "questionCode": "LTV-QDEV-0034",
+      "title": "Walk Through a Production Incident Postmortem You Led",
+      "prompt": "Describe a time you led (or would lead) a postmortem after a production incident in a trading or pricing system. What structure do you use, and how do you keep it from turning into blame?",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Incident Management",
+        "Postmortems",
+        "Leadership"
+      ],
+      "modelAnswer": "A good postmortem follows a fixed structure, not an improvised retelling: a precise timeline of what happened and when (built from logs, alerts, and the operational record, not memory), the immediate impact in concrete terms (what broke, for how long, what it cost or risked), the root cause -- distinguished explicitly from the proximate trigger, since the trigger is often just 'what happened to go wrong first' while the root cause is why the system allowed that to cause real damage -- and a specific list of action items with owners and dates, not vague intentions. Keeping it from turning into blame starts with language: describe what the system allowed to happen, not what a person did wrong -- 'the deploy process let an unverified change reach production' rather than 'so-and-so pushed without testing.' The useful reframe is that if one engineer's mistake could cause this much damage, the real finding is that the system had a gap (missing a safeguard, a review step, or a kill-switch interaction that wasn't covered) that let a single human error become a production incident -- and that gap, not the individual, is what the action items should fix. I'd also make sure the postmortem gets written down and actually revisited, since the value is mostly lost if it's a meeting that happens once and is never checked against.",
+      "professionalAnswer": "I run these the same way every time, which actually helps keep them from becoming personal: timeline first, built from logs and alerts, not anyone's memory of what happened; then impact, stated plainly; then root cause, which I always push to separate from 'what triggered it' -- the trigger is just the first domino, the root cause is why the system let that domino knock everything else over. On blame specifically, I phrase everything in terms of what the system allowed, not what a person did -- if one person's typo could take down a production pricing path, that's a gap in our safeguards, not just a person having a bad day, and the action items should close that gap. And I always make sure the postmortem actually gets revisited later, because writing good action items and never checking whether they happened defeats most of the value of doing this at all.",
+      "commonMistakes": [
+        "Running a postmortem as an informal discussion without a timeline built from actual logs/records",
+        "Framing findings around what a specific person did wrong rather than what the system allowed",
+        "Producing vague action items with no owner or date, which quietly never get done"
+      ],
+      "keyPoints": [
+        "A postmortem needs a fact-based timeline, impact statement, root cause, and concrete action items",
+        "Root cause should be explicitly distinguished from the proximate trigger",
+        "Blame-free framing focuses on what the system allowed, not what an individual did wrong",
+        "Action items need owners and dates, and should be revisited later"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Describes a clear, repeatable postmortem structure",
+          "weight": 35
+        },
+        {
+          "criterion": "Distinguishes root cause from proximate trigger",
+          "weight": 20
+        },
+        {
+          "criterion": "Explains concrete blame-free framing technique",
+          "weight": 30
+        },
+        {
+          "criterion": "Mentions following up on action items",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 8,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-014",
+      "questionCode": "LTV-QDEV-0035",
+      "title": "Deciding When Optimization Effort Is Actually Worth Spending",
+      "prompt": "A teammate wants to spend a week porting a Python research function to C++ because 'Python is slow.' How do you evaluate whether that's actually worth doing, and how do you communicate your recommendation if you disagree?",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Prioritization",
+        "Performance Engineering",
+        "Technical Communication"
+      ],
+      "modelAnswer": "Before agreeing or disagreeing, I'd ask for the profiling data, because 'Python is slow' is rarely the real diagnosis -- most slow-looking Python code is actually calling into already-compiled NumPy/pandas internals, and porting a thin Python wrapper around a C-backed call buys almost nothing. I'd want to know specifically where the time goes (cProfile/line_profiler), whether it's a constant-factor problem (fixable by a faster implementation) or a complexity problem (an O(n^2) approach that a faster implementation of the same algorithm won't actually fix), and how often this code runs -- a three-minute one-off research script isn't a performance problem worth a week of engineering time, while a function in a nightly production pipeline or a latency-sensitive path is a different conversation entirely. If the data supports porting, I'd also push for trying lower-effort fixes first -- vectorization, then Numba -- since a C++ port is the highest-effort, highest-maintenance option on the list and should be reached for only once cheaper fixes have been tried and don't close the gap. If I disagreed with spending a week on this, I'd say so by pointing at the specific missing evidence (the profile, the run frequency) rather than a flat 'I don't think it's worth it,' which turns the disagreement into a shared, checkable question instead of two people's differing intuitions about speed.",
+      "professionalAnswer": "My first move isn't agreement or disagreement, it's a question: what does the profile actually say? 'Python is slow' without that is usually wrong in a specific, checkable way -- a lot of 'slow' Python is actually sitting inside NumPy or pandas already, and a C++ port of the wrapper around that buys nothing. If the profile shows a genuine Python-interpreted hot loop, I still want to know how often this runs -- a one-off research script eating three minutes once isn't worth a week of anyone's time, a nightly production job might be. And even then, I'd want vectorization and Numba tried first, since a C++ port is the most expensive, longest-maintenance option on the menu, not the first one to reach for. If I disagree, I try to make the disagreement about the missing evidence, not my gut feeling versus theirs.",
+      "commonMistakes": [
+        "Treating 'Python is slow' as self-evidently true without requiring profiling data",
+        "Jumping straight to a C++ port without trying lower-effort fixes (vectorization, Numba) first",
+        "Framing a disagreement as personal opinion rather than pointing at specific missing evidence"
+      ],
+      "keyPoints": [
+        "Profile first; much 'slow Python' is actually already C-backed via NumPy/pandas",
+        "Distinguish a constant-factor problem from an algorithmic-complexity problem before choosing a fix",
+        "Weigh run frequency/latency sensitivity against the real cost of a C++ port",
+        "Try lower-effort fixes (vectorize, then Numba) before committing to the highest-effort option"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Requires profiling evidence before accepting the premise",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly applies the effort-vs-payoff ordering of fixes",
+          "weight": 30
+        },
+        {
+          "criterion": "Weighs run frequency/criticality appropriately",
+          "weight": 20
+        },
+        {
+          "criterion": "Frames disagreement around evidence, not opinion",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "when-python-is-too-slow",
+        "label": "Review: When Python Is Too Slow"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-015",
+      "questionCode": "LTV-QDEV-0036",
+      "title": "Evaluating Competing Offers Across Different Firm Types",
+      "prompt": "You have two offers: one from a systematic hedge fund with a lower base but a bonus tied to fund performance, and one from a bank's quant desk with a higher, steadier base and a less individually-linked bonus. How do you think through comparing them, beyond just the headline numbers?",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Compensation Negotiation",
+        "Career Decisions",
+        "Firm Types"
+      ],
+      "modelAnswer": "The first step is recognizing these aren't really the same kind of offer just with different numbers -- they're different compensation structures with different variance, and comparing only the headline base salary across them produces a misleading picture. The systematic fund's lower base plus performance-tied bonus can pay far more in a good year and far less in a bad one than the bank desk's steadier, more bank-performance-tied structure; understanding which structure is being offered, and realistically estimating the range of outcomes under each (not just the optimistic case), matters more than comparing single numbers. Beyond compensation structure, I'd weigh: the actual day-to-day role (research-heavy vs. trading-heavy vs. infrastructure-heavy can carry the same title at different firms -- confirm which one this really is), strategy and risk culture fit (does the firm's approach to risk and research rigor match what I'd want to practice, or does it reward overselling results), mentorship and learning curve (will I be taught, or left to figure it out alone), and my own honest tolerance for the variance a profit-share-heavy structure implies -- a thin year at a prop-style structure is a real possibility, not just a hypothetical, and that needs to be something I can actually absorb, not just accept in theory.",
+      "professionalAnswer": "I wouldn't just put the two base numbers side by side -- that's comparing apples to a completely different kind of fruit. One of these pays more in a good year and less in a bad one; the other is steadier. I'd try to build a realistic range for each, not just the best case, and be honest with myself about whether I can actually handle a thin year if the performance-linked one goes that way, not just whether I'd enjoy a great year. Past the compensation structure, I'd want to know what the role actually does day to day -- research-heavy and trading-heavy roles can have the exact same title at two firms and be completely different jobs -- and whether the research/risk culture is one I'd actually want to be part of, because that affects how the next few years feel a lot more than the number on the offer letter does.",
+      "commonMistakes": [
+        "Comparing only headline base salary without accounting for different compensation structures",
+        "Assuming the best-case bonus scenario rather than a realistic range of outcomes",
+        "Ignoring day-to-day role content, risk culture, and mentorship in favor of pure compensation comparison"
+      ],
+      "keyPoints": [
+        "Different firm types carry fundamentally different compensation structures and variance, not just different numbers",
+        "Build a realistic range of outcomes for each offer, not just the optimistic case",
+        "Confirm what the role actually does day to day, since titles can mean different things at different firms",
+        "Weigh risk/research culture fit and mentorship alongside compensation"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly recognizes the structural difference between the two offers",
+          "weight": 30
+        },
+        {
+          "criterion": "Discusses realistic outcome ranges rather than best-case comparison",
+          "weight": 25
+        },
+        {
+          "criterion": "Weighs role content, culture, and mentorship alongside pay",
+          "weight": 30
+        },
+        {
+          "criterion": "Clarity and maturity of reasoning",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "quant-research-and-trading-capstone",
+        "lessonSlug": "compensation-offers-and-choosing-a-firm",
+        "label": "Review: Compensation, Offers & Choosing a Firm"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    }
+  ]
+}

@@ -1,0 +1,515 @@
+{
+  "questions": [
+    {
+      "id": "qanl-exp-001",
+      "questionCode": "LTV-QANL-0037",
+      "title": "Why VaR Isn't Sub-Additive, and Why That's a Real Problem",
+      "prompt": "Explain, with an illustrative structure, why Value at Risk is not guaranteed to be sub-additive, and why that matters for how a firm allocates risk capital across desks.",
+      "category": "technical-knowledge",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Value at Risk", "Coherent Risk Measures", "Risk Capital Allocation"],
+      "modelAnswer": "Sub-additivity means the risk of a combined position should never exceed the sum of the risks of its parts — diversification should help, or at worst do nothing, never hurt. VaR doesn't guarantee this because it's a single quantile of a distribution, not a measure of the whole tail, and combining two positions can shift probability mass across the VaR threshold in a way that increases the measured quantile even while reducing risk everywhere else in the distribution. A classic illustrative structure: two independent positions that each individually have a small chance of a large loss concentrated just below their own 95% VaR cutoff (e.g., written out-of-the-money options or default-like exposures) can, when combined, push the combined 95% quantile to capture a joint tail event that neither position's standalone VaR captured, making the combined VaR exceed the sum of the standalone VaRs. This matters directly for risk capital allocation: if a firm sizes desk-level capital using standalone VaRs and then simply sums them for a firm-wide figure, it can either overstate or understate the true combined risk depending on exactly how the tails interact, and in the understatement direction, the firm could be systematically under-capitalized for its actual combined tail exposure — which is precisely the flaw Expected Shortfall, a coherent risk measure, is built to avoid, since sub-additivity is one of its guaranteed axioms.",
+      "professionalAnswer": "The cleanest way I've found to make this concrete is with digital, option-like payoffs — two separate positions each with a small, isolated probability of a large loss just outside their own 95% VaR window, combined so that the joint loss event lands differently than either one does alone. It sounds like a contrived edge case, but it's exactly the kind of structure concentrated credit or tail-risk exposures can create in practice, which is why risk committees shouldn't treat VaR aggregation as mechanically safe. I'd always push for Expected Shortfall or a full joint-simulation approach for anything with meaningful tail or default-like risk, specifically because sub-additivity isn't optional there — it's guaranteed by construction.",
+      "example": "Two positions, each with a 94% chance of zero loss and a 6% chance of a large loss, structured so their large-loss events only partially overlap: each position's standalone 95% VaR can be zero (the loss event sits just outside the 95th percentile alone), while the combined position's 95% VaR is strictly positive because the combined probability of at least one large loss now exceeds 5% — a case where VaR(A+B) > VaR(A) + VaR(B) = 0.",
+      "commonMistakes": [
+        "Assuming VaR, like variance, always satisfies sub-additivity",
+        "Not being able to construct or describe a concrete scenario where VaR violates it",
+        "Confusing sub-additivity with simple diversification benefit under normal, non-tail conditions",
+        "Not connecting the issue specifically to risk-capital allocation decisions"
+      ],
+      "keyPoints": [
+        "Sub-additivity: risk of a sum should never exceed the sum of individual risks",
+        "VaR is a single quantile, not a tail-aware measure, so it can fail sub-additivity for tail-concentrated or skewed positions",
+        "A concrete construction (e.g., overlapping tail events in option-like payoffs) can produce VaR(A+B) > VaR(A)+VaR(B)",
+        "Expected Shortfall is a coherent risk measure and guarantees sub-additivity, which is why it's preferred for capital allocation"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly defines sub-additivity", "weight": 20 },
+        { "criterion": "Explains the mechanism by which VaR can violate it", "weight": 30 },
+        { "criterion": "Provides or describes a coherent illustrative example", "weight": 25 },
+        { "criterion": "Connects this to real risk-capital allocation consequences", "weight": 25 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "value-at-risk-and-expected-shortfall", "label": "Value at Risk & Expected Shortfall" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-002",
+      "questionCode": "LTV-QANL-0038",
+      "title": "When a Duration-Only Hedge Fails",
+      "prompt": "Explain the role convexity plays in bond price sensitivity, and describe a scenario where a hedge built using only modified duration would fail badly, even though it looked adequate for small rate moves.",
+      "category": "technical-knowledge",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Duration", "Convexity", "Fixed Income Hedging"],
+      "code": "ΔP/P ≈ -D*Δy + (1/2)*C*(Δy)^2",
+      "modelAnswer": "Duration is a linear (first-order) approximation of the price-yield relationship, but the true relationship is convex, meaning duration systematically overstates the price drop for a yield increase and understates the price gain for a yield decrease. Convexity is the second-order correction term, always positive for a plain vanilla bond, which is why it works in the bondholder's favor in both directions — cushioning losses on the way up in yield and boosting gains on the way down. A duration-only hedge (e.g., shorting a duration-matched quantity of a hedging instrument) is calibrated to offset the linear term exactly, but says nothing about the convexity term; for small rate moves the convexity term is negligible (it scales with (Δy)²) so the hedge looks fine, but for a large rate move — a genuine stress event, a central bank surprise, a credit-crisis-driven rate shock — the convexity term becomes material, and because the hedge was never designed to offset it, the hedged position's actual P&L diverges meaningfully from what the duration-matched hedge predicted, typically leaving the hedger worse off than expected if the hedging instrument's own convexity differs from the hedged bond's (e.g., hedging a high-convexity long-duration bond with a lower-convexity instrument of the same duration).",
+      "professionalAnswer": "The way this actually bites people is almost always the same story: someone duration-matches a hedge, it tracks beautifully through a normal, choppy rate environment, and then a genuinely large rate move happens and the hedge is suddenly off by more than anyone expected — not because the duration match was wrong, but because duration was never supposed to capture that second-order curvature in the first place. If I were building this hedge for anything with meaningfully different convexity than the instrument I'm hedging with — long-dated bonds, mortgage-backed securities with negative convexity, or anything with embedded optionality — I'd insist on matching convexity too, not just duration, specifically because that's exactly the scenario where a duration-only hedge quietly stops working.",
+      "example": "A duration-matched hedge built for a 25bp daily rate environment looks perfect; during a 200bp shock, the convexity term (½·C·(Δy)²) becomes large enough that the hedged portfolio's actual loss meaningfully exceeds the duration-only prediction, especially if the hedging instrument (e.g., a vanilla bond future) has lower convexity than a long-dated bond or mortgage security being hedged.",
+      "commonMistakes": [
+        "Treating duration and convexity as always moving together proportionally across instruments",
+        "Assuming a duration-matched hedge is adequate regardless of the size of the rate move being hedged against",
+        "Not recognizing that convexity differs meaningfully between instrument types (e.g., mortgage-backed securities can have negative convexity)",
+        "Forgetting that the convexity term scales with the square of the yield change, making it negligible for small moves but material for large ones"
+      ],
+      "keyPoints": [
+        "Duration is a linear approximation; convexity is the second-order correction for the true curved price-yield relationship",
+        "Convexity is positive for plain bonds and benefits the holder in both directions",
+        "A duration-only hedge is calibrated to the linear term and ignores convexity entirely",
+        "Large rate moves make the convexity term material, causing duration-only hedges to fail precisely when it matters most"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains convexity's role as the second-order correction", "weight": 30 },
+        { "criterion": "Correctly explains why small moves hide the problem", "weight": 25 },
+        { "criterion": "Describes a concrete, plausible large-move failure scenario", "weight": 30 },
+        { "criterion": "Notes instrument-specific convexity differences (e.g., MBS)", "weight": 15 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "bond-pricing-duration-and-convexity", "label": "Bond Pricing, Duration & Convexity" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-003",
+      "questionCode": "LTV-QANL-0039",
+      "title": "Estimating a Strategy's Capacity Ceiling",
+      "prompt": "A strategy has a gross annual edge of 150 basis points at its current size. Using the square-root market impact model (impact ≈ σ√(Q/ADV)), estimate roughly how trading 25% of ADV compares in impact cost to trading 1% of ADV, and explain how you'd use that relationship to estimate the strategy's capacity ceiling.",
+      "category": "hands-on",
+      "difficulty": "expert",
+      "responseFormat": "code",
+      "skills": ["Market Impact", "Capacity Estimation", "Square-Root Model"],
+      "code": "impact_cost ≈ sigma * sqrt(Q / ADV)",
+      "modelAnswer": "Under the square-root model, impact cost scales with √(Q/ADV), so the ratio of impact at 25% ADV to impact at 1% ADV is √(25/1) = 5 — trading 25x more participation only costs 5x as much in impact, not 25x, which is the defining (and somewhat counterintuitive) feature of the square-root shape: impact rises slower than linearly, but still rises. To estimate capacity, I'd start from the strategy's gross edge at the current, small size (150bps here), then compute impact cost at successively larger trade sizes (as a rising fraction of ADV) using this model, and find the capital level at which the modeled impact cost grows large enough to erode that gross edge to roughly zero or below the required hurdle rate — that crossover point is the approximate capacity ceiling. Because impact cost grows with the square root of participation rather than linearly, this ceiling is often lower than naive linear-cost intuition would suggest, since costs compound faster near the edges once participation gets large, even though the square-root shape grows 'slower than linear' overall.",
+      "professionalAnswer": "The number people often get wrong here is assuming 25x the participation means 25x the cost — it doesn't, it's the square root, so it's 5x. But I'd flag the opposite trap too: 'only 5x' can sound comforting compared to 25x, and it still might be more than enough to wipe out a 150bp edge once you're trading a large enough fraction of ADV. The actual capacity estimate comes from walking the participation rate up step by step, computing impact at each step, and finding where the cumulative cost crosses the gross edge — that crossover, not any single ratio, is the number I'd actually report as the capacity ceiling.",
+      "example": "impact(1% ADV) = σ√0.01 = 0.10σ. impact(25% ADV) = σ√0.25 = 0.50σ. Ratio = 0.50σ/0.10σ = 5. If σ=2% daily, impact at 25% ADV ≈ 1.0% per trade — large enough that a few round-trips per year at that participation rate could already erode a 150bp annual gross edge, pointing to a capacity ceiling well below the size implied by 25% ADV participation on a regular basis.",
+      "commonMistakes": [
+        "Assuming impact cost scales linearly with participation rate (25x cost for 25x size)",
+        "Computing the ratio correctly but failing to connect it to an actual capacity-ceiling estimation method",
+        "Not accounting for how often the strategy would need to trade at that participation rate (turnover) when converting impact cost to an annual drag",
+        "Treating the square-root model's calibration constant as universal rather than something that needs fitting to real fill data"
+      ],
+      "keyPoints": [
+        "Square-root model: impact scales with sqrt(Q/ADV), not linearly",
+        "25% vs. 1% ADV implies a 5x impact ratio (sqrt(25)), not 25x",
+        "Capacity ceiling = capital level where modeled impact cost erodes gross edge to roughly zero",
+        "The crossover must account for turnover/trading frequency to convert per-trade impact into an annual drag"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly computes the 5x impact ratio", "weight": 30 },
+        { "criterion": "Correctly explains the sub-linear scaling intuition", "weight": 20 },
+        { "criterion": "Describes a correct method for estimating the capacity ceiling", "weight": 35 },
+        { "criterion": "Notes the need to account for turnover/trading frequency", "weight": 15 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "market-impact-and-capacity", "label": "Market Impact & Capacity" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-004",
+      "questionCode": "LTV-QANL-0040",
+      "title": "Interpreting a Sharpe Ratio's Confidence Interval",
+      "prompt": "Using Lo's approximation SE(Sharpe) ≈ √((1+0.5·Sharpe²)/n), a strategy shows a non-annualized daily Sharpe of 0.09 over n=750 daily observations. Compute the standard error and a 95% confidence interval for the daily Sharpe, then annualize the bounds by √252. What does the result tell you?",
+      "category": "hands-on",
+      "difficulty": "expert",
+      "responseFormat": "code",
+      "skills": ["Sharpe Ratio", "Statistical Inference", "Lo's Standard Error"],
+      "code": "SE(Sharpe) ≈ sqrt((1 + 0.5*Sharpe^2) / n)\n95% CI = Sharpe ± 1.96*SE",
+      "modelAnswer": "SE = √((1+0.5×0.09²)/750) = √((1+0.00405)/750) = √(1.00405/750) ≈ √0.0013387 ≈ 0.0366. 95% CI for the daily Sharpe = 0.09 ± 1.96×0.0366 = 0.09 ± 0.0717, giving approximately [0.0183, 0.1617]. Annualizing each bound by √252 (≈15.87): point estimate ≈ 0.09×15.87 ≈ 1.43; lower bound ≈ 0.0183×15.87 ≈ 0.29; upper bound ≈ 0.1617×15.87 ≈ 2.57. Unlike a shorter, noisier sample where the interval might cross zero, here the entire 95% confidence interval for the annualized Sharpe (roughly [0.29, 2.57]) stays comfortably positive, which means — at standard significance levels — this result is statistically distinguishable from a zero or negative true Sharpe, even though the interval is still quite wide. The width itself is still worth flagging: a point estimate of 1.43 with a lower bound near 0.29 means the data supports 'real, positive edge' with reasonable confidence, but doesn't pin down the edge's actual magnitude very precisely.",
+      "professionalAnswer": "I'd run the numbers exactly as given — compute the daily SE, build the daily CI, then annualize both bounds by the same √252 factor used for the point estimate, never just the point estimate alone. What I'd actually say to someone is: the lower bound sitting comfortably above zero is the headline result here, which is a meaningfully different and more reassuring conclusion than the textbook case where the lower bound dips negative — but I'd still caveat that '[0.29, 2.57]' is a wide range, so while I'm confident there's real positive edge, I wouldn't claim much precision about exactly how large it is.",
+      "example": "SE_daily ≈ 0.0366. 95% CI (daily) ≈ [0.0183, 0.1617]. Annualized: point ≈1.43, CI ≈ [0.29, 2.57] — entirely positive, unlike a shorter/noisier sample's interval that might straddle zero.",
+      "commonMistakes": [
+        "Annualizing only the point estimate and forgetting to annualize both CI bounds by the same factor",
+        "Using the Sharpe ratio squared incorrectly (forgetting the 0.5 coefficient or using the annualized Sharpe inside Lo's formula meant for the per-period Sharpe)",
+        "Concluding the result is 'not significant' just because the CI is wide, without checking whether it actually crosses zero",
+        "Treating a positive lower bound as proof of a precisely known edge rather than just statistically distinguishable from zero"
+      ],
+      "keyPoints": [
+        "Lo's formula estimates the standard error of a per-period (non-annualized) Sharpe ratio",
+        "Both the point estimate and the CI bounds must be annualized by the same sqrt(252) factor",
+        "A CI that stays entirely positive indicates statistical significance, distinct from a CI straddling zero",
+        "A significant result can still be imprecise — width of the interval matters even when it doesn't cross zero"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly computes the standard error", "weight": 25 },
+        { "criterion": "Correctly computes the daily 95% CI", "weight": 20 },
+        { "criterion": "Correctly annualizes both bounds and the point estimate", "weight": 25 },
+        { "criterion": "Correctly interprets statistical significance vs. precision", "weight": 30 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "statistical-significance-of-results", "label": "Statistical Significance of Results" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-005",
+      "questionCode": "LTV-QANL-0041",
+      "title": "A Dollar-Neutral Book's Beta Spike During a Panic",
+      "prompt": "A dollar-neutral long/short book normally runs a beta to SPY of about 0.04. During a sudden market panic, realized beta jumps to roughly 0.25 and the book takes a meaningful loss, even though it still outperformed the index. Diagnose the mechanism, and propose one practical risk-management response for future similar events.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Correlation-to-One", "Crisis Risk Management", "Dollar-Neutral Construction"],
+      "modelAnswer": "This is the correlation-to-one effect in a clean, quantified form: the book's near-zero beta in normal times reflects the long and short legs moving mostly independently, which lets dollar-neutral construction cancel out most of the average market exposure. In a sudden, broad panic, cross-sectional correlations across almost every name spike toward 1 — everything sells off together regardless of its idiosyncratic characteristics — which mechanically pushes the realized beta of a long/short book up sharply even with zero change in position sizing, exactly the spike from ~0.04 to ~0.25 observed here. The book still outperformed the index precisely because 0.25 beta is still much lower than a long-only book's beta of roughly 1.0, so the dollar-neutral construction continued providing substantial, if not perfect, protection. A practical forward-looking response: maintain an explicit, separately-sized tail/crash hedge (e.g., a modest standing long-volatility or index-put position) that doesn't rely on the book's own cross-sectional diversification holding up during a panic — since the whole point of correlation-to-one is that the diversification the book normally relies on is precisely what fails at the moment it's needed most.",
+      "professionalAnswer": "I'd present this as a known, named mechanism rather than a surprise — dollar-neutral books reliably see their realized beta spike during a panic because that's exactly when cross-sectional correlation breaks down and converges toward one, and it's not a sign the construction was flawed. The response I'd actually push for isn't 'rebuild the hedge differently' — it's 'add a standing, independent tail hedge,' because the core insight is that the protection a long/short book gets from diversification is structurally the thing that disappears in a panic, so you need a hedge that doesn't depend on diversification holding up at all.",
+      "commonMistakes": [
+        "Treating the beta spike as evidence of a construction error rather than a known correlation-to-one effect",
+        "Not quantifying how much protection was still provided (0.25 beta vs. ~1.0 for long-only) when explaining the outperformance",
+        "Proposing a response that itself relies on cross-sectional diversification (which is the thing that just failed)",
+        "Failing to recommend a concrete, specific, implementable response"
+      ],
+      "keyPoints": [
+        "Correlation-to-one: cross-sectional correlations spike toward 1 during a panic, breaking down normal diversification",
+        "This mechanically raises a dollar-neutral book's realized beta without any change in positioning",
+        "The book still outperformed because 0.25 beta remains far below a long-only book's ~1.0",
+        "A standing, independently-sized tail hedge is a practical response that doesn't rely on diversification holding up"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly diagnoses the correlation-to-one mechanism", "weight": 35 },
+        { "criterion": "Correctly explains why the book still outperformed despite the loss", "weight": 20 },
+        { "criterion": "Proposes a practical, independent response (e.g., standing tail hedge)", "weight": 30 },
+        { "criterion": "Communicates this as an expected, known risk rather than a flaw", "weight": 15 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "quant-research-and-trading-capstone", "lessonSlug": "risk-analysis-and-stress-tests", "label": "Risk Analysis & Stress Tests" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-006",
+      "questionCode": "LTV-QANL-0042",
+      "title": "A Manager's Alpha Disappears Once You Add Factors",
+      "prompt": "A long-only small-cap value manager shows a strong CAPM alpha of 4% per year. Once you regress their returns on the Fama-French three factors, the alpha drops to a statistically insignificant 0.3%. Explain what happened and what you'd tell an allocator who was impressed by the original 4% number.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Fama-French", "Alpha Attribution", "Factor Exposure"],
+      "modelAnswer": "The 4% CAPM alpha was almost certainly not skill at all — it was unpriced exposure to the size (SMB) and value (HML) factors that CAPM's single market beta simply doesn't account for. Because this manager is explicitly a small-cap value manager, their returns naturally carry significant positive loadings on both SMB and HML; CAPM's regression attributes all of the return not explained by market beta alone to 'alpha,' which in this case was really just the historical size and value premiums showing up as a return the single-factor model had no way to explain. Once the three-factor regression explicitly includes SMB and HML, those premiums get properly attributed to factor exposure rather than to alpha, and the genuinely leftover, unexplained return (0.3%) turns out to be statistically indistinguishable from zero — meaning there's no reliable evidence of stock-picking skill beyond simply holding a small-cap value tilt. I'd tell the allocator directly: the 4% number was real, but it wasn't a management fee you needed to pay for — a passive, low-cost small-cap value index or ETF would likely have captured most of the same 4% simply from being exposed to the same factors, without paying for active management.",
+      "professionalAnswer": "This is the conversation I'd have without softening it too much, because it's exactly the kind of result that should change an allocation decision: the manager isn't lying or doing anything wrong, but the 4% 'alpha' the allocator fell in love with was mostly just size and value beta wearing a skill costume. I'd frame the practical takeaway concretely — ask whether a cheap small-cap value index fund would have delivered something close to the same 4% for a fraction of the fee, because if the three-factor regression says yes, that's the real decision in front of the allocator now.",
+      "commonMistakes": [
+        "Concluding the manager did something wrong rather than explaining this is a standard factor-attribution finding",
+        "Not explaining specifically why a small-cap value manager would show exactly this pattern (positive SMB and HML loadings)",
+        "Failing to connect the finding to an actionable allocator decision (cheaper factor exposure alternative)",
+        "Treating the drop in alpha as evidence the manager's returns were fabricated rather than mischaracterized"
+      ],
+      "keyPoints": [
+        "CAPM alpha conflates unpriced factor exposure with genuine skill when only one factor (the market) is controlled for",
+        "A small-cap value manager naturally carries positive SMB and HML loadings",
+        "Once SMB and HML are controlled for, the statistically insignificant leftover alpha indicates no detectable stock-picking skill",
+        "The practical allocator takeaway: the same factor exposure may be available far more cheaply via a passive vehicle"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains why CAPM alpha captured factor exposure, not skill", "weight": 35 },
+        { "criterion": "Correctly connects the manager's style (small-cap value) to the specific factor loadings", "weight": 25 },
+        { "criterion": "Correctly interprets the statistically insignificant three-factor alpha", "weight": 20 },
+        { "criterion": "Gives a clear, actionable message to the allocator", "weight": 20 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "fama-french-and-factor-investing", "label": "Fama-French & Factor Investing" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-007",
+      "questionCode": "LTV-QANL-0043",
+      "title": "Reconciling a Performance Report's Gross-to-Net Gap",
+      "prompt": "A strategy's performance report shows gross Sharpe 1.05 but net Sharpe 0.42, with no single cost line item standing out as abnormal. Walk through how you'd investigate whether this gap reflects honest, expected frictions or a sign the strategy has been running past its true capacity.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Performance Reporting", "Capacity", "Gross-Net Reconciliation"],
+      "modelAnswer": "I'd start by decomposing the gap into its component pieces rather than accepting the aggregate gross-to-net drop at face value: separate the cost drag attributable to commissions, to spread/slippage, and to market impact, each computed independently using the strategy's actual trade-level data rather than an assumed blended rate. If commissions and typical slippage account for most of the gap and are consistent with the strategy's known turnover, that's an honest, expected friction and nothing to escalate. If market impact specifically is a disproportionate share of the gap — and especially if impact cost has been trending up over time relative to AUM — that's the signature of a strategy running at or past its true capacity, since impact cost rises faster than linearly with trade size relative to ADV. I'd also check whether the gap has worsened as AUM has grown over the reporting period (a time-series view, not just a single aggregate number), since a capacity problem shows up specifically as the gross-net gap widening as the strategy scales, not as a constant proportional drag. Finally, I'd verify the cost assumptions used in historical backtests match live, realized costs — a persistent, stable gap that matches what the backtest always assumed is very different from a gap that's grown unexpectedly relative to what was modeled.",
+      "professionalAnswer": "A roughly 60% Sharpe haircut from gross to net isn't automatically alarming on its own — some strategies are just turnover-heavy and that's an honest cost of doing business — but I wouldn't sign off on it without decomposing where the cost actually comes from. The specific thing I'd be looking for is whether market impact's share of that gap has been growing as AUM grew, because that's the tell-tale sign of outrunning capacity, versus a flat, stable drag that's simply consistent with what the strategy has always cost to run at this turnover.",
+      "commonMistakes": [
+        "Accepting or rejecting the gross-to-net gap based on its size alone, without decomposing into cost components",
+        "Not checking whether the gap has changed over time as AUM has grown",
+        "Failing to distinguish market impact (self-caused, capacity-related) from commissions and slippage (generally more stable, turnover-driven)",
+        "Not cross-checking live realized costs against the assumptions used in the original backtest"
+      ],
+      "keyPoints": [
+        "Decompose the gross-net gap into commissions, slippage, and market impact separately",
+        "A growing impact-cost share as AUM scales is the specific signature of running past capacity",
+        "Check the gap's trend over time, not just its current aggregate size",
+        "Cross-check realized live costs against the backtest's original cost assumptions"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Proposes decomposing the gap into specific cost components", "weight": 35 },
+        { "criterion": "Correctly identifies market impact as the capacity-related signal", "weight": 30 },
+        { "criterion": "Proposes examining the trend over time, not just the current snapshot", "weight": 20 },
+        { "criterion": "Recommends cross-checking against backtest cost assumptions", "weight": 15 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "quant-research-and-trading-capstone", "lessonSlug": "writing-the-performance-report", "label": "Writing the Performance Report" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-008",
+      "questionCode": "LTV-QANL-0044",
+      "title": "Debugging a Portfolio Optimizer That Won't Converge",
+      "prompt": "A mean-variance optimizer for a 400-stock universe, estimated from 18 months of daily returns, keeps failing because the covariance matrix can't be inverted. Diagnose why this is happening and describe the fix you'd implement.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Covariance Estimation", "Portfolio Optimization", "Factor Models"],
+      "modelAnswer": "18 months of daily data gives roughly 375-390 observations for 400 assets — T is close to or below N, which is exactly the regime where the sample covariance matrix becomes singular or numerically near-singular: estimating a full covariance matrix for 400 assets requires roughly 80,200 distinct parameters (N(N+1)/2), and with only about as many or fewer observations than assets, there isn't enough independent information in the data to pin down a full-rank matrix — several of its eigenvalues come out as (numerically) zero, making it non-invertible, which is exactly what the optimizer needs (Σ⁻¹) to run. The fix is to stop estimating the full sample covariance matrix directly and instead build a factor-model-based covariance estimate: regress each of the 400 stocks' returns on a small number of common factors (market, size, value, or principal components extracted from the return data itself), decompose Σ = BΣ_FB' + D, where B is the loadings matrix, Σ_F is the small factor covariance matrix, and D is a diagonal matrix of idiosyncratic variances. This collapses the parameter count from roughly 80,200 down to a small multiple of N plus a small factor covariance matrix, and the added diagonal D term guarantees the resulting matrix is full rank and invertible, directly resolving the optimizer's failure. A shrinkage estimator (blending the sample covariance toward a structured target) is a reasonable alternative or complement if a full factor model isn't readily available.",
+      "professionalAnswer": "The math tells you exactly why this is failing before you even look at the data: 400 assets need about 80,000 covariance parameters, and 18 months of daily data gives you maybe 390 observations — you simply cannot estimate that many independent parameters from that few data points, and the matrix comes out singular as a direct, mechanical consequence, not a bug in the optimizer. I wouldn't try to patch this with more history (which risks staleness) or a numerical hack like adding a tiny constant to the diagonal (which 'fixes' invertibility but doesn't fix the underlying noise) — I'd replace the estimation approach entirely with a factor-model or shrinkage-based covariance matrix, which is the standard, principled fix for exactly this failure mode.",
+      "commonMistakes": [
+        "Trying to fix invertibility with an ad hoc numerical patch (e.g., adding a small constant to the diagonal) rather than addressing the underlying estimation problem",
+        "Assuming simply gathering more historical data fully solves the problem without considering staleness or regime change",
+        "Not quantifying why T being near or below N specifically causes singularity",
+        "Proposing a fix without explaining why it guarantees invertibility (the role of the diagonal D term)"
+      ],
+      "keyPoints": [
+        "With 400 assets and ~390 daily observations, T is near or below N, causing a singular or near-singular sample covariance matrix",
+        "N(N+1)/2 parameters (~80,200 here) vastly exceeds what the available data can reliably estimate",
+        "A factor-model covariance estimate (Sigma = B*Sigma_F*B' + D) collapses the parameter count dramatically",
+        "The diagonal D term specifically guarantees the resulting matrix is full rank and invertible"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly diagnoses the T-near-N singularity cause", "weight": 30 },
+        { "criterion": "Quantifies or explains the parameter-count mismatch", "weight": 20 },
+        { "criterion": "Proposes a factor-model covariance estimate as the fix", "weight": 35 },
+        { "criterion": "Explains why the fix guarantees invertibility", "weight": 15 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "risk-models-and-covariance-estimation", "label": "Risk Models & Covariance Estimation" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-009",
+      "questionCode": "LTV-QANL-0045",
+      "title": "Designing an End-to-End Risk Pipeline for a Multi-Strategy Book",
+      "prompt": "Design the architecture of a daily risk-reporting pipeline for a multi-strategy fund: what risk measures would it compute (VaR, ES, stress scenarios, factor exposures), in what order, and how would the outputs reach a PM versus a risk committee differently?",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Risk Reporting", "VaR/ES Pipelines", "Risk Governance"],
+      "modelAnswer": "I'd structure the pipeline in layers that build on each other. First, a position and factor-exposure layer: ingest end-of-day positions, run each position through the firm's factor model to get per-position and aggregated factor loadings (market, size, value, sector, and any strategy-specific factors) — this layer underpins everything downstream. Second, a core risk-measure layer computed from the same position data: parametric or historical-simulation VaR at the standard confidence levels, Expected Shortfall as the coherent companion measure, and factor-level risk decomposition showing which factors are driving total portfolio variance. Third, a stress-testing layer run against the same end-of-day positions: historical scenario replay (prior crises), hypothetical scenarios maintained by the risk team, and a periodically-refreshed reverse stress test identifying what combination of moves would breach capital limits. Fourth, an aggregation layer that rolls desk- or strategy-level risk up to a firm-wide figure using actual cross-strategy correlations, not a naive sum. For outputs: a PM needs their own book's VaR/ES, factor exposures, and stress results, timely and granular enough to inform same-day position decisions — fast, desk-specific, and actionable. A risk committee needs the firm-wide aggregated view, trend-over-time context (is a risk measure drifting, not just its current level), and explicit flagging of any limit breaches or reverse-stress-test findings, formatted for a less frequent, higher-level review rather than daily granular detail. The same underlying computation layers feed both outputs, just filtered and aggregated differently for each audience.",
+      "professionalAnswer": "I'd build this bottom-up, in the order data actually becomes available: positions and factor exposures first, since every other risk number depends on them, then VaR/ES and factor risk decomposition, then stress tests run against that same position snapshot, then a firm-wide aggregation layer that explicitly accounts for cross-strategy correlation rather than just summing. The PM/risk-committee split is really an audience-and-cadence design decision on top of the same pipeline — the PM wants their own numbers fast and actionable today, the committee wants the firm-wide trend and any limit breaches, on a different cadence and with far less granularity.",
+      "commonMistakes": [
+        "Designing VaR/ES and stress testing as disconnected systems rather than both feeding from the same position/factor-exposure layer",
+        "Aggregating firm-wide risk by naive summation rather than accounting for cross-strategy correlation",
+        "Not differentiating what a PM needs (fast, granular, actionable) from what a risk committee needs (aggregated, trend-aware, breach-focused)",
+        "Treating reverse stress testing as a one-off report rather than a periodically-refreshed pipeline component"
+      ],
+      "keyPoints": [
+        "Layer 1: position and factor-exposure data underpinning everything downstream",
+        "Layer 2: VaR, Expected Shortfall, and factor risk decomposition from that same data",
+        "Layer 3: historical, hypothetical, and reverse stress testing against the same positions",
+        "Layer 4: correlation-aware firm-wide aggregation, with PM and risk-committee outputs filtered differently from the same pipeline"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Designs a logical, layered pipeline architecture", "weight": 30 },
+        { "criterion": "Correctly includes VaR, ES, factor decomposition, and stress testing", "weight": 30 },
+        { "criterion": "Correctly addresses correlation-aware firm-wide aggregation", "weight": 20 },
+        { "criterion": "Clearly differentiates PM vs. risk-committee outputs and cadence", "weight": 20 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "value-at-risk-and-expected-shortfall", "label": "Value at Risk & Expected Shortfall" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-010",
+      "questionCode": "LTV-QANL-0046",
+      "title": "Architecting a Risk-Budgeted, Multi-Sleeve Portfolio Construction Process",
+      "prompt": "Design a portfolio construction process that combines three independently-researched signal sleeves into one book, using risk budgeting (not equal dollar weighting) to size each sleeve, with leverage applied at the book level. What decisions does this architecture require, and where are the dangerous failure points?",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Risk Budgeting", "Multi-Sleeve Construction", "Leverage"],
+      "modelAnswer": "The architecture needs, at minimum: a per-sleeve covariance estimate and a cross-sleeve covariance estimate (how the three sleeves' returns actually co-move, not just how volatile each is standalone), since risk budgeting requires computing each sleeve's marginal and total contribution to combined book risk (risk_contrib = w_i × marginal_contrib_i, from the full covariance matrix), not its dollar weight. The process needs an explicit, deliberate decision about the target risk allocation across sleeves (e.g., equal risk contribution, or risk weighted by conviction/expected Sharpe), computed and rebalanced on a defined cadence as each sleeve's realized volatility and cross-sleeve correlation drift over time. Leverage is then applied at the book level on top of this risk-budgeted base allocation, scaling gross exposure to hit a target volatility or capital-utilization level — critically, leverage doesn't change the underlying blended strategy's Sharpe ratio, only the dollar magnitude of both returns and drawdowns, and it introduces margin-call risk that can force deleveraging at the worst possible time. The dangerous failure points: (1) treating sleeve volatilities as static rather than re-estimating them, letting one sleeve's risk contribution silently grow out of its intended budget as its volatility rises; (2) ignoring cross-sleeve correlation, especially the risk that two 'independently researched' sleeves turn out to be more correlated in a stress event than their historical correlation suggests (a correlation-to-one-style risk at the sleeve level); (3) applying leverage to a risk-budget estimate built on an uncertain, possibly overestimated edge — compounding Kelly-style estimation-error risk with real borrowed exposure; and (4) a margin call forcibly deleveraging at the worst moment, locking in losses the risk-budgeting process never intended to realize.",
+      "professionalAnswer": "I'd design this so risk budgeting happens first, off a real cross-sleeve covariance matrix, and leverage gets applied strictly afterward, at the book level, as a separate decision — mixing the two steps is one of the most common mistakes I'd watch for. The failure point I'd worry about most isn't any single sleeve blowing up, it's the three 'independent' sleeves turning out to be correlated exactly when it matters, because that's the scenario where risk budgeting built on calm-period correlations quietly understates the real combined risk right as leverage is amplifying it.",
+      "commonMistakes": [
+        "Confusing risk budgeting with equal dollar-weighting across sleeves",
+        "Estimating sleeve risk contributions from standalone volatility only, ignoring cross-sleeve correlation",
+        "Treating leverage as improving the Sharpe ratio rather than just scaling both return and volatility equally",
+        "Not identifying margin-call risk and correlated sleeve breakdown as the primary dangerous failure points"
+      ],
+      "keyPoints": [
+        "Risk budgeting requires a full cross-sleeve covariance matrix, not just standalone sleeve volatilities",
+        "Risk contribution (not dollar weight) should be deliberately allocated and periodically re-estimated",
+        "Leverage is applied at the book level afterward and does not change the underlying Sharpe ratio",
+        "Key failure points: stale correlation/volatility estimates, correlated sleeves in stress, and margin-call-forced deleveraging"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly designs the risk-budgeting mechanics across sleeves", "weight": 30 },
+        { "criterion": "Correctly separates risk budgeting from book-level leverage", "weight": 25 },
+        { "criterion": "Identifies cross-sleeve correlation risk as a key failure point", "weight": 25 },
+        { "criterion": "Identifies margin-call / forced-deleveraging risk", "weight": 20 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "risk-budgeting-and-leverage", "label": "Risk Budgeting & Leverage" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-011",
+      "questionCode": "LTV-QANL-0047",
+      "title": "Designing Point-in-Time Data Infrastructure",
+      "prompt": "Design the data infrastructure needed to guarantee that every historical backtest at your firm uses point-in-time index membership and point-in-time (unrevised) fundamental data. What would you build, and how would you prevent a researcher from accidentally reintroducing look-ahead or survivorship bias?",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Point-in-Time Data", "Look-Ahead Bias", "Data Infrastructure"],
+      "modelAnswer": "The core piece is a versioned, timestamped data store rather than a store that only holds 'current' values: for index membership, every addition and removal event is recorded with the exact effective date, so a query for 'what was in this index as of date X' reconstructs the historical membership rather than returning today's list. For fundamental data, every data point needs to record both its as-of (reporting) date and its knowledge date (when it was actually available/published, including any subsequent restatement as a new, separately timestamped record rather than an overwrite of the original) — this is the only way to guarantee a backtest run 'as of' a historical date sees exactly what was knowable then, not a later-corrected value. To prevent researchers from accidentally reintroducing bias, I'd make the point-in-time query interface the only sanctioned way to pull historical data for backtesting — the API itself takes an as-of date and only returns what was known by that date, making it structurally difficult (not just a documentation note) to accidentally pull 'current' data into a historical simulation. I'd pair this with automated backtest linting that flags any data access pattern suggesting a current-snapshot pull (e.g., querying without specifying an as-of date, or querying today's index list directly) and a mandatory code-review checklist item specifically for point-in-time compliance before any backtest result is reported to decision-makers.",
+      "professionalAnswer": "The design principle I'd insist on is: make the biased path harder to take than the correct one, not just document that it's wrong. That means a versioned data store where 'what did we know on date X' is a first-class query, not an afterthought, and a backtesting API that structurally can't return future knowledge because it doesn't expose a 'current' view at all during a historical simulation — only an as-of view. I'd back that with automated checks on new backtests, because relying purely on researcher discipline is exactly how this bias creeps back in even among people who know better.",
+      "commonMistakes": [
+        "Designing a data store that only keeps current values, requiring manual point-in-time reconstruction each time",
+        "Storing fundamental data restatements as overwrites rather than new, separately timestamped records",
+        "Relying solely on documentation/training to prevent bias, without structural or automated enforcement",
+        "Not distinguishing index-membership point-in-time needs from fundamental-data point-in-time needs, which require different mechanisms"
+      ],
+      "keyPoints": [
+        "Index membership needs a versioned, timestamped event log, not a current-snapshot table",
+        "Fundamental data needs both an as-of date and a knowledge date, with restatements stored as new records, not overwrites",
+        "The backtesting API itself should structurally enforce as-of queries, not just document the correct usage",
+        "Automated linting/review checks add a second layer of defense beyond researcher discipline alone"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly designs versioned, timestamped index-membership storage", "weight": 30 },
+        { "criterion": "Correctly designs as-of/knowledge-date fundamental data storage", "weight": 30 },
+        { "criterion": "Proposes structural (not just procedural) bias prevention in the API", "weight": 25 },
+        { "criterion": "Proposes an additional automated or review-based safeguard", "weight": 15 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "look-ahead-bias-and-survivorship-bias", "label": "Look-Ahead Bias & Survivorship Bias" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-012",
+      "questionCode": "LTV-QANL-0048",
+      "title": "Designing a Volatility Surface Construction and Maintenance Process",
+      "prompt": "Design the process a derivatives desk would use to build and maintain a volatility surface intraday: what inputs feed it, how do you handle strikes/expirations with thin trading, and what would trigger a manual review of the surface?",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Volatility Surface", "Implied Volatility", "Derivatives Infrastructure"],
+      "modelAnswer": "The process starts by pulling live quoted option prices across all available strikes and expirations for the underlying, then running a root-finding inversion (Newton-Raphson or bisection) against Black-Scholes for each liquid, actively-quoted contract to back out its implied volatility, building a raw grid of IV points indexed by strike and expiration. For strikes/expirations with thin or no trading, raw inversion is unreliable (stale or wide quotes produce noisy or missing IV points), so the process needs an interpolation/smoothing layer — commonly fitting a parametric curve (e.g., an SVI-style parameterization) or a smoothing spline across the liquid points for each expiration slice, then interpolating across expirations for the full surface, rather than trusting a noisy raw IV computed from a stale quote. The surface needs to update on a defined cadence (continuously intraday for liquid underlyings, or on each meaningful quote change) and should be versioned so a historical surface snapshot can be reconstructed for any past timestamp. Triggers for manual review: a surface update that produces an implausible shape (e.g., a sudden, large discontinuity in the skew or term structure inconsistent with neighboring points), implied volatilities that imply a negative or inconsistent risk-neutral density (calendar-spread or butterfly-arbitrage violations), a liquid contract's observed price falling outside the surface's fitted value by more than a defined tolerance, or a stale-quote flag on a disproportionate share of the inputs feeding a given expiration slice.",
+      "professionalAnswer": "I'd split this into two distinct jobs: getting a clean implied-vol point wherever a quote is actually trustworthy, and smoothing/interpolating everywhere else, because trying to trust every raw inversion equally is how a thin, stale quote ends up distorting the whole surface. The manual-review triggers I'd care about most are the arbitrage-violation checks — calendar spread and butterfly arbitrage in the fitted surface are structural red flags, not just noisy data, and those are exactly the kind of thing that should halt an automated update and pull a human in before the surface gets used to price anything live.",
+      "commonMistakes": [
+        "Treating raw inverted implied volatility from thin or stale quotes as equally trustworthy as liquid contract quotes",
+        "Not including an interpolation/smoothing layer, leaving gaps or noise where trading is thin",
+        "Missing arbitrage-consistency checks (calendar spread, butterfly) as a manual-review trigger",
+        "Not versioning/snapshotting the surface, making historical reconstruction for backtesting or review impossible"
+      ],
+      "keyPoints": [
+        "Build raw IV points from liquid, actively-quoted contracts via root-finding inversion",
+        "Interpolate/smooth (e.g., parametric curve fit) for thin or illiquid strikes/expirations rather than trusting noisy raw inversions",
+        "Version and snapshot the surface for historical reconstruction",
+        "Manual review triggers: implausible shape discontinuities, arbitrage violations, and quotes deviating meaningfully from the fitted surface"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly describes building raw IV from liquid quotes via inversion", "weight": 25 },
+        { "criterion": "Correctly addresses thin-liquidity strikes/expirations with interpolation/smoothing", "weight": 30 },
+        { "criterion": "Proposes concrete, correct manual-review triggers (including arbitrage checks)", "weight": 30 },
+        { "criterion": "Addresses versioning/historical reconstruction", "weight": 15 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "implied-volatility-and-the-volatility-surface", "label": "Implied Volatility & the Volatility Surface" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-013",
+      "questionCode": "LTV-QANL-0049",
+      "title": "Telling Leadership Your Risk Model Underestimated Tail Risk",
+      "prompt": "You discover, shortly after a loss event, that your own VaR/ES model had been understating tail risk for months because of a stale correlation assumption. How do you report this upward, and what do you do in the immediate aftermath?",
+      "category": "behavioral",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Model Risk", "Risk Governance", "Difficult Disclosure"],
+      "modelAnswer": "I'd report this upward quickly and directly, without waiting to have every detail polished, because a stale model understating tail risk is exactly the kind of finding that needs to inform decisions being made right now, not after a perfect post-mortem. I'd lead with what's been wrong, for how long, and the best current estimate of the impact — e.g., 'our correlation assumption hasn't reflected the regime shift that started roughly four months ago, and re-running VaR/ES with updated correlations shows our true exposure has been meaningfully higher than reported' — rather than burying the disclosure in technical caveats. In the immediate aftermath, I'd re-run the risk numbers with corrected assumptions across the whole book (not just the position involved in the loss event, since a stale correlation assumption likely affected every risk estimate, not just one), flag any positions whose true risk now appears to breach limits under the corrected model, and propose both an immediate fix (updated correlation estimates, re-validated against recent data) and a process change to prevent the staleness from going undetected this long again — such as a scheduled, recurring model-assumption review rather than an ad hoc one triggered only by a loss event.",
+      "professionalAnswer": "I would not wait to make this disclosure feel comfortable — the instinct to gather more analysis before saying anything is understandable but it's exactly the instinct that turns a four-month staleness problem into a six-month one. I'd go to leadership with what I know now, be explicit that the model's been wrong and for roughly how long, and immediately widen the investigation to the whole book rather than just the position that triggered the discovery, because a stale correlation assumption doesn't limit itself to one position. The part I'd insist on afterward is a process fix, not just a one-time correction, since the real failure here was that nothing caught this before a loss event did.",
+      "commonMistakes": [
+        "Delaying disclosure to perfect the analysis first, letting the staleness persist longer",
+        "Only correcting the risk estimate for the specific position involved in the loss event, missing that the stale assumption likely affects the whole book",
+        "Reporting the finding without a concrete immediate fix and a longer-term process change",
+        "Framing the disclosure defensively rather than directly and factually"
+      ],
+      "keyPoints": [
+        "Report upward promptly and directly, not after a fully polished post-mortem",
+        "State what was wrong, for how long, and the best current estimate of the impact",
+        "Re-run corrected risk estimates across the whole book, not just the position involved in the loss",
+        "Propose both an immediate model fix and a longer-term process change to prevent recurrence"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Reports the finding promptly, directly, and without burying it", "weight": 30 },
+        { "criterion": "Correctly widens the re-check to the whole book, not just the triggering position", "weight": 25 },
+        { "criterion": "Proposes a concrete immediate fix", "weight": 20 },
+        { "criterion": "Proposes a longer-term process change to prevent recurrence", "weight": 25 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "value-at-risk-and-expected-shortfall", "label": "Value at Risk & Expected Shortfall" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-014",
+      "questionCode": "LTV-QANL-0050",
+      "title": "Evaluating Competing Offers Across Firm Types",
+      "prompt": "You have offers from a systematic hedge fund, a prop trading firm, and a bank's quant desk, all titled 'Quantitative Analyst.' Walk through how you'd actually evaluate and compare these, beyond the headline compensation number.",
+      "category": "behavioral",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Compensation Structures", "Career Decision-Making", "Firm Types"],
+      "modelAnswer": "I'd start by understanding that these three firm types structure total compensation very differently, so comparing headline base salaries alone is close to meaningless: a systematic hedge fund role likely ties bonus to fund or team performance, a prop trading firm's bonus is often heavily tied to individual or desk PnL with a lower base, and a bank's quant desk bonus is typically tied more to overall bank/division performance and is generally less individually-PnL-linked. I'd build an independently-researched compensation range for each firm type and city using at least two sources (aggregated salary sites read skeptically, live comparable postings, and direct network contacts at similar firms), since quant compensation is unusually city- and firm-type-sensitive and averaging across firm types produces a meaningless blended number. Beyond compensation, I'd weigh strategy and risk-culture fit (does the firm's approach to research rigor and risk match my own standards, or does it reward overselling results), mentorship and learning curve (will I be actively taught or left to figure things out alone), the stability of the compensation structure (a profit-share-heavy role can be lucrative in good years and thin in bad ones — know my own tolerance for that variance), and what the role actually does day to day, since 'Quantitative Analyst' can mean research-heavy, trading-heavy, or infrastructure-heavy work at different firms even under the same title.",
+      "professionalAnswer": "The first thing I'd pin down for each offer is the actual compensation structure, not just the number, because a hedge fund's PnL-linked bonus, a prop shop's profit-share, and a bank's division-performance bonus are three completely different risk/reward shapes even if the base salaries look similar on paper. Past that, I'd weigh the things that actually determine whether the next few years go well: will I learn from people who actively teach, does the firm's research culture match my own standards for honesty about results, and can I actually tolerate the variance of whichever compensation structure I'm signing up for. The title 'Quantitative Analyst' tells me almost nothing about what the day-to-day job actually is across these three firm types, so I'd confirm that specifically before comparing anything else.",
+      "commonMistakes": [
+        "Comparing headline base salaries directly across firm types without accounting for different compensation structures",
+        "Averaging salary benchmarks across firm types into one meaningless blended number",
+        "Ignoring mentorship, risk culture, and day-to-day role content in favor of compensation alone",
+        "Assuming the same job title means the same actual responsibilities across different firm types"
+      ],
+      "keyPoints": [
+        "Compensation structure (base/bonus/profit-share mix) varies fundamentally by firm type, not just by seniority",
+        "Build a researched compensation range per firm type and city from at least two independent sources",
+        "Weigh strategy/risk-culture fit, mentorship, and compensation-structure stability alongside the number",
+        "Confirm what the role actually does day to day, since the same title can mean very different work across firm types"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains how compensation structures differ by firm type", "weight": 30 },
+        { "criterion": "Describes a sound, multi-source approach to researching compensation ranges", "weight": 25 },
+        { "criterion": "Weighs non-compensation factors (culture, mentorship, structure stability)", "weight": 25 },
+        { "criterion": "Notes the need to confirm actual day-to-day role content", "weight": 20 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "quant-research-and-trading-capstone", "lessonSlug": "compensation-offers-and-choosing-a-firm", "label": "Compensation, Offers & Choosing a Firm" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    }
+  ]
+}

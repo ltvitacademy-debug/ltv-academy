@@ -1,0 +1,323 @@
+{
+  "questions": [
+    {
+      "id": "qres-beg-001",
+      "questionCode": "LTV-QRES-0001",
+      "title": "The Central Limit Theorem and the Standard Error of the Mean",
+      "prompt": "You're estimating the mean daily return of a stock from one year of daily log returns. Walk me through what the Central Limit Theorem tells you about the sampling distribution of that estimate, and explain why doubling your sample size does not halve your uncertainty.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Central Limit Theorem", "Statistical Estimation", "Probability Theory"],
+      "modelAnswer": "The Law of Large Numbers guarantees the sample mean of daily returns converges to the true mean as the sample grows, but it says nothing about the shape of the remaining uncertainty. The Central Limit Theorem fills that gap: for i.i.d. observations with finite mean mu and finite variance sigma^2, sqrt(n)*(X_bar - mu)/sigma converges in distribution to N(0,1), so for large n the sample mean itself is approximately X_bar ~ N(mu, sigma^2/n). Critically, this holds regardless of the shape of the daily return distribution (skewed, fat-tailed, whatever) as long as the variance is finite. The standard deviation of that sampling distribution, sigma/sqrt(n), is called the standard error of the mean, and it shrinks with the square root of n, not linearly. That means to cut the uncertainty in half you need four times as much data, not twice as much -- which is exactly why precisely estimating a mean daily return from historical data is so hard: daily volatility is large relative to the mean you're trying to pin down, and the sqrt(n) scaling makes that gap close only very slowly.",
+      "professionalAnswer": "I'd walk through it the way I actually think about it when someone hands me a 'the average daily return is X%' claim. The Law of Large Numbers is the reason I believe averaging is a sensible thing to do at all -- with enough data, the sample mean gets close to the truth. But the CLT is the more useful tool day to day, because it tells me how precise that estimate is: the sampling distribution of the mean is approximately normal with standard deviation sigma over root n, and that holds even though daily returns themselves are clearly not normal -- they're fat-tailed and a bit skewed. The part that trips people up, and that I'd flag explicitly, is the square-root scaling. If I have a year of data and want to cut my standard error in half, I don't need two years, I need four. That's the practical reason a 'statistically significant' mean-return estimate from a few years of daily data should always be treated with some suspicion -- the standard error is often embarrassingly large relative to the number you're estimating.",
+      "example": "With a daily volatility of 1.5% and 252 trading days in a year, the standard error of the annual mean-return estimate is 0.015/sqrt(252) ≈ 0.00094, or about 0.094% per day -- often larger than the mean return itself, which is why a single year of daily data rarely lets you reject the null hypothesis that the true mean return is zero.",
+      "commonMistakes": [
+        "Assuming the CLT requires the underlying daily returns to already be normally distributed, rather than understanding it's the average that becomes approximately normal",
+        "Confusing the Law of Large Numbers (the mean converges) with the Central Limit Theorem (the shape and rate of that convergence)",
+        "Assuming standard error shrinks proportionally with sample size instead of with its square root",
+        "Forgetting that the classical CLT requires finite variance, which can fail for extremely heavy-tailed return series"
+      ],
+      "keyPoints": [
+        "LLN says the sample mean converges to the true mean; CLT describes the shape of the remaining uncertainty",
+        "sqrt(n)*(X_bar - mu)/sigma -> N(0,1) holds for any finite-variance i.i.d. distribution, not just normal data",
+        "Standard error of the mean is sigma/sqrt(n)",
+        "Halving the standard error requires 4x the data, not 2x",
+        "This is why mean-return estimates from daily data are often imprecise even over multi-year windows"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "States the CLT correctly, including that it holds regardless of the underlying distribution's shape", "weight": 30 },
+        { "criterion": "Explains the sqrt(n) standard-error scaling and its practical consequence", "weight": 30 },
+        { "criterion": "Distinguishes the Law of Large Numbers from the Central Limit Theorem", "weight": 20 },
+        { "criterion": "Clarity and use of a concrete framing", "weight": 20 }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "mathematics-for-quantitative-finance",
+        "lessonSlug": "law-of-large-numbers-and-central-limit-theorem",
+        "label": "Review: Law of Large Numbers & Central Limit Theorem"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-beg-002",
+      "questionCode": "LTV-QRES-0002",
+      "title": "Why Model Returns, Not Prices",
+      "prompt": "A junior analyst wants to fit an ARMA model directly to a stock's daily closing-price series. Explain why that's a problem, and what 'stationarity' actually means in this context.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Stationarity", "Time Series", "Statistics"],
+      "modelAnswer": "A time series is weakly (covariance) stationary if, for all t, it has a constant mean, a constant variance, and an autocovariance that depends only on the lag between two points, not on calendar time itself. Raw stock prices violate this badly: they trend over time (so the mean isn't constant) and their variance tends to grow or shift across regimes. A price series behaves like a random walk, which has a unit root -- shocks never decay, and the variance of the level grows without bound as time passes. Fitting ARMA, GARCH, or almost any classical time-series model to a non-stationary series produces unreliable, often nonsensical parameter estimates and spurious-looking fits, because those models assume the statistical properties they're estimating (mean, variance, autocorrelation structure) are stable over the estimation window. The fix is to work with log returns instead of prices: differencing the log price series removes the trend and typically produces a series that passes a stationarity test (such as the Augmented Dickey-Fuller test) decisively, which is why virtually every model in quantitative finance is built on returns, not price levels.",
+      "professionalAnswer": "I'd stop the analyst before they run the model and ask: does this series look like it has the same statistical behavior in year one as it does in year five? For a raw price series, obviously not -- it trends, and its volatility shifts around. That's non-stationarity, and it's not a minor technicality; ARMA's whole machinery assumes constant mean and a lag-only autocovariance structure, so fitting it to a trending price series gives you garbage parameter estimates that happen to look plausible. The fix I'd actually make them do is take log returns instead -- differencing the log price kills the trend and, in my experience, almost always turns a series that fails an ADF test into one that passes it cleanly. I'd also flag that this isn't just an ARMA issue; GARCH, cointegration tests, basically everything downstream in this kind of research assumes some form of stationarity, so getting this step right first saves a lot of debugging later.",
+      "commonMistakes": [
+        "Treating 'stationary' and 'normally distributed' as the same property",
+        "Assuming a model 'fitting' without errors means the stationarity assumption was satisfied",
+        "Not realizing that returns, not prices, are the quantity that's actually of interest anyway -- nobody invests to own a price level",
+        "Forgetting that even engineered features (rolling sums, cumulative fundamentals) can inherit the same non-stationarity problem"
+      ],
+      "keyPoints": [
+        "Weak stationarity: constant mean, constant variance, autocovariance depends only on lag",
+        "Raw price levels trend and have shifting variance, so they fail stationarity",
+        "A price series behaves like a random walk / unit-root process -- shocks never decay",
+        "Log returns are (usually) stationary, which is why models are built on returns, not prices",
+        "The Augmented Dickey-Fuller test is the standard way to check this in practice"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Gives the correct definition of weak stationarity", "weight": 35 },
+        { "criterion": "Explains why raw prices violate it and why returns typically satisfy it", "weight": 35 },
+        { "criterion": "Mentions a concrete consequence of fitting a model to non-stationary data", "weight": 20 },
+        { "criterion": "Clarity", "weight": 10 }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "time-series-and-financial-modeling",
+        "lessonSlug": "stationarity-and-unit-roots",
+        "label": "Review: Stationarity & Unit Roots"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-beg-003",
+      "questionCode": "LTV-QRES-0003",
+      "title": "Computing Log Returns and Why Time-Additivity Matters",
+      "prompt": "Given a pandas Series of daily closing prices called `prices`, write the code to compute both simple returns and log returns. Then explain why a quant researcher building a multi-day cumulative-return feature would reach for log returns instead of simple returns.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["pandas", "NumPy", "Returns Calculation"],
+      "code": "import pandas as pd\n\nprices = pd.Series([100.0, 102.0, 101.0, 105.0, 110.0])",
+      "modelAnswer": "Simple returns are computed with `prices.pct_change()`, giving (P_t - P_{t-1})/P_{t-1}. Log returns are computed with `np.log(prices).diff()` (equivalently `np.log(prices / prices.shift(1))`), giving ln(P_t/P_{t-1}). The key property that makes log returns the default choice for a multi-day feature is time-additivity: the log return over several periods is exactly the sum of the one-period log returns, r_(t-k,t) = r_t + r_{t-1} + ... + r_{t-k+1}. That means a '5-day cumulative return' feature can be built by summing five daily log returns with a rolling `.sum()`, which is both simpler and numerically cleaner than the multiplicative compounding simple returns require, (1+R_1)*(1+R_2)*...*(1+R_n) - 1. Simple returns have their own useful property -- cross-sectional (portfolio) additivity, since a portfolio's return is the weighted average of its holdings' simple returns -- but that's the wrong property for a single-asset, multi-period feature, which is exactly the case here.",
+      "professionalAnswer": "I'd just write it directly: `simple_returns = prices.pct_change()` and `log_returns = np.log(prices).diff()`. For the 'why log returns' part, the honest answer is almost always time-additivity -- if I want a 5-day momentum feature, I can just take a rolling sum of daily log returns instead of multiplying five (1+R) terms together, which is cleaner to compute and avoids any multiplicative compounding mistakes. I'd also mention the flip side so it doesn't sound like log returns are always correct: if I were instead building a portfolio-level return from several holdings at one point in time, I'd want simple returns, because those are the ones that add up correctly across assets in a weighted average. Picking the wrong one for the wrong axis -- time versus assets -- is a classic beginner mistake.",
+      "example": "cum_growth_from_log = np.exp(log_returns.cumsum()) and cum_growth_from_simple = (1 + simple_returns).cumprod() should match up to floating-point noise over the same window -- a good sanity check that both were computed correctly.",
+      "commonMistakes": [
+        "Summing simple returns instead of compounding them multiplicatively, which overstates true cumulative growth",
+        "Using log returns to aggregate across assets in a portfolio at a single point in time, where simple returns are the correct additive quantity",
+        "Forgetting the first value of either series is NaN and needs to be dropped before feeding it into a model",
+        "Not recognizing that for small moves the two return types are numerically very close, which can hide a real bug for a while"
+      ],
+      "keyPoints": [
+        "`pct_change()` for simple returns, `np.log(prices).diff()` for log returns",
+        "Log returns are time-additive: multi-period log return is the sum of one-period log returns",
+        "Simple returns are cross-sectionally additive: a portfolio's return is the weighted average of its holdings' simple returns",
+        "A multi-day feature should use log returns and a rolling sum, not multiplicative compounding of simple returns"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct pandas/NumPy code for both return types", "weight": 40 },
+        { "criterion": "Correctly explains time-additivity as the reason to prefer log returns here", "weight": 35 },
+        { "criterion": "Correctly distinguishes when simple returns are actually the right choice", "weight": 15 },
+        { "criterion": "Clarity", "weight": 10 }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "time-series-and-financial-modeling",
+        "lessonSlug": "prices-returns-and-log-returns",
+        "label": "Review: Prices, Returns & Log Returns"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-beg-004",
+      "questionCode": "LTV-QRES-0004",
+      "title": "Computing Portfolio Variance as a Quadratic Form",
+      "prompt": "You're given a 3-asset covariance matrix `Sigma` as a NumPy array and a weight vector `w`. Write the NumPy code to compute the portfolio's variance, and explain in one sentence why that result is guaranteed to be non-negative no matter what weights you choose.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["NumPy", "Linear Algebra", "Portfolio Risk"],
+      "code": "import numpy as np\n\nSigma = np.array([\n    [0.040, 0.018, 0.012],\n    [0.018, 0.090, 0.030],\n    [0.012, 0.030, 0.025],\n])\nw = np.array([0.5, 0.3, 0.2])",
+      "modelAnswer": "Portfolio variance is the quadratic form `portfolio_var = w @ Sigma @ w`. This is guaranteed non-negative because a covariance matrix is always symmetric positive semi-definite: for any weight vector w, w^T*Sigma*w equals Var(w^T*X), the variance of the weighted combination of the underlying asset returns, and a variance can never be negative. Note the common mistake of writing `w * Sigma * w`, which is elementwise multiplication on mismatched shapes and not the matrix-algebra operation at all -- `@` must be used for matrix-vector multiplication in NumPy.",
+      "professionalAnswer": "I'd write `w @ Sigma @ w` and leave it at that for the code. For the 'why is it always non-negative' part, the clean way to say it is that w^T*Sigma*w is literally the variance of the portfolio's return, Var(w^T*X), and variances are never negative by definition -- so the positive semi-definiteness of a covariance matrix isn't some separate fact you have to prove, it falls straight out of what the matrix actually represents. I'd also flag the NumPy gotcha here, because it's the single most common mistake I see: people write `w * Sigma * w` using `*`, which is elementwise, not `@`. That either errors out on shape mismatch or silently gives you a meaningless array instead of a scalar.",
+      "commonMistakes": [
+        "Using `*` (elementwise multiplication) instead of `@` (matrix multiplication)",
+        "Forgetting to flatten the result to a scalar when weights are passed as a column vector",
+        "Explaining positive semi-definiteness as an abstract linear-algebra fact rather than connecting it to 'this number is literally a variance'",
+        "Not checking that `Sigma` is actually symmetric before trusting downstream calculations built on it"
+      ],
+      "keyPoints": [
+        "Portfolio variance is the quadratic form w^T * Sigma * w",
+        "Use `@` for matrix/vector multiplication in NumPy, never `*`",
+        "A covariance matrix is always symmetric positive semi-definite because w^T*Sigma*w = Var(w^T*X) >= 0",
+        "This single fact underlies mean-variance portfolio optimization and PCA"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct NumPy code using `@`", "weight": 45 },
+        { "criterion": "Correctly explains why the result is non-negative, tying it to the definition of variance", "weight": 40 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 2,
+      "lessonLink": {
+        "courseSlug": "mathematics-for-quantitative-finance",
+        "lessonSlug": "covariance-matrices-and-principal-components",
+        "label": "Review: Covariance Matrices & Principal Components"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-beg-005",
+      "questionCode": "LTV-QRES-0005",
+      "title": "A Backtest That Looks Too Good to Be True",
+      "prompt": "A new intern shows you a backtest of a simple moving-average crossover strategy with a Sharpe ratio of 4.5. Before getting excited, what are the first two or three things you'd check?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Backtesting", "Look-Ahead Bias", "Overfitting"],
+      "modelAnswer": "A Sharpe ratio that high on a simple strategy is a red flag, not a reason for excitement, and the first checks should target the most common causes. First, look-ahead bias: does every signal and feature in the backtest use only information that would actually have been available at that point in time, or did something (an index membership list, a restated fundamental, a same-day closing price used to both generate and execute the signal) sneak in from the future? Second, survivorship bias: was the universe built from today's list of surviving assets, projected backward, silently excluding companies or funds that were delisted or went bankrupt along the way? Third, ask how many variants of this strategy (different moving-average windows, different thresholds) were tried before this one was shown to you -- if dozens were tested and only the best one is being reported, that's a multiple-testing problem, and an impressively high Sharpe ratio is exactly what you'd expect to see from pure chance across enough trials, even with zero real skill in any of them.",
+      "professionalAnswer": "Honestly, my gut reaction to a 4.5 Sharpe on a moving-average crossover is suspicion, not excitement -- that's an extraordinary number for a strategy that simple. The first thing I'd ask is whether the backtest could be peeking into the future anywhere: is the signal computed using only prices available up to that bar's close, or did a rolling window accidentally include the current (or a future) bar? Second, I'd ask about the universe -- is this tested only on stocks that are still around today, which would quietly exclude every company that blew up along the way and flatter the result? And third, and this is the one interns usually haven't thought about yet, I'd ask how many parameter combinations were tried to land on this specific one. If it's the best of fifty window lengths tried, a great-looking Sharpe is just what you'd expect from noise alone, and reporting only the winner without saying how many were tried is a classic way research fools itself.",
+      "commonMistakes": [
+        "Getting excited about a high Sharpe ratio before checking for look-ahead or survivorship bias",
+        "Not asking how many strategy variants were tried before this one was selected",
+        "Assuming the backtest costs (if any) were modeled realistically without checking",
+        "Treating 'the backtest runs without errors' as evidence the result is trustworthy"
+      ],
+      "keyPoints": [
+        "An unusually high Sharpe ratio on a simple strategy should trigger scrutiny, not celebration",
+        "Check for look-ahead bias: does every feature only use information that was actually available at that time",
+        "Check for survivorship bias: does the universe include assets that were delisted or went bankrupt",
+        "Ask how many strategy variants were tried -- multiple testing inflates the apparent best result"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Identifies look-ahead bias as a check", "weight": 30 },
+        { "criterion": "Identifies survivorship bias as a check", "weight": 25 },
+        { "criterion": "Identifies multiple testing / number of variants tried as a check", "weight": 25 },
+        { "criterion": "Correctly frames a high Sharpe ratio as suspicious rather than exciting", "weight": 20 }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "machine-learning-for-quant-finance",
+        "lessonSlug": "the-overfitting-problem-in-finance",
+        "label": "Review: The Overfitting Problem in Finance"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-beg-006",
+      "questionCode": "LTV-QRES-0006",
+      "title": "Why Hardcoded File Paths Hurt a Research Codebase",
+      "prompt": "Ten different notebooks in your research repo each call `pd.read_parquet()` with a hardcoded path to a vendor file. What goes wrong with this pattern over time, and what's the basic fix?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Research Infrastructure", "Data Engineering", "Python"],
+      "modelAnswer": "Hardcoding a file path into every notebook that needs the data means the loading and cleaning logic is duplicated ten times. The moment the source changes -- a new vendor, a renamed column, a moved file -- every one of those call sites has to be found and fixed individually, and any two of them that handle a quirk (a timezone, a column name, a missing-value convention) even slightly differently will silently produce different numbers from what's supposed to be 'the same' data. The fix is a thin research data layer: a function like `load_prices(universe, start, end)` that hides the actual source (file path, column names, timezone handling) behind a stable interface, so every notebook calls the same function instead of re-implementing the read-and-clean logic. That also makes it trivial to add caching in one place, since every caller now goes through the same code path.",
+      "professionalAnswer": "This is one of those things that looks totally fine on day one and becomes a real mess by month three. If ten notebooks all hardcode the same file path, you don't actually have one source of truth -- you have ten copies of the loading logic that happen to currently agree. The day the vendor renames a column or the file moves, you're hunting through ten notebooks instead of fixing one function. My actual fix is always the same: write a `load_prices(universe, start, end)`-style function once, have it handle the messy stuff -- column names, timezones, whatever the raw file's quirks are -- and make every notebook call that function instead of touching the file directly. Then if the source changes, I fix it in one place and every notebook downstream just keeps working.",
+      "commonMistakes": [
+        "Treating this as a minor style preference rather than a real source of silent data inconsistency",
+        "Fixing the hardcoded path problem by search-and-replace across notebooks instead of introducing a shared function",
+        "Not normalizing column names, dtypes, and timezones consistently across different data sources",
+        "Forgetting that a stable interface also makes caching trivial to add later, in one place"
+      ],
+      "keyPoints": [
+        "Duplicated hardcoded paths mean duplicated loading/cleaning logic across every call site",
+        "A source change requires fixing every call site individually, and inconsistent handling causes silently different results",
+        "The fix is a stable interface function (e.g. load_prices) that hides the source behind a consistent contract",
+        "This also makes caching and future source changes much easier to manage"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Explains the duplication/inconsistency problem clearly", "weight": 40 },
+        { "criterion": "Proposes a stable-interface function as the fix", "weight": 40 },
+        { "criterion": "Clarity", "weight": 20 }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "building-a-research-data-layer",
+        "label": "Review: Building a Research Data Layer"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-beg-007",
+      "questionCode": "LTV-QRES-0007",
+      "title": "Explaining a Sharpe Ratio to a Non-Technical Stakeholder",
+      "prompt": "A member of the firm's investor-relations team, who has no statistics background, asks you what a 'Sharpe ratio of 1.2' actually means and whether it's good. How do you explain it?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Communication", "Risk-Adjusted Return"],
+      "modelAnswer": "A strong answer avoids formulas entirely and leads with the intuition: the Sharpe ratio measures how much return you're getting for the amount of bumpiness, or risk, you had to tolerate to get it -- it's return per unit of volatility, not just return on its own. A Sharpe of 1.2 means that, historically, the strategy's average excess return each year has been about 1.2 times its own year-to-year volatility, which is a solid, respectable figure for most systematic strategies (very few strategies sustain much above 2 for long, and many real strategies run well below 1). The honest caveat worth adding is that a Sharpe ratio alone doesn't tell you about tail risk or how the strategy behaves in a crash, which is a reasonable point to make rather than letting the single number stand in for the whole risk picture.",
+      "professionalAnswer": "I'd start without any math at all: 'it's a way of measuring how much return you got for how much risk you had to take to get it, not just the return by itself.' Then I'd give them a number to anchor on -- most systematic strategies that are considered genuinely good land somewhere between 0.5 and 1.5, so 1.2 is solidly in the respectable range, not spectacular but not weak either. I'd be careful not to oversell it, though -- I'd also say plainly that Sharpe ratio doesn't capture everything, especially tail risk, so a strategy can have a perfectly fine Sharpe ratio and still have a bad month if the market does something unusual. I think that honesty actually builds more trust with a non-technical stakeholder than a confident-sounding number alone would.",
+      "commonMistakes": [
+        "Leading with the formula (mean excess return divided by standard deviation) instead of the intuition",
+        "Implying a single number like Sharpe ratio captures the whole risk picture",
+        "Failing to give a benchmark (what counts as a 'good' Sharpe ratio in practice) for context",
+        "Using jargon like 'risk-adjusted' without unpacking what that actually means"
+      ],
+      "keyPoints": [
+        "Sharpe ratio is return per unit of risk (volatility), not return alone",
+        "Gives a practical benchmark for what counts as a reasonable value",
+        "Avoids formulas and jargon when explaining to a non-technical audience",
+        "Honestly notes the metric's limitation (it doesn't capture tail risk)"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Explains the concept in plain, non-technical language", "weight": 40 },
+        { "criterion": "Gives useful context for what counts as a good value", "weight": 30 },
+        { "criterion": "Notes a real limitation honestly rather than overselling the metric", "weight": 20 },
+        { "criterion": "Clarity and tone appropriate for a non-technical audience", "weight": 10 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-beg-008",
+      "questionCode": "LTV-QRES-0008",
+      "title": "When Your Research Hypothesis Turns Out to Be Wrong",
+      "prompt": "Tell me about a time you were confident a signal or hypothesis would work, built it out, and the data told you otherwise. How did you handle it?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Research Process", "Intellectual Honesty"],
+      "modelAnswer": "A strong answer names a specific hypothesis, states plainly what the researcher expected and why, describes the actual result that contradicted it, and explains what they did next -- rather than quietly abandoning the idea or forcing the data to agree. The best answers show the researcher stating the hypothesis and success criteria before looking at results (so the negative finding isn't just hindsight), checking whether the negative result was a real finding or a bug in the pipeline, and then documenting the negative result rather than burying it, since a well-documented null result saves someone else from re-testing the same idea later.",
+      "professionalAnswer": "I'd tell this as a short, specific story rather than a general principle. I'd name the actual hypothesis I had going in, be honest about why I was confident, describe concretely what the data showed instead, and then focus most of the answer on what I did next -- did I double-check it wasn't a bug, did I write it down somewhere so the next person doesn't waste a week re-testing the same idea, did I update how I think about that kind of signal going forward. I think the thing an interviewer is actually listening for here is whether I treat a wrong hypothesis as useful information or as a personal failure -- the honest answer is it's useful information, and pretending otherwise is a worse habit than being wrong in the first place.",
+      "commonMistakes": [
+        "Giving a vague, generic answer with no specific hypothesis or result",
+        "Describing the failure but not what was done afterward (verifying it wasn't a bug, documenting it)",
+        "Sounding defensive about having been wrong, rather than treating it as a normal part of research",
+        "Claiming the hypothesis was secretly 'right all along' with minor caveats, rather than genuinely updating"
+      ],
+      "keyPoints": [
+        "States a specific hypothesis and why it seemed reasonable beforehand",
+        "Describes the actual contradicting result honestly",
+        "Verifies the negative result wasn't itself a pipeline bug before accepting it",
+        "Documents or acts on the negative finding rather than quietly dropping it"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Gives a specific, concrete example rather than a generic answer", "weight": 35 },
+        { "criterion": "Shows intellectual honesty about being wrong", "weight": 30 },
+        { "criterion": "Describes a sound follow-up process (verification, documentation)", "weight": 25 },
+        { "criterion": "Clarity and structure", "weight": 10 }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "quant-research-and-trading-capstone",
+        "lessonSlug": "formulating-a-research-question",
+        "label": "Review: Formulating a Research Question"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    }
+  ]
+}

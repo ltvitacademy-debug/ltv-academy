@@ -5,7 +5,13 @@ import { loadInterviewBank, hasInterviewBank } from "@/lib/interviewPrep";
 import InterviewPrep from "@/components/app/InterviewPrep";
 
 export function generateStaticParams() {
-  return CAREER_PATHS.filter((p) => hasInterviewBank(p.slug)).map((p) => ({ path: p.slug }));
+  // "quantitative-developer-researcher" has its own static sibling route
+  // (app/app/interview-prep/quantitative-developer-researcher/) — a 3-way
+  // role picker (Researcher/Developer/Analyst), since that destination's
+  // bank is split into 3 separate banks instead of one. Next.js prefers the
+  // static route over this dynamic one for that exact slug, so excluding it
+  // here just avoids generating an unreachable duplicate page for it.
+  return CAREER_PATHS.filter((p) => hasInterviewBank(p.slug) && p.slug !== "quantitative-developer-researcher").map((p) => ({ path: p.slug }));
 }
 
 export default async function InterviewPrepPage({

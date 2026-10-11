@@ -1,0 +1,449 @@
+{
+  "questions": [
+    {
+      "id": "qdev-beg-001",
+      "questionCode": "LTV-QDEV-0001",
+      "title": "RAII: Why C++ Ties Resource Lifetime to Scope",
+      "prompt": "Explain what RAII (Resource Acquisition Is Initialization) means in C++, and why it's the idiom nearly all modern C++ resource management is built on. Use an example other than a smart pointer -- a file handle or a network connection -- to show why it matters.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "RAII",
+        "C++ Fundamentals",
+        "Resource Management"
+      ],
+      "modelAnswer": "RAII ties the lifetime of a resource -- heap memory, a file handle, a socket, a lock -- to the lifetime of an object. The resource is acquired in the object's constructor and released in its destructor. Because C++ guarantees a stack object's destructor runs deterministically the moment it goes out of scope -- whether that's normal control flow, an early return, or an exception unwinding through the scope -- the resource is released no matter how the function exits. The programmer never has to remember to call a cleanup function on every exit path; the type system does it automatically. A FileHandle class that opens a file in its constructor and calls fclose in its destructor is a direct example: once an instance goes out of scope, the file closes, even if the function threw partway through. This is exactly the mechanism std::unique_ptr and std::lock_guard build on; they are just RAII applied to heap memory and mutexes respectively.",
+      "professionalAnswer": "I'd describe RAII as 'the destructor is the cleanup code, and C++ guarantees it runs.' Instead of writing open() then remembering to close() on every single return path -- including the ones you forget about, like an exception -- you wrap the resource in a small class: acquire it in the constructor, release it in the destructor. The moment that object's scope ends, cleanup just happens, automatically, deterministically, no garbage collector involved. It's the single idea that makes modern C++ memory-safe-feeling without a GC -- unique_ptr, lock_guard, ifstream, they're all the same trick applied to a different resource.",
+      "commonMistakes": [
+        "Thinking RAII only applies to smart pointers, not files, sockets, or locks",
+        "Thinking RAII only guards against exceptions, when it also protects every ordinary early return",
+        "Writing a class with acquire-in-constructor but a separate manual cleanup() method instead of putting release logic in the destructor, defeating the whole point"
+      ],
+      "keyPoints": [
+        "A resource is acquired in a constructor and released in the matching destructor",
+        "Destructor execution is deterministic and runs on every exit path, including exceptions",
+        "RAII removes the need to remember manual cleanup on each return path",
+        "Smart pointers, lock_guard, and file streams are all RAII applied to a specific resource"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly defines RAII as tying resource lifetime to object lifetime",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains deterministic destructor execution, including on exception paths",
+          "weight": 25
+        },
+        {
+          "criterion": "Gives a non-smart-pointer example (file/socket/lock)",
+          "weight": 25
+        },
+        {
+          "criterion": "Clear, accurate overall explanation",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "smart-pointers-and-raii",
+        "label": "Review: Smart Pointers & RAII"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-002",
+      "questionCode": "LTV-QDEV-0002",
+      "title": "Stack vs. Heap: Lifetime, Speed, and a Classic Bug",
+      "prompt": "What's the difference between stack and heap allocation in C++? Walk through why returning a pointer to a local (stack) variable from a function is a bug, and how you'd fix it.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Memory Management",
+        "C++ Fundamentals",
+        "Object Lifetime"
+      ],
+      "modelAnswer": "Stack memory is allocated and freed automatically as functions are called and return -- every local variable lives in the current function's stack frame, and the whole frame is popped the instant the function returns, destroying those variables. It's extremely fast because there's no allocation bookkeeping, but strictly scoped: a stack object cannot outlive the block that created it. Heap memory, requested explicitly with new, has a lifetime completely independent of scope -- it lives until something explicitly calls delete on it, even long after the function that allocated it has returned. Returning a pointer to a local variable (e.g. `double* make_price() { double price = 182.35; return &price; }`) is a bug because the moment the function returns, that stack frame is popped and `price` ceases to exist; the returned pointer refers to memory that may already be reused by something else. Dereferencing it afterward is undefined behavior -- it might print a plausible-looking stale value, garbage, or crash, unpredictably. The fix is to return by value (the stack object is copied or moved out safely before the frame is popped) or allocate on the heap and return ownership through a smart pointer.",
+      "professionalAnswer": "Stack is the 'free, automatic, scoped' memory -- it's gone the second the function returns, no action needed from you. Heap is the 'you asked for it, you own it until you say otherwise' memory. The classic beginner bug is handing out the address of a stack variable and expecting it to still mean something after the function that owned it has already returned -- it's reading memory that's already been reclaimed. The fix is almost always to just return the value itself rather than a pointer to it; modern C++ makes that efficient via move semantics, so there's rarely a real reason to reach for a raw pointer here at all.",
+      "example": "double* p = make_price(); std::cout << *p; // undefined behavior -- price's stack frame is already gone",
+      "commonMistakes": [
+        "Returning the address of a local variable instead of returning by value",
+        "Assuming a crash will happen immediately, when the bug can silently print a plausible stale value instead",
+        "Thinking heap memory is automatically freed the way stack memory is"
+      ],
+      "keyPoints": [
+        "Stack allocation is automatic, fast, and strictly scoped to the enclosing block",
+        "Heap allocation persists until explicitly freed, independent of any function's scope",
+        "Returning a pointer/reference to a local variable is undefined behavior once the frame is popped",
+        "Returning by value (relying on move semantics) is the safe, idiomatic fix"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly contrasts stack vs. heap lifetime and speed",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains why the dangling-pointer bug occurs",
+          "weight": 30
+        },
+        {
+          "criterion": "Gives the correct fix (return by value / smart pointer)",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity of explanation",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "the-stack-the-heap-and-object-lifetime",
+        "label": "Review: The Stack, the Heap & Object Lifetime"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-003",
+      "questionCode": "LTV-QDEV-0003",
+      "title": "Fix This Leak With a Smart Pointer",
+      "prompt": "The function below leaks memory on every call. Rewrite it using a smart pointer so the leak is structurally impossible, and explain why your version can't leak even if an exception is thrown partway through processing.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": [
+        "Smart Pointers",
+        "RAII",
+        "Memory Management"
+      ],
+      "code": "Order* process_order(int id, double price) {\n    Order* o = new Order{id, price};\n    validate(o);          // throws on bad input\n    enrich(o);\n    return o;              // caller must remember to delete -- and never does on the throw path\n}",
+      "modelAnswer": "Replace the raw new/delete with std::unique_ptr (constructed via std::make_unique), and let the compiler-generated destructor handle cleanup. Because unique_ptr's destructor runs deterministically when it goes out of scope -- on a normal return, an early return, or an exception propagating through -- the Order it owns is always deleted exactly once, with no code path left that forgets to call delete. There's also no way to accidentally double-delete or delete twice, since unique_ptr can't be copied, only moved, so at most one owner ever exists.",
+      "professionalAnswer": "The fix is almost mechanical once you see it: swap `Order* o = new Order(...)` for `auto o = std::make_unique<Order>(...)`, drop the manual delete entirely, and use `o->` exactly as before. The reason it can't leak on an exception is the same reason RAII works everywhere -- the unique_ptr is a stack object, and stack objects get their destructors run during exception unwinding, same as a normal return. You genuinely don't have to think about the exception path separately; it's handled by the same mechanism as the happy path.",
+      "example": "std::unique_ptr<Order> process_order(int id, double price) {\n    auto o = std::make_unique<Order>(Order{id, price});\n    validate(*o);   // if this throws, o's destructor still runs -- no leak\n    enrich(*o);\n    return o;        // ownership moved out, not copied\n}",
+      "commonMistakes": [
+        "Forgetting std::make_unique and still writing new T(...) manually, which loses the exception-safety benefit make_unique provides during argument evaluation",
+        "Manually calling delete on the pointer the unique_ptr owns, causing a double-free",
+        "Using std::shared_ptr by habit when exclusive ownership (unique_ptr) is all that's needed, adding unnecessary reference-counting overhead"
+      ],
+      "keyPoints": [
+        "std::unique_ptr's destructor automatically deletes the owned object",
+        "Destructors run on every exit path, including exception unwinding",
+        "std::make_unique is preferred over new + unique_ptr construction",
+        "unique_ptr cannot be copied, only moved, preventing double ownership"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly replaces new/delete with unique_ptr/make_unique",
+          "weight": 40
+        },
+        {
+          "criterion": "Explains why the destructor runs even on the exception path",
+          "weight": 30
+        },
+        {
+          "criterion": "Notes unique_ptr cannot be copied, preventing double-free",
+          "weight": 15
+        },
+        {
+          "criterion": "Code is syntactically correct",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "smart-pointers-and-raii",
+        "label": "Review: Smart Pointers & RAII"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-004",
+      "questionCode": "LTV-QDEV-0004",
+      "title": "Why Returning a Large Vector by Value Is Cheap in Modern C++",
+      "prompt": "Write a function that builds a std::vector<double> of a million simulated prices and returns it by value. Explain why this doesn't copy a million doubles in modern C++, and what would have happened in C++03.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": [
+        "Move Semantics",
+        "C++ Fundamentals",
+        "Performance"
+      ],
+      "modelAnswer": "Because the vector being returned is a local variable about to go out of scope, it's treated as an rvalue at the return statement, and the compiler either elides the copy entirely or invokes std::vector's move constructor -- which just swaps a few internal pointers (data, size, capacity) between the local vector and the caller's destination, with zero element-by-element copying. In C++03, before move semantics existed, the same code would have performed a full copy: allocate a new million-element buffer and copy every double into it, then destroy the original -- a real, measurable cost for something that's conceptually just handing the data to the caller. This is exactly why modern C++ guidance is to write the natural return-by-value signature rather than an output parameter or raw pointer 'to avoid a copy' the old C++03 way demanded.",
+      "professionalAnswer": "I'd just write the obvious signature -- build the vector locally, return it by value -- and trust the compiler. That used to be bad advice in C++03, where it really did copy the whole buffer, which is why you see a lot of old code passing an output reference parameter instead. Move semantics changed that: the compiler sees you're returning a local that's about to die anyway, so it moves the internal buffer pointer instead of copying every element. It's one of the clearest cases where modern C++ let people go back to writing readable code without paying a performance tax for it.",
+      "example": "std::vector<double> simulate_prices(int n) {\n    std::vector<double> prices;\n    prices.reserve(n);\n    for (int i = 0; i < n; ++i) prices.push_back(100.0 + 0.01 * i);\n    return prices;   // moved (or elided), not copied\n}",
+      "commonMistakes": [
+        "Still writing an output-parameter style signature (passing a vector& to fill) out of old C++03 habit when return-by-value is now equally fast",
+        "Thinking std::move is required on the return statement -- it isn't; the compiler already treats the return of a local as a move candidate",
+        "Assuming the one-million-element copy still happens and adding unnecessary manual optimization"
+      ],
+      "keyPoints": [
+        "A returned local variable is treated as an rvalue, enabling a move instead of a copy",
+        "std::vector's move constructor transfers internal pointers, not elements",
+        "C++03 would have performed a full deep copy of the buffer",
+        "Modern guidance favors natural return-by-value signatures over output parameters"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Writes a correct function returning the vector by value",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains the move-instead-of-copy mechanism correctly",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly contrasts with C++03 copy behavior",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "move-semantics",
+        "label": "Review: Move Semantics"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-005",
+      "questionCode": "LTV-QDEV-0005",
+      "title": "Diagnosing a Memory Leak With AddressSanitizer",
+      "prompt": "A pricing service's memory usage grows steadily over days of continuous operation and is eventually killed by the OS. You suspect a leak. Walk through how you would confirm it and locate the exact allocation site using AddressSanitizer.",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "AddressSanitizer",
+        "Memory Leaks",
+        "Debugging"
+      ],
+      "modelAnswer": "First, I'd reproduce the behavior under a controlled, repeatable load rather than waiting days in production -- run the service's normal request path in a loop long enough that a leak's growth becomes visible. I'd rebuild the binary with -fsanitize=address -g (ASan plus debug symbols) and run that instrumented build against the same load. ASan tracks every allocation and, on program exit (or via a periodic leak check if the binary runs continuously), reports exactly which allocations were never freed, along with the full call stack of where each one was allocated. That report points directly at the offending new/malloc call, rather than at the symptom of rising memory, which is the key advantage over just watching OS-level memory metrics. Once the leak is isolated to a specific allocation site, the fix is usually either a missing delete on an exception path, a container that keeps growing (e.g. a cache with no eviction), or a raw pointer where a smart pointer should own the object.",
+      "professionalAnswer": "I wouldn't try to find this by staring at production memory graphs -- that only tells you memory is growing, not where. I'd get a build with ASan turned on, hammer it with the same traffic pattern that triggers the growth, and let ASan's leak report do the work: it gives you the exact call stack of the allocation that never got freed. In my experience the usual suspects are an exception path that skips a cleanup step, or a cache/map that accumulates entries nobody ever removes -- ASan tells you which of those it actually is instead of making you guess.",
+      "commonMistakes": [
+        "Trying to find the leak by reading code by eye instead of using a tool built for exactly this",
+        "Running ASan once with light load and concluding there's no leak when the leak only shows up at sustained volume",
+        "Confusing steadily rising memory with a one-time startup allocation, instead of confirming it keeps growing under sustained load"
+      ],
+      "keyPoints": [
+        "Reproduce the leak under controlled, repeatable load rather than relying on production",
+        "Compile with -fsanitize=address -g to get instrumented, line-accurate reports",
+        "ASan's leak report gives the full allocation call stack, not just a memory-growth symptom",
+        "Common real causes: a skipped delete on an exception path, or an unbounded cache/container"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Describes reproducing the leak under controlled load",
+          "weight": 20
+        },
+        {
+          "criterion": "Correctly describes compiling and running with AddressSanitizer",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains that ASan's report gives the allocation call stack",
+          "weight": 25
+        },
+        {
+          "criterion": "Names plausible real-world root causes",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "memory-bugs-and-sanitizers",
+        "label": "Review: Memory Bugs & Sanitizers"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-006",
+      "questionCode": "LTV-QDEV-0006",
+      "title": "What an Order Management System (OMS) Layer Is For",
+      "prompt": "A junior developer asks why the strategy code calls an internal `OrderManager.submit(order)` instead of talking to the broker's REST API directly. How would you explain the purpose of an OMS abstraction layer?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Order Management System",
+        "Software Architecture",
+        "Trading Systems"
+      ],
+      "modelAnswer": "An OMS layer is the stable internal interface the strategy code calls -- submit an order, cancel an order, query status -- that then translates those calls into whatever protocol the specific broker actually speaks underneath, whether that's a REST API, the FIX protocol, or a vendor's native SDK. The strategy's signal, sizing, and risk logic shouldn't need to know or care which protocol is underneath; it just calls a stable method. This matters for a few concrete reasons: if the firm adds a second broker or the first broker changes its API, only the OMS layer's implementation changes, not every strategy that submits orders. It's also the natural place to put cross-cutting concerns that every order needs regardless of broker -- generating a unique client order ID for idempotent retries, tracking the order lifecycle (new, working, partially filled, filled, rejected), and applying pre-trade risk checks -- once, rather than duplicated inside every strategy.",
+      "professionalAnswer": "I'd tell them: imagine we add a second broker next quarter, or the first one changes their API -- without an OMS layer, every single strategy that calls the broker directly has to be touched. With the OMS in between, only one piece of code changes. It's also just a cleaner separation of concerns: the strategy's job is deciding what to trade, not managing retries, client order IDs, or parsing a specific broker's JSON response format. We want that logic written and tested once, not copy-pasted into every strategy that happens to trade.",
+      "commonMistakes": [
+        "Thinking the OMS layer is only about code reuse, missing that it also centralizes correctness-critical logic like idempotent retries",
+        "Letting strategy code reach around the OMS to call the broker directly for a 'quick' feature, which defeats the abstraction over time",
+        "Assuming one broker's API will never change or that a second broker will never be added"
+      ],
+      "keyPoints": [
+        "The OMS is a stable internal interface strategies call, independent of the underlying broker protocol",
+        "Protocol-specific details (REST/FIX/native SDK) live only inside the OMS implementation",
+        "Centralizes cross-cutting correctness logic: client order IDs, order lifecycle, risk checks",
+        "Isolates the impact of adding a broker or a broker API change to one place"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Explains the OMS as a stable abstraction over broker protocols",
+          "weight": 35
+        },
+        {
+          "criterion": "Identifies at least one concrete cross-cutting concern it centralizes",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains the maintenance benefit of isolating broker-specific logic",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity suitable for explaining to a junior developer",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "connecting-to-brokers-and-exchanges",
+        "label": "Review: Connecting to Brokers & Exchanges"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-007",
+      "questionCode": "LTV-QDEV-0007",
+      "title": "Tell Me About Yourself (Quant Developer Recruiter Screen)",
+      "prompt": "Walk me through your background and why you're interested in a quantitative developer role here.",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Communication",
+        "Interviewing",
+        "Career Prep"
+      ],
+      "modelAnswer": "A strong answer for a quant-developer-track recruiter screen stays under 90 seconds and moves through three parts: background (what you've built and in what language/domain -- emphasize systems and performance work, not just research), one concrete project that demonstrates production-engineering judgment (e.g. a C++ pricing library exposed to Python, or a backtest engine you hardened for realistic execution), stated in one or two sentences including a real result, and what you're looking for (a role where correctness and latency both matter, ideally naming something specific about the firm's stack or desk). The goal is to signal, quickly, that you understand this is a developer/engineering-flavored quant role, not a pure research role -- distinct from how you'd frame the same background for a quant researcher position.",
+      "professionalAnswer": "I keep it tight: a sentence on background, one project I can speak to in real technical depth if they dig in, and why I want this specific kind of role. For a dev-track quant role I lead with engineering judgment, not just 'I built a model' -- something like, I built a C++ pricing library and bound it into Python with pybind11 because the Python version couldn't meet the latency bar, and that's exactly the kind of problem I want to keep solving. I always have two or three specific questions ready about their stack and how research code actually gets into production here, because generic questions read as under-prepared for this kind of process.",
+      "commonMistakes": [
+        "Giving a research-flavored answer (model accuracy, Sharpe ratio) when the role is explicitly engineering/latency-focused",
+        "Rambling past 90 seconds instead of a tight, structured answer",
+        "Having no specific questions ready about the team's stack or deployment process"
+      ],
+      "keyPoints": [
+        "Keep the answer to roughly 60-90 seconds with a clear structure",
+        "Frame the project around engineering/performance judgment, not just research results",
+        "Signal explicitly that you understand this is a developer/infrastructure-flavored quant role",
+        "Have specific, firm-relevant questions ready rather than generic ones"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Structures the answer clearly (background, project, goal)",
+          "weight": 30
+        },
+        {
+          "criterion": "Frames the example around engineering/performance judgment appropriate to a dev role",
+          "weight": 30
+        },
+        {
+          "criterion": "Keeps the answer concise",
+          "weight": 20
+        },
+        {
+          "criterion": "Mentions having specific questions prepared",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "quant-research-and-trading-capstone",
+        "lessonSlug": "the-quant-recruiting-process",
+        "label": "Review: The Quant Recruiting Process"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-008",
+      "questionCode": "LTV-QDEV-0008",
+      "title": "Knowing Which Interview You're In: Python Round vs. C++ Round",
+      "prompt": "How do you figure out whether a quant developer interview is going to test Python, C++, or both -- and how would you prepare differently for each?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Interviewing",
+        "Career Prep",
+        "C++",
+        "Python"
+      ],
+      "modelAnswer": "The honest answer is the job posting and the role itself are the first signal: research-flavored roles at systematic funds tend to test Python, specifically pandas/NumPy fluency, because that's the actual daily tool; latency-sensitive roles -- market making, HFT infrastructure, low-latency trading systems -- test C++, because execution speed in production is the entire point of the job. Many postings test both at different stages of the loop. If the posting doesn't make it clear, the right move is to ask the recruiter directly during the screen which language the technical rounds will use -- that's a completely normal, expected question, not a sign of being under-prepared. Preparation differs accordingly: for a Python round, practice vectorized pandas/NumPy problems and be ready to explain why vectorization is fast, not just that it is; for a C++ round, be fluent in pointers vs. references, stack vs. heap, RAII, and comfortable with a focused problem set that exercises memory management directly, like implementing a small fixed-size ring buffer, not just abstract algorithm puzzles.",
+      "professionalAnswer": "I just ask. Recruiters get this question all the time and it's a completely reasonable thing to want to know before you spend a weekend prepping the wrong thing. If it's a systematic-fund research role, I lean into pandas/NumPy fluency and make sure I can explain why vectorized code is actually fast under the hood. If it's a market-making or infra-heavy role, I make sure pointers vs. references, stack vs. heap, and RAII are second nature, and I practice a couple of small memory-management exercises -- something like a ring buffer -- rather than only leetcode-style puzzles, because that's closer to what they'll actually probe.",
+      "commonMistakes": [
+        "Assuming every quant interview is the same and over-preparing one language while ignoring the other entirely",
+        "Being too hesitant to simply ask the recruiter which language will be tested",
+        "Preparing only abstract algorithm puzzles for a C++ round instead of memory-management-specific exercises"
+      ],
+      "keyPoints": [
+        "Research-flavored roles typically test Python/pandas; latency-sensitive roles typically test C++",
+        "Asking the recruiter directly which language to prepare is normal and expected",
+        "Python prep should include explaining why vectorization is fast, not just reciting that it is",
+        "C++ prep should emphasize pointers/references, stack/heap, RAII, and memory-management exercises"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly maps role type to likely interview language",
+          "weight": 30
+        },
+        {
+          "criterion": "States that asking the recruiter directly is appropriate",
+          "weight": 20
+        },
+        {
+          "criterion": "Describes concrete, differentiated prep for each language",
+          "weight": 35
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "quant-research-and-trading-capstone",
+        "lessonSlug": "coding-and-cplusplus-interview-preparation",
+        "label": "Review: Coding & C++ Interview Preparation"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    }
+  ]
+}

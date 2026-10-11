@@ -1,0 +1,534 @@
+{
+  "questions": [
+    {
+      "id": "qres-int-001",
+      "questionCode": "LTV-QRES-0009",
+      "title": "Updating a Belief About a Strategy's Win Rate",
+      "prompt": "You're tracking a new signal and want to update your belief about its true win rate as trades come in, rather than just computing a raw hit rate. Explain how you'd use Bayesian inference with a Beta-Binomial model to do this, and why the posterior differs from the raw win rate after only a handful of trades.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Bayesian Inference", "Beta-Binomial Model", "Statistical Estimation"],
+      "modelAnswer": "Start with a prior belief about the win rate p, expressed as p ~ Beta(alpha, beta) -- a Beta(1,1) prior is uniform, representing 'no strong opinion yet.' After observing k wins out of n trades, the Binomial likelihood combines with the Beta prior to give a posterior that is again Beta: p | data ~ Beta(alpha + k, beta + (n - k)). This conjugacy means the update is pure algebra -- add wins to alpha, add losses to beta -- with no numerical integration required. The posterior mean, (alpha+k)/(alpha+beta+n), is a blend of the prior and the raw win rate k/n, and after only a few trades the prior still carries real weight, pulling the posterior mean toward the prior's center. That's exactly why a 70% win rate after 10 trades produces a posterior mean noticeably below 70% with a Beta(1,1) prior -- the data hasn't yet overwhelmed the prior's influence. As n grows, the k/n term dominates and the posterior converges to the raw win rate, exactly as you'd want.",
+      "professionalAnswer": "The way I'd actually set this up: put a Beta(1,1) prior on the win rate if I genuinely have no strong view, then every time a trade closes, just update alpha with wins and beta with losses -- that's the entire update, no numerical work needed, which is the whole point of using a conjugate prior. The thing I'd specifically call out, because it's the part people get wrong, is that after only 10 trades with 7 wins, the posterior mean won't be exactly 0.70 -- it'll be pulled a bit toward 0.5 because the prior still has real weight relative to only 10 data points. That's a feature, not a bug: it's exactly the kind of overconfidence correction you want when someone shows you a 70% win rate from a tiny sample and wants to size a position based on it.",
+      "example": "Starting from Beta(1,1) and observing 7 wins out of 10 trades gives a posterior of Beta(8,4), with posterior mean 8/12 ≈ 0.667 -- noticeably below the raw 70% win rate, and you can also report a 95% credible interval directly from that posterior.",
+      "commonMistakes": [
+        "Reporting the raw win rate k/n as if it were already the best estimate, ignoring how little data backs it",
+        "Confusing a Bayesian credible interval ('there's a 95% probability the true rate is in this range') with a frequentist confidence interval, which has a different meaning",
+        "Picking a Beta(1,1) prior and forgetting it still meaningfully shrinks the estimate toward 0.5 for small samples",
+        "Not updating the posterior incrementally as new trades arrive, and instead recomputing from scratch with ad hoc weighting"
+      ],
+      "keyPoints": [
+        "Beta prior + Binomial likelihood gives a Beta posterior: Beta(alpha+k, beta+n-k)",
+        "The update is pure algebra: add wins to alpha, losses to beta",
+        "Posterior mean is a blend of prior and raw win rate, more prior-weighted with small samples",
+        "As n grows, the posterior converges to the raw win rate",
+        "Credible intervals have a different meaning from frequentist confidence intervals"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly states the Beta-Binomial conjugate update", "weight": 35 },
+        { "criterion": "Explains why the posterior differs from the raw win rate with small samples", "weight": 30 },
+        { "criterion": "Mentions credible intervals and how they differ from confidence intervals", "weight": 20 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "mathematics-for-quantitative-finance",
+        "lessonSlug": "bayesian-inference",
+        "label": "Review: Bayesian Inference"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-int-002",
+      "questionCode": "LTV-QRES-0010",
+      "title": "PCA as a Statistical Factor Model",
+      "prompt": "You run PCA on a panel of 200 equity return series and look at `explained_variance_ratio_`. Explain what the first principal component typically represents, and why that's not an accident of the math.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["PCA", "Factor Models", "Dimensionality Reduction"],
+      "modelAnswer": "PCA finds the eigenvectors of the (standardized) return covariance matrix, ranked by the variance they explain -- the eigenvectors are orthogonal directions in return space, and each eigenvalue is exactly the variance of the portfolio defined by that eigenvector. Applied to a broad equity panel, the first principal component almost always loads positively on nearly every asset, because nearly every stock moves with the broad market to some degree; PCA finds that shared co-movement as the single direction that explains the most variance, without ever being told what 'the market' is. For a broad equity universe it's typical for PC1 alone to explain 30-50%+ of total variance, with a sharp drop-off after that. This isn't an artifact of the decomposition -- it's a structural fact about equity markets (systematic, market-wide co-movement dominates idiosyncratic movement), and it's exactly why PCA is used as a data-driven, assumption-light alternative to classical factor models like the Fama-French or APT framework: it recovers a 'market factor' and secondary factors directly from the covariance structure of the data.",
+      "professionalAnswer": "Whenever I run PCA on a wide equity panel and look at the explained-variance ratios, I expect the first component to come out looking like a market factor, and if it doesn't, that's actually the surprising result worth investigating. The reason is structural, not mathematical sleight of hand: most stocks have some positive co-movement with the broad market, so the direction that explains the most variance in the data is going to load broadly and positively across nearly everything -- PCA finds that because it's genuinely the dominant source of shared variance, not because PCA was told to look for 'the market.' In practice I've seen PC1 explain anywhere from 30% to over 50% of total variance on a diversified equity universe, with a steep drop to PC2. The later components are harder to interpret cleanly, but they often loosely track known style factors like size or sector groupings.",
+      "commonMistakes": [
+        "Assuming PCA 'knows' what the market factor is, rather than it emerging purely from the variance structure",
+        "Forgetting to standardize returns before PCA, letting a few high-volatility names dominate the components",
+        "Treating later principal components as equally interpretable as the first one",
+        "Not distinguishing PCA's uncorrelated components from a classical factor model's economically-motivated factors"
+      ],
+      "keyPoints": [
+        "PCA finds orthogonal variance-maximizing directions via the covariance matrix's eigendecomposition",
+        "Each eigenvalue equals the variance explained by its corresponding component",
+        "PC1 in a broad equity panel typically loads broadly and positively -- the informal 'market factor'",
+        "This reflects real market structure, not an artifact of the math",
+        "Standardizing returns before PCA matters, since PCA is scale-sensitive"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains PCA's relationship to the covariance matrix's eigendecomposition", "weight": 30 },
+        { "criterion": "Explains why PC1 typically resembles a market factor", "weight": 30 },
+        { "criterion": "Mentions standardization and typical explained-variance magnitudes", "weight": 20 },
+        { "criterion": "Clarity", "weight": 20 }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "machine-learning-for-quant-finance",
+        "lessonSlug": "dimensionality-reduction-for-factor-discovery",
+        "label": "Review: Dimensionality Reduction for Factor Discovery"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-int-003",
+      "questionCode": "LTV-QRES-0011",
+      "title": "GARCH(1,1) and the Persistence of Volatility",
+      "prompt": "Explain what a GARCH(1,1) model is capturing that a simple historical (rolling-window) volatility estimate misses, and what the stationarity condition alpha + beta < 1 actually means in practice.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["GARCH", "Volatility Modeling", "Time Series"],
+      "modelAnswer": "A rolling-window historical volatility estimate just averages squared returns over a fixed window, treating every day in that window equally and giving no model of how volatility evolves. GARCH(1,1) instead models the conditional variance explicitly as sigma_t^2 = omega + alpha*eps_(t-1)^2 + beta*sigma_(t-1)^2, where alpha captures how strongly a fresh shock moves today's variance and beta captures how much of yesterday's variance persists into today. This lets the model react immediately to a large shock (through alpha) while also remembering that volatility was already elevated (through beta) -- producing the volatility clustering seen in real markets, where a turbulent period tends to stay turbulent for a while rather than snapping back to normal immediately. The condition alpha + beta < 1 is what guarantees the process has a well-defined, finite long-run average variance (the model is covariance stationary); if alpha + beta were close to or above 1, shocks to volatility would decay very slowly or not at all, meaning any given shock has a near-permanent effect on the variance forecast -- in practice, real equity data often shows beta in the 0.85-0.95 range, meaning volatility shocks decay slowly and a turbulent week can leave the market jumpy for a long stretch afterward.",
+      "professionalAnswer": "A rolling-window vol estimate is really just a blunt average -- every day in the window counts the same, and it has no sense of 'volatility is itself evolving.' GARCH(1,1) actually models that evolution: alpha tells you how much a fresh shock moves today's variance forecast, and beta tells you how much of yesterday's elevated variance is still hanging around today. That combination is what produces volatility clustering -- a big move today raises tomorrow's forecast immediately, and if beta is high, that elevated level persists for a while rather than reverting instantly. The alpha+beta<1 condition is the thing I always check first when I fit one of these -- it's what guarantees the model has a sensible long-run variance to revert to. In real equity data I almost always see beta sitting somewhere around 0.85 to 0.95, which tells you volatility shocks are quite persistent -- a bad week leaves the market jumpy for a good while afterward, not just the next day.",
+      "example": "arch_model(returns, vol='Garch', p=1, q=1).fit() in Python's `arch` package returns omega, alpha[1], and beta[1] directly, and res.forecast(horizon=10) projects the conditional variance forward using exactly this recursive formula.",
+      "commonMistakes": [
+        "Describing GARCH as just 'a fancier moving average' without mentioning it models conditional variance as its own recursive process",
+        "Confusing the ARCH (q) and GARCH (p) lag conventions, which are the opposite of ARIMA's (p,d,q) convention",
+        "Not checking alpha + beta < 1 before trusting a fitted model's long-run variance forecast",
+        "Assuming GARCH automatically captures the leverage effect (asymmetric response to negative shocks), which plain GARCH(1,1) does not"
+      ],
+      "keyPoints": [
+        "GARCH(1,1): sigma_t^2 = omega + alpha*eps_(t-1)^2 + beta*sigma_(t-1)^2",
+        "alpha measures reaction to a fresh shock; beta measures persistence of past variance",
+        "This produces volatility clustering, which a static rolling-window estimate cannot represent",
+        "alpha + beta < 1 is required for a finite, well-defined long-run variance (stationarity)",
+        "Real equity data often shows high beta (0.85-0.95), implying slow-decaying volatility shocks"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly states the GARCH(1,1) recursion and the roles of alpha and beta", "weight": 35 },
+        { "criterion": "Explains what GARCH captures that rolling-window volatility misses", "weight": 30 },
+        { "criterion": "Correctly explains the alpha+beta<1 stationarity condition", "weight": 20 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "time-series-and-financial-modeling",
+        "lessonSlug": "arch-and-garch-models",
+        "label": "Review: ARCH & GARCH Models"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-int-004",
+      "questionCode": "LTV-QRES-0012",
+      "title": "Why Ordinary K-Fold Cross-Validation Leaks on Time Series",
+      "prompt": "A colleague wants to use scikit-learn's standard `KFold` (with `shuffle=False`) to validate a return-prediction model on daily data. Explain why this still leaks future information into training, and how `TimeSeriesSplit` fixes it. Then explain what `TimeSeriesSplit` alone still does NOT fix.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": ["Cross-Validation", "Walk-Forward Validation", "scikit-learn"],
+      "code": "from sklearn.model_selection import KFold, TimeSeriesSplit\n\n# BAD for time series:\nkf = KFold(n_splits=5, shuffle=False)\n\n# Enforces train strictly before test in time:\ntscv = TimeSeriesSplit(n_splits=5)",
+      "modelAnswer": "Even with `shuffle=False`, plain `KFold` rotates which fold is held out as the test set, so for every fold except the very first, the training set contains rows that come from *after* the test period in calendar time -- the model is trained partly on the future and evaluated on the past, making it look better than it has any right to. `TimeSeriesSplit` fixes this directly: given data sorted by time, every test fold comes strictly after its corresponding training fold, by default using an expanding window (training grows each split) or, if `max_train_size` is set, a rolling window of fixed size. What `TimeSeriesSplit` does NOT fix is leakage from overlapping label windows: if a label is 'the return over the next 5 days,' a training observation sitting just before the test boundary can have a label that reaches into the test period even though its own timestamp is safely before it. Time order alone guarantees train precedes test in timestamp, but not that a training label's underlying window stays entirely out of the test span -- that's exactly the gap that purging and embargoing close.",
+      "professionalAnswer": "The thing I'd point out first is that `shuffle=False` doesn't save plain `KFold` here -- the leak isn't from randomization, it's from fold rotation. Every fold gets a turn as the test set, so except for the very first one, your training data for that fold includes rows from after the test period. `TimeSeriesSplit` fixes exactly that: train is always strictly before test, period, whether you use its default expanding window or cap it with `max_train_size` for a rolling window instead. But I'd immediately flag the thing that trips people up next: `TimeSeriesSplit` only guarantees order on the raw timestamp. If your label is a forward-looking return -- 'what happens over the next 5 days' -- a training row sitting right before the test boundary can have a label that's computed using data from inside the test window. `TimeSeriesSplit` has no idea that's happening; it only looks at row position, not at what the label itself depends on. That's a different, additional leak that needs purging to fix.",
+      "commonMistakes": [
+        "Assuming `shuffle=False` alone makes ordinary KFold safe for time series",
+        "Believing TimeSeriesSplit's time-ordering guarantee is sufficient for any kind of label",
+        "Not knowing TimeSeriesSplit supports both expanding and rolling (max_train_size) windows",
+        "Forgetting that the `gap` parameter in TimeSeriesSplit exists but still isn't the same as proper purging for overlapping labels"
+      ],
+      "keyPoints": [
+        "Plain KFold leaks future-into-past because every fold rotates into the test role, with or without shuffling",
+        "TimeSeriesSplit guarantees train always precedes test in calendar time",
+        "Expanding window (default) keeps all history; rolling window (max_train_size) caps training set size",
+        "TimeSeriesSplit does not account for forward-looking label windows overlapping the test set",
+        "That remaining gap is what purging and embargoing are built to close"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains why plain KFold leaks even without shuffling", "weight": 30 },
+        { "criterion": "Correctly explains how TimeSeriesSplit fixes ordering", "weight": 25 },
+        { "criterion": "Correctly identifies what TimeSeriesSplit does NOT fix (overlapping label windows)", "weight": 30 },
+        { "criterion": "Code correctness", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "machine-learning-for-quant-finance",
+        "lessonSlug": "walk-forward-validation",
+        "label": "Review: Walk-Forward Validation"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-int-005",
+      "questionCode": "LTV-QRES-0013",
+      "title": "Deriving the MLE for an Exponential Distribution",
+      "prompt": "Derive the maximum likelihood estimator for the rate parameter lambda of an Exponential(lambda) distribution, given n i.i.d. observations x_1, ..., x_n. Then write the one line of Python that computes it from a NumPy array of observations.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": ["Maximum Likelihood Estimation", "Probability Theory", "NumPy"],
+      "modelAnswer": "The density is f(x; lambda) = lambda * e^(-lambda*x), so the log-likelihood is ell(lambda) = n*log(lambda) - lambda*sum(x_i). Differentiating and setting to zero: ell'(lambda) = n/lambda - sum(x_i) = 0, which gives lambda_hat_MLE = n / sum(x_i) = 1/x_bar -- the reciprocal of the sample mean. This matches the known fact that E[X] = 1/lambda for the exponential distribution, so setting the sample mean equal to the theoretical mean (which is also what Method of Moments would give here) recovers the same estimator. In NumPy: `lam_mle = 1 / x.mean()`.",
+      "professionalAnswer": "I'd just do the calculus directly: log-likelihood is n*log(lambda) minus lambda times the sum of the observations, take the derivative with respect to lambda, set it to zero, and solve -- you get lambda_hat equals n over the sum of x_i, which is just one over the sample mean. It's a nice derivation because it also matches Method of Moments here, since E[X] = 1/lambda for an exponential, so matching the sample mean to the theoretical mean gives you the exact same formula -- that agreement is a good sanity check that the derivation is right. In code it's just `1 / x.mean()`, and I'd usually cross-check it against `scipy.stats.expon.fit(x, floc=0)` to make sure the closed form and the general-purpose numerical fit agree.",
+      "example": "rng.exponential(scale=1/250, size=2000) simulated data recovers lam_mle = 1/returns.mean() that matches scipy's expon.fit() closed form almost exactly.",
+      "commonMistakes": [
+        "Forgetting to take the log of the likelihood before differentiating, making the algebra much messier",
+        "Mixing up the exponential's 'rate' parameterization (lambda) with its 'scale' parameterization (1/lambda), which is what scipy and NumPy actually use by default",
+        "Not checking the second derivative (or just reasoning about the shape) to confirm it's a maximum, not a minimum",
+        "Writing the estimator as lambda_hat = x_bar instead of 1/x_bar"
+      ],
+      "keyPoints": [
+        "Log-likelihood: n*log(lambda) - lambda*sum(x_i)",
+        "Setting the derivative to zero gives lambda_hat_MLE = n / sum(x_i) = 1/x_bar",
+        "This matches the Method of Moments estimator for this particular distribution",
+        "NumPy: `1 / x.mean()`"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct derivation of the log-likelihood and its derivative", "weight": 40 },
+        { "criterion": "Correct final estimator (1/x_bar)", "weight": 30 },
+        { "criterion": "Correct one-line NumPy code", "weight": 20 },
+        { "criterion": "Clarity", "weight": 10 }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "mathematics-for-quantitative-finance",
+        "lessonSlug": "estimation-maximum-likelihood-and-method-of-moments",
+        "label": "Review: Estimation — MLE & Method of Moments"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-int-006",
+      "questionCode": "LTV-QRES-0014",
+      "title": "Rolling Z-Score vs. Global Z-Score",
+      "prompt": "You're normalizing a rolling-sum trading-volume feature before feeding it into a model. Write the code for a rolling z-score transform, and explain why using a single global z-score (computed once over the whole dataset) is a leakage bug rather than just a different modeling choice.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": ["Feature Engineering", "Stationarity", "Leakage Prevention"],
+      "code": "def rolling_zscore(series, window=60):\n    roll_mean = series.rolling(window).mean()\n    roll_std = series.rolling(window).std()\n    return (series - roll_mean) / roll_std",
+      "modelAnswer": "A rolling z-score re-centers and re-scales a feature using only a trailing window of recent history, `(x_t - rolling_mean_t) / rolling_std_t`, which adapts to a drifting mean or a changing volatility regime. A global z-score instead subtracts the mean and divides by the standard deviation computed once over the entire dataset, including rows that are chronologically in the future relative to any earlier point in the sample. That's a leakage bug, not a neutral modeling choice, because at any historical point t, the global mean and standard deviation used to normalize x_t were partly computed from data that didn't exist yet at time t -- the feature at time t secretly 'knows' something about the future distribution of the series. It's also a statistically weaker choice even ignoring leakage, since a global z-score assumes the feature's distribution is stable across the whole sample, which fails across a genuine regime change. Confirming the fix typically means running the ADF test before and after: a trending or regime-shifting raw feature fails to reject the unit-root null, while the same feature after a rolling z-score usually rejects it decisively.",
+      "professionalAnswer": "The code itself is simple -- rolling mean, rolling std, subtract and divide, all using `.rolling(window)` so nothing outside the trailing window is touched. The part I'd really want to get across in an interview is why a global z-score is a bug and not just 'a simpler way to normalize.' If I compute the mean and std once over the entire history and use that single pair of numbers to normalize a value from five years ago, that value's normalized score depends on data that didn't exist yet at that point in time -- that's leakage, full stop, not a stylistic difference. On top of that, it's just a worse assumption statistically, because it assumes the feature's distribution never shifts across the whole sample, and in real market data that's rarely true. I always confirm this kind of fix worked by running an ADF test before and after -- if the rolling z-score version passes and the raw feature or the global z-score version doesn't, that's the fix actually working, not just code that runs without error.",
+      "example": "A global z-score of a raw price level has identical ADF statistics to the untransformed price level itself, because it's just a fixed linear rescaling -- it does nothing to remove a trend, which is a useful fact to check directly if someone claims a global z-score 'fixed' non-stationarity.",
+      "commonMistakes": [
+        "Treating a global z-score as a harmless convenience rather than a leakage bug",
+        "Using `.rolling(window)` but forgetting the window must end strictly before the row it's attached to (an off-by-one leak)",
+        "Not re-running an ADF test after the transform to confirm stationarity was actually achieved",
+        "Assuming any normalization automatically fixes non-stationarity, when a fixed linear rescaling cannot remove a trend"
+      ],
+      "keyPoints": [
+        "Rolling z-score uses only a trailing window's mean/std, adapting to drift and regime change",
+        "A global z-score uses full-sample statistics, including future-relative-to-any-point data -- that's leakage",
+        "A global z-score also assumes a stable distribution across the whole sample, which often fails",
+        "The ADF test is the standard way to confirm a stationarity fix actually worked"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct rolling z-score implementation", "weight": 30 },
+        { "criterion": "Correctly explains why a global z-score is leakage, not just a weaker choice", "weight": 35 },
+        { "criterion": "Mentions regime-change / distributional stability as an additional problem", "weight": 20 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "time-series-and-financial-modeling",
+        "lessonSlug": "feature-stationarity-and-normalization",
+        "label": "Review: Feature Stationarity & Normalization"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-int-007",
+      "questionCode": "LTV-QRES-0015",
+      "title": "A Feature That Suddenly Stops Working",
+      "prompt": "A feature that drove a profitable signal for two years suddenly starts contributing nothing -- or actively hurting performance -- in live trading, even though nothing about the model's code changed. Walk through how you'd diagnose this.",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Non-Stationarity", "Signal Decay", "Model Monitoring"],
+      "modelAnswer": "The first hypothesis should be non-stationarity in the underlying relationship, not a code bug: financial relationships are not fixed, and a feature that worked well in one market regime can go flat or invert in another. The diagnostic is to stop looking at a single full-sample importance or correlation number and instead compute the feature's Information Coefficient (the rank correlation between its predicted values and actual forward returns) in rolling windows over time. If the IC series shows a clear decay toward zero, or a reversal in sign, in the recent period relative to earlier history, that confirms the feature's relationship with returns has genuinely changed rather than the model simply hitting bad luck. It's also worth checking whether the feature itself has become non-stationary in a new way -- for example if it's built from a rolling-sum or price-level quantity that has drifted into a different regime -- since that can independently degrade a previously well-behaved feature. Only after ruling out a genuine regime shift would a code or data-pipeline bug become the next most likely explanation.",
+      "professionalAnswer": "My first instinct here is not to assume the code broke -- it's to assume the relationship itself changed, because that's exactly what financial signals do. I'd pull up the feature's rolling Information Coefficient over time rather than looking at one aggregate number, and see whether it's been quietly decaying or flipping sign over the recent window versus the two good years. If the IC series shows a clear decay or reversal, that's the real story -- the signal's edge faded, which is a very different problem from 'something is broken' and calls for a different response, like reconsidering whether to keep trading it at all rather than debugging code that was never wrong. I'd also double check the feature's own stationarity, since a rolling-sum or price-level-derived feature can drift into a new regime on its own and degrade a previously fine signal independent of anything about the target. Only after that would I go check the data pipeline for something more mundane, like a vendor change or a timezone shift.",
+      "commonMistakes": [
+        "Jumping straight to debugging code before checking whether the signal's underlying relationship has simply changed",
+        "Relying on a single full-sample importance or correlation metric instead of a rolling diagnostic",
+        "Not distinguishing a genuine regime shift from a one-off bad stretch that could just be noise",
+        "Forgetting that the feature itself, not just its relationship to the target, can become non-stationary over time"
+      ],
+      "keyPoints": [
+        "Non-stationarity of the underlying relationship is the primary hypothesis, not a code bug",
+        "Compute a rolling Information Coefficient to see whether the signal's predictive power has decayed or reversed",
+        "Check whether the feature itself has drifted into a new statistical regime",
+        "Only investigate pipeline/data bugs after ruling out a genuine regime shift"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies non-stationarity/regime change as the leading hypothesis", "weight": 30 },
+        { "criterion": "Proposes a rolling IC or rolling-importance diagnostic", "weight": 35 },
+        { "criterion": "Considers the feature's own stationarity as a separate angle", "weight": 20 },
+        { "criterion": "Clarity and logical ordering of the diagnostic process", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "machine-learning-for-quant-finance",
+        "lessonSlug": "stability-of-signals-over-time",
+        "label": "Review: Stability of Signals Over Time"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-int-008",
+      "questionCode": "LTV-QRES-0016",
+      "title": "The Off-by-One Rolling Window Leak",
+      "prompt": "A teammate built a 5-day moving-average feature with `ret.rolling(5).mean()` to predict the same day's return, and it shows a suspiciously strong correlation with the target. What's wrong, and how do you fix it?",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": ["Leakage Prevention", "Feature Engineering", "pandas"],
+      "code": "df[\"ma5\"] = ret.rolling(5).mean()   # ends ON day t -- includes ret[t] itself!\ncorrect_feature = df[\"ma5\"].shift(1)  # fix: shift back one day",
+      "modelAnswer": "`ret.rolling(5).mean()` computed on day t includes ret[t] itself as one of the five values being averaged, which means the 'feature' being used to predict today's return already partially contains today's own return. This is the off-by-one rolling-window leak: the window, as written, ends ON the row it's attached to rather than ending strictly before it. The fix is a one-character change: `.shift(1)` on the resulting series, so the feature value attached to day t only uses information available through yesterday's close. The practical impact of this bug is large, not subtle -- in a documented worked example on synthetic noise data, the leaky feature showed R^2 around 0.20 against the target, while the honestly shifted version showed R^2 around 0.0001, correctly revealing there was no real signal there at all. Every rolling-window feature should be checked against one question: does this window end strictly before the row it's attached to?",
+      "professionalAnswer": "This is one of the most common bugs I see, and it's exactly as described: `rolling(5).mean()` on day t's row includes day t's own value in the average, so you've built a feature that's partially made of the thing you're trying to predict. The fix is trivially small in code -- just add `.shift(1)` -- but the effect of not catching it is huge. I've seen this exact pattern produce an R^2 around 0.20 on data that has zero real signal in it, and the honest, shifted version comes back at essentially 0.0001, which is the true number. My habit now is to treat any suspiciously strong rolling-feature correlation as guilty until proven innocent -- the first thing I check is literally 'does this window end strictly before the target row,' because that one question catches this bug every time.",
+      "example": "On a synthetic i.i.d. noise series, the leaky ma5 feature showed corr ≈ 0.45 (R^2 ≈ 0.20) against today's return, while the correctly shifted feature showed corr ≈ 0.01 (R^2 ≈ 0.0001) — the honest answer for data with no real autocorrelation.",
+      "commonMistakes": [
+        "Not realizing a rolling window 'ending on' the current row includes the current row's own value",
+        "Celebrating a strong in-sample correlation instead of treating it as suspicious",
+        "Fixing this inconsistently across some features but not others in the same pipeline",
+        "Forgetting this same off-by-one issue applies to rolling standard deviations, sums, and other rolling-window features, not just means"
+      ],
+      "keyPoints": [
+        "rolling(5).mean() on day t includes ret[t] itself unless shifted",
+        "The feature circularly contains part of the thing it's predicting -- classic leakage",
+        "Fix: .shift(1) so the feature only uses information through yesterday's close",
+        "An inflated in-sample correlation/R^2 is a symptom, not something to celebrate",
+        "Every rolling-window feature should be checked: does it end strictly before its target row?"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly diagnoses the off-by-one rolling-window leak", "weight": 35 },
+        { "criterion": "Correctly proposes the .shift(1) fix", "weight": 30 },
+        { "criterion": "Explains why the inflated correlation is a red flag rather than good news", "weight": 20 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "time-series-and-financial-modeling",
+        "lessonSlug": "avoiding-leakage-in-time-aware-features",
+        "label": "Review: Avoiding Leakage in Time-Aware Features"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-int-009",
+      "questionCode": "LTV-QRES-0017",
+      "title": "Designing a Research Data Layer",
+      "prompt": "You're setting up a research codebase from scratch for a small team of three researchers. Describe the design of a data-access layer that will keep their notebooks consistent as data sources evolve, including how you'd handle caching and schema consistency.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Research Infrastructure", "Data Engineering", "Software Design"],
+      "modelAnswer": "The core design principle is that research code should ask for data by meaning, not by file path: functions like `load_prices(universe, start, end)` or `load_fundamentals(ticker, as_of)` that hide whatever the underlying source actually is -- a CSV, a Parquet file, a REST API, a database table -- behind a stable interface. The function's output contract (column names, dtypes, what a row represents, timezone convention) stays fixed even if the source changes underneath it, which is the entire point: a vendor swap or a schema change in the raw data gets fixed once, inside the function, instead of touching every notebook that calls it. For caching, something as simple as `functools.lru_cache` is often enough for a single research session, since the cache key is just the function's arguments and it avoids redundant reads of the same universe/date-range combination; for caching that needs to survive across process restarts, a disk-backed cache is the natural next step. For schema consistency, the data layer should normalize every source to the same column names, dtypes, and timezone handling on the way in -- resolving, once, the fact that a vendor file might call the date column 'Date' and store it in US Eastern time while another source calls it 'trade_date' in naive UTC -- so downstream research code never has to special-case which source a row originally came from.",
+      "professionalAnswer": "I'd design this around one idea: nobody writing research code should ever see a raw file path or a vendor's column names directly. I'd build small functions like `load_prices(universe, start, end)` that do the messy work once -- reading whatever the actual source is, renaming columns to a consistent contract, normalizing timezones -- and have every notebook on the team call those functions instead of reading files themselves. That buys two things immediately: when a vendor changes something, I fix it in one place, and three researchers can't accidentally get three slightly different answers from 'the same' data because one of them handled a timezone differently. For caching, I'd start with `functools.lru_cache` for in-session speed since it's basically free to add, and only reach for a disk-backed cache once it's clear the same expensive reads are happening across separate sessions often enough to matter. The schema piece is honestly the part that pays off the most and gets noticed the least -- getting column names, dtypes, and timezone handling consistent across every source, once, in the data layer, rather than three researchers each guessing at it slightly differently in their own notebooks.",
+      "commonMistakes": [
+        "Designing the interface around how the data happens to be stored today instead of what the caller actually needs",
+        "Skipping schema normalization and letting each notebook handle column-name or timezone differences independently",
+        "Jumping straight to a heavyweight caching/versioning solution before a simple in-memory cache is even needed",
+        "Not planning for the interface's output contract to stay stable even as the underlying source changes"
+      ],
+      "keyPoints": [
+        "Design functions around meaning (load_prices(universe, start, end)), not file paths",
+        "The output contract (columns, dtypes, timezone) stays stable even if the source changes",
+        "functools.lru_cache is a reasonable first caching layer; disk-backed caching for cross-session needs",
+        "Normalize schema/timezone once in the data layer, not independently in every notebook",
+        "This prevents silent disagreement between researchers using 'the same' data"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Proposes a stable, meaning-based interface design", "weight": 30 },
+        { "criterion": "Addresses caching with a reasonable, appropriately-scoped solution", "weight": 25 },
+        { "criterion": "Addresses schema/timezone consistency across sources", "weight": 25 },
+        { "criterion": "Clarity and practical framing for a small team", "weight": 20 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "building-a-research-data-layer",
+        "label": "Review: Building a Research Data Layer"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-int-010",
+      "questionCode": "LTV-QRES-0018",
+      "title": "I Can't Reproduce Last Week's Backtest Result",
+      "prompt": "A researcher reruns a notebook from last week and gets a meaningfully different Sharpe ratio, even though they're confident they didn't change any code. How do you figure out what happened, and how would you prevent this going forward?",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Experiment Tracking", "Data Versioning", "Reproducibility"],
+      "modelAnswer": "A backtest result depends on three things: the code, the parameters, and the data. If the researcher is confident the code didn't change, the most likely remaining culprit is the data -- a vendor restated some fundamentals, a corporate action got applied differently, or a data pull happened to land on a slightly different day's universe, none of which show up in a git diff of the code. The fix going forward is two linked habits: experiment tracking (logging, for every run, the parameters and the resulting metrics so every run is queryable later -- even a simple logged row per run gets most of the value, though a framework like MLflow formalizes it) and data versioning (recording a fingerprint of the exact data used, as simply as a SHA-256 hash of the dataset's bytes, alongside the run's logged parameters and metrics). With both in place, 'reproduce last week's result' becomes a lookup -- find the run with this exact data fingerprint and these exact parameters -- instead of archaeology through old notebook outputs.",
+      "professionalAnswer": "My first move wouldn't be to re-read the code -- it would be to ask what changed about the data between then and now, because 'the code didn't change' almost never means 'nothing that could affect the result changed.' A vendor restating a few numbers, a corporate action getting applied differently, a data pull landing on a slightly different universe snapshot -- none of that shows up in git history, and it's the single most common cause of this exact complaint. Going forward, I'd want two things in place: log every run's parameters and resulting metrics somewhere queryable, even if it's just a CSV row with a timestamp to start, and compute a hash of the exact data used in each run and log that alongside it. Once both exist, 'why can't I reproduce last week's number' turns into 'let me look up the run with this exact data fingerprint and these exact parameters' instead of a week of guessing.",
+      "example": "hashlib.sha256(df.to_csv(index=False).encode('utf-8')).hexdigest() changes completely if even a single cell in the dataset is restated -- logging that hash alongside each run's parameters and metrics turns 'why is this different' into a direct lookup.",
+      "commonMistakes": [
+        "Assuming 'the code didn't change' rules out the data as a cause",
+        "Relying on memory or chat history to reconstruct what inputs produced a past result",
+        "Treating experiment tracking and data versioning as separate concerns rather than two halves of the same reproducibility story",
+        "Jumping straight to a heavyweight tool (like full DVC) before even basic parameter/metric logging and file hashing are in place"
+      ],
+      "keyPoints": [
+        "A result depends on code, parameters, and data -- if code is ruled out, the data is the next suspect",
+        "Experiment tracking: log parameters and metrics per run so results are queryable later",
+        "Data versioning: fingerprint the exact dataset used (e.g. a SHA-256 hash), even without a full DVC setup",
+        "Together, these turn 'why can't I reproduce this' into a direct lookup rather than guesswork"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies data (not code) as the likely cause given the stated premise", "weight": 25 },
+        { "criterion": "Proposes experiment tracking (logging parameters/metrics per run)", "weight": 30 },
+        { "criterion": "Proposes data versioning/fingerprinting", "weight": 30 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "experiment-tracking-and-data-versioning",
+        "label": "Review: Experiment Tracking & Data Versioning"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-int-011",
+      "questionCode": "LTV-QRES-0019",
+      "title": "Communicating Uncertainty, Not Just a Point Estimate",
+      "prompt": "Your model estimates a strategy's true win rate as 58%, based on a Bayesian update from 40 trades. A portfolio manager asks you to just 'tell them the number' so they can size a position. How do you communicate the uncertainty behind that number without the conversation turning into a stats lecture?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Communication", "Bayesian Inference", "Risk Communication"],
+      "modelAnswer": "A strong answer leads with the number the PM asked for, then immediately attaches a plain-language range rather than a lecture: something like '58% is our best estimate, but with only 40 trades behind it, the real number could reasonably be anywhere from about 45% to 70% -- that's a wide range, and it matters for how much confidence you put in the 58% specifically.' The key communication move is translating a credible interval into a decision-relevant statement ('don't size this as if 58% were exact') rather than explaining what a Beta posterior or a credible interval actually is. It's also worth proactively stating what would tighten that range -- more trades -- so the PM understands the uncertainty is a function of sample size, not a flaw in the model, and knows what to expect if they ask again after another 40 trades.",
+      "professionalAnswer": "I'd give them the number first, because that's genuinely what they asked for and burying it doesn't help anyone -- '58%, that's our best estimate.' Then I'd immediately follow with the uncertainty in plain terms, not in Bayesian vocabulary: 'with only 40 trades, that 58% could realistically be anywhere from the mid-40s to around 70%, so I wouldn't size this as if 58% were a precise, locked-in number.' I think the mistake would be either hiding the uncertainty entirely, which sets them up to be surprised later, or going into a full explanation of credible intervals and posteriors, which is the stats lecture they explicitly didn't ask for. I'd close by telling them what actually narrows that range -- more trades -- so they know this isn't a permanent limitation, just where we are right now with the data we have.",
+      "commonMistakes": [
+        "Either hiding the uncertainty entirely or over-explaining the statistical machinery behind it",
+        "Giving the range without translating it into what it means for position sizing",
+        "Not proactively stating what would reduce the uncertainty going forward",
+        "Treating the PM's request for 'just the number' as license to drop the uncertainty from the conversation"
+      ],
+      "keyPoints": [
+        "Lead with the requested number, then attach the uncertainty in plain language",
+        "Translate statistical uncertainty into a decision-relevant statement about position sizing",
+        "Avoid jargon (credible interval, posterior) in favor of a concrete range",
+        "Explain what would narrow the uncertainty (more data), framing it as temporary, not permanent"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Gives the requested number without burying it", "weight": 25 },
+        { "criterion": "Communicates uncertainty in decision-relevant, non-technical terms", "weight": 40 },
+        { "criterion": "Avoids unnecessary jargon while still conveying the real uncertainty", "weight": 20 },
+        { "criterion": "Clarity and professionalism", "weight": 15 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-int-012",
+      "questionCode": "LTV-QRES-0020",
+      "title": "When a Result Doesn't Replicate",
+      "prompt": "You presented a promising signal to your team two weeks ago. A teammate just reran your analysis on a slightly extended data window and the effect has nearly vanished. How do you handle this conversation and the follow-up work?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Research Integrity", "Debugging", "Communication"],
+      "modelAnswer": "The right first move is curiosity, not defensiveness: treat the non-replication as new information rather than an attack on the original work, and systematically rule out the mundane explanations before assuming the original finding was wrong. That means checking whether the extended window introduced a genuine regime change the original signal never saw, whether the teammate's rerun used the exact same data vintage and parameters, and whether the original result depended on a specific lucky stretch of history that a slightly longer window now dilutes. Once the cause is identified, the researcher should communicate it plainly to the team -- including the honest version if it turns out the original result doesn't hold up -- rather than quietly re-tuning parameters until the extended window 'works' again, which would just reintroduce the same overfitting problem the original research was supposed to avoid.",
+      "professionalAnswer": "My first reaction would genuinely be curiosity rather than defensiveness -- a result that doesn't replicate on more data is exactly the kind of thing good research culture is supposed to surface, and getting defensive about it would be the wrong instinct. I'd start by making sure it's an apples-to-apples comparison: same parameters, same data vintage, same preprocessing, before assuming anything about the original finding. If it turns out the extended window just happened to add a different market regime, or the original result was riding on a specific lucky stretch of history, I'd want to say that plainly to the team rather than quietly tweaking parameters until the number looks good again on the new window -- because that would just be re-introducing the exact overfitting problem the original validation was supposed to catch in the first place. I think how you handle this moment says more about your research judgment than the original result ever did.",
+      "commonMistakes": [
+        "Getting defensive and looking for reasons to dismiss the teammate's rerun rather than investigating it",
+        "Re-tuning parameters on the extended window until the result looks good again, reintroducing overfitting",
+        "Not communicating the non-replication honestly to the rest of the team",
+        "Jumping to 'the original result was wrong' before ruling out mundane explanations like a data or parameter mismatch"
+      ],
+      "keyPoints": [
+        "Treat non-replication as information, not an attack -- respond with curiosity, not defensiveness",
+        "Rule out mundane causes first: parameter/data mismatches between the two runs",
+        "Consider whether a genuine regime change or a lucky original stretch explains the gap",
+        "Communicate the honest outcome to the team rather than quietly re-tuning until it 'works' again"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Responds with curiosity and process rather than defensiveness", "weight": 30 },
+        { "criterion": "Proposes a sound, systematic way to investigate the discrepancy", "weight": 30 },
+        { "criterion": "Explicitly rejects re-tuning parameters to force the result to reappear", "weight": 25 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "quant-research-and-trading-capstone",
+        "lessonSlug": "defending-your-research-to-a-skeptical-audience",
+        "label": "Review: Defending Your Research to a Skeptical Audience"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qres-int-013",
+      "questionCode": "LTV-QRES-0021",
+      "title": "Framing a Research Question Before Touching the Data",
+      "prompt": "A PM tells you, 'go see if there's any interesting signal in our options-flow data.' Before you write any code, how do you turn that into an actual research question?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": ["Research Process", "Hypothesis Formulation", "Communication"],
+      "modelAnswer": "A strong answer resists the pull to immediately start exploring the data and instead pins down a specific, falsifiable hypothesis first: what exactly is being predicted (next-day return? a volatility event? direction over some horizon?), over what universe and time horizon, and what would count as a real, actionable effect versus a curiosity. Writing this down before looking at the data matters because it sets a pre-registered target, which makes it possible to later say honestly how many things were tried to find whatever result eventually turns up -- a vague, open-ended mandate like 'see if there's anything interesting' is exactly the setup that invites unconsciously trying dozens of framings until one looks good, which is a multiple-testing problem wearing the costume of open-minded exploration. The researcher should also clarify success criteria with the PM up front (what Sharpe, what sample size, what level of statistical significance would make this worth pursuing further) so the research has a stopping point instead of continuing indefinitely in search of a positive result.",
+      "professionalAnswer": "Before I write a single line of code, I'd push back gently on the vagueness of 'see if there's anything interesting' and turn it into something specific: what outcome are we actually trying to predict with options flow -- next-day direction, an upcoming vol event, something else -- and over what horizon and universe? I'd also want to agree on success criteria with the PM before I start, not after I find something that looks good, because otherwise it's very easy to unconsciously try framing after framing until one happens to look promising, which is a multiple-testing problem dressed up as open-minded exploration. Writing the actual hypothesis down first also means that whatever I find later, I can honestly say how many things I tried to get there, which is exactly the kind of transparency that makes a result trustworthy instead of just impressive-looking.",
+      "commonMistakes": [
+        "Starting to explore the data immediately without first stating a specific hypothesis",
+        "Not agreeing on success criteria with the stakeholder before the research begins",
+        "Treating an open-ended mandate as license to try many framings until one looks good",
+        "Confusing 'exploratory data analysis' with skipping hypothesis formulation altogether"
+      ],
+      "keyPoints": [
+        "Convert a vague mandate into a specific, falsifiable hypothesis before touching the data",
+        "Pre-registering the hypothesis makes later claims about how many things were tried honest and checkable",
+        "Agree on success criteria with the stakeholder up front",
+        "An open-ended mandate without a stated hypothesis invites an unconscious multiple-testing problem"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Proposes converting the vague request into a specific, falsifiable hypothesis", "weight": 35 },
+        { "criterion": "Explains why pre-registering the hypothesis matters for research integrity", "weight": 30 },
+        { "criterion": "Proposes agreeing on success criteria with the stakeholder up front", "weight": 20 },
+        { "criterion": "Clarity", "weight": 15 }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "quant-research-and-trading-capstone",
+        "lessonSlug": "formulating-a-research-question",
+        "label": "Review: Formulating a Research Question"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    }
+  ]
+}

@@ -1,0 +1,553 @@
+{
+  "questions": [
+    {
+      "id": "qanl-adv-001",
+      "questionCode": "LTV-QANL-0022",
+      "title": "Deriving Put-Call Parity From Replicating Portfolios",
+      "prompt": "Derive put-call parity from first principles using a replicating-portfolio argument. What specifically breaks the derivation if the underlying pays discrete dividends, or if the options are American rather than European?",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Put-Call Parity", "No-Arbitrage", "American Options"],
+      "modelAnswer": "Build Portfolio A (long one call, plus a risk-free bond that grows to exactly K by expiration, costing K·e^(-rT) today) and Portfolio B (long one put, plus long one share of stock). At expiration, if S≥K, Portfolio A pays (S-K)+K=S and Portfolio B pays 0+S=S; if S<K, Portfolio A pays 0+K=K and Portfolio B pays (K-S)+S=K. Both portfolios pay exactly max(S,K) in every state, so by no-arbitrage their costs today must be equal: C+K·e^(-rT) = P+S, which rearranges to C-P = S-K·e^(-rT). With discrete dividends, Portfolio B's stock leg pays out dividends during the holding period that Portfolio A's bond leg doesn't receive, breaking the payoff equivalence — the fix is to replace S with S minus the present value of dividends expected before expiration, giving C-P = (S - PV(dividends)) - K·e^(-rT). With American options, early exercise destroys the clean argument entirely: if the put holder in Portfolio B can exercise early, the two portfolios' payoffs are no longer guaranteed identical at every future date, only at expiration if neither is exercised early, so strict equality breaks down into an inequality range instead of a precise formula (the familiar put-call parity bounds for American options).",
+      "professionalAnswer": "I always rebuild this from the two portfolios rather than trying to recite the formula, because that's what actually lets me answer the follow-up questions about dividends and early exercise cleanly. The dividend case is just 'the stock leg gets paid something the bond leg doesn't, so subtract that payment's present value from S before comparing.' The American case is the one people usually fumble — the clean equality only survives because European options can't be exercised before expiration, so once early exercise is on the table you lose the guarantee that both portfolios' payoffs stay tied together at every point in time, and parity degrades into a set of inequality bounds rather than an exact equation.",
+      "example": "With a dividend-paying stock, S=$100, PV(dividends)=$2, K=$95, r=4%, T=1: parity requires C-P = (100-2) - 95·e^(-0.04) = 98 - 91.27 = $6.73, not the no-dividend value of $8.73 — missing the dividend adjustment would overstate the implied call-put spread by exactly the $2 of dividends.",
+      "commonMistakes": [
+        "Reciting the formula without being able to derive it from the replicating portfolios",
+        "Forgetting to subtract the present value of dividends from S in the dividend-adjusted version",
+        "Claiming American put-call parity is simply the European formula with no adjustment",
+        "Not recognizing that early exercise, not dividends, is the specific mechanism that breaks strict equality for American options"
+      ],
+      "keyPoints": [
+        "Two portfolios (call+bond vs. put+stock) have identical payoffs, forcing identical prices today",
+        "Dividend adjustment: replace S with S minus PV(dividends)",
+        "American options: early exercise breaks the payoff-equivalence guarantee at every date, not just at expiration",
+        "American put-call parity becomes an inequality/bound rather than an exact equality"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly derives parity from the replicating-portfolio argument", "weight": 35 },
+        { "criterion": "Correctly explains the dividend adjustment", "weight": 25 },
+        { "criterion": "Correctly explains why American options break strict equality", "weight": 30 },
+        { "criterion": "Provides a correct worked example", "weight": 10 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "put-call-parity-and-no-arbitrage", "label": "Put-Call Parity & No-Arbitrage" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-adv-002",
+      "questionCode": "LTV-QANL-0023",
+      "title": "Fama-French Factor Loadings and What They Mean for 'Skill'",
+      "prompt": "Explain the Fama-French three- and five-factor models, what a factor loading represents, and why running this regression on a manager's returns can turn an apparently skilled track record into an unremarkable one.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Fama-French", "Factor Models", "Alpha vs. Beta"],
+      "code": "R_i - R_f = alpha_i + b*(R_m-R_f) + s*SMB + h*HML [+ r*RMW + c*CMA] + eps_i",
+      "modelAnswer": "The three-factor model extends CAPM's single market factor with SMB (small-cap minus large-cap returns) and HML (high book-to-market/value minus low book-to-market/growth returns), each estimated as its own long-short portfolio spread. The five-factor extension adds RMW (robust minus weak profitability) and CMA (conservative minus aggressive investment). A factor loading is simply a regression coefficient — how much the asset's excess return moves, on average, for a one-unit move in that factor, holding the others fixed — estimated by OLS the same way CAPM beta is. The reason this regression can deflate an apparently skilled track record: a manager's raw outperformance versus a simple benchmark might just be unpriced exposure to small-cap or value stocks (a static tilt, not an active decision), and once that tilt is explicitly accounted for as SMB and HML loadings, the alpha — the return genuinely left over after accounting for all factor exposures — often shrinks toward statistically insignificant, revealing that most of the apparent 'skill' was simply a factor bet dressed up as stock-picking.",
+      "professionalAnswer": "This is the regression I'd run before ever getting excited about a manager's track record — most of what looks like alpha against a plain market benchmark is often just an unacknowledged tilt toward small-caps or value stocks that happened to do well over the period being measured. Once you control for SMB and HML (and RMW/CMA if you want the fuller picture), the leftover alpha and its t-stat tell you what's actually left to call skill, and more often than people expect, that number is close to zero and not statistically different from it.",
+      "example": "A small-cap value fund with loadings b=1.15, s=0.40, h=-0.25 against a CAPM-only beta of 1.15 would show a CAPM alpha driven partly by its size and value tilts; running the three-factor regression and recovering a statistically insignificant alpha (t-stat near zero, p-value well above 0.05) reveals the manager's apparent outperformance was factor exposure, not stock-picking skill.",
+      "commonMistakes": [
+        "Treating CAPM alpha and three-factor alpha as measuring the same thing",
+        "Forgetting that SMB and HML are themselves long-short portfolio returns, not raw small-cap or value index returns",
+        "Assuming a positive three-factor alpha is automatically statistically significant without checking its standard error/t-stat",
+        "Not recognizing that factor loadings are plain OLS regression coefficients, estimated the same way as CAPM beta"
+      ],
+      "keyPoints": [
+        "Three-factor model adds SMB (size) and HML (value) to the market factor; five-factor adds RMW and CMA",
+        "A factor loading is an OLS regression coefficient measuring sensitivity to that factor",
+        "Alpha is whatever return is left over after accounting for all factor exposures",
+        "Apparent CAPM-level skill can collapse to insignificant alpha once factor tilts are properly controlled for"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly states the three- and five-factor model structure", "weight": 30 },
+        { "criterion": "Correctly explains what a factor loading represents", "weight": 20 },
+        { "criterion": "Explains why alpha shrinks once factor exposures are controlled for", "weight": 35 },
+        { "criterion": "Uses a concrete, correct example", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "fama-french-and-factor-investing", "label": "Fama-French & Factor Investing" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-adv-003",
+      "questionCode": "LTV-QANL-0024",
+      "title": "VaR vs. Expected Shortfall and the Move to FRTB",
+      "prompt": "Explain the two specific weaknesses of VaR that Expected Shortfall addresses, and why Basel's Fundamental Review of the Trading Book moved capital requirements from VaR to a 97.5% Expected Shortfall measure.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["VaR", "Expected Shortfall", "Regulatory Capital"],
+      "modelAnswer": "VaR has two well-known weaknesses. First, it's tail-blind: VaR marks a threshold a loss is unlikely to cross but says nothing about how severe the loss gets beyond that threshold — two portfolios can share the same 99% VaR while one has a mild tail and the other a catastrophic one. Second, it isn't guaranteed to be sub-additive: it's possible for the VaR of a combined portfolio to exceed the sum of the VaRs of its two pieces, which violates the intuitive idea that diversification should never increase measured risk, and makes VaR an unreliable basis for risk aggregation and capital allocation across desks. Expected Shortfall (Conditional VaR) fixes both: it reports the average loss given that the loss exceeds the VaR threshold, directly addressing tail-blindness, and it is a coherent risk measure in the technical sense, which includes guaranteed sub-additivity. The Basel Committee's FRTB moved minimum trading-book capital requirements to a 97.5% Expected Shortfall specifically because regulators wanted a measure that properly captured tail severity and behaved consistently (sub-additively) when aggregating risk across a bank's many trading desks — exactly the two properties VaR lacks.",
+      "professionalAnswer": "If I'm asked to justify FRTB's move away from VaR in one breath, I'd say: regulators wanted a number that actually describes how bad the bad days get, and one that doesn't accidentally reward a bank for not diversifying its risk measurement. VaR fails on both counts — it's silent past the threshold, and combining positions can sometimes make the reported risk look bigger than the sum of its parts, which is backwards. ES fixes both by averaging the tail directly and by being a coherent measure, which is the formal property that guarantees it behaves the way intuition says risk aggregation should.",
+      "commonMistakes": [
+        "Describing VaR's only weakness as 'it can be exceeded,' missing the tail-blindness and non-sub-additivity distinction",
+        "Confusing Expected Shortfall with simply a higher-confidence VaR (e.g., 99.9% VaR)",
+        "Not knowing that 'coherent risk measure' specifically implies sub-additivity among other technical axioms",
+        "Getting the FRTB confidence level wrong or not connecting it to the sub-additivity/tail-severity rationale"
+      ],
+      "keyPoints": [
+        "VaR weakness 1: tail-blind — says nothing about severity beyond the threshold",
+        "VaR weakness 2: not guaranteed sub-additive — can penalize diversification in theory",
+        "Expected Shortfall averages the tail beyond the VaR threshold, fixing tail-blindness",
+        "Expected Shortfall is a coherent risk measure (including sub-additivity), which is why FRTB adopted a 97.5% ES standard"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains VaR's tail-blindness", "weight": 25 },
+        { "criterion": "Correctly explains VaR's non-sub-additivity", "weight": 25 },
+        { "criterion": "Correctly explains how ES fixes both", "weight": 25 },
+        { "criterion": "Correctly connects this to the FRTB regulatory rationale", "weight": 25 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "value-at-risk-and-expected-shortfall", "label": "Value at Risk & Expected Shortfall" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-adv-004",
+      "questionCode": "LTV-QANL-0025",
+      "title": "Computing Treynor Ratio and Jensen's Alpha",
+      "prompt": "A portfolio returned 15%, the risk-free rate is 2%, the portfolio's beta is 1.2, and the market returned 10%. Compute the Treynor ratio and Jensen's alpha, and state what each tells you that the other doesn't.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": ["Treynor Ratio", "Jensen's Alpha", "CAPM"],
+      "code": "Treynor = (Rp - Rf) / beta_p\nJensen's alpha = Rp - [Rf + beta_p*(Rm - Rf)]",
+      "modelAnswer": "Treynor ratio = (0.15 - 0.02) / 1.2 = 0.13 / 1.2 ≈ 0.1083, or about 10.83% of excess return per unit of beta. CAPM-expected return = 0.02 + 1.2×(0.10-0.02) = 0.02 + 0.096 = 0.116 (11.6%). Jensen's alpha = 0.15 - 0.116 = 0.034, or 3.4%. The Treynor ratio tells you the reward per unit of systematic risk taken, which is the right lens when this portfolio is one piece of a larger, already-diversified holding — only its beta contribution matters in that context. Jensen's alpha tells you something different and arguably more direct: whether the portfolio beat what CAPM would have predicted given its beta, which is the most direct quantitative signal of genuine risk-adjusted skill beyond simply taking on more systematic risk. A portfolio can have a mediocre Treynor ratio relative to peers but a meaningfully positive alpha, or vice versa, because they're answering different questions.",
+      "professionalAnswer": "I'd compute both numbers the same way every time: get the CAPM-expected return first using beta, then Jensen's alpha falls straight out as the gap between actual and expected. Treynor I think of as a cross-sectional ranking tool — good for comparing managers with different betas when you're slotting a piece into an already-diversified book — while alpha is the number I'd actually quote if someone asked 'did this manager add real value,' because it's measured directly against what the risk taken should have delivered.",
+      "example": "Treynor = (0.15-0.02)/1.2 ≈ 0.108. CAPM expected = 0.02+1.2*0.08 = 0.116. Jensen's alpha = 0.15-0.116 = 0.034 (3.4%).",
+      "commonMistakes": [
+        "Dividing by total standard deviation instead of beta when computing Treynor",
+        "Forgetting to compute the CAPM-expected return as an intermediate step before subtracting to get alpha",
+        "Treating Treynor and alpha as redundant rather than answering distinct questions",
+        "Mixing up which ratio is appropriate for a standalone portfolio (Sharpe) versus one piece of a diversified holding (Treynor)"
+      ],
+      "keyPoints": [
+        "Treynor = excess return / beta; reward per unit of systematic risk",
+        "Jensen's alpha = actual return minus CAPM-predicted return",
+        "Treynor is appropriate for evaluating a piece of an already-diversified portfolio",
+        "Alpha is the most direct single number for detecting genuine risk-adjusted skill"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly computes the Treynor ratio", "weight": 30 },
+        { "criterion": "Correctly computes Jensen's alpha", "weight": 30 },
+        { "criterion": "Explains what each measure uniquely tells you", "weight": 30 },
+        { "criterion": "Correctly contextualizes when each is the appropriate tool", "weight": 10 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "performance-attribution", "label": "Performance Attribution" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-adv-005",
+      "questionCode": "LTV-QANL-0026",
+      "title": "Sizing a Position With the Kelly Criterion",
+      "prompt": "A strategy has an estimated annualized mean return of 8% and annualized variance of 0.16 (about 40% annualized volatility). Compute the full continuous Kelly fraction, then a half-Kelly fraction, and explain why a quant analyst reviewing this sizing would push back on running at full Kelly.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": ["Kelly Criterion", "Position Sizing", "Estimation Error"],
+      "code": "f* = mu / sigma^2",
+      "modelAnswer": "Full Kelly fraction f* = μ/σ² = 0.08/0.16 = 0.50, meaning the formula suggests committing 50% of capital to this strategy. Half-Kelly would be 0.25, or 25% of capital. A quant analyst would push back on running at full Kelly for two linked reasons: first, full Kelly maximizes long-run geometric growth but accepts very large short-term swings along the way — a full-Kelly bettor can see drawdowns of 50% or more even when the underlying edge is completely real, which is rarely tolerable in practice for a risk-managed book. Second, and more fundamentally, the formula assumes μ and σ² are known exactly, when in reality μ is estimated from a finite, noisy sample with real sampling error — plugging an overestimated μ into the formula produces an oversized position, and a backtest-derived edge that looks like it should bet 50% of capital could really be half that size or less once estimation uncertainty is honestly accounted for. Fractional Kelly is the standard practical response to both problems at once.",
+      "professionalAnswer": "50% of capital on a single estimated edge is already a number that should make anyone pause, and that's before even getting into the fact that μ itself is an estimate with real uncertainty around it. I'd frame the pushback as: the Kelly formula has no idea it's working off an estimate rather than a known fact, so it will happily size you up to the hilt based on a number that might be wrong by half. Fractional Kelly isn't just a smoother ride — it's a direct, practical hedge against the exact scenario where your edge estimate was optimistic.",
+      "example": "f* = 0.08/0.16 = 0.50 (full Kelly). Half-Kelly = 0.25. If the true mu is actually 4% rather than the estimated 8%, full Kelly at 50% sizing would be roughly twice as aggressive as the edge actually supports.",
+      "commonMistakes": [
+        "Confusing the discrete Kelly formula (for a binary bet) with the continuous form used for a return stream",
+        "Treating the Kelly fraction as something to size to exactly, without acknowledging estimation error in mu",
+        "Assuming fractional Kelly is just about reducing volatility rather than also hedging against overestimated edge",
+        "Not recognizing that variance in the denominator means a volatile strategy gets sized down, correctly penalizing uncertainty"
+      ],
+      "keyPoints": [
+        "Continuous Kelly fraction f* = mu / sigma^2",
+        "Full Kelly maximizes long-run growth but with large, realistic short-term drawdowns",
+        "Fractional Kelly (commonly 0.25-0.5x) is standard practice, not just caution for its own sake",
+        "The deeper issue is that mu is an estimate with real sampling error, which the raw formula ignores"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly computes the full Kelly fraction", "weight": 25 },
+        { "criterion": "Correctly computes the half-Kelly fraction", "weight": 15 },
+        { "criterion": "Explains the drawdown risk of full Kelly", "weight": 25 },
+        { "criterion": "Explains the estimation-error rationale for fractional Kelly", "weight": 35 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "position-sizing-and-the-kelly-criterion", "label": "Position Sizing & the Kelly Criterion" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-adv-006",
+      "questionCode": "LTV-QANL-0027",
+      "title": "Finding the Minimum-Variance Weight for a Two-Asset Portfolio",
+      "prompt": "Two assets have σ1=18%, σ2=28%, and correlation ρ=0.25. Solve for the minimum-variance portfolio weight on asset 1 (w1*), and compute the resulting portfolio volatility.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": ["Mean-Variance Optimization", "Minimum-Variance Portfolio"],
+      "code": "w1* = (sigma2^2 - rho*sigma1*sigma2) / (sigma1^2 + sigma2^2 - 2*rho*sigma1*sigma2)",
+      "modelAnswer": "σ1²=0.0324, σ2²=0.0784, σ1σ2=0.0504, ρσ1σ2=0.0126. Numerator = 0.0784 - 0.0126 = 0.0658. Denominator = 0.0324 + 0.0784 - 2(0.0126) = 0.1108 - 0.0252 = 0.0856. w1* = 0.0658/0.0856 ≈ 0.769, so w2* ≈ 0.231. Portfolio variance = w1²σ1² + w2²σ2² + 2w1w2ρσ1σ2 = 0.769²(0.0324) + 0.231²(0.0784) + 2(0.769)(0.231)(0.0126) ≈ 0.01915 + 0.00419 + 0.00447 ≈ 0.02781. Portfolio volatility = √0.02781 ≈ 0.1667, or about 16.7% — notably lower than either individual asset's own volatility (18% and 28%), illustrating that the minimum-variance portfolio tilts heavily toward the lower-volatility, lower-correlation asset but still achieves a standard deviation below even that asset's own 18% thanks to the diversification cross-term.",
+      "professionalAnswer": "I'd solve this with the closed-form two-asset minimum-variance weight rather than trying to set up a Lagrangian from scratch under time pressure — plug the numbers straight into w1* = (σ2² - ρσ1σ2)/(σ1² + σ2² - 2ρσ1σ2), which comes directly from minimizing the two-asset variance formula subject to the weights summing to one. The result makes intuitive sense: because asset 1 is both less volatile and not too correlated with asset 2, the optimizer leans heavily toward it, but the diversification benefit from the correlation being well below 1 is strong enough to push the combined volatility below even asset 1's own standalone 18%.",
+      "example": "w1* ≈ 0.769, w2* ≈ 0.231. Portfolio volatility ≈ 16.7%, below both individual asset volatilities (18% and 28%).",
+      "commonMistakes": [
+        "Forgetting the closed-form minimum-variance formula and trying to minimize numerically without the right setup",
+        "Dropping the cross-correlation term when computing the resulting portfolio variance",
+        "Not checking that w1*+w2*=1",
+        "Assuming the minimum-variance weight should simply be proportional to inverse volatility, ignoring the correlation term"
+      ],
+      "keyPoints": [
+        "Closed-form two-asset minimum-variance weight: w1* = (sigma2^2 - rho*sigma1*sigma2)/(sigma1^2+sigma2^2-2*rho*sigma1*sigma2)",
+        "The minimum-variance portfolio tilts toward the lower-volatility, lower-correlation asset",
+        "Resulting portfolio volatility can fall below either individual asset's own volatility",
+        "This is the special case of mean-variance optimization with no return target constraint"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly computes w1* and w2*", "weight": 40 },
+        { "criterion": "Correctly computes resulting portfolio variance/volatility", "weight": 40 },
+        { "criterion": "Correctly interprets the result relative to individual asset volatilities", "weight": 20 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "mean-variance-optimization", "label": "Mean-Variance Optimization" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-adv-007",
+      "questionCode": "LTV-QANL-0028",
+      "title": "An Impressive Backtest That Died Out-of-Sample",
+      "prompt": "A researcher swept 3,000 parameter combinations for a moving-average crossover strategy and reported the best one: an in-sample Sharpe of 2.8. Walk-forward testing on new data shows a Sharpe near zero. Explain exactly why this happened and what the researcher should have done differently.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Overfitting", "Data Snooping", "Walk-Forward Analysis"],
+      "modelAnswer": "This is a textbook data-snooping and overfitting failure. Testing 3,000 parameter combinations against the same historical dataset and reporting only the best one means the selected parameters were chosen partly because they happened to fit that specific sample's noise, not because they captured a durable, general pattern — with enough combinations tried, finding one with an impressive-looking historical Sharpe is close to statistically guaranteed, whether or not any real signal exists. The reported 2.8 in-sample Sharpe is the maximum of 3,000 noisy draws, which is a fundamentally different (and far more optimistic) statistical quantity than a single honest test. When tested on genuinely new data the optimization never touched, the noise that was fit no longer helps, and only whatever real signal exists (apparently very little, here) remains, which is exactly why the walk-forward Sharpe collapsed toward zero. The researcher should have used a disciplined train/test split (holding out the most recent 20-30% of data, untouched during selection) or, better, walk-forward analysis from the start — repeatedly refitting on a rolling window and testing only on the immediately following out-of-sample period — and should have tracked and disclosed how many parameter combinations were tried, since that number directly affects how much to trust any single result.",
+      "professionalAnswer": "The giveaway here isn't really the near-zero out-of-sample Sharpe — it's the '3,000 combinations, picked the best one' setup, which guarantees you'll find something that looks great purely by chance even with zero real signal underneath. I'd walk through it like flipping 3,000 coins twenty times each: some coin is going to come up heads fifteen-plus times, and that doesn't mean it's biased, it means you tried enough coins. The fix isn't a better parameter search, it's a fundamentally more honest validation process — walk-forward testing from the start, with the researcher committing to report however many variations were actually tried.",
+      "commonMistakes": [
+        "Blaming the out-of-sample collapse on 'the market regime changing' without first addressing the parameter-search methodology",
+        "Treating the in-sample Sharpe of 2.8 as a legitimate point estimate rather than the maximum of thousands of noisy draws",
+        "Suggesting a narrower parameter search as the fix without also recommending proper train/test discipline",
+        "Not recognizing that disclosing the number of combinations tried is itself part of an honest research process"
+      ],
+      "keyPoints": [
+        "Testing many combinations against the same data guarantees finding an apparently good result by chance alone",
+        "The best-of-many in-sample Sharpe is a biased, optimistic statistic, not a trustworthy point estimate",
+        "Train/test splits and walk-forward analysis are the standard defenses",
+        "The number of combinations tried should be tracked and disclosed, since it affects how much to trust any single result"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies data snooping/overfitting as the root cause", "weight": 35 },
+        { "criterion": "Explains why in-sample Sharpe from a large search is statistically biased", "weight": 30 },
+        { "criterion": "Recommends train/test split or walk-forward analysis as the fix", "weight": 25 },
+        { "criterion": "Mentions disclosing the number of combinations tried", "weight": 10 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "data-snooping-and-overfitting", "label": "Data Snooping & Overfitting" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-adv-008",
+      "questionCode": "LTV-QANL-0029",
+      "title": "A Pairs Trade That Stopped Reverting",
+      "prompt": "A pairs trade that passed an Engle-Granger cointegration test two years ago has recently drifted to a z-score of 4 and shown no sign of reverting. What are the possible explanations, and how should the desk respond?",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Statistical Arbitrage", "Cointegration", "Regime Breaks"],
+      "modelAnswer": "A persistently non-reverting spread at a z-score of 4 suggests the cointegrating relationship itself may have broken — a merger, a regulatory change, a divergence in one company's underlying business model, or any structural shift that permanently changes the relationship between the two instruments would do this, and a test that passed two years ago says nothing about whether the relationship still holds today. It's also possible the hedge ratio has drifted (since it's typically estimated on a rolling window and markets evolve), so the 'spread' being monitored may no longer be the right linear combination of the two legs. A third possibility, especially if other desks hold economically similar pairs, is a crowded stat-arb unwind — correlated selling by multiple participants pushing an otherwise mean-reverting spread further away before it can revert, as happened industry-wide in August 2007. The desk's response should be to re-run the cointegration test on recent data rather than assuming the original result still holds, re-estimate the hedge ratio on a more current window, check for a plausible fundamental/structural cause (the merger/business-divergence check), and reduce or exit the position if the relationship looks genuinely broken rather than doubling down on the assumption that a z-score of 4 implies an even-more-overdue reversion.",
+      "professionalAnswer": "A z-score of 4 that just keeps grinding wider is exactly the scenario market-neutral traders fear most, because the instinct is to add to the position since 'it has to revert eventually' — but cointegration passing a test two years ago is not a permanent guarantee, and the single most important question is whether something structural changed. I'd re-test cointegration on recent data before doing anything else, and I'd specifically go look for a fundamental reason the relationship might have genuinely broken, rather than assuming this is just a larger version of the normal mean-reversion the strategy is built to trade.",
+      "commonMistakes": [
+        "Assuming a wider z-score always means a bigger reversion is 'overdue' rather than considering a structural break",
+        "Treating a cointegration test result as permanent rather than something that needs periodic re-validation",
+        "Ignoring hedge-ratio drift as a possible contributor to an apparently widening spread",
+        "Not considering crowding/correlated-unwind risk as a real, historically documented failure mode"
+      ],
+      "keyPoints": [
+        "Cointegration can break permanently due to structural/fundamental changes",
+        "The hedge ratio drifts over time and needs periodic re-estimation",
+        "Crowded stat-arb unwinds are a real historical failure mode (e.g., August 2007)",
+        "Re-test, re-estimate, and investigate fundamentals before assuming reversion is simply 'overdue'"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Identifies structural/fundamental break as a plausible cause", "weight": 30 },
+        { "criterion": "Identifies hedge-ratio drift as a plausible cause", "weight": 20 },
+        { "criterion": "Identifies crowding/correlated unwind risk", "weight": 25 },
+        { "criterion": "Proposes a concrete, prioritized response plan", "weight": 25 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "statistical-arbitrage-and-pairs-trading", "label": "Statistical Arbitrage & Pairs Trading" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-adv-009",
+      "questionCode": "LTV-QANL-0030",
+      "title": "Why a Delta-Hedge Keeps Drifting Out of Balance",
+      "prompt": "A trader delta-hedged a large short-gamma options position this morning, and by afternoon the hedge is noticeably off even though no new trades were made. What's happening, and what should the trader do differently going forward?",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Gamma", "Delta-Hedging", "Dynamic Hedging"],
+      "modelAnswer": "Delta is only accurate for small, instantaneous moves — it's a snapshot, not a fixed hedge ratio. Because this is a large short-gamma position, the position's delta itself changes quickly as the underlying moves (that's precisely what gamma measures: the rate of change of delta), so a hedge that was neutral this morning has almost certainly drifted meaningfully by afternoon simply from normal intraday price movement, with no new trades required to explain the drift. Being short gamma specifically means the position's delta moves against the trader as the stock moves — delta becomes more negative as the stock rises and more positive as it falls for a short-gamma book — which is the worst possible direction for a static hedge to be stale in. Going forward, the trader needs to rebalance the hedge more frequently, roughly in proportion to how large the gamma exposure is and how volatile the underlying has been; a high-gamma book may need intraday rebalancing multiple times a day, not just once at the open, and the rebalancing frequency itself should be treated as a parameter to manage (more frequent rebalancing reduces hedge slippage but increases transaction costs from the hedge trades themselves).",
+      "professionalAnswer": "I'd tell the trader: nothing is 'wrong,' this is just what being short gamma feels like — your hedge ratio was only ever correct for the instant you set it, and the bigger your gamma, the faster it goes stale as the stock moves around during the day. The practical fix is rebalancing cadence, not a one-time correction: a book this gamma-heavy probably needs to be re-hedged multiple times a day, and the real decision is balancing hedge-slippage risk against the transaction costs of rebalancing that often.",
+      "commonMistakes": [
+        "Assuming the delta drift implies an error in the original hedge calculation",
+        "Not connecting the drift specifically to the position's gamma exposure",
+        "Suggesting a one-time re-hedge rather than a change in rebalancing frequency going forward",
+        "Ignoring the transaction-cost tradeoff that comes with more frequent rebalancing"
+      ],
+      "keyPoints": [
+        "Delta is accurate only for small, instantaneous moves; it drifts as the underlying moves, driven by gamma",
+        "A large short-gamma position needs more frequent rebalancing, not a one-time fix",
+        "Rebalancing frequency trades off hedge slippage against transaction costs",
+        "This is expected, structural behavior of a gamma-exposed position, not an error"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly attributes the drift to gamma, not an error", "weight": 35 },
+        { "criterion": "Explains the direction of short-gamma delta drift", "weight": 20 },
+        { "criterion": "Recommends more frequent rebalancing as the forward-looking fix", "weight": 30 },
+        { "criterion": "Notes the transaction-cost tradeoff of rebalancing frequency", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "the-greeks", "label": "The Greeks" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-adv-010",
+      "questionCode": "LTV-QANL-0031",
+      "title": "Designing a Factor-Based Covariance Matrix for a Large Book",
+      "prompt": "You're asked to replace a 500-stock portfolio's sample covariance matrix (built from 2 years of daily data) with a factor-model-based estimate. Walk through how you'd structure this — what goes into B, Σ_F, and D — and why this fixes the singularity problem the sample covariance has.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Factor Models", "Covariance Estimation", "Risk Model Design"],
+      "code": "Sigma = B * Sigma_F * B' + D",
+      "modelAnswer": "I'd estimate B, the N×k matrix of factor loadings, by regressing each of the 500 stocks' historical excess returns on a small set of k common factors (e.g., market, size, value, and a handful of others) via OLS — the same regression used to estimate CAPM beta, just extended to multiple factors. Σ_F, the k×k factor covariance matrix, is estimated directly from the much shorter history of the k factor return series themselves, which is a tiny, tractable estimation problem compared to the full stock-level matrix. D is a diagonal matrix of each stock's idiosyncratic (residual) variance from its own factor regression, assumed uncorrelated across stocks by construction of the model. This collapses the estimation problem from roughly N(N+1)/2 (over 125,000 for 500 stocks) down to roughly N·k (the loadings) plus k(k+1)/2 (the factor covariance) plus N (idiosyncratic variances) — dramatically fewer free parameters, which is why the resulting matrix is automatically full rank and invertible (the added diagonal D term guarantees it), unlike the sample covariance matrix, which becomes singular whenever the number of historical observations is near or below the number of assets.",
+      "professionalAnswer": "I'd build this exactly the way the lesson's three-piece decomposition lays it out: run the factor regressions stock by stock to get B and the idiosyncratic variances for D, estimate Σ_F once off the (much smaller) factor return series, then assemble Σ = BΣ_FB' + D. The reason this fixes invertibility isn't subtle — adding a strictly positive diagonal term to a lower-rank BΣ_FB' structure guarantees the result is full rank, which the raw sample covariance matrix simply isn't once you're estimating 125,000+ parameters from roughly 500 days of data. I'd also sanity-check the result against the sample covariance on a subset of liquid, well-covered names to make sure the factor model isn't introducing its own systematic bias.",
+      "commonMistakes": [
+        "Not explaining how each of B, Sigma_F, and D is actually estimated",
+        "Missing that the diagonal D term is specifically what guarantees invertibility",
+        "Confusing the number of factors k with the number of assets N when describing the parameter-count reduction",
+        "Not validating the factor-model covariance against the sample covariance where data permits"
+      ],
+      "keyPoints": [
+        "B: factor loadings from per-stock OLS regressions against the chosen factors",
+        "Sigma_F: covariance of the small number of factor returns themselves",
+        "D: diagonal idiosyncratic variances from the regression residuals",
+        "The diagonal D term guarantees full rank / invertibility, fixing the sample covariance's singularity problem"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly describes how B is estimated", "weight": 25 },
+        { "criterion": "Correctly describes how Sigma_F is estimated", "weight": 20 },
+        { "criterion": "Correctly describes how D is estimated", "weight": 20 },
+        { "criterion": "Explains why this structure fixes singularity/invertibility", "weight": 35 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "risk-models-and-covariance-estimation", "label": "Risk Models & Covariance Estimation" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-adv-011",
+      "questionCode": "LTV-QANL-0032",
+      "title": "Structuring a Firm's Stress-Testing Program",
+      "prompt": "Design the structure of a stress-testing program for a multi-strategy book: what categories of scenarios would you include, how do they complement each other, and where does reverse stress testing fit in?",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Stress Testing", "Scenario Analysis", "Risk Program Design"],
+      "modelAnswer": "A well-rounded program needs at least three complementary categories plus reverse stress testing as a fourth, distinct check. Historical scenario replay applies real past crises (2008, the COVID crash, 1998 LTCM) to today's positions — powerful because the moves are internally consistent and really happened, but inherently backward-looking since it can only replay what's already occurred. Hypothetical (constructed) scenarios let the risk team probe forward-looking risks that haven't happened historically but are judged plausible, filling the gap historical replay leaves. Single-factor sensitivity analysis shocks one risk factor at a time, holding everything else fixed, which isolates exactly which factor the book is most exposed to, though it ignores how factors might move together in a real crisis — which is exactly why it needs to sit alongside the other two, not replace them. Reverse stress testing flips the usual direction: starting from a specific unacceptable loss (one that would breach a capital or liquidity limit), work backward to find what combination of market moves would produce it — this surfaces hidden concentrations and fragile assumptions that forward-looking scenario design might never think to construct, since it isn't limited by the risk team's own imagination about plausible scenarios.",
+      "professionalAnswer": "I'd design this as four complementary lenses, not one 'best' method: historical replay to ground the program in what's actually happened, hypothetical scenarios to cover plausible things that haven't happened yet, single-factor sensitivity to isolate which lever matters most, and reverse stress testing specifically because it doesn't depend on anyone having thought of the right scenario in advance — it just asks the math 'what would break us,' which is often more honest than anything a risk team would have constructed themselves. I'd run all four on a regular cadence and treat reverse stress testing results as a standing watchlist of concentrations to actively manage down, not just a reporting exercise.",
+      "commonMistakes": [
+        "Relying on only historical scenarios and treating that as a complete stress-testing program",
+        "Describing reverse stress testing as just 'a bigger shock' rather than a backward-direction methodology",
+        "Not explaining why single-factor sensitivity analysis needs to be paired with multi-factor scenarios",
+        "Treating stress testing as a one-time report rather than an ongoing, regularly-run program"
+      ],
+      "keyPoints": [
+        "Historical scenarios: real, internally consistent, but backward-looking only",
+        "Hypothetical scenarios: cover plausible forward-looking risks historical replay can't reach",
+        "Single-factor sensitivity: isolates the most important risk driver, but ignores co-movement",
+        "Reverse stress testing: starts from an unacceptable loss and works backward, surfacing hidden concentrations"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly describes historical scenario replay and its limitation", "weight": 20 },
+        { "criterion": "Correctly describes hypothetical scenarios and sensitivity analysis", "weight": 25 },
+        { "criterion": "Correctly describes reverse stress testing and its distinct value", "weight": 30 },
+        { "criterion": "Explains how the categories complement rather than duplicate each other", "weight": 25 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "stress-testing-and-scenario-analysis", "label": "Stress Testing & Scenario Analysis" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-adv-012",
+      "questionCode": "LTV-QANL-0033",
+      "title": "Building an Attribution Framework for a Multi-Sleeve Portfolio",
+      "prompt": "A fund blends a momentum sleeve and a mean-reversion sleeve. Design an attribution framework that lets you separate each sleeve's contribution to total return, and explain how allocation effect and selection effect fit into that design for a fund that also makes sector-weighting decisions on top of the sleeves.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Performance Attribution", "Multi-Sleeve Portfolios", "Allocation vs. Selection"],
+      "modelAnswer": "At the position level, each asset's contribution to portfolio return is its weight multiplied by its own return; because contributions are additive by construction, they sum to the portfolio's total return. I'd group individual positions by which sleeve they belong to (momentum vs. mean-reversion) and sum contributions within each group to get each sleeve's total contribution — this immediately reveals whether a sleeve is persistently earning its capital allocation or quietly riding along on the other sleeve's performance, information the blended headline return alone would never show. Layered on top of that, if the fund also makes sector-weighting decisions, I'd separate allocation effect (return from over/underweighting sectors relative to a benchmark's sector weights, independent of which names were picked) from selection effect (return from which specific names were picked within a given sector, holding the sector weight fixed) — this tells you which type of decision, the top-down sector call or the bottom-up stock-picking call, actually drove performance within and across sleeves. The architecture needs three layers of grouping (position → sleeve → sector-allocation vs. selection) all computed from the same underlying position-level contribution data, so the numbers reconcile exactly rather than being computed independently and potentially disagreeing.",
+      "professionalAnswer": "I'd build this bottom-up from one source of truth: position-level weight-times-return contributions. Everything else — sleeve totals, allocation effect, selection effect — is just a different grouping or decomposition of that same number, which is important architecturally because it guarantees the pieces reconcile back to the total return exactly, rather than three separate calculations that might not agree. The practical payoff for a research lead is being able to ask 'is the momentum sleeve earning its risk budget' and 'is our sector-weighting call or our stock-picking call driving this quarter's number' from the same underlying data, on demand.",
+      "commonMistakes": [
+        "Building sleeve attribution and allocation/selection attribution as separate, disconnected calculations",
+        "Confusing a position's own return with its contribution to the portfolio (weight × return)",
+        "Not grouping consistently from the same position-level contribution data, risking numbers that don't reconcile",
+        "Treating sleeve attribution and sector allocation/selection as the same decomposition rather than two distinct, complementary layers"
+      ],
+      "keyPoints": [
+        "Contribution to return = weight × asset's own return; additive and sums to total portfolio return",
+        "Group contributions by sleeve to see which sleeve is actually earning its capital allocation",
+        "Separately decompose sector-level allocation effect vs. selection effect",
+        "Build all layers from the same position-level contribution data so they reconcile exactly"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly defines contribution to return and its additivity", "weight": 25 },
+        { "criterion": "Designs a correct sleeve-level grouping approach", "weight": 30 },
+        { "criterion": "Correctly explains allocation effect vs. selection effect", "weight": 30 },
+        { "criterion": "Ensures the architecture reconciles across layers", "weight": 15 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "performance-attribution", "label": "Performance Attribution" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-adv-013",
+      "questionCode": "LTV-QANL-0034",
+      "title": "Defending a Pricing Model's Assumptions to a Skeptical Trader",
+      "prompt": "A trader says, 'Why are we still using Black-Scholes when everyone knows volatility isn't constant?' How do you respond, defending the model's continued use while being honest about its limits?",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Black-Scholes", "Model Risk", "Stakeholder Communication"],
+      "modelAnswer": "I'd agree with the premise directly rather than getting defensive: constant volatility is the single assumption Black-Scholes gets most visibly wrong, and the volatility smile/skew we see every day is direct evidence of exactly that. But I'd explain that the model earns its continued use in a different way — it's the reference point every other pricing method in the business gets compared against, it gives a clean, fast, closed-form sanity check, and the market itself has effectively patched the constant-volatility flaw by pricing each option off its own point on the implied volatility surface rather than one flat number. In practice, nobody serious is actually pricing with one constant σ across every strike — they're using Black-Scholes as the pricing engine with market-implied, strike-specific volatilities plugged in, which is a meaningfully different (and much more honest) use of the model than the trader's question implies. For anything path-dependent, early-exercisable, or where the smile dynamics themselves matter to the payoff, I'd be the first to say Black-Scholes alone isn't enough and we need tree, simulation, or stochastic/local volatility methods instead.",
+      "professionalAnswer": "I wouldn't try to defend the constant-volatility assumption itself, because it's indefensible and everyone in the room already knows it. What I'd defend is how we actually use the model: as a fast, standardized engine fed with market-implied volatility per strike, not as a literal description of how markets behave. That's the difference between 'the model is wrong about volatility' and 'we're using the model wrong,' and in practice no desk I've worked with does the latter. If the trader is really asking about path-dependent or barrier-style risk, that's a fair challenge, and the honest answer there is we'd reach for a different tool entirely.",
+      "commonMistakes": [
+        "Getting defensive about Black-Scholes rather than acknowledging the trader's point is factually correct",
+        "Failing to explain that the model is actually used with market-implied, strike-specific volatility rather than one flat number",
+        "Not distinguishing between vanilla European options (where Black-Scholes-with-smile is fine) and path-dependent/exotic payoffs (where it isn't)",
+        "Overclaiming the model's accuracy rather than being honest about its real, well-known limits"
+      ],
+      "keyPoints": [
+        "Agree that constant volatility is a real, visible flaw, evidenced by the smile/skew",
+        "Explain the model is used as an engine fed with market-implied vol per strike, not one flat number",
+        "Black-Scholes remains the reference point and sanity check across the business",
+        "Be honest that path-dependent/exotic payoffs genuinely need different methods"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Acknowledges the trader's point as substantively correct", "weight": 25 },
+        { "criterion": "Explains the practical use of market-implied volatility per strike", "weight": 35 },
+        { "criterion": "Articulates the model's genuine continued value", "weight": 20 },
+        { "criterion": "Is honest about where the model genuinely falls short", "weight": 20 }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "the-black-scholes-model", "label": "The Black-Scholes Model" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-adv-014",
+      "questionCode": "LTV-QANL-0035",
+      "title": "Telling an Allocator Their Favorite Number Isn't Significant",
+      "prompt": "An allocator is excited about a strategy's Sharpe ratio of 1.0 from a 2-year backtest. Your analysis shows the 95% confidence interval on that Sharpe spans from negative to strongly positive. How do you deliver this news constructively?",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Statistical Significance", "Sharpe Ratio Uncertainty", "Stakeholder Communication"],
+      "modelAnswer": "I'd start by validating what's real — a Sharpe of 1.0 is genuinely a solid-looking point estimate by the usual rule of thumb — and then explain that every Sharpe ratio has its own sampling uncertainty, just like a mean return does, and two years of daily data is a short sample for pinning that uncertainty down tightly. I'd walk through the actual numbers: using a standard-error approximation (or a bootstrap), the 95% confidence interval for this Sharpe stretches from clearly negative to quite strongly positive, which means the data cannot rule out that the true underlying Sharpe is actually negative, even though this particular two-year sample happened to land on a point estimate of 1.0. I'd frame this not as 'the strategy is bad' but as 'we don't yet have enough data to be confident it's good,' and I'd recommend either a longer track record, out-of-sample validation on data the strategy wasn't designed against, or sizing the allocation conservatively until more evidence accumulates.",
+      "professionalAnswer": "I'd lead with the number they want to hear — yes, 1.0 is a good point estimate — before immediately adding the honest caveat: it comes with a confidence interval wide enough to include negative territory, and that's not a flaw in the strategy, it's just what two years of daily data can and can't tell you statistically. I've found allocators respond much better to 'we need more evidence before sizing this up' than to a blunt 'this number isn't trustworthy,' even though those are really the same message.",
+      "commonMistakes": [
+        "Delivering only the bad news (wide CI) without first validating that the point estimate itself is reasonable",
+        "Failing to explain concretely why two years of data produces this much uncertainty",
+        "Implying the strategy is definitely bad rather than correctly framing it as 'not yet proven'",
+        "Not offering a constructive next step (longer sample, out-of-sample test, conservative sizing)"
+      ],
+      "keyPoints": [
+        "A Sharpe ratio has its own sampling uncertainty, just like a mean return",
+        "A wide 95% CI spanning negative to positive means the true Sharpe could be negative despite a good point estimate",
+        "Frame this as 'not yet proven' rather than 'bad', and explain why briefly and concretely",
+        "Offer a constructive path forward: longer sample, out-of-sample validation, or conservative initial sizing"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains Sharpe ratio sampling uncertainty", "weight": 30 },
+        { "criterion": "Accurately communicates what the wide confidence interval implies", "weight": 25 },
+        { "criterion": "Delivers the message constructively, not alarmingly", "weight": 25 },
+        { "criterion": "Proposes a concrete, reasonable next step", "weight": 20 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "statistical-significance-of-results", "label": "Statistical Significance of Results" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-adv-015",
+      "questionCode": "LTV-QANL-0036",
+      "title": "Delivering a Bad Stress-Test Result to the Risk Committee",
+      "prompt": "Your reverse stress test reveals the firm's book would breach its capital limit under a plausible, moderate combination of market moves — not even an extreme scenario. How do you present this to the risk committee?",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": ["Stress Testing", "Risk Governance", "Difficult Communication"],
+      "modelAnswer": "I'd lead with the finding itself, stated plainly and without burying it: the reverse stress test found a plausible, moderate combination of market moves — not an extreme tail event — that would breach the firm's capital limit, and I'd name the specific combination of moves precisely so the committee understands exactly what scenario this is, not a vague 'something bad happened.' I'd explain why reverse stress testing specifically surfaced this when forward-looking hypothetical scenarios might not have — it works backward from the unacceptable outcome rather than depending on anyone having thought to construct this exact scenario in advance, which is precisely its value and exactly why this is a credible, not alarmist, finding. I'd come with a concrete recommendation already prepared — reduce the specific concentration driving the breach, add a targeted hedge, or tighten a specific risk limit — rather than just presenting the problem and leaving the committee to figure out the response, since a risk finding without an accompanying recommendation tends to generate anxiety rather than action.",
+      "professionalAnswer": "I'd treat this as exactly the kind of finding reverse stress testing is supposed to produce — the whole point of the exercise is to find the uncomfortable scenarios nobody would have thought to construct forward, so finding one isn't a failure of the book, it's the method working as intended. I'd present the specific scenario clearly, resist the urge to soften it, and show up with at least one concrete mitigation option already scoped, because a committee that hears 'we have a problem and here's what we'd do about it' responds very differently than one that just hears 'we have a problem.'",
+      "commonMistakes": [
+        "Softening or burying the finding to avoid delivering bad news",
+        "Presenting the problem without a concrete mitigation recommendation",
+        "Treating the finding as evidence the risk process failed, rather than evidence it worked as designed",
+        "Describing the scenario vaguely instead of naming the specific combination of moves that causes the breach"
+      ],
+      "keyPoints": [
+        "State the finding plainly and specifically, without burying or softening it",
+        "Explain why reverse stress testing is designed to surface exactly this kind of hidden risk",
+        "Come prepared with a concrete mitigation recommendation, not just the problem",
+        "Frame the finding as the risk process succeeding, not failing"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Communicates the finding clearly and without minimizing it", "weight": 30 },
+        { "criterion": "Correctly frames why reverse stress testing surfaced this", "weight": 25 },
+        { "criterion": "Comes with a concrete, actionable mitigation recommendation", "weight": 30 },
+        { "criterion": "Maintains appropriate tone for a risk-committee audience", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "stress-testing-and-scenario-analysis", "label": "Stress Testing & Scenario Analysis" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    }
+  ]
+}
