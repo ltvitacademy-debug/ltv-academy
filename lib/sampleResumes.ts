@@ -30,6 +30,8 @@ import { RESUMES as AWS_DATA_ENGINEER } from "./sample-resumes-data/aws-data-eng
 import { RESUMES as SQL_SERVER_DATABASE_ADMINISTRATOR } from "./sample-resumes-data/sql-server-database-administrator";
 import { RESUMES as DATA_GOVERNANCE } from "./sample-resumes-data/data-governance";
 import { RESUMES as QUANTITATIVE_DEVELOPER_RESEARCHER } from "./sample-resumes-data/quantitative-developer-researcher";
+import { RESUMES as SALESFORCE_ARCHITECT } from "./sample-resumes-data/salesforce-architect";
+import { RESUMES as PRINCIPAL_DATA_ENGINEER } from "./sample-resumes-data/principal-data-engineer";
 
 export const SAMPLE_RESUMES: Record<string, PathResumes> = {
   "microsoft-data-bi-developer": MICROSOFT_DATA_BI_DEVELOPER,
@@ -49,10 +51,12 @@ export const SAMPLE_RESUMES: Record<string, PathResumes> = {
   "sql-server-database-administrator": SQL_SERVER_DATABASE_ADMINISTRATOR,
   "data-governance": DATA_GOVERNANCE,
   "quantitative-developer-researcher": QUANTITATIVE_DEVELOPER_RESEARCHER,
+  "salesforce-architect": SALESFORCE_ARCHITECT,
   // The Principal/Staff AI Engineer destination's own `stages` in career-paths.ts is just the full
   // AI Engineer path with no additional courses — its destinationNote explicitly says not to invent
   // a second curriculum. So its resume is, honestly, the same resume as the AI Engineer path itself.
   "principal-staff-ai-engineer": AI_ENGINEER,
+  "principal-data-engineer": PRINCIPAL_DATA_ENGINEER,
 };
 
 export function getSampleResume(pathSlug: string, level: string): ResumeData | undefined {
