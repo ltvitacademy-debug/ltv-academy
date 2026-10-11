@@ -207,13 +207,7 @@ export default function PathDetailRedesign({
       {/* Career progression stepper */}
       {path.targetJobs.length > 1 && (
         <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <div
-            className={
-              certs.length > 0 || (sampleResumeLevels && sampleResumeLevels.length > 0)
-                ? "grid gap-10 lg:grid-cols-[1fr_20rem]"
-                : undefined
-            }
-          >
+          <div className={certs.length > 0 ? "grid gap-10 lg:grid-cols-[1fr_20rem]" : undefined}>
             <div>
               <p className="eyebrow mb-3">Career progression</p>
               <h2 className="display max-w-2xl text-3xl sm:text-4xl">
@@ -242,56 +236,31 @@ export default function PathDetailRedesign({
               </div>
             </div>
 
-            {(certs.length > 0 || (sampleResumeLevels && sampleResumeLevels.length > 0)) && (
-              <div className="space-y-6 lg:self-start">
-                {certs.length > 0 && (
-                  <div className="rounded-[2px] border border-ink/15 bg-white/60 p-5">
-                    <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-                        <circle cx="12" cy="8" r="5" />
-                        <path d="M8.5 12.5 7 21l5-3 5 3-1.5-8.5" />
-                      </svg>
-                      What this prepares you for
-                    </p>
-                    <ul className="mt-3 space-y-3">
-                      {certs.map((c) => (
-                        <li key={c.certification} className="flex items-center gap-3 text-sm">
-                          {c.logo ? (
-                            <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-parchment shadow-[0_0_0_1px_var(--color-gold)]">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img src={`/brand/logos/${c.logo}.svg`} alt="" className="h-4 w-4 object-contain" />
-                            </span>
-                          ) : (
-                            <span className="h-7 w-7 flex-shrink-0 rounded-full border border-ink/15" aria-hidden="true" />
-                          )}
-                          <span className="text-ink">{c.certification}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <p className="mt-4 text-xs text-stone">LTV Academy does not issue certifications — this shows the skills these courses cover.</p>
-                  </div>
-                )}
-
-                {sampleResumeLevels && sampleResumeLevels.length > 0 && (
-                  <div className="rounded-[2px] border-2 border-ink/15 bg-white/50 p-6 text-center">
-                    <p className="display text-xl text-ink">What does this look like on a resume?</p>
-                    <p className="mt-2 text-sm text-stone">
-                      A sample resume for a fictional graduate, John Doe, showing what you can
-                      credibly claim after finishing this path.
-                    </p>
-                    <div className="mt-5 flex flex-col gap-2">
-                      {sampleResumeLevels.map((level) => (
-                        <Link
-                          key={level.key}
-                          href={`/careers/${path.slug}/resume/${level.key}`}
-                          className="inline-block rounded-[2px] border border-crimson/40 bg-parchment px-6 py-2.5 text-sm font-semibold text-crimson-deep hover:bg-crimson hover:text-parchment transition-colors"
-                        >
-                          View the {level.label} resume →
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
+            {certs.length > 0 && (
+              <div className="rounded-[2px] border border-ink/15 bg-white/60 p-5 lg:self-start">
+                <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                    <circle cx="12" cy="8" r="5" />
+                    <path d="M8.5 12.5 7 21l5-3 5 3-1.5-8.5" />
+                  </svg>
+                  What this prepares you for
+                </p>
+                <ul className="mt-3 space-y-3">
+                  {certs.map((c) => (
+                    <li key={c.certification} className="flex items-center gap-3 text-sm">
+                      {c.logo ? (
+                        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-parchment shadow-[0_0_0_1px_var(--color-gold)]">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={`/brand/logos/${c.logo}.svg`} alt="" className="h-4 w-4 object-contain" />
+                        </span>
+                      ) : (
+                        <span className="h-7 w-7 flex-shrink-0 rounded-full border border-ink/15" aria-hidden="true" />
+                      )}
+                      <span className="text-ink">{c.certification}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-4 text-xs text-stone">LTV Academy does not issue certifications — this shows the skills these courses cover.</p>
               </div>
             )}
           </div>
@@ -697,29 +666,6 @@ export default function PathDetailRedesign({
               </div>
             )}
 
-            {/* Sample resume now lives next to the Career progression ladder above, for the same
-                reason — only fall back to showing it here for paths with no ladder. */}
-            {sampleResumeLevels && sampleResumeLevels.length > 0 && path.targetJobs.length <= 1 && (
-              <div className="rounded-[2px] border-2 border-ink/15 bg-white/50 p-6 text-center">
-                <p className="display text-xl text-ink">What does this look like on a resume?</p>
-                <p className="mt-2 text-sm text-stone">
-                  A sample resume for a fictional graduate, John Doe, showing what you can
-                  credibly claim after finishing this path.
-                </p>
-                <div className="mt-5 flex flex-col gap-2">
-                  {sampleResumeLevels.map((level) => (
-                    <Link
-                      key={level.key}
-                      href={`/careers/${path.slug}/resume/${level.key}`}
-                      className="inline-block rounded-[2px] border border-crimson/40 bg-parchment px-6 py-2.5 text-sm font-semibold text-crimson-deep hover:bg-crimson hover:text-parchment transition-colors"
-                    >
-                      View the {level.label} resume →
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-
             <div className="rounded-[2px] bg-crimson-deep p-6 text-center text-gold-pale">
               <p className="display text-xl">Ready to become {/^[aeiou]/i.test(path.title) ? "an" : "a"} {path.title}?</p>
               <p className="mt-2 text-sm text-gold-pale/80">Step-by-step training and real projects to break into one of the most in-demand careers in tech.</p>
@@ -838,12 +784,69 @@ export default function PathDetailRedesign({
         </section>
       )}
 
-      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-        <div className="rounded-[2px] bg-gold-pale p-6">
-          <p className="text-sm uppercase tracking-[0.14em] text-crimson-deep">Where this leads</p>
-          <p className="mt-2 max-w-2xl text-ink">{path.destinationNote}</p>
+      {path.destinationNote && (
+        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+          <div
+            className={
+              sampleResumeLevels && sampleResumeLevels.length > 0
+                ? "grid gap-6 lg:grid-cols-[1fr_20rem]"
+                : undefined
+            }
+          >
+            <div className="rounded-[2px] bg-gold-pale p-6">
+              <p className="text-sm uppercase tracking-[0.14em] text-crimson-deep">Where this leads</p>
+              <p className="mt-2 max-w-2xl text-ink">{path.destinationNote}</p>
+            </div>
+
+            {sampleResumeLevels && sampleResumeLevels.length > 0 && (
+              <div className="rounded-[2px] border-2 border-ink/15 bg-white/50 p-6 text-center lg:self-start">
+                <p className="display text-xl text-ink">What does this look like on a resume?</p>
+                <p className="mt-2 text-sm text-stone">
+                  A sample resume for a fictional graduate, John Doe, showing what you can
+                  credibly claim after finishing this path.
+                </p>
+                <div className="mt-5 flex flex-col gap-2">
+                  {sampleResumeLevels.map((level) => (
+                    <Link
+                      key={level.key}
+                      href={`/careers/${path.slug}/resume/${level.key}`}
+                      className="inline-block rounded-[2px] border border-crimson/40 bg-parchment px-6 py-2.5 text-sm font-semibold text-crimson-deep hover:bg-crimson hover:text-parchment transition-colors"
+                    >
+                      View the {level.label} resume →
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* "What does this look like on a resume?" lives next to "Where this leads" above.
+          Only fall back to showing it here for the rare path with no destinationNote at all,
+          so the card is never dropped entirely. */}
+      {!path.destinationNote && sampleResumeLevels && sampleResumeLevels.length > 0 && (
+        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+          <div className="mx-auto max-w-md rounded-[2px] border-2 border-ink/15 bg-white/50 p-6 text-center">
+            <p className="display text-xl text-ink">What does this look like on a resume?</p>
+            <p className="mt-2 text-sm text-stone">
+              A sample resume for a fictional graduate, John Doe, showing what you can credibly
+              claim after finishing this path.
+            </p>
+            <div className="mt-5 flex flex-col gap-2">
+              {sampleResumeLevels.map((level) => (
+                <Link
+                  key={level.key}
+                  href={`/careers/${path.slug}/resume/${level.key}`}
+                  className="inline-block rounded-[2px] border border-crimson/40 bg-parchment px-6 py-2.5 text-sm font-semibold text-crimson-deep hover:bg-crimson hover:text-parchment transition-colors"
+                >
+                  View the {level.label} resume →
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
