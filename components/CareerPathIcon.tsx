@@ -127,6 +127,14 @@ const ICONS: Record<string, React.ReactNode> = {
       <path d="M3 19h18" />
     </>
   ),
+  "quantitative-trader": (
+    <>
+      <path d="M7 4v16M12 3v16M17 7v13" />
+      <rect x="5.5" y="8" width="3" height="6" rx="0.5" />
+      <rect x="10.5" y="6" width="3" height="5" rx="0.5" />
+      <rect x="15.5" y="10" width="3" height="7" rx="0.5" />
+    </>
+  ),
 };
 
 const FALLBACK: React.ReactNode = (
