@@ -32,6 +32,8 @@ import { RESUMES as DATA_GOVERNANCE } from "./sample-resumes-data/data-governanc
 import { RESUMES as QUANTITATIVE_DEVELOPER_RESEARCHER } from "./sample-resumes-data/quantitative-developer-researcher";
 import { RESUMES as SALESFORCE_ARCHITECT } from "./sample-resumes-data/salesforce-architect";
 import { RESUMES as PRINCIPAL_DATA_ENGINEER } from "./sample-resumes-data/principal-data-engineer";
+import { RESUMES as AI_ML_RESEARCH_AND_ALIGNMENT_ENGINEER } from "./sample-resumes-data/ai-ml-research-and-alignment-engineer";
+import { RESUMES as AI_INFRASTRUCTURE_ML_SYSTEMS_ENGINEER } from "./sample-resumes-data/ai-infrastructure-ml-systems-engineer";
 
 export const SAMPLE_RESUMES: Record<string, PathResumes> = {
   "microsoft-data-bi-developer": MICROSOFT_DATA_BI_DEVELOPER,
@@ -57,6 +59,8 @@ export const SAMPLE_RESUMES: Record<string, PathResumes> = {
   // a second curriculum. So its resume is, honestly, the same resume as the AI Engineer path itself.
   "principal-staff-ai-engineer": AI_ENGINEER,
   "principal-data-engineer": PRINCIPAL_DATA_ENGINEER,
+  "ai-ml-research-and-alignment-engineer": AI_ML_RESEARCH_AND_ALIGNMENT_ENGINEER,
+  "ai-infrastructure-ml-systems-engineer": AI_INFRASTRUCTURE_ML_SYSTEMS_ENGINEER,
 };
 
 export function getSampleResume(pathSlug: string, level: string): ResumeData | undefined {
