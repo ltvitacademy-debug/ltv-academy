@@ -2786,71 +2786,6 @@
       "updatedAt": "2026-10-09T00:00:00.000Z"
     },
     {
-      "id": "aieng-adv-044",
-      "questionCode": "LTV-AIENG-ADV-044",
-      "title": "Allocating a Fixed Context Window Across Instructions, History, and Tools",
-      "prompt": "You're building a chat agent on a model with a 128K-token context window. In practice it must fit system instructions, potentially long conversation history, retrieved documents from a RAG layer, and a growing set of tool definitions, and the agent is starting to either truncate important history or push out retrieved context on long sessions. Design a context budget allocation strategy that handles this gracefully as any one of these four components grows, rather than letting whichever happens to be added last win the remaining space.",
-      "category": "architecture",
-      "difficulty": "advanced",
-      "responseFormat": "text",
-      "skills": [
-        "context window management",
-        "token budgeting",
-        "conversation summarization",
-        "RAG integration",
-        "prompt engineering"
-      ],
-      "modelAnswer": "The failure mode described — whichever component is assembled last wins the remaining space — happens when context assembly is additive and unbounded rather than budgeted. The fix is to assign each of the four components an explicit token budget (not a soft preference) that sums to comfortably under the model's limit, leaving headroom for the model's own output. System instructions and tool definitions should get a small, roughly fixed budget since they don't need to grow with the conversation; the remaining budget is split dynamically between conversation history and retrieved documents based on which matters more for the current turn.\n\nFor conversation history, the strategy should combine recency with summarization: keep the most recent N turns verbatim since recent context is usually most relevant to the current message, and compress everything older into a running summary that's periodically regenerated rather than letting raw history grow unbounded. For retrieved documents, the RAG layer should have a token-aware retrieval cap — ranking retrieved chunks and including only as many as fit the allocated budget, dropping the lowest-ranked rather than truncating mid-document, since a half-document is often useless and misleading.\n\nWhen total demand exceeds the available budget even after these compressions, the system needs an explicit priority order rather than silent truncation: typically system instructions and tool definitions are non-negotiable, retrieved documents relevant to the current query are prioritized over older conversation history, and the oldest history is summarized more aggressively before anything is dropped outright. This priority order should be a deliberate design decision, documented and tested, not an emergent property of implementation order.",
-      "professionalAnswer": "What I'd point out first is that the symptom — whichever component got added last wins — tells you the assembly logic is additive with no actual budget, it's just concatenating things until it hits a wall. So the fix starts with giving each of the four things an explicit token allocation that sums to well under the context limit, with headroom left for the model's response, instead of hoping it all fits.\n\nSystem instructions and tool definitions are pretty static per turn, so I'd give them a small fixed slice and move on — the real tension is between history and retrieved documents, and I'd split that remaining budget dynamically rather than fixed 50/50, because a simple factual question needs more retrieval budget and a multi-turn clarifying conversation needs more history budget. For history specifically, I'd keep recent turns verbatim and compress everything older into a periodically-refreshed summary, rather than either keeping everything raw or truncating from the oldest end blindly.\n\nFor retrieval, I'd make the RAG layer token-aware on the way in — rank chunks, and only include as many as fit the budget, dropping the lowest-ranked ones whole rather than truncating a document mid-sentence, because a half-document chunk is often worse than not including it at all. And when I still can't fit everything even after summarizing and capping retrieval, I'd want an explicit, tested priority order — instructions and tools never get cut, current-turn retrieval beats old history, and old history gets summarized harder before anything's dropped — so that decision is deliberate, not whatever order the code happened to concatenate things in.",
-      "example": "Budget sketch for a 128K window: system instructions + tool defs ~8K fixed; model output reserve ~8K; remaining ~112K split dynamically between history (recent turns verbatim + rolling summary of older turns) and RAG-retrieved chunks (ranked, included until budget exhausted, never truncated mid-chunk).",
-      "commonMistakes": [
-        "Assembling context additively with no explicit per-component budget, so whichever piece is added last consumes the remaining space",
-        "Truncating retrieved documents mid-chunk instead of dropping whole lower-ranked chunks",
-        "Letting raw conversation history grow unbounded instead of summarizing older turns",
-        "Using a fixed static split between history and retrieval regardless of what the current turn actually needs",
-        "Having no explicit, tested priority order for what gets cut first when total demand exceeds the budget"
-      ],
-      "keyPoints": [
-        "Assign explicit token budgets per component instead of additive, unbounded assembly",
-        "Reserve a fixed small budget for system instructions and tool definitions since they don't scale with conversation length",
-        "Combine recency (verbatim recent turns) with periodic summarization for older history rather than unbounded raw history",
-        "Make retrieval token-aware: rank and include whole chunks up to budget, never truncate a chunk mid-document",
-        "Define and test an explicit priority order for what gets cut when total demand exceeds available budget"
-      ],
-      "evaluationCriteria": [
-        {
-          "criterion": "Diagnoses the root cause as unbounded additive assembly rather than budgeted allocation",
-          "weight": 20
-        },
-        {
-          "criterion": "Proposes explicit per-component token budgets",
-          "weight": 20
-        },
-        {
-          "criterion": "Describes a recency + summarization strategy for conversation history",
-          "weight": 20
-        },
-        {
-          "criterion": "Describes token-aware, rank-based retrieval inclusion that avoids mid-chunk truncation",
-          "weight": 20
-        },
-        {
-          "criterion": "Defines an explicit priority order for handling budget overflow",
-          "weight": 20
-        }
-      ],
-      "estimatedMinutes": 8,
-      "lessonLink": {
-        "courseSlug": "prompt-and-context-engineering",
-        "lessonSlug": "managing-context-window-budgets",
-        "label": "Managing Context Window Budgets"
-      },
-      "status": "published",
-      "version": 1,
-      "createdAt": "2026-10-09T00:00:00.000Z",
-      "updatedAt": "2026-10-09T00:00:00.000Z"
-    },
-    {
       "id": "aieng-adv-045",
       "questionCode": "LTV-AIENG-ADV-045",
       "title": "A Safe Weekly Prompt-Shipping Pipeline Without Manual Spot-Checks",
@@ -4580,6 +4515,180 @@
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
       "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "aieng-adv-072",
+      "questionCode": "LTV-AIENG-ADV-072",
+      "title": "MCP's Host, Client, and Server Roles, and Why One Client Per Server",
+      "prompt": "A teammate says 'we only need one MCP client since we're only building one agent application.' Your application is about to connect to three different MCP servers — a filesystem server, an internal ticketing server, and a Slack server. Explain why that statement is wrong, and what actually happens architecturally when your application connects to all three.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Model Context Protocol",
+        "MCP Architecture",
+        "Agent Architecture",
+        "Distributed Systems"
+      ],
+      "modelAnswer": "The teammate is conflating the MCP Host (the application itself) with an MCP Client (a connection to one specific server). The host is the single application coordinating everything — that part is correct, there's one host. But MCP's architecture creates one dedicated client per server connection, not one client for the whole application. Connecting to three servers means the host instantiates three separate client objects, each maintaining its own independent connection to its corresponding server. This isn't an implementation detail to optimize away — it's how MCP keeps each server's capabilities, connection state, and potential failure modes isolated from the others. If the Slack server's connection drops, that shouldn't take down the filesystem server's client.",
+      "professionalAnswer": "I'd clarify the distinction first: host and client aren't the same thing in MCP's model. We have exactly one host — our application — but the host is going to create three separate clients, one dedicated connection per server. That's not three apps, it's one app managing three independent connections, each to a different server. I'd actually push back on 'we only need one client' as a design goal, because collapsing three server connections into one shared client would mean a failure or slowdown in one server's connection could bleed into the others. Keeping them separate, the way MCP's architecture already does, means the ticketing server having a bad day doesn't take down our filesystem or Slack integration.",
+      "example": "Visual Studio Code is MCP's own real example of this: connecting to a Sentry MCP server and a filesystem MCP server at the same time creates two separate client objects inside the one VS Code host, each with its own dedicated connection.",
+      "commonMistakes": [
+        "Conflating 'one application' (host) with 'one client' — they're different concepts",
+        "Treating the one-client-per-server design as unnecessary overhead rather than deliberate isolation",
+        "Assuming all three servers must use the same transport (local servers typically use stdio, remote ones Streamable HTTP, and a host can mix both)",
+        "Not recognizing that a failure in one client-server connection shouldn't be able to cascade to the others"
+      ],
+      "keyPoints": [
+        "MCP Host = the coordinating application; MCP Client = one dedicated connection to one server",
+        "A host connecting to N servers creates N separate client instances, not one shared client",
+        "This design isolates each server connection's state and failure modes from the others",
+        "Local (stdio) and remote (Streamable HTTP) servers can be mixed within the same host"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly distinguishes Host from Client",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly states one client is created per server connection",
+          "weight": 25
+        },
+        {
+          "criterion": "Explains the isolation/failure-containment rationale for this design",
+          "weight": 25
+        },
+        {
+          "criterion": "Uses or references a concrete multi-server example",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "ai-agents",
+        "lessonSlug": "mcp-architecture-hosts-clients-servers",
+        "label": "MCP Architecture: Hosts, Clients & Servers"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-10T00:00:00.000Z",
+      "updatedAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "aieng-adv-073",
+      "questionCode": "LTV-AIENG-ADV-073",
+      "title": "MCP Server vs. Custom Tool Integration: Making the Call",
+      "prompt": "Your team needs an agent to query a third-party shipping-carrier API for tracking status. Walk through how you'd decide between writing this as a direct, hand-coded tool (the Chapter 2-style approach) versus building a dedicated MCP server for it, and what you'd check before building either one.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Model Context Protocol",
+        "Architectural Decision-Making",
+        "Tool Design",
+        "API Integration"
+      ],
+      "modelAnswer": "Before writing anything, I'd check whether a maintained MCP server for this carrier already exists in the ecosystem — connecting to an existing, maintained server is almost always less work and risk than building either option myself. Assuming none exists, the decision comes down to reuse: will only this one agent ever need shipping-tracking access, or is this something other applications or teams might also want? If it's genuinely one-off, a direct Chapter 2-style tool is faster to ship and has one fewer moving part — no separate server process to deploy and operate. If multiple applications, or multiple teams, would plausibly want this same integration, building it once as an MCP server avoids the M x N integration problem: every application that needs shipping-tracking access can connect to the same server instead of each one reimplementing the API call, auth handling, and response formatting independently.",
+      "professionalAnswer": "First thing I'd do is check if someone's already built this — a lot of common SaaS integrations already have an MCP server, official or community-maintained, and connecting to an existing one beats building from scratch almost every time. If nothing exists, I'm weighing reuse against overhead. A hand-coded Chapter 2 tool is the right call if this is genuinely a one-off — just this one agent, nothing else will ever call this carrier's API. But if there's a real chance another team's agent, or a different application entirely, would also want shipping-tracking access, I'd build it as an MCP server instead, specifically to avoid everyone reimplementing the same auth handling and response parsing independently. The overhead of standing up a server only pays off if more than one thing is going to use it — I wouldn't build infrastructure for a user base of one.",
+      "example": "If two other internal tools later need the same carrier's tracking data, the MCP-server version pays for itself immediately — those tools connect to the existing server rather than each writing their own API client, auth handling, and error parsing from scratch.",
+      "commonMistakes": [
+        "Jumping straight to building an MCP server without first checking whether a maintained one already exists",
+        "Defaulting to MCP for every integration regardless of whether it will ever be reused",
+        "Defaulting to a hand-coded tool out of habit even when multiple teams clearly need the same integration",
+        "Not considering operational overhead (a server process to deploy and monitor) as a real cost of the MCP approach"
+      ],
+      "keyPoints": [
+        "Check for an existing, maintained MCP server before building anything",
+        "A one-off, single-application integration favors a direct Chapter 2-style tool",
+        "A genuinely shared integration favors an MCP server, to avoid the M x N integration problem",
+        "Building an MCP server has real operational overhead that only pays off with actual reuse"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Checks for an existing reference/maintained server before deciding to build",
+          "weight": 20
+        },
+        {
+          "criterion": "Frames the decision around reuse (one-off vs. shared) rather than a blanket preference",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly connects MCP's value to avoiding the M x N integration problem",
+          "weight": 25
+        },
+        {
+          "criterion": "Acknowledges the real operational overhead of standing up a server",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "ai-agents",
+        "lessonSlug": "mcp-vs-custom-tool-integrations",
+        "label": "MCP vs. Custom Tool Integrations"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-10T00:00:00.000Z",
+      "updatedAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "aieng-adv-074",
+      "questionCode": "LTV-AIENG-ADV-074",
+      "title": "An MCP Server's Tools Aren't Showing Up in the Client",
+      "prompt": "You've configured Claude Desktop to launch your new local MCP server, and the server process starts successfully — you can see it in your process list — but none of its tools appear when you ask Claude what it can do. Walk through how you'd debug this.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Model Context Protocol",
+        "MCP Server Development",
+        "Debugging",
+        "stdio Transport"
+      ],
+      "modelAnswer": "The process running successfully doesn't mean the protocol handshake succeeded — I'd start by checking whether discovery (tools/list) is actually completing. The single most common cause for exactly this symptom in a stdio-based server is that something wrote to stdout outside the protocol's own JSON-RPC messages — most often a stray print() statement, or a library the server depends on that logs to stdout by default. Since stdio uses standard output as the literal message channel, any extra text on stdout corrupts the JSON-RPC stream the client is trying to parse, and the client fails to receive a valid tool list, which looks exactly like 'the tools just aren't there' from the host's side. I'd check the server's own logs (written correctly to stderr, not stdout) for parse errors on the client side, and audit the server code and its dependencies for anything that might be writing to stdout. I'd also double check the configuration file itself — a typo in the launch command would mean the server process that's running isn't actually the one Claude Desktop thinks it configured.",
+      "professionalAnswer": "A running process isn't the same as a working connection, so I wouldn't trust the process list alone. My first suspect, every time, is stdout contamination — some print() call, or a dependency that logs to stdout by default, corrupting the JSON-RPC stream that stdio uses as its actual message channel. That failure mode looks exactly like this: the server's alive, but the client never gets a valid response to its tools/list discovery call, so nothing shows up. I'd grep the server code for any print() calls and check whether any imported library defaults to stdout logging. I'd also sanity-check the config file itself, since a subtly wrong command or argument would mean the process that's running isn't actually wired up the way the host thinks it is. If both of those check out, I'd look at whether the tool registration — the @mcp.tool() decorators — actually ran before the server started listening, since a tool defined after the server's already serving requests wouldn't be in the list either.",
+      "example": "A dependency that calls logging.basicConfig() with a default StreamHandler pointed at stdout, or a debugging print(f\"Got request: {data}\") left in the code, are both realistic, easy-to-miss causes of exactly this symptom.",
+      "commonMistakes": [
+        "Assuming the server process running means the connection and discovery succeeded",
+        "Not checking for stdout contamination from print() calls or a dependency's default logging behavior",
+        "Not checking the server's own stderr logs for parse errors on the client side",
+        "Overlooking a simple configuration typo in the launch command as a cause"
+      ],
+      "keyPoints": [
+        "A running process does not guarantee the discovery handshake (tools/list) succeeded",
+        "stdout contamination (print(), or a dependency's default stdout logging) is the most common cause of this exact symptom in stdio servers",
+        "Server logs must go to stderr, never stdout, for a stdio-based server",
+        "Configuration typos and tool registration ordering are secondary but real causes to rule out"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Doesn't treat the running process as proof the connection/discovery succeeded",
+          "weight": 20
+        },
+        {
+          "criterion": "Identifies stdout contamination as the primary, most likely cause",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains why stdout contamination breaks tool discovery specifically (corrupts JSON-RPC)",
+          "weight": 25
+        },
+        {
+          "criterion": "Names at least one secondary cause to check (config typo, registration order)",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "ai-agents",
+        "lessonSlug": "building-a-simple-mcp-server",
+        "label": "Building a Simple MCP Server"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-10T00:00:00.000Z",
+      "updatedAt": "2026-10-10T00:00:00.000Z"
     }
   ]
 }
