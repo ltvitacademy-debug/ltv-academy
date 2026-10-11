@@ -50,10 +50,12 @@ function parseSalaryTiers(salaryRange?: string) {
 export default function PathDetailRedesign({
   path,
   hasInterviewPrep,
+  hasCommunicationTrainer,
   sampleResumeLevels,
 }: {
   path: CareerPath;
   hasInterviewPrep?: boolean;
+  hasCommunicationTrainer?: boolean;
   sampleResumeLevels?: { key: string; label: string }[];
 }) {
   const allCourseSlugs = path.stages.flatMap((s) => s.courseSlugs ?? []);
@@ -727,12 +729,22 @@ export default function PathDetailRedesign({
             </div>
 
             <div className="rounded-[2px] border-2 border-crimson bg-gold-pale p-6 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson">Coming soon</p>
+              {!hasCommunicationTrainer && (
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson">Coming soon</p>
+              )}
               <p className="display mt-1 text-xl text-crimson-deep">LTV Technical Communication Trainer</p>
               <p className="mt-2 text-sm text-crimson-deep/80">
                 Learn to explain your work the way a working {path.title} actually would — the
                 reasoning, the terminology, and the structure, not just the right answer.
               </p>
+              {hasCommunicationTrainer && (
+                <Link
+                  href={`/app/communication-trainer/${path.slug}`}
+                  className="mt-5 inline-block rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep transition-colors"
+                >
+                  Practice scenarios →
+                </Link>
+              )}
             </div>
 
             {hasInterviewPrep && (

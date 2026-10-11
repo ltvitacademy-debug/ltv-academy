@@ -1,0 +1,67 @@
+{
+  "scenarios": [
+    {
+      "id": "msbi-comm-01",
+      "title": "A report query that's suddenly slow",
+      "skillTag": "T-SQL Performance Tuning",
+      "situation": "A report query that used to run in a couple of seconds is now taking over a minute, and nobody changed the query. How would you troubleshoot it?",
+      "beginnerAnswer": "I'd look at the query and maybe add an index to speed it up.",
+      "professionalAnswer": "I'd turn on the actual execution plan before I change anything, so I'm looking at what SQL Server is actually doing instead of guessing. I'd check whether the plan shows an Index Seek or an Index Scan on the main table — a scan against a table that should only return a handful of rows is the first red flag. From there I'd check whether the WHERE clause is still SARGable, since a function wrapped around a column forces a scan even with the right index in place, and I'd capture SET STATISTICS TIME and IO before and after any change so I can prove the fix actually reduced logical reads and duration instead of just assuming it did.",
+      "vocabulary": [
+        { "term": "Execution plan", "usage": "I'd turn on the actual execution plan and see whether SQL Server is doing an Index Seek or an Index Scan on the main table." },
+        { "term": "SARGable predicate", "usage": "I'd check whether the WHERE clause is still SARGable — a function wrapped around the column would force a scan even with the right index in place." },
+        { "term": "Index Seek vs. Index Scan", "usage": "A scan against a table that should only return a handful of rows is the red flag I'd look for first." },
+        { "term": "SET STATISTICS TIME and IO", "usage": "I'd capture logical reads and duration before and after any change, so I can prove the fix actually helped instead of just assuming it did." }
+      ],
+      "whyStronger": "The beginner answer names an action (add an index) with no diagnosis behind it — it might not even be an indexing problem. The professional answer investigates first, names the specific tool it would use at each step, and validates the result with a measurement instead of a guess.",
+      "lessonLink": { "courseSlug": "t-sql-development", "lessonSlug": "execution-plans", "label": "Reading Execution Plans: Scans vs. Seeks" }
+    },
+    {
+      "id": "msbi-comm-02",
+      "title": "A dashboard showing numbers that don't match",
+      "skillTag": "Power BI / DAX Troubleshooting",
+      "situation": "Two visuals on the same Power BI report page are supposed to show the same total revenue, but they don't match. How would you investigate?",
+      "beginnerAnswer": "I'd check the data and refresh the report to see if that fixes it.",
+      "professionalAnswer": "I'd first check whether both visuals are actually under the same filter context — a slicer or a visual-level filter applied to one part of the page but not the other would fully explain a mismatch without anything being 'wrong.' Next I'd check whether both numbers come from the same measure, since a calculated column is computed once per row at refresh time under row context and won't respond to filters the same way a measure does. If they're pulling from different tables, I'd confirm which relationship between those tables is active — an inactive relationship is silently ignored unless a measure explicitly calls USERELATIONSHIP, which is an easy thing to miss.",
+      "vocabulary": [
+        { "term": "Filter context", "usage": "I'd check whether the two visuals are actually sitting under the same filter context — a slicer or visual-level filter on one but not the other would explain a mismatch." },
+        { "term": "Row context", "usage": "If one number comes from a calculated column, it was computed per-row at refresh time, not re-evaluated by the current filters the way a measure is." },
+        { "term": "Active vs. inactive relationship", "usage": "I'd confirm which relationship between the two tables is active — an inactive one is silently ignored unless a measure calls USERELATIONSHIP." },
+        { "term": "Measures vs. calculated columns", "usage": "I'd check whether both totals are actually measures, since a calculated column won't respond to filters the same way a measure does." }
+      ],
+      "whyStronger": "The beginner answer treats this as a data problem and reaches for 'refresh it' as a generic fix. The professional answer treats it as a context problem — the data is probably fine — and checks the three specific DAX mechanics that produce exactly this symptom.",
+      "lessonLink": { "courseSlug": "power-bi", "lessonSlug": "row-vs-filter-context", "label": "Row Context vs. Filter Context" }
+    },
+    {
+      "id": "msbi-comm-03",
+      "title": "A nightly load that used to work now fails partway through",
+      "skillTag": "SSIS / ETL Troubleshooting",
+      "situation": "A nightly SSIS package that's run reliably for months failed partway through last night's load. How would you troubleshoot it before just rerunning it?",
+      "beginnerAnswer": "I'd just rerun the package and see if it works the second time.",
+      "professionalAnswer": "Rerunning it is a diagnosis, not a fix, so I'd start by reading the error message closely enough to sort it into a category — a connection failure, a data type mismatch, or something else — because each one points at a different place to look. I'd check the logging provider output to see exactly which task and which row the package was on when it failed, rather than guessing from the top-level error. I'd also check whether the data flow has an error output that should have redirected bad rows instead of failing outright, and whether checkpoints are configured, so if this does need a retry, I'm restarting from the failed task instead of redoing work that already succeeded.",
+      "vocabulary": [
+        { "term": "Failure category", "usage": "I'd read the error message closely enough to sort it into a category first — connection failure, data type mismatch, something else — because each one points at a different fix." },
+        { "term": "Logging provider", "usage": "I'd check the logging provider output to see exactly which task and which row the package was on when it failed, instead of guessing." },
+        { "term": "Error output", "usage": "I'd check whether the data flow has an error output that should have redirected bad rows instead of failing the whole package outright." },
+        { "term": "Checkpoints / restartability", "usage": "If checkpoints are configured, I'd restart from the failed task instead of rerunning the whole package and redoing work that already succeeded." }
+      ],
+      "whyStronger": "The beginner answer skips diagnosis entirely and treats 'try again' as the plan. The professional answer reads the failure for information first, names the specific category it points to, and only then decides whether a restart is even the right next step.",
+      "lessonLink": { "courseSlug": "ssis-development", "lessonSlug": "common-failure-patterns", "label": "Common Failure Patterns" }
+    },
+    {
+      "id": "msbi-comm-04",
+      "title": "A report that used to load fast is now timing out",
+      "skillTag": "SSRS / Report Performance",
+      "situation": "A paginated report that used to load in a few seconds is now timing out for users. How would you approach fixing it?",
+      "beginnerAnswer": "I'd try adding caching to the report so it loads faster.",
+      "professionalAnswer": "I'd start with the diagnostic question of whether every report is slow or just this one, because that points at two completely different problems — infrastructure if it's everything, this report's own design if it's just this one. Assuming it's one report, I'd look at dataset query efficiency before anything else: filtering and aggregating at the source instead of pulling everything and filtering inside the report, presorting with ORDER BY on the data source, and tying report parameters to the dataset's query parameters so less data is retrieved in the first place. Caching or a snapshot is something I'd layer in deliberately once the underlying query is actually efficient, not reach for as the first fix.",
+      "vocabulary": [
+        { "term": "Is it every report, or one report?", "usage": "I'd start by asking whether every report is slow or just this one, because that points at two completely different fixes — infrastructure versus this report's design." },
+        { "term": "Dataset query efficiency", "usage": "Before touching caching, I'd tune the dataset query itself — filtering and aggregating at the source instead of pulling everything and filtering inside the report." },
+        { "term": "Caching / snapshots", "usage": "I'd only layer in caching or a snapshot deliberately, once the underlying query is actually efficient, not as the first thing I reach for." }
+      ],
+      "whyStronger": "The beginner answer reaches for caching first, which can mask a slow query without fixing it. The professional answer diagnoses scope first, fixes the actual query, and treats caching as a deliberate layer on top rather than a band-aid.",
+      "lessonLink": { "courseSlug": "ssrs-development", "lessonSlug": "performance-considerations", "label": "Performance Considerations" }
+    }
+  ]
+}
