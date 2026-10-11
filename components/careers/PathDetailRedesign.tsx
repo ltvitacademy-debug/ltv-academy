@@ -205,7 +205,13 @@ export default function PathDetailRedesign({
       {/* Career progression stepper */}
       {path.targetJobs.length > 1 && (
         <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <div className={certs.length > 0 ? "grid gap-10 lg:grid-cols-[1fr_20rem]" : undefined}>
+          <div
+            className={
+              certs.length > 0 || (sampleResumeLevels && sampleResumeLevels.length > 0)
+                ? "grid gap-10 lg:grid-cols-[1fr_20rem]"
+                : undefined
+            }
+          >
             <div>
               <p className="eyebrow mb-3">Career progression</p>
               <h2 className="display max-w-2xl text-3xl sm:text-4xl">
@@ -234,31 +240,56 @@ export default function PathDetailRedesign({
               </div>
             </div>
 
-            {certs.length > 0 && (
-              <div className="rounded-[2px] border border-ink/15 bg-white/60 p-5 lg:self-start">
-                <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-                    <circle cx="12" cy="8" r="5" />
-                    <path d="M8.5 12.5 7 21l5-3 5 3-1.5-8.5" />
-                  </svg>
-                  What this prepares you for
-                </p>
-                <ul className="mt-3 space-y-3">
-                  {certs.map((c) => (
-                    <li key={c.certification} className="flex items-center gap-3 text-sm">
-                      {c.logo ? (
-                        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-parchment shadow-[0_0_0_1px_var(--color-gold)]">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={`/brand/logos/${c.logo}.svg`} alt="" className="h-4 w-4 object-contain" />
-                        </span>
-                      ) : (
-                        <span className="h-7 w-7 flex-shrink-0 rounded-full border border-ink/15" aria-hidden="true" />
-                      )}
-                      <span className="text-ink">{c.certification}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-4 text-xs text-stone">LTV Academy does not issue certifications — this shows the skills these courses cover.</p>
+            {(certs.length > 0 || (sampleResumeLevels && sampleResumeLevels.length > 0)) && (
+              <div className="space-y-6 lg:self-start">
+                {certs.length > 0 && (
+                  <div className="rounded-[2px] border border-ink/15 bg-white/60 p-5">
+                    <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                        <circle cx="12" cy="8" r="5" />
+                        <path d="M8.5 12.5 7 21l5-3 5 3-1.5-8.5" />
+                      </svg>
+                      What this prepares you for
+                    </p>
+                    <ul className="mt-3 space-y-3">
+                      {certs.map((c) => (
+                        <li key={c.certification} className="flex items-center gap-3 text-sm">
+                          {c.logo ? (
+                            <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-parchment shadow-[0_0_0_1px_var(--color-gold)]">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={`/brand/logos/${c.logo}.svg`} alt="" className="h-4 w-4 object-contain" />
+                            </span>
+                          ) : (
+                            <span className="h-7 w-7 flex-shrink-0 rounded-full border border-ink/15" aria-hidden="true" />
+                          )}
+                          <span className="text-ink">{c.certification}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="mt-4 text-xs text-stone">LTV Academy does not issue certifications — this shows the skills these courses cover.</p>
+                  </div>
+                )}
+
+                {sampleResumeLevels && sampleResumeLevels.length > 0 && (
+                  <div className="rounded-[2px] border-2 border-ink/15 bg-white/50 p-6 text-center">
+                    <p className="display text-xl text-ink">What does this look like on a resume?</p>
+                    <p className="mt-2 text-sm text-stone">
+                      A sample resume for a fictional graduate, John Doe, showing what you can
+                      credibly claim after finishing this path.
+                    </p>
+                    <div className="mt-5 flex flex-col gap-2">
+                      {sampleResumeLevels.map((level) => (
+                        <Link
+                          key={level.key}
+                          href={`/careers/${path.slug}/resume/${level.key}`}
+                          className="inline-block rounded-[2px] border border-crimson/40 bg-parchment px-6 py-2.5 text-sm font-semibold text-crimson-deep hover:bg-crimson hover:text-parchment transition-colors"
+                        >
+                          View the {level.label} resume →
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -664,31 +695,9 @@ export default function PathDetailRedesign({
               </div>
             )}
 
-            <div className="rounded-[2px] bg-crimson-deep p-6 text-center text-gold-pale">
-              <p className="display text-xl">Ready to become {/^[aeiou]/i.test(path.title) ? "an" : "a"} {path.title}?</p>
-              <p className="mt-2 text-sm text-gold-pale/80">Step-by-step training and real projects to break into one of the most in-demand careers in tech.</p>
-              <Link href={startHref} className="mt-5 inline-block rounded-[2px] bg-gold px-6 py-3 text-sm font-semibold text-crimson-deep hover:bg-gold-pale transition-colors">
-                Start this path →
-              </Link>
-            </div>
-
-            {hasInterviewPrep && (
-              <div className="rounded-[2px] border-2 border-ink/15 bg-white/50 p-6 text-center">
-                <p className="display text-xl text-ink">Think you&apos;re ready for the interview?</p>
-                <p className="mt-2 text-sm text-stone">
-                  Test yourself against real {path.title} interview questions — type your own
-                  answer, then reveal a full model answer to see how you did.
-                </p>
-                <Link
-                  href={`/app/interview-prep/${path.slug}`}
-                  className="mt-5 inline-block rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep transition-colors"
-                >
-                  Practice interview questions →
-                </Link>
-              </div>
-            )}
-
-            {sampleResumeLevels && sampleResumeLevels.length > 0 && (
+            {/* Sample resume now lives next to the Career progression ladder above, for the same
+                reason — only fall back to showing it here for paths with no ladder. */}
+            {sampleResumeLevels && sampleResumeLevels.length > 0 && path.targetJobs.length <= 1 && (
               <div className="rounded-[2px] border-2 border-ink/15 bg-white/50 p-6 text-center">
                 <p className="display text-xl text-ink">What does this look like on a resume?</p>
                 <p className="mt-2 text-sm text-stone">
@@ -706,6 +715,39 @@ export default function PathDetailRedesign({
                     </Link>
                   ))}
                 </div>
+              </div>
+            )}
+
+            <div className="rounded-[2px] bg-crimson-deep p-6 text-center text-gold-pale">
+              <p className="display text-xl">Ready to become {/^[aeiou]/i.test(path.title) ? "an" : "a"} {path.title}?</p>
+              <p className="mt-2 text-sm text-gold-pale/80">Step-by-step training and real projects to break into one of the most in-demand careers in tech.</p>
+              <Link href={startHref} className="mt-5 inline-block rounded-[2px] bg-gold px-6 py-3 text-sm font-semibold text-crimson-deep hover:bg-gold-pale transition-colors">
+                Start this path →
+              </Link>
+            </div>
+
+            <div className="rounded-[2px] border-2 border-crimson bg-gold-pale p-6 text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson">Coming soon</p>
+              <p className="display mt-1 text-xl text-crimson-deep">LTV Technical Communication Trainer</p>
+              <p className="mt-2 text-sm text-crimson-deep/80">
+                Learn to explain your work the way a working {path.title} actually would — the
+                reasoning, the terminology, and the structure, not just the right answer.
+              </p>
+            </div>
+
+            {hasInterviewPrep && (
+              <div className="rounded-[2px] border-2 border-ink/15 bg-white/50 p-6 text-center">
+                <p className="display text-xl text-ink">Think you&apos;re ready for the interview?</p>
+                <p className="mt-2 text-sm text-stone">
+                  Test yourself against real {path.title} interview questions — type your own
+                  answer, then reveal a full model answer to see how you did.
+                </p>
+                <Link
+                  href={`/app/interview-prep/${path.slug}`}
+                  className="mt-5 inline-block rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep transition-colors"
+                >
+                  Practice interview questions →
+                </Link>
               </div>
             )}
           </aside>
