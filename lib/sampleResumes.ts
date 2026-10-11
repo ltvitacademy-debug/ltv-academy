@@ -49,6 +49,10 @@ export const SAMPLE_RESUMES: Record<string, PathResumes> = {
   "sql-server-database-administrator": SQL_SERVER_DATABASE_ADMINISTRATOR,
   "data-governance": DATA_GOVERNANCE,
   "quantitative-developer-researcher": QUANTITATIVE_DEVELOPER_RESEARCHER,
+  // The Principal/Staff AI Engineer destination's own `stages` in career-paths.ts is just the full
+  // AI Engineer path with no additional courses — its destinationNote explicitly says not to invent
+  // a second curriculum. So its resume is, honestly, the same resume as the AI Engineer path itself.
+  "principal-staff-ai-engineer": AI_ENGINEER,
 };
 
 export function getSampleResume(pathSlug: string, level: string): ResumeData | undefined {
