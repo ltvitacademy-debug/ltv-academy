@@ -510,6 +510,1318 @@
       "version": 1,
       "createdAt": "2026-10-11",
       "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-015",
+      "questionCode": "LTV-QANL-0165",
+      "title": "Why Fama-MacBeth's Errors-in-Variables Fix Matters More Than It Looks",
+      "prompt": "Explain the errors-in-variables problem in a naive single cross-sectional regression of returns on estimated betas, and why Fama-MacBeth's fix is about the standard error, not the point estimate.",
+      "category": "technical-knowledge",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Fama-MacBeth", "Errors-in-Variables", "Cross-Sectional Regression"],
+      "modelAnswer": "In a naive approach, you estimate each asset's beta once from a long time-series regression, then run one cross-sectional regression of average returns on those betas. The problem is that the betas on the right-hand side are themselves noisy estimates, not the true unobserved betas — classic errors-in-variables, which biases the estimated slope (the risk premium) toward zero and, separately and just as importantly, corrupts the standard errors reported by that single regression, because those standard errors are computed as if the betas were known constants rather than estimates carrying their own sampling noise. Fama-MacBeth's two-step procedure doesn't primarily fix the point estimate — in a well-specified single-factor setting, the point estimate from the naive approach and from Fama-MacBeth can come out numerically identical, as the lesson's worked example shows directly. What Fama-MacBeth actually fixes is the standard error: instead of treating each asset-period observation as if it carried independent statistical information (which overstates precision whenever returns are correlated across assets within the same period, which they virtually always are), it runs one cross-sectional regression per period, treats each period's resulting lambda_t as a single data point, and measures how much that number genuinely bounces around across periods. The honest standard error comes from that across-time dispersion divided by sqrt(T), which is typically dramatically larger than the naive regression's standard error — in the lesson's own worked example, a factor of roughly four. A risk-premium estimate that looked statistically rock-solid under the naive regression can turn out to be far less confidently estimated once you account for this correctly.",
+      "professionalAnswer": "The subtlety I'd make sure comes across is that this isn't really about getting a different number for the risk premium — it's about getting an honest standard error around the same number. The naive regression treats every asset in a single cross-section as an independent piece of evidence, which overstates confidence enormously because asset returns are correlated with each other within the same period. Fama-MacBeth fixes this by making each period, not each asset, the unit of independent observation, and the resulting standard error — built from how much the period-by-period estimate actually bounces around — is usually several times larger than what the naive approach would report. I'd always want to know whether a quoted factor-premium t-stat came from a Fama-MacBeth-style procedure or a naive pooled regression before trusting it.",
+      "commonMistakes": [
+        "Assuming Fama-MacBeth primarily changes the point estimate rather than the standard error",
+        "Not explaining why treating each asset as independent overstates statistical confidence",
+        "Missing that estimated (not true) betas on the right-hand side is the specific source of errors-in-variables bias",
+        "Not being able to state concretely how much larger the honest standard error typically is"
+      ],
+      "keyPoints": [
+        "Errors-in-variables: the betas used as regressors are themselves noisy estimates, not the true unobserved values",
+        "The naive single cross-sectional regression's standard error overstates precision by treating correlated assets as independent",
+        "Fama-MacBeth's fix is primarily about the standard error, not the point estimate, which can be numerically identical",
+        "The honest standard error comes from the across-time dispersion of period-by-period lambda_t estimates, divided by sqrt(T)"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the errors-in-variables problem", "weight": 30 },
+        { "criterion": "Correctly explains why naive standard errors overstate precision", "weight": 30 },
+        { "criterion": "Correctly explains that Fama-MacBeth primarily fixes the standard error, not the point estimate", "weight": 30 },
+        { "criterion": "Articulates the practical magnitude of the difference", "weight": 10 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "cross-sectional-regression", "label": "Cross-Sectional Regression" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-016",
+      "questionCode": "LTV-QANL-0166",
+      "title": "GARCH's Symmetric Blind Spot and the Leverage Effect",
+      "prompt": "Explain why standard GARCH(1,1) cannot capture the leverage effect, and why this specifically matters for risk management on equity portfolios more than on, say, a currency pair.",
+      "category": "technical-knowledge",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["GARCH", "Leverage Effect", "Volatility Asymmetry"],
+      "code": "sigma_t^2 = omega + alpha*eps_(t-1)^2 + beta*sigma_(t-1)^2",
+      "modelAnswer": "Standard GARCH(1,1) specifies conditional variance as a function of the squared prior shock, eps_(t-1)^2 — and squaring destroys the sign of the shock entirely. A large negative return and an equally large positive return produce exactly the same contribution to tomorrow's forecast variance under this specification, which means GARCH(1,1) is structurally symmetric by construction and cannot represent the empirically well-documented leverage effect: the tendency for volatility to rise more after a price decline than after an equally-sized price increase. For equities specifically, this asymmetry has a real economic mechanism behind it, not just a statistical curiosity — when a company's stock price falls, its debt-to-equity ratio rises mechanically (the market value of equity shrinks while debt stays roughly fixed), making the remaining equity financially riskier and pushing its volatility up further, creating a feedback loop between falling prices and rising risk that a symmetric model simply cannot see. This matters more for equities than for a currency pair specifically because the leverage mechanism is tied to corporate capital structure — a currency doesn't have a debt-to-equity ratio that moves mechanically with its own price, so the leverage-effect asymmetry, while FX can show its own distinct asymmetries from other causes, isn't driven by the same mechanism and is typically far less pronounced. For equity risk management, using standard GARCH means systematically underforecasting volatility immediately following a sharp selloff — exactly the moment an accurate, elevated volatility forecast matters most for VaR and position sizing — which is precisely why EGARCH and GJR-GARCH extensions, which add an explicit asymmetry term responding differently to negative versus positive shocks, exist specifically for equity risk applications.",
+      "professionalAnswer": "The mechanical reason is simple: squaring the shock in standard GARCH erases its sign, so a down day and an up day of the same size produce an identical variance forecast — there's no way for the model to know the difference. For equities, that's a real problem because there's an actual economic reason falling prices should raise volatility more than rising prices: debt-to-equity rises mechanically as equity value falls, making the stock genuinely riskier. A currency pair has no equivalent mechanism, so the case for an asymmetric volatility model is much stronger for an equity book than an FX book. Practically, this means standard GARCH on an equity portfolio will underforecast volatility right after a selloff — exactly when I'd want the model to be most alert — which is the direct argument for using EGARCH or GJR-GARCH instead for this specific application.",
+      "commonMistakes": [
+        "Not identifying that squaring the shock is specifically what destroys the sign information",
+        "Describing the leverage effect vaguely without naming the debt-to-equity mechanism behind it",
+        "Treating the equity-vs-FX distinction as arbitrary rather than tied to a genuine economic mechanism",
+        "Not connecting the practical consequence (underforecasting volatility right after a selloff) to a concrete risk management cost"
+      ],
+      "keyPoints": [
+        "GARCH(1,1) uses the squared prior shock, which destroys sign information and is structurally symmetric",
+        "The leverage effect specifically requires an asymmetric response to negative vs. positive shocks",
+        "For equities, falling prices mechanically raise debt-to-equity, creating a real economic feedback into volatility",
+        "This mechanism has no equivalent for currency pairs, making asymmetric volatility models more critical for equities"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains why squaring the shock removes sign information", "weight": 25 },
+        { "criterion": "Correctly explains the debt-to-equity leverage mechanism", "weight": 30 },
+        { "criterion": "Correctly explains why this matters more for equities than FX", "weight": 25 },
+        { "criterion": "Connects this to a concrete risk management consequence", "weight": 20 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "arch-and-garch-models", "label": "ARCH & GARCH Models" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-017",
+      "questionCode": "LTV-QANL-0167",
+      "title": "Why Path-Dependent Payoffs Break Closed-Form Pricing",
+      "prompt": "Explain precisely why an Asian option's payoff structure breaks closed-form Black-Scholes-style pricing, and what specifically makes Monte Carlo simulation the natural fit rather than a binomial tree.",
+      "category": "technical-knowledge",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Exotic Options", "Asian Options", "Monte Carlo Simulation"],
+      "modelAnswer": "Black-Scholes's closed form exists because the payoff at expiration, max(S_T-K, 0), depends on exactly one random variable: the terminal stock price S_T, which under the model's lognormal assumption has a known, tractable distribution that makes the discounted expectation solvable analytically. An Asian option's payoff depends on the average price over a window, max(Average(S)-K, 0), which is a function of the entire price path, not a single terminal value — and the average of a set of lognormally-distributed prices is not itself lognormally distributed, so the clean distributional assumption that makes Black-Scholes solvable breaks down the moment the payoff depends on a path average rather than a single point. A binomial tree can represent the full path (it's literally a collection of individual paths), but it has its own structural problem for an Asian option: at any given node, the correct value depends not just on the current stock price but on the average price along the specific path taken to reach that node — and different paths can reach the same price node while having taken very different averages along the way. This path-dependency breaks the tree's defining computational advantage, the recombining lattice, where multiple paths are deliberately collapsed into the same node precisely because an option like a vanilla call or put only cares about the current price, not the path. For an Asian option, that collapsing is no longer valid, since nodes that look identical in price can have meaningfully different correct values depending on path history, which would require tracking every distinct path separately — exploding the computational cost back toward what a tree was designed to avoid. Monte Carlo simulation sidesteps this entirely: it simulates many complete, explicit price paths under the risk-neutral measure, computes the actual path average and resulting payoff on each simulated path individually, and averages and discounts across paths — naturally handling any degree of path dependency without needing a tractable closed-form distribution or a collapsible lattice structure at all.",
+      "professionalAnswer": "The core issue is that Black-Scholes's closed form only works because it needs to know the distribution of one random variable, the terminal price, and that has a known, clean lognormal form. An Asian option cares about the average over the whole path, and the average of lognormal variables isn't itself lognormal, so the clean math disappears immediately. A tree doesn't save you here either, because its entire efficiency trick — collapsing different paths that reach the same price into one node — stops being valid once the payoff depends on path history, not just current price; nodes that look the same can hide very different correct values. Monte Carlo just simulates full paths explicitly and never needs either the clean distribution or the collapsing trick, which is exactly why it's the natural tool for this and most other path-dependent exotics.",
+      "commonMistakes": [
+        "Explaining only that Asian options are 'path-dependent' without identifying exactly why that breaks the closed form",
+        "Not explaining why the average of lognormal variables isn't itself lognormal",
+        "Assuming a binomial tree handles path dependency fine simply because it represents multiple paths",
+        "Missing the specific reason trees fail here: the recombining-lattice collapsing trick becomes invalid"
+      ],
+      "keyPoints": [
+        "Black-Scholes's closed form relies on the terminal price alone having a tractable, known distribution",
+        "An Asian option's payoff depends on a path average, which isn't lognormally distributed even if prices are",
+        "A binomial tree's efficiency relies on collapsing paths that reach the same price into one node — invalid once payoff depends on path history",
+        "Monte Carlo simulates full paths explicitly, naturally handling any degree of path dependency"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains why Black-Scholes's closed form depends on terminal-price distribution tractability", "weight": 25 },
+        { "criterion": "Correctly explains why a path average breaks that tractability", "weight": 25 },
+        { "criterion": "Correctly explains specifically why a binomial tree also fails for path-dependent payoffs", "weight": 30 },
+        { "criterion": "Correctly explains why Monte Carlo naturally handles this", "weight": 20 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "exotic-options-overview", "label": "Exotic Options Overview" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-018",
+      "questionCode": "LTV-QANL-0168",
+      "title": "Why Uncovered Interest Rate Parity Fails So Persistently",
+      "prompt": "Uncovered interest rate parity predicts that high-interest-rate currencies should depreciate to equalize expected returns, yet the empirical 'forward premium puzzle' shows the opposite tends to happen on average. Explain the leading risk-premium-based explanation for this, and why it's economically different from a simple market inefficiency.",
+      "category": "technical-knowledge",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Uncovered Interest Rate Parity", "Carry Trade", "Forward Premium Puzzle"],
+      "modelAnswer": "Uncovered interest rate parity assumes investors are risk-neutral with respect to currency exposure, so the only thing equalizing expected returns across currencies is the expected exchange-rate move implied by the interest rate differential. Empirically, regressing future exchange-rate changes on the current interest-rate differential tends to produce a coefficient with the wrong sign — high-interest-rate currencies have historically tended to appreciate or hold steady on average rather than depreciate by the predicted amount, the opposite of naive UIP's prediction — this is the forward premium puzzle. The leading explanation is that UIP's risk-neutrality assumption is simply wrong: high-interest-rate currencies tend to be currencies exposed to global risk factors (they often depreciate sharply exactly during global risk-off, 'bad' economic states), and a risk-averse investor demands a positive risk premium for holding that exposure on top of the pure interest differential — meaning the observed excess return to holding high-rate currencies isn't a pricing error, it's compensation for bearing a risk that happens to be worst exactly when investors can least afford losses. This is economically distinct from a simple market inefficiency: an inefficiency implies a free lunch that should be arbitraged away as more capital chases it; a risk premium implies a genuine, priced, uncomfortable risk that persists precisely because it doesn't disappear just because more capital tries to exploit it — in fact it's exactly this risk that produces periodic, sharp 'carry crash' unwind events when the bad state actually arrives, which is consistent with a risk-premium story and harder to square with a pure inefficiency story.",
+      "professionalAnswer": "I'd frame this specifically as 'UIP assumes risk-neutrality, and that assumption is simply false' — high-interest-rate currencies tend to be the ones that get hit hardest in a global risk-off event, so holding them isn't free money, it's bearing a real risk that happens to show up exactly when things are already going badly elsewhere. That's a risk premium, not a market inefficiency, and the distinction matters practically: an inefficiency should get arbitraged away as more money chases it, while a genuine risk premium persists and periodically reminds everyone it was real via carry-crash-style unwinds — which is exactly the pattern carry trades have historically shown.",
+      "commonMistakes": [
+        "Describing the forward premium puzzle as simply 'UIP doesn't hold' without explaining the leading risk-premium explanation",
+        "Treating this as straightforward market inefficiency rather than distinguishing it from a priced risk premium",
+        "Not explaining why high-interest-rate currencies tend to be exposed to bad global states specifically",
+        "Missing the connection between the risk-premium explanation and the empirical pattern of periodic carry crashes"
+      ],
+      "keyPoints": [
+        "UIP assumes risk-neutrality; the forward premium puzzle shows the empirical sign is often opposite its prediction",
+        "The leading explanation: high-interest-rate currencies carry a genuine risk premium for exposure to bad global states",
+        "This is economically distinct from a market inefficiency, which should be arbitraged away rather than persist",
+        "The risk-premium story is consistent with periodic, sharp carry-crash unwinds when the bad state materializes"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the forward premium puzzle", "weight": 25 },
+        { "criterion": "Correctly explains the risk-premium-based explanation", "weight": 35 },
+        { "criterion": "Correctly distinguishes a risk premium from a market inefficiency", "weight": 25 },
+        { "criterion": "Connects the explanation to the empirical carry-crash pattern", "weight": 15 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "foreign-exchange-basics", "label": "Foreign Exchange Basics" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-019",
+      "questionCode": "LTV-QANL-0169",
+      "title": "Why Portfolio Credit Risk Isn't the Sum of Individual Expected Losses",
+      "prompt": "Explain why a portfolio of 50 loans, each with expected loss computed independently as PD x LGD x EAD, understates true portfolio credit risk if defaults are correlated, and what measure captures what expected loss alone misses.",
+      "category": "technical-knowledge",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Credit Risk", "Default Correlation", "Portfolio Credit Risk"],
+      "modelAnswer": "Expected loss for a single counterparty, PD x LGD x EAD, is a correct description of that counterparty's average loss outcome in isolation. Summing expected losses across 50 counterparties gives the portfolio's correct expected loss on average, regardless of correlation — that part of the arithmetic is unaffected by correlation, since expectation is linear. What correlation actually distorts is the shape of the portfolio loss distribution around that same expected value, specifically its tail. If defaults were independent, the portfolio's loss distribution would be relatively tight around the sum of expected losses, since by a law-of-large-numbers-style argument, it would be very unlikely for a large share of 50 independent counterparties to default simultaneously. If defaults are correlated — because all 50 borrowers share exposure to a common economic driver, such as a recession that raises everyone's default probability simultaneously — the portfolio's loss distribution develops a much fatter tail: a bad economic state can push many counterparties toward default at once, producing portfolio losses far beyond what the same expected loss figure, computed assuming independence, would suggest is likely. Expected loss, being just the mean of the distribution, is blind to this entirely. What's needed on top of expected loss is a measure of unexpected loss — typically the portfolio credit loss distribution's standard deviation or, more directly relevant for capital purposes, a credit VaR or credit Expected Shortfall computed from a model (such as a factor-based or copula-based default model) that explicitly represents the shared dependence between counterparties' default events, not from the independent, counterparty-by-counterparty PD x LGD x EAD calculation alone.",
+      "professionalAnswer": "I'd be precise about what correlation does and doesn't change here: it doesn't change the portfolio's expected loss at all, since expectation is linear and summing PD x LGD x EAD across counterparties still gives the right average outcome. What correlation changes is the tail — correlated defaults mean a bad common driver (a recession) can push many counterparties toward default together, fattening the tail of the loss distribution far beyond what the independent-default assumption implies. Expected loss, being a mean, is structurally blind to that. What you actually need is a credit VaR or Expected Shortfall built from a model that represents the dependence between defaults explicitly — a factor or copula-based default model — not 50 independent PD x LGD x EAD calculations summed together.",
+      "commonMistakes": [
+        "Assuming correlation distorts the portfolio's expected loss, when it actually only affects the shape of the loss distribution",
+        "Not explaining the specific mechanism (shared exposure to a common economic driver) that creates correlated defaults",
+        "Describing the problem vaguely as 'correlation makes it riskier' without naming what measure actually captures the missing risk",
+        "Not naming a concrete modeling approach (factor or copula-based) for representing default dependence"
+      ],
+      "keyPoints": [
+        "Summing individual expected losses still gives the correct portfolio expected loss, regardless of correlation",
+        "Correlation fattens the tail of the portfolio loss distribution without changing its mean",
+        "A common economic driver (e.g., a recession) creates correlated defaults across otherwise unrelated counterparties",
+        "Credit VaR or Expected Shortfall from a factor- or copula-based default model captures what expected loss alone misses"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains why expected loss itself is unaffected by correlation", "weight": 25 },
+        { "criterion": "Correctly explains how correlation fattens the tail of the loss distribution", "weight": 30 },
+        { "criterion": "Correctly names a common-driver mechanism for correlated defaults", "weight": 20 },
+        { "criterion": "Correctly identifies the measure/modeling approach needed beyond expected loss", "weight": 25 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "market-credit-and-liquidity-risk", "label": "Market, Credit & Liquidity Risk" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-020",
+      "questionCode": "LTV-QANL-0170",
+      "title": "Why Aggregational Gaussianity Doesn't Rescue Monthly Tail-Risk Modeling",
+      "prompt": "A risk manager argues that because monthly returns look much closer to Normal than daily returns (aggregational Gaussianity), it's safe to model monthly tail risk with a Normal distribution. Explain why this reasoning is still dangerous.",
+      "category": "technical-knowledge",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Aggregational Gaussianity", "Fat Tails", "Tail Risk Modeling"],
+      "modelAnswer": "Aggregational Gaussianity is a real, documented pattern: as you aggregate returns over longer horizons, the distribution's excess kurtosis shrinks and it looks progressively closer to Normal, consistent with a central-limit-theorem-style averaging effect across sub-periods. But 'closer to Normal' is a statement about the bulk of the distribution converging, and it is specifically not a guarantee that the extreme tail — the part that actually matters for tail-risk measures like VaR or Expected Shortfall at high confidence levels — has converged to the same degree or at the same rate. Even monthly returns typically retain meaningfully positive excess kurtosis; the departure from Normality shrinks, it doesn't vanish, and a risk model built on the assumption that it's negligible will still underestimate the true probability of an extreme monthly move, precisely in the part of the distribution the risk manager cares most about. There's a second, independent problem the aggregation reasoning doesn't address at all: aggregational Gaussianity is a statement about the unconditional shape of returns over longer horizons, not about volatility clustering or regime persistence — a month that starts in a high-volatility regime can still realize an extreme outcome, and averaging daily returns into monthly observations doesn't erase the possibility that an entire month sits inside one bad regime. Treating 'looks more Normal than daily data' as equivalent to 'safe to model tail risk with Normal' conflates a statement about the central part of the distribution with a claim about the tail, which is exactly the part of the distribution aggregational Gaussianity makes the weakest claim about.",
+      "professionalAnswer": "I'd push back specifically on the leap from 'closer to Normal' to 'safe to use Normal for tail risk' — those are different claims. Aggregational Gaussianity describes the bulk of the distribution converging as you aggregate; it says much less about how fast the extreme tail converges, and monthly returns still typically carry real excess kurtosis. On top of that, this reasoning ignores volatility clustering entirely — an unlucky month can still land entirely inside a high-volatility regime, and no amount of 'it looks more Normal on average' changes that risk. For anything where the tail is what actually matters — VaR, stress capital, extreme-loss estimation — I'd still want a fat-tailed distribution or an empirical/historical approach, even at the monthly horizon.",
+      "commonMistakes": [
+        "Treating aggregational Gaussianity as a statement about the tail rather than the bulk of the distribution",
+        "Not acknowledging that monthly returns still typically retain real excess kurtosis",
+        "Missing the separate, independent problem of volatility clustering/regime persistence at the monthly horizon",
+        "Concluding Normal is 'safe enough' for tail-risk purposes without distinguishing bulk convergence from tail convergence"
+      ],
+      "keyPoints": [
+        "Aggregational Gaussianity describes the bulk of the return distribution converging toward Normal at longer horizons",
+        "It makes a much weaker claim about the extreme tail, which still typically retains meaningful excess kurtosis even monthly",
+        "Volatility clustering/regime persistence is a separate issue aggregation doesn't resolve",
+        "Tail-risk measures (VaR, ES) need a fat-tailed or empirical approach even at longer horizons where the bulk looks more Normal"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains what aggregational Gaussianity actually claims", "weight": 25 },
+        { "criterion": "Correctly distinguishes bulk convergence from tail convergence", "weight": 30 },
+        { "criterion": "Identifies volatility clustering/regime persistence as a separate unresolved issue", "weight": 25 },
+        { "criterion": "Recommends a correct alternative approach for tail-risk modeling", "weight": 20 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "stylized-facts-of-financial-returns", "label": "Stylized Facts of Financial Returns" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-021",
+      "questionCode": "LTV-QANL-0171",
+      "title": "Risk-Neutral Probability and the American Exercise Boundary on a Tree",
+      "prompt": "Explain precisely why the risk-neutral probability used in a binomial tree is not a forecast of the real-world probability of the stock rising, and how the same backward-induction machinery determines the early-exercise boundary for an American put.",
+      "category": "technical-knowledge",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Binomial Model", "Risk-Neutral Valuation", "American Exercise"],
+      "code": "p = (e^(r*dt) - d) / (u - d)",
+      "modelAnswer": "The risk-neutral probability p is constructed specifically so that, under p, the stock's expected one-step return equals the risk-free rate — it's a mathematical device calibrated entirely from u, d, and r, with no reference to anyone's actual beliefs about whether the stock is more likely to rise or fall. The real-world probability of an up-move is a completely separate, genuinely unknown quantity that depends on investors' risk preferences and actual return expectations, and it plays no role in the no-arbitrage pricing argument at all. The reason this works is the replicating-portfolio logic underlying the whole binomial framework: at every node, a portfolio of the underlying stock and a risk-free bond can be constructed that exactly replicates the option's payoff at the next step, regardless of what the real-world probability of up or down actually is — and because that replicating portfolio's cost is uniquely determined by no-arbitrage, the option's price is pinned down without ever needing to know real-world probabilities, which is precisely why the risk-neutral probability, a pricing convenience, is sufficient. For the American exercise boundary, the same backward-induction machinery handles it almost incidentally: at every node, you compute both the 'hold' value (the discounted risk-neutral expected value of the two successor nodes, exactly as for a European option) and the 'exercise now' value (the option's intrinsic payoff at that node), and take whichever is larger. The early-exercise boundary isn't computed separately or in advance — it emerges as the set of nodes, across the whole tree, where the exercise value exceeds the hold value, discovered automatically as a byproduct of simply taking the max at each node during the backward pass. This is precisely why trees handle American exercise far more naturally than any closed-form approach: the boundary is a derived result of the algorithm, not an input that has to be solved for separately.",
+      "professionalAnswer": "The distinction I'd draw sharply: risk-neutral probability is a pricing device calibrated purely from u, d, and r so that discounted expected payoffs come out arbitrage-free — it has nothing to do with anyone's actual forecast of where the stock is headed, and the whole point of the replicating-portfolio argument is that the option's price doesn't depend on real-world probabilities at all. For American exercise, I wouldn't describe it as a separate calculation bolted onto the tree — it falls out automatically: at every node you compute both the hold value and the immediate exercise value and take the max, and the early-exercise boundary is just whichever set of nodes happens to have exercise beat hold once you've done that everywhere. That's exactly why a tree handles early exercise so naturally compared to trying to retrofit it onto a closed-form model.",
+      "commonMistakes": [
+        "Treating the risk-neutral probability as an actual forecast or belief about the stock's future direction",
+        "Not explaining the replicating-portfolio argument as the reason real-world probabilities are irrelevant to pricing",
+        "Describing the American exercise boundary as something solved for separately rather than emerging from the max operation at each node",
+        "Confusing the exercise decision logic (compare hold vs. exercise value) with the risk-neutral probability calculation itself"
+      ],
+      "keyPoints": [
+        "Risk-neutral probability p is calibrated from u, d, and r to make discounted expected payoffs arbitrage-free, not a real-world forecast",
+        "The replicating-portfolio argument is why option pricing never needs to know real-world probabilities",
+        "At every node, American exercise logic computes both hold value and exercise value, taking the maximum",
+        "The early-exercise boundary emerges automatically from this node-by-node comparison, not from a separate calculation"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains what the risk-neutral probability is calibrated to do", "weight": 25 },
+        { "criterion": "Correctly explains why real-world probabilities are irrelevant to the pricing argument", "weight": 25 },
+        { "criterion": "Correctly explains the hold-vs-exercise comparison at each node", "weight": 30 },
+        { "criterion": "Correctly explains that the exercise boundary emerges rather than being solved separately", "weight": 20 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "the-binomial-model", "label": "The Binomial Model" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-022",
+      "questionCode": "LTV-QANL-0172",
+      "title": "Computing Fama-MacBeth's Standard Error Gap",
+      "prompt": "A naive single cross-sectional regression of average returns on estimated betas across 80 assets gives a risk-premium estimate of 0.0065 with standard error 0.0008. A Fama-MacBeth procedure across 180 months gives the same point estimate, 0.0065, but the period-by-period lambda_t series has a standard deviation of 0.015. Compute the Fama-MacBeth standard error and t-stat, and compare to the naive regression's t-stat.",
+      "category": "hands-on",
+      "difficulty": "expert",
+      "responseFormat": "code",
+      "skills": ["Fama-MacBeth", "Standard Errors", "Statistical Inference"],
+      "code": "SE(lambda_FM) = std(lambda_1...lambda_T) / sqrt(T)",
+      "modelAnswer": "Fama-MacBeth SE = 0.015 / sqrt(180) = 0.015 / 13.4164 ≈ 0.001118. Fama-MacBeth t-stat = 0.0065 / 0.001118 ≈ 5.82. Naive regression t-stat = 0.0065 / 0.0008 = 8.125. Even though the Fama-MacBeth t-stat of 5.82 is still comfortably statistically significant on its own, it is meaningfully smaller than the naive regression's t-stat of 8.125 — about 40% larger of a standard error, and correspondingly a notably lower t-stat, once the honest, across-time dispersion of the period-by-period risk-premium estimate is used instead of treating all 80 assets within each period as independent observations. This specific example is a case where both approaches happen to agree the result is significant, but the gap illustrates the general pattern: the naive regression systematically overstates confidence, and in many real applications with a less overwhelmingly large point estimate, that overstatement is exactly what can turn a genuinely marginal, uncertain result into one that naively looks rock-solid.",
+      "professionalAnswer": "I'd compute both SE and t-stat cleanly from the given numbers and then make the comparison explicit rather than just reporting two numbers side by side: the Fama-MacBeth t-stat of about 5.82 is still solidly significant here, but it's meaningfully smaller than the naive t-stat of 8.125, and that gap is the direct, quantified cost of the naive regression's overstated precision. I'd flag that in a case with a less extreme point estimate relative to its noise, this same gap could easily be the difference between 'significant' and 'not significant' — which is exactly why I'd always ask whether a quoted factor-premium result came from a properly-run Fama-MacBeth procedure.",
+      "example": "FM SE ≈ 0.001118, FM t-stat ≈ 5.82. Naive t-stat = 8.125. Both significant here, but the FM t-stat is about 28% smaller, reflecting the honest cost of accounting for cross-asset correlation within each period.",
+      "commonMistakes": [
+        "Computing the Fama-MacBeth SE using the wrong T or forgetting to take the square root of T",
+        "Comparing the point estimates rather than the standard errors/t-stats, missing the actual point of the exercise",
+        "Concluding the naive regression's result is simply wrong rather than correctly overstated in confidence",
+        "Not recognizing that in a less extreme example, this same SE gap could flip a result from significant to insignificant"
+      ],
+      "keyPoints": [
+        "Fama-MacBeth SE = std(lambda_t) / sqrt(T) = 0.015/sqrt(180) ≈ 0.001118",
+        "Fama-MacBeth t-stat ≈ 5.82, versus the naive regression's t-stat of 8.125",
+        "Both are significant here, but the naive regression meaningfully overstates confidence",
+        "This overstatement can be the difference between significant and insignificant in less extreme cases"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly computes the Fama-MacBeth standard error", "weight": 30 },
+        { "criterion": "Correctly computes the Fama-MacBeth t-stat", "weight": 25 },
+        { "criterion": "Correctly computes and compares the naive regression's t-stat", "weight": 25 },
+        { "criterion": "Correctly interprets the practical significance of the gap", "weight": 20 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "cross-sectional-regression", "label": "Cross-Sectional Regression" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-023",
+      "questionCode": "LTV-QANL-0173",
+      "title": "From a GARCH Variance Forecast to a One-Day VaR",
+      "prompt": "A fitted GARCH(1,1) model gives a forecast conditional variance for tomorrow of sigma_(t+1)^2 = 0.000625 (i.e., sigma_(t+1) = 2.5% daily), with forecast mean return mu = 0.0005. Compute the 1-day 95% VaR for a $5 million position, assuming Normally distributed returns, and explain why using yesterday's unconditional historical volatility instead would likely understate this number right after a volatility spike.",
+      "category": "hands-on",
+      "difficulty": "expert",
+      "responseFormat": "code",
+      "skills": ["GARCH", "Value at Risk", "Volatility Forecasting"],
+      "code": "VaR_alpha = -(mu + z_alpha * sigma) * Position",
+      "modelAnswer": "sigma_(t+1) = sqrt(0.000625) = 0.025 (2.5%). z_0.05 ≈ -1.645. VaR_0.05 = -(0.0005 + (-1.645)*0.025) = -(0.0005 - 0.041125) = -(-0.040625) = 0.040625, or about 4.0625% of position value. For a $5 million position, 1-day 95% VaR = 0.040625 * 5,000,000 ≈ $203,125. If a historical, unconditional volatility estimate from a calm period prior to a recent volatility spike were used instead — say, an older estimate of 1.5% rather than the GARCH-forecast 2.5% — the resulting VaR would come out to roughly 0.0005+1.645*0.015 ≈ 0.025225, or about $126,125, understating the true current risk by well over a third. This gap exists precisely because GARCH's conditional variance reacts to recent shocks and persists (the alpha and beta terms), while an unconditional historical estimate averages over a longer window that includes the calmer period before the spike, diluting and lagging the true current risk level exactly when it has just risen.",
+      "professionalAnswer": "I'd plug the GARCH forecast's volatility directly into the standard parametric VaR formula and get about $203,125 for this position. The reason I'd insist on using the GARCH number rather than a simple historical average right after a spike is numerical, not just conceptual: the historical estimate blends in calmer pre-spike days, understating current risk by a meaningful amount — in this example, by more than a third — exactly when the risk desk most needs an accurate, responsive number rather than a lagging one.",
+      "example": "GARCH-based VaR ≈ $203,125. Stale historical-vol-based VaR (using an older 1.5% estimate) ≈ $126,125 — understating true current risk by roughly 38%.",
+      "commonMistakes": [
+        "Forgetting to take the square root of the forecast variance to get sigma before using it in the VaR formula",
+        "Using the wrong sign convention for z_alpha or mu in the VaR formula",
+        "Not quantifying the actual dollar understatement from using a stale historical volatility estimate",
+        "Not explaining the mechanism (GARCH reacting to and persisting recent shocks vs. an unconditional average diluting them) behind the gap"
+      ],
+      "keyPoints": [
+        "sigma_(t+1) = 2.5% from the GARCH forecast variance",
+        "1-day 95% VaR ≈ $203,125 for the $5 million position",
+        "A stale historical volatility estimate from before a spike meaningfully understates current risk",
+        "GARCH's conditional, persistent response to recent shocks is exactly why it tracks current risk better than an unconditional average"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly converts the forecast variance to volatility", "weight": 20 },
+        { "criterion": "Correctly computes the 1-day 95% VaR in dollar terms", "weight": 35 },
+        { "criterion": "Correctly quantifies the understatement from a stale historical estimate", "weight": 25 },
+        { "criterion": "Correctly explains the mechanism behind the gap", "weight": 20 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "volatility-forecasting-in-practice", "label": "Volatility Forecasting in Practice" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-024",
+      "questionCode": "LTV-QANL-0174",
+      "title": "Portfolio Expected Credit Loss Under Correlated Defaults",
+      "prompt": "A portfolio has 20 equally-sized loans of $1 million EAD each, each with PD=3% and LGD=50%, assumed independent. A stress scenario raises each loan's PD to 8% simultaneously due to a shared economic driver. Compute the portfolio expected loss under normal conditions and under the stress scenario, and explain why this comparison, not the independence assumption itself, is what actually matters for capital planning.",
+      "category": "hands-on",
+      "difficulty": "expert",
+      "responseFormat": "code",
+      "skills": ["Credit Risk", "Stress Testing", "Portfolio Expected Loss"],
+      "code": "Portfolio EL = sum(PD_i * LGD_i * EAD_i)",
+      "modelAnswer": "Normal-conditions portfolio EL = 20 * (0.03 * 0.50 * $1,000,000) = 20 * $15,000 = $300,000. Stress-scenario portfolio EL = 20 * (0.08 * 0.50 * $1,000,000) = 20 * $40,000 = $800,000 — a 2.67x increase in expected loss purely from the shared economic driver raising every loan's PD simultaneously. The independence assumption used in computing each scenario's EL is actually fine for getting the right expected loss under each scenario taken on its own; what the independence assumption gets wrong is treating the normal-conditions 3% PD as if it's the only PD this portfolio could ever realize, when in fact a common economic shock can push every loan's PD to 8% at once, in a correlated fashion, rather than each loan's default being an isolated, uncorrelated coin flip. For capital planning, the number that actually matters isn't just the normal-conditions EL of $300,000 — it's understanding the range of plausible EL outcomes across different economic scenarios, including the correlated-stress case, and holding capital against the stress case, not the average case, precisely because a bad economic state pushes every loan's risk up together rather than averaging out across 20 independent bets.",
+      "professionalAnswer": "I'd compute both numbers cleanly — $300,000 normal, $800,000 stressed, a 2.67x jump — and then make the capital-planning point explicit: the independence assumption isn't wrong about how to compute EL given a PD, it's wrong about treating the normal-conditions PD as the only number that matters. The real risk this portfolio carries is that a shared economic shock can push every loan's PD up together, and capital should be sized against that stressed scenario, not the calmer average-case number, because that's exactly the situation capital needs to absorb.",
+      "example": "Normal EL = $300,000. Stressed EL = $800,000 — a 2.67x increase from a shared economic driver raising every loan's PD simultaneously.",
+      "commonMistakes": [
+        "Computing one of the two EL figures incorrectly (mixing up PD values between the two scenarios)",
+        "Treating the independence assumption as wrong for computing EL given a scenario's PD, rather than wrong about which PD is realistic",
+        "Not explaining why capital should be sized against the stressed scenario rather than the normal-conditions average",
+        "Missing the connection between a shared economic driver and correlated, simultaneous PD increases"
+      ],
+      "keyPoints": [
+        "Normal-conditions portfolio EL = $300,000; stressed portfolio EL = $800,000, a 2.67x increase",
+        "Independence is a correct computation method given a scenario's PD; the real issue is which PD scenario is realistic",
+        "A shared economic driver can raise every loan's PD simultaneously, not as isolated independent events",
+        "Capital planning should be sized against the stressed scenario, not the calmer normal-conditions average"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly computes normal-conditions portfolio expected loss", "weight": 25 },
+        { "criterion": "Correctly computes stressed-scenario portfolio expected loss", "weight": 25 },
+        { "criterion": "Correctly explains what the independence assumption does and doesn't get wrong", "weight": 25 },
+        { "criterion": "Correctly connects this to capital planning against the stressed scenario", "weight": 25 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "market-credit-and-liquidity-risk", "label": "Market, Credit & Liquidity Risk" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-025",
+      "questionCode": "LTV-QANL-0175",
+      "title": "Computing Omega and Information Ratios From the Same Return Series",
+      "prompt": "A strategy's daily returns have a mean active return (over its benchmark) of 0.00015 with a tracking error (standard deviation of active return) of 0.0045 (both daily). Separately, using a zero threshold, the sum of gains above zero is 0.95 and the sum of losses below zero (as a positive number) is 0.80 over the sample. Compute the annualized Information Ratio and the Omega ratio, and explain what each one tells you that the other doesn't.",
+      "category": "hands-on",
+      "difficulty": "expert",
+      "responseFormat": "code",
+      "skills": ["Information Ratio", "Omega Ratio", "Risk-Adjusted Performance"],
+      "code": "IR = mean(active_return)/tracking_error * sqrt(252)\nOmega(L) = sum(gains above L) / sum(losses below L)",
+      "modelAnswer": "Information Ratio = (0.00015/0.0045) * sqrt(252) = 0.03333 * 15.8745 ≈ 0.529. Omega(0) = 0.95/0.80 = 1.1875. The Information Ratio of about 0.53 tells you how consistently the strategy outperformed its specific benchmark relative to how much that outperformance bounced around — a modest but genuinely positive and not-trivial result, answering a relative, benchmark-specific question. The Omega ratio of 1.1875 answers a completely different question: using the strategy's own absolute returns (not relative to any benchmark), it says the weighted sum of all gains above zero is about 19% larger than the weighted sum of all losses below zero, using the full distribution of returns rather than just their mean and standard deviation — which means it's sensitive to skew and fat tails in a way the IR, built from a mean and a standard deviation, is not. A strategy could have a solid IR (consistent benchmark outperformance) while having a mediocre Omega (its absolute return distribution is only modestly more weighted toward gains than losses) if its outperformance versus the benchmark comes from being less bad in down markets rather than from a generally favorable, asymmetric absolute return shape — the two numbers are capturing genuinely different things and shouldn't be used interchangeably.",
+      "professionalAnswer": "I'd compute both cleanly — IR ≈ 0.53, Omega ≈ 1.19 — and then explain they're answering different questions rather than two versions of the same thing: IR is specifically about consistency of outperformance versus a named benchmark, built from just the mean and standard deviation of that active return; Omega uses the whole absolute return distribution and is sensitive to skew and fat tails in a way IR structurally can't be. A strategy can look fine on one and mediocre on the other for a real, specific reason — for instance, beating its benchmark consistently in both up and down markets without having a particularly favorable absolute-return shape on its own — and I'd want both numbers before concluding anything about the strategy's overall quality.",
+      "example": "IR ≈ 0.529 (annualized). Omega(0) ≈ 1.1875.",
+      "commonMistakes": [
+        "Forgetting to annualize the Information Ratio by sqrt(252)",
+        "Computing Omega as a difference rather than a ratio of gains to losses",
+        "Treating IR and Omega as redundant measures of the same thing",
+        "Not explaining that Omega uses the full distribution while IR uses only mean and standard deviation"
+      ],
+      "keyPoints": [
+        "Annualized Information Ratio ≈ 0.529",
+        "Omega(0) ≈ 1.1875",
+        "IR measures consistency of outperformance versus a specific benchmark, from mean and tracking error alone",
+        "Omega uses the full absolute return distribution, making it sensitive to skew and fat tails in a way IR is not"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly computes the annualized Information Ratio", "weight": 30 },
+        { "criterion": "Correctly computes the Omega ratio", "weight": 30 },
+        { "criterion": "Correctly explains the distinct question each ratio answers", "weight": 30 },
+        { "criterion": "Describes a plausible scenario where the two ratios diverge", "weight": 10 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "risk-adjusted-performance-measures", "label": "Risk-Adjusted Performance Measures" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-026",
+      "questionCode": "LTV-QANL-0176",
+      "title": "Identifying an Arbitrage From a Commodity Futures Mispricing",
+      "prompt": "A commodity trades at spot S=$80. The risk-free rate is 4%, annual storage cost is 3%, and the convenience yield is estimated at 2% (all continuously compounded), with 6 months to delivery. The quoted futures price is $82.50. Compute the fair futures price and identify whether an arbitrage opportunity exists, and if so, describe the trade.",
+      "category": "hands-on",
+      "difficulty": "expert",
+      "responseFormat": "code",
+      "skills": ["Cost of Carry", "Arbitrage", "Commodity Futures"],
+      "code": "F_fair = S * e^((r + c - y) * T)",
+      "modelAnswer": "F_fair = 80 * e^((0.04+0.03-0.02)*0.5) = 80 * e^(0.05*0.5) = 80 * e^0.025 = 80 * 1.02532 ≈ $82.03. The quoted futures price of $82.50 is above the fair value of $82.03 — the futures contract is overpriced relative to the cost-of-carry model, by about $0.47 per unit. This creates a cash-and-carry arbitrage: borrow $80 at the risk-free rate, buy the commodity spot, pay the storage cost to hold it, and simultaneously sell (go short) the overpriced futures contract at $82.50. At delivery, deliver the physical commodity into the futures contract, receiving $82.50, while having spent $80 plus 6 months of financing and storage costs that the fair-value calculation already shows totals to $82.03 worth of cost — leaving a riskless profit of approximately $0.47 per unit, before accounting for any transaction costs, which in a real market would need to be smaller than this gap for the arbitrage to be worth executing.",
+      "professionalAnswer": "I'd compute the fair value first, get about $82.03, and compare it against the quoted $82.50 — the futures is overpriced, so the trade is a classic cash-and-carry: borrow to buy the physical commodity spot, hold it (paying storage), and short the overpriced future, locking in the ~$0.47 spread as a riskless profit at delivery. The one thing I'd always sanity-check before calling this a real, executable arbitrage is whether $0.47 per unit actually clears realistic transaction costs and whether the commodity can genuinely be stored and delivered as the model assumes — on paper it's riskless, but real-world frictions can easily eat a gap this size.",
+      "example": "F_fair ≈ $82.03 vs. quoted $82.50 — futures overpriced by about $0.47, pointing to a cash-and-carry arbitrage (buy spot, short the future).",
+      "commonMistakes": [
+        "Forgetting to net all three rate terms (r, c, and y) correctly in the exponent",
+        "Getting the direction of the arbitrage trade backwards (shorting spot and buying futures instead)",
+        "Not checking whether the mispricing is large enough to survive realistic transaction costs",
+        "Mislabeling this as a reverse cash-and-carry when the futures price is actually overpriced, not underpriced"
+      ],
+      "keyPoints": [
+        "F_fair = S * e^((r+c-y)*T) ≈ $82.03",
+        "The quoted futures price ($82.50) is overpriced relative to fair value by about $0.47",
+        "The arbitrage trade: borrow to buy spot, hold with storage cost, and short the overpriced futures",
+        "A real-world check against transaction costs is needed before treating this as genuinely executable"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly computes the fair futures price", "weight": 40 },
+        { "criterion": "Correctly identifies the mispricing direction", "weight": 20 },
+        { "criterion": "Correctly describes the arbitrage trade", "weight": 30 },
+        { "criterion": "Notes the need to check against transaction costs", "weight": 10 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "futures-and-forwards", "label": "Futures & Forwards" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-027",
+      "questionCode": "LTV-QANL-0177",
+      "title": "Demonstrating IC-Weighting Overfitting Numerically",
+      "prompt": "Three signals have in-sample ICs of 0.08, 0.03, and -0.01 over a 24-month window. Out-of-sample over the next 24 months, their true ICs turn out to be 0.03, 0.03, and 0.03 respectively (identical underlying quality, but noisy in-sample measurement). Explain numerically why IC-weighting based on the in-sample measurement would produce a worse out-of-sample combined signal than equal weighting here, and what this implies about when IC-weighting is and isn't worth the added complexity.",
+      "category": "hands-on",
+      "difficulty": "expert",
+      "responseFormat": "code",
+      "skills": ["Information Coefficient", "Signal Combination", "Overfitting"],
+      "code": "weight_i = IC_i / sum(abs(IC_j))",
+      "modelAnswer": "IC-weighting using the in-sample measurements gives weights proportional to 0.08, 0.03, and -0.01: total absolute IC = 0.08+0.03+0.01 = 0.12, so weights are 0.08/0.12≈0.667, 0.03/0.12=0.25, and -0.01/0.12≈-0.083. Applied to the true out-of-sample ICs (all 0.03), the combined signal's expected out-of-sample IC is approximately 0.667*0.03 + 0.25*0.03 + (-0.083)*0.03 = 0.03*(0.667+0.25-0.083) = 0.03*0.834 ≈ 0.025 — and worse, the negative weight on signal 3 means the combination is actively betting against a signal that's genuinely just as good as the other two, purely because it happened to measure poorly in-sample. Equal weighting (1/3 each) applied to the same true ICs of 0.03 each gives exactly 0.03, which is strictly better here. The in-sample IC differences (0.08 vs. 0.03 vs. -0.01) were pure measurement noise around a true common IC of 0.03 for all three, and the IC-weighting scheme, by trusting that noise as if it were real signal-quality information, actively degrades the combination relative to simply ignoring the (illusory) differences. This illustrates the general principle the lesson flags: IC-weighting is only worth its added complexity when the measured IC differences across signals are large and stable enough, relative to their own estimation noise, to reflect genuine, persistent quality differences — when they're actually just noise around similar true quality, equal weighting is not just simpler, it's measurably better.",
+      "professionalAnswer": "I'd walk through the arithmetic directly: IC-weighting on the in-sample numbers gives signal 3 a negative weight, actively betting against a signal that turns out to be exactly as good as the other two — that's worse than useless, it's actively destructive. Equal weighting, by ignoring the in-sample differences entirely, gets the full 0.03 out-of-sample IC rather than the roughly 0.025 (or worse) the IC-weighted version delivers. The lesson here isn't 'never use IC-weighting' — it's that IC-weighting is only earning its complexity when the measured differences between signals are large and stable relative to their own noise, and this example is constructed specifically to show what happens when they aren't.",
+      "example": "IC-weighted combined OOS IC ≈ 0.025 (with a destructive negative weight on signal 3). Equal-weighted combined OOS IC = 0.030 — strictly better here.",
+      "commonMistakes": [
+        "Computing the IC-weighted combination's weights but not applying them correctly to the true out-of-sample ICs",
+        "Not noticing that the in-sample-negative IC produces an actively harmful negative weight",
+        "Concluding IC-weighting is never worthwhile rather than stating the condition under which it is",
+        "Not comparing the two weighting schemes' out-of-sample results numerically"
+      ],
+      "keyPoints": [
+        "In-sample IC-weighting here produces a negative weight on a signal that's genuinely just as good as the others",
+        "The IC-weighted combination's true out-of-sample IC (≈0.025) is worse than equal weighting's (0.03)",
+        "The in-sample IC differences here were pure noise around an identical true IC of 0.03 for all three signals",
+        "IC-weighting is only worth its complexity when measured differences are large and stable relative to estimation noise"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly computes the IC-weighted weights", "weight": 25 },
+        { "criterion": "Correctly computes the resulting out-of-sample combined IC under both schemes", "weight": 35 },
+        { "criterion": "Correctly identifies the negative weight as actively destructive", "weight": 20 },
+        { "criterion": "States the correct general condition for when IC-weighting is worthwhile", "weight": 20 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "combining-signals", "label": "Combining Signals" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-028",
+      "questionCode": "LTV-QANL-0178",
+      "title": "Resizing a Volatility-Targeted Position After a GARCH Forecast Change",
+      "prompt": "A volatility-targeting strategy holds a position sized so expected annualized risk contribution is 10%. Yesterday's GARCH forecast implied annualized volatility of 16%. Today's updated forecast implies annualized volatility of 28%. Compute the required change in position size, and explain why a strategy that instead resized based on trailing 60-day historical volatility would likely react too slowly here.",
+      "category": "hands-on",
+      "difficulty": "expert",
+      "responseFormat": "code",
+      "skills": ["Volatility Targeting", "GARCH", "Position Sizing"],
+      "code": "Position_size proportional to 1 / forecast_volatility",
+      "modelAnswer": "Volatility targeting sizes a position inversely to forecast volatility: if yesterday's position was sized to hit a 10% risk contribution using a 16% volatility forecast, the position size was proportional to 1/0.16 = 6.25. Today's position, using the updated 28% forecast, should be proportional to 1/0.28 ≈ 3.571. The ratio of new to old position size is 3.571/6.25 ≈ 0.571 — the position needs to be cut by roughly 43% to keep the risk contribution at the same 10% target, since volatility rose by a factor of 1.75 (28/16) and position size must fall by the same proportional factor to offset it exactly. A 60-day trailing historical volatility estimate would react far more slowly here because it averages in 59 days of calmer pre-spike volatility alongside the first day or two of the new, higher-volatility regime — it would take many days for the rolling window to fully reflect the new, higher volatility level, during which the position would remain oversized relative to the strategy's actual current risk target. GARCH's conditional variance, by contrast, reacts to the most recent shock immediately (through the alpha term) and carries forward a persistent elevated level (through the beta term), which is exactly why it resizes the position appropriately in a single step rather than gradually catching up over weeks.",
+      "professionalAnswer": "I'd size this as inverse-proportional to volatility: the forecast jumped from 16% to 28%, a factor of 1.75, so the position needs to shrink by the reciprocal of that factor, roughly 43%, to keep the risk contribution at its 10% target. A 60-day trailing historical volatility estimate would badly lag this move — it would still be mostly reflecting the calmer pre-spike period for weeks, leaving the position oversized relative to actual current risk exactly during the window that matters most. That lag is the direct, practical argument for using a GARCH-based forecast rather than a simple rolling-window estimate for volatility-targeted sizing.",
+      "example": "Old position proportional to 1/0.16=6.25. New position proportional to 1/0.28≈3.571. Resize ratio ≈ 0.571, i.e., cut the position by about 43%.",
+      "commonMistakes": [
+        "Resizing the position proportionally to volatility rather than inversely",
+        "Computing the ratio of volatilities rather than the ratio of position sizes (which is the reciprocal)",
+        "Not explaining specifically why a 60-day rolling window lags a sudden volatility change",
+        "Not connecting GARCH's alpha and beta terms to its faster, more appropriate reaction"
+      ],
+      "keyPoints": [
+        "Position size should scale inversely to forecast volatility to maintain a constant risk contribution",
+        "The position needs to shrink by about 43% given the volatility jump from 16% to 28%",
+        "A 60-day trailing historical volatility estimate would lag this change for weeks, leaving the position oversized",
+        "GARCH's conditional variance reacts immediately to a new shock and carries it forward persistently"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly computes the required position resize ratio", "weight": 40 },
+        { "criterion": "Correctly explains the inverse relationship between position size and volatility", "weight": 20 },
+        { "criterion": "Correctly explains why a trailing historical estimate would lag", "weight": 25 },
+        { "criterion": "Correctly connects GARCH's structure to its faster response", "weight": 15 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "volatility-forecasting-in-practice", "label": "Volatility Forecasting in Practice" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-029",
+      "questionCode": "LTV-QANL-0179",
+      "title": "A GARCH Model Persistently Underforecasting Ahead of a Regime Change",
+      "prompt": "A GARCH(1,1) model with alpha=0.08 and beta=0.90 has, for the past month, consistently underforecast next-day volatility by a wide margin, right as the market has entered a sustained period of structurally higher volatility. Diagnose why this specific model is struggling here, and what you'd change.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["GARCH", "Regime Change", "Volatility Forecasting"],
+      "modelAnswer": "With alpha+beta=0.98, this model is highly persistent but mean-reverts, by design, toward its estimated long-run unconditional variance — a variance level estimated over a historical window that mostly reflects the calmer regime before the current shift. During a genuine, sustained regime change to structurally higher volatility, every one-step-ahead forecast, even though it reacts somewhat to the latest shock via alpha, is still being pulled by beta's persistence term back toward that stale, too-low long-run average, which produces a systematic, one-directional underforecast that persists for as long as the model's underlying long-run variance estimate hasn't been re-estimated on fresher data. This is different from and worse than ordinary forecast noise, because it's a structural, one-sided bias rather than random forecast error scattered in both directions — the diagnostic signature of exactly this problem is that the forecast errors are consistently one-sided (always too low) rather than zero-mean and symmetric. The fix isn't simply re-estimating the same GARCH(1,1) specification on the same long window, since that would still blend the old and new regimes together; it requires either re-estimating the model on a more recent window that better reflects the new regime, or switching to a regime-switching volatility model that can represent a discrete shift in the long-run variance level explicitly, or at minimum supplementing the GARCH forecast with a shorter-window realized volatility check specifically to catch exactly this kind of systematic, persistent underforecast before it compounds into underpriced VaR or position sizing.",
+      "professionalAnswer": "The tell here is that the errors are one-sided, not just noisy — that's a different and more serious problem than ordinary forecast imprecision. This model's high persistence (alpha+beta=0.98) means every forecast is still being pulled toward a long-run variance estimated mostly from the calmer regime before this shift, so it will keep underforecasting for as long as that stale long-run estimate hasn't caught up. I wouldn't just re-fit the same specification on the same long window — I'd re-estimate on a more recent window that actually reflects the new regime, or move to a model that can represent a discrete regime shift explicitly, and in the meantime I'd cross-check the GARCH forecast against a shorter realized-volatility window to catch this kind of systematic bias early.",
+      "commonMistakes": [
+        "Treating the persistent underforecast as ordinary, unbiased forecast noise rather than a structural, one-sided bias",
+        "Not connecting the problem specifically to the model's long-run unconditional variance being stale",
+        "Proposing to simply re-fit the same GARCH specification on the same long window, which wouldn't fix the underlying issue",
+        "Not proposing a concrete cross-check (e.g., shorter-window realized volatility) to catch this pattern going forward"
+      ],
+      "keyPoints": [
+        "High persistence (alpha+beta=0.98) still pulls every forecast toward a long-run variance estimated from the old regime",
+        "The diagnostic signature is a systematic, one-sided underforecast, not ordinary symmetric noise",
+        "Re-fitting the same specification on the same long window wouldn't fix a stale long-run variance estimate",
+        "The fix: re-estimate on a fresher window, use a regime-switching model, or cross-check against shorter-window realized volatility"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly diagnoses the stale long-run variance as the root cause", "weight": 30 },
+        { "criterion": "Correctly identifies the one-sided bias as the diagnostic signature", "weight": 25 },
+        { "criterion": "Explains why simply re-fitting the same specification on the same window wouldn't fix it", "weight": 20 },
+        { "criterion": "Proposes a concrete, correct fix", "weight": 25 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "volatility-forecasting-in-practice", "label": "Volatility Forecasting in Practice" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-030",
+      "questionCode": "LTV-QANL-0180",
+      "title": "Live Sharpe Collapsing Due to an Unrealistic Fill Assumption",
+      "prompt": "A strategy backtested with a 'fills at next-bar close' assumption shows a Sharpe of 1.8. Once live, using real next-bar-open fills, the realized Sharpe is 0.4. Diagnose exactly what the backtest smuggled in, and why the gap is this large specifically for this strategy's design.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Realistic Fill Assumptions", "Backtest Realism", "Lookahead Bias"],
+      "modelAnswer": "A 'fills at next-bar close' assumption, when the signal was generated from that same bar's own close, smuggles in a full extra bar's worth of price movement the strategy could never have actually observed before trading — the backtest is implicitly assuming the strategy can trade at a price that isn't even known until the end of the very bar it's trading on, which is exactly as physically impossible as fills at the signal bar's own close. This is a disguised form of lookahead bias specifically in the execution layer rather than the signal layer, and it tends to produce an inflated Sharpe whose magnitude depends on how much of the strategy's apparent edge was actually coming from that extra, illegitimate bar of foresight rather than genuine predictive signal. The size of the gap here — 1.8 down to 0.4 — suggests this strategy's measured edge was substantially inflated by this specific assumption, meaning a meaningful share of what looked like real predictive power was actually just the backtest quietly letting the strategy react to information (the next bar's full price path) it could never have had in real time. The correct fill convention for a signal generated at bar N's close is a fill at bar N+1's open, the earliest price actually observable and tradeable after the signal is known — and the fact that switching to this correct convention alone (separately from transaction costs or slippage, which would make the gap even larger) collapses the Sharpe this much indicates the strategy's true edge, once honestly measured, may not be much above the risk-free hurdle.",
+      "professionalAnswer": "This is lookahead bias wearing a different costume — fills at next-bar close instead of next-bar open quietly hands the strategy a full bar of price movement it couldn't have known about before trading, which is just as illegitimate as fills at the same bar's own close. A collapse from 1.8 to 0.4 after fixing just the fill convention, before even layering in slippage and transaction costs, tells me a large share of the original 'edge' was this specific artifact, not real predictive signal — and I'd want to know the true number including realistic costs on top of the corrected fill convention before drawing any further conclusions about whether this strategy has a real edge at all.",
+      "commonMistakes": [
+        "Not recognizing 'fills at next-bar close' as a disguised form of lookahead bias in the execution layer",
+        "Treating the gap as simply 'the backtest wasn't perfect' rather than identifying the specific, named mechanism",
+        "Not connecting the magnitude of the collapse to how much of the apparent edge was an artifact of this one assumption",
+        "Forgetting that transaction costs and slippage, layered on top of the corrected fill convention, would likely widen the gap further"
+      ],
+      "keyPoints": [
+        "'Fills at next-bar close' smuggles in a full bar of unknowable future price movement, a disguised lookahead bias",
+        "The correct convention is a fill at next-bar open, the earliest actually-observable, tradeable price after the signal",
+        "The large magnitude of the collapse (1.8 to 0.4) suggests much of the apparent edge was this specific artifact",
+        "Realistic slippage and transaction costs on top of the corrected fill convention would likely widen the gap further"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies the fill assumption as a disguised lookahead bias", "weight": 35 },
+        { "criterion": "Correctly states the proper fill convention", "weight": 25 },
+        { "criterion": "Correctly interprets the magnitude of the collapse", "weight": 25 },
+        { "criterion": "Notes that further realistic costs would likely widen the gap", "weight": 15 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "realistic-fill-assumptions", "label": "Realistic Fill Assumptions" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-031",
+      "questionCode": "LTV-QANL-0181",
+      "title": "A Risk-Parity Book Blowing Up as Correlations Spike",
+      "prompt": "A risk-parity portfolio, constructed using inverse-volatility weights estimated from a 60-day rolling window of calm-period data, suffers losses far larger than its target risk level during a sudden market-wide selloff where every asset's correlation with every other asset spikes toward one. Diagnose the specific flaw in the construction process.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Risk Parity", "Correlation Risk", "Portfolio Construction"],
+      "modelAnswer": "Inverse-volatility weighting, as a construction method, only accounts for each asset's own standalone volatility — it says nothing about how assets move together, which means it implicitly assumes the portfolio's diversification benefit from imperfect correlation will hold going forward, without ever explicitly modeling or stress-testing that assumption. During a calm period, the 60-day rolling correlations between the assets may have been low or even negative, making the inverse-volatility-weighted combination appear to achieve a modest, well-diversified total risk level. The moment a market-wide selloff hits and correlations spike toward one — a known, common pattern tied to the same correlation-to-one mechanism that affects equity long/short books — the portfolio's actual combined volatility jumps sharply above what the inverse-volatility weights alone would suggest, because the diversification benefit that the weighting scheme implicitly assumed, but never explicitly modeled via a full covariance matrix, has simply disappeared. The specific flaw: true risk parity requires sizing positions by each asset's marginal contribution to total portfolio risk computed from the full covariance matrix (including cross-asset correlations), not merely by inverse standalone volatility, which is only a valid shortcut for risk parity when correlations are low and stable — an assumption that is precisely false during the kind of stress event where risk management matters most.",
+      "professionalAnswer": "The specific flaw is that inverse-volatility weighting is being used as a shortcut for risk parity, and that shortcut only works when cross-asset correlations are low and stable — which is exactly the condition that breaks during a market-wide selloff. The calm-period 60-day window baked in low correlations that simply don't hold anymore once everything starts moving together, and because the construction never used the full covariance matrix to size risk contributions explicitly, it had no way to see this coming. True risk parity needs marginal risk contribution from the full covariance matrix, not just each asset's own standalone volatility — and that's the fix.",
+      "commonMistakes": [
+        "Blaming the specific assets chosen rather than the construction methodology itself",
+        "Not recognizing inverse-volatility weighting as only a valid risk-parity shortcut under the low-correlation assumption",
+        "Missing the direct connection to the correlation-to-one mechanism seen elsewhere during market-wide shocks",
+        "Not proposing the correct fix (full covariance-matrix-based marginal risk contribution) rather than just a different lookback window"
+      ],
+      "keyPoints": [
+        "Inverse-volatility weighting ignores cross-asset correlation entirely, only sizing by standalone volatility",
+        "This is a valid risk-parity shortcut only when correlations are low and stable, an assumption baked in from the calm estimation period",
+        "A market-wide selloff spikes correlations toward one, destroying the assumed diversification benefit",
+        "True risk parity requires marginal risk contribution computed from the full covariance matrix, not just standalone volatility"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies the construction methodology's flaw, not the specific assets", "weight": 30 },
+        { "criterion": "Correctly explains why inverse-volatility weighting is only a valid shortcut under low correlation", "weight": 30 },
+        { "criterion": "Connects the failure to the correlation-to-one pattern during market shocks", "weight": 20 },
+        { "criterion": "Proposes the correct fix (full covariance-based risk contribution)", "weight": 20 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "portfolio-construction-methods", "label": "Portfolio Construction Methods" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-032",
+      "questionCode": "LTV-QANL-0182",
+      "title": "A Fama-MacBeth Risk Premium That Flips Sign Across Sub-Periods",
+      "prompt": "A Fama-MacBeth estimate of a factor's risk premium is positive and marginally significant over a full 20-year sample, but splitting the sample into four 5-year sub-periods shows the period-by-period lambda_t estimates alternating between strongly positive and strongly negative. Diagnose what this instability implies, and what you'd tell a PM who wants to size a position based on the full-sample estimate.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Fama-MacBeth", "Factor Risk Premium", "Time Instability"],
+      "modelAnswer": "The sub-period instability is itself exactly the information the Fama-MacBeth standard error is designed to capture, and it's worth being explicit that this isn't a separate problem on top of Fama-MacBeth's standard framework — the full-sample standard error already reflects, by construction, how much the period-by-period lambda_t bounces around across the entire 20-year history, including whatever instability is visible when you split it into sub-periods. A marginally significant full-sample average sitting on top of alternating strongly-positive and strongly-negative sub-period estimates is a strong sign the 'true' risk premium is not stable over time — it may be regime-dependent (compensated during certain economic conditions and penalized during others) rather than a constant, persistently-positive risk premium the way a textbook factor model implicitly assumes. Telling a PM to size a position based on the full-sample point estimate alone, without flagging this sub-period instability, risks presenting a borderline-significant, time-varying effect as if it were a reliable, stable source of return — when the more honest read is that the premium's sign itself may depend on conditions that need to be identified and conditioned on, not averaged away into one number. The right recommendation: investigate whether the sub-period flips correlate with an identifiable macro or market regime variable; if they do, the premium should be sized conditionally on that regime, not as a flat, always-on exposure; if no such explanation is found, the marginal full-sample significance combined with this degree of instability argues for a smaller, more cautious position size than the raw point estimate alone would suggest.",
+      "professionalAnswer": "I'd tell the PM directly that a marginally significant full-sample average sitting on top of sub-periods that flip between strongly positive and strongly negative isn't really describing one stable risk premium — it's averaging together what might be two or more genuinely different regimes. Before sizing anything off the full-sample number, I'd want to know whether those sub-period flips line up with an identifiable macro regime; if they do, size the position conditionally on that regime rather than as a flat, always-on bet, and if they don't, the honest conclusion is that this result is less trustworthy than the marginal significance on its own makes it look, and the position should be sized more conservatively.",
+      "commonMistakes": [
+        "Treating the sub-period instability as a separate issue from what Fama-MacBeth's standard error is already designed to capture",
+        "Recommending the PM size off the full-sample point estimate without flagging the instability at all",
+        "Not proposing investigating whether the flips correlate with an identifiable regime variable",
+        "Concluding the premium is simply 'not real' rather than considering it might be genuinely regime-dependent"
+      ],
+      "keyPoints": [
+        "Sub-period instability is exactly what the Fama-MacBeth standard error is designed to reflect, not a separate problem",
+        "Alternating strongly positive/negative sub-periods suggest a regime-dependent, not stable, risk premium",
+        "Sizing off the full-sample point estimate alone risks treating an unstable effect as a reliable one",
+        "Investigate whether instability correlates with an identifiable regime; size conditionally or more conservatively"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the relationship between sub-period instability and the FM standard error", "weight": 25 },
+        { "criterion": "Correctly interprets the instability as suggesting a regime-dependent premium", "weight": 30 },
+        { "criterion": "Gives the PM an honest, non-alarmist but appropriately cautious recommendation", "weight": 25 },
+        { "criterion": "Proposes investigating a regime correlation as a concrete next step", "weight": 20 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "cross-sectional-regression", "label": "Cross-Sectional Regression" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-033",
+      "questionCode": "LTV-QANL-0183",
+      "title": "Diagnosing a Funding-Liquidity-to-Market-Liquidity Spiral",
+      "prompt": "A fund facing investor redemptions is forced to sell positions to raise cash, but the positions it sells cheapest and fastest are its most liquid holdings, leaving it progressively more concentrated in illiquid assets even as its NAV keeps falling. Diagnose the spiral mechanism at work and what structural decision created this vulnerability.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Funding Liquidity Risk", "Market Liquidity Risk", "Liquidity Spirals"],
+      "modelAnswer": "This is the classic interaction between funding liquidity risk and market liquidity risk reinforcing each other in a spiral. The fund's redemption pressure is a funding liquidity problem — needing cash to meet obligations (investor withdrawals) regardless of whether the fund is otherwise solvent. Facing that pressure, the fund rationally sells its most liquid holdings first, since those can be sold fastest and with the least market impact — but doing so repeatedly, redemption after redemption, mechanically shifts the portfolio's composition toward a higher concentration of illiquid assets over time, even without the fund manager intending that outcome. This creates a market liquidity risk problem that compounds the original funding problem: as the portfolio becomes more concentrated in illiquid holdings, any future redemption requires selling into thinner, harder-to-exit markets, at a larger market-impact cost and often at a further-depressed price, which can itself trigger further investor redemptions if the resulting NAV decline alarms remaining investors — a feedback loop where meeting funding liquidity needs degrades market liquidity, which in turn worsens the fund's apparent performance and funding pressure. The structural decision that created this vulnerability is the fund's redemption terms themselves: offering investors more frequent or larger redemption rights than the underlying portfolio's actual liquidity profile can comfortably support, a basic liquidity mismatch between the fund's liabilities (redeemable on demand or short notice) and its assets (including meaningfully illiquid holdings) that doesn't show up as a problem until redemption pressure actually arrives.",
+      "professionalAnswer": "I'd name this as the funding-liquidity-to-market-liquidity feedback loop directly: redemption pressure (funding liquidity) forces selling the most liquid assets first, which mechanically concentrates the remaining book into illiquid holdings, which then makes any future redemption more expensive and value-destructive (market liquidity), which can trigger more redemptions — a genuine spiral, not a sequence of unrelated bad luck. The root structural cause isn't any individual trade, it's the original mismatch between how liquid the fund promised investors it would be (its redemption terms) and how liquid its underlying assets actually are — and that mismatch is invisible until redemption pressure actually tests it.",
+      "commonMistakes": [
+        "Diagnosing this as a series of individually bad trading decisions rather than a structural funding/market liquidity spiral",
+        "Not explaining why selling the most liquid assets first mechanically worsens the portfolio's remaining liquidity profile",
+        "Missing the feedback-loop aspect where market liquidity deterioration can trigger further redemptions",
+        "Not identifying the original asset-liability liquidity mismatch (redemption terms vs. underlying asset liquidity) as the root structural cause"
+      ],
+      "keyPoints": [
+        "Redemption pressure is a funding liquidity problem independent of the fund's underlying solvency",
+        "Selling the most liquid assets first to meet it mechanically concentrates the remaining portfolio in illiquid holdings",
+        "This degrades market liquidity for future redemptions, which can trigger further redemptions, forming a spiral",
+        "The root structural cause is a mismatch between redemption terms offered and the underlying portfolio's actual liquidity profile"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies the funding-to-market liquidity spiral mechanism", "weight": 35 },
+        { "criterion": "Correctly explains why selling liquid assets first worsens the remaining portfolio's liquidity", "weight": 25 },
+        { "criterion": "Correctly explains the feedback-loop/further-redemption risk", "weight": 20 },
+        { "criterion": "Correctly identifies the structural redemption-terms mismatch as the root cause", "weight": 20 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "market-credit-and-liquidity-risk", "label": "Market, Credit & Liquidity Risk" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-034",
+      "questionCode": "LTV-QANL-0184",
+      "title": "A Market Maker's Inventory Risk Spiraling During One-Sided Flow",
+      "prompt": "A market maker's inventory in a stock grows from flat to a large net short position over a single trading session, as customer buy orders consistently outpace sell orders despite the market maker repeatedly widening and skewing its quotes. Diagnose why the standard inventory-skew response isn't containing the risk here, and what else should be done.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Market Making", "Inventory Risk", "Adverse Selection"],
+      "modelAnswer": "Skewing the quote (tightening the offer side and widening the bid side, to discourage further customer buying and encourage selling back) is the standard tool for managing inventory risk when order flow is noise-driven and roughly balanced over time — it works by making the market maker's own side of the trade progressively less attractive as inventory builds, nudging flow back toward neutral. If customer buy orders keep outpacing sells even as the quote is repeatedly skewed more aggressively, that's a strong signal the order flow isn't noise at all — it's informed, directional flow, meaning a meaningful share of the market is trading on information the market maker doesn't have, and simply widening the spread or skewing further is fighting a losing, continually-retreating battle rather than addressing the actual problem, since a genuinely better-informed counterparty will keep buying even at a worse price if they believe the stock is headed meaningfully higher. At this point, the inventory-risk-management playbook built for noise-driven flow has effectively reached its limits, and the market maker needs to treat this as an adverse-selection event rather than an ordinary inventory-management problem: this likely means pulling back from continuously quoting altogether for a period (reducing size or temporarily widening to levels that stop attracting flow entirely, rather than trying to find a skew that still trades), and separately, hedging the accumulated short position directly in a correlated, more liquid instrument (an index future or an options position) rather than relying solely on the inventory-skew mechanism to eventually bring the position back to flat through its own trading activity.",
+      "professionalAnswer": "The fact that skewing isn't working is itself the diagnostic signal — that only happens when the flow isn't noise, it's informed, and a market maker can't out-skew a counterparty who's willing to keep buying at a worse price because they believe they know something real. At that point I'd stop treating this as routine inventory management and start treating it as an adverse-selection event: pull back from quoting meaningfully, or stop altogether for a period, and hedge the accumulated position directly in a correlated, liquid instrument rather than waiting for the skew to eventually work its way back to flat on its own.",
+      "commonMistakes": [
+        "Recommending further skewing or widening as if the flow were still noise-driven",
+        "Not recognizing persistent one-sided flow despite aggressive skewing as the signature of informed, not noise, flow",
+        "Treating this purely as an inventory problem rather than an adverse-selection event requiring a different response",
+        "Not proposing a direct hedge in a correlated instrument as part of the response"
+      ],
+      "keyPoints": [
+        "Quote skewing is designed for noise-driven, roughly balanced flow, not persistent, informed directional flow",
+        "Flow that keeps outpacing an increasingly aggressive skew is the signature of informed, adverse-selection-driven trading",
+        "At that point, continuing to widen/skew is fighting a losing battle rather than addressing the real problem",
+        "The correct response: pull back from quoting and hedge the accumulated position directly in a correlated, liquid instrument"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains why standard inventory skewing isn't working here", "weight": 30 },
+        { "criterion": "Correctly identifies informed/adverse-selection flow as the underlying cause", "weight": 30 },
+        { "criterion": "Proposes pulling back from quoting as part of the response", "weight": 20 },
+        { "criterion": "Proposes a direct hedge in a correlated instrument", "weight": 20 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "market-microstructure-basics", "label": "Market Microstructure Basics" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-035",
+      "questionCode": "LTV-QANL-0185",
+      "title": "A Carry Strategy's Sharpe Halving Under Realistic Turnover",
+      "prompt": "An FX carry strategy that rebalances weekly shows a cost-free backtested Sharpe of 1.3. Once realistic transaction costs and bid-ask spread crossing are applied, the Sharpe drops to 0.65 — exactly half. Explain what this specific ratio (exactly half, not collapsed to near zero) implies about the strategy, in contrast to the earlier case of a daily-rebalanced strategy whose Sharpe collapsed from 2.2 to 0.3.",
+      "category": "troubleshooting",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Transaction Costs", "Carry Trade", "Turnover Comparison"],
+      "modelAnswer": "The key diagnostic is the magnitude of the degradation relative to turnover, not just the fact that costs reduced the Sharpe. A weekly-rebalanced strategy pays its round-trip cost roughly 52 times a year, meaningfully less often than a daily-rebalanced strategy's roughly 252 times a year — so for a comparable per-trade cost, the weekly strategy's total annual cost drag is structurally much smaller, which is consistent with a cost impact that dents the Sharpe meaningfully (cutting it in half) without eliminating it. This is a fundamentally healthier signature than the daily strategy's collapse from 2.2 to 0.3: a Sharpe halving while remaining a still-respectable 0.65 suggests the carry strategy's underlying edge was genuinely larger relative to its (lower) trading frequency, and real, durable trading costs, while a legitimate and material drag worth continuing to minimize, haven't eliminated the edge entirely. By contrast, the earlier daily strategy's near-total collapse indicated its apparent edge was largely a turnover-driven illusion in the first place. This carry strategy's result is more consistent with carry's own known economic story — it's compensation for a real, persistent risk premium (as established in the interest-rate-parity discussion), which should be expected to survive reasonable transaction costs, in contrast to a thin, noise-driven signal that only looked good because costs were originally assumed away entirely.",
+      "professionalAnswer": "The detail I'd focus on is that this Sharpe was cut in half, not collapsed toward zero — and the reason that's meaningfully different from the earlier daily strategy's near-total wipeout is turnover: weekly rebalancing pays its round-trip cost about a fifth as often as daily rebalancing, so a comparable per-trade cost produces a much smaller total annual drag. A carry strategy surviving costs at a still-respectable 0.65 Sharpe is consistent with carry's own economic story — a real, persistent risk premium, not a thin signal that only looked good when costs were ignored — and that's a genuinely more reassuring result than the daily strategy's collapse was.",
+      "commonMistakes": [
+        "Treating any cost-driven Sharpe reduction as equally concerning, without comparing the magnitude to the strategy's trading frequency",
+        "Not explaining why weekly rebalancing's lower turnover produces a structurally smaller annual cost drag than daily rebalancing",
+        "Missing the contrast with the earlier daily-strategy example as the point of the comparison",
+        "Not connecting the result to carry's own economic story as a persistent, cost-surviving risk premium"
+      ],
+      "keyPoints": [
+        "Weekly rebalancing incurs its round-trip cost roughly 52 times a year versus daily's roughly 252 times",
+        "A Sharpe halving while remaining a still-respectable 0.65 is a fundamentally healthier signature than a near-total collapse",
+        "This suggests the carry strategy's underlying edge is genuinely larger relative to its trading frequency, not a turnover-driven illusion",
+        "The result is consistent with carry's own economic story as a real, persistent, cost-surviving risk premium"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly connects turnover frequency to the magnitude of cost drag", "weight": 30 },
+        { "criterion": "Correctly contrasts this result with the earlier daily-strategy collapse", "weight": 30 },
+        { "criterion": "Correctly interprets what a surviving Sharpe implies about the underlying edge", "weight": 25 },
+        { "criterion": "Connects the result to carry's own economic rationale as a persistent risk premium", "weight": 15 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "strategy-families-momentum-mean-reversion-and-carry", "label": "Strategy Families: Momentum, Mean Reversion & Carry" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-036",
+      "questionCode": "LTV-QANL-0186",
+      "title": "Designing a Research Pipeline That Governs Against Overfitting End-to-End",
+      "prompt": "Design a research pipeline, from initial idea through to approved-for-capital signal, for a team of researchers, with explicit governance checkpoints that prevent overfitting from creeping in at any single stage: hypothesis formation, signal combination, and portfolio construction.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Research Governance", "Overfitting Prevention", "Pipeline Design"],
+      "modelAnswer": "I'd architect this as a staged pipeline with a mandatory, timestamped artifact and a hard data-access boundary at each stage, not just informal best practices. Stage one, hypothesis formation: every new idea must produce a written, timestamped hypothesis document — universe, exact signal definition, expected direction and magnitude, success metric, and kill criteria — committed to a version-controlled log before any code touches live data, exactly as the from-idea-to-hypothesis discipline requires; the pipeline should technically prevent a researcher from running a backtest against a hypothesis that hasn't been logged first. Stage two, signal combination: any combination weights (equal, IC-based, or otherwise) must be estimated only on a designated training partition of the data, with the held-out validation partition's existence enforced at the infrastructure level — the backtest engine itself should refuse to compute or report a result on the validation partition until the combination weights from the training partition are frozen and logged. Stage three, portfolio construction: any estimated inputs (expected returns, covariance structure) feeding an optimizer should similarly be fit only on the training partition, with position constraints and/or shrinkage applied by default rather than optional, specifically because unconstrained mean-variance optimization is known to overfit estimation noise into extreme weights. Finally, a single, final out-of-sample test — genuinely never touched by any researcher at any earlier stage, for any signal — is the only basis on which a signal is approved for live capital, and the pipeline should log and report exactly how many signals, parameter variations, and combination schemes were tried across the whole process, since that number is itself necessary context for judging how much to trust the final result.",
+      "professionalAnswer": "I'd build this so that each stage's defense against overfitting is enforced by the infrastructure itself, not left to researcher discipline: a hypothesis has to be logged and timestamped before any backtest can run against it, combination weights and portfolio-construction inputs can only be computed from a training partition the system itself walls off from the validation partition until weights are frozen, and a single, genuinely untouched final out-of-sample period is the only gate for approving live capital. I'd also have the pipeline automatically log how many signals and variations were tried in total, because that count is necessary context for anyone judging how much to trust whatever made it through to the end.",
+      "commonMistakes": [
+        "Relying on researcher discipline or documentation alone rather than infrastructure-enforced data partitioning",
+        "Not applying the same train/validation discipline consistently across all three stages (hypothesis, combination, construction)",
+        "Leaving mean-variance optimization unconstrained by default rather than defaulting to position caps or shrinkage",
+        "Not logging the total number of signals/variations tried across the whole pipeline as context for the final result"
+      ],
+      "keyPoints": [
+        "Every hypothesis must be logged and timestamped before any backtest runs against it",
+        "Signal-combination weights are computed only on a training partition, with validation data infrastructure-walled off until weights are frozen",
+        "Portfolio-construction inputs are fit only on the training partition, with default position constraints/shrinkage",
+        "A single, genuinely untouched final out-of-sample test gates live-capital approval, with the total number of variations tried logged"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly designs infrastructure-enforced hypothesis logging", "weight": 25 },
+        { "criterion": "Correctly designs train/validation separation for signal combination", "weight": 25 },
+        { "criterion": "Correctly designs train/validation separation and default constraints for portfolio construction", "weight": 25 },
+        { "criterion": "Proposes a final, untouched out-of-sample gate with variation-count logging", "weight": 25 }
+      ],
+      "estimatedMinutes": 11,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "from-idea-to-hypothesis", "label": "From Idea to Hypothesis" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-037",
+      "questionCode": "LTV-QANL-0187",
+      "title": "Designing a Firm-Wide GARCH-Based Dynamic Risk System",
+      "prompt": "Design a firm-wide risk system that uses GARCH-family volatility forecasts to drive both daily VaR reporting and volatility-targeted position sizing across multiple desks, with appropriate safeguards against model risk.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["GARCH", "VaR", "Volatility Targeting", "Model Risk"],
+      "modelAnswer": "I'd architect this with a shared volatility-forecasting service as the single source of truth, rather than each desk independently fitting its own GARCH models, so that VaR reporting and position sizing are always using consistent, reconciled volatility estimates. This service would fit a GARCH-family model (with an asymmetric extension like GJR-GARCH for equities, given the leverage effect) per instrument or risk factor on a defined re-fitting cadence, publish the resulting conditional variance forecasts to a shared feed, and version every forecast so any VaR number or position-sizing decision made on a given day can be traced back to the exact model parameters and forecast that drove it. The daily VaR reporting layer consumes this feed directly, computing parametric VaR per desk and firm-wide, aggregated with the firm's actual covariance structure rather than naive summation. The position-sizing layer, for any desk running volatility-targeted strategies, consumes the same feed to resize positions inversely to forecast volatility, guaranteeing the risk numbers being reported and the actual position sizes being held are always derived from the identical underlying forecast, never two independently-computed, potentially inconsistent numbers. For model-risk safeguards: every forecast is continuously back-tested against subsequently realized volatility (the standard RMSE-against-realized-vol check), with an automated alert if forecast errors become persistently one-sided (the signature of a stale or regime-blind model); a naive historical-volatility benchmark is computed in parallel at all times, not as a replacement but as a sanity check, triggering a manual review if the GARCH forecast and the naive benchmark diverge beyond a defined tolerance; and the model's fitted parameters are reviewed on a fixed schedule by someone independent of the desk using the forecasts, consistent with the three-lines-of-defense principle.",
+      "professionalAnswer": "The design principle I'd insist on is one shared volatility-forecasting service feeding both VaR and position sizing, not two independently-built pipelines that could quietly disagree with each other. I'd use an asymmetric GARCH variant for equities given the leverage effect, version every forecast for full traceability, and build in model-risk safeguards as first-class features, not afterthoughts: continuous back-testing against realized volatility with an alert on persistent one-sided errors, a parallel naive benchmark that triggers manual review on divergence, and an independent, scheduled review of the model's fitted parameters — because a dynamic risk system that silently drifts wrong is more dangerous than a static one everyone already knows to distrust.",
+      "commonMistakes": [
+        "Allowing each desk to fit its own independent GARCH model rather than a single shared forecasting service",
+        "Not using an asymmetric GARCH variant despite the leverage effect being specifically relevant for equities",
+        "Treating VaR reporting and position sizing as separate pipelines rather than both consuming the same versioned forecast",
+        "Omitting concrete model-risk safeguards such as continuous back-testing, a parallel naive benchmark, and independent review"
+      ],
+      "keyPoints": [
+        "A single, shared, versioned volatility-forecasting service feeds both VaR reporting and position sizing",
+        "An asymmetric GARCH variant (e.g., GJR-GARCH) is appropriate given the leverage effect, particularly for equities",
+        "Firm-wide VaR aggregation should use the actual covariance structure, not naive summation",
+        "Model-risk safeguards: continuous back-testing against realized volatility, a parallel naive benchmark, and independent scheduled review"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly designs a single shared, versioned forecasting service", "weight": 25 },
+        { "criterion": "Correctly connects VaR reporting and position sizing to the same forecast feed", "weight": 25 },
+        { "criterion": "Proposes appropriate model choice (asymmetric GARCH) and aggregation method", "weight": 20 },
+        { "criterion": "Proposes concrete, multi-layered model-risk safeguards", "weight": 30 }
+      ],
+      "estimatedMinutes": 11,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "volatility-forecasting-in-practice", "label": "Volatility Forecasting in Practice" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-038",
+      "questionCode": "LTV-QANL-0188",
+      "title": "Designing Exotic Derivatives Pricing Infrastructure",
+      "prompt": "Design a pricing infrastructure for a derivatives desk that trades vanilla options, American options, Asian options, and barrier options, choosing the appropriate numerical method for each payoff type and explaining how the system should validate its own outputs.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Exotic Options", "Pricing Infrastructure", "Numerical Methods"],
+      "modelAnswer": "I'd route each instrument type to a different pricing engine based on its specific payoff structure, rather than forcing one universal method to handle everything. Vanilla European options go to a closed-form Black-Scholes engine, the fastest and most precise option when it applies. American options go to a binomial or trinomial tree engine, since the tree's node-by-node hold-versus-exercise comparison naturally produces the early-exercise boundary without needing a separate algorithm. Asian and other strongly path-dependent payoffs go to a Monte Carlo engine, since their value depends on the whole simulated price path rather than a single terminal value or a cleanly collapsible lattice. Barrier options are a genuinely mixed case architecturally: for simple, single-barrier structures under standard Black-Scholes assumptions, a semi-closed-form solution exists and should be used for speed and precision; for more complex or multi-barrier structures, the system should fall back to Monte Carlo (for a continuously-monitored barrier) or a finite-difference PDE solver (which handles barriers as a boundary condition directly and efficiently). Critically, I'd build cross-validation into the system itself rather than trusting any one engine's output in isolation: every new pricing engine, before being trusted in production, must reproduce the closed-form Black-Scholes price on the vanilla European case as a sanity check (tree, Monte Carlo, and PDE methods should all converge to the Black-Scholes price as their respective approximation parameters — tree steps, simulation paths, grid resolution — are increased), and every Monte Carlo-based price should report alongside it a standard error from the simulation, with a defined minimum path count required before a price is considered trustworthy enough to trade on, rather than returning a single point estimate with no indication of its own numerical uncertainty.",
+      "professionalAnswer": "I'd route by payoff structure, not force one method to do everything: closed-form for vanilla, trees for American exercise (since the early-exercise boundary falls out of the same algorithm automatically), Monte Carlo for path-dependent payoffs like Asian options, and a mix of semi-closed-form or Monte Carlo/PDE for barriers depending on complexity. The non-negotiable safeguard I'd build in is convergence validation — every new engine has to reproduce the known Black-Scholes price on the vanilla case as its numerical parameters are increased — and every Monte Carlo price needs to report its own simulation standard error alongside the point estimate, so nobody trades off a number whose own uncertainty nobody checked.",
+      "commonMistakes": [
+        "Using one universal pricing method for all instrument types rather than routing by payoff structure",
+        "Not recognizing that a tree naturally produces the American early-exercise boundary without a separate algorithm",
+        "Omitting a validation step that checks new engines against known closed-form results",
+        "Returning a Monte Carlo price without reporting its simulation standard error alongside it"
+      ],
+      "keyPoints": [
+        "Route each instrument type to the appropriate engine: closed-form, tree, Monte Carlo, or PDE, based on payoff structure",
+        "Trees handle American exercise naturally through node-by-node hold-vs-exercise comparison",
+        "Barrier options may use semi-closed-form, Monte Carlo, or PDE methods depending on complexity",
+        "Validate every engine against known closed-form results, and report Monte Carlo standard error alongside every simulated price"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly routes each instrument type to an appropriate pricing method", "weight": 35 },
+        { "criterion": "Correctly explains why trees naturally handle American exercise", "weight": 20 },
+        { "criterion": "Correctly addresses barrier option complexity tiers", "weight": 15 },
+        { "criterion": "Proposes concrete validation safeguards (convergence checks, simulation standard error)", "weight": 30 }
+      ],
+      "estimatedMinutes": 11,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "exotic-options-overview", "label": "Exotic Options Overview" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-039",
+      "questionCode": "LTV-QANL-0189",
+      "title": "Designing an Execution Architecture With Partial-Fill Awareness",
+      "prompt": "Design an execution architecture for a strategy running near its estimated capacity ceiling, where large limit orders routinely only partially fill within a trading session. The architecture must correctly account for partial fills in both the backtester and the live execution system.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Capacity", "Partial Fills", "Execution Architecture"],
+      "modelAnswer": "I'd design the backtester's fill-simulation layer to explicitly model partial fills rather than assuming binary filled-or-not outcomes: for a limit order, the simulator should check the bar's actual traded volume at or through the limit price, and only mark as filled the portion of the order size that the available liquidity could plausibly have absorbed, carrying the unfilled remainder forward to subsequent bars rather than assuming the full size always executes once the limit is touched. This matters specifically for a capacity-constrained strategy because assuming full fills when the strategy is already near its capacity ceiling would materially overstate how much of the intended position the strategy could actually build, and therefore overstate its realistic backtested returns. The live execution system needs the mirror-image logic: when a submitted order partially fills, the system must track the remaining unfilled quantity explicitly as its own state, decide whether to resubmit the remainder immediately, resubmit at an adjusted price, or hold it for the next session, and feed the actual realized participation rate back into a monitoring component that compares it against the model's assumed capacity ceiling — if live partial-fill rates are consistently worse than the backtester assumed, that's a direct, measurable signal the strategy's true capacity is lower than modeled, and sizing should be adjusted down in response rather than continuing to trade the originally-modeled size. Both the backtester and the live system should share the same underlying partial-fill logic and capacity assumptions wherever possible, specifically so a live capacity breach gets detected by comparing against the same model the backtest was built on, not two inconsistent capacity models that could silently disagree.",
+      "professionalAnswer": "I'd make partial fills a first-class concept in both systems, not an edge case: the backtester's limit-order logic should only credit the portion of size the bar's actual liquidity could have absorbed, carrying the rest forward — assuming full fills near a capacity ceiling would materially overstate the strategy's realistic returns. The live system needs to track unfilled remainders explicitly and decide how to handle them, and critically, it should feed its actual realized fill rates back into a monitoring layer that compares them against the backtester's capacity assumptions — if live fills are consistently worse, that's real evidence the strategy's true capacity is lower than modeled, and the fix is sizing down, not hoping the gap closes on its own.",
+      "commonMistakes": [
+        "Assuming a limit order either fully fills or doesn't, rather than modeling partial fills explicitly",
+        "Not recognizing that assuming full fills near a capacity ceiling materially overstates backtested returns",
+        "Building the live execution system's partial-fill handling inconsistently with the backtester's assumptions",
+        "Not feeding live realized fill rates back into a monitoring layer that checks against the modeled capacity ceiling"
+      ],
+      "keyPoints": [
+        "The backtester's limit-order logic should credit only the portion of size the bar's actual liquidity could absorb",
+        "Assuming full fills near a capacity ceiling materially overstates realistic backtested returns",
+        "The live system must track unfilled remainders explicitly and decide how to handle them",
+        "Live realized fill rates should feed back into a monitoring layer comparing against the modeled capacity ceiling"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly designs partial-fill modeling in the backtester", "weight": 30 },
+        { "criterion": "Explains why assuming full fills overstates returns near capacity", "weight": 20 },
+        { "criterion": "Correctly designs live execution's partial-fill tracking and handling", "weight": 25 },
+        { "criterion": "Proposes a live-vs-model capacity feedback/monitoring mechanism", "weight": 25 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "realistic-fill-assumptions", "label": "Realistic Fill Assumptions" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-040",
+      "questionCode": "LTV-QANL-0190",
+      "title": "Designing a Production Fama-MacBeth Factor-Premium Pipeline",
+      "prompt": "Design a production pipeline that estimates and monitors factor risk premia across a firm's full factor set (market, size, value, momentum, quality) using the Fama-MacBeth procedure, running continuously as new monthly data arrives.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Fama-MacBeth", "Factor Premium Monitoring", "Pipeline Design"],
+      "modelAnswer": "I'd structure this as two clearly separated, sequential stages running on a monthly cadence. Stage one, per-asset time-series betas: for each asset in the universe, a rolling-window regression against the full factor set is re-estimated as each new month of data arrives, with the rolling window length itself a versioned, explicit parameter (not silently changed) so betas can be reconstructed exactly for any historical date. Stage two, cross-sectional regression: for every historical month, including newly arrived ones, a cross-sectional regression of that month's returns on the betas estimated as of that month is run, producing one lambda_t per factor per month, appended to a growing, versioned time series rather than recomputed from scratch each time in a way that could silently change historical values. The final risk-premium estimate and its Fama-MacBeth standard error are computed by averaging the full lambda_t time series and taking its standard deviation divided by sqrt(T), recalculated automatically each month as new lambda_t observations arrive. For monitoring, I'd build an automated check on the trailing lambda_t series for each factor — flagging a factor whose recent-period lambda_t estimates have meaningfully diverged in sign or magnitude from its longer-run average, since that's exactly the kind of regime-dependent instability that needs human investigation rather than being silently absorbed into an ever-growing average. The entire pipeline's outputs — betas, lambda_t series, and final premium estimates — should be versioned and timestamped so that any factor-premium number reported to a PM or allocator at any point in time can be reproduced exactly from the data and parameters available as of that date.",
+      "professionalAnswer": "I'd keep the two Fama-MacBeth stages cleanly separated and running on a monthly cadence: per-asset rolling betas first, versioned so they're exactly reconstructible, then a monthly cross-sectional regression appended to a growing lambda_t series rather than recomputed from scratch in a way that could quietly change history. The premium and its standard error fall out of that series automatically each month. The monitoring layer I'd insist on flags any factor whose recent lambda_t estimates have drifted meaningfully from their long-run average — that's the regime-instability signal worth a human looking at, not something that should just get smoothed into an ever-growing average unnoticed.",
+      "commonMistakes": [
+        "Recomputing the entire historical lambda_t series from scratch each month rather than appending to a versioned, growing series",
+        "Not versioning the rolling-window parameter, making historical betas impossible to reconstruct exactly",
+        "Omitting an automated check for factors whose recent premia have drifted from their long-run average",
+        "Not keeping the time-series (per-asset beta) and cross-sectional (per-period premium) stages clearly separated"
+      ],
+      "keyPoints": [
+        "Stage one: versioned, rolling per-asset time-series betas against the full factor set, re-estimated each month",
+        "Stage two: a monthly cross-sectional regression appended to a growing, versioned lambda_t series",
+        "The final premium and Fama-MacBeth standard error are recalculated automatically as new lambda_t observations arrive",
+        "An automated monitoring check flags factors whose recent lambda_t estimates diverge meaningfully from their long-run average"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly designs the versioned, rolling time-series beta stage", "weight": 25 },
+        { "criterion": "Correctly designs the appended, versioned cross-sectional lambda_t series", "weight": 25 },
+        { "criterion": "Correctly describes automatic recalculation of the premium and standard error", "weight": 20 },
+        { "criterion": "Proposes a concrete monitoring check for factor premium instability", "weight": 30 }
+      ],
+      "estimatedMinutes": 10,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "cross-sectional-regression", "label": "Cross-Sectional Regression" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-041",
+      "questionCode": "LTV-QANL-0191",
+      "title": "Designing a Capital and Liquidity Governance Structure for a Growing Broker-Dealer",
+      "prompt": "A broker-dealer is approaching the size and complexity where Basel-style capital and liquidity discipline (even if not formally required at its current regulatory tier) would meaningfully reduce its risk of a funding crisis. Design the internal governance structure it should adopt, including how LCR- and NSFR-style metrics would be used even without regulatory mandate.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Basel III", "Capital Governance", "Liquidity Risk Management"],
+      "modelAnswer": "Even without a regulatory mandate, I'd design the firm to voluntarily compute and monitor both an LCR-style metric (sufficient high-quality liquid assets to survive a defined short-horizon, acute stress scenario) and an NSFR-style metric (stable funding backing longer-term, less liquid assets over a one-year horizon), specifically because the two metrics catch different failure modes and the firm's own funding profile, not a regulator's threshold, is what determines its real risk. The governance structure around these metrics should follow the three-lines-of-defense model: the business lines manage their own funding and liquidity needs day to day within limits; an independent risk function (reporting separately from the business lines) sets those limits, computes and monitors both metrics against internally-set thresholds on a regular cadence, and has the authority to require corrective action — reducing less-liquid asset concentration, diversifying funding sources, extending funding tenor — well before either metric approaches a dangerous level, not only after a crisis is already underway; and an independent audit function periodically verifies the risk function is actually doing this. Critically, the firm should run its own internally-designed stress scenarios against both metrics, calibrated to its actual business (not simply copying a regulatory scenario designed for a different type or scale of institution), and a board-level risk committee should receive regular reporting on both metrics' trend over time, not just their current level, since a metric that's deteriorating even while still technically 'passing' is exactly the kind of early warning this voluntary governance structure is meant to catch before any regulator would require action.",
+      "professionalAnswer": "I'd adopt both an LCR-style and an NSFR-style metric voluntarily, specifically because they catch different failure modes — a short, acute stress test and a longer-run funding-structure check — and the firm's actual risk doesn't care whether a regulator currently requires either one. I'd wrap both in the standard three-lines-of-defense governance: business lines operate within set limits, an independent risk function sets and monitors those limits with real authority to require corrective action, and audit periodically checks that the risk function is doing its job. The detail I'd push hardest on is reporting trend, not just current level, to the board's risk committee — a metric that's still technically fine but visibly deteriorating is exactly the early warning this whole voluntary structure exists to catch.",
+      "commonMistakes": [
+        "Adopting only one of the two metrics rather than both, missing that they catch different failure modes",
+        "Designing a risk function without real independence or authority to require corrective action",
+        "Simply copying a regulatory stress scenario rather than calibrating one to the firm's actual business",
+        "Reporting only the current metric level to the board rather than its trend over time"
+      ],
+      "keyPoints": [
+        "Voluntarily adopting both an LCR-style and NSFR-style metric catches two distinct failure modes",
+        "A genuinely independent risk function should set limits, monitor both metrics, and have real authority for corrective action",
+        "Stress scenarios should be calibrated to the firm's actual business, not copied wholesale from a regulatory template",
+        "Board reporting should emphasize trend over time, not just current metric level, as the early-warning signal"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly proposes voluntarily adopting both LCR- and NSFR-style metrics", "weight": 25 },
+        { "criterion": "Correctly designs the three-lines-of-defense governance around them", "weight": 30 },
+        { "criterion": "Proposes firm-calibrated, not copied, stress scenarios", "weight": 20 },
+        { "criterion": "Correctly emphasizes trend-over-time board reporting as the early-warning mechanism", "weight": 25 }
+      ],
+      "estimatedMinutes": 11,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "regulation-and-risk-governance-overview", "label": "Regulation & Risk Governance Overview" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-042",
+      "questionCode": "LTV-QANL-0192",
+      "title": "Designing Point-in-Time Reference Data Infrastructure Across Asset Classes",
+      "prompt": "Design a point-in-time reference-data infrastructure for a multi-asset research platform, covering equity corporate actions, index membership changes, and fundamental data restatements, so that any historical backtest can reconstruct exactly what was knowable and investable as of any past date.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Point-in-Time Data", "Corporate Actions", "Data Infrastructure"],
+      "modelAnswer": "I'd design this around a single unifying principle applied consistently across all three data types: every fact is stored as an event with both an effective date (when it became true in the world) and a knowledge date (when it actually became available/published), never as a single current value that overwrites its own history. For equity corporate actions, every split, dividend, merger, and spin-off is a timestamped event in an append-only log, from which both raw and adjusted price series can be reconstructed as of any historical date by replaying only the events known by that date. For index membership, additions and removals are similarly stored as timestamped events, so a query for 'what was in this index on date X' replays the event log up to X rather than returning today's constituent list. For fundamental data, every reported value carries both the as-of (reporting period) date and the knowledge date it was actually published, and any subsequent restatement is stored as an entirely new, separately timestamped record rather than an overwrite of the original — so a backtest querying 'as of date X' only ever sees values whose knowledge date is on or before X, structurally incapable of returning a later restatement. Critically, I'd expose exactly one query interface across all three data types — an as-of-date query — and not expose any 'current value' endpoint to backtesting code at all, making it structurally impossible for a researcher to accidentally pull today's constituent list or today's restated fundamental value into a historical simulation, rather than relying on researchers to remember which endpoint is safe to use for backtesting. I'd pair this with automated validation that spot-checks reconstructed historical snapshots against independently-sourced historical records for a sample of dates, since the infrastructure itself needs periodic proof that its event logs are actually complete and correctly timestamped.",
+      "professionalAnswer": "The unifying design principle I'd apply across all three data types is: store events with both an effective date and a knowledge date, never a single current value, and expose only an as-of-date query to backtesting code — no 'current value' endpoint at all. That structural choice matters more than any documentation, because it makes pulling today's data into a historical simulation not just discouraged but actually impossible through the normal API. I'd add periodic automated validation spot-checking reconstructed historical snapshots against independent sources, because an event log that's silently incomplete or mistimed is just as dangerous as not having point-in-time data at all.",
+      "commonMistakes": [
+        "Designing separate, inconsistent point-in-time mechanisms for corporate actions, index membership, and fundamental data rather than one unifying principle",
+        "Storing fundamental data restatements as overwrites rather than new, separately timestamped records",
+        "Exposing a 'current value' endpoint alongside the as-of-date query, leaving room for accidental misuse",
+        "Not including automated validation of the event logs against independent historical sources"
+      ],
+      "keyPoints": [
+        "A single unifying principle: every fact is a timestamped event with both an effective date and a knowledge date",
+        "Corporate actions and index membership are both append-only event logs, replayed up to any as-of date",
+        "Fundamental data restatements are new, separately timestamped records, never overwrites",
+        "Only an as-of-date query interface is exposed to backtesting code, with no 'current value' endpoint at all"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly applies a unifying event-based, knowledge-date design across all three data types", "weight": 35 },
+        { "criterion": "Correctly specifies restatements as new records, not overwrites", "weight": 20 },
+        { "criterion": "Correctly proposes exposing only an as-of-date query interface structurally", "weight": 30 },
+        { "criterion": "Proposes automated validation of the event logs", "weight": 15 }
+      ],
+      "estimatedMinutes": 11,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "equities-and-corporate-actions", "label": "Equities & Corporate Actions" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-043",
+      "questionCode": "LTV-QANL-0193",
+      "title": "Convincing an Allocator That Sharpe Alone Misses the Real Story",
+      "prompt": "An allocator insists on ranking three candidate managers purely by Sharpe ratio, dismissing your suggestion to also look at Calmar and Omega as 'overcomplicating a simple decision.' How do you make the case for looking deeper?",
+      "category": "behavioral",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Risk-Adjusted Performance", "Stakeholder Communication", "Due Diligence"],
+      "modelAnswer": "I'd concede directly that Sharpe is a perfectly reasonable starting point, not a flawed metric to be replaced — the case for looking further isn't that Sharpe is wrong, it's that it's incomplete, and I'd show the allocator concretely why with the candidates in front of us rather than arguing abstractly. If two managers have similar Sharpe ratios but meaningfully different max drawdowns, Calmar reveals that one of them delivers the same risk-adjusted return with a far worse worst-case experience — information the allocator, who ultimately has to live through that worst case, should want before committing capital, not after. If a manager's return distribution is meaningfully skewed (small frequent losses, rare large gains, or vice versa), Omega captures that shape directly using the full distribution, while Sharpe, built from just a mean and a standard deviation, treats a symmetric and an asymmetric return pattern with similar volatility as interchangeable when they clearly aren't experientially or risk-wise. I'd frame the extra ratios not as 'more complexity for its own sake' but as answering specific follow-up questions a single Sharpe number can't: 'how bad does my worst year actually get' and 'is this manager's risk shaped in a way I'm comfortable with' — and I'd show the actual numbers for these three specific candidates rather than making a generic argument for always using more ratios.",
+      "professionalAnswer": "I wouldn't argue Sharpe is the wrong number — I'd argue it's an incomplete one, and the fastest way to make that land is to show, not just assert, the gap using these three specific managers. If two of them have similar Sharpes but very different max drawdowns, that's a real difference in what it's like to actually hold the position through a bad stretch, and Calmar surfaces it directly. If one has a notably skewed return pattern, Omega catches that in a way a mean-and-variance-based ratio structurally can't. I'd frame this as answering two concrete follow-up questions the allocator actually cares about — worst-case pain and return shape — rather than as adding complexity for its own sake.",
+      "commonMistakes": [
+        "Arguing that Sharpe is flawed or wrong, rather than incomplete",
+        "Making an abstract case for using more ratios rather than showing the concrete gap with these specific candidates",
+        "Not explaining specifically what Calmar and Omega each reveal that Sharpe structurally cannot",
+        "Framing the suggestion as adding complexity rather than answering a specific, relevant follow-up question"
+      ],
+      "keyPoints": [
+        "Sharpe is a reasonable starting point, not a metric to be dismissed as wrong",
+        "Calmar reveals worst-case drawdown differences that similar Sharpe ratios can hide",
+        "Omega captures return-distribution shape (skew) that Sharpe, built from mean and variance alone, cannot",
+        "The case should be made concretely with the actual candidates' numbers, not as an abstract argument for more complexity"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly frames Sharpe as incomplete rather than wrong", "weight": 20 },
+        { "criterion": "Correctly explains what Calmar specifically reveals", "weight": 30 },
+        { "criterion": "Correctly explains what Omega specifically reveals", "weight": 30 },
+        { "criterion": "Makes the case concretely rather than abstractly", "weight": 20 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "risk-adjusted-performance-measures", "label": "Risk-Adjusted Performance Measures" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-044",
+      "questionCode": "LTV-QANL-0194",
+      "title": "Defending GARCH Against a Trader Who Calls It Overengineering",
+      "prompt": "A trader says, 'Just use the last 30 days' standard deviation for volatility — GARCH is overengineering for a problem that doesn't need it.' How do you respond, while being honest about when the trader might actually be right?",
+      "category": "behavioral",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["GARCH", "Volatility Forecasting", "Model Justification"],
+      "modelAnswer": "I'd concede the trader has a real point in some contexts before making the counter-case: for a slow-moving, low-stakes decision, a simple trailing standard deviation is genuinely fine, and reaching for GARCH there would be unnecessary complexity for no practical benefit. But I'd walk through the specific, concrete scenario where the extra complexity earns its keep: right after a sudden volatility shock, a 30-day trailing window is still mostly averaging in the calmer days before the shock, meaningfully understating current risk for days or weeks until the old data finally rolls out of the window — while GARCH's conditional variance reacts to the shock immediately through its alpha term and carries the elevated level forward through its beta term, giving a materially more accurate, responsive estimate exactly during the window that matters most for sizing and risk limits. I'd frame the actual decision criterion honestly: if the trader's use case tolerates being a few weeks slow to react to a genuine regime shift, trailing standard deviation is a reasonable, simpler choice; if the use case is sizing positions or setting risk limits where that lag could mean carrying too much risk right when it matters most, the added complexity of GARCH is justified by a concrete, measurable improvement in responsiveness, not complexity for its own sake.",
+      "professionalAnswer": "I'd agree with the trader more than they might expect — for plenty of slower, lower-stakes uses, 30-day trailing vol is genuinely fine, and I wouldn't push GARCH just because it's more sophisticated. Where I'd push back specifically is right after a volatility shock: a 30-day window is still mostly reflecting the calm days before the shock, understating current risk for weeks, while GARCH reacts immediately and persists the new level. The honest framing is a tradeoff, not a blanket 'GARCH is always better' — if the use case can tolerate a few weeks' lag during a regime shift, trailing vol is fine; if it can't, the extra complexity earns its place.",
+      "commonMistakes": [
+        "Dismissing the trader's point entirely rather than conceding it's valid in some contexts",
+        "Not identifying the specific scenario (right after a volatility shock) where the difference actually matters",
+        "Arguing GARCH is unconditionally better rather than framing this as a genuine, context-dependent tradeoff",
+        "Not explaining concretely why the trailing window lags (old calm data still in the window)"
+      ],
+      "keyPoints": [
+        "A simple trailing standard deviation is genuinely adequate for slower, lower-stakes use cases",
+        "The gap matters specifically right after a volatility shock, when a trailing window still reflects calmer pre-shock days",
+        "GARCH's conditional variance reacts immediately and persists the new level, unlike a trailing average",
+        "The right framing is an honest, context-dependent tradeoff, not GARCH being unconditionally superior"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Honestly concedes the trader's point is valid in some contexts", "weight": 25 },
+        { "criterion": "Correctly identifies the specific scenario where GARCH's advantage matters", "weight": 35 },
+        { "criterion": "Correctly explains the mechanism behind the gap", "weight": 25 },
+        { "criterion": "Frames the overall answer as a genuine, non-dogmatic tradeoff", "weight": 15 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "volatility-forecasting-in-practice", "label": "Volatility Forecasting in Practice" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-045",
+      "questionCode": "LTV-QANL-0195",
+      "title": "Disclosing That a Combined Signal's Weights Were Overfit",
+      "prompt": "After a combined signal you built and championed goes live, you realize the IC-based combination weights were inadvertently estimated using data that overlapped with the validation period used to report the result. How do you disclose this, and what do you do immediately?",
+      "category": "behavioral",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Research Integrity", "Disclosure", "Signal Combination"],
+      "modelAnswer": "I'd disclose this immediately and specifically, to whoever approved the signal for live capital, rather than waiting to see if the problem resolves itself or quietly re-running the analysis correctly first and only reporting if the corrected result looks bad. I'd state plainly what happened: the combination weights were estimated on data that overlapped with what was reported as the out-of-sample validation period, which means the validation result I presented was not a genuine out-of-sample test, and the signal's true expected performance is less certain than what was originally communicated. I would not wait to deliver this news until I've already found a fix — the priority is getting the correct information in front of decision-makers as fast as possible, since live capital is currently being allocated based on a result I now know was measured incorrectly. Immediately afterward, I'd re-run the combination-weight estimation using a genuinely clean, non-overlapping train/validation split, report the corrected out-of-sample result honestly even if it's materially worse, and recommend reducing or pausing the live allocation until the corrected analysis is in hand, rather than letting the signal keep trading at its original size while the re-analysis is in progress.",
+      "professionalAnswer": "I'd go to whoever approved this for live capital immediately, not after I've quietly tried to fix it first — the fact that real money is currently sized against a result I now know wasn't a genuine out-of-sample test means the priority is getting accurate information in front of people fast, even though admitting my own mistake here is uncomfortable. I'd recommend reducing or pausing the live allocation while I re-run the analysis with a properly clean train/validation split, and whatever that corrected number comes out to, I'd report it honestly, even if it's a lot worse than what I originally presented.",
+      "commonMistakes": [
+        "Waiting to disclose until after quietly re-running the analysis, delaying the correction of a decision based on bad information",
+        "Only disclosing if the corrected result turns out to be bad, rather than disclosing the methodology error regardless of outcome",
+        "Not recommending reducing or pausing the live allocation while the correct analysis is pending",
+        "Framing the disclosure defensively rather than directly and factually"
+      ],
+      "keyPoints": [
+        "Disclose immediately to decision-makers, not after quietly attempting to fix it first",
+        "State plainly what went wrong and what it means for the signal's actual expected performance",
+        "Recommend reducing or pausing the live allocation while the correct, clean analysis is being rerun",
+        "Report the corrected result honestly, regardless of whether it's better or worse than originally presented"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Discloses promptly and directly rather than delaying", "weight": 30 },
+        { "criterion": "States the error and its implications clearly and factually", "weight": 25 },
+        { "criterion": "Recommends reducing/pausing live allocation pending correction", "weight": 25 },
+        { "criterion": "Commits to reporting the corrected result honestly regardless of outcome", "weight": 20 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "combining-signals", "label": "Combining Signals" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-046",
+      "questionCode": "LTV-QANL-0196",
+      "title": "Telling a Desk Head That Carry's Edge Is a Risk Premium, Not Skill",
+      "prompt": "A desk head wants to significantly increase sizing on a profitable carry strategy, attributing its steady returns to the team's skill in picking currency pairs. How do you reframe this conversation around what's actually driving the returns, and what it implies for sizing?",
+      "category": "behavioral",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Carry Trade", "Risk Premium vs. Skill", "Sizing Discipline"],
+      "modelAnswer": "I'd reframe this directly but constructively: carry's steady historical profitability is best explained as compensation for a real, persistent risk premium — bearing the risk that a high-interest-rate currency depreciates less than the pure interest-rate differential implies it should, which the empirically well-documented failure of uncovered interest rate parity supports — rather than as evidence of the team's skill in selecting which currency pairs to trade. This distinction matters enormously for the sizing decision: skill-based returns, if genuinely present, tend to be relatively uncorrelated with broad market conditions and don't have an obvious, well-known failure mode; a risk premium, by contrast, is specifically compensation for bearing a risk that materializes in a correlated, sometimes sudden way — a carry crash, triggered by a broad risk-off shock, where many carry positions unwind together regardless of which specific currency pairs were chosen. I'd make the case that increasing sizing on the assumption of persistent skill, without separately budgeting for this known tail risk, understates how much the strategy could lose in exactly the scenario carry trades are known to be vulnerable to, and I'd recommend sizing the increase with that tail risk explicitly modeled and budgeted for, rather than extrapolating the steady historical returns forward as if they reflect a skill that will keep performing regardless of market regime.",
+      "professionalAnswer": "I'd separate this into two different claims that get conflated easily: 'carry has been profitable' is true, but 'that profitability reflects our skill at picking pairs' is a different and much less defensible claim than 'we're being compensated for bearing a known, persistent risk that occasionally shows up as a sharp, correlated carry crash.' That distinction changes the sizing conversation completely — a genuine skill-based edge might reasonably be sized up without much more caveat, but a risk-premium-based edge needs the known tail risk explicitly budgeted for before increasing size, because the smooth historical returns are specifically the kind of pattern that masks how large the eventual correlated unwind could be.",
+      "commonMistakes": [
+        "Accepting the 'skill' framing without challenging it, leading to sizing decisions that ignore the known carry-crash risk",
+        "Not explaining the specific empirical basis (the uncovered IRP failure) for the risk-premium explanation",
+        "Failing to connect the risk-premium framing to a concrete sizing recommendation (explicit tail-risk budgeting)",
+        "Delivering the reframing in a way that feels dismissive of the desk head's team rather than constructive"
+      ],
+      "keyPoints": [
+        "Carry's steady profitability is best explained as compensation for a persistent risk premium, not stock/pair-picking skill",
+        "This is supported by the well-documented empirical failure of uncovered interest rate parity",
+        "A risk-premium-based edge carries a known, correlated tail risk (carry crash) that a skill-based edge wouldn't necessarily share",
+        "Sizing increases should explicitly budget for this tail risk, not simply extrapolate smooth historical returns forward"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly reframes carry's returns as a risk premium, not skill", "weight": 30 },
+        { "criterion": "Correctly connects this to the empirical uncovered IRP failure", "weight": 20 },
+        { "criterion": "Correctly explains the sizing implication (explicit tail-risk budgeting)", "weight": 30 },
+        { "criterion": "Delivers the reframing constructively", "weight": 20 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "strategy-families-momentum-mean-reversion-and-carry", "label": "Strategy Families: Momentum, Mean Reversion & Carry" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-047",
+      "questionCode": "LTV-QANL-0197",
+      "title": "Pushing Back on Skipping Survivorship-Bias-Free Data to Save Budget",
+      "prompt": "Senior management, under budget pressure, proposes canceling the firm's survivorship-bias-free data subscription and switching to a cheaper, standard dataset for all future research. As the person who would have to sign off on research built on this data, how do you push back?",
+      "category": "behavioral",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Survivorship Bias", "Risk Escalation", "Budget Pushback"],
+      "modelAnswer": "I'd push back by quantifying the decision as a risk tradeoff rather than treating it as simply a cost-saving measure, since that's genuinely what it is. I'd explain concretely that a standard dataset silently excludes every company or fund that was delisted or failed, which systematically overstates historical returns in every future backtest the firm runs on it, and that this bias compounds across every project, not just the current one under budget pressure — meaning the real cost of this decision isn't the data subscription savings, it's the risk of eventually allocating real capital to a strategy whose backtested edge was partly or entirely an artifact of this exclusion. I'd be specific about what I, as the person signing off on research, would then be unable to vouch for: any strategy built on the cheaper data going forward would carry an un-quantified, unremovable survivorship-bias risk baked into its measured historical performance, and I would not be able to responsibly approve that research for live capital with the same confidence I could today. I'd propose a concrete alternative to a flat 'yes or no' framing: quantify the actual price difference between the two data sources, and compare it honestly against even a conservative estimate of the downside risk of allocating capital to a biased result — making the tradeoff visible in dollar terms rather than letting the decision be driven purely by the smaller, more visible number (the subscription cost).",
+      "professionalAnswer": "I'd reframe this explicitly as a risk decision, not a cost-saving one, and say directly what it means for my own role: if we switch to the biased dataset, I won't be able to sign off on future research with the same confidence, because every backtest built on it will carry an unremovable, unquantified survivorship-bias risk baked into its historical performance. I'd push for putting real numbers on both sides — the actual subscription savings versus even a conservative estimate of what it costs to eventually allocate capital to a strategy whose edge was partly a data artifact — so the decision gets made with the real tradeoff visible, not just the smaller, more obvious number.",
+      "commonMistakes": [
+        "Objecting in principle without quantifying the tradeoff in a way management can actually weigh",
+        "Not being specific about what this means concretely for the research sign-off process",
+        "Treating this as a one-time cost decision rather than a compounding risk across all future research",
+        "Not proposing a concrete way to compare the savings against the risk in comparable terms"
+      ],
+      "keyPoints": [
+        "This is a risk decision, not simply a cost-saving measure",
+        "Switching datasets bakes an unremovable survivorship-bias risk into every future backtest's results",
+        "The researcher's ability to responsibly sign off on future capital allocation is directly affected",
+        "Push for quantifying both the savings and the downside risk in comparable terms, not leaving the tradeoff implicit"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly reframes this as a risk decision, not just a cost decision", "weight": 30 },
+        { "criterion": "Correctly explains the compounding nature of the bias across future research", "weight": 25 },
+        { "criterion": "Articulates the concrete personal/professional stake in the sign-off process", "weight": 20 },
+        { "criterion": "Proposes a concrete way to make the tradeoff visible to management", "weight": 25 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "time-series-and-financial-modeling", "lessonSlug": "survivorship-and-other-data-biases", "label": "Survivorship & Other Data Biases" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-048",
+      "questionCode": "LTV-QANL-0198",
+      "title": "Mentoring a Junior Developer on an Unrealistic Fill-Price Assumption",
+      "prompt": "A junior quant developer built a backtester that fills every order at the exact signal price with no slippage, and is confused about why you're asking them to change it since 'it passed all the unit tests.' How do you mentor them through this?",
+      "category": "behavioral",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Backtesting Infrastructure", "Mentorship", "Realistic Fills"],
+      "modelAnswer": "I'd start by validating what the unit tests actually proved: they confirmed the code does what it was written to do, correctly and reliably — that's real, valuable, and worth acknowledging. What they can't test is whether what it was written to do is itself a realistic description of how a real trade executes, and that's a separate question entirely. I'd walk through concretely why 'fills at the exact signal price' is physically impossible: the signal is computed from information available at a given moment, but by the time an order can actually reach the market, at least some time has passed and the price has almost certainly moved at least slightly — fills at the exact signal price silently assumes zero-latency, zero-impact, zero-cost execution, which doesn't exist anywhere in real markets. I'd frame the fix not as 'your code was buggy' but as 'your code is correct, and now we need to change what it's correctly modeling' — moving to a next-bar-open (or better) fill convention with slippage layered on top, and show them how to write a new test that specifically validates the new, more realistic fill logic, so they leave this conversation with both the conceptual understanding and a concrete, testable implementation path forward.",
+      "professionalAnswer": "I'd be careful to separate two different questions here: did the code do what it was told to do (yes, and the tests prove that), and was it told to do the right thing (no, and that's what we need to fix). Fills at the exact signal price means fills with zero latency and zero cost, which doesn't happen in any real market — I'd show concretely why, then walk through moving to a next-bar-open fill with slippage, and help them write the test that actually validates the realistic version, so this becomes a concrete skill they've built rather than just a correction they received.",
+      "commonMistakes": [
+        "Dismissing the junior developer's point about passing unit tests rather than validating what the tests actually proved",
+        "Not explaining concretely and specifically why fills at the exact signal price are physically impossible",
+        "Framing the correction as 'your code was wrong' rather than 'your code is correct, now let's change what it models'",
+        "Not helping the developer build a concrete, testable path to the fix"
+      ],
+      "keyPoints": [
+        "Unit tests validate that code does what it was written to do, not whether what it was written to do is realistic",
+        "Fills at the exact signal price silently assume zero latency, zero impact, and zero cost, which is physically impossible",
+        "The fix should be framed as changing what correct code models, not as a bug in the code itself",
+        "Mentorship should end with a concrete, testable implementation path, not just a conceptual correction"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Validates what the unit tests actually proved", "weight": 20 },
+        { "criterion": "Correctly and concretely explains why the fill assumption is unrealistic", "weight": 35 },
+        { "criterion": "Frames the correction constructively (correct code, wrong model) rather than as a mistake", "weight": 25 },
+        { "criterion": "Provides a concrete path forward, including a new test", "weight": 20 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "algorithmic-trading-and-backtesting", "lessonSlug": "realistic-fill-assumptions", "label": "Realistic Fill Assumptions" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-049",
+      "questionCode": "LTV-QANL-0199",
+      "title": "Flagging That Performance-Fee Incentives Are Driving Excess Risk-Taking",
+      "prompt": "You notice that a fund's '2 and 20' performance-fee structure appears to be incentivizing a specific trader to take on more risk than the fund's stated risk appetite as the measurement period's end approaches. How do you raise this, and to whom?",
+      "category": "behavioral",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Incentive Structures", "Risk Governance", "Escalation"],
+      "modelAnswer": "I'd raise this as a specific, evidence-based risk-governance observation, escalated to the independent risk function and senior management, not as an accusation against the individual trader — the behavior being described is a well-known, structural incentive effect of performance-fee compensation, not necessarily a sign of bad faith: a trader whose compensation is tied to crossing a high-water mark or hitting a performance threshold by a specific date has a rational, if problematic, incentive to take on more risk than usual as that date approaches, especially if they're currently below the threshold and 'need' a strong final push. I'd present concrete evidence of the pattern — specific instances where position sizing or risk-limit utilization increased near a measurement date in a way that doesn't match the trader's normal behavior — rather than a vague concern, and I'd frame the ask clearly: this is exactly the kind of risk the three-lines-of-defense structure exists to catch, and the fix isn't necessarily about this one trader, it's about whether the firm's risk limits and monitoring are robust enough to catch this incentive effect regardless of who's exhibiting it. I'd recommend the independent risk function specifically monitor risk-limit utilization in the weeks approaching performance-fee measurement dates going forward, as a standing practice, not a one-time investigation.",
+      "professionalAnswer": "I'd escalate this to the independent risk function with specific evidence, not as an accusation about one trader's character, but as a structural incentive-effect observation: performance-fee compensation tied to a measurement date creates a rational incentive to take on more risk right before that date, especially if someone's below their threshold, and that's exactly the kind of thing risk governance is supposed to catch regardless of who's doing it. I'd push for this to become a standing monitoring practice — checking risk-limit utilization specifically around measurement dates — rather than a one-off investigation of this particular instance.",
+      "commonMistakes": [
+        "Framing this as an accusation against the individual trader rather than a structural incentive effect",
+        "Raising a vague concern without concrete, specific evidence of the pattern",
+        "Not escalating to the independent risk function specifically, relying instead on an informal conversation",
+        "Treating this as a one-time investigation rather than recommending a standing monitoring practice"
+      ],
+      "keyPoints": [
+        "Performance-fee structures create a well-known, structural incentive to take on more risk near a measurement date",
+        "This should be escalated to the independent risk function with specific, concrete evidence, not framed as an accusation",
+        "The fix is about whether firm-wide risk limits and monitoring are robust to this incentive effect generally",
+        "Recommend a standing monitoring practice around measurement dates, not just a one-time investigation"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly frames the issue as a structural incentive effect, not individual misconduct", "weight": 30 },
+        { "criterion": "Escalates to the correct party (independent risk function) with concrete evidence", "weight": 30 },
+        { "criterion": "Frames the fix around firm-wide limits/monitoring robustness", "weight": 20 },
+        { "criterion": "Recommends a standing, ongoing monitoring practice", "weight": 20 }
+      ],
+      "estimatedMinutes": 9,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "how-quants-get-paid", "label": "How Quants Get Paid" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qanl-exp-050",
+      "questionCode": "LTV-QANL-0200",
+      "title": "Evaluating Your Own Fit Across Researcher, Developer, and Trader Roles",
+      "prompt": "An interviewer asks, 'Given everything you know about quant researcher, developer, and trader roles, which would you actually choose, and why?' How do you give a genuinely thoughtful answer rather than a generic one?",
+      "category": "behavioral",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": ["Career Self-Assessment", "Role Fit", "Interview Communication"],
+      "modelAnswer": "I'd avoid a generic answer by grounding the response in the actual skill-profile differences between the three roles and being specific about which parts of my own experience and preferences map onto each: a quant researcher's work is heaviest on statistics, probability, and the discipline of rigorously testing a hypothesis without fooling yourself about overfitting — a researcher spends most of their time designing and backtesting ideas, with the research itself as the primary output, not the production system it eventually runs on. A quant developer's work is heaviest on software engineering — building and maintaining the infrastructure, data pipelines, and execution systems that the research and trading actually depend on — valuable and technically demanding in a different way, with less emphasis on originating the trading ideas themselves. A quant trader's work is heaviest on real-time market intuition and decisiveness, managing live risk and reacting to live conditions, with less time spent on the deep, patient research or infrastructure-building the other two roles require. I'd then be honest and specific about where I genuinely fit: naming concrete experiences (a specific project, a specific kind of problem I gravitated toward or found most engaging) that point toward one role over the others, rather than claiming to be equally suited to all three, which usually reads as avoiding the question rather than answering it. I'd also acknowledge, honestly, that the lines blur more at smaller firms, and that I'd be realistic about which environment size fits whichever role I named.",
+      "professionalAnswer": "I'd ground this in the real skill-profile differences rather than giving a diplomatic 'I could do any of them' answer, which usually signals to an interviewer that the candidate hasn't actually thought about it. I'd name the role I'm most drawn to specifically, backed by a concrete example from my own experience that shows why — whether that's the patient, hypothesis-driven rigor of research, the engineering discipline of building infrastructure that has to actually work in production, or the real-time decisiveness trading demands — and I'd be upfront that the lines blur at smaller firms, since pretending otherwise would undercut the honesty of the answer.",
+      "commonMistakes": [
+        "Giving a generic 'I could do any of them equally well' answer that avoids actually choosing",
+        "Not grounding the choice in the specific skill-profile differences between the three roles",
+        "Not providing a concrete, specific example from personal experience supporting the choice",
+        "Failing to acknowledge that the lines between roles blur more at smaller firms"
+      ],
+      "keyPoints": [
+        "Quant researcher: heaviest on statistics/probability and rigorous hypothesis testing",
+        "Quant developer: heaviest on software engineering and production infrastructure",
+        "Quant trader: heaviest on real-time market intuition, decisiveness, and live risk management",
+        "A genuinely thoughtful answer names a specific choice with a concrete supporting example, not a diplomatic non-answer"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly distinguishes the three roles' skill profiles", "weight": 35 },
+        { "criterion": "Makes a specific, committed choice rather than a generic non-answer", "weight": 30 },
+        { "criterion": "Supports the choice with a concrete personal example", "weight": 25 },
+        { "criterion": "Acknowledges role blurring at smaller firms honestly", "weight": 10 }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": { "courseSlug": "financial-markets-and-quantitative-finance", "lessonSlug": "quant-researcher-developer-and-trader-roles", "label": "Quant Researcher, Developer & Trader Roles" },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
     }
   ]
 }

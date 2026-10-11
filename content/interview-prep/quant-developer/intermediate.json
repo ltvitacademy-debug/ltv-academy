@@ -705,6 +705,2013 @@
       "version": 1,
       "createdAt": "2026-10-11",
       "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-014",
+      "questionCode": "LTV-QDEV-0093",
+      "title": "Why cv.wait Needs a Predicate, Not Just a Notification",
+      "prompt": "A teammate writes cv.wait(lk); with no predicate argument, relying purely on cv.notify_one() to wake the consumer at the right time. What two specific hazards does this expose the code to, and why does passing a predicate to wait fix both?",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Condition Variables",
+        "Concurrency",
+        "C++"
+      ],
+      "modelAnswer": "The bare cv.wait(lk) form is exposed to two distinct hazards. First, a spurious wakeup: the OS is explicitly allowed to wake a waiting thread without any notify_* call ever happening, so the thread can resume even though nothing it's waiting for actually changed. Second, a missed notification: if notify_one() is called before the consumer thread has actually started waiting (a real timing possibility, since producer and consumer run concurrently), that notification is simply lost -- there's no queued-up 'wake up' signal sitting around for the consumer to receive once it does call wait. Passing a predicate -- cv.wait(lk, [] { return !queue.empty(); }) -- fixes both at once: internally, this is shorthand for 'unlock, sleep, wake up (for any reason, spurious or real), re-lock, and then actually check the predicate; if it's false, go back to sleep.' A spurious wakeup just gets re-checked and, finding the predicate false, goes right back to sleep with no observable effect. A missed notification is also harmless, because the predicate is checked once immediately before ever sleeping at all -- if the condition is already true by the time wait is called (because the notification that would have signaled it already happened), the thread proceeds immediately without needing to catch a signal that already passed.",
+      "professionalAnswer": "Two separate problems, one fix. A spurious wakeup means the OS can wake your thread for no real reason at all, and without a predicate you'd proceed as if something actually happened. A missed notification means notify_one() can fire before the consumer even starts waiting, and a bare wait has no way to recover that lost signal. The predicate overload handles both because it's really a loop: check the condition, and only actually sleep if it's false, then re-check after any wakeup, spurious or not. That's why I never call the bare wait(lk) overload in real code -- the predicate version is strictly safer and costs nothing extra to write.",
+      "commonMistakes": [
+        "Calling the bare cv.wait(lk) overload without a predicate, assuming every wakeup means the condition is true",
+        "Assuming notify_one() always reaches a thread that is already waiting, ignoring the missed-notification race",
+        "Checking the condition once before calling wait but not re-checking it after waking up"
+      ],
+      "keyPoints": [
+        "Spurious wakeups mean a waiting thread can wake with no notify_* call having happened",
+        "A missed notification means notify_one() called before the waiter starts waiting is simply lost",
+        "The predicate overload of wait checks the condition in a loop: before sleeping and after every wakeup",
+        "This single mechanism correctly handles both spurious wakeups and missed notifications"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains the spurious wakeup hazard",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly explains the missed notification hazard",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly explains how the predicate overload fixes both",
+          "weight": 30
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "mutexes-locks-and-condition-variables",
+        "label": "Review: Mutexes, Locks & Condition Variables"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-015",
+      "questionCode": "LTV-QDEV-0094",
+      "title": "The ABA Problem in a Lock-Free Stack",
+      "prompt": "Explain the ABA problem in the context of a lock-free singly-linked stack built on compare-and-swap, and why the standard fix (hazard pointers or a version-tagged pointer) is more than a minor implementation detail.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Lock-Free Programming",
+        "Atomics",
+        "Concurrency"
+      ],
+      "modelAnswer": "In a CAS-based lock-free stack, a push or pop reads the current head pointer, computes a new head, and tries to CAS the new value in only if head is still what was read. The ABA problem occurs when a thread reads head as pointer A, gets suspended before its CAS runs, and while it's asleep another thread pops A, frees that node, and a subsequent push happens to allocate a brand-new node at the exact same memory address A (a real possibility with a typical allocator reusing recently-freed memory). When the original thread wakes and runs its CAS, it sees head is still A -- bit-for-bit identical to what it read -- so the CAS succeeds, even though the actual node at that address is now completely different data with a different next pointer. The CAS's only guarantee is 'the bits are unchanged,' not 'nothing happened in between,' and ABA is exactly a case where something happened and the bits came back around anyway. This isn't a minor edge case to patch over -- it can corrupt the stack's structure in a way that's extraordinarily hard to reproduce, since it requires a specific unlucky interleaving plus a specific allocator reuse pattern. The standard fixes address the real problem (distinguishing 'same address' from 'same identity'): tagging each pointer with a monotonically incrementing version counter that's included in the CAS comparison, so a freed-and-reallocated node at the same address still has a different tag; or hazard pointers, which let a thread announce 'I'm currently examining this pointer' so it won't be freed out from under it at all, sidestepping the problem rather than detecting it after the fact.",
+      "professionalAnswer": "The core issue is that CAS can only tell you 'the value is still what I last saw,' not 'nothing happened since I last looked.' ABA is exactly the case where a thread gets suspended, the node it was holding onto gets freed and reused by a new allocation at the same address, and the thread wakes up and sees the same bit pattern and happily proceeds as if nothing happened -- except the actual object there is now something else entirely. That's a real structural corruption risk, not a cosmetic bug, and it's why I'd never hand-roll a lock-free stack without either a version-tagged pointer or hazard pointers -- or, more realistically, without just using a reviewed library that's already solved this correctly.",
+      "commonMistakes": [
+        "Thinking ABA only matters for performance, not correctness -- it's a real structural corruption risk",
+        "Assuming CAS failing to detect ABA is itself a bug in CAS, rather than an inherent limitation of comparing bit patterns",
+        "Underestimating how rarely and unpredictably ABA reproduces, which makes it dangerous precisely because it passes most testing"
+      ],
+      "keyPoints": [
+        "CAS only verifies the compared value's bit pattern is unchanged, not that nothing happened in between",
+        "ABA occurs when a pointer is freed and a new allocation reuses the exact same address",
+        "The resulting corruption is a real structural bug, not a performance nuance",
+        "Fixes: version-tagged pointers (included in the CAS) or hazard pointers (preventing reuse while referenced)"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains the ABA mechanism with a concrete scenario",
+          "weight": 40
+        },
+        {
+          "criterion": "Explains why CAS alone cannot detect this",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly describes at least one real fix (version tagging or hazard pointers)",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "lock-free-ideas-overview",
+        "label": "Review: Lock-Free Ideas Overview"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-016",
+      "questionCode": "LTV-QDEV-0095",
+      "title": "Sizing Task Granularity for a Thread Pool",
+      "prompt": "A thread pool is submitted a thousand tasks, each pricing a single option (a few microseconds of work). Throughput is worse than single-threaded. Explain why, and what change to the task granularity would actually help.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Thread Pools",
+        "Task Granularity",
+        "Concurrency"
+      ],
+      "modelAnswer": "A thread pool's overhead per submitted task -- acquiring the queue's mutex, pushing the task, notifying a worker, the worker acquiring the mutex again, popping, and releasing -- is itself real, measurable work, typically on the order of hundreds of nanoseconds to low microseconds depending on contention. When each task's actual payload is only a few microseconds, that coordination overhead is a large fraction of, or even larger than, the work itself, so the pool spends more time managing tasks than doing them, and overall throughput is worse than just running everything serially with zero coordination cost. The fix is to increase task granularity: instead of submitting one task per option, chunk the thousand options into, say, the number of worker threads (or a small multiple of it) batches, with each task pricing a whole batch of options in a tight loop. That amortizes the fixed per-task coordination cost across far more actual work per task, which is exactly the trade-off the thread-pool lesson's rule of thumb -- aim for tasks that take at least tens of microseconds -- is getting at.",
+      "professionalAnswer": "The pool isn't broken, the task size is just too small for the overhead it has to pay every time -- locking the queue, pushing, notifying, a worker waking up and popping, all of that is real time that doesn't scale down to zero just because the actual work is tiny. With a few-microsecond payload, that overhead can dominate, which is exactly why performance gets worse, not better. The fix is to chunk: submit roughly one task per worker thread, each one pricing a batch of a few hundred options in a plain loop, instead of a thousand tiny tasks. That amortizes the fixed coordination cost across way more real work per task, which is the actual lever here, not the thread pool's implementation.",
+      "commonMistakes": [
+        "Blaming the thread pool's implementation instead of the task granularity",
+        "Assuming more parallelism is always better regardless of per-task work size",
+        "Not recognizing that per-task coordination overhead (locking, queuing, notifying) is itself real, measurable cost"
+      ],
+      "keyPoints": [
+        "Per-task coordination overhead (lock, push, notify, pop) is real and can dominate for tiny tasks",
+        "A thread pool can be slower than serial execution if tasks are too fine-grained",
+        "The fix is chunking work into larger batches, roughly one task per worker rather than one per unit of work",
+        "A reasonable rule of thumb is tens of microseconds of real work per submitted task, at minimum"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies per-task coordination overhead as the cause",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains why this can make the pool slower than serial execution",
+          "weight": 25
+        },
+        {
+          "criterion": "Prescribes chunking/batching as the fix",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "thread-pools-and-task-based-parallelism",
+        "label": "Review: Thread Pools & Task-Based Parallelism"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-017",
+      "questionCode": "LTV-QDEV-0096",
+      "title": "Struct-of-Arrays vs. Array-of-Structs for a Risk Calculation",
+      "prompt": "A risk engine needs to sum just the notional field across a million Position records, each of which also has a symbol, a delta, and a gamma. It currently uses an array-of-structs layout. Explain the cache-level reason to switch to struct-of-arrays for this specific access pattern, and when array-of-structs would actually be the better choice instead.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "CPU Caches",
+        "Data Layout",
+        "Performance"
+      ],
+      "modelAnswer": "With an array-of-structs layout, each Position record (notional, symbol, delta, gamma all together) occupies one contiguous block, so every cache-line fetch while summing notional across a million records also pulls in symbol, delta, and gamma for that record -- bytes that get fetched into cache and then never used for this particular calculation, wasting a large fraction of the cache line's useful bandwidth. A struct-of-arrays layout instead stores one contiguous array per field (a notional array, a separate symbol array, a separate delta array, a separate gamma array), so summing notional touches only the notional array -- every single byte fetched into cache is a notional value actually needed for the sum, with zero waste. For this specific workload -- scanning one field across many records -- struct-of-arrays wins decisively, often by several times, purely from better cache-line utilization, with no algorithmic change at all. Array-of-structs would be the better choice instead for a different access pattern: if the typical operation is 'look up position 442 and use all of its fields together' (print a full record, compute something that genuinely needs notional, delta, and gamma for the same position at once), array-of-structs keeps everything needed for that single record in one or two cache lines, whereas struct-of-arrays would scatter the same logical record across four separate, unrelated memory locations.",
+      "professionalAnswer": "The reason array-of-structs loses here is that summing just notional still drags symbol, delta, and gamma along for the ride on every cache-line fetch, because they're all physically interleaved in memory -- that's wasted cache bandwidth on every single record. Struct-of-arrays fixes that by putting each field in its own contiguous array, so scanning notional touches only notional, nothing else. I'd flip the recommendation the moment the access pattern flips too, though -- if the real workload is 'grab everything about position 442 at once,' array-of-structs is actually better, because then you want one record's fields sitting together in one or two cache lines, not scattered across four separate arrays.",
+      "commonMistakes": [
+        "Recommending struct-of-arrays universally without checking the actual access pattern",
+        "Not explaining the specific cache-line-waste mechanism, just asserting 'SoA is faster'",
+        "Missing that array-of-structs is the right choice when records are accessed as whole units"
+      ],
+      "keyPoints": [
+        "Array-of-structs wastes cache-line bandwidth when scanning only one field across many records",
+        "Struct-of-arrays puts each field in its own contiguous array, so scanning one field touches only needed bytes",
+        "Struct-of-arrays wins for single-field scans across many records",
+        "Array-of-structs wins when a typical access needs all fields of one record together"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains the cache-line waste in AoS for a single-field scan",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains why SoA fixes it for this workload",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly identifies when AoS would actually be preferred instead",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "cpu-caches-and-data-layout",
+        "label": "Review: CPU Caches & Data Layout"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-018",
+      "questionCode": "LTV-QDEV-0097",
+      "title": "const, constexpr, and the Optimizer: More Than Style",
+      "prompt": "Explain how marking a value const can unlock compiler optimizations that wouldn't otherwise be safe, and what constexpr adds beyond that. Use a repeated read inside a hot loop as the example.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Compiler Optimization",
+        "const",
+        "constexpr"
+      ],
+      "modelAnswer": "Marking a value const is information the compiler can act on, not just the reader: if the optimizer can prove nothing is able to modify a value between two reads of it inside a loop, it can hoist that read out of the loop entirely and reuse a cached copy, instead of re-reading it on every iteration. Without const, the compiler has to be conservative -- unless it can otherwise prove no aliasing pointer or reference could have modified that value, it may be forced to re-read it every time, just in case something changed it between iterations. const removes that uncertainty for the compiler the same way it documents intent for a human reader. constexpr goes a step further: it asks for the value to be computed entirely at compile time wherever possible, so a function like constexpr double basis_points_to_decimal(double bps) { return bps / 10000.0; } called with a literal argument produces a value baked directly into the binary as a constant -- there's no runtime division at all, not even once, because the entire computation happened while compiling, not while running. const only helps the optimizer reason about mutation; constexpr can eliminate the computation from runtime altogether.",
+      "professionalAnswer": "const gives the optimizer a guarantee it can actually use: if nothing can change this value, a repeated read inside a loop can be hoisted out and done once instead of every iteration, because the compiler no longer has to assume, conservatively, that something might have mutated it in between. constexpr is a bigger lever -- it's not just 'this won't change,' it's 'compute this entirely at compile time if you can,' so a constexpr function called with a compile-time-known argument produces a literal baked into the binary with zero runtime cost, not even a division. I treat const as the default habit for anything that isn't meant to change, and reach for constexpr specifically when a value is genuinely knowable at compile time.",
+      "commonMistakes": [
+        "Treating const as purely documentation/style with no actual optimizer impact",
+        "Confusing const (can't be reassigned) with constexpr (computed at compile time)",
+        "Assuming constexpr always guarantees compile-time evaluation even with a runtime-only argument"
+      ],
+      "keyPoints": [
+        "const lets the optimizer safely hoist repeated reads out of a loop, since it can rule out mutation",
+        "Without const, the compiler may conservatively re-read a value every iteration",
+        "constexpr requests compile-time evaluation, potentially eliminating a computation from runtime entirely",
+        "const and constexpr solve related but distinct problems: mutation-safety vs. compile-time evaluation"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains how const enables hoisting a repeated read out of a loop",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains what constexpr adds beyond const",
+          "weight": 35
+        },
+        {
+          "criterion": "Uses a concrete example correctly",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "compiler-optimization-and-inlining",
+        "label": "Review: Compiler Optimization & Inlining"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-019",
+      "questionCode": "LTV-QDEV-0098",
+      "title": "Numba vs. a Hand-Written C++ Extension: Making the Call",
+      "prompt": "A Monte Carlo simulate_path loop is confirmed, via profiling, to be the actual bottleneck in a Python research pipeline. A teammate wants to jump straight to a pybind11 C++ extension; you suggest trying Numba's @njit first. Make the case for trying Numba first, and say when you'd actually go to C++ instead.",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Numba",
+        "pybind11",
+        "Performance Engineering"
+      ],
+      "modelAnswer": "Numba's @njit compiles an ordinary-looking Python loop to machine code on first call, with no separate build step, no new syntax, and no change to the function's calling convention -- you keep writing explicit, readable loops and let the compiler do the work vectorization would otherwise force by hand. For a function made of arrays, loops, and arithmetic -- exactly what a Monte Carlo path simulation is -- Numba routinely reaches speeds competitive with, and sometimes faster than, a hand-written C++ extension, with a fraction of the engineering cost: no PYBIND11_MODULE boilerplate, no build system, no separate compiled artifact to version and distribute. The case for trying it first is almost pure cost-benefit: if @njit gets you most or all of the speedup needed, you've avoided an entire category of ongoing maintenance (a C++ codebase, a build pipeline, ABI compatibility across Python versions) for free. The case for going straight to C++ instead is when Numba's nopython-mode restrictions are the actual blocker, not its speed -- if the function needs to call into pandas, work with arbitrary Python objects, interact with an existing C/C++ library, or needs features Numba's limited subset of Python simply doesn't support, no amount of tuning Numba will get there, and a pybind11 extension is the right next step. The decision isn't 'Numba is slower, use C++ when speed really matters' -- it's 'try Numba first because its restrictions, not its speed, are usually the actual limiting factor.",
+      "professionalAnswer": "I'd try Numba first purely on cost-benefit grounds: it's a decorator, no build step, no new language, and for a loop made of arrays and arithmetic -- which is exactly what a Monte Carlo path sim is -- it's routinely as fast as, sometimes faster than, hand-written C++, for a fraction of the ongoing maintenance cost. I'd only reach for pybind11 and C++ once Numba's restrictions, not its speed, become the actual blocker -- needing to call pandas, work with arbitrary Python objects, or wrap an existing C/C++ library are the real signals to move, not just 'this still isn't fast enough,' because in my experience that second case is rarer than people assume once they've actually profiled and isolated the real hot loop.",
+      "commonMistakes": [
+        "Assuming C++ is always faster than Numba without having actually measured either",
+        "Jumping to a C++ extension before trying the much cheaper Numba option on a confirmed, isolated hot loop",
+        "Not recognizing that Numba's real limitation is its restricted language subset, not raw speed"
+      ],
+      "keyPoints": [
+        "@njit compiles ordinary Python loops with no build step, often matching or beating hand-written C++ for array/loop-shaped code",
+        "Numba avoids the ongoing maintenance cost of a separate C++ build pipeline and ABI concerns",
+        "The real reason to move to C++/pybind11 is Numba's restricted-subset limitations, not necessarily raw speed",
+        "Profile and isolate the hot loop first, then try the cheaper option before the more expensive one"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Makes a correct, specific case for trying Numba first",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly identifies when Numba's restrictions, not speed, justify moving to C++",
+          "weight": 35
+        },
+        {
+          "criterion": "Reflects sound cost-benefit judgment rather than reflexive preference",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "numba-and-jit-compilation",
+        "label": "Review: Numba & JIT Compilation"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-020",
+      "questionCode": "LTV-QDEV-0099",
+      "title": "When a Team Actually Needs kdb+ Instead of DuckDB/Parquet",
+      "prompt": "A trading desk currently uses DuckDB and Parquet for research and is debating whether to invest in kdb+/q for a new project. What's the actual deciding factor, and why is 'the data is time-series' not a sufficient reason on its own?",
+      "category": "technical-knowledge",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "kdb+/q",
+        "Database Architecture",
+        "Time-Series Data"
+      ],
+      "modelAnswer": "DuckDB and Parquet already handle the overwhelming majority of research workloads extremely well -- batch-style analysis over daily or minute-bar data, files that fit comfortably on one machine's disk -- with essentially zero setup cost and excellent measured performance, specifically because they're columnar and match the aggregate-across-many-rows shape most research queries actually have. 'The data is time-series' describes almost everything a research desk touches, so it can't be the deciding factor on its own, or every project would reach for kdb+. The actual deciding factor is the combination of genuinely high-frequency, continuously-arriving data and a latency requirement measured in microseconds to low milliseconds against data that's still being written -- live risk or market-making infrastructure that needs sub-millisecond answers against data streaming in right now, not an end-of-day batch job. kdb+ earns its real cost (a steep learning curve for q, a specialized and largely proprietary ecosystem, licensing) specifically for that ingestion-and-latency profile, not merely because a dataset happens to be large or time-ordered -- DuckDB handles 'large' and 'time-series' just fine on their own, as long as the data isn't also continuously arriving with a hard sub-second latency requirement on top.",
+      "professionalAnswer": "I'd push back on 'it's time-series data' as the justification, because that describes almost everything this desk already handles fine in DuckDB and Parquet. The actual question is about ingestion and latency: is this genuinely high-frequency data arriving continuously, with queries that need sub-millisecond answers against data that's still being written right now? That's the profile kdb+ is actually built for, and it's a real, different problem from 'we have a lot of time-series data and want to analyze it,' which DuckDB already handles well and cheaply. If this new project is really that latency- and ingestion-sensitive, kdb+'s cost -- the learning curve, the specialized ecosystem -- is worth paying. If it's just 'another research dataset,' it isn't.",
+      "commonMistakes": [
+        "Treating 'it's time-series data' as sufficient justification for a specialized time-series database",
+        "Not distinguishing between batch research workloads and genuinely continuous, high-frequency ingestion with live query needs",
+        "Underestimating kdb+'s real adoption cost (q's learning curve, ecosystem, licensing) relative to the actual requirement"
+      ],
+      "keyPoints": [
+        "DuckDB/Parquet already handle most research workloads well via columnar storage, at near-zero setup cost",
+        "'Time-series data' alone describes nearly every research dataset and isn't a sufficient justification",
+        "kdb+ earns its cost specifically for high-frequency, continuously-arriving data with sub-millisecond live query needs",
+        "The deciding factor is ingestion/latency profile, not merely dataset size or time-ordering"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains why 'time-series' alone isn't sufficient justification",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly identifies the real deciding factor (ingestion rate + live latency requirement)",
+          "weight": 40
+        },
+        {
+          "criterion": "Acknowledges kdb+'s real adoption cost",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "kdbplus-q-and-specialized-tools-overview",
+        "label": "Review: kdb+/q & Specialized Tools Overview"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-021",
+      "questionCode": "LTV-QDEV-0100",
+      "title": "Implement a Single-Producer/Single-Consumer Order Queue",
+      "prompt": "Implement a thread-safe order queue where a producer thread pushes integer order IDs and a consumer thread processes them as they arrive, using a mutex and a condition variable correctly -- including correct shutdown behavior when the producer is done.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": [
+        "Mutexes",
+        "Condition Variables",
+        "Concurrency"
+      ],
+      "modelAnswer": "The queue needs a std::mutex protecting the underlying std::queue<int>, a std::condition_variable the consumer waits on, and a shutdown flag so the consumer knows to stop waiting once the producer is truly finished (otherwise it would wait forever after the last item). The producer locks the mutex with a lock_guard, pushes the order ID, unlocks (scoping the lock_guard tightly), then calls notify_one(); when done, it sets the shutdown flag under the lock and calls notify_one() (or notify_all(), since multiple consumers might be waiting) one more time so a consumer currently waiting wakes up and sees the shutdown condition. The consumer uses a std::unique_lock (required by condition_variable::wait) and calls cv.wait(lk, [&]{ return !queue.empty() || done; }) -- the predicate form, so spurious wakeups and missed notifications are both handled correctly -- then checks whether it woke because there's real work (pop and process it) or because of shutdown with nothing left (exit the loop).",
+      "professionalAnswer": "The shape is: a mutex-protected queue, a condition variable, and critically a shutdown flag so the consumer doesn't wait forever after the producer finishes. Producer side: lock, push, unlock, notify_one -- and one final notify after setting the done flag so a currently-waiting consumer actually wakes up to see it. Consumer side: unique_lock plus the predicate overload of wait, checking both !queue.empty() and the done flag, then distinguishing 'there's real work' from 'we're done and empty' after waking up. The predicate form is doing double duty here -- it's both the standard spurious-wakeup/missed-notification protection and the mechanism that lets clean shutdown actually work.",
+      "example": "#include <mutex>\n#include <condition_variable>\n#include <queue>\n#include <thread>\n\nstd::mutex m;\nstd::condition_variable cv;\nstd::queue<int> orders;\nbool done = false;\n\nvoid producer() {\n    for (int id = 1; id <= 5; ++id) {\n        {\n            std::lock_guard<std::mutex> lk(m);\n            orders.push(id);\n        }\n        cv.notify_one();\n    }\n    {\n        std::lock_guard<std::mutex> lk(m);\n        done = true;\n    }\n    cv.notify_all();\n}\n\nvoid consumer() {\n    while (true) {\n        std::unique_lock<std::mutex> lk(m);\n        cv.wait(lk, [] { return !orders.empty() || done; });\n        if (!orders.empty()) {\n            int id = orders.front();\n            orders.pop();\n            lk.unlock();\n            // process order `id` outside the lock\n        } else {\n            break;   // done and empty: exit\n        }\n    }\n}",
+      "commonMistakes": [
+        "Omitting a shutdown flag, leaving the consumer waiting forever once the producer stops producing",
+        "Using the bare wait(lk) overload instead of the predicate form, reintroducing spurious-wakeup/missed-notification bugs",
+        "Holding the lock while processing the popped item instead of unlocking first, unnecessarily serializing processing"
+      ],
+      "keyPoints": [
+        "A shutdown flag is required so the consumer can distinguish 'no work yet' from 'no more work ever'",
+        "The predicate overload of wait correctly handles both spurious wakeups and missed notifications",
+        "notify_all() after setting the shutdown flag ensures a currently-waiting consumer wakes to see it",
+        "The lock should be released before processing a popped item to avoid unnecessary serialization"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly implements the mutex/condition_variable producer-consumer pattern",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly implements clean shutdown via a flag checked in the predicate",
+          "weight": 30
+        },
+        {
+          "criterion": "Uses the predicate overload of wait correctly",
+          "weight": 20
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "mutexes-locks-and-condition-variables",
+        "label": "Review: Mutexes, Locks & Condition Variables"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-022",
+      "questionCode": "LTV-QDEV-0101",
+      "title": "Implement submit() for a Minimal Thread Pool",
+      "prompt": "Given a ThreadPool class with a fixed set of worker threads already created in its constructor, implement submit(std::function<void()> task) and the worker loop it feeds, so submitted tasks are picked up and run by whichever worker is free.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": [
+        "Thread Pools",
+        "Concurrency",
+        "C++"
+      ],
+      "modelAnswer": "submit() needs to push the task onto a shared, mutex-protected queue and wake a worker: lock the mutex, push the task (moved, not copied, since std::function can wrap an arbitrary, possibly expensive-to-copy callable), unlock, then call notify_one() so exactly one idle worker wakes to handle it. Each worker thread runs a loop that waits (using the predicate form of condition_variable::wait, to correctly handle spurious wakeups and the stop condition) until there's a task available or the pool is stopping; once woken with real work, it pops the task under the lock, unlocks, and runs the task outside the lock so that running the task doesn't block other workers from acquiring the queue. The loop then repeats, waiting again for the next task.",
+      "professionalAnswer": "submit() is just: lock, push the task, unlock, notify_one. The more interesting part is the worker loop -- each worker waits on the predicate overload for 'there's a task, or we're stopping,' pops under the lock if there's real work, unlocks before actually running the task (so running it doesn't hold up anyone else trying to submit or pop), and loops back to wait again. The one detail that's easy to get wrong is running the task while still holding the lock -- that would serialize every task behind the single queue mutex, defeating the entire point of having multiple workers.",
+      "example": "void ThreadPool::submit(std::function<void()> task) {\n    {\n        std::lock_guard<std::mutex> lk(m_);\n        tasks_.push(std::move(task));\n    }\n    cv_.notify_one();\n}\n\nvoid ThreadPool::worker_loop() {\n    while (true) {\n        std::function<void()> task;\n        {\n            std::unique_lock<std::mutex> lk(m_);\n            cv_.wait(lk, [this] { return stop_ || !tasks_.empty(); });\n            if (stop_ && tasks_.empty()) return;\n            task = std::move(tasks_.front());\n            tasks_.pop();\n        }\n        task();   // run outside the lock\n    }\n}",
+      "commonMistakes": [
+        "Running the task while still holding the queue's mutex, serializing all workers unnecessarily",
+        "Copying the task instead of moving it into the queue, adding unnecessary overhead for a potentially heavy std::function",
+        "Not checking the stop flag correctly, causing workers to either exit too early (dropping queued tasks) or never exit"
+      ],
+      "keyPoints": [
+        "submit() pushes under the lock and calls notify_one() to wake exactly one idle worker",
+        "The worker loop uses the predicate overload of wait for correct spurious-wakeup/stop handling",
+        "The task is popped under the lock but run after releasing it, so workers don't serialize on task execution",
+        "Moving (not copying) the task avoids unnecessary overhead for a potentially expensive callable"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly implements submit() with lock/push/unlock/notify",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly implements the worker loop with the predicate wait and stop handling",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly runs the task outside the lock",
+          "weight": 20
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "thread-pools-and-task-based-parallelism",
+        "label": "Review: Thread Pools & Task-Based Parallelism"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-023",
+      "questionCode": "LTV-QDEV-0102",
+      "title": "Write a Zero-Copy pybind11 Function Over a NumPy Array",
+      "prompt": "Write a pybind11 function that takes a NumPy array of spot prices and a strike, and returns a new NumPy array of call option payoffs (max(spot - strike, 0)), using the buffer protocol so the input array is never copied.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": [
+        "pybind11",
+        "NumPy",
+        "Python/C++ Integration"
+      ],
+      "modelAnswer": "Accept the input as py::array_t<double> and call .request() to get a py::buffer_info, which exposes the array's existing memory directly via .ptr -- no copy of the input ever happens, since this is a raw view into NumPy's own buffer. Allocate a single new output array of the same shape with py::array_t<double>(buf.shape), get its own buffer_info, and write each computed payoff directly into the output buffer's pointer in a plain loop. The one allocation that's unavoidable is the single output array itself, since the function has to produce new data; the input, however, is read zero-copy throughout. This is the standard shape of a vectorized pybind11 numerical function: one buffer_info for input, one freshly allocated array (and buffer_info) for output, and a tight loop between them.",
+      "professionalAnswer": "Standard shape: take py::array_t<double> for spots, call .request() to get a raw view into NumPy's existing memory with zero copying, allocate exactly one new output array sized to match, and loop over the input buffer writing into the output buffer. The only allocation here is the output array itself, which is unavoidable since new data has to come out; the input is read directly from NumPy's own memory the entire time.",
+      "example": "#include <pybind11/pybind11.h>\n#include <pybind11/numpy.h>\n\nnamespace py = pybind11;\n\npy::array_t<double> callPayoffs(py::array_t<double> spots, double strike) {\n    py::buffer_info buf = spots.request();\n    if (buf.ndim != 1) throw std::runtime_error(\"expected a 1-D array\");\n\n    auto result = py::array_t<double>(buf.shape);\n    py::buffer_info resBuf = result.request();\n\n    const double* in  = static_cast<const double*>(buf.ptr);\n    double*       out = static_cast<double*>(resBuf.ptr);\n\n    for (ssize_t i = 0; i < buf.shape[0]; ++i) {\n        double payoff = in[i] - strike;\n        out[i] = payoff > 0.0 ? payoff : 0.0;\n    }\n    return result;\n}\n\nPYBIND11_MODULE(quantlib_cpp, m) {\n    m.def(\"call_payoffs\", &callPayoffs, py::arg(\"spots\"), py::arg(\"strike\"));\n}",
+      "commonMistakes": [
+        "Converting the input to std::vector<double> instead of using the buffer protocol directly, introducing an unnecessary copy",
+        "Forgetting to check buf.ndim, silently misinterpreting a multi-dimensional array",
+        "Not allocating a correctly-shaped output array before writing into it"
+      ],
+      "keyPoints": [
+        "py::array_t<double>::request() gives a zero-copy view into NumPy's existing buffer",
+        "The input array is never copied; only one new output array needs to be allocated",
+        "A plain loop over raw pointers from both buffer_info objects does the actual computation",
+        "This is the standard pattern for any vectorized numerical pybind11 function"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly uses the buffer protocol for zero-copy input access",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly allocates and writes to a new output array",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly computes the payoff logic",
+          "weight": 20
+        },
+        {
+          "criterion": "Code correctness and PYBIND11_MODULE structure",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "exposing-numerical-code-to-numpy",
+        "label": "Review: Exposing Numerical Code to NumPy"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-024",
+      "questionCode": "LTV-QDEV-0103",
+      "title": "Using a Profiler Output to Decide What's Actually Worth Porting",
+      "prompt": "cProfile on a research pipeline shows 90% of cumulative time inside pandas.DataFrame.groupby, and a separate line_profiler run on a custom simulate_path function shows 95% of its own time on one line doing per-element Python arithmetic. A teammate wants to port the groupby call to C++. What would you actually recommend, and why?",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Profiling",
+        "Performance Engineering",
+        "Python/C++ Integration"
+      ],
+      "modelAnswer": "Porting the groupby call would be the wrong move: pandas's groupby is already backed by compiled C code, so the 90% of cumulative time it shows isn't time spent in slow, interpreted Python bytecode -- it's time spent doing real, already-fast aggregation work. Wrapping a call to an already-C-backed operation in a new C++ extension buys essentially nothing, because the bottleneck was never the Python interpreter loop in the first place; it adds a build dependency and boundary-crossing overhead for no real speedup. The simulate_path finding is the opposite, legitimate case: line_profiler pointing at 95% of time on one specific line of pure-Python, element-by-element arithmetic is exactly the signature of a genuinely interpreter-bound hot path -- this is real wall-clock time spent executing Python bytecode in a loop, which is precisely what a Numba @njit or a pybind11 C++ port is good at eliminating. The recommendation is to leave the groupby call alone entirely and focus porting effort on simulate_path, porting the whole per-path loop (not just the one hot line) so the boundary is crossed once per batch of paths rather than once per element.",
+      "professionalAnswer": "I'd tell them not to touch groupby -- that's already running in pandas's own compiled C code, so 90% of cumulative time there is already fast work, not slow Python bytecode; porting it would add a build dependency for essentially zero speedup. simulate_path is the real opportunity: line_profiler nailing 95% of its time to one line of pure-Python per-element arithmetic is exactly the signature of a genuinely interpreter-bound bottleneck, which is what Numba or a C++ port actually fixes. I'd focus all the porting effort there, and port the whole per-path loop rather than just that one line, so the boundary gets crossed once per batch instead of once per element.",
+      "commonMistakes": [
+        "Porting an already-C-backed library call (groupby) to C++, which buys no real speedup",
+        "Not distinguishing 'high cumulative time' from 'time actually spent in slow, interpreted Python code'",
+        "Porting only the single hot line instead of the whole per-path loop, paying boundary-crossing overhead once per element instead of once per batch"
+      ],
+      "keyPoints": [
+        "High time inside a C-backed library call (pandas groupby) is not a porting opportunity",
+        "line_profiler pinpointing time on pure-Python, element-by-element arithmetic is the real porting signature",
+        "Profile first, and distinguish genuinely interpreter-bound code from time spent inside already-compiled libraries",
+        "Port the whole loop, not just the hot line, to amortize boundary-crossing cost across a full batch"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly argues against porting the already-C-backed groupby call",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly identifies simulate_path as the legitimate porting candidate",
+          "weight": 35
+        },
+        {
+          "criterion": "Recommends porting the whole loop, not just the hot line",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "when-to-move-code-from-python-to-cplusplus",
+        "label": "Review: When to Move Code From Python to C++"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-025",
+      "questionCode": "LTV-QDEV-0104",
+      "title": "Write a Point-in-Time ASOF JOIN for Last Known Price",
+      "prompt": "Using DuckDB, write a SQL query that, for each row in a requests table (a timestamp and a symbol), finds the most recent price at or before that timestamp from a prices table. Explain why a plain JOIN on equal timestamps would be wrong here.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "sql",
+      "skills": [
+        "SQL",
+        "Time-Series Data",
+        "DuckDB"
+      ],
+      "modelAnswer": "A plain equality JOIN (ON r.symbol = p.symbol AND r.ts = p.ts) would only match rows whose timestamps are exactly identical, which almost never happens for an arbitrary request time against discrete price ticks -- most requests would simply match nothing. ASOF JOIN solves this directly: for each row on the left (requests), it finds the single best-matching row on the right (prices) at or before the left row's timestamp, using the condition r.req_ts >= p.ts. This is exactly the 'last known value as of this timestamp' pattern, and getting it right matters for a specific correctness reason: a naive join or window-function trick that accidentally matched a price from after the request time would hand the query information that wasn't actually available yet at that moment -- the same look-ahead bias problem as in backtesting, just expressed as a SQL join.",
+      "professionalAnswer": "A plain equality join only matches rows with the exact same timestamp, and request times almost never land exactly on a tick, so most rows would just come back empty. ASOF JOIN is built specifically for 'give me the most recent row at or before this time,' which is exactly the point-in-time lookup this needs. The reason to get this right rather than hack around it with a correlated subquery is correctness, not just convenience -- matching a price from after the request time would be handing the query information it couldn't have actually had yet, which is the same look-ahead-bias mistake as in a backtest, just showing up as a SQL bug instead.",
+      "example": "SELECT r.req_ts, r.symbol, p.ts AS as_of_ts, p.price AS last_known_price\nFROM requests r\nASOF JOIN prices p\n  ON r.symbol = p.symbol AND r.req_ts >= p.ts;",
+      "commonMistakes": [
+        "Using a plain equality join on timestamps, which matches almost nothing for arbitrary request times",
+        "Using a correlated subquery to hand-roll the point-in-time match instead of ASOF JOIN",
+        "Accidentally matching a price from after the request time, introducing look-ahead bias"
+      ],
+      "keyPoints": [
+        "ASOF JOIN matches each left row to the most recent right row at or before its timestamp",
+        "A plain equality join on timestamps almost never matches real, discretely-ticked data",
+        "Matching a future price relative to the request time is a correctness bug (look-ahead bias), not just a style issue",
+        "ASOF JOIN expresses this correctly and efficiently in one query, without a correlated subquery"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly writes an ASOF JOIN with the right condition",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains why a plain equality join fails here",
+          "weight": 30
+        },
+        {
+          "criterion": "Connects correctness to avoiding look-ahead bias",
+          "weight": 20
+        },
+        {
+          "criterion": "SQL correctness",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "sql-for-time-series-data",
+        "label": "Review: SQL for Time-Series Data"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-026",
+      "questionCode": "LTV-QDEV-0105",
+      "title": "Writing a Typed Cython Loop, and Knowing When It's the Right Tool",
+      "prompt": "Sketch a Cython .pyx function, using cdef-typed variables and a typed memoryview, that computes a rolling variance over a NumPy array faster than pure Python. Then explain a case where Cython is the right choice specifically over Numba, not just a slower-to-set-up alternative.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": [
+        "Cython",
+        "Performance Engineering",
+        "Python/C++ Integration"
+      ],
+      "modelAnswer": "Declaring the loop counters and accumulators with cdef (cdef int i, cdef double total) makes them genuine C-level int/double variables at compile time, not Python objects -- removing the per-element Python-object overhead a plain Python loop pays on every single arithmetic operation. A typed memoryview (double[:] returns) gives Cython a C-level view directly onto the NumPy array's underlying buffer, so indexing into it is a fast, direct memory access rather than going through Python-level indexing machinery. Cython needs this all compiled ahead of time via setup.py/cythonize or pyximport, unlike Numba's runtime JIT. The case where Cython is specifically the right choice over Numba, not just a less convenient alternative, is when the hot function needs to do something Numba's nopython mode fundamentally can't: calling into an existing C or C++ library directly, working with arbitrary Python objects (not just NumPy arrays and numeric scalars) inside the loop, or shipping a compiled extension as a distributable package without depending on Numba's JIT machinery being installed and working at runtime on whatever system it ends up running on.",
+      "professionalAnswer": "The sketch is straightforward: cdef the loop variables and accumulators so they're real C types, use a typed memoryview to get direct, fast access to the NumPy array's buffer, and let cythonize/build_ext compile it ahead of time. Where I'd actually reach for Cython over Numba isn't 'this needs to be a bit faster' -- it's when Numba's nopython-mode restrictions are the actual blocker: wrapping an existing C/C++ library, needing arbitrary Python objects inside the hot loop instead of just arrays and scalars, or shipping a compiled package where I don't want a runtime JIT dependency at all. If none of those apply, I'd try Numba first; it's just less setup for comparable speed on array-and-loop-shaped code.",
+      "example": "# rolling_vol.pyx (illustrative)\nimport numpy as np\n\ncdef double _variance(double[:] chunk, int window):\n    cdef double total = 0.0\n    cdef int k\n    for k in range(window):\n        total += chunk[k]\n    cdef double mean = total / window\n    cdef double sq_total = 0.0\n    for k in range(window):\n        sq_total += (chunk[k] - mean) ** 2\n    return sq_total / window\n\ncpdef rolling_vol_cython(double[:] returns, int window):\n    cdef int n = returns.shape[0]\n    cdef int i\n    out = []\n    for i in range(window, n):\n        out.append(_variance(returns[i - window:i], window) ** 0.5)\n    return out",
+      "commonMistakes": [
+        "Leaving loop variables as plain Python objects instead of cdef-declaring them, losing most of the speed benefit",
+        "Treating Cython as simply 'Numba but with a build step' rather than understanding its distinct capabilities",
+        "Choosing Cython by default instead of trying Numba first for ordinary array/loop-shaped numeric code"
+      ],
+      "keyPoints": [
+        "cdef-declared variables become real C types, removing per-element Python object overhead",
+        "A typed memoryview gives direct, fast access to a NumPy array's buffer",
+        "Cython requires an ahead-of-time build step, unlike Numba's runtime JIT",
+        "Cython is the right choice specifically when Numba's nopython-mode restrictions, not just its speed, are the blocker"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly sketches cdef-typed variables and a typed memoryview",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly identifies a legitimate Cython-over-Numba scenario",
+          "weight": 35
+        },
+        {
+          "criterion": "Shows awareness of the ahead-of-time build requirement",
+          "weight": 15
+        },
+        {
+          "criterion": "Code plausibility",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "cython-basics",
+        "label": "Review: Cython Basics"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-027",
+      "questionCode": "LTV-QDEV-0106",
+      "title": "Parallelizing a CPU-Bound Backtest Sweep Correctly",
+      "prompt": "You need to run the same backtest across 200 different parameter combinations, each taking about 2 seconds of pure CPU-bound work. Write the ProcessPoolExecutor code to parallelize this correctly, and explain why threads would not have helped here.",
+      "category": "hands-on",
+      "difficulty": "intermediate",
+      "responseFormat": "code",
+      "skills": [
+        "Multiprocessing",
+        "GIL",
+        "Performance Engineering"
+      ],
+      "modelAnswer": "Threads wouldn't help because CPython's Global Interpreter Lock allows only one thread to execute Python bytecode at a time, regardless of how many CPU cores are available -- for CPU-bound work like a backtest loop, multiple threads just take turns on one core rather than running truly in parallel, so wrapping this in a ThreadPoolExecutor would show no real speedup. ProcessPoolExecutor sidesteps the GIL entirely by running each task in its own separate process, each with its own full Python interpreter and its own GIL, so the OS can genuinely schedule them across multiple cores simultaneously. With 200 tasks at roughly 2 seconds of real CPU-bound work each, the per-task overhead of process creation and argument/result pickling is comfortably small relative to the actual work, which is exactly the task-granularity profile where multiprocessing pays off rather than backfiring. The if __name__ == '__main__': guard is required (and safe everywhere) because spawning a worker process re-imports the module, and without the guard that re-import would try to spawn the pool again, recursively.",
+      "professionalAnswer": "Threads are out because of the GIL -- for CPU-bound work, Python threads just take turns on one core no matter how many cores you have, so a ThreadPoolExecutor here would show basically no speedup. ProcessPoolExecutor actually works because each worker is its own full process with its own interpreter and its own GIL, so the OS can really run them on separate cores. At roughly 2 seconds of real work per task across 200 tasks, the fixed overhead of spinning up processes and pickling arguments back and forth is small relative to the actual computation, which is exactly the profile where this approach pays off instead of backfiring the way it would on a thousand tiny tasks.",
+      "example": "from concurrent.futures import ProcessPoolExecutor\n\ndef run_backtest(params):\n    # ~2 seconds of CPU-bound work\n    ...\n    return result\n\nif __name__ == \"__main__\":\n    param_grid = [...]   # 200 parameter combinations\n    with ProcessPoolExecutor(max_workers=4) as ex:\n        results = list(ex.map(run_backtest, param_grid))",
+      "commonMistakes": [
+        "Using a ThreadPoolExecutor for CPU-bound work, which the GIL prevents from actually running in parallel",
+        "Forgetting the if __name__ == \"__main__\": guard, causing recursive process spawning on some platforms",
+        "Not recognizing that ~2 seconds of real work per task is a healthy task granularity for multiprocessing overhead"
+      ],
+      "keyPoints": [
+        "The GIL prevents Python threads from running CPU-bound bytecode truly in parallel across cores",
+        "ProcessPoolExecutor runs each task in a separate process with its own interpreter and GIL, bypassing the GIL",
+        "The if __name__ == \"__main__\": guard prevents recursive process spawning on process-spawning platforms",
+        "~2 seconds of work per task is a healthy granularity relative to process/pickling overhead"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly uses ProcessPoolExecutor with the main guard",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains why threads don't help for CPU-bound work (the GIL)",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly assesses the task granularity as favorable here",
+          "weight": 20
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "multiprocessing-and-parallelism",
+        "label": "Review: Multiprocessing & Parallelism"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-028",
+      "questionCode": "LTV-QDEV-0107",
+      "title": "Diagnosing a Deadlock From Inconsistent Lock Ordering",
+      "prompt": "Two functions each need to lock both a PositionBook mutex and a RiskLimits mutex. One function locks PositionBook then RiskLimits; another locks RiskLimits then PositionBook. The system occasionally hangs completely under load. Diagnose the bug and the fix.",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Deadlock",
+        "Mutexes",
+        "Concurrency"
+      ],
+      "modelAnswer": "This is a classic deadlock from inconsistent lock ordering: if thread A locks PositionBook and is about to lock RiskLimits, while thread B simultaneously locks RiskLimits and is about to lock PositionBook, each thread ends up waiting forever for a lock the other thread is holding, and neither can ever proceed -- a permanent, total hang, not a transient slowdown. It's intermittent under load specifically because this requires a genuinely unlucky interleaving (both threads reaching their second lock attempt at roughly the same time), which is rare enough to pass casual testing but inevitable eventually under real concurrent traffic. The reliable fix is enforcing a single, consistent global lock-acquisition order everywhere in the codebase that needs both locks -- for example, always lock PositionBook before RiskLimits, never the reverse, in every function, so the specific circular-wait pattern that causes deadlock can never arise. A more robust alternative is std::lock(mutexA, mutexB), which acquires multiple locks together using a deadlock-avoidance algorithm, removing the need to manually enforce ordering discipline across the whole codebase by hand.",
+      "professionalAnswer": "Classic lock-ordering deadlock: one code path locks A then B, another locks B then A, and under the right unlucky timing each one ends up holding one lock while waiting for the other, forever. That's why it's intermittent and load-dependent -- it needs both threads to hit their second lock at close to the same moment, which is rare in light testing but will eventually happen under real traffic. The fix is enforcing one consistent lock order everywhere -- always A before B, no exceptions -- or using std::lock() to acquire both together with its own deadlock-avoidance algorithm instead of relying on everyone remembering the right manual order.",
+      "commonMistakes": [
+        "Trying to 'fix' this by adding a timeout or retry instead of addressing the actual lock-ordering inconsistency",
+        "Not recognizing why the bug is intermittent rather than consistently reproducible",
+        "Fixing the ordering in only one of the two functions instead of enforcing it everywhere both locks are needed"
+      ],
+      "keyPoints": [
+        "Inconsistent lock-acquisition order across code paths creates a classic deadlock (circular wait)",
+        "The bug is intermittent because it requires a specific, unlucky timing interleaving",
+        "The fix is a single, consistently enforced lock order across the entire codebase",
+        "std::lock() can acquire multiple locks together with built-in deadlock avoidance, as a more robust alternative"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses inconsistent lock ordering as a deadlock cause",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains why the bug is intermittent",
+          "weight": 25
+        },
+        {
+          "criterion": "Provides a correct, systemic fix (consistent order or std::lock)",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "mutexes-locks-and-condition-variables",
+        "label": "Review: Mutexes, Locks & Condition Variables"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-029",
+      "questionCode": "LTV-QDEV-0108",
+      "title": "Diagnosing False Sharing in a Multi-Threaded Counter Array",
+      "prompt": "A per-thread array of eight std::atomic<long> counters, one per worker thread, shows terrible scaling -- adding more threads makes it slower, not faster, even though each thread only ever touches its own counter. What's going on?",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "False Sharing",
+        "CPU Caches",
+        "Concurrency"
+      ],
+      "modelAnswer": "This is false sharing: even though each thread only logically touches its own counter, if the eight counters are packed tightly together in one array, several of them physically share the same 64-byte CPU cache line. Every write to any one counter invalidates that entire cache line in every other core's cache, forcing those cores to re-fetch the line from a slower cache level or memory the next time they access their own counter -- even though no actual data race or logical conflict exists between the threads. The result looks exactly like lock contention (worse scaling as more threads pile on) despite there being no lock and no shared logical data at all; it's purely a side effect of the physical memory layout. The fix is padding each counter out to its own cache line, typically 64 bytes, so no two counters from different threads ever land in the same cache line -- for example wrapping each counter in a small struct with explicit padding bytes, or using alignas(64) on each counter, or simply spacing the array elements far enough apart that false sharing becomes structurally impossible.",
+      "professionalAnswer": "That symptom -- more threads, worse performance, with zero actual data race -- is the signature of false sharing. The counters are logically independent, but if they're packed into one tight array, several of them physically sit in the same CPU cache line, and a write to any one of them invalidates that whole line for every other core, forcing an expensive re-fetch even though nothing about the actual data conflicted. It looks exactly like lock contention from the outside, but there's no lock anywhere. The fix is padding each counter out to its own cache line -- alignas(64) per counter, or a padded struct -- so no two threads' counters can ever collide in the same cache line again.",
+      "commonMistakes": [
+        "Assuming any scaling problem with atomics must be a logical data race, missing false sharing entirely",
+        "Not recognizing that this is purely a memory-layout issue with no actual shared logical state",
+        "Fixing it by adding locking, which addresses the wrong problem and adds real overhead for no benefit"
+      ],
+      "keyPoints": [
+        "False sharing occurs when logically independent variables physically share a CPU cache line",
+        "A write to one variable in that cache line invalidates the whole line for every other core",
+        "This produces lock-contention-like scaling symptoms with no actual data race or shared logical state",
+        "The fix is padding each variable out to its own cache line (e.g. alignas(64))"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses false sharing, not a logical data race",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains the cache-line invalidation mechanism",
+          "weight": 30
+        },
+        {
+          "criterion": "Provides the correct fix (per-counter padding/alignment)",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "cpu-caches-and-data-layout",
+        "label": "Review: CPU Caches & Data Layout"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-030",
+      "questionCode": "LTV-QDEV-0109",
+      "title": "Diagnosing Thread Pool Starvation From Oversized Tasks",
+      "prompt": "A thread pool with 4 workers is submitted a mix of many small pricing tasks and a few large, several-second batch-revaluation tasks. Small tasks that should finish almost instantly sometimes take seconds to even start. What's happening, and how would you fix it?",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Thread Pools",
+        "Task Scheduling",
+        "Concurrency"
+      ],
+      "modelAnswer": "A basic thread pool with a single FIFO task queue has no concept of task priority or size -- if a large, several-second task happens to be dequeued by one of the four workers, that worker is simply unavailable for the next several seconds, regardless of how many tiny, fast tasks are waiting behind it in the queue. With only 4 workers, if 1 or 2 of them get tied up on long tasks, the remaining small tasks either queue up behind other small tasks on the remaining workers or, worse, a small task that happens to be scheduled onto a worker just after a long task starts has to wait for that long task to finish before even being picked up. This is a form of head-of-line blocking / starvation, not a bug in the pool's correctness -- it's doing exactly what a simple FIFO pool is designed to do, which just doesn't match a workload with very different task sizes. The fix is typically one of: a separate, dedicated pool (or a reserved subset of workers) for small, latency-sensitive tasks so they're never queued behind long-running ones; breaking large batch-revaluation tasks into smaller chunks that interleave more fairly with small tasks; or a priority queue instead of plain FIFO, so small, latency-sensitive tasks can jump ahead of already-queued long tasks when that's the actual requirement.",
+      "professionalAnswer": "This isn't a bug, it's exactly what a plain FIFO thread pool does when task sizes vary wildly -- a long-running task ties up one of your four workers for its full duration, and anything queued behind it on that worker just has to wait, no matter how fast it would otherwise finish. With only 4 workers, losing even one or two to multi-second tasks noticeably starves the small ones. I'd fix this with either a separate pool for latency-sensitive small tasks so they're never stuck behind a long one, or by chunking the big batch-revaluation work into smaller pieces that interleave more fairly, or a priority queue if small tasks genuinely need to jump the line.",
+      "commonMistakes": [
+        "Assuming this is a pool implementation bug rather than an expected consequence of mixing wildly different task sizes in one FIFO queue",
+        "Adding more workers as the only fix, without addressing that a single long task can still starve whatever worker it occupies",
+        "Not considering a separate pool or priority queue as alternatives to simply chunking the large tasks"
+      ],
+      "keyPoints": [
+        "A plain FIFO thread pool has no concept of task size or priority",
+        "A long-running task occupies a worker for its full duration, starving queued small tasks behind it",
+        "This is head-of-line blocking from mixed task sizes, not a correctness bug",
+        "Fixes: a separate pool for small tasks, chunking large tasks, or a priority queue"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses head-of-line blocking from mixed task sizes in a FIFO pool",
+          "weight": 40
+        },
+        {
+          "criterion": "Explains why this isn't a correctness bug in the pool itself",
+          "weight": 20
+        },
+        {
+          "criterion": "Provides at least one concrete, correct fix",
+          "weight": 30
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "thread-pools-and-task-based-parallelism",
+        "label": "Review: Thread Pools & Task-Based Parallelism"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-031",
+      "questionCode": "LTV-QDEV-0110",
+      "title": "Debugging 'Parallelized' Python Code With No Actual Speedup",
+      "prompt": "A teammate parallelized a CPU-bound feature-engineering loop using Python's threading module and ThreadPoolExecutor, expecting a 4x speedup on a 4-core machine, but measured almost no improvement at all. Diagnose the cause.",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "GIL",
+        "Multiprocessing",
+        "Debugging"
+      ],
+      "modelAnswer": "The root cause is CPython's Global Interpreter Lock: only one thread can execute Python bytecode at a time, regardless of core count, so for genuinely CPU-bound work -- a tight computation loop, not something waiting on I/O -- multiple Python threads don't run truly in parallel, they take turns on a single core. Threads are legitimately useful in Python specifically for I/O-bound work, where waiting on a network request or disk read releases the GIL while waiting, letting other threads run meanwhile -- but a feature-engineering loop doing real computation the whole time never releases the GIL in a way that benefits from more threads. The fix is switching to multiple processes instead of threads: concurrent.futures.ProcessPoolExecutor runs each worker in its own separate process, each with its own full Python interpreter and its own independent GIL, so the OS can genuinely schedule them across multiple cores at once. The one thing to verify first is that the per-task work is large enough to be worth the real overhead of process creation and pickling arguments/results -- multiprocessing has its own granularity requirement, just a different one than threading's GIL problem.",
+      "professionalAnswer": "This is the GIL, almost certainly -- Python threads can't actually run CPU-bound bytecode in parallel no matter how many cores you have, they just take turns on one. Threads genuinely help for I/O-bound work because waiting on a request releases the GIL, but a real computation loop never does. The fix is ProcessPoolExecutor instead of a thread pool -- separate processes, separate interpreters, separate GILs, which actually lets the OS use multiple cores. I'd also just double-check each task chunk is big enough to be worth the process/pickling overhead, since that's multiprocessing's own version of the granularity problem, distinct from the GIL issue that broke the threaded version.",
+      "commonMistakes": [
+        "Assuming threading always provides parallelism in Python regardless of workload type",
+        "Not distinguishing CPU-bound work (where the GIL blocks real parallelism) from I/O-bound work (where threads genuinely help)",
+        "Switching to multiprocessing without checking that task granularity is large enough to amortize its own overhead"
+      ],
+      "keyPoints": [
+        "The GIL allows only one thread to execute Python bytecode at a time, regardless of core count",
+        "Threads help for I/O-bound work (which releases the GIL while waiting) but not CPU-bound work",
+        "ProcessPoolExecutor uses separate processes, each with its own interpreter and GIL, enabling real parallelism",
+        "Multiprocessing has its own overhead/granularity requirement, distinct from the threading GIL problem"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies the GIL as the root cause",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly distinguishes CPU-bound from I/O-bound suitability for threads",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly recommends ProcessPoolExecutor as the fix",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "multiprocessing-and-parallelism",
+        "label": "Review: Multiprocessing & Parallelism"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-032",
+      "questionCode": "LTV-QDEV-0111",
+      "title": "Investigating Unexpectedly High Execution Shortfall",
+      "prompt": "A VWAP execution algorithm is consistently costing 15+ basis points versus arrival price, far worse than the near-zero shortfall seen in backtesting. Walk through how you'd investigate whether the algorithm itself, or something else, is the actual cause.",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Execution Algorithms",
+        "TWAP/VWAP",
+        "Debugging"
+      ],
+      "modelAnswer": "The first thing to check is whether the backtest's near-zero shortfall was itself realistic or an artifact: a VWAP simulation that sizes its slices using the day's realized volume (which is only known after the fact) will match its own benchmark almost perfectly, but a real VWAP algo has to size slices against a predicted volume profile built from historical averages, and only matches the realized benchmark as well as that prediction turns out to be -- a mismatch here isn't a live bug at all, it's an unrealistic backtest. Assuming the backtest's volume-prediction methodology was sound, the next step is decomposing the 15+ bps into its actual sources: how much is genuine market drift during the execution window (which both TWAP and VWAP are equally exposed to and isn't the algorithm's fault), versus how much is the algo's own slices consistently executing worse than the volume-weighted benchmark it was targeting. If the predicted volume curve used for slicing is systematically wrong for this instrument (e.g. built from a different instrument's typical U-shaped profile, or stale), the algo would be mis-timing its slices relative to when liquidity is actually available, which directly produces exactly this kind of persistent shortfall. The investigation should compare live fills against both the arrival-price benchmark and the algo's own intraday VWAP benchmark separately, since conflating the two obscures whether the problem is market drift or genuinely bad execution timing.",
+      "professionalAnswer": "First question: was the backtest's near-zero number even realistic? If it sized VWAP slices using the day's own realized volume, that's cheating relative to what a live algo can actually know in advance -- it's only working from a predicted volume curve, so a real shortfall gap against that kind of backtest isn't necessarily a live bug. Assuming the backtest methodology was fair, I'd split the 15+ bps into market drift (which hits any algo equally and isn't the algorithm's fault) versus the algo's own fills consistently missing its own VWAP benchmark -- and if it's the latter, I'd check whether the predicted volume curve it's slicing against actually matches this instrument's real intraday liquidity pattern, because a stale or wrong volume profile would explain exactly this kind of persistent, structural shortfall.",
+      "commonMistakes": [
+        "Assuming the backtest's near-zero shortfall number was realistic without checking whether it used unrealistic realized-volume sizing",
+        "Not separating market drift (not the algorithm's fault) from genuine execution-timing error (the algorithm's fault)",
+        "Not checking whether the predicted volume profile used for slicing actually matches this instrument's real liquidity pattern"
+      ],
+      "keyPoints": [
+        "A VWAP backtest using realized (not predicted) volume will show unrealistically low shortfall",
+        "Decompose shortfall into market drift (not the algo's fault) vs. execution-timing error (the algo's fault)",
+        "A stale or mismatched predicted volume profile is a concrete, checkable cause of persistent shortfall",
+        "Compare against both arrival price and the algo's own intraday benchmark to isolate the real cause"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Questions whether the backtest's shortfall number was realistic (realized vs. predicted volume)",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly separates market drift from genuine execution error",
+          "weight": 30
+        },
+        {
+          "criterion": "Identifies the predicted volume profile as a concrete, checkable cause",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "execution-algorithms-twap-vwap-and-beyond",
+        "label": "Review: Execution Algorithms: TWAP, VWAP & Beyond"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-033",
+      "questionCode": "LTV-QDEV-0112",
+      "title": "Investigating a Realized-vs-Expected Volatility Alert",
+      "prompt": "A live strategy's realized daily P&L volatility is running at 1.8x its backtested expectation, but the kill switch hasn't triggered because no single day has breached the hard loss limit. How do you investigate this, and should it have triggered something regardless?",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Live Monitoring",
+        "Risk Management",
+        "Trading Systems"
+      ],
+      "modelAnswer": "A realized/expected volatility ratio of 1.8x is squarely a 'review, not kill switch' signal: kill switches exist for hard, pre-committed single-day or cumulative-drawdown limits, while a volatility ratio this elevated is exactly the kind of softer anomaly that's supposed to generate an alert to a human rather than an automatic stop, specifically because it doesn't automatically mean the strategy is broken -- a single unusually volatile period (one bad day, a short-lived regime shift, a data glitch inflating one day's P&L swing) can move a short-sample ratio substantially without the strategy actually having changed in any fundamental way. The investigation should first rule out sampling noise: how many days is this ratio computed over, and would removing the single worst day change the picture significantly -- if so, this may be exactly the kind of short-sample volatility the monitoring lesson warns against over-reacting to. If the elevated ratio persists over a longer, sustained window rather than being driven by one outlier day, that's a real signal worth treating seriously -- it could indicate the strategy's actual risk profile live doesn't match what the backtest predicted, which is often an early sign of the kind of decay that eventually warrants a retirement review. Separately, yes, something should have triggered regardless of whether the hard kill-switch limits were breached -- this is exactly the gap between hard limits and softer alerts that the monitoring discipline is supposed to cover, and if no alert fired at 1.8x, that threshold itself may need to be set as an explicit, pre-committed alert trigger rather than only relying on someone noticing it.",
+      "professionalAnswer": "1.8x is an alert-tier signal, not a kill-switch-tier one -- kill switches are for hard, pre-committed loss/drawdown limits, and this is exactly the softer kind of anomaly that's supposed to page a human instead of auto-stopping, because one bad day can move a short-sample ratio like this without the strategy actually being broken. First thing I'd check is whether one outlier day is driving the whole number, versus a sustained elevation over a longer window -- the first is probably noise, the second is a real signal worth taking seriously, possibly an early sign of decay. And yes, something should have fired regardless of the kill switch -- if nothing alerted a human at 1.8x, that's a gap in the monitoring setup itself, and I'd want an explicit, pre-committed alert threshold for exactly this ratio going forward.",
+      "commonMistakes": [
+        "Treating 'the kill switch didn't trigger' as evidence nothing is wrong",
+        "Not checking whether a single outlier day is driving the elevated ratio versus a sustained trend",
+        "Not recognizing the gap between hard kill-switch limits and softer alert-worthy anomalies as a monitoring-setup issue to fix"
+      ],
+      "keyPoints": [
+        "An elevated volatility ratio is an alert-tier signal, not automatically a kill-switch-tier one",
+        "Check whether a single outlier day, not a sustained trend, is driving the ratio before treating it as a real signal",
+        "A sustained elevation over time is a real signal and a plausible early sign of strategy decay",
+        "The absence of any alert at this threshold is itself a gap in the monitoring setup worth fixing"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly classifies this as an alert-tier, not kill-switch-tier, signal",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly investigates single-outlier-day noise vs. a sustained trend",
+          "weight": 35
+        },
+        {
+          "criterion": "Identifies the lack of an alert at this threshold as a real monitoring gap",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "monitoring-live-strategies",
+        "label": "Review: Monitoring Live Strategies"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-034",
+      "questionCode": "LTV-QDEV-0113",
+      "title": "Debugging a Spurious -50% Day in a Backtest",
+      "prompt": "A backtest shows a strategy taking a sudden, massive one-day loss on a date that corresponds to a known 2-for-1 stock split, even though the strategy never actually held a losing position that day. Diagnose the cause.",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Data Handling",
+        "Backtesting",
+        "Debugging"
+      ],
+      "modelAnswer": "This is the classic unadjusted-price bug: a 2-for-1 split halves the raw, unadjusted close price overnight with zero actual change in the company's value, and a backtest computing returns from raw close.pct_change() instead of the split-adjusted adj_close sees that halving as a genuine 50% one-day loss -- pure data artifact, not anything the strategy actually did. The fix is using adjusted close prices for return calculations, which retroactively rescale historical prices so splits (and, for total-return analysis, dividends) don't appear as fake price jumps. One subtlety worth checking at the same time: if the strategy's signal logic trades on absolute price levels (a rule like 'buy if price > $50'), the adjusted series isn't necessarily the right one for that trigger logic, since an adjusted price series itself changes retroactively as new dividends are paid -- the correct pattern is generally unadjusted prices for level-based trade triggers and adjusted prices specifically for computing realized P&L and returns.",
+      "professionalAnswer": "That's a split showing up as a fake 50% loss because the backtest is computing returns off the raw, unadjusted close instead of the adjusted close -- the split halves the raw price with zero actual change in value, and pct_change on the raw series reads that as a real one-day crash. The fix is switching return calculations to the adjusted close, which has already been rescaled backward through history to remove exactly this kind of artifact. One thing I'd double check at the same time: if any part of the signal trades on absolute price levels rather than just returns, I'd want unadjusted prices for that trigger logic specifically, since the adjusted series itself shifts over time as new dividends get paid.",
+      "commonMistakes": [
+        "Treating the -50% day as a real strategy bug rather than a data-adjustment issue",
+        "Switching everything to adjusted prices including level-based trade triggers, which have their own correct convention",
+        "Not recognizing that an adjusted price series itself changes retroactively as new dividends are paid"
+      ],
+      "keyPoints": [
+        "An unadjusted price series shows a stock split as a fake, massive price discontinuity",
+        "Adjusted close prices retroactively rescale history to remove split/dividend artifacts",
+        "Return calculations should use adjusted prices; absolute-level trade triggers often need unadjusted prices",
+        "This is a data-handling bug, not a trading-logic bug"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses the unadjusted-price/split artifact",
+          "weight": 45
+        },
+        {
+          "criterion": "Provides the correct fix (use adjusted close for returns)",
+          "weight": 30
+        },
+        {
+          "criterion": "Notes the correct convention for absolute-level trade triggers",
+          "weight": 15
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "data-handling-in-backtests",
+        "label": "Review: Data Handling in Backtests"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-035",
+      "questionCode": "LTV-QDEV-0114",
+      "title": "Diagnosing a Stale-Answer Bug From an Incomplete Cache Key",
+      "prompt": "A disk-cached expensive_backtest(signal_name, lookback, cost_bps) function was recently changed to add a new cost_bps parameter, but the cache key was never updated to include it. What breaks, and why might it not be noticed immediately?",
+      "category": "troubleshooting",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Caching",
+        "Cache Invalidation",
+        "Debugging"
+      ],
+      "modelAnswer": "If the cache key is still only (signal_name, lookback) after cost_bps was added as a real input that affects the result, two calls with the same signal_name and lookback but genuinely different cost_bps values will collide on the exact same cache entry -- the second call, instead of recomputing with its own cost_bps, silently returns the first call's cached result, computed under a different cost assumption entirely. This is a stale wrong answer, not a cache miss, which is specifically the worse of the two cache-key failure modes: a too-narrow key (missing an input that matters) returns incorrect data confidently, with no error, no warning, and no symptom that looks like a bug from the outside. It might not be noticed immediately because the first call that populates the cache for a given (signal_name, lookback) pair establishes whatever cost_bps happened to be used that first time, and every subsequent call with a different cost_bps silently inherits that stale result -- the bug only becomes visible if someone happens to notice that changing cost_bps doesn't actually change the reported result, which is easy to miss unless specifically tested for. The fix is updating the cache key to include every argument that actually affects the output: (signal_name, lookback, cost_bps).",
+      "professionalAnswer": "This is the dangerous cache-key failure mode: too narrow a key, not too wide. Since cost_bps was added as a real input but never added to the key, two calls that differ only in cost_bps collide on the same cache entry, and the second one silently gets the first one's answer under a completely different cost assumption -- no error, no warning, just a confidently wrong number. It can go unnoticed for a while because nothing about calling it looks broken; you'd only catch it by specifically testing that changing cost_bps actually changes the result, which is easy to skip if you're not looking for it. The fix is just adding cost_bps to the cache key so it's included in every lookup and every stored entry.",
+      "commonMistakes": [
+        "Assuming an incomplete cache key just causes extra cache misses, not realizing it can also return confidently wrong results",
+        "Not recognizing that this kind of bug produces no error or warning, making it easy to miss",
+        "Fixing only the new call sites instead of updating the cache key definition itself"
+      ],
+      "keyPoints": [
+        "A cache key missing an input that actually affects the result causes a stale, wrong answer, not just a miss",
+        "This failure mode is silent -- no error, no warning, a confidently wrong result returned",
+        "It can go unnoticed because nothing about the call looks broken from the outside",
+        "The fix is including every argument that affects the output in the cache key"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses the stale-answer collision from the missing cache-key input",
+          "weight": 45
+        },
+        {
+          "criterion": "Explains why this is silent and easy to miss",
+          "weight": 30
+        },
+        {
+          "criterion": "Provides the correct fix",
+          "weight": 15
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "caching-and-data-pipelines",
+        "label": "Review: Caching & Data Pipelines"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-036",
+      "questionCode": "LTV-QDEV-0115",
+      "title": "Designing Reproducible Logging for a Research Pipeline",
+      "prompt": "A research pipeline's Sharpe ratio report from six months ago can no longer be reproduced, and nobody remembers the exact config, seed, or library versions used. Design the minimum logging discipline that would have prevented this.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Logging",
+        "Reproducibility",
+        "Software Architecture"
+      ],
+      "modelAnswer": "The minimum discipline is: every run of a pipeline that produces a result anyone might later need to reproduce should, at the moment it starts, log the exact resolved configuration actually used (not just 'loaded config from file,' but the real parameter values), the random seed, and the versions of the key libraries involved (at minimum numpy/pandas and anything with its own randomness or numerically-significant behavior) -- all through Python's logging module at INFO level, not print(), so the record is structured, timestamped, and filterable rather than scattered. This should happen automatically, as part of the pipeline's normal execution, not as a manual step someone has to remember to do separately, because the entire point is that it needs to exist even for the run nobody thought was important at the time. Architecturally, this pairs with a lockfile (pinning exact dependency versions for a given environment) and, ideally, a config file checked into version control for non-secret settings, so that six months later, 'what produced this number' has an actual, written answer: the logged seed and config from that specific run, combined with the lockfile or logged versions, gives everything needed to reconstruct the exact environment and inputs.",
+      "professionalAnswer": "The fix has to be automatic, not a habit someone's supposed to remember: every run logs its actual resolved config values, its seed, and the key library versions, right at the start, through logging rather than print so it's structured and timestamped. That has to happen on every run, including the ones that don't feel important yet, because by definition you don't know in advance which result someone's going to ask about again in six months. Pair that with a lockfile pinning exact dependency versions, and 'can you reproduce that Sharpe ratio' stops being a guess and becomes a lookup.",
+      "commonMistakes": [
+        "Relying on someone remembering to manually record the config/seed instead of building it into the pipeline automatically",
+        "Logging only 'config loaded' without the actual resolved values used",
+        "Omitting library versions, which can silently change a numerical result between runs months apart"
+      ],
+      "keyPoints": [
+        "Every pipeline run should automatically log the exact resolved config, the seed, and key library versions",
+        "This must be automatic as part of normal execution, not a manual habit",
+        "Use structured logging (the logging module), not print(), for a timestamped, filterable record",
+        "Pair with a lockfile pinning exact dependency versions for full environment reproducibility"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies what must be logged (resolved config, seed, library versions)",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly argues this must be automatic, not a manual habit",
+          "weight": 30
+        },
+        {
+          "criterion": "Recommends structured logging over print(), and mentions a lockfile",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "logging-configuration-and-reproducibility",
+        "label": "Review: Logging, Configuration & Reproducibility"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-037",
+      "questionCode": "LTV-QDEV-0116",
+      "title": "Why a src/ Layout Prevents a Specific Import Bug",
+      "prompt": "A research package works fine when run from the repo root but breaks with a confusing import error once a teammate installs it properly and runs it from a different directory. Explain the specific bug class a src/ layout prevents, and why a flat layout is vulnerable to it.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Project Structure",
+        "Python Packaging",
+        "Software Architecture"
+      ],
+      "modelAnswer": "With a flat layout (the package directory sitting directly at the repo root, next to pyproject.toml), running Python from the repo root adds the current directory to Python's import path, which means import quant_research can silently succeed by importing the uninstalled local package directly off the filesystem, even if the package was never actually pip-installed at all, or was installed incorrectly. This masks real packaging problems: the code appears to work perfectly for the person who happens to always run it from exactly that directory, while the exact same import fails or behaves differently for anyone running it from somewhere else, or after a proper install, because there the current-directory trick isn't available and the import has to go through whatever was actually, correctly (or incorrectly) installed. A src/ layout (the package living under src/quant_research/ rather than at the root) eliminates this shortcut entirely: there's no way for the current-directory import trick to find the package, so every import -- in development, in testing, for every teammate, from every directory -- is forced to go through the real, installed package, via pip install -e . in editable mode for active development. The bug class this prevents is exactly 'it works on my machine because I happen to be in this one directory' quietly papering over a packaging problem that then surfaces, confusingly, for someone else.",
+      "professionalAnswer": "The flat layout has a specific trap: running from the repo root adds that directory to Python's import path, so import quant_research can succeed by grabbing the local, uninstalled package straight off disk -- even if the real pip install never actually worked correctly. That looks fine for whoever always happens to run it from that exact directory, and then breaks confusingly for anyone else, or after a real install, because the shortcut isn't available anywhere else. Moving the package under src/ removes that shortcut entirely -- there's no path by which Python finds it except through the actual, installed package, so pip install -e . either genuinely works for everyone or fails loudly right away, instead of working by accident for one person.",
+      "commonMistakes": [
+        "Not realizing the current working directory is added to Python's import path, enabling the accidental local-import shortcut",
+        "Assuming 'it works for me' means the packaging is actually correct",
+        "Treating src/ as a purely cosmetic convention rather than one that structurally prevents this bug class"
+      ],
+      "keyPoints": [
+        "Running Python from the repo root adds that directory to the import path",
+        "A flat layout can accidentally import the uninstalled local package, masking real packaging problems",
+        "This creates 'it works on my machine, in this exact directory' bugs that surface confusingly elsewhere",
+        "A src/ layout removes the accidental-local-import shortcut entirely, forcing every import through the real installed package"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains the accidental local-import mechanism in a flat layout",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains how src/ prevents this specifically",
+          "weight": 35
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "packaging-and-project-structure",
+        "label": "Review: Packaging & Project Structure"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-038",
+      "questionCode": "LTV-QDEV-0117",
+      "title": "Designing a Test Suite for a Numerical Returns Function",
+      "prompt": "Design a test suite (not just one test) for a pct_returns(prices) function, covering both the correctness-assertion pitfall and the edge cases numerical code commonly mishandles.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Testing",
+        "Numerical Code",
+        "pytest"
+      ],
+      "modelAnswer": "The suite needs several distinct categories of test, not just one happy-path case. First, a basic correctness test using pytest.approx or np.testing.assert_allclose rather than == -- comparing computed floats with == fails on values that are mathematically correct but not bit-identical due to floating-point rounding, which is a bug in the test, not the code, and would otherwise produce a confusing false failure. Second, explicit edge-case tests: an empty array and a single-element array (both should return zero results, not crash or return something nonsensical), an input containing NaN (which should propagate through to the corresponding output positions, not silently vanish or produce a different NaN-adjacent wrong value), and, if realistic for the domain, very large magnitude values that could risk overflow. Third, ideally a property-based test using hypothesis that checks a general rule across many generated inputs -- for example, that the output length is always exactly one less than a non-empty input's length -- which catches combinations of input size and magnitude that hand-picked test cases never happen to try. Designing the suite this way, as distinct categories rather than one or two example-driven tests, is what actually catches the kinds of bugs that pass casual, happy-path-only testing.",
+      "professionalAnswer": "I'd think of it as several distinct categories, not just 'a few tests.' Tolerance-based assertions (pytest.approx / assert_allclose) instead of == for the basic correctness check, since == on floats fails for the wrong reason -- rounding, not a real bug. Explicit tests for empty input, a single-element input, and NaN propagation, since those are exactly the inputs numerical code quietly mishandles. And ideally a hypothesis property test checking something that should always hold -- like output length always being input length minus one -- across a lot of generated inputs, which catches combinations nobody thought to hand-write. The real value here is in the categories, not any single test.",
+      "commonMistakes": [
+        "Using == to compare floating-point results instead of a tolerance-based assertion",
+        "Testing only the happy path, skipping empty-array, single-element, and NaN-propagation cases",
+        "Not considering a property-based test to cover combinations hand-picked examples wouldn't catch"
+      ],
+      "keyPoints": [
+        "Use pytest.approx or np.testing.assert_allclose instead of == for floating-point correctness",
+        "Explicit edge-case tests: empty array, single-element array, NaN propagation",
+        "A property-based test (hypothesis) checks a general rule across many generated inputs",
+        "A real test suite needs several distinct categories, not just happy-path examples"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly specifies tolerance-based assertions for float correctness",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly specifies the key edge cases (empty, single-element, NaN)",
+          "weight": 35
+        },
+        {
+          "criterion": "Mentions property-based testing as a complementary technique",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "testing-numerical-code",
+        "label": "Review: Testing Numerical Code"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-039",
+      "questionCode": "LTV-QDEV-0118",
+      "title": "Should This Sharpe-Ratio Script Be a Class?",
+      "prompt": "A teammate wraps a one-off script that loads a CSV, computes a Sharpe ratio, and prints it into a SharpeCalculator class with an __init__ and a calculate() method. Is that a good use of OOP here? Contrast it with a PositionBook that tracks fills over time.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Object-Oriented Design",
+        "Software Architecture",
+        "Python"
+      ],
+      "modelAnswer": "A class earns its place when there's state that persists and changes over time, with behavior tied to that state -- a PositionBook is exactly this: holdings change as fills arrive, and 'what's my current exposure' is a question that needs the current, evolving state, not a fresh recomputation from nothing each time, so bundling that state with the methods that update and query it (add_fill, total_value) is genuinely useful. The SharpeCalculator case has none of that: load a CSV, compute one number, print it -- there's no persisting state across calls and no behavior beyond the single calculation itself. Wrapping it in a class with __init__ and calculate() adds ceremony (an object to construct, state to manage even though nothing's actually changing) without adding anything a plain function wouldn't already do, more simply. The right question isn't 'could this be a class' -- almost anything technically could be -- it's 'does this genuinely have state and behavior that benefit from being bundled together, or is this just adding structure the problem doesn't need.' Here, a plain function does the same job with less code to read and maintain.",
+      "professionalAnswer": "I'd push back on the class here. The test I use is: is there real state that persists and changes, with behavior attached to it? A PositionBook clearly has that -- positions change as fills come in, and querying current exposure needs that live state. A script that loads a CSV, computes one Sharpe ratio, and prints it has none of that; there's nothing persisting, nothing changing, just one calculation. Wrapping it in a class adds an object to construct and 'state' that never actually changes, for no real benefit over a plain function. The question isn't whether it could be a class -- almost anything could -- it's whether the structure is actually earning its complexity here, and in this case it isn't.",
+      "commonMistakes": [
+        "Reaching for a class by default for any piece of logic, regardless of whether it has real persisting state",
+        "Not distinguishing 'could be a class' from 'benefits from being a class'",
+        "Missing that a PositionBook is a genuinely good fit for OOP because of its evolving, queried state"
+      ],
+      "keyPoints": [
+        "Classes earn their place when there's persisting, changing state with behavior tied to it",
+        "A PositionBook's evolving holdings and queries over them are a genuine fit for a class",
+        "A one-off calculation with no persisting state is better as a plain function",
+        "The right test is 'does this benefit from bundled state and behavior,' not 'could this be a class'"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly argues the SharpeCalculator doesn't need to be a class",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains why PositionBook is a genuinely good fit for a class",
+          "weight": 35
+        },
+        {
+          "criterion": "Articulates the right general decision criterion",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "object-oriented-design-for-quant-code",
+        "label": "Review: Object-Oriented Design for Quant Code"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-040",
+      "questionCode": "LTV-QDEV-0119",
+      "title": "Choosing Columnar Storage for a Research Data Layer",
+      "prompt": "A research team's data layer currently stores tick data in a traditional row-oriented database designed for an application's transactional workload. Queries like 'average price by symbol across 2 million rows' are slow. Diagnose why, and justify switching to a columnar approach like Parquet/DuckDB.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Database Architecture",
+        "Columnar Storage",
+        "Data Engineering"
+      ],
+      "modelAnswer": "A row-oriented database stores all columns of one row together on disk, which is the right layout for a transactional (OLTP) access pattern -- 'fetch this one specific order, with all its fields' -- but it's the wrong layout for an analytical (OLAP) query like 'average the price column across 2 million rows,' because that query has to read every column of every row off disk even though it only actually needs one or two of them, wasting most of the I/O on data it never uses. A columnar store like Parquet inverts this: all values of one column are stored together, so an aggregate query over just price and volume reads only those columns' bytes, skipping symbol and anything else entirely. This also compounds with two further benefits: compression works much better on a column of similar values than on a row interleaving different types, and a vectorized query engine like DuckDB can run SIMD-friendly operations across a contiguous chunk of one column at once. The research team's query pattern -- aggregate, analytical, across many rows -- is almost always OLAP-shaped, essentially never 'fetch and update one specific record,' which is exactly the mismatch explaining the current slowness and exactly the case columnar storage is built for.",
+      "professionalAnswer": "The slowness is a storage-layout mismatch, not a sizing problem. Row-oriented storage is built for 'fetch one record with all its fields,' which is a transactional pattern -- but an 'average price by symbol' query is analytical, and in a row store that means reading every column of every row off disk just to use one or two of them. Parquet/DuckDB's columnar layout flips that: the query only reads the columns it actually needs, plus you get real compression and vectorized execution benefits on top. Research queries are almost always this analytical, aggregate-across-many-rows shape, which is exactly the mismatch explaining the current slowness and exactly what columnar storage is designed to fix.",
+      "commonMistakes": [
+        "Diagnosing the slowness as a hardware/scaling problem rather than a storage-layout mismatch",
+        "Not explaining why row-oriented storage specifically wastes I/O for this query shape",
+        "Treating compression and vectorized execution as separate, unrelated benefits rather than both following from the columnar layout"
+      ],
+      "keyPoints": [
+        "Row-oriented storage reads every column of every row, even for a query that only needs one or two columns",
+        "Columnar storage reads only the needed columns, matching the analytical/aggregate access pattern",
+        "Compression and vectorized execution are both direct consequences of the columnar layout",
+        "Research queries are almost always OLAP-shaped (aggregate across many rows), rarely OLTP-shaped"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses the row-vs-columnar storage mismatch as the cause",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains why columnar storage fits the analytical query pattern",
+          "weight": 35
+        },
+        {
+          "criterion": "Mentions compression and/or vectorized execution as additional benefits",
+          "weight": 15
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "columnar-and-time-series-databases",
+        "label": "Review: Columnar & Time-Series Databases"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-041",
+      "questionCode": "LTV-QDEV-0120",
+      "title": "Designing a Correct Cache Key for a Research Pipeline Step",
+      "prompt": "Design the caching layer for an expensive_backtest(signal_name, lookback, cost_bps, data_version) pipeline step, including what the cache key must contain and how you'd guard against the single biggest risk in doing this wrong.",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Caching",
+        "Data Pipelines",
+        "Software Architecture"
+      ],
+      "modelAnswer": "The cache key must include every single argument that actually determines the output -- here, (signal_name, lookback, cost_bps, data_version) -- no more and no less. Including an irrelevant input makes the key too specific, causing avoidable cache misses for calls that should actually hit; the far more dangerous mistake, though, is omitting an input that genuinely affects the result, since that makes two different, legitimately different calls collide on the same stored entry, and the second call silently receives the first call's answer computed under different conditions -- a confidently wrong result with no error or warning, which is specifically why 'cache invalidation' has its own reputation as a genuinely hard problem, not a trivial implementation detail. data_version deserves particular attention here: if the underlying historical data is ever revised or extended, a cache key that doesn't account for which data version produced a given result would serve a stale answer computed against now-outdated data, indefinitely, with no way to tell from the outside. A disk-based cache (via diskcache) is the right persistence layer so results survive across process restarts and scheduled runs, not just within one session. The concrete guard against the biggest risk is a simple discipline: every time a new parameter is added to the underlying function that could change its output, it must be added to the cache key in the same change, reviewed as part of that same code change rather than as an afterthought.",
+      "professionalAnswer": "The key has to be exactly (signal_name, lookback, cost_bps, data_version) -- every real input, nothing more. The dangerous failure mode isn't too many cache misses, it's a key that's missing one of these: two genuinely different calls collide on one stored entry, and the second one silently gets the first one's answer under different conditions, with zero error or warning. data_version is the one I'd watch most carefully here, since if the underlying data ever gets revised, a cache that doesn't account for that would happily serve a stale result computed against outdated data forever. The actual discipline that prevents this: any time a new parameter gets added to the function, adding it to the cache key is part of that same change, not a follow-up task someone might forget.",
+      "commonMistakes": [
+        "Treating a too-narrow cache key as merely a performance problem rather than a correctness problem",
+        "Forgetting data_version specifically, risking a stale result if underlying data is later revised",
+        "Treating updating the cache key as a separate task from adding the new parameter, rather than the same change"
+      ],
+      "keyPoints": [
+        "The cache key must include every input that affects the output, including data_version",
+        "A too-narrow key causes silent stale-wrong-answer collisions, which is a correctness bug, not just a performance one",
+        "diskcache persists results across process restarts, appropriate for a research pipeline",
+        "Updating the cache key must happen in the same change as adding a new parameter, not as an afterthought"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly specifies the complete cache key",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly explains the stale-wrong-answer risk from an incomplete key",
+          "weight": 35
+        },
+        {
+          "criterion": "Addresses data_version specifically",
+          "weight": 20
+        },
+        {
+          "criterion": "Proposes a concrete discipline to prevent the risk going forward",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "caching-and-data-pipelines",
+        "label": "Review: Caching & Data Pipelines"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-042",
+      "questionCode": "LTV-QDEV-0121",
+      "title": "Where the Execution-Algorithm Layer Belongs in the System",
+      "prompt": "A strategy currently generates a target position and calls OrderManager.submit() directly for the full size in one order. The desk wants to start using VWAP execution for larger orders. Where architecturally should that TWAP/VWAP logic live, and why shouldn't the strategy's own code implement the slicing?",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Execution Algorithms",
+        "Software Architecture",
+        "Trading Systems"
+      ],
+      "modelAnswer": "The slicing logic belongs inside the execution/OMS layer, as a distinct execution algorithm the strategy can request, not inside the strategy's own code. The strategy's actual job is deciding what to trade and how much -- producing a target position -- and that decision is conceptually independent of how the resulting order gets worked into the market. If every strategy that needs VWAP slicing implemented its own slicing loop, the same non-trivial logic (volume-curve prediction, implementation-shortfall tracking, slice timing) would be duplicated and could easily drift out of sync across strategies, and a single bug or improvement in that logic would need to be found and fixed in every strategy separately rather than once. The correct interface is something like OrderManager.submit(target, algo=VWAP) or a dedicated execution-algorithm layer the OMS calls into, so the strategy just states what it wants (a target position, optionally with an execution style) and the execution layer handles the actual mechanics of getting there -- exactly the same separation-of-concerns argument that justifies the OMS abstraction existing at all between strategies and broker protocols.",
+      "professionalAnswer": "This belongs in the execution/OMS layer, not in the strategy. The strategy's job is deciding what to trade and how much; how that gets worked into the market -- all at once, TWAP, VWAP -- is a separate, genuinely reusable concern that shouldn't be duplicated inside every strategy that happens to need it. If each strategy implemented its own VWAP slicing, a bug or improvement in that logic has to be found and fixed everywhere it was copied, instead of once. The clean interface is something like submit(target, algo=VWAP) on the OMS side, so the strategy just states its intent and the execution layer owns the actual mechanics -- the same reasoning that justifies having an OMS abstraction at all.",
+      "commonMistakes": [
+        "Implementing VWAP slicing logic inside the strategy's own code instead of the execution/OMS layer",
+        "Not recognizing that duplicating this logic across strategies creates a maintenance and consistency risk",
+        "Missing that this is the same separation-of-concerns argument that justifies an OMS layer existing in the first place"
+      ],
+      "keyPoints": [
+        "Execution-algorithm logic belongs in the execution/OMS layer, not in strategy code",
+        "The strategy's job is deciding what to trade; how the order gets worked is a separate concern",
+        "Duplicating execution logic across strategies risks drift and multiplies the cost of any future fix",
+        "This mirrors the same reasoning that justifies an OMS abstraction between strategies and broker protocols"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly places the execution-algorithm logic in the OMS/execution layer",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains the separation-of-concerns argument",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains the duplication/maintenance risk of the alternative",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "execution-algorithms-twap-vwap-and-beyond",
+        "label": "Review: Execution Algorithms: TWAP, VWAP & Beyond"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-043",
+      "questionCode": "LTV-QDEV-0122",
+      "title": "Architecting an Automated Strategy Retirement Review Process",
+      "prompt": "Design a system component that automatically flags a live strategy for retirement review based on rolling Sharpe decay, rather than relying on someone remembering to check periodically. What are the key design decisions, and why does the threshold need multiple consecutive checks rather than one?",
+      "category": "architecture",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Monitoring",
+        "Risk Management",
+        "Trading Systems"
+      ],
+      "modelAnswer": "The component needs, at minimum: a recomputed rolling-window Sharpe ratio (refreshed on a regular cadence, e.g. monthly), a pre-committed numeric threshold below which performance is considered concerning, and critically, a requirement that the rolling Sharpe stay below that threshold for several consecutive checks, not just one, before flagging a review. The multiple-consecutive-checks requirement exists specifically to avoid reacting to short-term noise: a single bad monthly window can push a rolling Sharpe below any reasonable threshold even for a strategy that's perfectly healthy, just from ordinary sampling variation, and a system that flags a review on the very first below-threshold reading would generate frequent false alarms that erode trust in the alerting system itself. Requiring, say, three consecutive monthly checks below the threshold means a short-lived rough patch self-corrects before triggering anything, while a genuine, sustained decline still gets caught within a reasonable window -- a deliberate tradeoff between reacting fast (and risking false alarms) and reacting slow (and giving up more capital to a genuinely decayed strategy) that should be set deliberately, the same way kill-switch thresholds are, rather than picked arbitrarily. Just as important: flagging a review should never mean automatically shutting the strategy down -- it should route to a human decision (pause and re-paper-test, resize, or retire), since the system's job is surfacing the signal reliably, not making the final call.",
+      "professionalAnswer": "The key pieces are a rolling-window Sharpe recomputed on a regular cadence, a pre-committed threshold, and -- this is the part people skip -- requiring several consecutive below-threshold checks, not just one, before flagging anything. A single bad month can push even a healthy strategy's rolling Sharpe below a reasonable threshold purely from noise, and reacting to that single reading would generate false alarms that eventually make people stop trusting the system. Requiring three consecutive checks lets a short rough patch self-correct while still catching a genuine, sustained decline in a reasonable window -- that's a deliberate speed-vs-false-alarm tradeoff, set on purpose, the same way kill-switch thresholds are. And I'd make sure flagging a review routes to a human decision, not an automatic shutdown -- the system's job is surfacing the signal reliably, not making the retirement call itself.",
+      "commonMistakes": [
+        "Flagging a review on a single below-threshold reading, generating false alarms from ordinary noise",
+        "Not making the threshold and consecutive-check count a deliberate, pre-committed design decision",
+        "Having the flag automatically shut the strategy down instead of routing to a human decision"
+      ],
+      "keyPoints": [
+        "A rolling-window Sharpe, refreshed on a regular cadence, surfaces gradual decay a single whole-period number hides",
+        "Requiring multiple consecutive below-threshold checks avoids false alarms from short-term sampling noise",
+        "The threshold and consecutive-check count are a deliberate speed-vs-false-alarm tradeoff, set in advance",
+        "A flagged review should route to a human decision, not trigger an automatic shutdown"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly specifies the rolling Sharpe + threshold + consecutive-check design",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains why multiple consecutive checks are needed, not one",
+          "weight": 35
+        },
+        {
+          "criterion": "Notes that flagging should route to a human decision, not auto-shutdown",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "strategy-decay-and-retirement",
+        "label": "Review: Strategy Decay & Retirement"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-044",
+      "questionCode": "LTV-QDEV-0123",
+      "title": "Leading a Blameless Postmortem After a Production Incident",
+      "prompt": "A bug you reviewed and approved caused a strategy to double-submit orders for twenty minutes before anyone noticed. You're asked to lead the postmortem. How do you run it?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Incident Response",
+        "Leadership",
+        "Communication"
+      ],
+      "modelAnswer": "A good postmortem is structured around what happened and why the systems and process allowed it, not around assigning individual blame -- even though you personally reviewed and approved the change, starting from 'whose fault is this' produces defensiveness and incomplete information, while starting from 'what sequence of events, checks, and gaps let this happen' produces an honest, complete timeline people are willing to contribute to. Concretely: build an exact timeline (when the bug was introduced, when it was reviewed, when it shipped, when double-submission started, when it was detected, when it was fixed), identify every point a different check could plausibly have caught it (code review, a specific missing test case, a monitoring alert that didn't exist or didn't fire, a kill switch that could have caught the resulting anomaly but wasn't tuned to), and come away with concrete, assigned action items -- not vague 'be more careful' resolutions, but specific changes: add this test, add this monitoring check, adjust this threshold. As the reviewer who approved the change, explicitly owning that part of the timeline without being defensive about it actually sets the tone for everyone else to be equally honest about their own part, which is what makes the whole process actually work.",
+      "professionalAnswer": "I'd run it blameless by design -- not ignoring that I reviewed and approved the change, but framing the whole thing around 'what sequence of events and gaps let this happen,' not 'whose fault is it.' Concretely: a precise timeline from when the bug was introduced through when it was caught, a specific look at every point something could have caught it earlier -- review, a missing test, monitoring that didn't fire -- and ending with concrete, owned action items, not 'be more careful.' I'd also make a point of openly owning my part of the timeline first, without being defensive about it, because that's what actually gives everyone else permission to be honest about their part instead of covering for themselves.",
+      "commonMistakes": [
+        "Framing the postmortem around individual blame rather than systemic gaps",
+        "Producing vague action items ('be more careful') instead of specific, assigned changes",
+        "Being defensive about your own role in the incident, which discourages others from being honest about theirs"
+      ],
+      "keyPoints": [
+        "A postmortem should focus on what sequence of events and gaps allowed the incident, not individual blame",
+        "Build a precise timeline and identify every point a different check could plausibly have caught it earlier",
+        "End with specific, assigned action items, not vague resolutions",
+        "Openly owning your own part of the timeline sets the tone for others to be honest too"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Frames the postmortem as blameless/systemic rather than blame-focused",
+          "weight": 35
+        },
+        {
+          "criterion": "Describes building a precise timeline and identifying systemic gaps",
+          "weight": 30
+        },
+        {
+          "criterion": "Specifies concrete, assigned action items rather than vague resolutions",
+          "weight": 20
+        },
+        {
+          "criterion": "Shows accountability for your own role without defensiveness",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-045",
+      "questionCode": "LTV-QDEV-0124",
+      "title": "Negotiating a Quant Developer Offer With a Researched Range",
+      "prompt": "You've received an offer from a prop trading firm with a lower base and a profit-share component you don't fully understand yet, and a competing offer from a bank desk with a higher, steadier base. Walk through how you'd actually negotiate and decide, rather than just comparing the two base numbers.",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Negotiation",
+        "Compensation",
+        "Career Prep"
+      ],
+      "modelAnswer": "Comparing base numbers alone is comparing the wrong thing here, since prop shops and bank desks structure total compensation very differently -- a prop shop's lower base with a profit-share component tied to individual or desk PnL can pay far more in a good year and far less in a bad one than a bank desk's steadier, less individually-PnL-linked bonus on a higher base, so the real comparison needs to be expected total compensation and its variance, not the headline base. Before negotiating anything, I'd build a researched range for each firm type and city from a couple of independent sources -- aggregated salary sites read skeptically, actual live postings for comparable roles, and candid input from my own network, since quant pay is unusually city- and firm-type-sensitive and general sources underrepresent it. With that range in hand, a respectful counter follows the same shape that works anywhere: thank them for the offer, state the researched range with a specific, concrete reason behind it (not just 'I want more'), and stay collaborative rather than issuing an ultimatum. The actual decision between the two offers, once the numbers are properly understood, should weigh my own tolerance for the prop shop's compensation variance against the bank desk's steadier structure, alongside non-compensation factors -- which firm's research/risk culture and mentorship actually fit what I want, and what the role concretely does day to day, since the same title can mean very different things at each firm.",
+      "professionalAnswer": "The base numbers alone aren't actually comparable here -- a prop shop's profit-share-heavy structure and a bank desk's steadier bonus are different risk profiles wrapped around different compensation shapes, so I'd be comparing expected total comp and its variance, not just the headline base. Before I negotiate anything, I'd build a researched range per firm type and city from a couple of independent sources, since general salary sites underrepresent quant-specific roles. Then a respectful counter: thank them, state the range with a specific reason, stay collaborative. And the actual decision isn't just math -- it's how much variance I can personally tolerate, plus which firm's culture and mentorship I actually want, since the same job title can mean something very different at each place.",
+      "commonMistakes": [
+        "Comparing headline base salaries directly without understanding each firm's different compensation structure",
+        "Negotiating from a gut feeling about fairness instead of a researched range from independent sources",
+        "Deciding purely on expected compensation without weighing personal variance tolerance and culture fit"
+      ],
+      "keyPoints": [
+        "Prop shop and bank desk compensation structures differ in variance, not just headline base",
+        "Build a researched range from independent sources specific to firm type and city before negotiating",
+        "A respectful counter states a researched range with a specific reason, staying collaborative",
+        "The final decision should weigh variance tolerance and culture/role fit alongside the numbers"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains why base salary alone is the wrong comparison here",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes building a researched range from independent sources",
+          "weight": 25
+        },
+        {
+          "criterion": "Describes a respectful, specific negotiation approach",
+          "weight": 25
+        },
+        {
+          "criterion": "Weighs variance tolerance and non-compensation factors in the final decision",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 5,
+      "lessonLink": {
+        "courseSlug": "quant-research-and-trading-capstone",
+        "lessonSlug": "compensation-offers-and-choosing-a-firm",
+        "label": "Review: Compensation, Offers & Choosing a Firm"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-046",
+      "questionCode": "LTV-QDEV-0125",
+      "title": "Mentoring a Junior Developer Through a Recurring Memory Bug",
+      "prompt": "A junior developer on your team keeps introducing dangling-pointer bugs, and their latest fix for one was to add a try/catch around the crash rather than addressing the actual lifetime issue. How do you mentor them through this effectively?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Mentoring",
+        "Code Review",
+        "Technical Communication"
+      ],
+      "modelAnswer": "The try/catch 'fix' is a strong signal the junior developer doesn't yet have a working mental model of object lifetime, not just that they made one careless mistake -- catching an exception around undefined behavior doesn't actually address it (dangling-pointer dereferences aren't even guaranteed to throw a catchable exception in the first place), so pointing that out concretely, with why it doesn't fix the real problem, is the necessary first step rather than skipping straight to the lifetime explanation. From there, the more effective long-term move is walking through one or two of their actual recent bugs together, asking them to trace exactly when each object was created and destroyed rather than lecturing abstractly about stack vs. heap -- people build real intuition for lifetime from tracing concrete examples, not from hearing the rule restated. It's also worth normalizing that this is a genuinely common category of mistake for anyone newer to C++, not a sign they're not cut out for it, while still being clear that the pattern (not just this one bug) needs to change, and following up on their next few PRs specifically for this issue rather than assuming one conversation fixed it.",
+      "professionalAnswer": "The try/catch is the real tell here -- it means they don't have a working model of lifetime yet, not just that they made one mistake. I'd point out directly, concretely, why that doesn't actually fix anything -- dangling-pointer UB isn't even guaranteed to throw something catchable. Then I'd walk through one or two of their actual recent bugs together and have them trace exactly when each object gets created and destroyed, rather than re-explaining stack vs. heap in the abstract -- that's where the real intuition comes from. I'd also tell them directly this is a common mistake at this stage, not a sign they're bad at this, while being clear the pattern itself needs to change, and I'd actually follow up on their next couple of PRs rather than assuming one talk fixed it.",
+      "commonMistakes": [
+        "Only pointing out that the try/catch doesn't fix the bug without addressing the underlying lifetime misunderstanding",
+        "Re-explaining the abstract rule (stack vs. heap) instead of tracing concrete examples from their actual code",
+        "Assuming one conversation resolves a recurring pattern, without following up on subsequent work"
+      ],
+      "keyPoints": [
+        "A try/catch around undefined behavior doesn't fix it and signals a deeper lifetime misunderstanding",
+        "Tracing concrete examples from the developer's own recent bugs builds real intuition better than abstract explanation",
+        "Normalize that this is a common mistake at this experience level, while being clear the pattern must change",
+        "Follow up on subsequent work rather than assuming one conversation resolved a recurring pattern"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies the try/catch as addressing the wrong problem, and explains why",
+          "weight": 30
+        },
+        {
+          "criterion": "Proposes tracing concrete examples rather than abstract re-explanation",
+          "weight": 30
+        },
+        {
+          "criterion": "Balances supportive tone with clear expectation the pattern must change",
+          "weight": 25
+        },
+        {
+          "criterion": "Mentions following up on subsequent work",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-047",
+      "questionCode": "LTV-QDEV-0126",
+      "title": "Pushing Back on an Unrealistic Backtest Engine Rewrite Deadline",
+      "prompt": "Leadership wants the team's backtest engine rewritten from vectorized to event-driven architecture, with full feature parity, in two weeks, to unblock a new strategy that needs path-dependent logic. You believe this realistically takes six weeks. How do you handle this?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Technical Leadership",
+        "Stakeholder Management",
+        "Estimation"
+      ],
+      "modelAnswer": "The right move is to separate the actual business need (unblocking the new strategy) from the specific solution leadership proposed (a full rewrite with full feature parity), because those aren't the same thing, and the gap between them is exactly where a faster, legitimate path might exist. A two-week full rewrite with complete feature parity across a mature vectorized engine is a genuinely different, much larger scope than 'make it possible to backtest this one path-dependent strategy soon' -- the latter might be achievable in two weeks via a narrower, targeted approach (a small, purpose-built event-driven harness for just this strategy, without replacing the existing vectorized engine's other users) while the full rewrite proceeds on a realistic six-week timeline in parallel. Presenting this as a concrete tradeoff -- here's what a two-week narrow solution gets you, here's what the full six-week rewrite gets you, here's the risk of trying to force full parity into two weeks (corners cut on testing, a rushed engine other strategies then depend on) -- gives leadership an actual decision to make with the real costs visible, rather than either quietly agreeing to an unrealistic deadline and cutting corners, or just flatly saying no without offering a path to the thing they actually need.",
+      "professionalAnswer": "I'd separate what they actually need from what they asked for -- unblocking one path-dependent strategy is not the same scope as a full-parity rewrite of the whole engine, and that gap is where a faster real option probably lives. I'd propose a narrow, purpose-built event-driven path just for this one strategy, deliverable in something closer to the two-week window, while the full rewrite proceeds on its real six-week timeline in parallel. Then I'd lay out the actual tradeoff plainly: here's what the narrow fix gets you now, here's what full parity costs and why rushing it risks shipping something other strategies end up depending on without enough testing. That gives leadership a real decision instead of me either quietly agreeing to something I don't believe, or just saying no.",
+      "commonMistakes": [
+        "Treating the stated solution (full rewrite) as fixed, instead of questioning whether it's actually required to meet the real need",
+        "Simply agreeing to the unrealistic deadline and cutting corners on testing",
+        "Flatly refusing without offering any concrete path toward what leadership actually needs sooner"
+      ],
+      "keyPoints": [
+        "Separate the actual business need from the specific solution proposed, since they may not require the same scope",
+        "Propose a narrower, faster solution if one genuinely addresses the real need",
+        "Present the tradeoff (narrow fast fix vs. full proper rewrite) explicitly, with real costs and risks named",
+        "Avoid both silently agreeing to an unrealistic deadline and simply refusing without an alternative"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly separates the underlying need from the proposed solution's scope",
+          "weight": 35
+        },
+        {
+          "criterion": "Proposes a concrete, narrower alternative to meet the real deadline",
+          "weight": 30
+        },
+        {
+          "criterion": "Presents the tradeoff explicitly rather than silently complying or flatly refusing",
+          "weight": 25
+        },
+        {
+          "criterion": "Professional tone",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-048",
+      "questionCode": "LTV-QDEV-0127",
+      "title": "Disclosing a Bug You Introduced Into Production",
+      "prompt": "You discover, two days after deploying your own change, that it introduced a subtle sizing bug that's been slightly overstating position sizes in a live strategy since the deploy. No one else has noticed yet. What do you do?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Accountability",
+        "Risk Management",
+        "Communication"
+      ],
+      "modelAnswer": "The only acceptable move is disclosing it immediately and fully, to whoever owns risk/oversight for that strategy, the moment it's discovered -- not waiting to investigate quietly first and only surfacing it once there's a complete picture, since the strategy continues running with the sizing error for every additional hour that passes undisclosed, and that ongoing exposure is the actual risk, not the embarrassment of reporting an incomplete picture. The disclosure should be factual and specific: what the bug is, when it was introduced, the estimated magnitude and duration of the sizing error so far, and an immediate recommendation (pause the strategy, or at minimum flag it for urgent review) while the full fix and impact assessment continue in parallel. It's worth being honest that this was your own change without over-apologizing or getting defensive -- the goal in the moment is accurate, fast information that lets the right people make a risk decision, not managing how the mistake reflects on you personally; that part gets addressed properly afterward, in the postmortem.",
+      "professionalAnswer": "I disclose it immediately, fully, to whoever owns risk for that strategy -- not after I've quietly dug in and have a complete picture, because every extra hour it's live and undisclosed is the actual risk, not how complete my report is. I'd be factual: what broke, when, roughly how much and for how long, and an immediate recommendation like pausing it while the full fix and impact assessment continue. I'd own that it was my change without being defensive or over-apologizing in the moment -- what matters right then is getting accurate information to the people who need to make a risk call, not managing how it looks for me. That gets sorted out properly in the postmortem afterward.",
+      "commonMistakes": [
+        "Waiting to investigate quietly before disclosing, extending the strategy's ongoing undisclosed exposure",
+        "Disclosing vaguely instead of giving a specific, factual account of the bug's magnitude and duration",
+        "Getting defensive or over-apologizing instead of focusing on giving the information needed for a risk decision"
+      ],
+      "keyPoints": [
+        "Disclose immediately upon discovery, not after quietly investigating to a complete picture",
+        "Every additional hour undisclosed is real ongoing risk, which outweighs the discomfort of an incomplete report",
+        "Disclosure should be factual and specific: what, when, estimated magnitude/duration, and an immediate recommendation",
+        "Own the mistake without being defensive, focusing on actionable information over managing personal reputation in the moment"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly recommends immediate disclosure rather than quiet investigation first",
+          "weight": 40
+        },
+        {
+          "criterion": "Describes a factual, specific disclosure with an immediate recommendation",
+          "weight": 30
+        },
+        {
+          "criterion": "Shows accountability without defensiveness",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-049",
+      "questionCode": "LTV-QDEV-0128",
+      "title": "Working With a Researcher Who Dismisses Testing as Overhead",
+      "prompt": "A quant researcher you support keeps pushing untested, hand-verified-only signal code straight into the shared research library, saying unit tests 'slow down research.' Their code has already caused two silent bugs that reached production backtests. How do you address this?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Collaboration",
+        "Technical Influence",
+        "Engineering Culture"
+      ],
+      "modelAnswer": "The productive approach is making the cost concrete rather than arguing abstractly that 'testing is good practice' -- pointing specifically at the two actual incidents this exact pattern already caused, including what each one cost (time spent diagnosing, any decisions made on a wrong number before it was caught), is far more persuasive than a general principle, because it directly counters the 'tests slow down research' framing with 'and untested code has already cost us this much, twice.' It's also worth proposing something lighter than what the researcher is probably imagining when they hear 'unit tests' -- a small number of well-chosen edge-case tests (empty input, a known reference value) on just the parts of their code that get reused by others, not a demand for full test coverage on every piece of exploratory analysis, since exploratory, one-off research code genuinely has a different risk profile than shared library code other people depend on. Framing it as 'code that other people build on deserves a slightly higher bar than your own scratch notebook' is a distinction most researchers find reasonable once it's made explicit, rather than experiencing it as a blanket process demand. If this doesn't resolve through direct conversation, escalating with the concrete incident history (not vague frustration) to whoever owns the shared library's standards is the legitimate next step.",
+      "professionalAnswer": "I wouldn't argue the abstract case for testing -- I'd point at the two actual incidents this exact pattern already caused, with what each one cost, because that directly answers 'tests slow down research' with 'and this has already cost us real time, twice.' I'd also propose something much lighter than full coverage -- a handful of well-chosen tests, just on the parts of their code that other people actually build on, not their exploratory one-off analysis, which genuinely doesn't need the same bar. Most researchers find that distinction reasonable once it's made explicit, rather than hearing it as a blanket process demand. If it still doesn't land, I'd escalate with the actual incident history, not just general frustration, to whoever owns the shared library's standards.",
+      "commonMistakes": [
+        "Arguing the abstract principle ('testing is good practice') instead of pointing at concrete, already-happened incidents and their cost",
+        "Demanding full test coverage on all of the researcher's code, including genuinely exploratory analysis that doesn't need it",
+        "Escalating with vague frustration instead of specific incident history"
+      ],
+      "keyPoints": [
+        "Ground the argument in the concrete cost of the two actual incidents, not an abstract principle",
+        "Propose a lighter, targeted testing bar specifically for shared library code, not all exploratory research",
+        "Distinguish shared, reused code's risk profile from one-off exploratory analysis explicitly",
+        "Escalate with concrete incident history, not vague frustration, if direct conversation doesn't resolve it"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Grounds the argument in the concrete cost of the actual past incidents",
+          "weight": 35
+        },
+        {
+          "criterion": "Proposes a reasonable, targeted testing scope rather than full coverage everywhere",
+          "weight": 30
+        },
+        {
+          "criterion": "Distinguishes shared code from exploratory research appropriately",
+          "weight": 20
+        },
+        {
+          "criterion": "Describes a reasonable escalation path if needed",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-int-050",
+      "questionCode": "LTV-QDEV-0129",
+      "title": "Deciding Whether to Escalate a Code-Quality Concern",
+      "prompt": "During a routine refactor, you notice that a core risk-limit check has a logic error that makes it slightly less conservative than intended -- it's not causing visible problems today, but it's technically wrong. Fixing it properly would take a day you don't currently have budgeted, and nobody's asked you to look at this code. What do you do?",
+      "category": "behavioral",
+      "difficulty": "intermediate",
+      "responseFormat": "text",
+      "skills": [
+        "Judgment",
+        "Risk Management",
+        "Communication"
+      ],
+      "modelAnswer": "A logic error in a risk-limit check is squarely in the category of things that must be surfaced immediately, regardless of whether it's currently visible or in scope for the task at hand -- risk-limit code exists specifically to catch the scenario where something else has already gone wrong, so a bug there is a bug in the safety net itself, and 'it hasn't caused a visible problem yet' is exactly the property a latent risk-control bug has right up until the day it matters. The right move is not to silently fix it (if it takes longer than available time, a quick unreviewed fix to critical risk code is its own risk) and not to silently ignore it because it's out of scope -- it's to report it immediately to whoever owns that code or the team's risk process, with a concrete, specific description of exactly how it's less conservative than intended, and let them decide the priority and timeline for the proper fix, rather than making that call unilaterally just because it's inconvenient today. This is exactly the kind of finding that's worth surfacing even though 'nobody asked you to look at this' -- the value of noticing it doesn't depend on whose task it technically was.",
+      "professionalAnswer": "This gets reported immediately, full stop -- a bug in a risk-limit check is a bug in the actual safety net, and 'no visible problem yet' is precisely the state a latent risk-control bug sits in right up until it matters. I wouldn't quietly patch it myself under time pressure either, since a rushed, unreviewed fix to critical risk code is its own risk, and I wouldn't let 'nobody asked me to look at this' be a reason to just move on. I'd flag it specifically -- exactly how it's less conservative than intended -- to whoever owns that code or the risk process, and let them make the call on priority and timeline, rather than deciding unilaterally that it can wait because fixing it properly isn't convenient today.",
+      "commonMistakes": [
+        "Deciding unilaterally that it can wait because it hasn't caused a visible problem yet",
+        "Attempting a quick, unreviewed fix to critical risk-limit code under time pressure instead of reporting it",
+        "Ignoring the finding because it was outside the scope of the assigned task"
+      ],
+      "keyPoints": [
+        "A bug in a risk-limit check is a bug in the safety net itself and must be surfaced immediately",
+        "'No visible problem yet' is exactly the state a latent risk-control bug has until it matters",
+        "A rushed, unreviewed fix to critical risk code under time pressure is its own risk",
+        "Report the finding specifically and let the code's owner decide priority, rather than deciding unilaterally"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly treats this as requiring immediate escalation, not a 'can wait' judgment call",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly avoids a rushed, unreviewed self-fix under time pressure",
+          "weight": 25
+        },
+        {
+          "criterion": "Describes a specific, concrete report rather than a vague mention",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
     }
   ]
 }

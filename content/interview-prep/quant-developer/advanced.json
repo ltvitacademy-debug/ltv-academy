@@ -819,6 +819,1914 @@
       "version": 1,
       "createdAt": "2026-10-11",
       "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-016",
+      "questionCode": "LTV-QDEV-0130",
+      "title": "Why a Circular shared_ptr Reference Leaks Memory Forever",
+      "prompt": "Two classes, Position and Strategy, each hold a std::shared_ptr to the other so they can call back into each other. Explain precisely why this leaks, and the fix.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Smart Pointers",
+        "shared_ptr",
+        "Memory Management"
+      ],
+      "modelAnswer": "std::shared_ptr uses reference counting: an object is destroyed only when its count reaches zero. If Position holds a shared_ptr to Strategy and Strategy holds a shared_ptr back to Position, each object's count is kept at one by the other's pointer even after every external shared_ptr to either of them goes away -- neither count can ever reach zero, because each object is the thing keeping the other's count non-zero. The result is a genuine, permanent memory leak: the destructor never runs, even though nothing outside the pair references either object anymore. The standard fix is to make one direction of the relationship a std::weak_ptr -- typically the back-reference (Strategy's pointer back to Position), since usually one direction is the real 'ownership' relationship and the other is just a way to reach back without owning. A weak_ptr doesn't contribute to the reference count, so it doesn't keep the pointee alive, and code that needs to actually use it calls .lock() to get a temporary shared_ptr (or detects the pointee is already gone if lock() returns null).",
+      "professionalAnswer": "The giveaway is 'two shared_ptrs pointing at each other' -- that's the textbook reference-cycle leak, and it's real: each object's count never reaches zero because the other object is the one holding it up, even when nothing else in the program cares about either of them anymore. I'd fix it by deciding which direction is the real ownership and making the other direction a weak_ptr -- usually the child-to-parent back-reference. Anyone using that weak_ptr calls .lock() to safely get a usable shared_ptr or detect that the object's already gone.",
+      "commonMistakes": [
+        "Assuming shared_ptr automatically detects and breaks cycles the way a garbage collector would",
+        "Making both directions shared_ptr instead of identifying which one is the real ownership edge",
+        "Forgetting to call .lock() before using a weak_ptr, or assuming it behaves like a raw pointer"
+      ],
+      "keyPoints": [
+        "shared_ptr reference counting never reaches zero in a cycle, causing a permanent leak",
+        "Each object in the cycle keeps the other's count non-zero indefinitely",
+        "weak_ptr breaks the cycle by not contributing to the reference count",
+        "Code must call .lock() on a weak_ptr to safely obtain a usable shared_ptr"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains why the reference count never reaches zero",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly identifies weak_ptr as the fix",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains how weak_ptr is safely used (.lock())",
+          "weight": 15
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "smart-pointers-and-raii",
+        "label": "Review: Smart Pointers & RAII"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-017",
+      "questionCode": "LTV-QDEV-0131",
+      "title": "Why a Missing Virtual Destructor Is a Real Memory-Safety Bug",
+      "prompt": "A base class Instrument has no virtual destructor. Code does `Instrument* p = new Future(...); delete p;`. Explain exactly what goes wrong and why it's often silent.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Inheritance",
+        "Virtual Functions",
+        "Object Lifetime"
+      ],
+      "modelAnswer": "When delete is called through a base-class pointer and the base destructor is not virtual, the compiler generates a call to the base class's destructor only -- it has no mechanism to look up the derived type at runtime, because that lookup itself depends on virtual dispatch, which the programmer didn't opt into for the destructor. If Future adds its own members (especially ones that own resources, like a std::vector or another owned pointer), Future's destructor never runs, so those members' own destructors never run either -- a resource leak, and in some cases undefined behavior if the base destructor's assumptions about the object's layout don't match reality. It's dangerous specifically because it's silent: the program doesn't crash, doesn't warn, and for simple derived classes with no extra resources, nothing bad is even observable, which is exactly why this bug survives in codebases for a long time until a derived class is added that actually owns something. The fix is simple and should be a default habit: any class intended to be used polymorphically (any class with at least one virtual function) should mark its destructor virtual, so delete through a base pointer correctly invokes the derived destructor first, then unwinds up through each base in order.",
+      "professionalAnswer": "This is one of the bugs that doesn't announce itself -- the program runs fine until someone adds a derived class that actually owns a resource, and then it leaks silently with no crash to point at it. The mechanism is that delete through a base pointer only calls what it statically knows about unless the destructor is virtual; non-virtual means no runtime lookup of the real type happens for destruction. My rule of thumb, and what I'd flag in review: any class with even one virtual function needs a virtual destructor, full stop, as a default habit rather than something to remember case by case.",
+      "commonMistakes": [
+        "Assuming a missing virtual destructor would cause a crash or obvious error rather than a silent leak",
+        "Only adding a virtual destructor after a derived class visibly leaks, instead of as a default habit on any polymorphic base",
+        "Confusing this with a vtable-lookup cost concern rather than a correctness issue"
+      ],
+      "keyPoints": [
+        "delete through a non-virtual base pointer only runs the base destructor, not the derived one",
+        "Derived-class members that own resources leak silently as a result",
+        "The bug is dangerous because it produces no crash or warning, only a resource leak",
+        "Any class with at least one virtual function should have a virtual destructor by default"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains why only the base destructor runs",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains the consequence (leak) and why it's silent",
+          "weight": 30
+        },
+        {
+          "criterion": "States the correct fix/habit",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "inheritance-and-polymorphism",
+        "label": "Review: Inheritance & Polymorphism"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-018",
+      "questionCode": "LTV-QDEV-0132",
+      "title": "Iterator Invalidation From Modifying a Vector While Iterating It",
+      "prompt": "Code iterates a std::vector<Order> with a range-based for loop and calls push_back on the same vector inside the loop body to add a derived order. Explain exactly what can go wrong, including why it sometimes appears to work.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Iterators",
+        "Containers",
+        "Undefined Behavior"
+      ],
+      "modelAnswer": "std::vector stores its elements in one contiguous heap buffer, and push_back may need to grow that buffer once its current capacity is exhausted -- which means allocating a new, larger buffer, copying or moving every existing element into it, and freeing the old one. A range-based for loop holds iterators (effectively pointers) into the original buffer; if push_back triggers a reallocation during the loop, every iterator and reference into the old buffer -- including the loop's own iteration state -- is invalidated, pointing at freed memory. Dereferencing it afterward is undefined behavior: a crash, garbage data, or, in the specific case that makes this bug insidious, apparently correct output, because the freed memory happened not to be reused or overwritten yet during that particular run. This is exactly why it 'sometimes appears to work': whether a crash is visible depends on capacity headroom at the time (no reallocation needed yet) and what the allocator does with freed memory, neither of which is something the program's logic controls or can rely on. The fix is to never mutate a container's size while iterating it directly; either collect the new elements in a separate container and insert them after the loop finishes, or iterate over a fixed snapshot (a copy of the original size, or indices up to the original size) so growth doesn't affect the iteration.",
+      "professionalAnswer": "The failure mode here is iterator invalidation, and the reason it's dangerous in exactly this shape is that push_back can silently reallocate -- copy everything to a new buffer and free the old one -- the moment capacity runs out, and every iterator the loop is using becomes a dangling pointer into memory that might now be gone. Whether you see a crash is just luck: if there was still capacity headroom, or if the freed memory hasn't been reused yet, it looks fine, right up until it doesn't on a different run or a different build. I'd never mutate a vector's size while iterating it -- collect anything new in a separate container and append it after the loop, or iterate by index up to the original, captured size.",
+      "commonMistakes": [
+        "Assuming it 'worked in testing' means it's actually correct rather than lucky given the allocator's current state",
+        "Not knowing that push_back can reallocate and invalidate every existing iterator/reference into the vector",
+        "Fixing it by just 'being careful' instead of structurally avoiding mutation during iteration"
+      ],
+      "keyPoints": [
+        "push_back may reallocate the vector's entire backing buffer once capacity is exceeded",
+        "Reallocation invalidates all existing iterators and references into the old buffer",
+        "Dereferencing an invalidated iterator is undefined behavior, which can appear to work by chance",
+        "The fix is to never grow the container while iterating it directly"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains the reallocation/invalidation mechanism",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains why it can appear to work intermittently",
+          "weight": 25
+        },
+        {
+          "criterion": "Gives a correct structural fix",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "iterators-and-algorithms",
+        "label": "Review: Iterators & Algorithms"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-019",
+      "questionCode": "LTV-QDEV-0133",
+      "title": "A Lambda That Captures a Local Variable by Reference and Outlives It",
+      "prompt": "A function builds a lambda that captures a local double by reference and stores the lambda in a std::function member for later use. Explain the bug and the fix.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Lambdas",
+        "Dangling References",
+        "Object Lifetime"
+      ],
+      "modelAnswer": "Capturing by reference ([&threshold]) means the lambda stores a reference to the original variable's storage location, not a copy of its value at the time of capture. If the lambda is stored somewhere that outlives the function call -- a std::function member on an object that persists after the enclosing function returns -- the local variable's storage is released the moment the function returns (it was a stack local), and the captured reference now refers to memory that no longer belongs to that variable. Calling the stored lambda later reads through a dangling reference: undefined behavior, which in practice often reads whatever garbage now occupies that stack address, silently producing a wrong number rather than crashing. This is easy to miss because the bug is invisible at the call site that creates the lambda -- it only manifests later, when the lambda is actually invoked, often far away in the code and possibly much later in time, which makes root-causing it from the crash/wrong-value site alone difficult without specifically suspecting capture-by-reference lifetime. The fix is to capture by value ([threshold]) whenever the lambda might outlive the scope it was created in -- which should be the default assumption for any lambda stored in a std::function with a lifetime longer than the current scope, reserving capture-by-reference specifically for lambdas that are guaranteed to be used and discarded within the same scope (e.g. passed directly to std::sort and never stored).",
+      "professionalAnswer": "The rule I apply here is: capture by reference is only safe if the lambda's own lifetime is clearly bounded within the scope of the thing it's referencing -- used immediately and discarded, like a comparator passed straight into std::sort. The moment a lambda gets stored somewhere that can outlive the current function -- a std::function member, anything saved for later -- a by-reference capture of a local variable is a dangling reference waiting to happen, and it'll manifest later, far from where it was created, usually as a wrong value rather than a crash, which makes it miserable to trace back. My default for anything stored long-term is capture by value, and I treat by-reference capture as the exception that needs a specific, bounded-lifetime justification.",
+      "commonMistakes": [
+        "Assuming a reference capture behaves safely as long as the code 'looks fine' at the point of capture",
+        "Not distinguishing between a lambda used immediately in the same scope and one stored for later use",
+        "Debugging the wrong-value symptom at the call site instead of suspecting a dangling capture from where the lambda was created"
+      ],
+      "keyPoints": [
+        "Capture by reference stores a reference to the variable's storage, not its value",
+        "A stack-local's storage is released when its function returns, regardless of what still references it",
+        "A stored lambda invoked later can read through a dangling reference, often with no crash, just wrong data",
+        "Default to capture-by-value for any lambda whose lifetime may exceed the current scope"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains the dangling-reference mechanism",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains why the bug manifests later, not at creation",
+          "weight": 25
+        },
+        {
+          "criterion": "Gives the correct fix and the rule for when reference capture is actually safe",
+          "weight": 30
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "lambdas-and-functional-style",
+        "label": "Review: Lambdas & Functional Style"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-020",
+      "questionCode": "LTV-QDEV-0134",
+      "title": "What const and constexpr Actually Buy You at Compile Time",
+      "prompt": "A teammate marks every function parameter const 'for safety' but is surprised it doesn't measurably speed anything up, while a separate constexpr change to a tick-size calculation does. Explain the real distinction.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "const",
+        "constexpr",
+        "Compiler Optimization"
+      ],
+      "modelAnswer": "const on a parameter is primarily a correctness and documentation tool: it tells the compiler and other readers that the function won't modify the referenced object through that parameter, which can occasionally unlock an optimization (like hoisting a repeated read out of a loop when the compiler can prove nothing else aliases and modifies it), but by itself it doesn't move any computation to compile time or eliminate any runtime work -- most of a const parameter's value is about preventing accidental mutation and self-documenting intent, not raw speed. constexpr is a fundamentally different, stronger request: it asks the compiler to evaluate the expression at compile time whenever the inputs are themselves compile-time constants, so the computed value is baked directly into the binary as a literal, with zero runtime cost at all for that specific computation -- not 'faster at runtime,' but literally not computed at runtime. That's why marking a handful of function parameters const produced no measurable change (there was no actual runtime computation being eliminated, just a safety annotation), while converting the tick-size calculation to constexpr removed real work that used to happen every time that code path ran, replacing it with a single number already sitting in the compiled binary. The practical takeaway: reach for const by default everywhere for correctness and clarity, and reach for constexpr specifically when a value's inputs are genuinely known at compile time and the computation is worth not paying for at runtime.",
+      "professionalAnswer": "These are doing two different jobs, and conflating them is a common source of this exact confusion. const is mostly about correctness and communicating intent -- 'this function won't mutate what you passed in' -- and only occasionally unlocks an optimization as a side effect; it's not primarily a performance lever. constexpr is a performance lever specifically: when the inputs are compile-time constants, the whole computation happens once, at compile time, and the result just becomes a literal baked into the binary -- genuinely zero runtime cost, not just 'fast at runtime.' So the const sweep not moving the needle makes sense -- there was no runtime work being removed -- while the constexpr change on the tick-size calculation actually eliminated real, repeated runtime computation.",
+      "commonMistakes": [
+        "Expecting const alone to produce a measurable performance improvement",
+        "Assuming constexpr is just a stylistic alternative to const rather than a compile-time-evaluation request",
+        "Marking something constexpr whose actual inputs aren't known until runtime, which silently falls back to ordinary runtime evaluation"
+      ],
+      "keyPoints": [
+        "const is primarily a correctness/documentation tool, occasionally enabling minor optimizations",
+        "constexpr requests compile-time evaluation, eliminating the computation's runtime cost entirely when inputs are compile-time constants",
+        "A broad const sweep without compile-time-constant inputs removes no actual runtime computation",
+        "Use const by default for correctness; use constexpr specifically where inputs are genuinely compile-time constants"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly distinguishes const's role from constexpr's role",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains why constexpr can eliminate real runtime cost and const mostly cannot",
+          "weight": 35
+        },
+        {
+          "criterion": "Gives correct practical guidance for when to use each",
+          "weight": 15
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "compiler-optimization-and-inlining",
+        "label": "Review: Compiler Optimization & Inlining"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-021",
+      "questionCode": "LTV-QDEV-0135",
+      "title": "Choosing a Container for a Price-Level Order Book vs. a Symbol Lookup Table",
+      "prompt": "You need (a) a structure mapping price levels to resting order quantities for one order book, iterated in sorted price order on every update, and (b) a structure mapping ten thousand symbols to their latest quote, looked up by symbol on every tick with no ordering need. Pick a container for each and justify both choices against their actual access pattern.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Containers",
+        "STL",
+        "Data Structure Selection"
+      ],
+      "modelAnswer": "For the price-level book, the requirement is sorted iteration by price on essentially every update -- which immediately rules out unordered_map (no ordering at all) and makes a plain sorted vector of (price, quantity) pairs or a std::map<double, Quantity> the real candidates: std::map keeps elements sorted automatically with O(log n) insert/lookup, which is simpler to reason about and correct by construction if price levels are added and removed frequently and unpredictably; a sorted vector with binary search for lookup and insertion is more cache-friendly for iteration (contiguous memory) and can beat std::map in practice if insertions/removals are infrequent relative to iteration, but every insertion in the middle is O(n) due to shifting -- so the right choice actually depends on the book's real insert/iterate ratio, which should be measured on representative order flow rather than assumed. For the symbol-to-quote table, there's no ordering requirement at all and the access pattern is pure lookup-by-key on every tick, which is exactly what std::unordered_map is for: average O(1) lookup with no wasted cost maintaining an ordering nobody needs. The common mistake in both directions is picking std::map out of habit for the symbol table (paying for an ordering guarantee the use case never asks for) or picking unordered_map for the price book (losing the sorted iteration the use case needs on every update, which would then require a separate sort step that defeats the purpose of choosing a map at all).",
+      "professionalAnswer": "I'd pick based on what each one actually needs, not habit. The price-level book needs sorted order on basically every access, so unordered_map is disqualified outright -- it's between std::map, which keeps things sorted automatically at O(log n) per operation, and a sorted vector with binary search, which iterates faster due to cache locality but pays O(n) for a middle insertion. Which one wins depends on the actual insert-versus-iterate ratio in real order flow, and I'd want to measure that rather than guess. The symbol table has no ordering need at all and it's pure lookup by key every tick -- that's unordered_map's exact use case, and reaching for std::map there would just be paying for an ordering guarantee nobody's using.",
+      "commonMistakes": [
+        "Defaulting to std::map out of habit for a lookup table that has no ordering requirement",
+        "Choosing unordered_map for a structure that needs sorted iteration, requiring an extra sort step that defeats the point",
+        "Picking between std::map and a sorted vector without considering the actual insert/iterate ratio of the real workload"
+      ],
+      "keyPoints": [
+        "Sorted-iteration requirements rule out unordered_map immediately",
+        "std::map vs. a sorted vector for ordered data depends on the actual insert-vs-iterate ratio, not assumption",
+        "Pure key-lookup with no ordering need is exactly unordered_map's use case",
+        "Choosing a container should follow from the access pattern, not habit"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly selects/justifies the price-level book structure",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly selects/justifies the symbol lookup structure",
+          "weight": 30
+        },
+        {
+          "criterion": "Identifies the measurement-dependent tradeoff for the ordered case",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "choosing-the-right-container",
+        "label": "Review: Choosing the Right Container"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-022",
+      "questionCode": "LTV-QDEV-0136",
+      "title": "Same Big-O, Very Different Speed: Why a Vectorized O(n^2) Can Crush a Looped O(n log n)",
+      "prompt": "A teammate argues their loop-based O(n log n) sort-based approach must beat a colleague's vectorized O(n^2) pairwise computation because it has a better complexity class. Walk through why that reasoning can be wrong in practice, and how you'd actually settle the argument.",
+      "category": "technical-knowledge",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Algorithmic Complexity",
+        "Vectorization",
+        "Performance"
+      ],
+      "modelAnswer": "Big-O describes asymptotic growth rate as input size goes to infinity, deliberately ignoring the constant factor multiplying that growth -- so a true statement about which algorithm wins 'eventually, for large enough n' says nothing by itself about which one is actually faster at the specific, finite n the code will really run on. A vectorized O(n^2) computation running as compiled, SIMD-friendly array operations can have a dramatically smaller constant factor than a loop-based O(n log n) algorithm executing in an interpreted loop with per-element Python-level overhead -- and for realistic problem sizes, that constant-factor gap can comfortably outweigh the complexity-class difference, sometimes by one or two orders of magnitude, right up until n grows large enough that the O(n^2) term finally dominates regardless of its smaller constant. The only way to actually settle this is to measure both implementations on the actual range of n the system will realistically see, not argue from complexity class alone -- and if n could plausibly grow much larger later, measuring at a few increasing sizes additionally reveals the crossover point where the asymptotically better algorithm will eventually win, which is itself useful information for planning, not just picking a winner today. The complexity-class argument is a genuinely useful tool for reasoning about how a solution will scale, but it was never a substitute for measuring actual wall-clock time at the sizes that matter.",
+      "professionalAnswer": "Big-O is about the trend as n grows without bound, and it explicitly throws away the constant factor to get there -- which means 'better complexity class' is not the same claim as 'faster at the n we actually care about,' and conflating them is the exact mistake here. A vectorized O(n^2) running as compiled array operations can have such a small constant factor that it beats a loop-based O(n log n) paying per-element interpreter overhead, for a very wide and realistic range of n. I wouldn't try to win this with complexity-class reasoning alone -- I'd just measure both at the actual sizes we expect to run, and if growth is a real future concern, measure at a few increasing sizes to see where, if ever, the crossover actually happens.",
+      "commonMistakes": [
+        "Treating a better asymptotic complexity class as automatically meaning faster in practice",
+        "Not accounting for the constant-factor gap between compiled/vectorized code and interpreted loop code",
+        "Settling a performance disagreement by complexity-class argument instead of actual measurement at realistic sizes"
+      ],
+      "keyPoints": [
+        "Big-O ignores the constant factor, which can dominate at realistic problem sizes",
+        "Vectorized/compiled code can have a far smaller constant factor than interpreted loop code",
+        "A worse complexity class can still win in practice up to some crossover n",
+        "The disagreement is settled by measurement at realistic sizes, not complexity-class reasoning alone"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains what Big-O does and doesn't capture",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains why the vectorized O(n^2) can win in practice",
+          "weight": 30
+        },
+        {
+          "criterion": "Proposes measurement at realistic sizes as the actual resolution",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "algorithmic-complexity-in-practice",
+        "label": "Review: Algorithmic Complexity in Practice"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-023",
+      "questionCode": "LTV-QDEV-0137",
+      "title": "Implement Move Semantics for a Custom PriceMatrix Class",
+      "prompt": "Implement a move constructor and move assignment operator for a PriceMatrix class that owns a heap-allocated double* buffer, so returning one by value from a builder function is cheap. Explain what breaks if you forget to leave the source in a valid empty state.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": [
+        "Move Semantics",
+        "Resource Management",
+        "RAII"
+      ],
+      "code": "class PriceMatrix {\npublic:\n    PriceMatrix(size_t rows, size_t cols)\n        : rows_(rows), cols_(cols), data_(new double[rows * cols]) {}\n\n    // Move constructor: steal the buffer, leave source empty\n    PriceMatrix(PriceMatrix&& other) noexcept\n        : rows_(other.rows_), cols_(other.cols_), data_(other.data_) {\n        other.data_ = nullptr;\n        other.rows_ = other.cols_ = 0;\n    }\n\n    // Move assignment: release our own buffer first, then steal\n    PriceMatrix& operator=(PriceMatrix&& other) noexcept {\n        if (this != &other) {\n            delete[] data_;\n            data_ = other.data_;\n            rows_ = other.rows_;\n            cols_ = other.cols_;\n            other.data_ = nullptr;\n            other.rows_ = other.cols_ = 0;\n        }\n        return *this;\n    }\n\n    ~PriceMatrix() { delete[] data_; }  // safe: nullptr delete is a no-op\n\n    PriceMatrix(const PriceMatrix&) = delete;            // disable copy for this example\n    PriceMatrix& operator=(const PriceMatrix&) = delete;\n\nprivate:\n    size_t rows_, cols_;\n    double* data_;\n};",
+      "modelAnswer": "The move constructor takes an rvalue reference to the source object and transfers ownership of its internal pointer and size directly -- a pointer copy, not a deep copy of the underlying buffer -- and then must explicitly null out (or zero-size) the source's own pointer so that when the source's destructor eventually runs, it doesn't also delete the exact same buffer the new object now owns. Move assignment does the same transfer, but must also first release whatever the target object currently owns (to avoid leaking its old buffer) before taking ownership of the source's buffer, and should guard against self-move-assignment. Forgetting to null out the source's pointer after the transfer is a serious bug, not a minor one: both the moved-from object and the moved-to object now believe they own the same buffer, and whichever destructor runs second calls delete[] on memory that's already been freed by the first -- a double-free, which is undefined behavior and a classic source of heap corruption that can crash far from where the actual bug is.",
+      "professionalAnswer": "The part people get wrong isn't usually the pointer transfer itself -- it's forgetting that the source object is still a live object with its own destructor that's going to run eventually, and if its pointer still points at the buffer the new owner just took, you've created two objects that both think they own the same memory. Whichever destructor fires second double-frees it, and that's genuinely nasty to debug because the crash often shows up somewhere completely unrelated to the actual move. So every move operation I write ends with explicitly nulling the source's pointer -- leaving it in a valid, destructible, empty state is not optional, it's the whole point of 'moved-from but still destructible.'",
+      "commonMistakes": [
+        "Forgetting to null out the source's pointer, causing a double-free when both destructors run",
+        "Move assignment that doesn't release the target's existing buffer before taking ownership, leaking it",
+        "Not guarding move assignment against self-move-assignment"
+      ],
+      "keyPoints": [
+        "A move transfers ownership of the pointer, not a copy of the buffer's contents",
+        "The source must be left in a valid, destructible, empty state (nulled pointer)",
+        "Move assignment must release its own current resource before taking the source's",
+        "Forgetting to null the source causes a double-free, a serious and hard-to-trace bug"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly implements the move constructor",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly implements move assignment including self-move guard and prior-resource release",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains the double-free consequence of forgetting to null the source",
+          "weight": 25
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "move-semantics",
+        "label": "Review: Move Semantics"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-024",
+      "questionCode": "LTV-QDEV-0138",
+      "title": "Fix a Lambda Stored for Later That Captured a Local Risk Limit by Reference",
+      "prompt": "A function builds a std::function<bool(double)> risk check by capturing a local 'limit' variable by reference and stores it in a long-lived RiskMonitor object. Fix the bug and show the corrected code.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": [
+        "Lambdas",
+        "Dangling References",
+        "Bug Fixing"
+      ],
+      "code": "// Buggy: captures a stack local by reference, then outlives it\nstd::function<bool(double)> makeRiskCheck(double limit) {\n    return [&limit](double exposure) { return exposure <= limit; };\n}  // 'limit' is destroyed here -- the returned lambda now dangles\n\nRiskMonitor monitor;\nmonitor.check = makeRiskCheck(5'000'000.0);  // stored for later use\n// ... later, monitor.check(exposure) reads a dangling reference\n\n// Fixed: capture by value -- the lambda owns its own independent copy\nstd::function<bool(double)> makeRiskCheck(double limit) {\n    return [limit](double exposure) { return exposure <= limit; };\n}",
+      "modelAnswer": "The bug is exactly the dangling-reference-capture pattern: limit is a stack local inside the function that builds the check, its storage is released the instant that function returns, and the stored std::function keeps a reference into that now-freed stack location. Calling the stored predicate later reads through a dangling reference -- undefined behavior that typically manifests as a plausible-looking but wrong limit value, not a crash, since the stack memory usually still contains some leftover bit pattern rather than being immediately overwritten. The fix is to capture limit by value instead of by reference, so the lambda carries its own independent copy of the number that remains valid for exactly as long as the lambda itself does, completely decoupled from the original local variable's lifetime. If the check genuinely needs to reflect a limit that can change after the lambda is created, the correct pattern is not a reference capture at all, but storing a shared_ptr<double> (or a reference to a member that's guaranteed to outlive the lambda, such as a field on the same long-lived object the lambda is stored on) so the intended mutability is explicit and lifetime-safe rather than accidental.",
+      "professionalAnswer": "This is the same shape every time: something temporary got captured by reference and then outlived the thing it referenced. Here the fix is just switching the capture to by-value, since the risk limit at the moment the check was built is presumably exactly the number we want baked in. If the actual intent was 'track whatever the limit currently is, even if it changes later,' that's a different, explicit design -- a shared_ptr<double> or a member on the long-lived object itself -- not a reference capture of a local that was never going to live past the function call.",
+      "commonMistakes": [
+        "Capturing a function parameter or local by reference in a lambda that is stored beyond the function's return",
+        "Assuming the bug will crash rather than silently produce a wrong (stale/garbage) result",
+        "Using a reference capture when the real intent was a deliberately mutable, shared value (which needs a different pattern, not a fix to the reference itself)"
+      ],
+      "keyPoints": [
+        "A lambda stored beyond its creating scope must not capture a local by reference",
+        "The fix here is capturing by value, giving the lambda its own independent copy",
+        "A genuinely mutable shared limit needs an explicit shared/owned reference, not an accidental one",
+        "The bug typically manifests as a wrong value, not a crash"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses the dangling-reference-capture bug",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly fixes it with capture-by-value",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly distinguishes the fix from the genuinely-mutable-limit case",
+          "weight": 25
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "lambdas-and-functional-style",
+        "label": "Review: Lambdas & Functional Style"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-025",
+      "questionCode": "LTV-QDEV-0139",
+      "title": "Implement an Exception-Safe RAII Lock Guard Around a Risk-Limits Map",
+      "prompt": "Implement a small RAII wrapper that locks a mutex protecting a shared risk-limits map on construction and unlocks on destruction, and show why this is exception-safe where manual lock()/unlock() calls are not.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": [
+        "RAII",
+        "Mutexes",
+        "Exception Safety"
+      ],
+      "code": "class RiskLimitsLock {\npublic:\n    explicit RiskLimitsLock(std::mutex& m) : mutex_(m) { mutex_.lock(); }\n    ~RiskLimitsLock() { mutex_.unlock(); }   // runs even if an exception unwinds through here\n\n    RiskLimitsLock(const RiskLimitsLock&) = delete;\n    RiskLimitsLock& operator=(const RiskLimitsLock&) = delete;\n\nprivate:\n    std::mutex& mutex_;\n};\n\nvoid updateLimit(std::mutex& m, std::map<std::string, double>& limits,\n                  const std::string& symbol, double newLimit) {\n    RiskLimitsLock guard(m);          // locked here\n    if (newLimit < 0.0) throw std::invalid_argument(\"negative limit\");\n    limits[symbol] = newLimit;\n}   // guard's destructor unlocks here -- on normal return OR exception unwind",
+      "modelAnswer": "The wrapper's constructor calls mutex.lock(), and its destructor calls mutex.unlock() -- because C++ guarantees a stack object's destructor runs when it goes out of scope, including when an exception propagates through that scope, the mutex is released no matter how the function exits: a normal return, an early return, or an exception thrown mid-function from code that's using the protected map. Manual lock()/unlock() calls don't have this guarantee: if an exception is thrown between the lock() call and the unlock() call, unlock() is simply never reached, and the mutex stays locked forever -- every other thread that later tries to acquire it blocks permanently, which looks exactly like a deadlock and is extremely difficult to trace back to a thrown exception that happened once, possibly long before the hang is even noticed. This is precisely why the standard library already ships std::lock_guard and std::unique_lock as ready-made versions of this exact pattern, and a hand-rolled version like this one is really just demonstrating the mechanism those standard types already give you for free -- in real code there is essentially never a reason to write this by hand instead of using std::lock_guard directly.",
+      "professionalAnswer": "The whole value of this pattern is what happens when things go wrong, not when they go right -- manual lock/unlock looks fine in the happy path and then quietly deadlocks the first time an exception fires between the two calls, because unlock() never runs and nothing else ever tells it to. RAII sidesteps that completely: the destructor runs during stack unwinding from an exception exactly as reliably as it runs on a normal return, so the mutex is always released. That said, I'd actually write this with std::lock_guard in real code, not by hand -- this exercise is demonstrating the mechanism the standard library already gives you, and there's no good reason to reimplement it outside of an interview or a teaching example.",
+      "commonMistakes": [
+        "Using manual lock()/unlock() calls around code that can throw, leaving the mutex locked forever on an exception",
+        "Writing a hand-rolled RAII lock in production code instead of using std::lock_guard/std::unique_lock",
+        "Forgetting to delete the copy constructor/assignment, allowing the lock to be copied in a way that double-unlocks"
+      ],
+      "keyPoints": [
+        "RAII ties unlock to object destruction, which runs reliably even during exception unwinding",
+        "Manual lock()/unlock() leaves the mutex locked forever if an exception is thrown in between",
+        "A permanently locked mutex looks exactly like a deadlock and is hard to trace to a thrown exception",
+        "std::lock_guard/std::unique_lock already provide this; hand-rolling it is for demonstration only"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly implements the RAII lock wrapper",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly explains why manual lock/unlock is exception-unsafe",
+          "weight": 35
+        },
+        {
+          "criterion": "Notes the standard library already provides this (lock_guard/unique_lock)",
+          "weight": 20
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "smart-pointers-and-raii",
+        "label": "Review: Smart Pointers & RAII"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-026",
+      "questionCode": "LTV-QDEV-0140",
+      "title": "Reserve Capacity and Avoid Copies When Loading a Batch of Orders",
+      "prompt": "Implement a function that loads ten thousand orders from a feed into a std::vector<Order>, avoiding both repeated reallocation and unnecessary copying of each Order. Explain each decision.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": [
+        "Allocation",
+        "Performance",
+        "Move Semantics"
+      ],
+      "code": "std::vector<Order> loadOrderBatch(const std::vector<RawFeedMessage>& feed) {\n    std::vector<Order> orders;\n    orders.reserve(feed.size());   // one allocation, not several reallocate-and-copy cycles\n\n    for (const auto& msg : feed) {\n        // emplace_back constructs the Order in place -- no temporary to copy or move\n        orders.emplace_back(msg.symbol, msg.quantity, msg.price);\n    }\n    return orders;   // return by value is a move (RVO/NRVO), not a copy\n}",
+      "modelAnswer": "Two separate costs are worth attacking here. First, without a hint about the final size, push_back-ing ten thousand times forces the vector through several reallocate-and-copy cycles as it repeatedly outgrows its current capacity -- calling reserve(10000) up front replaces that with exactly one allocation, since the final size is known ahead of time from the feed's declared batch size. Second, each Order constructed from parsed feed data is a temporary about to be discarded once it's placed in the vector -- rather than copying it in, emplace_back constructs the Order directly in the vector's own storage from its constructor arguments, or, if an Order is already built as a local variable, std::move into push_back avoids a redundant copy of the object's own internals (e.g. if it holds a string symbol or similar). Both are small individually, but for a batch of ten thousand, skipping needless reallocation cycles and needless per-element copies adds up to a real, measurable difference versus the naive version with neither optimization.",
+      "professionalAnswer": "Two things I'd always do here: reserve the capacity up front since the batch size is already known from the feed, turning several reallocate-and-copy cycles into exactly one allocation; and avoid copying each Order into the vector when it's about to be discarded anyway, either by using emplace_back to construct it in place from its raw fields, or by moving a locally-built Order in with push_back(std::move(order)) rather than copying it. Neither of these is exotic -- they're just the default habits that should be applied whenever you know you're about to build a vector of a known size from a batch of inputs.",
+      "commonMistakes": [
+        "Calling push_back ten thousand times with no reserve(), paying for repeated reallocation",
+        "Building each Order as a separate local object and copying it into the vector instead of using emplace_back or std::move",
+        "Assuming returning the vector by value forces a copy, when modern compilers move/elide it"
+      ],
+      "keyPoints": [
+        "reserve() up front turns many reallocate-and-copy cycles into one allocation",
+        "emplace_back constructs an element in place, avoiding a temporary and a copy",
+        "std::move avoids copying a locally-built object that's about to be discarded",
+        "Returning a vector by value is a move (or elided entirely), not a copy, in modern C++"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly uses reserve() for the known batch size",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly uses emplace_back/move to avoid unnecessary copies",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains both decisions correctly",
+          "weight": 20
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "avoiding-allocation-and-copies",
+        "label": "Review: Avoiding Allocation & Copies"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-027",
+      "questionCode": "LTV-QDEV-0141",
+      "title": "Expose a Vectorized Payoff Function to NumPy Without Copying",
+      "prompt": "Implement a pybind11 binding that computes a European call payoff over a whole NumPy array of spot prices in one call, reading and writing through the buffer protocol with zero copies. Explain why this matters for a notebook pricing a large Monte Carlo path matrix.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": [
+        "pybind11",
+        "NumPy",
+        "Buffer Protocol"
+      ],
+      "code": "#include <pybind11/pybind11.h>\n#include <pybind11/numpy.h>\n\nnamespace py = pybind11;\n\npy::array_t<double> callPayoff(py::array_t<double> spots, double strike) {\n    py::buffer_info buf = spots.request();\n    if (buf.ndim != 1) throw std::runtime_error(\"expected a 1-D array\");\n\n    auto result = py::array_t<double>(buf.shape);      // one new allocation\n    py::buffer_info resBuf = result.request();\n\n    const double* in  = static_cast<const double*>(buf.ptr);     // reads NumPy's own buffer\n    double*       out = static_cast<double*>(resBuf.ptr);        // writes directly into result's buffer\n\n    for (ssize_t i = 0; i < buf.shape[0]; ++i) {\n        double payoff = in[i] - strike;\n        out[i] = payoff > 0.0 ? payoff : 0.0;\n    }\n    return result;\n}\n\nPYBIND11_MODULE(quantlib_cpp, m) {\n    m.def(\"call_payoff\", &callPayoff, py::arg(\"spots\"), py::arg(\"strike\"));\n}",
+      "modelAnswer": "py::array_t<double>'s .request() call returns a py::buffer_info exposing the array's raw memory pointer directly, so the C++ function can read every spot price straight out of NumPy's own existing buffer with no intermediate copy -- converting to a std::vector<double> instead would copy every element in and, for a returned result, copy every element back out, which is irrelevant for a handful of values but genuinely costly for a Monte Carlo matrix with millions of simulated paths. The function allocates exactly one new output array (of the same shape as the input) and writes the payoff for each element directly into that output buffer via its own raw pointer, so the only data movement that happens at all is the one pass computing payoff = max(spot - strike, 0) for each element -- no copy of the input, and no redundant copy of the output beyond the single array that genuinely needs to be allocated to hold a new result. For a large path matrix, calling this once with the whole array crosses the Python/C++ boundary a single time, rather than paying per-call overhead (and, if done naively via std::vector conversion, per-call copy cost) for every single path -- which is exactly the batching principle that makes the C++ port worth doing in the first place.",
+      "professionalAnswer": "The thing that actually matters for a big Monte Carlo matrix is avoiding copies on both sides of the boundary -- in and out. Using the buffer protocol directly, through .request(), means the C++ function is reading NumPy's own existing memory, not a converted std::vector that cost a full copy to create. I allocate exactly one new array for the output and write straight into its buffer, so the only real work happening is computing the payoff itself, once per element, with no redundant copying on either side. And the whole call happens once for the entire array, not once per path -- that's the actual payoff of doing this in C++ at all; a per-element call across the boundary would have eaten whatever speed advantage the vectorization bought.",
+      "commonMistakes": [
+        "Converting the NumPy array to std::vector<double> for a large batch, paying a full copy in and out",
+        "Allocating more than one new array, or reallocating inside the loop instead of once up front",
+        "Binding a per-scalar function and calling it once per path from Python instead of once for the whole array"
+      ],
+      "keyPoints": [
+        "The buffer protocol lets C++ read/write NumPy's own memory with zero copies",
+        "Converting to std::vector copies the data in, and copies the result back out",
+        "Exactly one new output array should be allocated, matching the input shape",
+        "Calling once for the whole batch avoids per-element boundary-crossing overhead"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly implements zero-copy buffer-protocol access",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly allocates and writes to exactly one output array",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly explains why batching this one call matters for a large Monte Carlo matrix",
+          "weight": 25
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "exposing-numerical-code-to-numpy",
+        "label": "Review: Exposing Numerical Code to NumPy"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-028",
+      "questionCode": "LTV-QDEV-0142",
+      "title": "Add cdef Type Declarations to Speed Up a Cython Rolling-Variance Function",
+      "prompt": "A .pyx function computing a rolling variance over a NumPy array has no type declarations and runs barely faster than pure Python. Rewrite it with the cdef declarations that actually matter, and explain why the untyped version gained so little.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": [
+        "Cython",
+        "Static Typing",
+        "Performance"
+      ],
+      "code": "# Before: .pyx file, but no type declarations -- barely faster than plain Python\ndef rolling_variance_untyped(prices, window):\n    n = len(prices)\n    out = [0.0] * n\n    for i in range(window, n):\n        chunk = prices[i-window:i]\n        mean = sum(chunk) / window\n        out[i] = sum((x - mean) ** 2 for x in chunk) / window\n    return out\n\n# After: cdef-typed -- loop indices and accumulators are real C types,\n# the array is a typed memoryview giving direct buffer access\ncimport numpy as cnp\n\ndef rolling_variance_typed(double[:] prices, int window):\n    cdef int n = prices.shape[0]\n    cdef int i, k\n    cdef double total, mean, sq_total\n    cdef cnp.ndarray[cnp.float64_t, ndim=1] out = np.zeros(n, dtype=np.float64)\n\n    for i in range(window, n):\n        total = 0.0\n        for k in range(i - window, i):\n            total += prices[k]\n        mean = total / window\n        sq_total = 0.0\n        for k in range(i - window, i):\n            sq_total += (prices[k] - mean) ** 2\n        out[i] = sq_total / window\n    return out",
+      "modelAnswer": "Plain Python syntax compiled by Cython without any cdef declarations still treats every variable as a generic Python object under the hood -- the loop index, the accumulator, each array element access -- which means every arithmetic operation still pays Python's dynamic-typing overhead (type checks, reference counting, boxed numeric objects) exactly as it would in the CPython interpreter; compiling it with Cython alone, with no type information added, buys very little because there's no C-level code for the compiler to generate instead. Adding cdef int for the loop indices and cdef double for the accumulator and the running mean converts those specific variables into genuine C-level primitives, so the arithmetic on them compiles to tight native instructions with none of the per-operation Python object overhead; typing the input as a typed memoryview (double[:] prices) similarly gives direct, bounds-checked-by-default access to the underlying buffer instead of going through Python's generic indexing machinery on every single element access. The real speedup in a Cython rewrite comes specifically from however many of the hot loop's variables and array accesses get cdef-typed -- it is not an automatic consequence of using the .pyx file extension, which is exactly why the untyped version barely moved: it was still, in all the ways that matter for speed, running as interpreted Python object operations end to end.",
+      "professionalAnswer": "The mistake here is thinking Cython's speed comes from the .pyx file itself -- it doesn't, it comes specifically from the cdef type declarations, and without them you're still paying full Python-object overhead on every operation in the loop, just now compiled rather than interpreted, which barely matters if the operations themselves are still dynamically typed. The fix is cdef int for the loop counters, cdef double for the accumulators, and a typed memoryview for the array itself so element access goes straight to the underlying buffer instead of through generic Python indexing. Once those are in place, the arithmetic genuinely becomes C-level code, which is where the real speedup actually comes from.",
+      "commonMistakes": [
+        "Assuming compiling a .pyx file with Cython is itself the source of speedup, with no type declarations needed",
+        "Typing only some variables (e.g. the loop index) while leaving the accumulator or array access untyped, limiting the gain",
+        "Using generic Python indexing on the array instead of a typed memoryview for direct buffer access"
+      ],
+      "keyPoints": [
+        "Untyped Cython code still pays Python object overhead on every operation",
+        "cdef declarations on loop indices and accumulators convert them to real C types",
+        "A typed memoryview gives direct buffer access instead of generic Python indexing",
+        "The real Cython speedup comes specifically from type declarations, not the .pyx extension itself"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies why the untyped version gained little",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly adds cdef type declarations for indices/accumulators",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly uses a typed memoryview for array access",
+          "weight": 25
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "cython-basics",
+        "label": "Review: Cython Basics"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-029",
+      "questionCode": "LTV-QDEV-0143",
+      "title": "Write a Vectorized Moving-Average Crossover Signal Without Look-Ahead Bias",
+      "prompt": "Implement a fully vectorized (no Python loop) moving-average crossover backtest signal in pandas, and explain exactly where the look-ahead-bias guard belongs and why it's easy to omit by accident.",
+      "category": "hands-on",
+      "difficulty": "advanced",
+      "responseFormat": "code",
+      "skills": [
+        "Vectorized Backtesting",
+        "pandas",
+        "Look-Ahead Bias"
+      ],
+      "code": "import pandas as pd\n\ndef crossover_signal(price: pd.Series, fast_window: int, slow_window: int) -> pd.Series:\n    fast = price.rolling(fast_window).mean()\n    slow = price.rolling(slow_window).mean()\n    raw_signal = (fast > slow).astype(int)          # 1 = long, 0 = flat\n    # Critical: shift by 1 bar -- today's signal can only be ACTED ON tomorrow,\n    # since today's close (used to compute fast/slow) isn't known until the close happens.\n    return raw_signal.shift(1)\n\ndef backtest_returns(price: pd.Series, fast_window: int, slow_window: int) -> pd.Series:\n    position = crossover_signal(price, fast_window, slow_window)\n    daily_return = price.pct_change()\n    return (position * daily_return).fillna(0)",
+      "modelAnswer": "The crossover signal itself -- comparing a fast rolling mean to a slow rolling mean -- is naturally vectorizable: rolling(window).mean() and a boolean comparison both operate over the whole Series at once with no explicit loop. The subtlety that's easy to miss is timing: the signal computed from today's close (fast > slow, both using today's closing price) is only knowable after today's market closes, so a backtest that multiplies today's signal directly by today's return is silently assuming the trade happened at the same close price the signal was computed from -- a textbook look-ahead violation, since that trade could not actually have been placed until some later point, typically the next bar's open. The fix is a single .shift(1) applied to the signal before it's multiplied against returns, which delays using that day's computed signal until the following bar -- a one-line change that is nonetheless the single most important correctness detail in the entire computation, and one that's easy to omit by accident because the unshifted version runs without error and produces a plausible-looking (and, misleadingly, better-looking) equity curve; nothing about the code crashes or warns if the shift is missing, which is exactly why this specific bug is common and consequential rather than rare and obvious.",
+      "professionalAnswer": "The vectorized part of this is the easy half -- rolling means and a comparison are a one-liner each. The part that actually matters is the .shift(1) on the signal before it touches returns, because without it you're implicitly trading at the exact close price the signal itself was computed from, which isn't physically possible. And the reason this bug is so common isn't that it's subtle to explain -- it's that omitting it doesn't error or warn, it just quietly produces a backtest that looks better than it should, which is exactly the kind of mistake that survives into a result someone trusts.",
+      "commonMistakes": [
+        "Multiplying the signal by the same day's return without shifting, implicitly trading at the signal's own close",
+        "Assuming a missing shift() would be caught by an error or obviously wrong output",
+        "Shifting the final position series in the wrong place (e.g. after multiplying by returns) rather than before"
+      ],
+      "keyPoints": [
+        "Rolling means and comparisons vectorize naturally with no explicit loop",
+        "A signal computed from today's close can only be acted on starting the next bar",
+        "The required fix is a single .shift(1) applied to the signal before it meets returns",
+        "Omitting the shift produces no error, only a silently overstated backtest result"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly implements the vectorized crossover signal",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly places and explains the shift(1) look-ahead guard",
+          "weight": 40
+        },
+        {
+          "criterion": "Explains why omitting it is easy to miss and produces no visible error",
+          "weight": 20
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "vectorized-vs-event-driven-backtests",
+        "label": "Review: Vectorized vs. Event-Driven Backtests"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-030",
+      "questionCode": "LTV-QDEV-0144",
+      "title": "Diagnosing a Backtest That Produces Different Results Each Time It's Re-Run",
+      "prompt": "A backtest run twice on 'the same' historical data, weeks apart, produces slightly different P&L numbers both times, with no code changes in between. Walk through the most likely cause and how you'd confirm it.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Data Handling",
+        "Reproducibility",
+        "Backtesting"
+      ],
+      "modelAnswer": "Given identical code and ostensibly identical data, the leading hypothesis should be that the data itself isn't actually identical between runs -- specifically, adjusted close prices are recomputed retroactively every time a new dividend or split is paid, so a fresh download of 'the same' historical adjusted series taken weeks apart can differ slightly in the past purely because something happened between the two downloads, with no error anywhere in the backtest code itself. This is confirmed by diffing the two input datasets directly, row by row over the historical window both runs used, rather than assuming the code must be at fault -- if cells differ specifically in the adjusted-price column (and only there), that strongly points at retroactive adjustment rather than a logic bug, a data vendor error, or nondeterminism in the code. The fix depends on what's actually needed: if the strategy trades on absolute price levels, the unadjusted series should be used for the trade-trigger logic in the first place (adjusted prices are for computing realized P&L, not necessarily for trigger logic); and for genuine reproducibility going forward, the specific data snapshot used for a given backtest run should be saved and versioned, so 'rerun this exact backtest' means replaying the saved snapshot rather than re-downloading a series that may have quietly changed underneath you.",
+      "professionalAnswer": "My first move with 'same code, different data runs, different results' is to stop suspecting the code and start diffing the actual input data between the two runs -- adjusted close prices get retroactively rescaled every time a new dividend is paid, so a fresh pull of 'the same' historical series weeks apart genuinely isn't guaranteed to be byte-identical, and that alone can account for a small but real P&L difference with zero bugs anywhere. I'd confirm it by diffing the two datasets directly rather than assuming; if the differences line up with the adjusted-price column specifically, that's the answer. Going forward, the real fix is snapshotting and versioning the exact data used for a given run, so reproducing a backtest means replaying a saved snapshot, not re-downloading something that can silently change.",
+      "commonMistakes": [
+        "Assuming identical code guarantees identical results and searching for a logic bug first",
+        "Not diffing the actual two input datasets before concluding the cause",
+        "Treating 'same data' as self-evidently true just because it covers the same historical date range"
+      ],
+      "keyPoints": [
+        "Adjusted close prices are retroactively rescaled whenever a new corporate action occurs",
+        "Two downloads of 'the same' historical window taken at different times may not be byte-identical",
+        "Confirmation requires diffing the actual datasets, not assuming the code is at fault",
+        "True reproducibility requires snapshotting and versioning the exact data a given run used"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly hypothesizes retroactive data adjustment as the likely cause",
+          "weight": 35
+        },
+        {
+          "criterion": "Describes a concrete way to confirm it (diffing datasets)",
+          "weight": 30
+        },
+        {
+          "criterion": "Proposes a correct fix/mitigation including data snapshotting",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "data-handling-in-backtests",
+        "label": "Review: Data Handling in Backtests"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-031",
+      "questionCode": "LTV-QDEV-0145",
+      "title": "Is This Strategy Decaying, or Is It Noise? Diagnosing a Rolling-Sharpe Dip",
+      "prompt": "A strategy's rolling 6-month Sharpe ratio has dipped noticeably over the last two months. A teammate wants to flag it for retirement immediately. How do you investigate whether this is genuine decay before agreeing or disagreeing?",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Strategy Monitoring",
+        "Statistical Significance",
+        "Risk Analysis"
+      ],
+      "modelAnswer": "A two-month dip inside a rolling 6-month window is a short, noisy sample on its own, and Sharpe ratios computed over short windows have real sampling variance -- a handful of unusually bad days, which happen periodically even to a genuinely unimpaired strategy, can visibly dent a 6-month rolling figure without indicating any real degradation in the underlying edge. The first check is whether the dip is concentrated in a small number of outlier days or genuinely spread evenly across the whole window; the former looks a lot more like ordinary variance than decay. The second check is whether this dip is actually unprecedented or whether the strategy's own history already contains dips of similar size and duration that later recovered -- plotting the full historical rolling-Sharpe series, not just the recent window, answers this directly and is something a single two-month snapshot can't tell you by itself. Only if the dip is broad-based (not a few outlier days), is deeper or longer than anything in the strategy's own prior history, and coincides with an identifiable, plausible cause (crowding, a regime shift, a structural market change) does it actually support a decay conclusion -- at which point the right next step is a formal retirement review, not instant retirement, since a pre-committed, structured review process exists specifically to make this decision deliberately rather than reactively to a single recent window.",
+      "professionalAnswer": "Two months inside a 6-month rolling window is a genuinely short, noisy sample, so my first question isn't 'should we retire it,' it's 'is this actually decay or just the kind of dip this strategy has shown before and recovered from.' I'd check whether a handful of bad days are driving the dip rather than a broad, even decline, and I'd pull the full historical rolling-Sharpe series, not just the recent window, to see if dips this size have happened and recovered before. If it turns out broad, deeper than anything in its own history, and lines up with something explainable -- crowding, a regime shift -- then yes, that's a real decay signal and worth a structured retirement review. But I wouldn't agree to flag it for retirement off a two-month snapshot alone; that's exactly the kind of reactive decision a pre-committed review process exists to prevent.",
+      "commonMistakes": [
+        "Treating a short rolling-window dip as conclusive evidence of decay without checking the strategy's own historical variance",
+        "Not checking whether a few outlier days, rather than a broad decline, are driving the dip",
+        "Reacting to a single recent window instead of comparing against the strategy's full historical rolling-Sharpe series"
+      ],
+      "keyPoints": [
+        "Short rolling-window Sharpe figures carry real sampling noise on their own",
+        "Check whether a few outlier days, not a broad decline, are driving the dip",
+        "Compare against the strategy's own historical rolling-Sharpe series for precedent",
+        "A genuine decay conclusion should trigger a structured review, not an immediate reactive retirement"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly treats the short window as potentially noisy, not automatically decay",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes checking outlier-day concentration",
+          "weight": 25
+        },
+        {
+          "criterion": "Describes comparing against the strategy's own historical precedent",
+          "weight": 25
+        },
+        {
+          "criterion": "Avoids over-reacting to a single recent window",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "strategy-decay-and-retirement",
+        "label": "Review: Strategy Decay & Retirement"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-032",
+      "questionCode": "LTV-QDEV-0146",
+      "title": "A VWAP Execution Algorithm That Looks Great in Backtest but Underperforms Live",
+      "prompt": "A VWAP execution algorithm consistently beats its benchmark in backtest but noticeably underperforms once live. Walk through the likely cause of the gap and how you'd confirm it.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Execution Algorithms",
+        "VWAP",
+        "Backtest-to-Live Gap"
+      ],
+      "modelAnswer": "The classic way a VWAP backtest 'cheats' is by computing the volume curve it slices against using the realized intraday volume from the exact same historical day being tested -- that is, the backtest effectively knows how much volume traded in each interval of the day before deciding how much to execute in that interval, which a real live algorithm cannot know in advance, since volume for the rest of today hasn't happened yet. A real algorithm must predict the volume curve from historical patterns (yesterday's curve, an average of recent days, a seasonally-adjusted profile) and execute against that prediction, which is necessarily less accurate than the backtest's privileged knowledge of what actually happened -- so some backtest-to-live gap specifically from this source is expected, and the right question is whether the observed gap is explained by this alone or whether something else is also wrong. Confirming it means checking exactly how the backtest's volume curve was constructed: if it used the realized volume profile from the same day being scored, that's the look-ahead, full stop, and the fix is to re-run the backtest using only a volume curve the algorithm could have predicted beforehand (e.g. a trailing N-day average profile), which should narrow the backtest-to-live gap toward a more honest, realistic benchmark number -- and if a material gap still remains after that fix, that's the signal something else (fees, latency, adverse selection in how the algo's own orders move the market) deserves investigation too.",
+      "professionalAnswer": "This is almost always the same bug: the backtest's VWAP curve was built from the actual realized volume of the day being tested, which means it effectively knew how the day's volume was going to unfold before deciding how to slice the order -- a real live algorithm has to predict that curve from history, it can't see today's volume before today happens. I'd confirm it by checking exactly how the backtest's volume profile was computed; if it's using same-day realized volume, that's the look-ahead. The fix is rerunning the backtest against a volume curve built only from information available beforehand, like a trailing average profile, and seeing how much of the live gap that closes. If a meaningful gap remains after that, there's something else going on worth digging into separately.",
+      "commonMistakes": [
+        "Assuming a backtest's VWAP curve can legitimately use the same day's realized volume",
+        "Not checking exactly how the backtest's volume profile was constructed before suspecting other causes",
+        "Concluding the entire backtest-to-live gap must be this one cause without checking whether a residual gap remains after fixing it"
+      ],
+      "keyPoints": [
+        "A VWAP backtest commonly 'cheats' by using the same day's realized volume to build its curve",
+        "A real live algorithm can only predict the volume curve from historical data, never the current day's own realized volume",
+        "Confirming the cause requires checking exactly how the backtest's volume profile was built",
+        "Any residual gap after fixing the look-ahead deserves separate investigation"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses the same-day volume look-ahead as the likely cause",
+          "weight": 40
+        },
+        {
+          "criterion": "Describes a concrete way to confirm it",
+          "weight": 25
+        },
+        {
+          "criterion": "Proposes the correct fix and checks for a residual gap afterward",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "execution-algorithms-twap-vwap-and-beyond",
+        "label": "Review: Execution Algorithms: TWAP, VWAP & Beyond"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-033",
+      "questionCode": "LTV-QDEV-0147",
+      "title": "A Mysterious Crash That Only Happens After the Order Book Grows Past a Certain Size",
+      "prompt": "A C++ matching engine crashes reliably once the resting-order vector grows past roughly a few thousand elements, but never below that, and the crash site in the debugger points at seemingly unrelated code. Diagnose the likely bug class and your investigation plan.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Containers",
+        "Iterator Invalidation",
+        "Memory Safety"
+      ],
+      "modelAnswer": "A crash that only appears once a container crosses a specific size threshold is a strong signature of a reallocation-triggered bug: std::vector grows its capacity by some multiplier (commonly doubling) each time it's exceeded, so there's a specific sequence of sizes at which a reallocation actually occurs, and if some other part of the code is holding a raw pointer, reference, or iterator into the vector's old buffer across one of those reallocation points, it becomes dangling the moment that specific reallocation happens -- which is exactly why the crash correlates with crossing a size threshold rather than with any particular order's content, and why the crash site in the debugger looks unrelated: the actual bug is wherever that stale iterator/pointer/reference was taken and held, not wherever it's finally dereferenced and crashes. The investigation plan: first, grep for any code that takes the address of, or an iterator into, an element of the resting-order vector and holds it across a call that might push_back or insert into that same vector -- that's the structural pattern to look for, not a specific crash-site inspection. Second, run the matching engine under AddressSanitizer with a workload specifically designed to cross the known threshold repeatedly; ASan reliably flags use of a pointer into freed memory the moment it's dereferenced, which should point directly at the actual stale-reference site rather than the eventual crash symptom. Third, once found, the fix is almost always either switching to a container that doesn't invalidate references on growth for this specific access pattern (e.g. std::deque for stable references, or storing elements as std::unique_ptr<Order> in the vector, where growing the vector only moves pointers, not the Order objects themselves, so references to the orders stay valid across any reallocation).",
+      "professionalAnswer": "The size threshold is the whole clue -- vector reallocates at specific sizes as it grows, usually by doubling, so a crash correlated with crossing a size threshold rather than with any particular order's data screams 'something is holding a pointer or iterator into the vector across a reallocation.' The crash site looking unrelated makes sense too -- that's just wherever the stale reference finally gets dereferenced, not where the actual mistake was made. My plan: grep for anything taking an iterator or address into this vector and holding it across a push_back/insert call, then confirm with ASan under a workload that reliably crosses the threshold, since ASan will point straight at the dereference of freed memory. The real fix is usually storing the orders as unique_ptr<Order> inside the vector, so growing the vector only ever moves pointers around, never the actual Order objects anyone might be holding a reference to.",
+      "commonMistakes": [
+        "Debugging purely at the crash site instead of looking for where a stale pointer/iterator into the vector was taken and held",
+        "Assuming the bug is data-dependent (a specific bad order) rather than size/reallocation-dependent",
+        "Fixing it with a workaround at the crash site rather than addressing the structural pattern (holding references across growth)"
+      ],
+      "keyPoints": [
+        "A crash correlated with a container crossing a size threshold points at reallocation-triggered invalidation",
+        "The crash site is typically unrelated to where the actual stale reference was taken",
+        "AddressSanitizer reliably catches dereference of freed memory and should be used with a threshold-crossing workload",
+        "Storing elements as unique_ptr<Order> in the vector keeps references to the orders valid across reallocation"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies reallocation-triggered invalidation given the size-threshold symptom",
+          "weight": 35
+        },
+        {
+          "criterion": "Describes a concrete, correct investigation plan (grep pattern + ASan)",
+          "weight": 30
+        },
+        {
+          "criterion": "Proposes a correct structural fix",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "choosing-the-right-container",
+        "label": "Review: Choosing the Right Container"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-034",
+      "questionCode": "LTV-QDEV-0148",
+      "title": "A Research Cache Silently Returning Yesterday's Signal After a Parameter Change",
+      "prompt": "A researcher changes a lookback parameter on a signal function wrapped with a disk cache, re-runs the notebook, and gets exactly the same numbers as before the change. Diagnose the bug and the fix.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Caching",
+        "Cache Invalidation",
+        "Reproducibility"
+      ],
+      "modelAnswer": "The entire value of a cache depends on its key capturing every input that actually affects the output; if the cache key here was built from only some of the function's arguments -- commonly just the signal name, forgetting the lookback parameter that was just changed -- then two genuinely different calls (old lookback and new lookback) collide on the exact same cache entry, and the second call wrongly receives the first call's stored, stale result instead of triggering a fresh computation. This is a specific, serious failure mode, worse than a cache that simply misses too often: a too-narrow key doesn't just waste time recomputing, it silently returns a wrong answer with complete confidence and no error, which is exactly why the notebook shows identical numbers after a real parameter change -- the computation for the new lookback never actually ran. Confirming it means inspecting the cache key construction directly rather than guessing: print or log the actual key being used for the pre- and post-change calls and check whether the new lookback value is genuinely part of it. The fix is making sure every argument that affects the output is included in the cache key -- here, the lookback parameter specifically -- and, as a defensive habit going forward, clearing or versioning the cache deliberately whenever a function's signature or logic changes, since a silently stale cache entry is strictly worse than no cache at all.",
+      "professionalAnswer": "Identical results after a real parameter change is the signature of a cache key that doesn't actually include that parameter -- the lookback changed, but if the key was only built from the signal name, the new call collides with the old entry and gets its stale answer back with total confidence, no error at all. I'd confirm it by just printing the actual cache key being used before and after the change and checking whether the new lookback value shows up in it. The fix is making every argument that affects the output part of the key, and going forward I'd treat 'did I just change what this function depends on' as a trigger to also check whether the cache key still captures that -- a cache that returns a wrong answer silently is worse than having no cache.",
+      "commonMistakes": [
+        "Building a cache key from only some of the function's arguments, missing one that actually affects the result",
+        "Assuming a cache either hits correctly or misses, without considering it might return a wrong, stale answer",
+        "Not inspecting the actual cache key directly and instead guessing at the cause"
+      ],
+      "keyPoints": [
+        "A cache key must include every argument that actually affects the output",
+        "A too-narrow key causes genuinely different calls to collide and return a stale wrong answer, not just a miss",
+        "This failure is silent -- no error, just a wrong, confidently-returned result",
+        "Confirming it means inspecting the actual constructed cache key directly"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses the too-narrow cache key as the cause",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains why this manifests as a silent wrong answer, not a miss",
+          "weight": 25
+        },
+        {
+          "criterion": "Describes a concrete way to confirm it and the correct fix",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "caching-and-data-pipelines",
+        "label": "Review: Caching & Data Pipelines"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-035",
+      "questionCode": "LTV-QDEV-0149",
+      "title": "A Moving-Average Column From a SQL Window Function That's Off by One Row",
+      "prompt": "A DuckDB window-function query computing a 3-row moving average produces a value for the first row of the dataset, which should be impossible with only 2 prior rows available. Diagnose the bug in the query.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "SQL",
+        "Window Functions",
+        "Debugging"
+      ],
+      "modelAnswer": "A ROWS BETWEEN 2 PRECEDING AND CURRENT ROW window, by definition, should only produce a full 3-row average starting from the third row of the ordered result -- the first two rows don't have two preceding rows to draw on, so a correct implementation either returns a partial average over however many rows are actually available (which some engines do by default for ROWS-based windows, averaging over just the rows that exist) or null, but it should never silently fabricate a value using data that doesn't exist. If the first row shows a suspiciously 'normal-looking' average rather than null or an average over fewer rows, the most likely explanation is that the ORDER BY clause inside the OVER() isn't actually ordering by the intended timestamp column -- for instance, if there's a tie or a null in the ordering column, or if the window's ORDER BY is referencing a different, incorrectly-named column than intended, rows can be processed in an order other than the one assumed, making 'the first row' in the output not actually the chronologically first row, and its 3-row window drawing on rows that are chronologically later, which can look like an impossible result at the position that's visually first in the output. The way to confirm this is to print the actual values of the ORDER BY column alongside the row's position in the result and check whether they're monotonically increasing as expected; if they're not, the ordering column itself (or a tie/null in it) is the bug, not the window function's row-counting logic, which behaves correctly once given a genuinely well-ordered input.",
+      "professionalAnswer": "A full 3-row window showing up on what should be the very first row, with no prior data to support it, means the ordering inside OVER() isn't actually doing what it looks like it's doing -- the window function's row-counting logic itself is standard and correct, so I wouldn't suspect that first. I'd check the actual values of the ORDER BY column next to each row's position in the output and see if they're genuinely increasing in the order you'd expect; a tie, a null, or an accidentally wrong column reference in that ORDER BY would make 'the first row in the result' not actually be the chronologically first row, which is exactly the kind of thing that produces an 'impossible' value at a position that only looks like the beginning.",
+      "commonMistakes": [
+        "Assuming the window function's row-counting logic itself is buggy rather than checking the ORDER BY column",
+        "Not verifying that the ORDER BY column is actually monotonic/well-ordered with no ties or nulls",
+        "Trusting visual row position in the output as equivalent to the window's actual processing order"
+      ],
+      "keyPoints": [
+        "A ROWS-based window should never fabricate a full average using rows that don't exist",
+        "An incorrect or tied/null ORDER BY inside OVER() can make the processing order differ from visual row position",
+        "The window function's own logic is standard; the bug is almost always in the ordering it's given",
+        "Confirming the cause means checking the actual ORDER BY column values against row position"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies that a full window on the apparent first row is a symptom of an ordering problem",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains how a tie/null/wrong column in ORDER BY causes this",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes a concrete way to confirm the cause",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "sql-for-time-series-data",
+        "label": "Review: SQL for Time-Series Data"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-036",
+      "questionCode": "LTV-QDEV-0150",
+      "title": "A Signal-Generation Service's Memory Grows Steadily From Lambdas Stored for Replay",
+      "prompt": "A long-running signal-generation service stores a callback lambda for each incoming market event, for later replay in debugging, and its memory usage grows steadily over the trading day. Diagnose the likely cause.",
+      "category": "troubleshooting",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Lambdas",
+        "Memory Growth",
+        "Performance Debugging"
+      ],
+      "modelAnswer": "If each stored lambda captures a reasonably large object by value -- say, a full market-data snapshot or an order book copy, rather than just the small handful of scalar fields actually needed for replay -- then every single stored lambda independently owns its own full copy of that large object, and across a full trading day's worth of market events, that is a very large number of large, independent copies accumulating in memory with nothing to release them until the debug-replay buffer itself is cleared or bounded. This is an easy mistake to make because capturing by value ([=] or an explicit named capture of a large object) is often the 'safe' choice developers reach for specifically to avoid the dangling-reference bugs covered elsewhere in this material -- but safety from dangling references doesn't mean the capture is cheap, and a lambda capturing a large object by value pays the full cost of that object's size, repeated once per stored lambda. Confirming this means checking exactly what each lambda's capture list actually holds -- if it's capturing a whole struct or snapshot rather than the few fields replay genuinely needs, that's very likely the leak's source, and a memory profiler attributing growth specifically to the type being captured would confirm it directly. The fix is capturing only the minimal set of fields replay actually needs (by value, since they're small scalars and still need to be captured safely), and separately, bounding how many of these debug lambdas are retained at all -- an unbounded 'store everything for possible later replay' buffer is itself a design smell regardless of what each entry costs, since even small captures accumulate without limit over a full trading day.",
+      "professionalAnswer": "Steady memory growth tied to volume of events, with each event storing a lambda, points me straight at what each lambda is actually capturing -- if it's grabbing a whole market-data snapshot or order-book copy by value instead of the few fields replay actually needs, every single one of those lambdas is carrying its own full copy, and across a trading day that adds up fast with nothing releasing it. I'd check the actual capture list for each lambda before assuming anything else, and a memory profiler attributing the growth to that captured type would confirm it directly. The fix is two things: capture only the small set of fields replay genuinely needs, and put a hard bound on how many of these debug lambdas get kept at all -- an unbounded 'save everything just in case' buffer is a problem on its own, independent of what each entry costs.",
+      "commonMistakes": [
+        "Assuming capture-by-value is always 'safe' in the sense of being cheap, not just safe from dangling references",
+        "Not inspecting what a lambda's capture list actually holds before looking elsewhere for the leak",
+        "Fixing only the capture size without also bounding how many entries an unbounded replay buffer retains"
+      ],
+      "keyPoints": [
+        "Capturing a large object by value means every stored lambda owns an independent full copy of it",
+        "Capture-by-value avoids dangling references but is not automatically cheap",
+        "Confirming the cause means inspecting exactly what each lambda's capture list holds",
+        "The fix is both minimizing what's captured and bounding how many entries are retained at all"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses large-object capture-by-value as the likely leak source",
+          "weight": 35
+        },
+        {
+          "criterion": "Describes a concrete way to confirm it",
+          "weight": 25
+        },
+        {
+          "criterion": "Proposes both the capture-size fix and a bounded-retention fix",
+          "weight": 30
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "lambdas-and-functional-style",
+        "label": "Review: Lambdas & Functional Style"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-037",
+      "questionCode": "LTV-QDEV-0151",
+      "title": "Structuring a Shared Research Library So Production Can Actually Depend on It",
+      "prompt": "You're setting up the repository layout for a quant research library that notebooks, scheduled batch jobs, and eventually a production pricing service will all depend on. What layout do you choose and why does it matter for reproducibility specifically, not just tidiness?",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Project Structure",
+        "Packaging",
+        "Reproducibility"
+      ],
+      "modelAnswer": "The core decision is putting the actual library under src/package_name/ rather than at the repository root, and treating notebooks/ and scripts/ purely as consumers of that installed package, never as places where new logic is written and left unpromoted. This matters for reproducibility specifically, not just code organization, because a flat layout (package directly at repo root) lets Python's own import mechanics quietly mask real packaging problems: running code from inside the repo root can accidentally import the uninstalled local package directly off the filesystem, which can work for whoever happens to be in that exact directory and fail the moment someone else installs the package properly (pip install -e .) and runs it from a different working directory or in a scheduled job with a different working directory than the original developer's. The src/ layout forces every import, everywhere, to go through the actually-installed package, so 'it works on my machine from this folder' stops being a possible state at all -- which is exactly the property a shared library feeding both notebooks and eventually production needs, since the production pricing service absolutely cannot depend on being run from one specific developer's working directory. pyproject.toml as the single source of dependency and build metadata, plus an editable install (pip install -e .) for active development, rounds this out: one real package, one real install mechanism, used identically by every consumer regardless of whether that consumer is an interactive notebook or an unattended scheduled job.",
+      "professionalAnswer": "The one decision I'd insist on is src/package_name/, not a flat layout with the package sitting right at the repo root, and I'd be specific about why: a flat layout lets Python accidentally import the uninstalled package directly off the filesystem when you happen to run something from the repo root, which can mask real packaging bugs that only surface once someone else installs it properly and runs it from a different directory -- exactly the scenario a production service guarantees will happen. The src/ layout makes that impossible by construction; every import has to go through the real, installed package. Everything else -- pyproject.toml for metadata, editable installs for development -- is in service of that one property: every consumer, whether it's a notebook, a scheduled job, or eventually production, depends on the exact same real package, not on where someone happened to be standing when they ran it.",
+      "commonMistakes": [
+        "Using a flat layout where the package sits directly at the repo root next to pyproject.toml",
+        "Letting logic accumulate directly in notebooks or scripts instead of promoting it into the installed library",
+        "Assuming 'it works when I run it' is sufficient evidence of correct packaging without testing from an installed, different-directory context"
+      ],
+      "keyPoints": [
+        "src/package_name/ layout prevents accidental imports of the uninstalled package off the filesystem",
+        "notebooks/ and scripts/ should be consumers of the library, not where new logic lives unpromoted",
+        "pyproject.toml plus editable installs give one consistent install mechanism for every consumer",
+        "This matters for reproducibility specifically: no consumer can depend on a specific working directory"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly specifies and justifies the src/ layout",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains the reproducibility failure mode a flat layout enables",
+          "weight": 35
+        },
+        {
+          "criterion": "Describes consistent packaging/install mechanism across all consumers",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "packaging-and-project-structure",
+        "label": "Review: Packaging & Project Structure"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-038",
+      "questionCode": "LTV-QDEV-0152",
+      "title": "Composition Over Inheritance for a Growing Strategy Hierarchy",
+      "prompt": "A codebase has a MomentumStrategy, a MeanReversionStrategy, and a growing list of others, all inheriting from a Strategy base class that's accumulated more and more shared helper methods over time. When would you refactor toward composition instead, and what specifically goes wrong with the inheritance-heavy version as it grows?",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Object-Oriented Design",
+        "Composition",
+        "Software Architecture"
+      ],
+      "modelAnswer": "The inheritance-heavy design tends to degrade in a specific, recognizable way as it grows: the base Strategy class accumulates helper methods that only some subclasses actually need, because 'put it on the base so everyone has access' is the easy move each time a new piece of shared logic appears -- and over time, every subclass inherits a growing pile of methods it doesn't use, coupling classes that have no real behavioral relationship just because they both happen to be Strategy subclasses. The genuine fix is to identify which pieces of shared logic are actually independent capabilities (a position-sizing calculator, a risk-limit checker, a signal-smoothing utility) rather than properties of 'being a strategy,' and give each strategy class a reference to the specific helper objects it actually uses via composition, instead of inheriting a monolithic bag of methods from a common base. The base class, kept thin, should define only the genuine common interface every strategy needs (generate_signal(data) -> Signal) -- the actual contract that makes polymorphic treatment of different strategies useful in the first place -- while everything else becomes an injectable, independently testable component that only the strategies that need it actually hold a reference to. This refactor is worth doing specifically once you notice unrelated subclasses inheriting methods they never call, or once testing one strategy class requires setting up unrelated state that exists only because of shared base-class machinery -- both are concrete, observable symptoms that composition would resolve, rather than a stylistic preference for composition in the abstract.",
+      "professionalAnswer": "The specific symptom I'd watch for is the base class turning into a dumping ground -- every time new shared logic shows up, it's easiest to just add it to the base, and after enough of that, every subclass is inheriting methods it never actually calls, purely because they're all Strategy subclasses. The fix isn't 'inheritance bad, composition good' as a blanket rule -- it's recognizing that most of what accumulated on the base was never really 'being a strategy,' it was independent capabilities like position sizing or risk checking that should be their own objects, injected into whichever strategy actually needs them. I'd keep the base class thin -- just the real shared contract, generate_signal(data) -- and move everything else to composition once I actually see subclasses carrying around methods they don't use, or tests needing to set up irrelevant base-class state just to exercise one strategy.",
+      "commonMistakes": [
+        "Adding every new piece of shared logic to the base class by default, regardless of whether every subclass needs it",
+        "Refactoring to composition as a blanket stylistic preference rather than in response to an observed symptom",
+        "Removing the base class's genuine shared interface (generate_signal) along with the accumulated helper clutter"
+      ],
+      "keyPoints": [
+        "A growing base class accumulates methods only some subclasses actually need",
+        "The fix identifies independent capabilities and injects them via composition, rather than inheriting a monolithic base",
+        "The base class should stay thin, keeping only the genuine common interface across strategies",
+        "The refactor is motivated by observed symptoms (unused inherited methods, irrelevant test setup), not stylistic preference"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses the inheritance-heavy design's specific failure mode",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly proposes composition for independent capabilities while keeping a thin base interface",
+          "weight": 35
+        },
+        {
+          "criterion": "Identifies concrete, observable symptoms that motivate the refactor",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "object-oriented-design-for-quant-code",
+        "label": "Review: Object-Oriented Design for Quant Code"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-039",
+      "questionCode": "LTV-QDEV-0153",
+      "title": "Designing Logging and Config for a Reproducible Overnight Batch Pricing Run",
+      "prompt": "Design the logging and configuration approach for an overnight batch job that reprices the full book and must be fully reproducible if someone needs to investigate a discrepancy the next morning. What specifically needs to be captured, and why does 'we have logs' not automatically mean 'we can reproduce this run'?",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Logging",
+        "Configuration Management",
+        "Reproducibility"
+      ],
+      "modelAnswer": "Having logs and having reproducibility are different properties: logs that record 'the job ran, here's the output' tell you what happened but not what specifically produced it, and reproducing a run requires knowing every input that could have affected the result -- which config values were in effect, which data snapshot/version was read, which library versions were installed, and any random seed if the pricing involves simulation. The design should log, at the start of every run, the exact resolved configuration (not just 'loaded config.yaml,' but the actual key-value pairs after any environment-variable overrides are applied, since a config file alone doesn't tell you what environment variables silently changed at runtime), the specific data version or snapshot identifier being read (not just 'read from the database,' since the same query against a mutable data source can return different rows on different days), the installed library versions (particularly anything that affects numerical results, like a pricing library's own version), and any seed used for stochastic components. Avoiding hardcoded paths and secrets (via environment variables or a config file, never inline in code) is a related but separate concern -- it's about security and portability, not reproducibility, though both benefit from the same discipline of making every run's actual inputs explicit and recorded rather than implicit and assumed. The test of whether this design actually achieves reproducibility: given only the morning-after logs from a specific run, could someone reconstruct and re-run the exact same inputs without asking anyone a single question about what config or data was actually in effect that night -- if any input required to answer that isn't in the logs, the design has a gap.",
+      "professionalAnswer": "The distinction I'd draw explicitly is that logs showing 'the job ran and produced this output' are not the same thing as being reproducible -- reproducibility means every input that could have affected the result is captured somewhere, and I design the logging specifically around that question: what config was actually in effect after any environment overrides, what data snapshot or version was read, what library versions were installed, and any seed if there's simulation involved. The test I'd apply to the design is: could someone reconstruct this exact run tomorrow morning using only what's in the logs, without asking anyone what was actually running that night? If any input needed to answer that isn't captured, that's a real gap in the design, not just a nice-to-have.",
+      "commonMistakes": [
+        "Logging that the job ran and what it output, without logging the actual inputs (resolved config, data version, library versions, seed) that produced that output",
+        "Logging 'loaded config.yaml' without logging the actual resolved values after environment-variable overrides",
+        "Treating avoiding hardcoded secrets/paths as the same concern as reproducibility, rather than a related but separate discipline"
+      ],
+      "keyPoints": [
+        "Reproducibility requires capturing every input that could affect the result, not just the output",
+        "The resolved configuration (after overrides), not just 'config loaded', must be logged",
+        "The specific data version/snapshot and library versions must be captured, since both can silently vary run to run",
+        "The design's real test: can the run be reconstructed from the logs alone, with no additional questions asked"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly distinguishes logging from reproducibility",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly specifies what must be captured (resolved config, data version, library versions, seed)",
+          "weight": 40
+        },
+        {
+          "criterion": "Applies a concrete reproducibility test to validate the design",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "logging-configuration-and-reproducibility",
+        "label": "Review: Logging, Configuration & Reproducibility"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-040",
+      "questionCode": "LTV-QDEV-0154",
+      "title": "Deciding Whether a Desk Actually Needs kdb+ or Should Stay on DuckDB/Parquet",
+      "prompt": "A growing trading desk's head of research wants to evaluate kdb+ for the team's tick-data infrastructure. Walk through how you'd actually make this recommendation, including what would change your answer.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Database Architecture",
+        "kdb+",
+        "Technology Selection"
+      ],
+      "modelAnswer": "The honest default is DuckDB and Parquet, which already handle the large majority of research workloads -- daily/minute-bar panels, end-of-day backtests, ad-hoc exploration -- with excellent performance, no specialized operational footprint, and no steep learning curve in an unfamiliar language. kdb+ earns its real cost (licensing, a genuinely steep q learning curve for the team, specialized operational expertise to run it well) specifically when the actual requirement is tick-level: continuous high-frequency ingestion, live queries against data that's still streaming in, and latency requirements in the microsecond-to-low-millisecond range -- the kind of workload that underpins a real-time trading or market-making system's own infrastructure, not research. The recommendation process should start by precisely characterizing the actual workload the desk needs to support, not the data's nominal label of 'time-series' or 'tick data' -- a desk that stores historical tick data for occasional backtesting (reading it, not querying it live at microsecond latency) is a DuckDB/Parquet workload wearing tick-data's label, while a desk that needs sub-millisecond queries against data still arriving in real time is a genuinely different requirement. What would change the answer: if the desk's actual, current pain point is specifically about live query latency against streaming data (not batch research speed, which DuckDB already handles well), or if the team is scaling toward supporting live trading infrastructure that genuinely needs kdb+'s sub-millisecond guarantees, that's when the cost becomes justified -- and I'd want that need stated concretely, with a real measured latency requirement, rather than adopting kdb+ because tick data sounds like it inherently needs a specialized tick-data database.",
+      "professionalAnswer": "My default answer, before even looking at the specifics, is that DuckDB and Parquet already cover the overwhelming majority of research workloads well, so the real question isn't 'is kdb+ good' -- it obviously is, for what it's built for -- it's 'does this desk's actual workload need what it's specifically good at.' I'd want to pin down exactly what's driving the request: is this batch research on historical tick data, which DuckDB handles fine, or a genuine need for live, sub-millisecond queries against data still streaming in, which is kdb+'s actual home turf. What would flip my recommendation is a concrete, measured latency requirement tied to live infrastructure, not just the general feeling that 'tick data' implies needing a specialized tick-data database -- the data's label isn't the deciding factor, the actual access pattern and latency requirement is.",
+      "commonMistakes": [
+        "Recommending kdb+ because the data is labeled 'tick data' without checking the actual query/latency requirement",
+        "Assuming DuckDB/Parquet can't handle any tick-level workload at all, rather than most research use of it",
+        "Not asking what specific pain point is actually driving the evaluation before recommending a technology"
+      ],
+      "keyPoints": [
+        "DuckDB/Parquet already handle the large majority of research workloads well",
+        "kdb+ earns its cost specifically for live, high-frequency, low-latency infrastructure needs, not batch research",
+        "The decision should be driven by the actual workload's access pattern and latency requirement, not the data's label",
+        "A concrete, measured latency/live-query requirement is what should actually change the recommendation"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly defaults to DuckDB/Parquet and explains why",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly characterizes when kdb+ is actually justified",
+          "weight": 35
+        },
+        {
+          "criterion": "Describes the correct process for making this recommendation (characterize the real workload first)",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "kdbplus-q-and-specialized-tools-overview",
+        "label": "Review: kdb+/q & Specialized Tools Overview"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-041",
+      "questionCode": "LTV-QDEV-0155",
+      "title": "Choosing Vectorized vs. Event-Driven for a Strategy With Path-Dependent Options",
+      "prompt": "You're designing the backtest engine for a strategy that trades options with path-dependent payoffs and needs to react to intraday order fills, not just daily closes. Would you reach for a vectorized or event-driven engine, and how would you structure the decision rather than just picking one?",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Backtesting Architecture",
+        "Vectorized vs. Event-Driven",
+        "System Design"
+      ],
+      "modelAnswer": "The deciding factor isn't speed preference, it's whether the strategy's logic can actually be expressed as whole-array operations at all: a path-dependent option payoff and intraday fill-reactive logic both require knowing, at each simulated point in time, specific history about what already happened along this exact path and exactly how an order would have filled given realistic intraday price action -- that's fundamentally a bar-by-bar (or tick-by-tick), stateful simulation, which is precisely what an event-driven engine is built for and what a vectorized engine's whole-array operations cannot naturally express, because vectorization assumes each row's computation doesn't depend on a simulated, strategy-specific state built up bar by bar within that same run. This doesn't mean vectorization has no place in the overall research workflow: the standard, sensible structure is to use a fast vectorized engine during early-stage idea exploration (testing simple proxies for the strategy's core logic, parameter sweeps, broad screening across many candidate signals) specifically because it's fast enough to test hundreds of variations quickly, and switch to the slower but necessarily more realistic event-driven engine once a specific strategy candidate -- with its real path-dependent payoff structure and intraday fill logic intact -- needs serious, trustworthy validation before being taken further. Picking one engine type for the entire research-to-validation pipeline, rather than using each for the stage it's actually suited to, either sacrifices realism too early (vectorized used where it can't actually represent the strategy's logic correctly) or sacrifices exploration speed unnecessarily (event-driven used for broad early screening where its realism isn't yet needed).",
+      "professionalAnswer": "The real test here isn't 'which engine do I prefer,' it's 'can this strategy's logic actually be expressed as whole-array math at all' -- and path-dependent option payoffs plus intraday fill reactions both require state that builds up along a specific simulated path, which vectorization fundamentally can't represent since each row's computation would need to depend on strategy-specific history accumulated within that same backtest run. That's squarely event-driven territory. Where I would use vectorization is earlier in the process -- fast proxy screening and parameter sweeps before this specific path-dependent structure needs to be modeled faithfully -- and then switch to event-driven once it's time to seriously validate this specific candidate. Using one engine type for the whole pipeline, instead of matching each stage to the tool suited for it, either breaks the strategy's realism too early or wastes a lot of time running a slow, realistic engine where it wasn't needed yet.",
+      "commonMistakes": [
+        "Choosing vectorized for the whole pipeline because it's faster, without checking whether the strategy's logic can actually be expressed as array operations",
+        "Choosing event-driven for the whole pipeline including early-stage broad exploration, where speed matters more than full realism yet",
+        "Treating the choice as a fixed, one-time decision rather than matching engine type to research stage"
+      ],
+      "keyPoints": [
+        "The deciding factor is whether the strategy's logic can be expressed as whole-array operations, not speed preference alone",
+        "Path-dependent payoffs and intraday fill-reactive logic require stateful, bar-by-bar simulation",
+        "Event-driven is necessary once that path-dependent/fill-reactive structure must be modeled faithfully",
+        "Vectorized engines remain useful for fast early-stage screening before full realism is needed"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies why vectorization can't represent this strategy's logic",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly justifies event-driven as necessary for serious validation",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes using both engine types at different research stages appropriately",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "vectorized-vs-event-driven-backtests",
+        "label": "Review: Vectorized vs. Event-Driven Backtests"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-042",
+      "questionCode": "LTV-QDEV-0156",
+      "title": "Designing a Type-Hinting and mypy Rollout for a Growing, Multi-Contributor Research Codebase",
+      "prompt": "A research codebase has grown from one person's scripts to a team of six contributing Python modules with no type hints anywhere. Design how you'd roll out type hints and mypy checking without halting ongoing research work.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Type Hints",
+        "Static Checking",
+        "Engineering Process"
+      ],
+      "modelAnswer": "A full retroactive type-hinting pass across the entire codebase, done as a single blocking effort before any new feature work continues, is both unrealistic for a six-person team with ongoing research deadlines and unnecessary -- the actual goal is catching real bugs going forward, not achieving type-hint completeness as an end in itself. The practical rollout: configure mypy to run in a permissive, incremental mode from day one (allowing untyped functions to exist without erroring, e.g. via per-module or per-directory configuration rather than a single strict blanket setting), and require type hints only on new code and any code being actively modified -- a 'boy scout rule' applied to typing specifically, so the typed fraction of the codebase grows naturally as a side effect of ongoing work rather than requiring a dedicated, disruptive sprint. Prioritize typing the modules with the highest fan-in first -- shared utility functions and core data structures that many other modules call into -- since type errors caught there (e.g. a function returning Optional[int] used elsewhere as if it's definitely an int) have the largest payoff relative to effort, versus typing a one-off analysis script that only one person ever runs. Wire mypy into CI as a check that runs and reports, initially in a non-blocking ('warn but don't fail the build') mode so the team can see where errors are accumulating without being blocked by a backlog that predates the rollout, and graduate specific, already-clean modules to blocking/strict mode over time as their coverage genuinely earns it -- rather than either ignoring mypy's output forever or demanding the whole codebase pass strict mode on day one, both of which would either waste the tool's value or stall real work.",
+      "professionalAnswer": "I wouldn't try to type the whole codebase in one disruptive pass -- that's a lot of effort for a team that has ongoing research deadlines, and it's not actually necessary to get the real value. I'd configure mypy permissively from the start, require type hints only on new or actively-modified code, and prioritize the shared, high-fan-in utility modules first, since that's where a caught type error actually prevents the most downstream pain. mypy goes into CI early, but in a non-blocking, report-only mode initially, so the team can see where issues accumulate without being stuck behind a backlog that predates the whole effort -- and specific modules graduate to strict, blocking mode once their coverage has actually earned it, rather than everything being forced to pass strict checking from day one.",
+      "commonMistakes": [
+        "Attempting a full retroactive type-hinting pass across the whole codebase as a blocking prerequisite to other work",
+        "Making mypy strict and build-blocking from day one, stalling ongoing work on a pre-existing untyped codebase",
+        "Typing low-fan-in, rarely-used scripts with the same priority as shared, high-fan-in utility modules"
+      ],
+      "keyPoints": [
+        "A full blocking retroactive typing pass is unrealistic and unnecessary for the actual goal",
+        "Requiring type hints on new/modified code lets typed coverage grow naturally alongside ongoing work",
+        "Prioritize high-fan-in shared modules first, since errors caught there have the largest payoff",
+        "Roll mypy into CI in a non-blocking mode initially, graduating specific modules to strict mode as coverage earns it"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly avoids a disruptive full-codebase retroactive typing pass",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly designs an incremental rollout (new/modified code, permissive config)",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly prioritizes high-fan-in modules and a graduated CI strictness approach",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "type-hints-and-static-checking",
+        "label": "Review: Type Hints & Static Checking"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-043",
+      "questionCode": "LTV-QDEV-0157",
+      "title": "Designing a Test Strategy for a Numerical Pricing Library That Catches Real Bugs",
+      "prompt": "Design the testing approach for a Python pricing library before it's trusted by a backtest engine, covering what pytest alone misses and why floating-point assertions need special handling.",
+      "category": "architecture",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Testing",
+        "Numerical Code",
+        "pytest",
+        "Hypothesis"
+      ],
+      "modelAnswer": "Ordinary pytest tests with hand-picked example inputs catch the cases the test author thought to write, which for numerical pricing code is a real but limited net -- a developer writing tests for their own pricing function tends to test the same 'normal' inputs they had in mind while writing the function, missing exactly the edge cases (zero time-to-expiry, zero volatility, deeply in/out-of-the-money) that are most likely to expose a real bug, because those weren't the cases the author was picturing. property-based testing with hypothesis addresses this specifically: instead of hand-picking inputs, you state a property that should hold for a whole range of generated inputs (e.g. 'a call price should never be negative' or 'put-call parity should hold within numerical tolerance for any valid set of inputs'), and hypothesis generates many inputs, including deliberately extreme ones, searching for a counterexample -- which tends to surface exactly the edge-case bugs a hand-written example-based suite misses. Floating-point assertions need pytest.approx or np.testing.assert_allclose rather than == specifically because floating-point arithmetic doesn't produce bit-exact results across mathematically equivalent computation paths -- an exact-equality assertion in a numerical test suite will intermittently or permanently fail for reasons that have nothing to do with the code actually being wrong, training the team to distrust test failures generally. The test suite should explicitly include the known-fragile edge cases from the domain itself (near-zero time-to-expiry, extreme moneyness, zero volatility) as hand-written example tests, not just rely on hypothesis to stumble onto them, since these specific regimes are known in advance to be where Black-Scholes-style formulas are numerically fragile, and explicit tests there document that fragility was deliberately considered rather than accidentally covered.",
+      "professionalAnswer": "Hand-written pytest examples only catch what the test author thought to write, and for pricing code that tends to mean the 'normal' cases the author was picturing while writing the function -- exactly the edge cases most likely to expose a real bug (zero time-to-expiry, deep moneyness) are the ones most likely to get missed this way. That's where hypothesis earns its place: state a property like 'price should never be negative' or 'put-call parity should hold within tolerance,' and let it generate a wide range of inputs, including extreme ones, searching for a counterexample. On floating-point specifically, I'd never use == in these tests -- pytest.approx or assert_allclose, because exact equality fails for reasons unrelated to actual correctness and just trains people to ignore test failures. And I'd still write explicit, hand-picked tests for the known-fragile regimes -- near-zero time-to-expiry, extreme moneyness -- rather than hoping hypothesis happens to generate them, because those are known in advance to be where this kind of formula breaks.",
+      "commonMistakes": [
+        "Relying only on hand-picked example tests, which reflect what the author already expected rather than genuine edge cases",
+        "Using == to assert on floating-point results instead of pytest.approx/assert_allclose",
+        "Assuming hypothesis's generated inputs make explicit, hand-written edge-case tests for known-fragile regimes unnecessary"
+      ],
+      "keyPoints": [
+        "Hand-picked example tests only catch cases the author already thought of",
+        "Property-based testing with hypothesis searches many generated inputs, including extreme ones, for counterexamples",
+        "Floating-point assertions require tolerance-based comparisons, not ==, since exact equality fails for unrelated reasons",
+        "Known-fragile domain regimes deserve explicit example tests in addition to property-based coverage"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies the limits of hand-picked example-based tests",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly proposes and justifies property-based testing with hypothesis",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly explains floating-point tolerance assertions",
+          "weight": 25
+        },
+        {
+          "criterion": "Includes explicit coverage of known-fragile domain edge cases",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 8,
+      "lessonLink": {
+        "courseSlug": "advanced-python-for-quant-research",
+        "lessonSlug": "testing-numerical-code",
+        "label": "Review: Testing Numerical Code"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-044",
+      "questionCode": "LTV-QDEV-0158",
+      "title": "Giving Feedback on a Pull Request With No Tests for New Numerical Code",
+      "prompt": "A teammate submits a pull request adding a new risk calculation to the pricing library, with no tests. How do you raise this in review in a way that actually lands, rather than just blocking the PR with a terse comment?",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Code Review",
+        "Testing Culture",
+        "Communication"
+      ],
+      "modelAnswer": "I'd start the comment by being specific about why this particular piece of code needs tests more than most, rather than citing a blanket 'always write tests' policy, which tends to read as process for its own sake: a risk calculation that's wrong in a subtle way -- not crashing, just quietly producing a slightly incorrect number -- is exactly the kind of bug that's hardest to catch any other way, since it can look plausible and pass casual review by eye. I'd point at one or two specific inputs I'd want to see covered (an edge case particular to this calculation, plus a basic sanity-check case) rather than leaving 'add tests' open-ended, since a concrete starting point is both easier to act on and makes clear I've actually thought about what would catch a real bug here, not just checked a box. I'd also ask, genuinely, whether there's a reason tests weren't included -- time pressure, uncertainty about what to test, or a belief that it's already covered elsewhere -- since the answer changes what's actually useful to say next, and assuming the worst (carelessness) before asking tends to put people on the defensive in a way that makes the next review harder, not easier. The goal of the comment is to get tests written, not to score a point about process, and framing it around the specific risk this exact code carries is what makes that likely to actually happen rather than just getting grudgingly complied with.",
+      "professionalAnswer": "I try to make the comment about this specific code, not about testing as abstract policy -- a risk calculation that's subtly wrong is genuinely hard to catch by eye in review, and that's the real reason this one needs tests, not 'we always require tests.' I'll usually name one or two concrete inputs I'd want covered rather than leaving it as an open-ended 'please add tests,' because that's both easier to act on and shows I've actually thought about what would catch a real bug here. And I'll ask why tests weren't included before assuming the worst -- sometimes it's time pressure, sometimes it's genuine uncertainty about what to test, and the answer changes what's actually helpful to say next. The point of the comment is getting tests written because they matter here, not making someone feel bad about having skipped them.",
+      "commonMistakes": [
+        "Leaving a generic 'please add tests' comment without explaining why this specific code needs it",
+        "Assuming carelessness rather than asking why tests were omitted before responding",
+        "Blocking the PR with a terse comment that reads as a process gate rather than a substantive concern"
+      ],
+      "keyPoints": [
+        "Frame the request around why this specific code's bugs would be hard to catch otherwise",
+        "Suggest concrete inputs/cases to test rather than an open-ended request",
+        "Ask why tests were omitted before assuming carelessness",
+        "The goal is getting tests written, not scoring a point about process"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Frames the request specifically, not as generic policy",
+          "weight": 30
+        },
+        {
+          "criterion": "Suggests concrete test cases",
+          "weight": 25
+        },
+        {
+          "criterion": "Asks rather than assumes about the omission",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity and maturity of communication approach",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-045",
+      "questionCode": "LTV-QDEV-0159",
+      "title": "Disagreeing With a Teammate's Container Choice in Code Review",
+      "prompt": "A teammate's pull request uses a std::list for a collection that's iterated constantly and rarely modified in the middle. You believe std::vector would be faster and simpler. How do you raise this without it feeling like you're overriding their decision unilaterally?",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Code Review",
+        "Technical Disagreement",
+        "Communication"
+      ],
+      "modelAnswer": "I'd open by asking what drove the std::list choice rather than leading with my own preferred answer, since there might be a real constraint I'm not seeing -- maybe there's a reason for frequent middle-insertions I haven't noticed in the code, or a reference-stability requirement (std::list never invalidates references to other elements on insertion, which vector can) that actually matters here. If the answer confirms what I suspected -- that the actual access pattern is mostly iteration with rare mutation -- I'd point at that mismatch specifically and concretely: this container was chosen for a property (fast middle-insertion) the code doesn't actually exercise much, while paying a real, measurable cost (cache-unfriendly iteration, since list nodes are scattered in memory) on the operation that happens constantly. I'd suggest we settle it with a quick benchmark on realistic data rather than just asserting vector is faster, both because it's more persuasive than my opinion and because it's possible the real workload has some wrinkle that changes the answer. Framing it as a question about the actual access pattern, backed by an offer to verify together rather than a flat assertion that they chose wrong, keeps this as a shared technical question rather than a decision I'm unilaterally overriding -- which also means if the benchmark surprises me, I've left room to actually update instead of having already staked out a position I'd feel pressure to defend.",
+      "professionalAnswer": "I'd ask first, not assert first -- what drove the list choice, since there might be a requirement I'm not seeing, like needing stable references across insertions, which list genuinely gives you and vector doesn't. If it turns out the real access pattern is mostly iteration with rare middle-insertion, I'd point at that specific mismatch rather than just saying 'vector is faster' -- this container is paying for a property the code barely uses, while costing something on the operation that happens constantly. And I'd rather settle it with a quick benchmark on realistic data than win it on assertion, partly because that's more convincing than my opinion and partly because I want to actually be right, not just confident. Leading with a question instead of a verdict is what keeps this a shared technical question instead of me overriding someone's decision.",
+      "commonMistakes": [
+        "Leading with the preferred answer ('use vector') instead of asking what drove the original choice",
+        "Not considering a real requirement (e.g. reference stability) that might justify the original choice",
+        "Asserting the performance claim rather than offering to verify it with an actual benchmark"
+      ],
+      "keyPoints": [
+        "Ask what drove the original choice before asserting a different one",
+        "Check for a real requirement (e.g. reference stability) the alternative container wouldn't satisfy",
+        "Point at the specific access-pattern mismatch rather than a general preference",
+        "Offer to settle the disagreement with a benchmark rather than assertion alone"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Leads with a question about the original rationale, not a verdict",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly identifies the access-pattern mismatch as the substantive issue",
+          "weight": 30
+        },
+        {
+          "criterion": "Proposes resolving via benchmark rather than assertion",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity and collaborative framing",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-046",
+      "questionCode": "LTV-QDEV-0160",
+      "title": "Being Wrong About a Performance Prediction You Made to the Team",
+      "prompt": "You told the team a specific optimization would cut repricing latency by roughly half. After implementing it, the actual improvement is closer to 10%. How do you handle this with the team?",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Accountability",
+        "Technical Communication",
+        "Growth Mindset"
+      ],
+      "modelAnswer": "I'd say plainly, as soon as the real numbers are in, that my estimate was off and by how much, rather than letting the gap surface implicitly through the final results without my having said anything about it first -- being first to name the miss is both more honest and more useful to the team than hoping nobody notices or compares against the earlier number I gave them. I'd then actually dig into why the prediction was wrong rather than just reporting the discrepancy and moving on, since that's the part with real value going forward: maybe the hot path I estimated against wasn't actually where most of the time was going, or maybe the optimization worked exactly as expected on its own but something else in the pipeline is now the dominant cost, masking the gain. Sharing that specific finding -- not just 'my estimate was wrong' but 'here's what I actually learned about where the time is going' -- turns an awkward miss into useful information the team can act on, which is a better outcome for everyone than either downplaying the gap or over-apologizing for it. I'd also resist the temptation to quietly revise my original claim retroactively or bury it in a long update; a short, direct 'here's what I predicted, here's what happened, here's why' keeps trust intact in a way that a vague or defensive explanation doesn't.",
+      "professionalAnswer": "I'd just say it directly and early -- my estimate was off, here's the actual number, rather than letting people discover the gap on their own by comparing against what I told them earlier. What I actually spend the real effort on is figuring out why I was wrong, because that's the useful part -- maybe I estimated against the wrong hot path, or maybe something else downstream became the dominant cost and masked the gain I did get. I'd share that specific finding, not just an apology, because 'here's what I actually learned about where the time goes' is more valuable to the team than either downplaying the miss or over-explaining it defensively. Being first to name it, and having a real answer for why, is what keeps this from costing trust.",
+      "commonMistakes": [
+        "Letting the team discover the gap themselves instead of proactively naming it",
+        "Reporting only that the estimate was wrong without investigating and sharing why",
+        "Being defensive or over-apologetic instead of giving a direct, factual account"
+      ],
+      "keyPoints": [
+        "Proactively and promptly disclose the gap between prediction and actual result",
+        "Investigate and share the actual reason for the miss, not just the fact of it",
+        "Frame the finding as useful information, not just an apology",
+        "A short, direct account preserves trust better than a defensive or vague one"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Proactively discloses the discrepancy rather than letting it surface passively",
+          "weight": 30
+        },
+        {
+          "criterion": "Investigates and explains the actual cause of the miss",
+          "weight": 35
+        },
+        {
+          "criterion": "Frames the disclosure constructively and directly",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity and maturity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-047",
+      "questionCode": "LTV-QDEV-0161",
+      "title": "Making the Business Case for a kdb+ License to Leadership",
+      "prompt": "Your team wants to adopt kdb+ for tick-data infrastructure, which comes with a real licensing cost and a learning curve. How would you make this case to a non-technical head of the desk who controls the budget?",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Business Communication",
+        "Technical Advocacy",
+        "Budget Justification"
+      ],
+      "modelAnswer": "I'd frame this around the specific business problem the current setup can't solve, not around kdb+'s technical merits in the abstract -- a budget-holder doesn't need to understand q's syntax or column-store internals, they need to understand what capability we're missing and what it costs us to keep missing it. If the actual driver is that the desk's live-query latency against streaming tick data is currently too slow for a real trading or risk-monitoring need, I'd state that gap in business terms: what decision or capability is currently delayed or degraded by it, and what that's actually costing (slower risk visibility, a missed opportunity class, whatever the real impact is) in terms the budget-holder already cares about. I'd present the license and ramp-up cost honestly alongside that, including the real learning-curve cost in people's time, not just the sticker price, and I'd be upfront that this is justified specifically because of the live-latency requirement, not because 'kdb+ is the industry-standard tool for tick data' -- a vague appeal to industry standard without a concrete business reason is exactly the kind of pitch that should be, and often is, pushed back on. If I can't point to a specific, current business pain that kdb+ specifically resolves and DuckDB/Parquet don't, that's useful information too -- it probably means the honest recommendation right now is to wait, not to make the case harder to swallow.",
+      "professionalAnswer": "I'd skip the technical merits entirely in this pitch and anchor on the specific business gap -- what decision or capability is currently too slow or degraded because of our live-query latency, stated in terms that matter to someone running the budget, not in terms of q syntax or column stores. I'd be straight about the full cost, including the real time cost of the team's learning curve, not just the license number, and I'd tie the justification specifically to that live-latency gap rather than leaning on 'this is the industry-standard tool,' which isn't actually a business case on its own. And honestly, if I can't point to a concrete current pain this solves that our existing tools don't, I'd rather say that directly than force a weak pitch -- that usually means the right answer is to wait, not to push harder on convincing someone.",
+      "commonMistakes": [
+        "Pitching kdb+'s technical merits rather than the specific business problem it solves",
+        "Citing 'industry standard' as the justification instead of a concrete business need",
+        "Omitting the real cost of the learning curve, presenting only the license price"
+      ],
+      "keyPoints": [
+        "Frame the pitch around a specific business gap, not technical merits",
+        "State the cost of inaction in terms the budget-holder already cares about",
+        "Present the full cost honestly, including the learning-curve time cost",
+        "If no concrete current business pain justifies it, say so rather than forcing a weak pitch"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Frames the pitch around a concrete business problem, not technical merit",
+          "weight": 35
+        },
+        {
+          "criterion": "Presents costs honestly and completely",
+          "weight": 25
+        },
+        {
+          "criterion": "Avoids a vague 'industry standard' justification",
+          "weight": 20
+        },
+        {
+          "criterion": "Shows willingness to recommend against it absent a real case",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-048",
+      "questionCode": "LTV-QDEV-0162",
+      "title": "Telling a Colleague Their Lock-Free Code Is Too Risky to Ship As-Is",
+      "prompt": "A colleague has written a hand-rolled lock-free queue for a new feature and is proud of it, but you believe it's too risky to ship without much more scrutiny than the deadline allows. How do you raise this without it becoming a conflict?",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Technical Disagreement",
+        "Code Review",
+        "Risk Communication"
+      ],
+      "modelAnswer": "I'd acknowledge genuinely, first, that writing correct lock-free code is hard and that getting this far is real, nontrivial work -- starting with something that reads as dismissive of the effort tends to make the rest of the conversation defensive regardless of how good the technical point is. I'd then be specific about why this particular class of code worries me, grounded in the actual failure mode rather than a vague 'lock-free is scary': bugs like ABA or subtle memory-ordering mistakes are notorious specifically because they can pass every test run and then occur once in production under a specific timing window, which means 'it passed my tests' genuinely isn't strong evidence of correctness here the way it would be for most code -- that's a property of this problem domain, not a comment on their skill. I'd propose a concrete path forward rather than just a blocking objection: using a reviewed, widely-used lock-free queue implementation instead of the hand-rolled one if the deadline is tight, or, if there's a specific reason the custom version is needed, a focused extra review pass plus stress-testing under ThreadSanitizer before it ships, framed as 'let's make sure this is solid' rather than 'I don't trust your code.' Making the conversation about the properties of lock-free code in general, with a concrete next step, keeps it from becoming personal while still actually addressing the real risk.",
+      "professionalAnswer": "I'd start by meaning it when I say getting this far on a hand-rolled lock-free queue is genuinely hard -- that's not a softening tactic, it's true, and starting anywhere else makes the rest of the conversation defensive no matter how right the concern is. Then I'd be specific about what actually worries me: this class of bug is notorious for passing every test and then showing up once in production under a specific timing window, so 'it passed my tests' just isn't strong evidence here the way it is for most code -- that's about the problem domain, not about them. And I'd bring a concrete option, not just an objection -- swap in a reviewed library implementation if the deadline's tight, or if the custom version is genuinely needed, a focused review plus a ThreadSanitizer stress pass before it ships. Framing it as 'let's make sure this is solid' rather than 'I don't trust this' is what keeps it a technical conversation instead of a conflict.",
+      "commonMistakes": [
+        "Opening with the objection before acknowledging the genuine difficulty and effort involved",
+        "Treating 'it passed testing' as sufficient evidence of correctness for this specific class of bug",
+        "Raising the concern without offering any concrete path forward"
+      ],
+      "keyPoints": [
+        "Acknowledge the genuine difficulty of the work before raising the concern",
+        "Explain why testing alone is weak evidence for this specific class of bug (ABA, memory ordering)",
+        "Propose a concrete path forward (reviewed library, or focused review plus ThreadSanitizer)",
+        "Frame it around the properties of the problem domain, not a judgment of the person"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Opens with genuine acknowledgment rather than leading with the objection",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly explains why passing tests is weak evidence for this bug class",
+          "weight": 30
+        },
+        {
+          "criterion": "Proposes a concrete, actionable path forward",
+          "weight": 30
+        },
+        {
+          "criterion": "Keeps the framing technical and non-personal",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-049",
+      "questionCode": "LTV-QDEV-0163",
+      "title": "Prioritizing Between Fixing a Decaying Strategy and Building a New One",
+      "prompt": "Your team can either spend the next sprint trying to revive a strategy whose edge is fading, or start building a promising new strategy idea from scratch. How do you think through this prioritization and present your recommendation?",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Prioritization",
+        "Strategy Lifecycle",
+        "Decision-Making"
+      ],
+      "modelAnswer": "I'd start by separating two different questions that are easy to conflate: is the decaying strategy's edge fading due to something fixable (an execution or implementation issue, a parameter that no longer fits current conditions) versus something structural (crowding, a regime shift, or a market-structure change that removed the actual reason the edge existed) -- because reviving a strategy is only a sensible investment of a sprint if the cause is the former; throwing engineering time at a structurally decayed edge is time that can't restore something the market itself has already competed away. I'd want evidence on which category this falls into before recommending either path, since recommending 'revive it' or 'move on' without that diagnosis is really just a guess dressed up as a decision. If the cause looks structural, I'd recommend investing the sprint in the new idea instead, since a promising new strategy has unbounded (if uncertain) upside while reviving a structurally decayed edge has a low, probably temporary ceiling even if the sprint succeeds. If the cause looks genuinely fixable, I'd weigh the fix's effort against the new idea's current maturity -- a quick, well-understood fix to a still-viable strategy is usually worth doing before a brand-new, unvalidated idea, since the decaying strategy already has a validated track record the new idea hasn't earned yet. I'd present this as a recommendation anchored in that diagnosis, not a gut preference, and be explicit about what evidence drove it so the team can push back on the diagnosis itself if they see something I didn't.",
+      "professionalAnswer": "The question I'd actually answer first isn't 'which project is more exciting,' it's 'why is this strategy's edge fading' -- is it something fixable, like an execution detail or a stale parameter, or something structural, like crowding or a regime shift that's actually removed the reason the edge existed. That diagnosis is what should drive the recommendation, not a preference for either project. If it's structural, I'd push for the new idea, since reviving a structurally decayed edge has a low ceiling even on a good sprint, while the new idea at least has unbounded upside. If it's genuinely fixable, I'd usually favor the fix first, since the decaying strategy already has a validated track record the new idea hasn't earned yet, and a quick fix to something proven is often a better bet than an unvalidated new idea. Either way, I'd present the recommendation anchored in that diagnosis and be upfront about the evidence behind it, so the team can challenge the diagnosis itself if they see it differently.",
+      "commonMistakes": [
+        "Recommending based on which project is more exciting rather than diagnosing the decay's actual cause",
+        "Treating 'revive it' as always worth a sprint regardless of whether the cause is structural",
+        "Presenting the recommendation as a gut call rather than anchoring it in specific diagnostic evidence"
+      ],
+      "keyPoints": [
+        "Diagnose whether the decay is fixable or structural before recommending either path",
+        "A structurally decayed edge has a low ceiling even if the sprint succeeds",
+        "A validated, still-viable strategy with a fixable issue often beats an unvalidated new idea",
+        "Present the recommendation anchored in evidence, inviting challenge to the diagnosis itself"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly frames the decision around diagnosing fixable vs. structural decay",
+          "weight": 35
+        },
+        {
+          "criterion": "Applies sound reasoning for each diagnosis outcome",
+          "weight": 30
+        },
+        {
+          "criterion": "Presents the recommendation as evidence-based, not a gut preference",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "strategy-decay-and-retirement",
+        "label": "Review: Strategy Decay & Retirement"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-adv-050",
+      "questionCode": "LTV-QDEV-0164",
+      "title": "Coaching a Junior Candidate Through a C++ Coding Interview Debrief",
+      "prompt": "A junior engineer on your team is about to interview for a quant developer role that tests C++ fundamentals, and asks you to run a mock interview and give feedback. What do you focus the feedback on, beyond just 'right or wrong answer'?",
+      "category": "behavioral",
+      "difficulty": "advanced",
+      "responseFormat": "text",
+      "skills": [
+        "Mentorship",
+        "Interview Preparation",
+        "Technical Communication"
+      ],
+      "modelAnswer": "I'd focus most of the feedback on how they communicated their reasoning while solving the problem, not just whether the final answer was correct, because that's usually the actual gap between a candidate who solved the problem and one who gets the offer -- interviewers are evaluating thought process as much as the result, and a candidate who silently stares and then produces a correct answer gives the interviewer much less to go on than one who narrates their reasoning as they go, including false starts. I'd specifically watch for whether they explained pointer-vs-reference and stack-vs-heap tradeoffs precisely when they came up naturally in the problem, rather than reciting a memorized definition disconnected from the actual code they were writing -- a correct recitation that doesn't connect to the specific line of code in front of them reads as rehearsed rather than understood. I'd also give feedback on how they handled not immediately knowing something: did they guess confidently and move on, or did they say 'I'm not sure, let me reason through it' and actually reason through it out loud -- the second is almost always the better interview behavior, since it shows genuine problem-solving under uncertainty rather than either false confidence or freezing. Finally, I'd point out any moment where recognizing a known problem pattern (a running-value, single-pass approach, for instance) would have shortened their path to a solution, since recognizing the shape of a problem is a skill that generalizes far more than memorizing any one specific solution, and that's the kind of feedback that actually improves their next interview, not just this one.",
+      "professionalAnswer": "Most of what I'd focus feedback on is the thinking-out-loud part, not just whether the final code was right -- interviewers are watching the reasoning as much as the result, and someone who narrates their process, including the false starts, usually comes across better than someone who goes quiet and eventually produces a correct answer. I'd specifically listen for whether concepts like pointers-vs-references or stack-vs-heap came up connected to the actual code in front of them, versus a recited definition that doesn't land anywhere specific -- the second reads as memorized, not understood. And I'd pay attention to how they handled not knowing something in the moment -- saying 'I'm not sure, let me think through it' and actually doing that is almost always better than guessing confidently or freezing. If there was a moment where recognizing a familiar problem pattern would have gotten them there faster, I'd point that out too, since that's a skill that transfers to the next interview, not just this one.",
+      "commonMistakes": [
+        "Giving feedback only on whether the final answer was correct, not on the reasoning process",
+        "Not distinguishing a memorized, recited definition from one genuinely connected to the code at hand",
+        "Not addressing how the candidate handled moments of uncertainty during the problem"
+      ],
+      "keyPoints": [
+        "Feedback should focus on communicated reasoning, not just the final correctness of the answer",
+        "Watch for recited definitions disconnected from the actual code versus genuine, connected understanding",
+        "Handling uncertainty by reasoning aloud is better interview behavior than confident guessing or freezing",
+        "Pointing out recognizable problem patterns builds a transferable skill, not just a one-off answer"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly focuses feedback on communicated reasoning, not just correctness",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly distinguishes recited vs. genuinely connected understanding",
+          "weight": 25
+        },
+        {
+          "criterion": "Addresses handling of uncertainty during the interview",
+          "weight": 25
+        },
+        {
+          "criterion": "Notes the value of recognizing transferable problem patterns",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 7,
+      "lessonLink": {
+        "courseSlug": "quant-research-and-trading-capstone",
+        "lessonSlug": "coding-and-cplusplus-interview-preparation",
+        "label": "Review: Coding & C++ Interview Preparation"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
     }
   ]
 }

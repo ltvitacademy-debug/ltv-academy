@@ -444,6 +444,2264 @@
       "version": 1,
       "createdAt": "2026-10-11",
       "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-009",
+      "questionCode": "LTV-QDEV-0051",
+      "title": "Pointer, Reference, or Value: The Decision Rule",
+      "prompt": "A teammate passes every function argument by raw pointer 'just in case the object doesn't exist.' Walk through the actual decision rule for choosing between pass-by-value, pass-by-const-reference, pass-by-reference, and pass-by-pointer, and say when a pointer is actually the right call.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Pointers",
+        "References",
+        "C++ Fundamentals"
+      ],
+      "modelAnswer": "The decision comes down to size, mutability, and whether 'no object at all' is a real, meaningful possibility. Pass small, cheap types (int, double, bool) by value -- copying them costs nothing and avoids any indirection. Pass anything larger (a struct, a std::string, a std::vector) by const reference when the function only needs to read it and the argument is guaranteed to exist -- this avoids a copy while promising the caller their data won't be modified. Pass by plain reference (no const) specifically when the function needs to modify the caller's object in place, and that object is guaranteed to exist. Reserve a raw pointer (or better, a smart pointer or std::optional) for the one case none of the others handle: when the argument might legitimately be absent -- nullptr is a real, valid state the function needs to check for. Defaulting to pointers everywhere throws away the compiler's guarantee that a reference is never null, and forces every caller to think about null-checking even when 'no object' was never actually a real possibility for that parameter.",
+      "professionalAnswer": "I'd walk through it as a short checklist: is it small and cheap -- pass by value. Is it bigger but read-only and will definitely exist -- const reference. Does the function need to change it in place and it'll definitely exist -- plain reference. Only reach for a pointer (or std::optional) when 'this might not exist' is a real case the function has to handle, not a hypothetical. Pointers everywhere isn't 'safer,' it's actually less safe -- a reference can't be null, so using one wherever possible removes an entire category of bug the 'just in case' pointer habit reintroduces for no reason.",
+      "commonMistakes": [
+        "Defaulting to raw pointers for every parameter instead of using references when the object is guaranteed to exist",
+        "Passing a large struct or std::string by value out of habit, causing an unnecessary copy",
+        "Using a non-const reference for a parameter the function never actually modifies"
+      ],
+      "keyPoints": [
+        "Pass small, cheap types (int, double, bool) by value",
+        "Pass larger read-only arguments by const reference to avoid a copy",
+        "Pass by plain reference only when the function must modify the caller's object and it's guaranteed to exist",
+        "Reserve pointers (or std::optional) for genuinely optional arguments where null is a real state"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "States the value/const-reference/reference/pointer decision rule correctly",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly identifies when a pointer is actually appropriate",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains why a reference's non-null guarantee is valuable",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "pointers-and-references-in-depth",
+        "label": "Review: Pointers & References in Depth"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-010",
+      "questionCode": "LTV-QDEV-0052",
+      "title": "Why C++ Still Wins the Latency Argument",
+      "prompt": "A new grad asks why a pricing library would ever be written in C++ instead of Python, when Python is so much faster to develop in. What's the actual technical answer, beyond 'it's faster'?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "C++ Fundamentals",
+        "Performance",
+        "Systems Design"
+      ],
+      "modelAnswer": "The real answer isn't just raw speed, it's predictable, worst-case control. Python and Java run on a managed heap with a garbage collector that reclaims memory on its own schedule, not the program's -- which means it can pause execution at a moment the program doesn't control, and that pause is unacceptable for code that must react to a market-data tick in a few hundred nanoseconds. C++ has no garbage collector: every object's lifetime is determined entirely by the code you write, through RAII and scope, so there's no hidden pause waiting to happen. On top of that, C++ compiles straight to machine code with no interpreter or virtual machine layer in between, and its guiding design goal of 'zero-overhead abstraction' means you can write expressive, high-level code (classes, templates, the STL) without paying a runtime penalty for it. That combination -- no GC pauses, no interpreter, abstractions that cost nothing -- is why exchange matching engines, pricing libraries, and execution systems are written in C++ even though Python is genuinely faster to develop in for research.",
+      "professionalAnswer": "I'd say it's not about Python being slow on average, it's about worst-case behavior. A garbage collector can decide to pause your program at the worst possible moment, and in a system reacting to live prices, that pause is the whole ballgame. C++ gives you full control over memory and execution with no such surprise, and it does that without forcing you to write ugly, low-level code -- that's the 'zero-overhead abstraction' idea. That's why the pattern across the industry is: research happens in Python because it's fast to write, and the pieces that actually have to react in real time get written or rewritten in C++.",
+      "commonMistakes": [
+        "Answering only 'C++ is faster' without explaining why that speed is predictable, not just average-case",
+        "Not mentioning the garbage-collector pause as the specific mechanism that makes GC'd languages unsuitable for hard latency targets",
+        "Implying Python is never used in a quant shop, rather than describing the typical research-in-Python, execution-in-C++ split"
+      ],
+      "keyPoints": [
+        "C++ has no garbage collector; object lifetimes are determined entirely by the code, not a scheduler",
+        "A GC pause is unpredictable and can occur at the worst possible moment for latency-sensitive code",
+        "C++ compiles to machine code with no interpreter/VM layer in between",
+        "Zero-overhead abstraction lets expressive, high-level C++ code run at hand-written-low-level speed"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Explains the garbage-collection pause problem specifically, not just 'C++ is faster'",
+          "weight": 35
+        },
+        {
+          "criterion": "Mentions no interpreter/VM and zero-overhead abstraction",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly describes the typical research-in-Python/execution-in-C++ split",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "why-cplusplus-in-finance",
+        "label": "Review: Why C++ in Finance"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-011",
+      "questionCode": "LTV-QDEV-0053",
+      "title": "double vs. float, and Why You Never Compare Prices With ==",
+      "prompt": "Explain why financial code should default to double over float, why a plain int can silently overflow when counting something like nanosecond timestamps, and why you should never compare two computed prices with ==.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "C++ Fundamentals",
+        "Floating Point",
+        "Types"
+      ],
+      "modelAnswer": "double is a 64-bit floating-point type with roughly twice the precision of float's 32 bits, and in financial calculations that extra precision matters because rounding error compounds across millions of arithmetic operations -- a price computed through a long chain of multiplications and divisions in float will have accumulated visibly more error than the same chain in double. Integer overflow is a separate but related trap: a plain int is commonly only 32 bits, so counting something that can genuinely grow large -- nanosecond timestamps, cumulative share counts -- in a plain int can silently wrap around to a nonsensical value with no warning or crash, rather than failing loudly; the fix is a wider type like long long or a fixed-width int64_t. Comparing two floating-point values with == is unreliable because two numbers that are mathematically equal can differ in their last bit or two due to how floating-point arithmetic rounds intermediate results -- two prices computed through slightly different, but mathematically equivalent, code paths can fail an == check despite being 'the same' for any practical purpose. The fix is comparing against a small tolerance, such as std::abs(a - b) < 1e-9, rather than exact equality.",
+      "professionalAnswer": "Three separate habits, all for similar reasons: default to double for anything financial, because the extra precision avoids visibly worse rounding drift over long chains of math. Watch integer sizes -- a plain int silently overflowing on a large share count or a nanosecond timestamp is a real, quiet bug, not a theoretical one, so reach for long long or int64_t once the range matters. And never write if (priceA == priceB) for computed floating-point values -- floating-point arithmetic just doesn't guarantee bit-for-bit equality across different but equivalent calculations, so I always compare against a small tolerance instead.",
+      "example": "if (std::abs(priceA - priceB) < 1e-9) { /* treat as equal */ }\n// not: if (priceA == priceB)",
+      "commonMistakes": [
+        "Using float for prices or P&L calculations instead of double",
+        "Using a plain int for a quantity or timestamp that can realistically exceed 32-bit range",
+        "Comparing two computed doubles with == instead of a tolerance-based comparison"
+      ],
+      "keyPoints": [
+        "double has roughly twice float's precision, reducing compounding rounding error",
+        "A plain int can silently overflow on large counts or timestamps; use long long/int64_t",
+        "Floating-point == comparisons are unreliable because of rounding differences between equivalent computations",
+        "Compare floats with a small tolerance (e.g. std::abs(a-b) < 1e-9) instead of =="
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains why double is preferred over float for financial math",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly explains integer overflow risk and the fix",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly explains why == is unreliable for floats and gives the tolerance fix",
+          "weight": 35
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "types-variables-and-control-flow",
+        "label": "Review: Types, Variables & Control Flow"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-012",
+      "questionCode": "LTV-QDEV-0054",
+      "title": "Pass by Value vs. const Reference: The Single Highest-Impact Habit",
+      "prompt": "An Order struct has an int id, a double price, a long quantity, and a std::string symbol. Why does a function signature like void log_order(Order o) cost more than it looks like, and what's the fix?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "C++ Fundamentals",
+        "References",
+        "Performance"
+      ],
+      "modelAnswer": "void log_order(Order o) passes the Order by value, which means every single call copies the entire struct -- including a deep copy of the std::string symbol's heap-allocated character data, not just a shallow bit-copy. For a function called on every order in a hot path, that's a real, entirely avoidable cost, and it's easy to miss because the signature looks completely ordinary. The fix is void log_order(const Order& o): a reference parameter doesn't create a new object at all, it's just another name for the caller's existing Order, so no copy happens, and const documents (and the compiler enforces) that the function won't modify the caller's data. The rule of thumb that covers this and nearly every similar case: pass small, cheap types (int, double, bool) by value, and pass anything larger -- structs, classes, std::string, std::vector -- by const reference unless the function specifically needs to modify the caller's object.",
+      "professionalAnswer": "This is one of those bugs that doesn't look like a bug at all -- the signature reads perfectly naturally. The problem is purely that passing Order by value silently copies the whole thing, string data included, on every single call. Changing the parameter to const Order& fixes it with essentially no downside: no copy, and const makes the compiler enforce that the function can't mutate the caller's order. I treat this as close to a default habit now -- value for small primitive types, const reference for anything bigger that's read-only -- and it eliminates most of the unnecessary copying you'd otherwise find scattered through a codebase.",
+      "example": "void log_order(const Order& o) {   // no copy\n    std::cout << o.symbol << \"\\n\";\n}",
+      "commonMistakes": [
+        "Passing a struct or class by value out of habit instead of defaulting to const reference",
+        "Forgetting that a std::string member means a 'simple-looking' copy is actually copying heap data too",
+        "Using a non-const reference when the function never modifies the argument"
+      ],
+      "keyPoints": [
+        "Passing a struct by value copies every member, including heap-owned data like std::string",
+        "const Order& binds to the caller's object with no copy, and prevents modification",
+        "Pass small primitives by value; pass larger types by const reference by default",
+        "The cost of an unnecessary copy is easy to miss because the function signature looks ordinary"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies the hidden copy cost in pass-by-value for a struct",
+          "weight": 35
+        },
+        {
+          "criterion": "Gives the correct fix (const reference)",
+          "weight": 30
+        },
+        {
+          "criterion": "States the general value-vs-const-reference rule of thumb",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "functions-and-references",
+        "label": "Review: Functions & References"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-013",
+      "questionCode": "LTV-QDEV-0055",
+      "title": "struct vs. class: The One Real Difference",
+      "prompt": "A teammate insists struct and class are fundamentally different features in C++. Are they? Explain the actual distinction, and why a Position type that enforces 'quantity and average price can never drift out of sync' should be a class with private data, not a public struct.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Classes",
+        "Encapsulation",
+        "C++ Fundamentals"
+      ],
+      "modelAnswer": "struct and class are the same language feature in C++, with exactly one difference: members of a struct are public by default, members of a class are private by default -- that's the entire distinction, nothing more. Convention uses struct for simple, passive data bags where every field is meant to be freely read and written, and class for types that own behavior and need to enforce rules about their own data. A Position holding a quantity and an average price is exactly the second case: if both fields are public, any piece of calling code can set quantity without touching avgPrice, letting the two drift out of sync with no way to prevent it. Making them private and exposing only a method like addFill(fillQty, fillPrice) that updates both together, consistently, means that method is the only path into the object's state -- the invariant 'quantity and avgPrice agree with each other' can never be violated from outside the class, because outside code has no way to touch either field directly.",
+      "professionalAnswer": "They're the same thing under the hood -- the only actual difference is the default access level, public for struct, private for class. The reason it matters for something like Position isn't the keyword, it's the design decision it signals: if quantity and avgPrice are public, two unrelated pieces of calling code can update one without the other and quietly corrupt the object's own internal consistency. Making them private and only exposing a method like addFill() that updates both together is what actually prevents that -- the class keyword is just a default that nudges you toward the right habit, not a different mechanism from struct.",
+      "commonMistakes": [
+        "Believing struct and class are different mechanisms rather than differing only in default access",
+        "Making a type's fields public 'for convenience' when it genuinely has an invariant across multiple fields",
+        "Exposing separate setters for each field instead of one method that updates related fields together consistently"
+      ],
+      "keyPoints": [
+        "struct and class are identical except for default member access (public vs. private)",
+        "struct suits passive data bags; class suits types with behavior and invariants to protect",
+        "Private fields plus a single update method prevent related fields from drifting out of sync",
+        "Encapsulation means the only path into an object's state is the interface it deliberately exposes"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly states struct vs. class differ only in default access",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains why Position's invariant requires encapsulation",
+          "weight": 35
+        },
+        {
+          "criterion": "Describes a correct design (private fields, a combined update method)",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "classes-and-encapsulation",
+        "label": "Review: Classes & Encapsulation"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-014",
+      "questionCode": "LTV-QDEV-0056",
+      "title": "Why price() Needs to Be virtual",
+      "prompt": "A Future and an Option both derive from an abstract Instrument base class with a price() method. A junior developer removes the virtual keyword from Instrument::price() because 'it compiles fine without it.' What breaks, and why does it compile without any error or warning?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Inheritance",
+        "Polymorphism",
+        "C++ Fundamentals"
+      ],
+      "modelAnswer": "Without virtual, calling price() through a base-class pointer or reference always calls Instrument::price() specifically, regardless of what the actual underlying object is -- this is called static (compile-time) dispatch, and the compiler resolves it purely from the pointer's declared type, not the object's real type. It compiles fine because that's completely legal C++; the compiler has no way to know this isn't what you wanted, since removing virtual doesn't create any error, it just changes which function gets called. The practical break shows up the moment code iterates a std::vector<std::unique_ptr<Instrument>> containing both Futures and Options and calls instr->price() on each -- every single call would silently return Instrument's own (likely wrong, possibly non-existent without a body) price() instead of each object's actual derived pricing logic. With virtual, the same call performs dynamic dispatch: at runtime, the call looks up the actual object's real type and calls that type's override -- which is the entire point of writing a polymorphic instrument book in the first place.",
+      "professionalAnswer": "The dangerous part is exactly that it compiles cleanly -- there's no error, no warning, just quietly wrong behavior. Without virtual, a call through an Instrument* always resolves to Instrument::price() at compile time, based on the pointer's declared type, not what it actually points to. The bug becomes real the moment you loop over a mixed vector of Futures and Options through base pointers and call price() on each -- every single one calls the base version instead of its own, and nothing about that looks broken until you look at the actual numbers coming out. virtual is what makes the call look up the real object's type at runtime instead -- it's not a performance nicety, it's the entire mechanism that makes polymorphism work at all.",
+      "commonMistakes": [
+        "Assuming a missing virtual would cause a compile error or warning",
+        "Not realizing the bug only shows up when calling through a base-class pointer or reference, not when calling on the derived type directly",
+        "Thinking of virtual as an optional performance tweak rather than the mechanism that enables dynamic dispatch at all"
+      ],
+      "keyPoints": [
+        "Without virtual, a call through a base pointer/reference always resolves to the base class's version (static dispatch)",
+        "This compiles without any error or warning, because it's legal, just not what's intended",
+        "virtual enables dynamic dispatch: the actual object's type is looked up at runtime",
+        "The bug surfaces specifically when iterating mixed derived types through base-class pointers"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains static dispatch without virtual",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains why this compiles with no error/warning",
+          "weight": 25
+        },
+        {
+          "criterion": "Gives a concrete scenario where the bug manifests (mixed base-pointer collection)",
+          "weight": 30
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "inheritance-and-polymorphism",
+        "label": "Review: Inheritance & Polymorphism"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-015",
+      "questionCode": "LTV-QDEV-0057",
+      "title": "vector, map, or unordered_map: A Quick Decision Guide",
+      "prompt": "You need to store last-traded prices keyed by ticker symbol, and you'll look them up constantly but never need them in any particular order. Which STL container fits, and how would your answer change if you did need them iterated in sorted symbol order?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "STL Containers",
+        "C++ Fundamentals"
+      ],
+      "modelAnswer": "For fast lookups with no ordering requirement, std::unordered_map<std::string, double> is the right choice: it's hash-based, giving average O(1) insert, lookup, and erase, with no guarantee about (and no cost paid for) iteration order. If sorted-by-symbol iteration genuinely matters -- for example printing prices alphabetically, or needing a defined traversal order -- std::map<std::string, double> is the better fit: it's a balanced binary tree keyed by operator<, giving O(log n) operations but always iterating in sorted key order as a side effect of its structure. std::vector doesn't fit either need well here, since looking up a price by symbol in a vector would require a linear scan unless the vector were kept sorted and searched with binary search -- more code and more subtlety for no benefit over a map when the STL already provides exactly this trade-off as a built-in choice.",
+      "professionalAnswer": "If the only requirement is 'look this symbol up fast, order doesn't matter,' unordered_map is the default -- average O(1) lookups, and you're not paying for an ordering guarantee you don't need. The moment someone actually needs symbols to come out sorted -- printing a report alphabetically, say -- that's the signal to switch to map specifically, because sorted iteration is baked into how it's structured, not something you'd bolt onto an unordered_map after the fact. I wouldn't reach for vector here at all; searching a vector by key means either a linear scan or maintaining sorted order yourself, and the STL already hands you that trade-off for free in map and unordered_map.",
+      "commonMistakes": [
+        "Using std::map by default when no sorted-order requirement actually exists, paying O(log n) instead of average O(1) for nothing",
+        "Trying to look up a value by key in a std::vector via linear scan instead of using an associative container",
+        "Assuming unordered_map's lack of ordering guarantee means its iteration order is random each run, rather than simply unspecified and implementation-dependent"
+      ],
+      "keyPoints": [
+        "unordered_map gives average O(1) lookup/insert/erase with no ordering guarantee",
+        "map gives O(log n) operations but always iterates in sorted key order",
+        "Choose based on whether sorted iteration is an actual requirement, not by default",
+        "A vector is the wrong tool for keyed lookups unless manually kept sorted and binary-searched"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly recommends unordered_map for the no-ordering-needed case",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains when map would be the better choice",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains why vector doesn't fit a keyed-lookup use case well",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "containers",
+        "label": "Review: Containers"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-016",
+      "questionCode": "LTV-QDEV-0058",
+      "title": "Capture by Value vs. by Reference in a Lambda",
+      "prompt": "Explain the difference between [threshold](double price) {...} and [&threshold](double price) {...}, and give a concrete scenario where using the wrong one produces a bug that's easy to miss.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Lambdas",
+        "C++ Fundamentals"
+      ],
+      "modelAnswer": "[threshold] captures threshold by value -- the lambda stores its own independent copy, frozen at the moment the lambda is created, and later changes to the outer threshold variable have no effect on what the lambda sees. [&threshold] captures it by reference -- the lambda holds onto the actual outer variable, so if threshold changes after the lambda was created but before it's called, the lambda will see the new value. The bug scenario: if you build a filtering lambda with [&threshold] inside a loop that also modifies threshold on each iteration, and then store that lambda to call later, every stored lambda ends up referencing the same outer threshold variable -- by the time any of them actually run, they'll all see whatever threshold's final value happened to be, not the value that was 'current' when each lambda was created. Capturing by value instead ([threshold]) freezes each lambda's own copy at creation time, giving each one the value you actually intended it to have.",
+      "professionalAnswer": "Capture by value takes a snapshot right then; capture by reference keeps a live link to the actual outer variable. The bug I'd watch for is building a bunch of lambdas in a loop, capturing a loop variable by reference, and only calling those lambdas later -- by then the outer variable has already changed, often to its final value, so every lambda sees the same wrong thing instead of the value it had when it was created. My default is to capture by value unless I specifically need the lambda to see live changes to that variable -- naming the capture explicitly (`[threshold]` rather than a blanket `[=]`) also documents exactly what the lambda depends on.",
+      "example": "double threshold = 100.0;\nauto byValue = [threshold](double p) { return p > threshold; };  // frozen copy\nauto byRef    = [&threshold](double p) { return p > threshold; }; // live link\nthreshold = 200.0;\n// byValue still compares against 100.0; byRef now compares against 200.0",
+      "commonMistakes": [
+        "Capturing a loop variable by reference when each lambda is meant to remember a different, per-iteration value",
+        "Using blanket captures ([=] or [&]) instead of naming exactly which variables are captured and how",
+        "Assuming capture-by-reference is always 'more correct' without considering whether live updates are actually wanted"
+      ],
+      "keyPoints": [
+        "[x] captures a value copy, frozen at the lambda's creation time",
+        "[&x] captures a live reference; later changes to x are visible inside the lambda",
+        "Capturing by reference inside a loop that also mutates the captured variable is a classic, easy-to-miss bug",
+        "Naming captures explicitly documents exactly what a lambda depends on"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly distinguishes capture by value vs. by reference",
+          "weight": 35
+        },
+        {
+          "criterion": "Gives a concrete, correct bug scenario",
+          "weight": 35
+        },
+        {
+          "criterion": "Recommends a sound default practice",
+          "weight": 15
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "lambdas-and-functional-style",
+        "label": "Review: Lambdas & Functional Style"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-017",
+      "questionCode": "LTV-QDEV-0059",
+      "title": "Compiler, Linker, and Build System: Three Different Jobs",
+      "prompt": "A teammate says 'the compiler is broken' when their multi-file project fails with an undefined reference error after g++ runs successfully on each file. What's actually going on, and why is this a linker problem, not a compiler problem?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Toolchains",
+        "Compilation",
+        "C++ Fundamentals"
+      ],
+      "modelAnswer": "The compiler (g++, clang++) and the linker solve different problems, and conflating them is exactly what causes this confusion. The compiler only ever looks at one .cpp file (one translation unit) at a time, translating it into an object file -- if each file compiles without error, the compiler did its job correctly and completely. The linker's separate job is to combine multiple object files into one executable, resolving every function call in one file to its actual definition, wherever that definition lives. 'Undefined reference' is specifically a linker error: it means the linker found a call to some function but never found that function's definition in any of the object files it was given to link -- usually because a .cpp file containing the definition was never compiled and included in the link step, or the function's signature doesn't exactly match between its declaration and its definition. The compiler isn't broken at all; it did exactly what it was asked to do on each file individually. The fix is almost always making sure every .cpp file that defines something the program calls is actually being compiled and passed to the final link command.",
+      "professionalAnswer": "I'd clarify the split first: the compiler translates one file at a time and has no idea what's in any other file; the linker is the one that stitches multiple files' object code together afterward. 'Undefined reference' is the linker telling you it found a call to something but never found where that something is actually defined -- almost always because a .cpp file with the definition wasn't compiled and handed to the final link step, or the declaration and definition don't quite match. Nothing about that means the compiler failed; each file compiled exactly fine on its own, which is the whole clue that this is a linking problem, not a compilation one.",
+      "commonMistakes": [
+        "Blaming 'the compiler' for an error that's actually produced by the linker",
+        "Not checking whether the .cpp file containing the needed definition was actually included in the build/link command",
+        "Assuming a mismatched function signature between a header declaration and its .cpp definition would be caught at compile time rather than producing a linker error"
+      ],
+      "keyPoints": [
+        "The compiler processes one translation unit (one .cpp file) at a time",
+        "The linker combines multiple object files, resolving calls to their actual definitions",
+        "'Undefined reference' is a linker error: a definition was never found among the linked object files",
+        "Each file compiling successfully doesn't guarantee the whole program links correctly"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly distinguishes the compiler's job from the linker's job",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains what 'undefined reference' means",
+          "weight": 35
+        },
+        {
+          "criterion": "Identifies a plausible real cause and fix",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "toolchains-compilers-and-build-systems",
+        "label": "Review: Toolchains, Compilers & Build Systems"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-018",
+      "questionCode": "LTV-QDEV-0060",
+      "title": "Rewrite This Function to Stop Copying the Order",
+      "prompt": "Rewrite the function below so it stops copying the whole Order struct on every call, while still being able to read (but not modify) its fields.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": [
+        "References",
+        "Performance",
+        "C++ Fundamentals"
+      ],
+      "code": "struct Order {\n    int id;\n    double price;\n    long quantity;\n    std::string symbol;\n};\n\nvoid log_order(Order o) {\n    std::cout << o.id << \" \" << o.symbol << \" \" << o.price << \"\\n\";\n}",
+      "modelAnswer": "Change the parameter from Order o to const Order& o. This makes the parameter a reference -- another name for the caller's actual Order object -- so no copy of the struct, and critically no copy of the std::string's heap-allocated character data, ever happens. const additionally guarantees, and lets the compiler enforce, that log_order cannot modify the caller's Order through this parameter, which matches the function's actual intent of only reading and printing the fields.",
+      "professionalAnswer": "Just change the parameter type to const Order&. That single change removes the copy entirely -- the function now operates directly on the caller's object -- and the const makes it explicit, compiler-enforced, that this function only reads the order, which is exactly what log_order is supposed to do anyway.",
+      "example": "void log_order(const Order& o) {\n    std::cout << o.id << \" \" << o.symbol << \" \" << o.price << \"\\n\";\n}",
+      "commonMistakes": [
+        "Changing to Order& (non-const) when the function never actually needs to modify the order",
+        "Leaving the parameter as pass-by-value and trying to 'optimize' elsewhere instead of fixing the actual copy",
+        "Forgetting that std::string has its own heap allocation, so even a 'small-looking' struct can be expensive to copy"
+      ],
+      "keyPoints": [
+        "const Order& avoids copying the struct and its heap-owned string data",
+        "const documents and enforces that the function doesn't modify the caller's object",
+        "This is the single highest-impact, lowest-risk change for a read-only struct parameter",
+        "No other part of the function body needs to change"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly changes the parameter to const Order&",
+          "weight": 50
+        },
+        {
+          "criterion": "Explains why this avoids the copy, including the string data",
+          "weight": 30
+        },
+        {
+          "criterion": "Code is syntactically correct and preserves behavior",
+          "weight": 20
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "functions-and-references",
+        "label": "Review: Functions & References"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-019",
+      "questionCode": "LTV-QDEV-0061",
+      "title": "Fix the Multiple-Definition Linker Error",
+      "prompt": "This header is included by both main.cpp and pricer.cpp, and the build fails with 'multiple definition of fair_value(double, double, double)'. Find the bug and fix it.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": [
+        "Headers",
+        "Linking",
+        "C++ Fundamentals"
+      ],
+      "code": "// pricer.h\n#pragma once\n\ndouble fair_value(double spot, double rate, double time) {\n    return spot * (1.0 + rate * time);\n}",
+      "modelAnswer": "The bug is that the header holds a full function definition, not just a declaration. #pragma once only prevents this header's contents from being processed twice within a single translation unit -- it does nothing to prevent the same definition from appearing in multiple different translation units that each include this header. Since both main.cpp and pricer.cpp include pricer.h, each one ends up with its own compiled copy of fair_value's definition, and when the linker tries to combine their object files, it finds the same function defined twice and reports exactly this error. The fix is to split it: leave only the declaration (double fair_value(double spot, double rate, double time);) in the header, and move the actual function body into a single .cpp file, such as pricer.cpp.",
+      "professionalAnswer": "This is a classic case of putting a real function body in a header instead of just a declaration. #pragma once stops the header being processed twice in one file, but it can't stop the same definition landing in two separate .cpp files that each include the header -- each one compiles its own copy, and the linker sees two definitions of the same function. The fix is simple: keep only the declaration in the header, move the body into one .cpp file, and let every other file just call it through the declaration.",
+      "example": "// pricer.h\n#pragma once\ndouble fair_value(double spot, double rate, double time);   // declaration only\n\n// pricer.cpp\n#include \"pricer.h\"\ndouble fair_value(double spot, double rate, double time) {   // the one definition\n    return spot * (1.0 + rate * time);\n}",
+      "commonMistakes": [
+        "Thinking #pragma once prevents the same definition from existing across multiple translation units",
+        "Leaving the function body in the header and trying to fix the error with include guards instead",
+        "Forgetting to actually compile and link pricer.cpp after moving the definition there"
+      ],
+      "keyPoints": [
+        "#pragma once only prevents double-inclusion within one translation unit, not across multiple files",
+        "A full function definition in a header gets duplicated into every .cpp file that includes it",
+        "The fix: declaration in the header, the one definition in a single .cpp file",
+        "The rule of thumb is declarations in headers, definitions in .cpp files"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies the root cause (definition in header, not just declaration)",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains why #pragma once doesn't prevent this",
+          "weight": 25
+        },
+        {
+          "criterion": "Provides the correct fix (split declaration/definition)",
+          "weight": 25
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "headers-compilation-and-linking",
+        "label": "Review: Headers, Compilation & Linking"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-020",
+      "questionCode": "LTV-QDEV-0062",
+      "title": "Implement a Position Class That Can't Drift Out of Sync",
+      "prompt": "Implement a Position class with a symbol, a quantity, and an average price, where the only way to change quantity or average price is a single addFill(qty, price) method that updates both together. Explain why this design prevents a specific class of bug.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": [
+        "Classes",
+        "Encapsulation",
+        "C++ Fundamentals"
+      ],
+      "modelAnswer": "Make symbol_, qty_, and avgPrice_ private members, with a constructor that sets them via a member-initializer list, and the only public mutator is addFill(fillQty, fillPrice), which recomputes avgPrice_ as the weighted average of the existing position and the new fill, then updates qty_. Because no other public method can touch qty_ or avgPrice_ individually, there is no way for calling code to update one without the other -- the two fields can never become inconsistent with each other, which is exactly the bug class this prevents: a Position whose stored average price no longer matches the trades that actually built the current quantity. Making the fields public (or exposing separate setters for each) would reopen exactly that risk.",
+      "professionalAnswer": "I'd make both fields private and route every change through one method, addFill, that updates quantity and average price together, in the same place, every time. The whole point is there's no other way into the object's state -- no setQuantity(), no setAvgPrice() -- so it's structurally impossible for calling code to update one field without the other and leave the position internally inconsistent. That's the actual value encapsulation gives you here; it's not about hiding implementation details for their own sake, it's about making a specific category of bug impossible by construction.",
+      "example": "class Position {\npublic:\n    Position(std::string symbol, double qty, double avgPrice)\n        : symbol_(std::move(symbol)), qty_(qty), avgPrice_(avgPrice) {}\n\n    void addFill(double fillQty, double fillPrice) {\n        double newQty = qty_ + fillQty;\n        avgPrice_ = (qty_ * avgPrice_ + fillQty * fillPrice) / newQty;\n        qty_ = newQty;\n    }\n\n    double quantity() const { return qty_; }\n    double avgPrice() const { return avgPrice_; }\nprivate:\n    std::string symbol_;\n    double qty_;\n    double avgPrice_;\n};",
+      "commonMistakes": [
+        "Making qty_ and avgPrice_ public, or exposing separate setters for each, reopening the drift bug",
+        "Forgetting the member-initializer list and assigning members inside the constructor body instead",
+        "Not marking the read-only accessor methods const"
+      ],
+      "keyPoints": [
+        "Private fields with a single combined update method prevent related fields from drifting out of sync",
+        "addFill recomputes the weighted average price and the new quantity together, atomically within one call",
+        "Read-only accessors should be marked const",
+        "This is encapsulation protecting a real invariant, not just hiding details for style"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly implements private fields with addFill as the only mutator",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly computes the weighted average price",
+          "weight": 25
+        },
+        {
+          "criterion": "Explains why this prevents fields from drifting out of sync",
+          "weight": 25
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "classes-and-encapsulation",
+        "label": "Review: Classes & Encapsulation"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-021",
+      "questionCode": "LTV-QDEV-0063",
+      "title": "Sort Prices Descending With a Lambda Comparator",
+      "prompt": "Write code that sorts a std::vector<double> of prices in descending order using std::sort and a lambda, without writing a separate named comparator function.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": [
+        "Lambdas",
+        "STL Algorithms",
+        "C++ Fundamentals"
+      ],
+      "modelAnswer": "std::sort takes an optional third argument -- a callable that takes two elements and returns true if the first should come before the second. Passing a lambda [](double a, double b) { return a > b; } directly at the call site sorts descending, because it tells std::sort that a 'comes before' b whenever a is larger. This is exactly what lambdas are for: a one-off comparison written right where it's used, with no need for a separate, named function just to flip the sort order.",
+      "professionalAnswer": "std::sort's third argument is just 'how do I know a comes before b,' and a lambda is the natural way to express that inline. [](double a, double b) { return a > b; } sorts descending -- it's telling the algorithm that the bigger value counts as 'earlier.' I wouldn't bother writing a separate named function for something this small; that's exactly the case a lambda exists for.",
+      "example": "#include <algorithm>\n#include <vector>\n\nstd::vector<double> prices{101.25, 99.80, 103.10, 97.50};\nstd::sort(prices.begin(), prices.end(),\n          [](double a, double b) { return a > b; });\n// prices is now: 103.10, 101.25, 99.80, 97.50",
+      "commonMistakes": [
+        "Writing [](double a, double b) { return a < b; }, which sorts ascending, and getting the comparator direction backwards",
+        "Writing a full separate named comparator function for a simple, one-off comparison",
+        "Forgetting #include <algorithm>"
+      ],
+      "keyPoints": [
+        "std::sort's optional third argument is a callable returning true if the first argument should precede the second",
+        "a > b as the comparator sorts descending",
+        "A lambda is the idiomatic tool for a one-off comparator used at a single call site",
+        "No separate named function is needed for a comparison this simple"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly uses std::sort with a lambda comparator",
+          "weight": 40
+        },
+        {
+          "criterion": "Comparator correctly produces descending order",
+          "weight": 35
+        },
+        {
+          "criterion": "Code is syntactically correct and includes needed headers",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "lambdas-and-functional-style",
+        "label": "Review: Lambdas & Functional Style"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-022",
+      "questionCode": "LTV-QDEV-0064",
+      "title": "const double* vs. double* const: Fix the Declaration",
+      "prompt": "A function needs a pointer that can be repointed to different prices over time, but every price it points to must never be modified through that pointer. Which of const double* p and double* const p is correct, and why does the other one fail to express the requirement?",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": [
+        "Pointers",
+        "const Correctness",
+        "C++ Fundamentals"
+      ],
+      "modelAnswer": "const double* p is correct: read right to left from the *, it's 'a pointer to a const double' -- you can reassign p to point somewhere else entirely, but you cannot modify the value it points to through p. double* const p is the opposite: 'a const pointer to a double' -- p itself can never be reassigned once initialized, but the double it points to can freely be modified through it. The requirement here -- repointable, but never allowed to write through the pointer -- is exactly const double*, and double* const would fail the requirement by allowing exactly the mutation that's supposed to be forbidden, while incorrectly forbidding the repointing that's supposed to be allowed.",
+      "professionalAnswer": "I always read these right to left starting at the *. const double* p is 'pointer to a const double' -- repointable, read-only through the pointer, which is exactly what's being asked for here. double* const p is the mirror image -- fixed pointer, mutable target -- which gets the requirement backwards: it would let you write through the pointer while locking you out of ever repointing it. Mixing these two up is one of the most common const-correctness mistakes in C++, and reading right-to-left from the star is the trick that makes it unambiguous every time.",
+      "example": "double priceA = 100.0, priceB = 200.0;\nconst double* p = &priceA;   // correct: repointable, read-only through p\np = &priceB;                  // OK -- repointing is allowed\n// *p = 150.0;                // ERROR -- can't modify through p, as required",
+      "commonMistakes": [
+        "Confusing const double* (pointer to const) with double* const (const pointer)",
+        "Not reading the declaration right-to-left from the * to determine what's actually const",
+        "Assuming 'const pointer' always means 'the data is protected,' when it actually protects the pointer itself, not the data"
+      ],
+      "keyPoints": [
+        "const double* p: repointable pointer, cannot modify the pointed-to value",
+        "double* const p: fixed pointer, can modify the pointed-to value",
+        "Read the declaration right to left from the * to determine what's const",
+        "The two forms express opposite guarantees and are not interchangeable"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies const double* as the right answer",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains what double* const would allow/forbid instead",
+          "weight": 35
+        },
+        {
+          "criterion": "Demonstrates the right-to-left reading technique or equivalent reasoning",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "pointers-and-references-in-depth",
+        "label": "Review: Pointers & References in Depth"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-023",
+      "questionCode": "LTV-QDEV-0065",
+      "title": "Replace a Raw C-Style Array With std::array",
+      "prompt": "Rewrite this code to use std::array instead of a raw C-style array, and explain what safety std::array adds without changing the performance characteristics.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": [
+        "STL Containers",
+        "C++ Fundamentals"
+      ],
+      "code": "double quarterReturns[4] = {0.03, -0.01, 0.05, 0.02};\ndouble total = 0.0;\nfor (int i = 0; i < 4; ++i) {\n    total += quarterReturns[i];\n}",
+      "modelAnswer": "std::array<double, 4> quarterReturns{0.03, -0.01, 0.05, 0.02}; is a drop-in replacement with no heap allocation and the same fixed, compile-time-known size as the raw array -- there's no performance difference, since std::array is essentially a thin wrapper around exactly the same fixed-size storage. What it adds is safety and convenience: it knows its own size via .size(), so loops can use that instead of a hardcoded magic number that could fall out of sync with the actual array if someone changes the data without updating every loop bound; it supports range-based for and .at() for bounds-checked access; and it integrates with STL algorithms (like std::accumulate) the same way std::vector does, without decaying to a bare pointer the way a C-style array does when passed to a function.",
+      "professionalAnswer": "It's a straight swap: std::array<double, 4> instead of double[4], same braces-initializer syntax, zero heap allocation, same fixed size at compile time -- no performance cost either way. What you get for free is that it knows its own size, supports range-based for cleanly, and doesn't silently decay into a bare pointer the moment you pass it to a function the way a C-style array does. For any new code with a fixed, known-at-compile-time size, I'd reach for std::array over a raw array by default.",
+      "example": "#include <array>\n#include <numeric>\n\nstd::array<double, 4> quarterReturns{0.03, -0.01, 0.05, 0.02};\ndouble total = std::accumulate(quarterReturns.begin(), quarterReturns.end(), 0.0);\n// or: for (double r : quarterReturns) total += r;",
+      "commonMistakes": [
+        "Assuming std::array involves heap allocation or a performance penalty versus a raw array",
+        "Still hardcoding the loop bound instead of using .size() or range-based for",
+        "Thinking std::array is resizable like std::vector, when its size is fixed at compile time"
+      ],
+      "keyPoints": [
+        "std::array<T, N> has the same zero-overhead, fixed-size, stack-allocated layout as a raw array",
+        "It knows its own size via .size(), avoiding hardcoded magic numbers",
+        "It supports range-based for and STL algorithms without decaying to a raw pointer",
+        "Its size N is a compile-time constant, unlike the resizable std::vector"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly rewrites the array as std::array<double, 4>",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly states there is no performance difference",
+          "weight": 25
+        },
+        {
+          "criterion": "Explains the safety/convenience benefits accurately",
+          "weight": 25
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "containers",
+        "label": "Review: Containers"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-024",
+      "questionCode": "LTV-QDEV-0066",
+      "title": "Implement a Derived Bond Class With a Correct Override",
+      "prompt": "Given an abstract Instrument base class with a pure virtual price() const and a virtual destructor, implement a Bond derived class that stores a face value and a flat yield, and correctly overrides price() with a simple discounted-value calculation.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": [
+        "Inheritance",
+        "Polymorphism",
+        "C++ Fundamentals"
+      ],
+      "modelAnswer": "Bond must inherit publicly from Instrument (: public Instrument), store its own faceValue_ and yield_ members, provide a constructor that initializes them, and implement double price() const override returning its own calculation -- the override keyword is what makes the compiler verify this actually matches a virtual function in the base class rather than accidentally declaring an unrelated new function with a slightly different signature. Because Instrument's destructor is already virtual, deleting a Bond through an Instrument* (for example, when it's held in a std::vector<std::unique_ptr<Instrument>>) correctly runs ~Bond() if one exists, with no resource leak -- that correctness was already earned by the base class, Bond doesn't need to do anything extra for it.",
+      "professionalAnswer": "Inherit publicly from Instrument, add the two fields the Bond actually needs, and override price() with override on the end so the compiler checks it's really overriding the base's virtual function and not quietly declaring something unrelated. Since Instrument already has a virtual destructor, I don't need to add anything special for cleanup -- that part of the polymorphism contract was already satisfied one level up.",
+      "example": "class Bond : public Instrument {\npublic:\n    Bond(double faceValue, double yield) : faceValue_(faceValue), yield_(yield) {}\n    double price() const override {\n        return faceValue_ / (1.0 + yield_);   // simplified single-period discount\n    }\nprivate:\n    double faceValue_;\n    double yield_;\n};",
+      "commonMistakes": [
+        "Forgetting override, which silently creates an unrelated function if the signature doesn't exactly match",
+        "Forgetting public inheritance (: public Instrument), which would make price() inaccessible polymorphically",
+        "Not marking price() const to match the base class's const member function signature"
+      ],
+      "keyPoints": [
+        "Derived classes inherit with : public Base and override virtual functions with override",
+        "override lets the compiler verify the signature actually matches the base class's virtual function",
+        "A base class's virtual destructor already covers correct cleanup for any derived class, including Bond",
+        "The derived class's own constructor initializes only its own additional members"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly inherits from Instrument with public access",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly overrides price() with override and matching signature (const)",
+          "weight": 40
+        },
+        {
+          "criterion": "Implements a reasonable pricing calculation",
+          "weight": 20
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "inheritance-and-polymorphism",
+        "label": "Review: Inheritance & Polymorphism"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-025",
+      "questionCode": "LTV-QDEV-0067",
+      "title": "Write a Correct g++ Command for a Release Build",
+      "prompt": "Write the g++ command to compile hello.cpp into an executable named pricer, targeting C++20, with optimizations enabled and extra warnings turned on. Explain what each flag does.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": [
+        "Toolchains",
+        "Build Systems",
+        "C++ Fundamentals"
+      ],
+      "modelAnswer": "g++ -std=c++20 -O2 -Wall -Wextra hello.cpp -o pricer. -std=c++20 selects the C++20 language standard, so the compiler accepts and correctly interprets C++20-specific syntax. -O2 turns on the standard set of optimizations appropriate for a release build -- without it, the default is effectively no optimization, which is fine for debugging but far slower than necessary for anything performance-sensitive. -Wall -Wextra enables a broad set of additional compiler warnings beyond the bare minimum, which is worth treating as close to mandatory, since many of those warnings point at real bugs waiting to happen. -o pricer names the resulting executable pricer rather than accepting the compiler's default output name.",
+      "professionalAnswer": "g++ -std=c++20 -O2 -Wall -Wextra hello.cpp -o pricer -- that's close to my default command for anything I'm compiling by hand. -std=c++20 locks in the language version, -O2 is the standard release optimization level, -Wall -Wextra turns on warnings I genuinely want to see because they catch real bugs, and -o just names the output file. For anything bigger than a single file I'd move to CMake instead of typing this by hand every time, but this is exactly the command that CMake would effectively be generating under the hood.",
+      "example": "g++ -std=c++20 -O2 -Wall -Wextra hello.cpp -o pricer",
+      "commonMistakes": [
+        "Forgetting -O2 and unknowingly benchmarking an unoptimized debug build",
+        "Omitting -Wall -Wextra and missing warnings that point at real bugs",
+        "Forgetting -o and getting the compiler's generic default output filename instead of a meaningful one"
+      ],
+      "keyPoints": [
+        "-std=c++20 selects the language standard",
+        "-O2 enables standard release-level optimization",
+        "-Wall -Wextra enables additional, valuable compiler warnings",
+        "-o names the output executable"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Produces a correct, complete g++ command with all required flags",
+          "weight": 50
+        },
+        {
+          "criterion": "Correctly explains what each flag does",
+          "weight": 35
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "toolchains-compilers-and-build-systems",
+        "label": "Review: Toolchains, Compilers & Build Systems"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-026",
+      "questionCode": "LTV-QDEV-0068",
+      "title": "Overload == for a Trade Struct",
+      "prompt": "Implement operator== for a Trade struct (with an int id, double price, long quantity) so two Trade values can be compared with ==, comparing all three fields. Explain why this needs to be a free function, not a member, if you choose that form.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": [
+        "Operator Overloading",
+        "C++ Fundamentals"
+      ],
+      "modelAnswer": "operator== can be written either as a member function (bool operator==(const Trade& rhs) const) or as a free function (bool operator==(const Trade& a, const Trade& b)); both are valid here, unlike operator<<, which is forced to be a free function because the left-hand side (std::ostream) isn't your type. A member version compares this's fields against rhs's; a free function version (optionally friend if it needs private access) takes both sides explicitly. Either way, the comparison should check all three fields for equality -- id, price, and quantity -- and in modern C++ (C++20), a simpler alternative is bool operator==(const Trade&) const = default, which asks the compiler to generate exactly this member-wise comparison automatically.",
+      "professionalAnswer": "For a simple value-equality case like this, I'd actually reach for C++20's defaulted comparison first: bool operator==(const Trade&) const = default compares every member in declaration order with zero code to maintain. If I were writing it by hand instead, either a member function or a friend free function works fine for ==, since both operands are the same type -- operator<< is the one that's truly forced to be a free function, because the left operand there is std::ostream, not your own type.",
+      "example": "struct Trade {\n    int id;\n    double price;\n    long quantity;\n\n    bool operator==(const Trade& rhs) const {\n        return id == rhs.id && price == rhs.price && quantity == rhs.quantity;\n    }\n};\n// or, in C++20: bool operator==(const Trade&) const = default;",
+      "commonMistakes": [
+        "Comparing only some of the fields instead of all three",
+        "Believing operator== must always be a free function, when a member function works fine as long as the left operand is your own type",
+        "Comparing price with == without considering that floating-point equality can be fragile for computed values (less of a concern for a stored, unmodified field, but worth noting)"
+      ],
+      "keyPoints": [
+        "operator== compares all relevant fields for value equality",
+        "Unlike operator<<, operator== can correctly be either a member or a free function here",
+        "C++20's = default can generate a correct member-wise comparison automatically",
+        "operator<< is forced to be a free function specifically because std::ostream is the left operand"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly implements operator== comparing all three fields",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains member vs. free function applicability here",
+          "weight": 35
+        },
+        {
+          "criterion": "Code correctness",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "operator-overloading",
+        "label": "Review: Operator Overloading"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-027",
+      "questionCode": "LTV-QDEV-0069",
+      "title": "Diagnosing a Null Pointer Dereference Segfault",
+      "prompt": "A function sometimes crashes with a segmentation fault, and you suspect a null pointer is being dereferenced somewhere. Walk through how you'd confirm that and find exactly where it happens.",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Pointers",
+        "Debugging",
+        "Segfaults"
+      ],
+      "modelAnswer": "A segmentation fault from dereferencing a null pointer is undefined behavior, but in practice it very reliably crashes immediately at the exact dereference, which makes it one of the more debuggable categories of crash. The fastest path is running the program under a debugger (gdb or lldb) or simply rebuilding with debug symbols (-g) and letting the crash itself point at the line: when the segfault occurs, the debugger stops exactly at the offending dereference and shows the call stack leading there. From that stack trace, inspect the pointer's value at the moment of the crash -- if it's 0x0 (or close to it), that confirms a null pointer dereference, and the call stack shows exactly which code path passed in or produced that null value. The actual fix is almost always either adding a check (if (ptr != nullptr)) before the dereference, or, more robustly, fixing the code path further up that allowed a null pointer to reach this function in the first place when it should have guaranteed a valid one.",
+      "professionalAnswer": "I wouldn't guess at this -- I'd just run it under gdb (or rebuild with -g and let it crash under a debugger), because a null-pointer segfault reliably crashes exactly at the dereference, which makes it one of the easier bugs to actually pin down. The debugger's stack trace at the moment of the crash tells you exactly which line and which call path led there, and checking the pointer's value confirms it's null. From there it's usually a judgment call: add a guard right at the dereference, or better, fix whichever upstream code path is handing this function a null pointer it was never supposed to receive.",
+      "commonMistakes": [
+        "Trying to find the bug by reading code instead of just running it under a debugger and letting the crash point at the exact line",
+        "Adding a null check at the crash site without investigating why a null pointer reached that point in the first place",
+        "Assuming every segfault must be a null pointer, rather than confirming the pointer's actual value at the crash"
+      ],
+      "keyPoints": [
+        "A null-pointer dereference typically crashes reliably and immediately, making it debuggable",
+        "Running under a debugger (or with debug symbols) shows the exact crash line and call stack",
+        "Confirm the pointer's actual value is null/near-zero rather than assuming",
+        "Fix the upstream code path that produced the null, not just the dereference site"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Describes using a debugger or debug build to locate the crash precisely",
+          "weight": 40
+        },
+        {
+          "criterion": "Describes confirming the pointer's value is actually null",
+          "weight": 25
+        },
+        {
+          "criterion": "Recommends fixing the upstream cause, not just the symptom",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "pointers-and-references-in-depth",
+        "label": "Review: Pointers & References in Depth"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-028",
+      "questionCode": "LTV-QDEV-0070",
+      "title": "Diagnosing an Undefined Reference Error",
+      "prompt": "Your build fails with: undefined reference to `price_option(double, double)'. The function is declared in pricer.h and defined in pricer.cpp, and main.cpp includes pricer.h and calls it. Walk through how you'd track down the actual cause.",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Linking",
+        "Headers",
+        "Debugging"
+      ],
+      "modelAnswer": "This is a linker error, meaning the linker found a call to price_option but never found a matching definition among the object files it was given. The first thing to check is whether pricer.cpp was actually compiled and included in the final link command at all -- it's extremely common to add a new .cpp file to a project and forget to add it to the build command or CMakeLists.txt, in which case its definitions simply never get compiled into any object file the linker sees. If pricer.cpp is being compiled, the next check is whether the function's signature in the header exactly matches the one in the .cpp file -- a mismatch in parameter types, constness, or even just one being in a namespace and the other not, produces a different mangled symbol name, which the linker will treat as two entirely unrelated functions, with one of them (the declaration-only one being called) never actually defined anywhere as far as the linker can tell.",
+      "professionalAnswer": "First thing I check: is pricer.cpp actually part of the build? It's an easy thing to forget when adding a new file -- the header's included everywhere, but nobody added the .cpp to the compile/link step, so the function was declared but never actually compiled into any object file. If it is being compiled, I'd check the exact signature matches between the header's declaration and the .cpp's definition -- parameter types, const-ness, namespace -- because even a small mismatch produces a different linker symbol, and the linker sees that as a totally different, never-defined function rather than giving you a helpful 'these don't match' message.",
+      "commonMistakes": [
+        "Assuming the header's declaration alone is enough, forgetting the .cpp file must also be compiled and linked",
+        "Not checking for an exact signature match between the declaration and definition",
+        "Treating this as a compiler problem rather than recognizing it's specifically a linker-stage error"
+      ],
+      "keyPoints": [
+        "Undefined reference means the linker found a call but no matching definition among the linked object files",
+        "Check first whether the .cpp file with the definition is actually part of the build/link step",
+        "Check for an exact signature match between the header declaration and the .cpp definition",
+        "A signature mismatch produces a different linker symbol, which looks like a missing definition"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly frames this as a linker-stage problem",
+          "weight": 25
+        },
+        {
+          "criterion": "Checks whether the defining .cpp file is actually compiled/linked",
+          "weight": 40
+        },
+        {
+          "criterion": "Checks for a signature mismatch between declaration and definition",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "headers-compilation-and-linking",
+        "label": "Review: Headers, Compilation & Linking"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-029",
+      "questionCode": "LTV-QDEV-0071",
+      "title": "Debugging a Silent Out-of-Bounds Vector Access",
+      "prompt": "A pricing function reads prices[prices.size()] somewhere deep in a loop and sometimes produces a plausible-looking but wrong number, with no crash and no error. Explain why this doesn't crash, and how you'd actually catch it.",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "std::vector",
+        "Undefined Behavior",
+        "Debugging"
+      ],
+      "modelAnswer": "prices[prices.size()] is reading one past the last valid element -- operator[] on std::vector performs no bounds checking at all, so this is undefined behavior, not a guaranteed error. In practice, that often means reading whatever happens to sit in memory immediately after the vector's allocated buffer, which can be leftover data from an earlier allocation, part of the vector's own internal bookkeeping, or genuinely unmapped memory. Because it's frequently 'just some other number already in memory' rather than unmapped memory, it often doesn't crash at all -- it silently returns a plausible-looking garbage value, which is exactly what makes this bug dangerous: nothing about the program's behavior announces that anything went wrong. The right way to actually catch this is to compile with AddressSanitizer (-fsanitize=address), which instruments every memory access and will flag this specific out-of-bounds read immediately, with the exact line number, the moment it happens during a test run -- rather than relying on the bug to eventually crash on its own, which it may never reliably do. A simpler, narrower fix for day-to-day safety is to use .at(i) instead of operator[] during development and testing, since .at() does bounds-check and throws an exception on an out-of-range index.",
+      "professionalAnswer": "The reason it doesn't crash is that operator[] on vector has no bounds checking at all -- reading one past the end is undefined behavior, and undefined behavior often just means 'reads whatever garbage happens to be in memory there,' which can look like a perfectly plausible number. That's what makes it genuinely dangerous rather than just broken. I wouldn't try to catch this by staring at the loop -- I'd rebuild with AddressSanitizer and run the same workload; ASan instruments every memory access and will flag this out-of-bounds read the instant it happens, with the exact line. For day-to-day safety during development, swapping operator[] for .at() also catches it immediately, since .at() bounds-checks and throws.",
+      "commonMistakes": [
+        "Assuming any memory bug will reliably crash, rather than understanding undefined behavior can silently produce plausible garbage",
+        "Trying to spot an off-by-one index bug by code review alone instead of using a tool designed for exactly this",
+        "Not knowing that .at() bounds-checks while operator[] does not"
+      ],
+      "keyPoints": [
+        "std::vector::operator[] performs no bounds checking; an out-of-range access is undefined behavior",
+        "Undefined behavior can silently return plausible-looking garbage instead of crashing",
+        "AddressSanitizer (-fsanitize=address) catches out-of-bounds accesses immediately, with the exact location",
+        ".at() bounds-checks and throws, unlike operator[]"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains why operator[] out-of-bounds is undefined behavior without a bounds check",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains why this often doesn't crash, just silently returns garbage",
+          "weight": 25
+        },
+        {
+          "criterion": "Names AddressSanitizer as the correct detection tool",
+          "weight": 30
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "containers",
+        "label": "Review: Containers"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-030",
+      "questionCode": "LTV-QDEV-0072",
+      "title": "Diagnosing an Object Slicing Bug",
+      "prompt": "A function takes an Instrument (by value, not by reference or pointer) and is supposed to work polymorphically across Future and Option. Instead, it always behaves like a plain Instrument no matter what's actually passed in. What's going wrong?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Inheritance",
+        "Object Slicing",
+        "Debugging"
+      ],
+      "modelAnswer": "This is object slicing: a function parameter of type Instrument (by value) can only ever hold exactly an Instrument-sized object, so when a Future or Option is passed in, only its Instrument base-class portion gets copied into the parameter -- every derived-class member and the information about which derived type it actually was gets 'sliced off' and discarded. The parameter inside the function is now a genuine, plain Instrument object, not a Future or Option wearing an Instrument hat, so any virtual function call on it correctly (from the compiler's point of view) dispatches to Instrument's own version, because that's truly all that's left. This is completely different from the earlier virtual-dispatch bug, where the object itself was still the right type and only the pointer's static type caused wrong dispatch; here the actual object has been destroyed and replaced by a smaller copy. The fix is to never take a polymorphic base type by value -- take it by reference (const Instrument&) or by pointer/smart pointer (std::unique_ptr<Instrument> or Instrument*), both of which preserve the object's real, full type and let virtual dispatch work correctly.",
+      "professionalAnswer": "That's slicing, not a dispatch bug -- a real, structural difference from the 'forgot virtual' bug. Taking an Instrument by value means the function parameter can literally only ever be Instrument-sized; whatever extra data and type information a Future or Option carried gets thrown away during the copy, and what's left really is just a plain Instrument. Calling a virtual function on it is correctly calling Instrument's version, because by that point there's genuinely nothing else left to call. The fix is to never take a polymorphic type by value -- pass it by reference or pointer instead, so the real object (and its real type) stays intact.",
+      "commonMistakes": [
+        "Confusing object slicing with a missing-virtual dispatch bug -- they look similar but have different root causes",
+        "Trying to fix it by adding virtual somewhere, when the object itself has already been destroyed by the copy",
+        "Not recognizing that pass-by-value is the root cause for any polymorphic base type"
+      ],
+      "keyPoints": [
+        "Passing a polymorphic base type by value copies only the base-class portion, discarding derived data and type",
+        "The resulting object genuinely is just the base type -- virtual dispatch is correctly calling the base version",
+        "This differs from a missing-virtual bug: here the object itself has been destroyed by the copy",
+        "The fix is passing by reference or pointer/smart pointer, never by value, for a polymorphic base type"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies this as object slicing",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains why the base-class portion alone is copied",
+          "weight": 25
+        },
+        {
+          "criterion": "Distinguishes this from a missing-virtual dispatch bug",
+          "weight": 20
+        },
+        {
+          "criterion": "Provides the correct fix (reference or pointer)",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "inheritance-and-polymorphism",
+        "label": "Review: Inheritance & Polymorphism"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-031",
+      "questionCode": "LTV-QDEV-0073",
+      "title": "Diagnosing a Bug From an Uninitialized Variable",
+      "prompt": "A function computes a running total that starts with a seemingly random, nonsensical value on some runs but not others, even though the input data looks identical. What's the likely cause, and how would you confirm it?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Uninitialized Variables",
+        "Debugging",
+        "C++ Fundamentals"
+      ],
+      "modelAnswer": "A local variable declared without an initializer (double total; with no = 0.0) has an indeterminate value -- it holds whatever bits happened to already be sitting in that stack memory from whatever used it previously, which is why the symptom is run-dependent rather than consistently wrong: different programs, different call histories, or even a different build can leave different leftover bits there. The fix is simply always initializing variables at declaration (double total = 0.0;), which removes the ambiguity entirely. To confirm this is actually the cause rather than guessing, compiling with -Wall -Wextra will often flag an obviously uninitialized read with a warning, and a tool like MemorySanitizer (or, more commonly available, simply running the suspect code path under a debugger and inspecting the variable's value right after declaration, before it's ever assigned) can confirm the exact uninitialized read directly.",
+      "professionalAnswer": "This smells like an uninitialized variable -- something like double total; with no = 0.0, which means it starts out holding whatever bits were already sitting in that stack slot from something else, not a clean zero. That's exactly why it's inconsistent between runs: different leftover memory contents each time. The fix is just always initializing at declaration. To actually confirm it rather than guess, -Wall -Wextra often catches an obviously uninitialized read as a warning, and worst case I'd step through in a debugger and look at the variable's value the moment it's declared, before any assignment happens.",
+      "commonMistakes": [
+        "Assuming identical input data guarantees identical behavior, missing that uninitialized memory content varies run to run",
+        "Not compiling with -Wall -Wextra, which often flags an obviously uninitialized read directly",
+        "'Fixing' the symptom by resetting the variable somewhere later instead of initializing it at declaration"
+      ],
+      "keyPoints": [
+        "An uninitialized local variable holds an indeterminate value from leftover stack memory",
+        "This explains run-dependent, seemingly random behavior with identical input data",
+        "The fix is always initializing variables at declaration",
+        "Compiler warnings (-Wall -Wextra) or a debugger can confirm the uninitialized read"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies an uninitialized variable as the likely cause",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains why the symptom varies between runs",
+          "weight": 25
+        },
+        {
+          "criterion": "Describes a concrete way to confirm the diagnosis",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "types-variables-and-control-flow",
+        "label": "Review: Types, Variables & Control Flow"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-032",
+      "questionCode": "LTV-QDEV-0074",
+      "title": "Debugging a Build That Behaves Differently Than Expected",
+      "prompt": "A teammate reports their pricing code is 'working fine' in testing but behaves strangely slow, and when you check their build command, there's no -O flag at all. Why would that alone explain sluggish behavior, and what's the risk of just adding -O3 blindly?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Build Systems",
+        "Compiler Optimization",
+        "Debugging"
+      ],
+      "modelAnswer": "With no -O flag, the compiler defaults to -O0 -- essentially no optimization at all, which is exactly what you want for stepping through code in a debugger line by line, but it's dramatically slower than necessary for anything performance-sensitive, since none of the usual optimizations (inlining, loop unrolling, dead-code elimination) are applied. That alone, with zero logic changes, fully explains 'correct but sluggish' behavior -- the code was never actually measuring anything close to real performance. The fix for a release/performance build is -O2, the typical default optimization level that captures most of the safe, beneficial transformations. Blindly jumping straight to -O3 instead of -O2 is its own small risk: -O3 enables more aggressive transformations that occasionally make no difference or, less commonly, even regress performance on certain code, so the professional habit is to measure -O2 against -O3 on the actual workload rather than assuming more aggressive is automatically faster.",
+      "professionalAnswer": "No -O flag means -O0 by default -- debug-level, essentially unoptimized, which is perfect for stepping through in a debugger and genuinely bad for anything you care about the speed of. That alone, with no code changes, fully explains 'correct but slow.' I'd set -O2 as the release build's standard optimization level. I wouldn't reach straight for -O3 assuming it's automatically better, though -- the more aggressive transformations in -O3 sometimes don't help, or occasionally even hurt, depending on the code, so I'd actually measure -O2 against -O3 on the real workload rather than assuming.",
+      "commonMistakes": [
+        "Not realizing the default build (no -O flag) is essentially unoptimized",
+        "Assuming -O3 is always strictly faster than -O2 without measuring",
+        "Treating a slow debug build as a logic bug instead of checking the build flags first"
+      ],
+      "keyPoints": [
+        "No -O flag defaults to -O0, essentially unoptimized, appropriate for debugging, not performance",
+        "-O2 is the typical release-build default, enabling most safe, beneficial optimizations",
+        "-O3 enables more aggressive transformations that should be measured, not assumed to always win",
+        "This class of 'slow' is purely a build-configuration issue, not a logic bug"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies the missing -O flag (defaulting to -O0) as the cause",
+          "weight": 40
+        },
+        {
+          "criterion": "Recommends -O2 as the appropriate release-build fix",
+          "weight": 30
+        },
+        {
+          "criterion": "Correctly cautions against assuming -O3 is automatically better",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "compiler-optimization-and-inlining",
+        "label": "Review: Compiler Optimization & Inlining"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-033",
+      "questionCode": "LTV-QDEV-0075",
+      "title": "Debugging an Infinite Loop From a Signed/Unsigned Comparison",
+      "prompt": "This loop is supposed to count down and stop, but it never terminates: for (int i = 10; i >= 0; --i) looks fine, but a similar loop using std::size_t instead of int hangs forever. Explain exactly why, using a loop counting down from a vector's size.",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Signed/Unsigned",
+        "Debugging",
+        "C++ Fundamentals"
+      ],
+      "modelAnswer": "std::size_t (the type returned by .size()) is unsigned, meaning it can never represent a negative number -- it has no sign bit to hold one. A loop like for (std::size_t i = prices.size() - 1; i >= 0; --i) looks like it should stop once i reaches 0, but the moment --i is applied when i is already 0, it doesn't become -1; it wraps around to the maximum representable value for std::size_t (an enormous positive number, since unsigned arithmetic is defined to wrap modulo 2^N rather than go negative), and the condition i >= 0 is then still true -- in fact it's always true for an unsigned type, since an unsigned value can never be negative in the first place. The loop effectively never terminates in any reasonable time. The fix is either to use a signed integer type for a counter that needs to go negative or reach a sentinel below zero, or restructure the loop to avoid ever needing to compare an unsigned value against a condition that assumes negative values are reachable -- for example counting up through an offset instead of counting down to -1.",
+      "professionalAnswer": "The core fact is that std::size_t is unsigned, so it literally cannot represent -1 -- decrementing past zero wraps around to a huge positive number instead of going negative. That means i >= 0 is true for every single value an unsigned type can ever hold, so the loop condition never fails and it just runs forever (well past any reasonable time). I'd fix it either by using a signed type for a counter that's genuinely meant to reach negative values, or by rewriting the loop to count upward through an offset instead of counting down through zero with an unsigned type.",
+      "commonMistakes": [
+        "Assuming decrementing an unsigned value below zero produces a negative number like a signed type would",
+        "Not recognizing i >= 0 is always true for any unsigned type, making the loop condition meaningless",
+        "Mixing signed and unsigned types in a comparison without considering the implicit conversion rules involved"
+      ],
+      "keyPoints": [
+        "std::size_t is unsigned and cannot represent negative values",
+        "Decrementing an unsigned value past zero wraps around to a very large positive number",
+        "i >= 0 is always true for an unsigned type, making that loop condition meaningless",
+        "Fix with a signed counter type, or restructure the loop to avoid comparing against an unreachable negative bound"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains that std::size_t is unsigned and cannot go negative",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains the wraparound behavior on decrement past zero",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains why the loop condition is then always true",
+          "weight": 20
+        },
+        {
+          "criterion": "Provides a correct fix",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "types-variables-and-control-flow",
+        "label": "Review: Types, Variables & Control Flow"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-034",
+      "questionCode": "LTV-QDEV-0076",
+      "title": "Debugging a Crash Caused by a Bad Sort Comparator",
+      "prompt": "A call to std::sort with a custom lambda comparator sometimes crashes or produces a corrupted-looking result, but only on certain input vectors. The comparator is [](double a, double b) { return a >= b; }. What's wrong with it?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "STL Algorithms",
+        "Lambdas",
+        "Debugging"
+      ],
+      "modelAnswer": "A valid comparator for std::sort must implement strict weak ordering, which specifically requires that comp(x, x) is always false -- an element can never be considered to come strictly before itself. [](double a, double b) { return a >= b; } violates this: when a and b are equal (including when they're literally the same element being compared to itself during the algorithm's internal operations), it returns true, claiming the element comes before itself. std::sort's internal implementation relies on strict weak ordering holding to guarantee correct, bounded behavior; violating it is undefined behavior, which can manifest as anything from a subtly wrong sort order to memory corruption or a crash, and -- consistent with undefined behavior generally -- it often only shows up on certain input data (specifically, data containing duplicate or equal values) rather than failing consistently on every input. The fix is simply changing >= to >, which correctly returns false when a and b are equal.",
+      "professionalAnswer": "The bug is that >= breaks strict weak ordering, which std::sort's comparator is required to satisfy -- specifically, comparing an element to an equal value (including itself) must return false, and >= returns true in that case. That's undefined behavior from the algorithm's point of view, and like most undefined behavior, it doesn't fail consistently -- it only shows up with input that actually contains equal or duplicate values, which is exactly the 'only on certain inputs' pattern described here. The fix is just switching >= to >.",
+      "commonMistakes": [
+        "Not knowing std::sort's comparator must satisfy strict weak ordering (comp(x,x) must be false)",
+        "Assuming any boolean-returning comparator is automatically valid as long as it compiles",
+        "Debugging the input data instead of the comparator itself, since the bug only appears with certain data"
+      ],
+      "keyPoints": [
+        "std::sort requires its comparator to implement strict weak ordering",
+        "A valid comparator must return false when comparing an element to an equal value",
+        ">= violates this because it returns true for equal values",
+        "Violating strict weak ordering is undefined behavior and often only surfaces with duplicate/equal input values"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies the strict-weak-ordering violation",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly explains why this causes undefined behavior in std::sort",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains why the bug only appears with certain (equal-valued) input",
+          "weight": 20
+        },
+        {
+          "criterion": "Provides the correct fix",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 4,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "iterators-and-algorithms",
+        "label": "Review: Iterators & Algorithms"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-035",
+      "questionCode": "LTV-QDEV-0077",
+      "title": "Why the Pricing Core Should Never Include a pybind11 Header",
+      "prompt": "A capstone pricing library's design says 'the C++ pricing core never includes a pybind11 header.' Why is that specific rule worth enforcing, rather than just binding things wherever it's convenient?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Software Architecture",
+        "pybind11",
+        "Layered Design"
+      ],
+      "modelAnswer": "The rule separates the project into a pure C++ core (EuropeanOption, Bond, pricing math) with no knowledge of Python at all, and a thin pybind11 bindings layer on top that's the only place translating between Python/NumPy types and the core's plain C++ types. This matters for a concrete, practical reason: it makes the pricing core independently unit-testable with a plain C++ test harness, with no Python interpreter involved anywhere in that test run -- tests run faster and have one less moving part that could mask where a bug actually lives. It also keeps the core reusable: if the library is later also needed from a C++ command-line tool, or another binding layer entirely, the core doesn't have to change at all, because it never depended on pybind11 in the first place. Mixing pybind11 calls directly into the pricing logic 'wherever convenient' would couple correctness-critical math code to a binding library's API, making both harder to test and harder to reuse.",
+      "professionalAnswer": "The reasoning is pretty concrete: if the core never touches pybind11, I can write and run C++ tests against the pricing logic with no Python interpreter anywhere in the loop -- faster tests, and one less place for a bug to hide. It also means the same core could be reused from a plain C++ tool or a different binding layer later without touching a single line. Scattering pybind11 calls through the actual pricing math instead would tie correctness-critical code to a specific binding library's API for no real benefit.",
+      "commonMistakes": [
+        "Mixing pybind11 binding code directly into pricing logic for convenience, coupling the two unnecessarily",
+        "Assuming the separation is just a style preference rather than enabling independent, Python-free unit testing",
+        "Not recognizing that this separation also makes the core reusable from contexts other than Python"
+      ],
+      "keyPoints": [
+        "The pricing core is pure C++ with zero knowledge of Python or pybind11",
+        "The bindings layer is a thin translation layer on top, the only place touching pybind11",
+        "This separation enables independent unit testing of the core with no Python interpreter involved",
+        "It also keeps the core reusable from other contexts (a CLI tool, a different binding layer)"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains the core/bindings separation",
+          "weight": 30
+        },
+        {
+          "criterion": "Explains the independent-testability benefit specifically",
+          "weight": 35
+        },
+        {
+          "criterion": "Mentions reusability beyond just Python bindings",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "capstone-kickoff-a-high-performance-cplusplus-pricing-library",
+        "label": "Review: Capstone Kickoff — A High-Performance C++ Pricing Library"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-036",
+      "questionCode": "LTV-QDEV-0078",
+      "title": "The Five Moving Parts Every Backtest Needs",
+      "prompt": "A junior researcher's backtest script computes a signal and prints a return number, with no mention of execution assumptions or costs. What's structurally missing from their mental model of what a backtest actually is?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Backtesting",
+        "Systems Design"
+      ],
+      "modelAnswer": "Every backtest, no matter how simple, has five distinct moving parts: data (the historical prices feeding it), signal (the rule turning data into a view), position (the signal sized into an actual target holding), execution (the simulated act of getting from the current position to the target, at some price, with some cost, with some delay), and P&L (the resulting profit or loss accumulated over time). A script that only computes a signal and prints a return has implicitly skipped the execution step entirely -- it's very likely assuming trades fill instantly, at the exact signal price, for free, which is exactly the naive oversimplification that the apparent 'edge' of a backtest usually quietly comes from. Structurally, what's missing is any explicit model of execution: at what price does the trade actually happen, what delay is there between generating the signal and acting on it, and what transaction costs apply. Without modeling those honestly, the number being printed isn't really measuring 'how would this strategy have performed' -- it's measuring a much easier, and much less meaningful, question.",
+      "professionalAnswer": "What's missing is the execution and cost layer -- two of the five things every backtest actually has, alongside data, signal, and position. A script that just computes a signal and reports a return is implicitly assuming instant, free, exact-price fills, and that assumption is almost always where a chunk of a backtest's apparent edge is quietly coming from. I'd push back before trusting that number at all: what price does a trade actually fill at, how much delay is there between the signal and the trade, and what does it cost. Skip those and you're not really measuring what the strategy would have done, you're measuring something much easier and much less useful.",
+      "commonMistakes": [
+        "Treating a backtest as just 'signal in, return out' without an explicit execution and cost model",
+        "Not recognizing that naive execution assumptions (instant, free, exact-price fills) are a major source of a backtest's apparent edge",
+        "Assuming a higher reported return automatically means a better, more trustworthy strategy"
+      ],
+      "keyPoints": [
+        "Every backtest has five parts: data, signal, position, execution, and P&L",
+        "A naive backtest often gets execution wrong by assuming instant, free, exact-price fills",
+        "That naive execution assumption is a common hidden source of a backtest's apparent edge",
+        "A credible backtest result requires explicit, stated execution and cost assumptions"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly names the five parts of a backtest",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly identifies execution/cost modeling as what's missing",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains why naive execution assumptions inflate apparent edge",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "backtesting-fundamentals",
+        "label": "Review: Backtesting Fundamentals"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-037",
+      "questionCode": "LTV-QDEV-0079",
+      "title": "The Minimal Shape of an Event-Driven Backtester Loop",
+      "prompt": "Describe, at a structural level, what a minimal event-driven backtester needs to track and do on every single bar, using a moving-average crossover strategy as the example.",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Backtesting",
+        "Event-Driven Architecture"
+      ],
+      "modelAnswer": "At minimum, an event-driven backtester needs an explicit, tracked portfolio state (cash and current share count), and on every bar in the loop it performs the same sequence: look at yesterday's completed values (not today's, to avoid look-ahead bias) to decide whether the strategy wants to be long or flat; if the desired position differs from the current one, simulate a trade at today's bar (commonly the open, not the price the decision was based on) to move from the current position toward the desired one, updating cash and shares accordingly; and finally record the portfolio's current equity (cash plus shares times today's price) into a running equity curve. The key structural discipline is that the decision at step i is based strictly on information available before bar i (typically bar i-1's completed values), and the trade executes at a bar's price that is itself not the price the decision was computed from -- the loop structure itself is what enforces no-look-ahead, rather than relying on remembering to shift a column the way a vectorized approach does.",
+      "professionalAnswer": "The minimum shape is: keep an explicit cash/shares state, and on each bar, decide using only data from before that bar (yesterday's moving averages, not today's), trade at today's price if the desired position differs from the current one, and record the resulting equity. The important discipline is architectural, not just a detail: the loop's structure -- decide on yesterday, trade today -- is what prevents look-ahead bias by construction, rather than relying on a programmer remembering to shift a column the way you'd have to in a vectorized version.",
+      "commonMistakes": [
+        "Letting the decision on bar i use bar i's own data instead of strictly earlier data, introducing look-ahead bias",
+        "Not tracking portfolio state explicitly (cash and shares), and instead trying to infer it after the fact",
+        "Executing the simulated trade at the same price the decision was computed from, rather than a later, genuinely tradeable price"
+      ],
+      "keyPoints": [
+        "An event-driven backtester tracks explicit portfolio state: cash and current position",
+        "Each bar's decision uses only data available before that bar, enforced by the loop's structure",
+        "A simulated trade executes at a genuinely tradeable price, not the price the decision was based on",
+        "Equity is recorded each bar from the tracked cash/shares state, building the equity curve"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly describes tracking explicit cash/position state",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly describes deciding on prior-bar data to avoid look-ahead",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly describes trading at a later, genuinely tradeable price",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "building-a-simple-backtester",
+        "label": "Review: Building a Simple Backtester"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-038",
+      "questionCode": "LTV-QDEV-0080",
+      "title": "Why Use an Existing Backtesting Framework Instead of Rolling Your Own",
+      "prompt": "A developer argues their hand-rolled backtester is 'simpler and I understand every line,' and resists adopting a framework like backtesting.py or vectorbt. What's the actual case for the framework?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Backtesting Frameworks",
+        "Software Architecture"
+      ],
+      "modelAnswer": "Understanding every line of a hand-rolled engine is genuinely valuable -- that's exactly why learning to build one by hand first is worth doing -- but it's a different question from whether production research should keep running on it. A framework exists specifically to handle the parts of a backtest that are easy to get subtly wrong and tedious to rebuild every time: applying commissions and slippage consistently to every single fill, avoiding accidental look-ahead bias in the core loop, handling different order types, and computing a standard, trustworthy set of performance statistics. Every one of those is a chance for a quiet, hard-to-notice bug in hand-rolled code, and a mature, widely-used framework has already had those bugs found and fixed by a much larger set of users than any one team's internal engine ever will. Using a framework doesn't remove the need to understand what's happening underneath, and it doesn't remove the responsibility of configuring realistic assumptions -- it just removes a large amount of error-prone boilerplate that isn't actually where the team's engineering effort should be going.",
+      "professionalAnswer": "I wouldn't argue against understanding the internals -- building one by hand first is exactly how you earn the right to trust a framework's defaults. But understanding every line of your own engine and continuing to maintain it in production are two different costs. A framework has already had its commission/slippage/look-ahead-bias edge cases found and fixed by far more users than any one team will ever generate internally. The responsibility for configuring realistic assumptions doesn't go away, but a huge amount of error-prone boilerplate does, and that's time better spent on the actual research.",
+      "commonMistakes": [
+        "Treating 'I understand my own code' as equivalent to 'my code has been as thoroughly tested as a mature framework'",
+        "Assuming adopting a framework removes the need to configure realistic costs and assumptions",
+        "Not acknowledging that hand-rolling first is valuable for learning, even while favoring a framework for production use"
+      ],
+      "keyPoints": [
+        "A framework standardizes commissions, slippage, order handling, and statistics that are easy to get subtly wrong by hand",
+        "A mature framework has had its edge cases found and fixed by a far larger user base than any one team",
+        "Using a framework doesn't remove the responsibility to configure realistic assumptions",
+        "Hand-rolling an engine is valuable for learning the mechanics, separate from the production-use decision"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly articulates the case for using a framework in production",
+          "weight": 40
+        },
+        {
+          "criterion": "Acknowledges the legitimate value of hand-rolling for learning",
+          "weight": 20
+        },
+        {
+          "criterion": "Notes that a framework doesn't remove the responsibility for realistic assumptions",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "using-backtesting-frameworks",
+        "label": "Review: Using Backtesting Frameworks"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-039",
+      "questionCode": "LTV-QDEV-0081",
+      "title": "Why Price-Adjustment Logic Shouldn't Live Inside the Signal Code",
+      "prompt": "A strategy's signal code directly reads a raw price CSV and computes its own split adjustment inline, mixed in with the actual trading logic. Why is that a design problem, independent of whether the adjustment math is correct?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Data Handling",
+        "Software Architecture",
+        "Backtesting"
+      ],
+      "modelAnswer": "Mixing data-cleaning concerns (split/dividend adjustment, gap handling, timezone normalization) directly into the signal logic couples two things that should be independent: whether the trading rule is correct, and whether the data feeding it is correct. If a split-adjustment bug is ever found, it has to be hunted down and fixed inside every single strategy that happened to inline its own copy of that logic, instead of in one place. It also makes the signal code harder to reason about and test in isolation -- a unit test for 'does this crossover rule work correctly' now has to also account for 'and does the inline adjustment logic also behave correctly on this test data,' conflating two separate questions. The better design is a dedicated data-handling layer that produces already-adjusted, already-cleaned data, with the signal code consuming that clean data and focusing purely on the trading rule itself -- the same separation-of-concerns argument that applies to keeping an OMS layer separate from strategy logic on the execution side.",
+      "professionalAnswer": "The problem isn't whether the adjustment math is right today -- it's that two genuinely separate concerns, data correctness and trading-rule correctness, are now tangled together in one place. If a split-adjustment bug shows up later, you're hunting through every strategy that inlined its own copy instead of fixing it once. It also makes testing harder, since a test of the trading rule now implicitly depends on the adjustment logic behaving correctly too. I'd want a dedicated data layer that hands the signal code already-clean, already-adjusted data, so the signal code's only job is the actual trading rule.",
+      "commonMistakes": [
+        "Judging this purely on whether the inline adjustment math happens to be correct right now",
+        "Not recognizing that a future adjustment bug would then need fixing in every strategy separately",
+        "Missing that mixing concerns also makes the signal logic harder to test in isolation"
+      ],
+      "keyPoints": [
+        "Mixing data-cleaning logic into signal code couples two genuinely separate concerns",
+        "A bug in inlined adjustment logic has to be found and fixed separately in every strategy that copied it",
+        "Separating data handling makes signal logic easier to test and reason about in isolation",
+        "A dedicated data-handling layer should hand already-clean data to the strategy's signal code"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly identifies the separation-of-concerns problem, independent of correctness today",
+          "weight": 40
+        },
+        {
+          "criterion": "Explains the maintenance cost of duplicated inline logic",
+          "weight": 30
+        },
+        {
+          "criterion": "Recommends a dedicated data-handling layer",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "data-handling-in-backtests",
+        "label": "Review: Data Handling in Backtests"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-040",
+      "questionCode": "LTV-QDEV-0082",
+      "title": "Why Paper Trading Exists as a Separate Stage",
+      "prompt": "A strategy already passed a careful, realistic backtest. Why is paper trading still a required stage before risking real capital, rather than a redundant extra step?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Paper Trading",
+        "Systems Architecture",
+        "Trading Systems"
+      ],
+      "modelAnswer": "A backtest, no matter how realistic, runs entirely against data the researcher already has in full, through code that's typically run once, offline. Paper trading exercises something a backtest structurally cannot: the actual live pipeline, running continuously, unattended, against data arriving in real time -- does the live data feed actually arrive in the format the signal code expects, does the order-generation logic run fast enough and reliably enough bar after bar without a human babysitting it, and does the strategy behave sanely around real-world glitches like a stale quote or a halted symbol that clean historical data never has. These are infrastructure and operational risks, not strategy-logic risks, and a backtest's realism, however careful, can never rehearse them because a backtest was never actually running the live pipeline in the first place. Paper trading is the stage that specifically tests whether the strategy's code can survive contact with the operational reality it will actually run in.",
+      "professionalAnswer": "A backtest, even a careful one, is still running offline against data you already have in full -- it never actually exercises the live pipeline. Paper trading is the stage that does: does the real-time data feed show up the way the signal code expects, does order generation keep running reliably without someone watching it, does the strategy handle a stale quote or a halted symbol the way clean historical data never forced it to. None of that is about whether the trading logic itself is sound -- it's about whether the actual running system survives contact with live, messy, real-time reality, which no amount of backtest realism can rehearse.",
+      "commonMistakes": [
+        "Treating paper trading as redundant once a backtest is realistic, rather than testing a different category of risk",
+        "Not distinguishing strategy-logic risk (what backtesting addresses) from infrastructure/operational risk (what paper trading addresses)",
+        "Assuming a backtest's realistic cost modeling is a substitute for actually running the live pipeline"
+      ],
+      "keyPoints": [
+        "A backtest runs offline against data already fully available, never exercising the live pipeline",
+        "Paper trading exercises the real-time data feed, order-generation code, and operational reliability",
+        "It catches infrastructure and operational risks a backtest structurally cannot rehearse",
+        "Paper trading and backtesting address different categories of risk, not the same one twice"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly distinguishes strategy-logic risk from infrastructure/operational risk",
+          "weight": 40
+        },
+        {
+          "criterion": "Explains specifically what paper trading exercises that a backtest cannot",
+          "weight": 35
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 25
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "algorithmic-trading-and-backtesting",
+        "lessonSlug": "paper-trading-and-forward-testing",
+        "label": "Review: Paper Trading & Forward Testing"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-041",
+      "questionCode": "LTV-QDEV-0083",
+      "title": "Why Use a Template Instead of Three Copy-Pasted Functions",
+      "prompt": "A codebase has weightedAverageDouble, weightedAverageInt, and weightedAverageDecimal, three near-identical copy-pasted functions differing only in their argument type. What's the architectural case for replacing them with a single template?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Templates",
+        "Generic Programming",
+        "Software Architecture"
+      ],
+      "modelAnswer": "A function template lets you write the weighted-average logic exactly once, parameterized over a type T, and the compiler generates a correct, type-specific version for every type it's actually called with -- with zero runtime dispatch cost, since each instantiation is just an ordinary, separately compiled function under the hood. The copy-pasted three-function version has a maintenance problem baked in: if a bug is found or the formula needs to change, it has to be fixed in three separate places, and it's entirely possible for the copies to quietly drift out of sync with each other over time as one gets updated and the others don't. The template version has exactly one implementation to maintain, and adding support for a fourth numeric type later costs nothing beyond calling the template with that type -- no new function to write at all. The only real cost is that each distinct set of template arguments generates its own compiled code, which can modestly increase binary size if many very different types are actually instantiated -- a cost worth knowing about but rarely significant in practice for something like this.",
+      "professionalAnswer": "The problem with the three-function version isn't that it's wrong today, it's that it's three separate places for the same logic to quietly drift apart over time. A template collapses that to one implementation -- the compiler generates a correct version per type you actually call it with, at zero runtime cost, and adding a fourth type later is free, no new function needed. The only real tradeoff is a bit of extra compiled code size per distinct type actually instantiated, which almost never matters in practice for something this small.",
+      "commonMistakes": [
+        "Underestimating the maintenance risk of copy-pasted near-duplicate functions drifting apart over time",
+        "Assuming templates add a runtime performance cost compared to the hand-written duplicated functions",
+        "Not mentioning that each template instantiation does generate its own separately compiled code (a minor, usually acceptable cost)"
+      ],
+      "keyPoints": [
+        "A function template expresses the logic once, with the compiler generating a type-specific version per call",
+        "Templates have zero runtime dispatch cost compared to the hand-duplicated versions",
+        "Copy-pasted near-duplicate functions risk drifting out of sync as one is updated and others aren't",
+        "Templates increase compiled code size per distinct instantiated type, a usually-acceptable tradeoff"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains the template-generates-per-type mechanism",
+          "weight": 35
+        },
+        {
+          "criterion": "Explains the maintenance risk of duplicated code the template avoids",
+          "weight": 35
+        },
+        {
+          "criterion": "Mentions the zero-runtime-cost property and the binary-size tradeoff",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "templates-and-generic-programming",
+        "label": "Review: Templates & Generic Programming"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-042",
+      "questionCode": "LTV-QDEV-0084",
+      "title": "std::optional vs. a Sentinel Value for 'No Price Available'",
+      "prompt": "A lookupPrice function currently returns -1.0 to mean 'no price available for this symbol.' What's architecturally wrong with that design, and how does std::optional<double> fix it?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Modern C++",
+        "std::optional",
+        "API Design"
+      ],
+      "modelAnswer": "A sentinel value like -1.0 overloads a single double to mean two completely different things -- a real, negative price (which can genuinely occur for certain instruments, like negative interest rates or spreads) and 'no value at all' -- with nothing in the function's type signature telling a caller this ambiguity exists. A caller who forgets to check for -1.0 specifically will silently treat it as a real price and proceed with obviously wrong downstream math, and the compiler has no way to catch that mistake, because as far as the type system is concerned, -1.0 is just an ordinary double. std::optional<double> fixes this by making 'might not have a value' part of the type itself: the function returns std::optional<double>, callers must explicitly check whether a value is present (if (auto px = lookupPrice(...))) before extracting it, and there's no numeric value left over that could collide with a genuinely valid price. The absence of a value becomes a distinct, type-level state instead of a magic number a caller has to remember to special-case.",
+      "professionalAnswer": "The problem with -1.0 as a sentinel is that it's overloading one double to mean two different things, and nothing in the type system flags that ambiguity -- a caller who forgets to check for it just silently treats -1.0 as a real price and keeps going. std::optional<double> fixes that structurally: 'no value' becomes a real, distinct state in the type itself, the caller is forced to check presence before extracting the value, and there's no leftover numeric value that could ever collide with a genuinely valid (even negative) price.",
+      "commonMistakes": [
+        "Not recognizing that a sentinel value can collide with a genuinely valid value (e.g. a real negative price)",
+        "Assuming the compiler would catch a caller forgetting to check for the sentinel value",
+        "Treating std::optional as just a style preference rather than a type-safety improvement"
+      ],
+      "keyPoints": [
+        "A sentinel value overloads one type to mean both 'a real value' and 'no value,' ambiguously",
+        "The compiler cannot catch a caller forgetting to check for a sentinel value",
+        "std::optional<T> makes 'might not have a value' part of the type itself",
+        "Callers must explicitly check presence before extracting the value from an optional"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly explains the ambiguity/collision risk of a sentinel value",
+          "weight": 35
+        },
+        {
+          "criterion": "Correctly explains how std::optional resolves it at the type level",
+          "weight": 35
+        },
+        {
+          "criterion": "Notes the compiler cannot catch a missed sentinel check",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "cpp-for-quantitative-developers",
+        "lessonSlug": "modern-cplusplus-features-cplusplus17-20",
+        "label": "Review: Modern C++ Features (C++17/20)"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-043",
+      "questionCode": "LTV-QDEV-0085",
+      "title": "Evaluating Your First Quant Developer Offer",
+      "prompt": "You've received your first real offer as a quant developer, with a base salary and a bonus structure you don't fully understand yet. How should you approach evaluating it before accepting?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Career Prep",
+        "Compensation",
+        "Negotiation"
+      ],
+      "modelAnswer": "The first step is understanding that quant compensation structures vary significantly by firm type -- a systematic hedge fund, a prop trading firm, a bank's quant desk, and a fintech company each weight base salary, bonus, and profit-share very differently, so the same headline base number can represent very different total compensation and very different year-to-year variance depending on which type of firm is offering it. Before reacting to the number itself, it's worth understanding exactly how the bonus is determined -- team performance, individual contribution, desk PnL, or fully discretionary -- since a profit-share-heavy structure can pay far more in a good year and far less in a bad one than a steadier structure with the same headline base. It's also worth building a quick researched range from at least two independent sources (aggregated salary sites read skeptically, actual live postings for comparable roles at comparable firm types, and your own network) before deciding whether the offer is fair, rather than evaluating it purely against gut feeling. Beyond the number, weigh mentorship opportunities, the firm's actual risk and research culture, and what the role concretely does day to day -- a 'quant developer' title can mean very different things at different firms.",
+      "professionalAnswer": "First thing I'd do is figure out what kind of firm this actually is, because compensation structure varies by firm type more than by title -- a bank desk, a prop shop, and a systematic fund can all offer the same base number with wildly different bonus mechanics and variance behind it. I'd ask directly how the bonus is actually determined before assuming anything. I'd also build a quick researched range from a couple of independent sources rather than just trusting my gut on whether the number is fair. And I'd weigh the non-number stuff seriously -- mentorship, the firm's actual research/risk culture, what the role does day to day -- since those tend to matter more to how the next few years actually go than a modest difference in the base number.",
+      "commonMistakes": [
+        "Evaluating the offer purely on the headline base number without understanding the bonus structure",
+        "Not researching comparable compensation at comparable firm types before judging whether the offer is fair",
+        "Ignoring non-compensation factors like mentorship, culture fit, and actual day-to-day role content"
+      ],
+      "keyPoints": [
+        "Quant compensation structure varies significantly by firm type, not just by seniority",
+        "Understand exactly how the bonus is determined before judging the offer",
+        "Build a researched range from independent sources before deciding if a number is fair",
+        "Weigh mentorship, culture, and actual day-to-day role content alongside the compensation number"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly notes that compensation structure varies meaningfully by firm type",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes researching comparable compensation before judging the offer",
+          "weight": 30
+        },
+        {
+          "criterion": "Mentions weighing non-compensation factors",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "lessonLink": {
+        "courseSlug": "quant-research-and-trading-capstone",
+        "lessonSlug": "compensation-offers-and-choosing-a-firm",
+        "label": "Review: Compensation, Offers & Choosing a Firm"
+      },
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-044",
+      "questionCode": "LTV-QDEV-0086",
+      "title": "Receiving Tough Code Review Feedback as a Junior Developer",
+      "prompt": "A senior engineer leaves several blunt, detailed comments on your first real pull request, pointing out a memory-management mistake and a design choice they clearly think is wrong. How do you respond?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Code Review",
+        "Communication",
+        "Growth Mindset"
+      ],
+      "modelAnswer": "The right response treats the feedback as information about the code, not a judgment about your worth as an engineer -- reacting defensively or taking it personally tends to make the next review harder, not easier. Concretely: read through all the comments fully before responding to any of them, ask a clarifying question on anything genuinely unclear rather than guessing or silently disagreeing, and where the feedback is correct, say so plainly and fix it rather than arguing for the sake of it. If a comment seems wrong or there's a reasonable case for the original approach, it's fine to respectfully explain the reasoning and ask for their view, rather than either capitulating without understanding why or digging in defensively. The best long-term habit is to treat a detailed, critical review from a senior engineer as a genuine growth opportunity -- the alternative, a reviewer who doesn't bother leaving detailed comments because they've given up on the conversation being useful, is a much worse place to be as a junior developer.",
+      "professionalAnswer": "I try to read it as feedback on the code, not on me -- getting defensive just makes the next review harder for both of us. I'll read through everything first, ask a clarifying question if something's genuinely unclear, and where they're right, just say so and fix it rather than relitigating it. If I actually think there's a reasonable case for what I did, I'll say that respectfully and ask what they think, rather than either silently caving or getting defensive. Honestly, a senior engineer taking the time to leave detailed, blunt comments on my first PR is a good sign -- it means they think it's worth the effort to help me get better.",
+      "commonMistakes": [
+        "Taking detailed critical feedback personally and responding defensively",
+        "Silently agreeing with feedback you don't actually understand instead of asking a clarifying question",
+        "Arguing a point reflexively instead of considering whether the feedback is actually correct"
+      ],
+      "keyPoints": [
+        "Treat code review feedback as information about the code, not a judgment of your worth",
+        "Read all feedback fully before responding, and ask clarifying questions where genuinely needed",
+        "Acknowledge and fix feedback that's correct rather than arguing for its own sake",
+        "Respectfully explain your reasoning when you have a legitimate case, rather than silently capitulating or being defensive"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Shows a non-defensive, growth-oriented attitude toward critical feedback",
+          "weight": 35
+        },
+        {
+          "criterion": "Describes a concrete, professional process for responding",
+          "weight": 35
+        },
+        {
+          "criterion": "Allows for respectfully pushing back when there's a legitimate case",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-045",
+      "questionCode": "LTV-QDEV-0087",
+      "title": "Admitting You Don't Know Something Mid-Interview",
+      "prompt": "During a technical interview, you're asked a question about memory ordering you genuinely don't know the answer to. What's the best way to handle it in the moment?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Interviewing",
+        "Communication",
+        "Problem Solving"
+      ],
+      "modelAnswer": "The worst response is guessing confidently and hoping it sounds plausible -- an experienced interviewer will usually probe further and the guess will unravel, costing more credibility than an honest 'I don't know' would have. The better approach is to say plainly that you haven't worked with this specific concept deeply, then reason through what you do know that's adjacent to it out loud -- for memory ordering specifically, that might mean explaining what you do understand about mutexes or atomics generally, and thinking through, from first principles, what a weaker vs. stronger guarantee might trade off, even if you can't name the exact C++ memory_order values. Interviewers are very often evaluating how you think and how you handle not knowing something, not just whether you've memorized the answer -- a candidate who reasons carefully from a position of acknowledged uncertainty often comes across better than one who bluffs. If there's a natural opening, it's also fine to ask a clarifying question that narrows the problem to something closer to what you do know.",
+      "professionalAnswer": "I say directly that I haven't gone deep on this specific thing, and then I try to reason through it out loud from whatever I do know that's adjacent -- for something like memory ordering, that's talking through what I understand about atomics and locking generally and thinking through the tradeoffs even without the exact terminology. Guessing confidently and hoping it holds up is the worst move; a good interviewer will push on it and the bluff falls apart, which costs more than just saying 'I don't know, but here's how I'd reason about it' would have.",
+      "commonMistakes": [
+        "Guessing confidently instead of being honest about the gap",
+        "Going silent instead of reasoning through adjacent knowledge out loud",
+        "Treating 'I don't know' as a failure rather than an honest, often expected, answer"
+      ],
+      "keyPoints": [
+        "Confidently guessing and being wrong usually costs more credibility than honest uncertainty",
+        "Reason out loud through adjacent knowledge rather than going silent",
+        "Interviewers often evaluate how you think, not just whether you know the exact answer",
+        "A clarifying question can sometimes reframe the problem toward something you do know"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Recommends honesty over guessing",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes reasoning through adjacent knowledge out loud",
+          "weight": 35
+        },
+        {
+          "criterion": "Shows understanding of what interviewers are actually evaluating",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-046",
+      "questionCode": "LTV-QDEV-0088",
+      "title": "Learning a New Tool Quickly Under a Real Deadline",
+      "prompt": "Tell me about a time you had to learn a new language, library, or tool quickly to get a project done. How did you approach it?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Learning Agility",
+        "Communication",
+        "Career Prep"
+      ],
+      "modelAnswer": "A strong answer picks a specific, real example rather than a generic claim of being a 'fast learner,' and walks through an actual approach: identifying the minimum subset of the new tool actually needed for the task at hand rather than trying to learn everything about it up front, finding the highest-quality fast-path resource (official documentation, a focused tutorial, a knowledgeable colleague) rather than randomly searching, and getting to a small working example quickly to build real, tested understanding rather than only reading passively. It should also be honest about where it got hard -- a believable story includes at least one place the learning curve was genuinely steep or a specific mistake that got corrected, since a story with no friction at all reads as either exaggerated or not really engaging with the difficulty. Ending with the concrete outcome -- the project shipped, the specific thing that was learned stuck and got reused later -- grounds the story in a real result rather than just effort.",
+      "professionalAnswer": "I'd pick one real, specific example rather than a general claim. My actual approach is usually: figure out the smallest slice of the tool I genuinely need for this task, not the whole thing; go straight to the best fast-path resource I can find -- official docs or someone who already knows it -- rather than random searching; and get to a small, real working example as fast as possible, because that's when I actually start understanding it, not while just reading. I'd also be honest about where it was genuinely hard, because a story where nothing went wrong doesn't sound real. And I'd end with the actual outcome -- what shipped, and whether what I learned ended up being useful again later.",
+      "commonMistakes": [
+        "Giving a generic 'I'm a fast learner' answer with no specific example",
+        "Describing only reading/research with no concrete working example or output",
+        "Telling a story with no friction or mistakes, which reads as unconvincing"
+      ],
+      "keyPoints": [
+        "Use one specific, real example, not a generic claim",
+        "Describe a concrete learning approach: minimum needed subset, best fast-path resource, hands-on practice",
+        "Include an honest point of difficulty or a mistake that was corrected",
+        "End with the concrete outcome, not just the effort"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Uses a specific, concrete example",
+          "weight": 30
+        },
+        {
+          "criterion": "Describes a credible, structured learning approach",
+          "weight": 35
+        },
+        {
+          "criterion": "Includes honest friction/difficulty, not a frictionless story",
+          "weight": 20
+        },
+        {
+          "criterion": "Ends with a concrete outcome",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-047",
+      "questionCode": "LTV-QDEV-0089",
+      "title": "Explaining Why a Feature Will Take Longer Than Expected",
+      "prompt": "A non-technical product manager expects a new pricing feature to ship this week, but you've discovered it genuinely requires more testing because it touches order-submission code. How do you explain the delay without a technical deep-dive?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Communication",
+        "Stakeholder Management"
+      ],
+      "modelAnswer": "The goal is to translate the technical reason into a business-relevant one, without either hiding the real reason or drowning the PM in detail they don't need to make a decision. Concretely: state plainly that the feature touches order-submission, which is the part of the system where a mistake has real financial consequences (a duplicated or missed order), so it gets a higher bar of testing than a typical change, and that bar is what's adding the time, not scope creep or disorganization. Give a concrete, specific new estimate rather than a vague 'it'll take longer,' and if possible offer an option -- a smaller, lower-risk version that could ship on the original timeline, with the fuller version following once properly tested. This keeps the PM able to make an informed call about timeline versus risk, rather than either being stonewalled with jargon or pressured into accepting a risky shortcut they never actually agreed to.",
+      "professionalAnswer": "I'd keep it simple and honest: this code touches how orders actually get submitted, and a mistake there has real financial consequences, so it needs a higher bar of testing than most changes -- that's specifically what's adding the time, not disorganization. I'd give them a real new date, not a vague 'soon,' and if there's a smaller, safer version of the feature that could ship on the original timeline, I'd offer that as an option. The point is giving them an actual decision to make, with the real tradeoff stated plainly, instead of either burying them in technical detail or quietly cutting corners they never agreed to.",
+      "commonMistakes": [
+        "Giving a vague excuse without explaining the actual, legitimate reason for the delay",
+        "Over-explaining technical details the PM doesn't need to make the decision",
+        "Not offering a concrete new timeline or any alternative option"
+      ],
+      "keyPoints": [
+        "Translate the technical reason (order-submission risk) into plain business terms",
+        "Be specific about the new timeline rather than vague",
+        "Offer a concrete alternative (smaller safe version) where possible",
+        "Keep the PM able to make an informed decision rather than hiding or overexplaining"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Translates the technical reason into plain, accurate business terms",
+          "weight": 35
+        },
+        {
+          "criterion": "Gives a specific new estimate rather than a vague delay",
+          "weight": 25
+        },
+        {
+          "criterion": "Offers a concrete alternative or option",
+          "weight": 25
+        },
+        {
+          "criterion": "Clarity and professional tone",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-048",
+      "questionCode": "LTV-QDEV-0090",
+      "title": "Disagreeing With a Peer About Code Style",
+      "prompt": "A peer on your team insists everything should use raw pointers 'for clarity,' while you believe smart pointers should be the default per modern C++ practice. How do you handle this disagreement without it becoming a standoff?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Collaboration",
+        "Communication",
+        "Technical Judgment"
+      ],
+      "modelAnswer": "The productive move is to ground the disagreement in concrete trade-offs rather than personal preference -- explain specifically what smart pointers solve (automatic cleanup on every exit path including exceptions, clear ownership semantics, no manual delete to forget) rather than just asserting 'this is the modern way.' It's worth genuinely listening to the clarity argument too; there may be a legitimate point if raw pointers are being proposed specifically for non-owning observation (where a smart pointer would actually be misleading about ownership), as opposed to for owning a resource. If the disagreement doesn't resolve through discussion, the right move is proposing a concrete, shared standard -- written down, agreed by the team, maybe escalated to a tech lead if needed -- rather than each person writing code their own preferred way in the same codebase, which produces an inconsistent, harder-to-maintain result worse than either individual approach.",
+      "professionalAnswer": "I'd try to make it concrete rather than 'my style vs. your style' -- here's specifically what a smart pointer buys you: it can't leak on an exception path, and it's explicit about who owns what. I'd also actually listen to their clarity point, because if what they mean is 'use a raw pointer for a non-owning reference,' that's a reasonable and separate case from using one to own a resource. If we still don't agree after that, I'd rather get a written team standard everyone follows than have each of us write code our own way in the same codebase -- that inconsistency ends up worse than either approach alone.",
+      "commonMistakes": [
+        "Arguing from 'this is the modern way' instead of concrete, specific trade-offs",
+        "Not considering that the peer's point might have a legitimate narrower case (non-owning raw pointers)",
+        "Leaving the disagreement unresolved and letting inconsistent styles coexist in the same codebase"
+      ],
+      "keyPoints": [
+        "Ground the argument in concrete trade-offs (exception safety, ownership clarity), not just 'modern practice'",
+        "Genuinely consider whether the other position has a legitimate narrower case",
+        "Escalate to a written, agreed team standard rather than leaving inconsistent styles to coexist",
+        "Avoid treating the disagreement as personal or a standoff to win"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Argues from concrete technical trade-offs rather than preference",
+          "weight": 35
+        },
+        {
+          "criterion": "Shows genuine openness to the other viewpoint's legitimate case",
+          "weight": 25
+        },
+        {
+          "criterion": "Proposes a resolution path (team standard) rather than leaving it unresolved",
+          "weight": 25
+        },
+        {
+          "criterion": "Professional, collaborative tone",
+          "weight": 15
+        }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-049",
+      "questionCode": "LTV-QDEV-0091",
+      "title": "Managing Two Competing Deadlines as a Junior Developer",
+      "prompt": "You've been asked to finish a bug fix by end of day and also help onboard a new teammate this afternoon, and you don't think you can do both well. How do you handle it?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Time Management",
+        "Communication",
+        "Prioritization"
+      ],
+      "modelAnswer": "The right first move is surfacing the conflict early, to whoever assigned the tasks, rather than silently trying to do both and doing each one worse as a result, or silently dropping one without telling anyone. A clear way to frame it: here are the two things I've been asked to do, I don't think I can do both well in the time available, which one is the actual priority, or is there a way to adjust scope or timing on one of them. This isn't a sign of weakness -- it's giving whoever has visibility into the bigger picture the information they need to make the call, since they may know something about priority that isn't obvious from where you're sitting (maybe the bug fix is more urgent than it looks, or the onboarding session could easily move an hour). The failure mode to avoid is quietly trying to do both at reduced quality and letting someone else discover that after the fact.",
+      "professionalAnswer": "I'd flag the conflict early rather than quietly trying to do both and doing each one worse. Something like: I've got these two things, I genuinely don't think I can do both well today, which one's the real priority, or can we move one of them. That's not a weakness, it's giving someone with more context a chance to make the call -- maybe the bug is more urgent than it looks from my side, or maybe the onboarding slot can easily shift an hour. What I want to avoid is silently struggling through both and someone finding out afterward that neither got the attention it needed.",
+      "commonMistakes": [
+        "Silently attempting both tasks and doing each one at reduced quality without telling anyone",
+        "Unilaterally dropping one task without surfacing the conflict to whoever assigned it",
+        "Waiting until the deadline is missed to raise the conflict instead of flagging it early"
+      ],
+      "keyPoints": [
+        "Surface a real scheduling conflict early, rather than silently struggling through both",
+        "Ask whoever assigned the tasks which one is the actual priority, or whether scope/timing can shift",
+        "This gives someone with more context the information needed to make the right call",
+        "Avoid the failure mode of quietly doing both poorly and having it discovered later"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Recommends surfacing the conflict early rather than hiding it",
+          "weight": 40
+        },
+        {
+          "criterion": "Describes a concrete, professional way to frame the ask",
+          "weight": 30
+        },
+        {
+          "criterion": "Shows understanding of why this is the right move, not just a tactic",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
+    },
+    {
+      "id": "qdev-beg-050",
+      "questionCode": "LTV-QDEV-0092",
+      "title": "What Draws You Specifically to Quant Development",
+      "prompt": "Why quant development specifically, rather than general backend software engineering or data science? What's genuinely different about this kind of role to you?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": [
+        "Career Prep",
+        "Interviewing",
+        "Communication"
+      ],
+      "modelAnswer": "A strong answer is specific about what's actually different, rather than a generic 'I like finance and coding.' Quant development sits at a genuine intersection: the correctness bar is unusually high because bugs can mean real financial loss, not just a bad user experience, and the performance bar is often unusually concrete and measurable -- a specific latency target, a specific throughput number -- rather than a vague 'make it faster someday.' Compared to general backend engineering, there's often a tighter, more immediate feedback loop between a design decision (like a data layout choice) and a measurable number. Compared to data science or research roles, the day-to-day is closer to systems and performance engineering than to statistical modeling. A credible answer names which of these specifically appeals, grounded in something concrete the candidate has actually done -- not just an assertion that finance sounds exciting.",
+      "professionalAnswer": "I'd be specific rather than generic: what pulls me in is the combination of an unusually high correctness bar -- a bug here can mean real financial loss, not just an annoying ticket -- with concrete, measurable performance targets, not vague 'make it faster' goals. Compared to general backend work, the feedback loop between a design choice and an actual measured number tends to be tighter and faster. And compared to research-heavy data science roles, this is closer to systems and performance engineering day to day, which is the part I actually enjoy. I'd tie that back to something concrete I've actually built, not just a general interest in finance.",
+      "commonMistakes": [
+        "Giving a generic 'I like finance and I like coding' answer with no specificity",
+        "Not distinguishing quant development from quant research or general software engineering",
+        "Failing to ground the answer in a concrete example of relevant work already done"
+      ],
+      "keyPoints": [
+        "Quant development combines an unusually high correctness bar with concrete, measurable performance targets",
+        "Contrast specifically with general backend engineering and with research/data-science roles",
+        "A credible answer names a specific appeal, not a generic interest in finance",
+        "Ground the answer in something concrete already built or worked on"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Gives a specific, non-generic answer about what differentiates the role",
+          "weight": 40
+        },
+        {
+          "criterion": "Correctly contrasts quant development against adjacent roles",
+          "weight": 30
+        },
+        {
+          "criterion": "Grounds the answer in a concrete example",
+          "weight": 20
+        },
+        {
+          "criterion": "Clarity",
+          "weight": 10
+        }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-11",
+      "updatedAt": "2026-10-11"
     }
   ]
 }
