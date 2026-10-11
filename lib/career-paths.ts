@@ -1596,6 +1596,87 @@ export const CAREER_PATHS: CareerPath[] = [
     destinationNote:
       "Level 6 is specialization: Quantitative Researcher (heavy mathematics, statistics, machine learning, and research), Quantitative Developer (C++, Python, distributed systems, and performance engineering), Quant ML Researcher (deep learning, alternative data, NLP, and time series), or Low-Latency / High-Frequency Trading Engineer (C++, networking, operating systems, concurrency, and performance optimization). Top firms hire very selectively, and the highest compensation levels typically take years of proven results rather than being a promise on graduation.",
   },
+  {
+    slug: "quantitative-trader",
+    title: "Quantitative Trader",
+    subtitle: "Read the book, manage the risk, in real time",
+    targetJobs: ["Quantitative Trader", "Market Maker", "Proprietary Trader", "Execution Trader", "Risk Trader"],
+    description:
+      "This is not a starting point. Quantitative Trading takes the same mathematical, statistical, and market foundation as the Quantitative Developer / Researcher destination and applies it to a different discipline: making real-time trading and risk decisions under a live limit, not designing a strategy beforehand or analyzing it after the fact.",
+    longDescription: [
+      "This is not a starting point. Quantitative Trading is an advanced destination built on the skills developed throughout the LTV career paths — the same foundation the Quantitative Developer / Researcher destination is built on.",
+      "By the time you reach this specialization, you should already have a strong foundation in SQL, Python, statistics, machine learning, data engineering, cloud computing, Git, data pipelines, and MLOps through the Data Scientist path and a Data Engineering specialty.",
+      "The Quantitative Trader path takes those skills into live market decision-making: reading order flow and the limit order book, managing inventory and position risk through the trading day, and knowing when a losing position needs to be cut versus held.",
+      "Instead of repeating the foundation, you advance into mathematics for quantitative finance, advanced Python for research, C++ for high-performance production systems, financial markets and derivatives, time-series analysis, financial modeling, machine learning for noisy financial data, algorithmic trading, risk modeling, and backtesting — the same core the researcher, developer, and analyst roles share.",
+      "The path concludes with a Quantitative Research & Trading Capstone in which you take:",
+    ],
+    capstoneFlow: [
+      "Raw Market Data",
+      "Research Question",
+      "Statistical Analysis",
+      "Feature Engineering",
+      "Model",
+      "Trading Signal",
+      "Backtest",
+      "Risk Analysis",
+      "Performance Report",
+      "Presentation",
+    ],
+    afterFlow: [
+      "From there, students can specialize as a Quantitative Trader, Market Maker, or Proprietary / Execution Trader — reading order flow, managing live risk, and making trading decisions in real time rather than building the research or engineering behind them.",
+    ],
+    salaryRange: "$350K–$2M+ total compensation at elite prop trading firms and market makers — top-performing traders can exceed $2M",
+    compensation: {
+      heading: "Compensation potential",
+      paragraphs: [
+        "$350K–$600K+ total compensation is achievable early in a trading career at selective proprietary trading firms and market makers.",
+        "Traders who consistently generate profit can reach $600K–$1.5M+ as they take on more risk and responsibility, and top-performing traders at elite firms can exceed $2M — trading compensation is unusually leveraged to individual P&L, often more directly and more quickly than research or engineering compensation.",
+        "These figures represent total compensation — base salary plus a performance-based bonus tied directly to trading results — rather than guaranteed base salary. A trader's upside, and downside, is typically the most volatile of the quantitative roles, since pay tracks the risk they're actually given to manage.",
+      ],
+    },
+    progression: {
+      heading: "Career progression",
+      ladder: "Junior Trader / Trading Assistant → Quantitative Trader → Senior Trader / Risk Trader → Desk Head / Head of Trading",
+      levels: [
+        { label: "Senior-career target", value: "$600K–$1.5M+ total compensation" },
+        { label: "High-performing senior trader", value: "$1M–$2M+" },
+        { label: "Desk head / elite performance", value: "$2M+ potential" },
+      ],
+    },
+    isDestination: true,
+    stages: [
+      {
+        label: "Data science foundation",
+        note: "Levels 1–4 of the ladder: SQL, Python, statistics, machine learning, AI, cloud ML, and MLOps",
+        pathChoiceSlugs: ["data-scientist"],
+      },
+      {
+        label: "Data engineering layer",
+        note: "Level 3: pipelines and cloud — pick one specialty",
+        pathChoiceSlugs: ["azure-fabric-data-engineer", "databricks-lakehouse-engineer", "aws-data-engineer", "snowflake-data-engineer"],
+      },
+      {
+        label: "Quantitative core",
+        note: "Level 5: the same advanced specialization layer as the Quantitative Developer / Researcher destination",
+        courseSlugs: [
+          "mathematics-for-quantitative-finance",
+          "advanced-python-for-quant-research",
+          "cpp-for-quantitative-developers",
+          "financial-markets-and-quantitative-finance",
+          "time-series-and-financial-modeling",
+          "machine-learning-for-quant-finance",
+          "algorithmic-trading-and-backtesting",
+        ],
+      },
+      {
+        label: "Research capstone",
+        note: "From raw market data to a presented, backtested, risk-analyzed trading strategy",
+        courseSlugs: ["quant-research-and-trading-capstone"],
+      },
+    ],
+    destinationNote:
+      "Level 6 is specialization: Quantitative Trader (reading order flow, pricing in real time, and managing a book under a live risk limit), Market Maker (continuous two-sided pricing and inventory management), or Proprietary / Execution Trader (discretionary or systematic position-taking and trade execution). Top firms hire very selectively, and the highest compensation levels typically take years of proven, consistent P&L rather than being a promise on graduation.",
+  },
 ];
 
 export const getCareerPath = (slug: string) => CAREER_PATHS.find((p) => p.slug === slug);
