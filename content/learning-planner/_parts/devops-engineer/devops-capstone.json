@@ -1,0 +1,195 @@
+{
+  "courseSlug": "devops-capstone",
+  "courseTitle": "DevOps Capstone",
+  "slots": [
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "the-capstone-brief-and-architecture", "title": "The Capstone Brief & Architecture", "chapterTitle": "Capstone Overview", "estimatedMinutes": 10, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Redraw the engineer-to-GitHub-to-ACR-to-AKS dev/staging/prod architecture diagram by hand (or in a diagramming tool) from memory after reading the brief, labeling product-catalog, checkout, PaymentPro, the legacy inventory service, and where monitoring and security sit across the whole system, then check it against the lesson's diagram and correct any gaps.",
+      "deliverable": "A hand-drawn or diagrammed architecture map of the Northbridge Retail storefront system with every component correctly labeled."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "repository-structure-and-branching-plan", "title": "Repository Structure & Branching Plan", "chapterTitle": "Capstone Overview", "estimatedMinutes": 8, "durationIsEstimated": true },
+        { "lessonSlug": "success-criteria-and-project-plan", "title": "Success Criteria & Project Plan", "chapterTitle": "Capstone Overview", "estimatedMinutes": 7, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Create a real git repo scaffolded like `storefront/` (services/, infra/terraform/, charts/, .github/workflows/, docs/), initialize it with a README, create a feature/CAT-xxx branch following the trunk-based naming convention, and write the capstone's six-item Definition of Done checklist as a DONE.md file mapped to this repo.",
+      "deliverable": "An initialized monorepo-shaped git repo with the correct top-level folders plus a DONE.md checklist file."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "the-sample-application", "title": "The Sample Application", "chapterTitle": "Phase 1: Application & Containers", "estimatedMinutes": 9, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Stand up product-catalog (Node/Express) and checkout (Python/FastAPI) locally exactly as described — run each with `node server.js` / `uvicorn main:app`, hit `/healthz` and `/products`, and trace through checkout's `/checkout` handler in the code to identify its three outbound calls (inventory, PaymentPro, shipping webhook).",
+      "deliverable": "Terminal output of both services running locally and responding to their health/data endpoints, plus written notes identifying checkout's three downstream calls."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "containerizing-the-application", "title": "Containerizing the Application", "chapterTitle": "Phase 1: Application & Containers", "estimatedMinutes": 10, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Write the real multi-stage, non-root Dockerfiles for both services (node:20-slim / python:3.12-slim build+runtime stages, `USER app`, `EXPOSE 8080`), add a `.dockerignore` excluding `.env`/`.git`/`node_modules`, build and tag both images with the git-SHA convention (`northbridgeacr.azurecr.io/<service>:<sha>`), and run each container directly to confirm it starts as the non-root `app` user.",
+      "deliverable": "Two built, SHA-tagged Docker images plus terminal proof each runs as the non-root `app` user."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "local-multi-service-environment-with-compose", "title": "Local Multi-Service Environment With Compose", "chapterTitle": "Phase 1: Application & Containers", "estimatedMinutes": 10, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Write a `docker-compose.yml` wiring postgres, an `inventory-mock` (a MockServer stub returning `{\"available\": 999}`), product-catalog, and checkout together, load secrets from a local `.env` that is never committed, run `docker compose up --build`, and curl both services end to end including a full `/checkout` call that succeeds against the mocked inventory service.",
+      "deliverable": "A working docker-compose.yml plus terminal output of a successful end-to-end /checkout call against the mocked inventory service."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Phase 1 build review: break the compose stack on purpose (stop postgres mid-run, point PAYMENTPRO_URL at a bad host) and diagnose each failure using only `docker compose logs`, then fix it and confirm `docker compose down -v` followed by `up --build` cleanly rebuilds the whole stack from nothing.",
+      "deliverable": "A written log of two deliberately introduced failures, their log-based diagnosis, and confirmation the stack rebuilds cleanly from scratch."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "provisioning-cloud-infrastructure-with-terraform", "title": "Provisioning Cloud Infrastructure With Terraform", "chapterTitle": "Phase 2: Infrastructure", "estimatedMinutes": 11, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Write the `infra/terraform/` project (an `azurerm` remote-state backend, a networking module provisioning a resource group/VNet/subnets, and a database module provisioning a Postgres Flexible Server) for a dev environment, run `terraform init/plan/apply` against a real or trial Azure subscription, then reproduce the state-locking collision by holding the state lock in one terminal and running a second `terraform apply` in another to see the real 'state blob is already locked' error.",
+      "deliverable": "`terraform apply` output showing real resource groups/VNet/Postgres created from code, plus a captured state-lock error demonstrating remote-state locking."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "provisioning-the-kubernetes-cluster", "title": "Provisioning the Kubernetes Cluster", "chapterTitle": "Phase 2: Infrastructure", "estimatedMinutes": 10, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Extend the Terraform to provision an AKS cluster (`azurerm_kubernetes_cluster` with a system node pool plus a second autoscaling user node pool) and attach ACR via an `AcrPull` role assignment on the cluster's kubelet identity, apply it, then confirm with `az aks show` and `kubectl get nodes` that the cluster is live and a test pod referencing an ACR image pulls successfully with zero `imagePullSecrets`.",
+      "deliverable": "`kubectl get nodes` output against a real Terraform-provisioned AKS cluster, plus proof a pod pulled an ACR image with no imagePullSecrets."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "configuring-networking-identity-and-secrets", "title": "Configuring Networking, Identity & Secrets", "chapterTitle": "Phase 2: Infrastructure", "estimatedMinutes": 11, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Install the NGINX Ingress Controller and cert-manager on the cluster, create an Ingress for one service with a cert-manager `cluster-issuer` annotation, set up Azure AD Workload Identity federation (a user-assigned identity plus a federated credential bound to a specific namespace/service-account subject) so a pod can read a Key Vault secret with no stored credential, and wire an ExternalSecret to sync it into a native Kubernetes Secret.",
+      "deliverable": "A working Ingress with a cert-manager-issued TLS certificate, plus a pod proven to read a Key Vault secret via Workload Identity federation with no client secret anywhere."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Phase 2 infrastructure review: tear down and reprovision the entire dev environment from Terraform alone (`terraform destroy` then `terraform apply` against `environments/dev.tfvars`), confirming every resource — VNet, Postgres, AKS, the ACR role assignment, the federated identity — comes back identical from code with no manual portal clicks.",
+      "deliverable": "A terraform destroy + terraform apply transcript proving the full dev environment is 100% reproducible from code alone."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "building-the-ci-pipeline", "title": "Building the CI Pipeline", "chapterTitle": "Phase 3: Pipeline & Deployment", "estimatedMinutes": 11, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Write the two path-filtered GitHub Actions workflows (`product-catalog-ci.yml`, `checkout-ci.yml`) covering lint/test → docker build → Trivy image scan → gitleaks scan → push to ACR, each tagging images by git SHA, and push a real commit under `services/checkout/**` to confirm only checkout's workflow fires.",
+      "deliverable": "Two working, path-scoped GitHub Actions CI workflows, with a real PR showing only the correct service's pipeline triggered and all five stages passing."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "deploying-to-kubernetes-automatically", "title": "Deploying to Kubernetes Automatically", "chapterTitle": "Phase 3: Pipeline & Deployment", "estimatedMinutes": 10, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Add a `deploy-dev` job to each workflow (gated to `main`, OIDC `azure/login`, `aks-set-context`, `helm upgrade --install` into the dev namespace with `--set image.tag=${{ github.sha }}`), write the Helm chart skeleton (Chart.yaml, values.yaml/values-dev.yaml, deployment/service/hpa/ingress templates) for both services, and merge a real change to confirm it auto-deploys to the dev namespace with no manual command.",
+      "deliverable": "A merged PR that automatically deployed to the dev namespace via Helm, confirmed with `kubectl get pods,deploy` in that namespace with zero manual helm/kubectl commands run by hand."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "CI/CD build-out continued: finish both services' per-environment Helm values files (values-dev/staging/prod.yaml) with the correct differing autoscaling ranges (checkout min 3 / max 15, product-catalog min 2 / max 8 — sized for their very different traffic profiles), then push three small real commits in a row to prove the pipeline builds, scans, and redeploys to dev every single time without intervention.",
+      "deliverable": "Three consecutive real commits each shown auto-deploying to dev via Helm, plus the three environment-specific values files with correct, differing HPA ranges."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "environment-promotion-and-approvals", "title": "Environment Promotion & Approvals", "chapterTitle": "Phase 3: Pipeline & Deployment", "estimatedMinutes": 10, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Add the tag-triggered `promote-release.yml` workflow (an unconditional `deploy-staging` job, and a `deploy-prod` job gated on a GitHub Environment named `production` with 1 required reviewer), configure that Environment protection rule for real in the repo's Settings, cut a real semver tag, and personally approve the pending production deployment once staging looks good.",
+      "deliverable": "A real pushed semver tag that auto-deployed to staging, paused on a GitHub Environments approval gate, and completed to prod only after the student approved it."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "the-push-to-production-demo", "title": "The Push-to-Production Demo", "chapterTitle": "Phase 3: Pipeline & Deployment", "estimatedMinutes": 9, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Run the full commit-to-prod demo yourself end to end on your own build — open a PR with a small real change to checkout, watch CI go green, squash-merge, watch the automatic dev deploy, cut a tag, watch staging deploy, approve the production gate, and confirm the change is live in the prod namespace — narrating which workflow/job fires at each step.",
+      "deliverable": "A recorded or logged walkthrough tracing one real commit from PR through dev, staging, and an approved prod deploy, with the exact workflow run for each stage."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Phase 3 stabilization: deliberately promote one broken build (e.g. a failing health check) partway to staging, then execute both rollback strategies — a `helm rollback` to the prior revision, and an explicit redeploy pinned to a known-good prior `image.tag`/SHA — confirming each one restores the working version.",
+      "deliverable": "Terminal proof of a bad release caught in staging and successfully reverted using both a helm rollback and an explicit prior-SHA redeploy."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "adding-monitoring-and-alerting", "title": "Adding Monitoring & Alerting", "chapterTitle": "Phase 4: Monitoring & Security", "estimatedMinutes": 11, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Install `kube-prometheus-stack` via Helm into the dev (and prod, if available) cluster, add a ServiceMonitor for each service's `/metrics` endpoint, build the three-panel RED dashboard (rate, errors, duration) in Grafana for checkout, define the 99.5%-under-800ms-p99 SLO as a PrometheusRule, and route a `severity: page` alert through Alertmanager to a real Slack webhook or channel.",
+      "deliverable": "A live Grafana RED dashboard for checkout plus a working PrometheusRule/Alertmanager route proven to fire into a real notification channel."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "adding-security-scanning-and-secrets-management", "title": "Adding Security Scanning & Secrets Management", "chapterTitle": "Phase 4: Monitoring & Security", "estimatedMinutes": 11, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Add a Checkov scan to a `terraform-ci.yml` workflow against `infra/terraform/`, confirm Trivy and gitleaks are actually blocking (not just reporting) in both service pipelines by deliberately committing a fake API key and a CRITICAL-vulnerability base image and watching each scanner fail the build, then wire an ExternalSecret so a real secret is pulled from Key Vault into a pod with nothing sensitive in any values.yaml.",
+      "deliverable": "Two captured CI failures (a gitleaks-blocked fake secret and a Trivy-blocked vulnerable image) plus a running pod consuming a Key Vault secret via ExternalSecret with no secret value in Git."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Phase 4 build review: with monitoring and security both wired in, push one more real change through the full pipeline (CI scans → dev deploy → tag → staging → approved prod) and confirm the Grafana dashboard shows the new deploy's traffic while Trivy, gitleaks, and Checkov all still pass on that same run.",
+      "deliverable": "One real end-to-end pipeline run with a visible Grafana traffic change plus all three security scanners shown green on the same run."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "incident-drill-and-postmortem", "title": "Incident Drill & Postmortem", "chapterTitle": "Phase 4: Monitoring & Security", "estimatedMinutes": 10, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Run a real load-testing tool (k6 or similar) ramping synthetic traffic against checkout, watch its p99 latency climb on the Grafana dashboard exactly as in the lesson's drill, diagnose the saturation point using the golden signals plus the USE method on the dependency it's bottlenecked on, and write a complete blameless postmortem (summary, impact, root cause, contributing factor, dated/owned action items) in `docs/postmortems/`.",
+      "deliverable": "A captured load test showing checkout's p99 latency degrading on a real dashboard, plus a written blameless postmortem with at least 3 owned, dated action items."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "documentation-and-presentation", "title": "Documentation & Presentation", "chapterTitle": "Phase 4: Monitoring & Security", "estimatedMinutes": 9, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Write the real storefront README (what it is, how to run it locally, how it's deployed, where to look next) and populate `docs/` with an architecture diagram, at least one on-call runbook derived from the incident drill, and the postmortem itself, then rehearse the live commit-to-prod demo script end to end: PR → merge → tag → staging → approval → prod → dashboard → incident replay → postmortem.",
+      "deliverable": "A complete README + docs/ folder (architecture diagram, runbook, postmortem) plus a rehearsed, timed run-through of the full commit-to-prod demo script."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "resume-and-linkedin-for-devops-engineers", "title": "Resume & LinkedIn for DevOps Engineers", "chapterTitle": "Career Preparation", "estimatedMinutes": 6, "durationIsEstimated": true },
+        { "lessonSlug": "building-a-github-portfolio", "title": "Building a GitHub Portfolio", "chapterTitle": "Career Preparation", "estimatedMinutes": 7, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Rewrite your resume and LinkedIn summary to foreground the Northbridge Retail capstone in concrete, metric-bearing language (e.g. 'built a CI/CD pipeline with Trivy/gitleaks/Checkov gating deploys to AKS across dev/staging/prod'), then clean up your actual capstone repo for public viewing — a two-minute-read README with a 'design decisions' section, a full-history gitleaks run confirming nothing sensitive was ever committed, and the monorepo pinned as your top GitHub profile repo.",
+      "deliverable": "An updated resume/LinkedIn summary plus a public-ready GitHub repo with a documentation-quality README and a clean, scrubbed git history."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "the-devops-interview-landscape", "title": "The DevOps Interview Landscape", "chapterTitle": "Career Preparation", "estimatedMinutes": 6, "durationIsEstimated": true },
+        { "lessonSlug": "linux-and-networking-interview-questions", "title": "Linux & Networking Interview Questions", "chapterTitle": "Career Preparation", "estimatedMinutes": 7, "durationIsEstimated": true },
+        { "lessonSlug": "ci-cd-and-cloud-interview-questions", "title": "CI/CD & Cloud Interview Questions", "chapterTitle": "Career Preparation", "estimatedMinutes": 7, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "For each question set, write your own grounded answer to at least 2 questions, each one citing a specific piece of the Northbridge Retail build rather than a generic textbook answer — for example a networking answer citing the NGINX Ingress + cert-manager setup, and a CI/CD answer citing the five-stage GitHub Actions pipeline.",
+      "deliverable": "A written answer sheet covering at least 2 Linux/networking and 2 CI/CD/cloud interview questions, each answer citing a specific capstone artifact."
+    },
+    {
+      "type": "review",
+      "lessons": [
+        { "lessonSlug": "kubernetes-and-terraform-interview-questions", "title": "Kubernetes & Terraform Interview Questions", "chapterTitle": "Career Preparation", "estimatedMinutes": 6, "durationIsEstimated": true },
+        { "lessonSlug": "behavioral-and-incident-interview-questions", "title": "Behavioral & Incident Interview Questions", "chapterTitle": "Career Preparation", "estimatedMinutes": 6, "durationIsEstimated": true },
+        { "lessonSlug": "certifications-az-400-aws-devops-cka-and-terraform-associate", "title": "Certifications: AZ-400, AWS DevOps, CKA & Terraform Associate", "chapterTitle": "Career Preparation", "estimatedMinutes": 8, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Answer at least 2 Kubernetes/Terraform questions and 2 behavioral/incident questions the same grounded way (citing the AKS Terraform module, or the flash-sale postmortem as a STAR-shaped story), then pick one of AZ-400, AWS DevOps Pro, CKA, or Terraform Associate using the certification-mapping table and write a 4-week study plan naming which capstone chapter already covers each exam domain.",
+      "deliverable": "A written answer sheet for the Kubernetes/Terraform and behavioral/incident question sets, plus a chosen certification with a 4-week study plan mapped to specific capstone chapters."
+    }
+  ],
+  "monthlyMilestoneContribution": "After this course — and the DevOps Engineer path it closes — a student can take a real multi-service application from 'runs on a laptop' to a fully automated pipeline that builds, scans, tests, and deploys it to Kubernetes on Azure with monitoring, alerting, and a tested incident-response process in place, backed by a portfolio-ready capstone and a mapped study plan toward AZ-400, AWS DevOps Pro, CKA, or Terraform Associate."
+}
