@@ -1,0 +1,343 @@
+{
+  "courseSlug": "aws-data-engineering",
+  "courseTitle": "AWS Data Engineering",
+  "slots": [
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "s3-fundamentals", "title": "S3 Fundamentals", "chapterTitle": "S3 for Data Engineers", "estimatedMinutes": 8, "durationIsEstimated": true },
+        { "lessonSlug": "buckets-and-objects", "title": "Buckets & Objects", "chapterTitle": "S3 for Data Engineers", "estimatedMinutes": 7, "durationIsEstimated": true },
+        { "lessonSlug": "storage-classes", "title": "Storage Classes", "chapterTitle": "S3 for Data Engineers", "estimatedMinutes": 8, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "In the AWS S3 console (or AWS CLI), create a bucket, upload a handful of sample CSV/Parquet files into it, then move a copy of one object between the Standard, Standard-IA, and Glacier Instant Retrieval storage classes and compare the per-GB pricing shown in the console.",
+      "deliverable": "A screenshot of the S3 bucket showing uploaded objects with storage classes labeled, plus a short note on which class you'd pick for raw vs. archived pipeline data."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "partitioning-strategy-in-s3", "title": "Partitioning Strategy in S3", "chapterTitle": "S3 for Data Engineers", "estimatedMinutes": 12, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Re-upload the same sample data into the practice bucket using a Hive-style key prefix (year=2024/month=01/day=15/...) and compare the resulting folder structure in the console against the flat layout from the previous slot.",
+      "deliverable": "A documented before/after S3 key layout (flat vs. Hive-partitioned) with a one-paragraph explanation of how partition pruning would change the cost of a later Athena query against each."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "s3-event-notifications", "title": "S3 Event Notifications", "chapterTitle": "S3 for Data Engineers", "estimatedMinutes": 10, "durationIsEstimated": true },
+        { "lessonSlug": "s3-as-a-data-lake-foundation", "title": "S3 as a Data Lake Foundation", "chapterTitle": "S3 for Data Engineers", "estimatedMinutes": 10, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Configure an S3 Event Notification on the practice bucket (object-created event) targeting an SNS topic or SQS queue, upload a new file to confirm it fires, then sketch the raw/curated/consumption zone layout for a data lake built on top of this bucket.",
+      "deliverable": "A working S3 event notification (screenshot of the SNS/SQS message received) plus a diagram of a three-zone raw/curated/consumption data lake layout."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Chapter lab: build out the full raw/curated/consumption prefix structure in the practice bucket, upload a small multi-file dataset into raw/, and apply a lifecycle rule that transitions curated/ objects to Standard-IA after 30 days.",
+      "deliverable": "An S3 bucket with the three-zone layout populated and a lifecycle rule configured and visible in the console."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "iam-roles-for-services", "title": "IAM Roles for Services", "chapterTitle": "IAM for Data Pipelines", "estimatedMinutes": 9, "durationIsEstimated": true },
+        { "lessonSlug": "resource-based-policies", "title": "Resource-Based Policies", "chapterTitle": "IAM for Data Pipelines", "estimatedMinutes": 9, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Create an IAM role with a trust policy scoped to the Glue service principal, attach an inline policy granting s3:GetObject/s3:PutObject on specific prefixes of the practice bucket, and separately write a bucket policy granting read access to a second AWS account or principal.",
+      "deliverable": "The IAM role's trust policy JSON and the bucket's resource policy JSON, both scoped to specific ARNs rather than `*`."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "cross-account-access", "title": "Cross-Account Access", "chapterTitle": "IAM for Data Pipelines", "estimatedMinutes": 10, "durationIsEstimated": true },
+        { "lessonSlug": "iam-best-practices-for-pipelines", "title": "IAM Best Practices for Pipelines", "chapterTitle": "IAM for Data Pipelines", "estimatedMinutes": 10, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Work through a cross-account role-assumption setup (a role in one account trusting a principal in another), then audit an overly broad policy (`\"Action\": \"s3:*\", \"Resource\": \"*\"`) and rewrite it to least-privilege scoped ARNs for a job that only reads raw/ and writes curated/.",
+      "deliverable": "A before/after IAM policy document showing the rewritten least-privilege policy, plus a note on what IAM Access Analyzer would flag about the original."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Chapter lab: provision the actual least-privilege IAM role a Glue job will assume in the next chapter, then confirm with the AWS CLI (`aws sts assume-role`) that it can only touch the intended S3 prefixes and nothing else in the account.",
+      "deliverable": "A working, least-privilege IAM role (ARN + policy JSON) confirmed by a successful `assume-role` test, ready to attach to the Chapter 3 Glue job."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "glue-architecture", "title": "Glue Architecture", "chapterTitle": "AWS Glue & the Glue Catalog", "estimatedMinutes": 9, "durationIsEstimated": true },
+        { "lessonSlug": "glue-crawlers", "title": "Glue Crawlers", "chapterTitle": "AWS Glue & the Glue Catalog", "estimatedMinutes": 9, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Point a Glue crawler at the raw/ prefix of the practice bucket, run it, and inspect the table it creates in the Glue Data Catalog, checking the inferred schema and any partition columns against the actual files.",
+      "deliverable": "A Glue Data Catalog table (screenshot) created by a real crawler run against the S3 data, with its inferred schema visible."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "the-glue-data-catalog", "title": "The Glue Data Catalog", "chapterTitle": "AWS Glue & the Glue Catalog", "estimatedMinutes": 12, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Browse the Glue Data Catalog console for the table created in the previous slot, manually edit a column's data type, then crawl curated/ separately so two related tables appear in the same Glue database.",
+      "deliverable": "Two Glue Catalog tables (raw and curated) in the same database, with one manually-edited column type."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "glue-etl-jobs", "title": "Glue ETL Jobs: Python & Scala Spark", "chapterTitle": "AWS Glue & the Glue Catalog", "estimatedMinutes": 14, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Author a PySpark Glue job that reads the raw/ Catalog table via create_dynamic_frame.from_catalog, converts it to a DataFrame, applies a filter/transform, and writes the result to curated/ as Parquet via write_dynamic_frame.from_options, ending with job.commit().",
+      "deliverable": "A saved, runnable Glue ETL job script plus a successful job-run log showing rows read from raw/ and written to curated/."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "glue-studio", "title": "Glue Studio", "chapterTitle": "AWS Glue & the Glue Catalog", "estimatedMinutes": 8, "durationIsEstimated": true },
+        { "lessonSlug": "glue-job-bookmarks", "title": "Glue Job Bookmarks", "chapterTitle": "AWS Glue & the Glue Catalog", "estimatedMinutes": 7, "durationIsEstimated": true },
+        { "lessonSlug": "glue-triggers-and-workflows", "title": "Glue Triggers & Workflows", "chapterTitle": "AWS Glue & the Glue Catalog", "estimatedMinutes": 7, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Rebuild the previous slot's job visually in Glue Studio's drag-and-drop editor, enable job bookmarks so a rerun only processes new files, then add a scheduled trigger that kicks the job off daily.",
+      "deliverable": "A Glue Studio visual job diagram with bookmarks enabled and a trigger configured, screenshotted from the console."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Chapter lab: run the full crawl-then-transform pipeline end to end against the practice bucket -- crawler on raw/, Glue job reading/writing via the Catalog, second crawler on curated/ -- and confirm both Catalog tables are queryable after at least two successful job runs.",
+      "deliverable": "Two populated Glue Catalog tables (raw, curated) produced entirely by crawler + job runs, with job-run history showing at least two successful executions."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Chapter lab: break the pipeline on purpose by removing job.commit() and rerunning without bookmarks enabled, compare row counts to diagnose duplicate processing, then fix it and confirm the rerun no longer duplicates rows.",
+      "deliverable": "A short incident write-up documenting the duplicate-processing bug, its cause (missing job.commit()/bookmarks), and the fix, with before/after row counts."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "athena-fundamentals", "title": "Athena Fundamentals", "chapterTitle": "Athena — Serverless Querying", "estimatedMinutes": 8, "durationIsEstimated": true },
+        { "lessonSlug": "querying-s3-data-with-athena", "title": "Querying S3 Data With Athena", "chapterTitle": "Athena — Serverless Querying", "estimatedMinutes": 12, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "In the Athena console, write a CREATE EXTERNAL TABLE statement against the curated/ Parquet data (or rely on the Glue crawler's table), then run a real SELECT with GROUP BY and ORDER BY against it.",
+      "deliverable": "A saved Athena query and its result set (screenshot) run against the curated Catalog table, plus the CREATE EXTERNAL TABLE SQL used."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "athena-and-the-glue-catalog", "title": "Athena + Glue Catalog Integration", "chapterTitle": "Athena — Serverless Querying", "estimatedMinutes": 7, "durationIsEstimated": true },
+        { "lessonSlug": "partitioning-for-athena-performance", "title": "Partitioning for Athena Performance", "chapterTitle": "Athena — Serverless Querying", "estimatedMinutes": 9, "durationIsEstimated": true },
+        { "lessonSlug": "athena-cost-optimization", "title": "Athena Cost Optimization", "chapterTitle": "Athena — Serverless Querying", "estimatedMinutes": 8, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Run the same aggregate query against an unpartitioned table and against the Hive-partitioned version of the same data from Chapter 1, then open the Athena query details panel on each run to compare Data scanned.",
+      "deliverable": "A side-by-side data-scanned comparison (screenshots of both query detail panels) showing the cost impact of partitioning."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Chapter lab: configure an Athena workgroup with a dedicated query-result location and a per-query data-scanned limit, then run several queries against the practice tables to confirm the limit enforces as expected.",
+      "deliverable": "A configured Athena workgroup (screenshot of settings) with at least one query that was blocked or flagged by the data-scanned limit."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "redshift-architecture", "title": "Redshift Architecture", "chapterTitle": "Redshift — Cloud Data Warehousing", "estimatedMinutes": 9, "durationIsEstimated": true },
+        { "lessonSlug": "cluster-vs-serverless", "title": "Cluster vs. Serverless", "chapterTitle": "Redshift — Cloud Data Warehousing", "estimatedMinutes": 8, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Provision a small Redshift Serverless workgroup (or cluster), connect with the built-in query editor, and inspect the leader/compute node layout exposed in the console.",
+      "deliverable": "A running Redshift Serverless workgroup (or cluster) with a successful test connection and query from the query editor."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "loading-data-with-copy", "title": "Loading Data Into Redshift: the COPY Command", "chapterTitle": "Redshift — Cloud Data Warehousing", "estimatedMinutes": 14, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Create a target table matching the curated/ Parquet schema, then load it with a real COPY command from S3 using the Chapter 2 IAM role -- first against the S3 prefix directly, then against a manifest file listing the exact objects.",
+      "deliverable": "A Redshift table populated via COPY, plus the manifest JSON file used for the second, more precise load."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "distribution-and-sort-keys", "title": "Distribution & Sort Keys", "chapterTitle": "Redshift — Cloud Data Warehousing", "estimatedMinutes": 9, "durationIsEstimated": true },
+        { "lessonSlug": "redshift-spectrum", "title": "Redshift Spectrum", "chapterTitle": "Redshift — Cloud Data Warehousing", "estimatedMinutes": 9, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Recreate the loaded table with an explicit DISTKEY and SORTKEY chosen for your query patterns, then set up Redshift Spectrum to query the raw/ S3 data directly from Redshift without loading it.",
+      "deliverable": "A redefined table with DISTKEY/SORTKEY plus a successful Spectrum query against external S3 data, both screenshotted from the query editor."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "workload-management", "title": "Workload Management", "chapterTitle": "Redshift — Cloud Data Warehousing", "estimatedMinutes": 8, "durationIsEstimated": true },
+        { "lessonSlug": "redshift-performance-tuning", "title": "Redshift Performance Tuning", "chapterTitle": "Redshift — Cloud Data Warehousing", "estimatedMinutes": 10, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Configure a WLM queue (or a query priority if using Serverless), then run EXPLAIN against the previous slot's query to identify whether it's doing a sequential scan or sort that performance tuning could eliminate.",
+      "deliverable": "An EXPLAIN plan (text output) with annotations identifying the slow step and the tuning change made to address it."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Chapter lab: load a second, larger sample table via COPY, join it against the first table, and tune distribution/sort keys until EXPLAIN shows a collocated join with no redistribution step.",
+      "deliverable": "An EXPLAIN plan showing a collocated join (no redistribution step) between two properly distributed tables."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Chapter lab: build a small reporting query against the warehouse tables and measure query time before and after adding a sort key tuned to the query's WHERE clause.",
+      "deliverable": "A before/after query-timing comparison (two screenshots) demonstrating the sort-key improvement."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "lambda-fundamentals", "title": "Lambda Fundamentals", "chapterTitle": "Lambda for Data Engineering", "estimatedMinutes": 8, "durationIsEstimated": true },
+        { "lessonSlug": "event-driven-data-processing", "title": "Event-Driven Data Processing", "chapterTitle": "Lambda for Data Engineering", "estimatedMinutes": 9, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Write a Python Lambda function that reads an S3 object key from its event payload and logs basic metadata about the file, then invoke it manually with a test event shaped like a real S3 object-created notification.",
+      "deliverable": "A deployed Lambda function and a successful test-invocation log (CloudWatch Logs excerpt) showing it parsed the event payload."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "lambda-and-s3-triggers", "title": "Lambda + S3 Triggers", "chapterTitle": "Lambda for Data Engineering", "estimatedMinutes": 8, "durationIsEstimated": true },
+        { "lessonSlug": "lambda-limitations-for-data-workloads", "title": "Lambda's Limitations for Data Workloads", "chapterTitle": "Lambda for Data Engineering", "estimatedMinutes": 7, "durationIsEstimated": true },
+        { "lessonSlug": "lambda-and-step-functions", "title": "Lambda + Step Functions", "chapterTitle": "Lambda for Data Engineering", "estimatedMinutes": 7, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Wire the previous slot's Lambda to a real S3 object-created trigger on a test prefix, upload a file and confirm it fires automatically, then note in writing where its 15-minute timeout would break down for a Glue-sized dataset.",
+      "deliverable": "A working S3-triggered Lambda function confirmed by an automatic invocation log, plus a short write-up of a workload it couldn't handle and why Glue/EMR would be the right tool instead."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Chapter lab: extend the S3-triggered Lambda so that, on trigger, it calls boto3's start_job_run to kick off a real Glue job run instead of just logging -- a miniature version of the orchestration Chapter 7 builds formally.",
+      "deliverable": "A Lambda function that successfully starts a real Glue job run in response to an S3 upload, confirmed in the Glue console's run history."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "step-functions-fundamentals", "title": "Step Functions Fundamentals", "chapterTitle": "Step Functions — Orchestration", "estimatedMinutes": 8, "durationIsEstimated": true },
+        { "lessonSlug": "building-a-state-machine", "title": "Building a State Machine", "chapterTitle": "Step Functions — Orchestration", "estimatedMinutes": 12, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Build the two-stage state machine from the lesson in Workflow Studio -- a Task state starting a real Glue job with the .sync integration, followed by a Lambda notification task -- and run a real execution.",
+      "deliverable": "A deployed Step Functions state machine with a successful execution graph (screenshot) showing both states completing."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "error-handling-in-step-functions", "title": "Error Handling in Step Functions", "chapterTitle": "Step Functions — Orchestration", "estimatedMinutes": 9, "durationIsEstimated": true },
+        { "lessonSlug": "orchestrating-glue-and-lambda", "title": "Orchestrating Glue & Lambda", "chapterTitle": "Step Functions — Orchestration", "estimatedMinutes": 9, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Add a Catch block to the Glue task state that routes failures to a notification state, then force a failure (an invalid job name) to confirm the Catch branch fires instead of the execution simply stopping.",
+      "deliverable": "Two execution screenshots: one showing the happy path, one showing a deliberately triggered failure correctly caught and routed."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Chapter lab: extend the state machine into a three-stage pipeline -- Glue job, then an Athena query via the Athena service integration validating row counts, then a Lambda notification -- with error handling wired through every stage.",
+      "deliverable": "A three-stage Step Functions state machine (exported ASL JSON) with error handling on every stage."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "dms-fundamentals", "title": "DMS Fundamentals", "chapterTitle": "DMS — Database Migration Service", "estimatedMinutes": 9, "durationIsEstimated": true },
+        { "lessonSlug": "migrating-a-database-with-dms", "title": "Migrating a Database With DMS", "chapterTitle": "DMS — Database Migration Service", "estimatedMinutes": 11, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Set up a DMS replication instance and a full-load task migrating a small sample table from a source database into the practice S3 bucket (or Redshift), and run it to completion.",
+      "deliverable": "A completed DMS full-load task (screenshot of task status: Load complete) with the migrated table visible at the target."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "cdc-with-dms", "title": "CDC With DMS", "chapterTitle": "DMS — Database Migration Service", "estimatedMinutes": 10, "durationIsEstimated": true },
+        { "lessonSlug": "dms-troubleshooting", "title": "DMS Troubleshooting", "chapterTitle": "DMS — Database Migration Service", "estimatedMinutes": 8, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Reconfigure the previous task as 'Migrate existing data and replicate ongoing changes,' make a live INSERT/UPDATE on the source table and confirm it lands at the target via CDC, then intentionally misconfigure a permission to trigger a task error and diagnose it from the DMS task log.",
+      "deliverable": "A CDC-enabled DMS task with a confirmed change propagated to the target, plus a documented troubleshooting note for one real error encountered and resolved."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Chapter lab: point the DMS CDC target at the Chapter 5 Redshift table instead of S3, confirm new source-side writes land in the warehouse within minutes, and graph DMS's CDCLatencySource/CDCLatencyTarget metrics in CloudWatch over a test window.",
+      "deliverable": "A CloudWatch graph of DMS CDC latency metrics with live replicated rows visible in the Redshift target table."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "emr-fundamentals", "title": "EMR Fundamentals", "chapterTitle": "EMR — Big Data Processing", "estimatedMinutes": 10, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Launch a small EMR cluster (or review a launch configuration carefully to control cost) and compare its master/core/task node layout against the cluster concepts covered for Redshift and Glue.",
+      "deliverable": "An EMR cluster launch configuration (screenshot or saved CLI command) with master/core/task node counts documented and justified."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "emr-vs-glue-vs-databricks", "title": "EMR vs. Glue vs. Databricks", "chapterTitle": "EMR — Big Data Processing", "estimatedMinutes": 7, "durationIsEstimated": true },
+        { "lessonSlug": "running-spark-on-emr", "title": "Running Spark on EMR", "chapterTitle": "EMR — Big Data Processing", "estimatedMinutes": 12, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Submit the Chapter 3 Glue PySpark script to the EMR cluster as a Step using spark-submit via `aws emr add-steps`, and compare the run experience (startup time, logs, cost control) against running the same transform as a Glue job.",
+      "deliverable": "A completed EMR Step (screenshot of status: COMPLETED) running the same transform logic as the Chapter 3 Glue job, plus a short comparison note on when you'd choose EMR over Glue."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "emr-cluster-configuration", "title": "EMR Cluster Configuration", "chapterTitle": "EMR — Big Data Processing", "estimatedMinutes": 8, "durationIsEstimated": true },
+        { "lessonSlug": "emr-cost-optimization", "title": "EMR Cost Optimization", "chapterTitle": "EMR — Big Data Processing", "estimatedMinutes": 8, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Reconfigure the cluster to use Spot instances for task nodes and enable auto-termination after idle time, then calculate the estimated hourly cost difference versus the earlier on-demand configuration.",
+      "deliverable": "A cost comparison table (on-demand vs. Spot + auto-termination) for the same cluster shape, with the auto-termination setting visible in the console."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Chapter lab: terminate the practice cluster, then relaunch it from a saved cluster configuration (CLI JSON or console template) to confirm the setup is fully reproducible rather than hand-clicked.",
+      "deliverable": "A reusable EMR cluster configuration file (JSON) that successfully relaunches an identical cluster."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "kinesis-data-streams", "title": "Kinesis Data Streams", "chapterTitle": "Kinesis — Real-Time Streaming", "estimatedMinutes": 11, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Create a Kinesis Data Stream with a small shard count, then use the AWS CLI or a short script to PutRecord a batch of simulated clickstream events partitioned by a user-id key, and read them back with GetRecords.",
+      "deliverable": "A Kinesis Data Stream with a confirmed batch of put/get records (CLI output) showing events landed on the expected shard by partition key."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "kinesis-data-firehose", "title": "Kinesis Data Firehose", "chapterTitle": "Kinesis — Real-Time Streaming", "estimatedMinutes": 9, "durationIsEstimated": true },
+        { "lessonSlug": "kinesis-data-analytics", "title": "Kinesis Data Analytics", "chapterTitle": "Kinesis — Real-Time Streaming", "estimatedMinutes": 9, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Point a Firehose delivery stream at the previous slot's Data Stream as its source, deliver buffered records to S3 as Parquet, and write a simple Kinesis Data Analytics SQL query computing a rolling count over the same stream.",
+      "deliverable": "Firehose-delivered Parquet files visible in S3 (screenshot) plus the Kinesis Data Analytics SQL used for the rolling aggregate."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "kinesis-vs-eventstreams-and-kafka", "title": "Kinesis vs. Fabric Eventstreams & Kafka", "chapterTitle": "Kinesis — Real-Time Streaming", "estimatedMinutes": 7, "durationIsEstimated": true },
+        { "lessonSlug": "a-real-kinesis-pipeline", "title": "A Real Kinesis Streaming Pipeline", "chapterTitle": "Kinesis — Real-Time Streaming", "estimatedMinutes": 12, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Add a Glue crawler on the Firehose-delivered S3 prefix and query the resulting table in Athena, completing the stream-to-S3-to-Athena clickstream pipeline end to end.",
+      "deliverable": "A working clickstream pipeline -- Kinesis Data Stream to Firehose to S3 to Glue Catalog to Athena -- with a real Athena query result against the streamed data."
+    },
+    {
+      "type": "practice",
+      "lessons": [],
+      "practicalActivity": "Chapter lab: simulate a traffic spike by writing records faster than the shard count supports, observe rising IteratorAge / throttled records in CloudWatch, then resolve it by increasing shard count and confirm the metric recovers.",
+      "deliverable": "A CloudWatch metric graph showing an IteratorAge spike and recovery after a resharding operation."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "cloudwatch-fundamentals", "title": "CloudWatch Fundamentals", "chapterTitle": "CloudWatch — Monitoring AWS Pipelines", "estimatedMinutes": 10, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Open CloudWatch Metrics for every service touched so far in this course (S3, Glue, Lambda, Step Functions, Redshift, DMS, EMR, Kinesis) and pull the one or two metrics per service that best predict a silent failure.",
+      "deliverable": "A draft CloudWatch dashboard with one widget per upstream service, each showing that service's key failure-predicting metric."
+    },
+    {
+      "type": "lesson",
+      "lessons": [
+        { "lessonSlug": "cloudwatch-alarms-and-dashboards", "title": "CloudWatch Alarms & Dashboards", "chapterTitle": "CloudWatch — Monitoring AWS Pipelines", "estimatedMinutes": 10, "durationIsEstimated": true },
+        { "lessonSlug": "monitoring-a-pipeline-end-to-end", "title": "Monitoring a Pipeline End to End", "chapterTitle": "CloudWatch — Monitoring AWS Pipelines", "estimatedMinutes": 13, "durationIsEstimated": true }
+      ],
+      "practicalActivity": "Save the previous slot's dashboard as a real CloudWatch Dashboard, then attach CloudWatch Alarms (wired to an SNS topic) on at least three pipeline metrics -- e.g. Step Functions failed executions, Kinesis IteratorAge, DMS replication lag -- and test one by forcing that condition.",
+      "deliverable": "A saved CloudWatch Dashboard with alarms attached to at least three pipeline stages, plus a screenshot of one alarm transitioning to ALARM state after a forced failure."
+    },
+    {
+      "type": "review",
+      "lessons": [],
+      "practicalActivity": "Course review: walk back through every lab built in this course (S3 lake, IAM roles, Glue ETL, Athena queries, Redshift warehouse, Lambda triggers, Step Functions orchestration, DMS CDC, EMR Spark, Kinesis streaming, CloudWatch monitoring) and sketch how they would combine into one connected pipeline, since that is exactly what the AWS Capstone course asks you to build next.",
+      "deliverable": "A single end-to-end architecture diagram connecting all eleven chapters' services into one pipeline, used as the starting point for the AWS Capstone course."
+    }
+  ],
+  "monthlyMilestoneContribution": "After finishing this course, a student can build, connect, and monitor a real AWS data pipeline -- landing data in a partitioned S3 lake, cataloging and transforming it with Glue, querying it with Athena, warehousing it in Redshift, triggering and orchestrating steps with Lambda and Step Functions, migrating and syncing a live database with DMS, running big-data Spark jobs on EMR, streaming real-time events with Kinesis, and watching the whole thing with CloudWatch alarms."
+}
