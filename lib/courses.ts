@@ -1934,6 +1934,13 @@ export type Quiz = {
 
 // Lesson content lives on disk under content/<contentBase>/ (moves to the
 // database when the backend lands). Only lessons with a contentDir have content.
+// Reuses the same configured `marked` instance as lesson guides (new-tab
+// external links, bold self-hosted /downloads/ links) for any other content
+// — e.g. a Worked Example — rendered with the same .book-page styling.
+export function renderMarkdown(md: string): string {
+  return marked.parse(md) as string;
+}
+
 export function loadLessonContent(lesson: LessonMeta, contentBase: string) {
   if (!lesson.contentDir) return null;
   const dir = path.join(process.cwd(), "content", contentBase, lesson.contentDir);

@@ -74,3 +74,23 @@ export function TargetIcon({ className }: { className?: string }) {
     </Icon>
   );
 }
+
+export function DownloadIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path d="M12 3.5v11.5" />
+      <path d="M7.5 10.5 12 15l4.5-4.5" />
+      <path d="M4.5 18.5h15" />
+    </Icon>
+  );
+}
+
+export function BookOpenIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path d="M12 6.2c-1.6-1.3-3.8-1.9-7-1.9v13c3.2 0 5.4.6 7 1.9" />
+      <path d="M12 6.2c1.6-1.3 3.8-1.9 7-1.9v13c-3.2 0-5.4.6-7 1.9Z" />
+      <path d="M12 6.2v13" />
+    </Icon>
+  );
+}

@@ -11,9 +11,13 @@ import {
 import { buildFinalTest } from "@/lib/finalTest";
 import { getCourseHeroImage } from "@/lib/courseHeroImage";
 import { getCareerPath } from "@/lib/career-paths";
+import { loadCourseResources } from "@/lib/resourceVault";
+import { loadWorkedExamples } from "@/lib/workedExamples";
 import CourseCurriculum from "@/components/app/CourseCurriculum";
 import CoursePathBreadcrumb from "@/components/app/CoursePathBreadcrumb";
 import {
+  BookOpenIcon,
+  DownloadIcon,
   LayersIcon,
   PencilCheckIcon,
   PlayIcon,
@@ -37,6 +41,9 @@ export default async function CoursePage({
   const hasFinalTest = test.questions.length > 0;
   const flashcardCount = getCourseFlashcards(course).length;
   const practiceCount = getCoursePracticeQuestions(course).length;
+  const resourceCount = loadCourseResources(course).length;
+  const workedExampleCount = loadWorkedExamples(course).length;
+  const hasCourseResourcesSection = resourceCount > 0 || workedExampleCount > 0;
 
   if (course.status === "coming-soon") {
     return (
@@ -181,7 +188,74 @@ export default async function CoursePage({
           />
         </div>
       </div>
+
+      {hasCourseResourcesSection && (
+        <div className="relative mt-16 border-t-4 border-double border-gold pt-10">
+          <p className="eyebrow mb-2">Course resources</p>
+          <h2 className="display text-2xl sm:text-3xl">Tools and examples to help you apply what you&apos;ve learned</h2>
+
+          <div className="mt-8 grid gap-6 sm:grid-cols-2">
+            {resourceCount > 0 && (
+              <ResourceCard
+                icon={<DownloadIcon className="h-6 w-6" />}
+                title="Resource Vault"
+                description="Download datasets, templates, scripts, reference materials, and project files."
+                count={`${resourceCount} resource${resourceCount === 1 ? "" : "s"}`}
+                href={`/app/courses/${course.slug}/resources`}
+                cta="Open the Resource Vault →"
+              />
+            )}
+            {workedExampleCount > 0 && (
+              <ResourceCard
+                icon={<BookOpenIcon className="h-6 w-6" />}
+                title="Worked Examples"
+                description="Explore complete, step-by-step solutions to realistic professional tasks."
+                count={`${workedExampleCount} worked example${workedExampleCount === 1 ? "" : "s"}`}
+                href={`/app/courses/${course.slug}/worked-examples`}
+                cta="Explore worked examples →"
+              />
+            )}
+          </div>
+        </div>
+      )}
     </main>
+  );
+}
+
+function ResourceCard({
+  icon,
+  title,
+  description,
+  count,
+  href,
+  cta,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  count: string;
+  href: string;
+  cta: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group flex flex-col border-2 border-ink/15 bg-white/40 p-6 shadow-[0_6px_18px_-10px_rgba(30,26,22,0.3)] transition-all duration-300 hover:-translate-y-1 hover:border-crimson-deep/30 hover:shadow-[0_10px_24px_-10px_rgba(30,26,22,0.35)]"
+    >
+      <div className="flex items-center gap-3">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[5px] bg-crimson-deep text-gold-pale">
+          {icon}
+        </span>
+        <h3 className="display text-xl">{title}</h3>
+      </div>
+      <p className="mt-2 inline-block w-fit rounded-full border border-ink/10 bg-white/60 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.08em] text-stone">
+        {count}
+      </p>
+      <p className="mt-3 flex-1 text-sm text-stone">{description}</p>
+      <span className="mt-5 inline-block w-fit border border-ink/20 px-5 py-2.5 text-sm font-semibold transition-colors group-hover:border-crimson group-hover:text-crimson">
+        {cta}
+      </span>
+    </Link>
   );
 }
 
