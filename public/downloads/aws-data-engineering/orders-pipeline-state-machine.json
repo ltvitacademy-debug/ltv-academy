@@ -1,0 +1,48 @@
+{
+  "Comment": "Nightly orders pipeline: crawl raw data, run the ETL job, notify on success or failure. Matches the pipeline built in Worked Example 3 and taught across Chapter 7 (Lessons 35-38).",
+  "StartAt": "StartCrawler",
+  "States": {
+    "StartCrawler": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
+      "Parameters": { "Name": "orders-raw-crawler" },
+      "Retry": [
+        {
+          "ErrorEquals": ["States.TaskFailed"],
+          "IntervalSeconds": 30,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Next": "RunETLJob",
+      "Catch": [{ "ErrorEquals": ["States.ALL"], "Next": "NotifyFailure" }]
+    },
+    "RunETLJob": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::glue:startJobRun.sync",
+      "Parameters": { "JobName": "orders-etl-job" },
+      "Retry": [
+        {
+          "ErrorEquals": ["States.TaskFailed"],
+          "IntervalSeconds": 30,
+          "MaxAttempts": 2,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Next": "NotifyComplete",
+      "Catch": [{ "ErrorEquals": ["States.ALL"], "Next": "NotifyFailure" }]
+    },
+    "NotifyComplete": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:123456789012:function:notify-slack",
+      "Parameters": { "message": "orders pipeline finished successfully" },
+      "End": true
+    },
+    "NotifyFailure": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:123456789012:function:notify-slack",
+      "Parameters": { "message": "orders pipeline FAILED - check CloudWatch Logs and the Step Functions execution history" },
+      "End": true
+    }
+  }
+}
