@@ -25,8 +25,8 @@ export type PlannerLessonRef = {
 
 export type PlannerHourSlot = {
   id: string; // "<pathSlug>-m<M>-w<weekInMonth>-<day-3letter>-h<H>", unique within the plan
-  month: number; // 1-6
-  week: number; // 1-24, global
+  month: number; // 1-based, path-dependent (6/7/9 months depending on course count)
+  week: number; // 1-based, global across the whole plan
   weekInMonth: number; // 1-4
   day: PlannerDay;
   hour: 1 | 2;

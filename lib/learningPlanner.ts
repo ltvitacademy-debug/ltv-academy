@@ -252,6 +252,12 @@ export function hasLearningPlanner(pathSlug: string): boolean {
   return loadLearningPlanner(pathSlug) !== null;
 }
 
+// Cheap enough to call from a page that just needs the real week count for
+// copy (e.g. "Get a real 36-week study plan") without rendering the whole UI.
+export function getLearningPlannerWeeks(pathSlug: string): number | null {
+  return loadLearningPlanner(pathSlug)?.totalWeeks ?? null;
+}
+
 export function getLearningPlannerPathSlugs(): string[] {
   return Object.keys(PATH_CONFIG);
 }

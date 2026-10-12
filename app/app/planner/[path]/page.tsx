@@ -16,6 +16,9 @@ export default async function LearningPlannerPage({ params }: { params: Promise<
   const plan = loadLearningPlanner(pathSlug);
   if (!plan) notFound();
 
+  const totalMonths = Math.ceil(plan.totalHours / (plan.hoursPerWeek * 4));
+  const totalCourses = new Set(plan.slots.map((s) => s.courseSlug)).size;
+
   return (
     <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
       <nav className="mb-6 text-sm text-stone">
@@ -27,17 +30,18 @@ export default async function LearningPlannerPage({ params }: { params: Promise<
           {careerPath.title}
         </Link>
         {" · "}
-        <span>24-week planner</span>
+        <span>{plan.totalWeeks}-week planner</span>
       </nav>
 
-      <p className="eyebrow mb-3">24-Week Learning Planner</p>
+      <p className="eyebrow mb-3">{plan.totalWeeks}-Week Learning Planner</p>
       <h1 className="display text-3xl sm:text-4xl">
         {careerPath.title} <span className="text-crimson">schedule</span>
       </h1>
       <p className="mt-4 max-w-2xl text-stone">
         {plan.totalWeeks} weeks · {plan.studyDaysPerWeek} study days/week, Monday–Friday · {plan.hoursPerDay}{" "}
         hours/day · {plan.hoursPerWeek} hours/week · {plan.totalHours} scheduled hours total, built from every real
-        lesson in {plan.workloadAudit.totalLessons} lessons across the program&apos;s 7 Job-Ready courses.
+        lesson in {plan.workloadAudit.totalLessons} lessons across the program&apos;s {totalCourses} Job-Ready
+        courses.
       </p>
 
       <div className="mt-5 rounded-[2px] border border-ink/15 bg-white/30 p-4 text-sm text-stone">
@@ -52,7 +56,7 @@ export default async function LearningPlannerPage({ params }: { params: Promise<
         </p>
         {plan.excludedCourses.length > 0 && (
           <p className="mt-2">
-            <span className="font-semibold text-ink">Not in this 6-month plan:</span>{" "}
+            <span className="font-semibold text-ink">Not in this {totalMonths}-month plan:</span>{" "}
             {plan.excludedCourses.map((c) => c.title).join(", ")} — {plan.excludedCourses[0].reason}
           </p>
         )}

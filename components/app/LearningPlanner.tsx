@@ -15,6 +15,7 @@ function loadSet(getter: () => string[] | null): Set<string> {
 }
 
 export default function LearningPlannerView({ plan }: { plan: LearningPlanner }) {
+  const totalMonths = Math.ceil(plan.totalHours / (plan.hoursPerWeek * 4));
   const [month, setMonth] = useState(1);
   const [weekInMonth, setWeekInMonth] = useState(1);
   const [studiedSlots, setStudiedSlots] = useState<Set<string>>(new Set());
@@ -189,7 +190,7 @@ export default function LearningPlannerView({ plan }: { plan: LearningPlanner })
             Month ({studiedInMonth}/{plan.hoursPerWeek * 4} hrs)
           </p>
           <div className="mt-2 flex gap-1.5">
-            {Array.from({ length: 6 }, (_, i) => i + 1).map((m) => (
+            {Array.from({ length: totalMonths }, (_, i) => i + 1).map((m) => (
               <button
                 key={m}
                 onClick={() => {

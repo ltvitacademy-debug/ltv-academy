@@ -52,12 +52,14 @@ export default function PathDetailRedesign({
   hasInterviewPrep,
   hasCommunicationTrainer,
   hasLearningPlanner,
+  learningPlannerWeeks,
   sampleResumeLevels,
 }: {
   path: CareerPath;
   hasInterviewPrep?: boolean;
   hasCommunicationTrainer?: boolean;
   hasLearningPlanner?: boolean;
+  learningPlannerWeeks?: number | null;
   sampleResumeLevels?: { key: string; label: string }[];
 }) {
   const allCourseSlugs = path.stages.flatMap((s) => s.courseSlugs ?? []);
@@ -616,7 +618,9 @@ export default function PathDetailRedesign({
               >
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson">Day-by-day schedule</p>
-                  <p className="display mt-1 text-xl text-crimson-deep">Get a real 24-week study plan →</p>
+                  <p className="display mt-1 text-xl text-crimson-deep">
+                    Get a real {learningPlannerWeeks ?? 24}-week study plan →
+                  </p>
                   <p className="mt-1 text-sm text-crimson-deep/80">
                     Every lesson above, scheduled hour by hour — 5 days a week, 2 hours a day, with a practical
                     activity and deliverable for each session.
