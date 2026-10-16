@@ -206,6 +206,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(30, "lambda-fundamentals", "Lambda Fundamentals", {
         contentDir: "ch06/30-lambda-fundamentals",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155370/ltv-aws-data-engineering/lambda-fundamentals.mp4",
+        durationLabel: "1 min 33 s",
       }),
       L(31, "event-driven-data-processing", "Event-Driven Data Processing", {
         contentDir: "ch06/31-event-driven-data-processing",
