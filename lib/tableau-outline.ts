@@ -206,7 +206,7 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     n: 16,
     title: "Performance Optimization",
     lessons: [
-      L(90, "troubleshooting-slow-workbooks", "Troubleshooting Slow Tableau Workbooks", { contentDir: "ch16/90-troubleshooting-slow-workbooks" }),
+      L(90, "troubleshooting-slow-workbooks", "Troubleshooting Slow Tableau Workbooks", { contentDir: "ch16/90-troubleshooting-slow-workbooks", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135871/ltv-tableau/troubleshooting-slow-workbooks.mp4", durationLabel: "1 min 56 s" }),
       L(91, "optimizing-extracts-queries-calculations-dashboards", "Optimizing Extracts, Queries, Calculations & Dashboards", { contentDir: "ch16/91-optimizing-extracts-queries-calculations-dashboards" }),
     ],
   },
