@@ -96,6 +96,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(12, "policies-and-permissions", "Policies & Permissions", {
         contentDir: "ch03/12-policies-and-permissions",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153486/ltv-aws-fundamentals/policies-and-permissions.mp4",
+        durationLabel: "1 min 54 s",
       }),
       L(13, "least-privilege-for-data-pipelines", "Least Privilege for Data Pipelines", {
         contentDir: "ch03/13-least-privilege-for-data-pipelines",
