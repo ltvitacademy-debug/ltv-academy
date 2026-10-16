@@ -127,7 +127,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(17, "deploying-your-first-resource", "Deploying Your First Resource", {
         contentDir: "ch04/17-deploying-your-first-resource",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158117/ltv-azure-fundamentals/deploying-your-first-resource.mp4",
+        durationLabel: "1 min 30 s",
       }),
       L(18, "az-900-exam-overview", "AZ-900 Exam Overview", {
         contentDir: "ch04/18-az-900-exam-overview",
