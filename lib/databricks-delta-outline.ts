@@ -215,7 +215,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(36, "data-quality-checks", "Data Quality Checks in the Medallion Flow", {
         contentDir: "ch03/36-data-quality-checks",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144569/ltv-databricks-delta/data-quality-checks.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(37, "building-a-full-medallion-pipeline", "Building a Full Medallion Pipeline", {
         contentDir: "ch03/37-building-a-full-medallion-pipeline",
