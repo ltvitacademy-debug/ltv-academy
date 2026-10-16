@@ -165,6 +165,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(23, "redshift-architecture", "Redshift Architecture", {
         contentDir: "ch05/23-redshift-architecture",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155043/ltv-aws-data-engineering/redshift-architecture.mp4",
+        durationLabel: "1 min 23 s",
       }),
       L(24, "cluster-vs-serverless", "Cluster vs. Serverless", {
         contentDir: "ch05/24-cluster-vs-serverless",
