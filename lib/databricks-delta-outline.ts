@@ -327,7 +327,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(56, "lakeflow-vs-traditional-adf-pipelines", "Lakeflow vs. Traditional ADF Pipelines", {
         contentDir: "ch05/56-lakeflow-vs-traditional-adf-pipelines",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145971/ltv-databricks-delta/lakeflow-vs-traditional-adf-pipelines.mp4",
+        durationLabel: "1 min 37 s",
       }),
       L(57, "course-recap", "Course Recap — From Storage to Orchestrated Pipelines", {
         contentDir: "ch05/57-course-recap",
