@@ -126,7 +126,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Backup & Recovery with T-SQL",
     lessons: [
-      L(19, "backup-database-and-backup-log", "BACKUP DATABASE & BACKUP LOG", { contentDir: "ch05/19-backup-database-and-backup-log" }),
+      L(19, "backup-database-and-backup-log", "BACKUP DATABASE & BACKUP LOG", { contentDir: "ch05/19-backup-database-and-backup-log",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792165078/ltv-t-sql-for-dbas/backup-database-and-backup-log.mp4",
+        durationLabel: "1 min 38 s",
+      }),
       L(20, "restore-fundamentals", "RESTORE Fundamentals", { contentDir: "ch05/20-restore-fundamentals" }),
       L(21, "restore-sequences-and-point-in-time-recovery", "Restore Sequences & Point-in-Time Recovery", { contentDir: "ch05/21-restore-sequences-and-point-in-time-recovery" }),
       L(22, "restore-verifyonly", "RESTORE VERIFYONLY", { contentDir: "ch05/22-restore-verifyonly" }),
