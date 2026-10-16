@@ -235,7 +235,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792169042/ltv-sql-server-dba/proxies-and-credentials.mp4",
         durationLabel: "1 min 40 s",
       }),
-      L(44, "agent-troubleshooting", "Agent Troubleshooting", { contentDir: "ch07/44-agent-troubleshooting" }),
+      L(44, "agent-troubleshooting", "Agent Troubleshooting", { contentDir: "ch07/44-agent-troubleshooting",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792169095/ltv-sql-server-dba/agent-troubleshooting.mp4",
+        durationLabel: "1 min 33 s",
+      }),
     ],
   },
   {
