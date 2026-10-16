@@ -106,9 +106,9 @@ export const DBT_CHAPTERS: ChapterMeta[] = [
     title: "Semantic Layer & Advanced Patterns",
     lessons: [
       L(37, "semantic-layer-concepts", "Semantic Layer Concepts", { contentDir: "ch08/37-semantic-layer-concepts", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125899/ltv-dbt/semantic-layer-concepts.mp4", durationLabel: "1 min 25 s" }),
-      L(38, "defining-metrics", "Defining Metrics in dbt", { contentDir: "ch08/38-defining-metrics" }),
-      L(39, "scd-type-2-in-dbt", "SCD Type 2 in dbt", { contentDir: "ch08/39-scd-type-2-in-dbt" }),
-      L(40, "data-quality-in-dbt", "Data Quality Patterns in dbt", { contentDir: "ch08/40-data-quality-in-dbt" }),
+      L(38, "defining-metrics", "Defining Metrics in dbt", { contentDir: "ch08/38-defining-metrics", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125944/ltv-dbt/defining-metrics.mp4", durationLabel: "1 min 23 s" }),
+      L(39, "scd-type-2-in-dbt", "SCD Type 2 in dbt", { contentDir: "ch08/39-scd-type-2-in-dbt", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125985/ltv-dbt/scd-type-2-in-dbt.mp4", durationLabel: "1 min 18 s" }),
+      L(40, "data-quality-in-dbt", "Data Quality Patterns in dbt", { contentDir: "ch08/40-data-quality-in-dbt", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792126031/ltv-dbt/data-quality-in-dbt.mp4", durationLabel: "1 min 34 s" }),
     ],
   },
   {
