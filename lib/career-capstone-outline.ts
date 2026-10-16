@@ -205,7 +205,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(35, "practice-security-and-governance", "Practice Questions: Security and Governance", {
         contentDir: "ch02/35-practice-security-and-governance",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148296/ltv-career-capstone/practice-security-and-governance.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(36, "practice-monitoring-and-deployment", "Practice Questions: Monitoring and Deployment", {
         contentDir: "ch02/36-practice-monitoring-and-deployment",
