@@ -98,7 +98,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
       L(31, "json-and-the-variant-data-type", "JSON & the VARIANT Data Type", { contentDir: "ch07/31-json-and-the-variant-data-type", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792128212/ltv-snowflake/json-and-the-variant-data-type.mp4", durationLabel: "1 min 43 s" }),
       L(32, "querying-nested-json", "Querying Nested JSON", { contentDir: "ch07/32-querying-nested-json", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792128270/ltv-snowflake/querying-nested-json.mp4", durationLabel: "1 min 51 s" }),
       L(33, "flatten-semi-structured-to-relational", "FLATTEN — Converting Semi-Structured Data to Relational", { contentDir: "ch07/33-flatten-semi-structured-to-relational", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792128325/ltv-snowflake/flatten-semi-structured-to-relational.mp4", durationLabel: "1 min 51 s" }),
-      L(34, "lab-json-feed-to-reporting-tables", "Lab: Turning a Raw JSON Feed Into Reporting Tables", { contentDir: "ch07/34-lab-json-feed-to-reporting-tables" }),
+      L(34, "lab-json-feed-to-reporting-tables", "Lab: Turning a Raw JSON Feed Into Reporting Tables", { contentDir: "ch07/34-lab-json-feed-to-reporting-tables", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792128386/ltv-snowflake/lab-json-feed-to-reporting-tables.mp4", durationLabel: "2 min 2 s" }),
     ],
   },
   {
