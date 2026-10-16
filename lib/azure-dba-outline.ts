@@ -570,7 +570,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(92, "project-performance-and-automation", "Project — Performance & Automation", {
         contentDir: "ch15/92-project-performance-and-automation",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162679/ltv-azure-dba/project-performance-and-automation.mp4",
+        durationLabel: "1 min 46 s",
       }),
       L(93, "project-ha-dr-and-disaster-simulation", "Project — HA/DR & Disaster Simulation", {
         contentDir: "ch15/93-project-ha-dr-and-disaster-simulation",
