@@ -348,7 +348,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(59, "spark-sql-with-dataframes", "Spark SQL With DataFrames", {
         contentDir: "ch04/59-spark-sql-with-dataframes",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792140506/ltv-de-foundations/spark-sql-with-dataframes.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(60, "writing-data", "Writing Data", {
         contentDir: "ch04/60-writing-data",
