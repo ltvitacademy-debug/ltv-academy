@@ -278,6 +278,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(42, "dms-troubleshooting", "DMS Troubleshooting", {
         contentDir: "ch08/42-dms-troubleshooting",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155976/ltv-aws-data-engineering/dms-troubleshooting.mp4",
+        durationLabel: "1 min 48 s",
       }),
     ],
   },
