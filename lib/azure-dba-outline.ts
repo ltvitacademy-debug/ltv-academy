@@ -226,7 +226,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(34, "row-level-security", "Row-Level Security", {
         contentDir: "ch06/34-row-level-security",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159809/ltv-azure-dba/row-level-security.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(35, "data-discovery-classification-sensitive-data", "Data Discovery, Classification & Sensitive Data", {
         contentDir: "ch06/35-data-discovery-classification-sensitive-data",
