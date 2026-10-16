@@ -122,7 +122,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(16, "arm-and-bicep-overview", "ARM & Bicep, Overview", {
         contentDir: "ch04/16-arm-and-bicep-overview",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158068/ltv-azure-fundamentals/arm-and-bicep-overview.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(17, "deploying-your-first-resource", "Deploying Your First Resource", {
         contentDir: "ch04/17-deploying-your-first-resource",
