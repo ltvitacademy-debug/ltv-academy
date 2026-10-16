@@ -64,6 +64,8 @@ export const HOW_IT_TEAMS_WORK_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(7, "real-world-it-project-simulation", "Real-World IT Project Simulation", {
         contentDir: "ch02/07-real-world-it-project-simulation",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139918/ltv-how-it-teams-work/real-world-it-project-simulation.mp4",
+        durationLabel: "2 min 15 s",
       }),
     ],
   },
