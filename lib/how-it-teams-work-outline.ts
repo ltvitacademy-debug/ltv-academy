@@ -33,9 +33,13 @@ export const HOW_IT_TEAMS_WORK_CHAPTERS: ChapterMeta[] = [
       }),
       L(2, "scrum-sprints-and-user-stories", "Scrum, Sprints & User Stories", {
         contentDir: "ch01/02-scrum-sprints-and-user-stories",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139482/ltv-how-it-teams-work/scrum-sprints-and-user-stories.mp4",
+        durationLabel: "2 min 19 s",
       }),
       L(3, "kanban-boards-and-work-management", "Kanban Boards & Work Management", {
         contentDir: "ch01/03-kanban-boards-and-work-management",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139569/ltv-how-it-teams-work/kanban-boards-and-work-management.mp4",
+        durationLabel: "2 min 31 s",
       }),
       L(4, "sdlc-dev-qa-uat-and-production", "SDLC: Dev, QA, UAT & Production", {
         contentDir: "ch01/04-sdlc-dev-qa-uat-and-production",
