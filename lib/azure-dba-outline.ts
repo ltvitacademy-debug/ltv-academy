@@ -159,7 +159,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(23, "grant-deny-revoke", "GRANT, DENY & REVOKE", {
         contentDir: "ch04/23-grant-deny-revoke",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159288/ltv-azure-dba/grant-deny-revoke.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(24, "principle-of-least-privilege", "Principle of Least Privilege", {
         contentDir: "ch04/24-principle-of-least-privilege",
