@@ -45,7 +45,7 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
       L(10, "creating-refreshing-managing-extracts", "Creating, Refreshing & Managing Extracts", { contentDir: "ch02/10-creating-refreshing-managing-extracts", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131872/ltv-tableau/creating-refreshing-managing-extracts.mp4", durationLabel: "1 min 40 s" }),
       L(11, "data-types-metadata-field-properties", "Data Types, Metadata & Field Properties", { contentDir: "ch02/11-data-types-metadata-field-properties", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131926/ltv-tableau/data-types-metadata-field-properties.mp4", durationLabel: "1 min 46 s" }),
       L(12, "cleaning-data-interpreter-splits-pivots-nulls", "Cleaning Data: Data Interpreter, Splits, Pivots & NULLs", { contentDir: "ch02/12-cleaning-data-interpreter-splits-pivots-nulls", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131989/ltv-tableau/cleaning-data-interpreter-splits-pivots-nulls.mp4", durationLabel: "2 min 4 s" }),
-      L(13, "wide-vs-long-data", "Wide vs. Long Data & Preparing Data for Tableau", { contentDir: "ch02/13-wide-vs-long-data" }),
+      L(13, "wide-vs-long-data", "Wide vs. Long Data & Preparing Data for Tableau", { contentDir: "ch02/13-wide-vs-long-data", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132030/ltv-tableau/wide-vs-long-data.mp4", durationLabel: "1 min 23 s" }),
     ],
   },
   {
