@@ -54,7 +54,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
       L(14, "working-with-csv-files", "Working With CSV Files", { contentDir: "ch03/14-working-with-csv-files", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144363/ltv-python-for-data-engineers/working-with-csv-files.mp4", durationLabel: "2 min 19 s" }),
       L(15, "working-with-json", "Working With JSON", { contentDir: "ch03/15-working-with-json", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144488/ltv-python-for-data-engineers/working-with-json.mp4", durationLabel: "2 min 36 s" }),
       L(16, "exception-handling-for-real-pipelines", "Exception Handling for Real Pipelines", { contentDir: "ch03/16-exception-handling-for-real-pipelines", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144603/ltv-python-for-data-engineers/exception-handling-for-real-pipelines.mp4", durationLabel: "2 min 25 s" }),
-      L(17, "calling-a-rest-api-with-requests", "Calling a REST API With requests", { contentDir: "ch03/17-calling-a-rest-api-with-requests" }),
+      L(17, "calling-a-rest-api-with-requests", "Calling a REST API With requests", { contentDir: "ch03/17-calling-a-rest-api-with-requests", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144720/ltv-python-for-data-engineers/calling-a-rest-api-with-requests.mp4", durationLabel: "2 min 25 s" }),
       L(18, "pagination-and-rate-limits-in-real-apis", "Pagination & Rate Limits in Real APIs", { contentDir: "ch03/18-pagination-and-rate-limits-in-real-apis" }),
     ],
   },

@@ -240,7 +240,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(42, "real-time-chapter-recap", "Real-Time Chapter Recap", {
         contentDir: "ch02/42-real-time-chapter-recap",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144722/ltv-fabric-realtime/real-time-chapter-recap.mp4",
+        durationLabel: "1 min 46 s",
       }),
     ],
   },
