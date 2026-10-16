@@ -328,7 +328,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(55, "pyspark-joins", "PySpark Joins", {
         contentDir: "ch04/55-pyspark-joins",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792140335/ltv-de-foundations/pyspark-joins.mp4",
+        durationLabel: "1 min 31 s",
       }),
       L(56, "union", "union()", {
         contentDir: "ch04/56-union",
