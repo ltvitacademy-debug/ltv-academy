@@ -303,7 +303,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(50, "date-functions", "Date Functions", {
         contentDir: "ch04/50-date-functions",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792140117/ltv-de-foundations/date-functions.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(51, "null-handling", "Null Handling", {
         contentDir: "ch04/51-null-handling",
