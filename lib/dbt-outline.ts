@@ -84,8 +84,8 @@ export const DBT_CHAPTERS: ChapterMeta[] = [
     n: 6,
     title: "Jinja & Macros",
     lessons: [
-      L(28, "jinja-basics", "Jinja Basics Inside dbt", { contentDir: "ch06/28-jinja-basics" }),
-      L(29, "custom-macros", "Writing Custom Macros", { contentDir: "ch06/29-custom-macros" }),
+      L(28, "jinja-basics", "Jinja Basics Inside dbt", { contentDir: "ch06/28-jinja-basics", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125463/ltv-dbt/jinja-basics.mp4", durationLabel: "1 min 53 s" }),
+      L(29, "custom-macros", "Writing Custom Macros", { contentDir: "ch06/29-custom-macros", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125516/ltv-dbt/custom-macros.mp4", durationLabel: "1 min 43 s" }),
       L(30, "dbt-packages", "dbt Packages", { contentDir: "ch06/30-dbt-packages" }),
       L(31, "dbt-utils", "dbt_utils: The Macros You'll Actually Reuse", { contentDir: "ch06/31-dbt-utils" }),
     ],
