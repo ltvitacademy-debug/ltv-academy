@@ -45,7 +45,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(4, "brokers-and-clusters", "Brokers & Clusters", {
         contentDir: "ch01/04-brokers-and-clusters",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148177/ltv-kafka/brokers-and-clusters.mp4",
+        durationLabel: "1 min 32 s",
       }),
       L(5, "kafka-vs-other-streaming-tools", "Kafka vs. Other Streaming Tools", {
         contentDir: "ch01/05-kafka-vs-other-streaming-tools",
