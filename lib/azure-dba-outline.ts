@@ -41,7 +41,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(3, "azure-sql-database-vs-managed-instance-vs-vm", "Azure SQL Database vs. Managed Instance vs. SQL Server on Azure VM", {
         contentDir: "ch01/03-azure-sql-database-vs-managed-instance-vs-vm",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158317/ltv-azure-dba/azure-sql-database-vs-managed-instance-vs-vm.mp4",
+        durationLabel: "1 min 26 s",
       }),
       L(4, "iaas-vs-paas-for-sql-server", "IaaS vs. PaaS for SQL Server", {
         contentDir: "ch01/04-iaas-vs-paas-for-sql-server",
