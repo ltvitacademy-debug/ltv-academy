@@ -74,7 +74,10 @@ export const SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792171000/ltv-sql-server-performance-tuning/plan-cache-internals.mp4",
         durationLabel: "1 min 21 s",
       }),
-      L(11, "forcing-and-hinting-plans", "Forcing & Hinting Plans", { contentDir: "ch02/11-forcing-and-hinting-plans" }),
+      L(11, "forcing-and-hinting-plans", "Forcing & Hinting Plans", { contentDir: "ch02/11-forcing-and-hinting-plans",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792171067/ltv-sql-server-performance-tuning/forcing-and-hinting-plans.mp4",
+        durationLabel: "1 min 53 s",
+      }),
     ],
   },
   {
