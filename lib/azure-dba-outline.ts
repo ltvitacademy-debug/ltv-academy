@@ -483,7 +483,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(77, "backup-and-restore-with-ssms-and-t-sql", "Backup & Restore with SSMS and T-SQL", {
         contentDir: "ch13/77-backup-and-restore-with-ssms-and-t-sql",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161986/ltv-azure-dba/backup-and-restore-with-ssms-and-t-sql.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(78, "azure-sql-automated-backups", "Azure SQL Automated Backups", {
         contentDir: "ch13/78-azure-sql-automated-backups",
