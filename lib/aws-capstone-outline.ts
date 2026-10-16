@@ -65,6 +65,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(7, "querying-with-athena", "Querying With Athena", {
         contentDir: "ch02/07-querying-with-athena",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156986/ltv-aws-capstone/querying-with-athena.mp4",
+        durationLabel: "1 min 45 s",
       }),
       L(8, "orchestrating-with-step-functions", "Orchestrating With Step Functions", {
         contentDir: "ch02/08-orchestrating-with-step-functions",
