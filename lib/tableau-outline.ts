@@ -152,8 +152,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
       L(63, "understanding-and-creating-parameters", "Understanding & Creating Parameters", { contentDir: "ch11/63-understanding-and-creating-parameters", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134563/ltv-tableau/understanding-and-creating-parameters.mp4", durationLabel: "1 min 37 s" }),
       L(64, "parameters-with-calculated-fields", "Parameters with Calculated Fields", { contentDir: "ch11/64-parameters-with-calculated-fields", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134613/ltv-tableau/parameters-with-calculated-fields.mp4", durationLabel: "1 min 39 s" }),
       L(65, "dynamic-measure-and-dimension-selection", "Dynamic Measure & Dimension Selection", { contentDir: "ch11/65-dynamic-measure-and-dimension-selection", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134661/ltv-tableau/dynamic-measure-and-dimension-selection.mp4", durationLabel: "1 min 33 s" }),
-      L(66, "what-if-analysis-with-parameters", "What-If Analysis with Parameters", { contentDir: "ch11/66-what-if-analysis-with-parameters" }),
-      L(67, "parameter-actions-and-interactive-analysis", "Parameter Actions & Interactive Analysis", { contentDir: "ch11/67-parameter-actions-and-interactive-analysis" }),
+      L(66, "what-if-analysis-with-parameters", "What-If Analysis with Parameters", { contentDir: "ch11/66-what-if-analysis-with-parameters", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134716/ltv-tableau/what-if-analysis-with-parameters.mp4", durationLabel: "1 min 43 s" }),
+      L(67, "parameter-actions-and-interactive-analysis", "Parameter Actions & Interactive Analysis", { contentDir: "ch11/67-parameter-actions-and-interactive-analysis", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134768/ltv-tableau/parameter-actions-and-interactive-analysis.mp4", durationLabel: "1 min 44 s" }),
     ],
   },
   {
