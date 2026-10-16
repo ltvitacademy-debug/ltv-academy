@@ -68,7 +68,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
       L(22, "cleaning-data-missing-values-and-duplicates", "Cleaning Data: Missing Values & Duplicates", { contentDir: "ch04/22-cleaning-data-missing-values-and-duplicates", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145272/ltv-python-for-data-engineers/cleaning-data-missing-values-and-duplicates.mp4", durationLabel: "2 min 10 s" }),
       L(23, "transforming-columns-and-applying-functions", "Transforming Columns & Applying Functions", { contentDir: "ch04/23-transforming-columns-and-applying-functions", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145381/ltv-python-for-data-engineers/transforming-columns-and-applying-functions.mp4", durationLabel: "2 min 12 s" }),
       L(24, "groupby-and-aggregation", "groupBy() & Aggregation", { contentDir: "ch04/24-groupby-and-aggregation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145484/ltv-python-for-data-engineers/groupby-and-aggregation.mp4", durationLabel: "2 min 12 s" }),
-      L(25, "merging-and-joining-dataframes", "Merging & Joining DataFrames", { contentDir: "ch04/25-merging-and-joining-dataframes" }),
+      L(25, "merging-and-joining-dataframes", "Merging & Joining DataFrames", { contentDir: "ch04/25-merging-and-joining-dataframes", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145582/ltv-python-for-data-engineers/merging-and-joining-dataframes.mp4", durationLabel: "2 min 16 s" }),
     ],
   },
   {
