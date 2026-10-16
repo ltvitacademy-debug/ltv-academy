@@ -107,7 +107,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(14, "lakeflow-vs-traditional-notebooks", "Lakeflow vs. Traditional Notebooks", {
         contentDir: "ch03/14-lakeflow-vs-traditional-notebooks",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151185/ltv-advanced-databricks/lakeflow-vs-traditional-notebooks.mp4",
+        durationLabel: "1 min 12 s",
       }),
       L(15, "expectations-and-data-quality", "Expectations & Data Quality in Lakeflow", {
         contentDir: "ch03/15-expectations-and-data-quality",
