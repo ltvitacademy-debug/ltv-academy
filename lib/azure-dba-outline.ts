@@ -323,7 +323,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(51, "dmvs-for-query-performance-troubleshooting", "DMVs for Query Performance Troubleshooting", {
         contentDir: "ch08/51-dmvs-for-query-performance-troubleshooting",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160787/ltv-azure-dba/dmvs-for-query-performance-troubleshooting.mp4",
+        durationLabel: "1 min 45 s",
       }),
       L(52, "intelligent-query-processing-and-automatic-tuning", "Intelligent Query Processing & Automatic Tuning", {
         contentDir: "ch08/52-intelligent-query-processing-and-automatic-tuning",
