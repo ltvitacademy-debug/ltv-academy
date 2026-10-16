@@ -212,7 +212,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(33, "spark-partitions", "Spark Partitions", {
         contentDir: "ch03/33-spark-partitions",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139184/ltv-de-foundations/spark-partitions.mp4",
+        durationLabel: "1 min 37 s",
       }),
       L(34, "lazy-evaluation", "Lazy Evaluation", {
         contentDir: "ch03/34-lazy-evaluation",
