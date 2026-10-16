@@ -72,16 +72,16 @@ export const GIT_CICD_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(20, "a-real-github-actions-workflow", "A Real GitHub Actions Workflow, Start to Finish", { contentDir: "ch05/20-a-real-github-actions-workflow", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792119945/ltv-git-cicd/a-real-github-actions-workflow.mp4", durationLabel: "1 min 47 s" }),
       L(21, "running-dbt-and-tests-in-ci", "Running dbt Models & Tests in CI", { contentDir: "ch05/21-running-dbt-and-tests-in-ci" }),
-      L(22, "deploying-on-merge", "Deploying on Merge to Main", { contentDir: "ch05/22-deploying-on-merge" }),
-      L(23, "environment-secrets", "Environment Variables & Secrets in CI/CD", { contentDir: "ch05/23-environment-secrets" }),
+      L(22, "deploying-on-merge", "Deploying on Merge to Main", { contentDir: "ch05/22-deploying-on-merge", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120005/ltv-git-cicd/deploying-on-merge.mp4", durationLabel: "1 min 59 s" }),
+      L(23, "environment-secrets", "Environment Variables & Secrets in CI/CD", { contentDir: "ch05/23-environment-secrets", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120055/ltv-git-cicd/environment-secrets.mp4", durationLabel: "1 min 42 s" }),
     ],
   },
   {
     n: 6,
     title: "Capstone",
     lessons: [
-      L(24, "capstone-project", "Capstone: A Data Project With a Real CI/CD Pipeline", { contentDir: "ch06/24-capstone-project" }),
-      L(25, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch06/25-capstone-wrap-up" }),
+      L(24, "capstone-project", "Capstone: A Data Project With a Real CI/CD Pipeline", { contentDir: "ch06/24-capstone-project", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120106/ltv-git-cicd/capstone-project.mp4", durationLabel: "1 min 43 s" }),
+      L(25, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch06/25-capstone-wrap-up", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120156/ltv-git-cicd/capstone-wrap-up.mp4", durationLabel: "1 min 47 s" }),
     ],
   },
 ];
