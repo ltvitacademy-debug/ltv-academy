@@ -118,6 +118,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(16, "glue-job-bookmarks", "Glue Job Bookmarks", {
         contentDir: "ch03/16-glue-job-bookmarks",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154632/ltv-aws-data-engineering/glue-job-bookmarks.mp4",
+        durationLabel: "1 min 58 s",
       }),
       L(17, "glue-triggers-and-workflows", "Glue Triggers & Workflows", {
         contentDir: "ch03/17-glue-triggers-and-workflows",
