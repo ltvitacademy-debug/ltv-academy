@@ -77,7 +77,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(9, "dtu-vs-vcore", "DTU vs. vCore & Choosing the Right Database Configuration", {
         contentDir: "ch02/09-dtu-vs-vcore",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158575/ltv-azure-dba/dtu-vs-vcore.mp4",
+        durationLabel: "1 min 12 s",
       }),
       L(10, "serverless-provisioned-elastic-pools", "Serverless, Provisioned Compute & Elastic Pools", {
         contentDir: "ch02/10-serverless-provisioned-elastic-pools",
