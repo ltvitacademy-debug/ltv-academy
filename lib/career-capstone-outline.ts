@@ -175,7 +175,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(29, "ingesting-and-transforming-exam-focus", "Ingesting and Transforming Data — Exam Focus", {
         contentDir: "ch02/29-ingesting-and-transforming-exam-focus",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147981/ltv-career-capstone/ingesting-and-transforming-exam-focus.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(30, "monitoring-and-optimizing-exam-focus", "Monitoring and Optimizing a Solution — Exam Focus", {
         contentDir: "ch02/30-monitoring-and-optimizing-exam-focus",

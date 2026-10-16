@@ -30,7 +30,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "what-is-kafka", "What Is Kafka & Why Event Streaming?", {
         contentDir: "ch01/01-what-is-kafka",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147977/ltv-kafka/what-is-kafka.mp4",
+        durationLabel: "1 min 11 s",
       }),
       L(2, "topics-partitions-offsets", "Topics, Partitions & Offsets", {
         contentDir: "ch01/02-topics-partitions-offsets",
