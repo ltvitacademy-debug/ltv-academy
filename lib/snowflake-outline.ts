@@ -107,7 +107,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(35, "streams-change-tracking", "Streams: Change Tracking in Snowflake", { contentDir: "ch08/35-streams-change-tracking", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792128441/ltv-snowflake/streams-change-tracking.mp4", durationLabel: "1 min 44 s" }),
       L(36, "tasks-scheduled-processing", "Tasks: Scheduled Processing", { contentDir: "ch08/36-tasks-scheduled-processing", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792128491/ltv-snowflake/tasks-scheduled-processing.mp4", durationLabel: "1 min 34 s" }),
-      L(37, "incremental-pipelines-with-streams-and-tasks", "Building Incremental Pipelines With Streams + Tasks", { contentDir: "ch08/37-incremental-pipelines-with-streams-and-tasks" }),
+      L(37, "incremental-pipelines-with-streams-and-tasks", "Building Incremental Pipelines With Streams + Tasks", { contentDir: "ch08/37-incremental-pipelines-with-streams-and-tasks", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792128547/ltv-snowflake/incremental-pipelines-with-streams-and-tasks.mp4", durationLabel: "1 min 49 s" }),
       L(38, "task-dependencies-and-automating-transformations", "Task Dependencies & Automating Transformations", { contentDir: "ch08/38-task-dependencies-and-automating-transformations" }),
     ],
   },
