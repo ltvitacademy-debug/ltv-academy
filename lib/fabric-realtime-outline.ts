@@ -251,7 +251,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(43, "what-makes-a-pipeline-production-ready", "What Makes a Pipeline \"Production Ready\"?", {
         contentDir: "ch03/43-what-makes-a-pipeline-production-ready",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144775/ltv-fabric-realtime/what-makes-a-pipeline-production-ready.mp4",
+        durationLabel: "1 min 8 s",
       }),
       L(44, "environments-dev-test-prod", "Environments: Dev, Test, and Prod", {
         contentDir: "ch03/44-environments-dev-test-prod",
