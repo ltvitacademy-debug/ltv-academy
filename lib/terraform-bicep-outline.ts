@@ -39,11 +39,13 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
       }),
       L(3, "installing-the-tools", "Installing the Tools", {
         contentDir: "ch01/03-installing-the-tools",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146619/ltv-terraform-bicep/installing-the-tools.mp4",
+        durationLabel: "1 min 20 s",
       }),
       L(4, "providers", "Providers", {
         contentDir: "ch01/04-providers",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146687/ltv-terraform-bicep/providers.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(5, "understanding-state", "Understanding State", {
         contentDir: "ch01/05-understanding-state",

@@ -74,7 +74,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(10, "sharding-a-data-store", "Sharding a Data Store", {
         contentDir: "ch01/10-sharding-a-data-store",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146669/ltv-career-capstone/sharding-a-data-store.mp4",
+        durationLabel: "1 min 23 s",
       }),
       L(11, "designing-for-idempotency", "Designing for Idempotency", {
         contentDir: "ch01/11-designing-for-idempotency",
