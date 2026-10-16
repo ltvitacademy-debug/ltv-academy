@@ -96,7 +96,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(12, "azure-pricing-and-cost-management", "Azure Pricing & Cost Management", {
         contentDir: "ch03/12-azure-pricing-and-cost-management",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157883/ltv-azure-fundamentals/azure-pricing-and-cost-management.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(13, "governance-policies-tags-management-groups", "Governance: Policies, Tags & Management Groups", {
         contentDir: "ch03/13-governance-policies-tags-management-groups",
