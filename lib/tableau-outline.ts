@@ -140,8 +140,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     title: "Groups, Sets, Bins & Hierarchies",
     lessons: [
       L(59, "groups-and-hierarchies", "Groups & Hierarchies", { contentDir: "ch10/59-groups-and-hierarchies", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134343/ltv-tableau/groups-and-hierarchies.mp4", durationLabel: "1 min 59 s" }),
-      L(60, "sets-and-dynamic-sets", "Sets & Dynamic Sets", { contentDir: "ch10/60-sets-and-dynamic-sets" }),
-      L(61, "combined-sets-and-set-analysis", "Combined Sets & Set Analysis", { contentDir: "ch10/61-combined-sets-and-set-analysis" }),
+      L(60, "sets-and-dynamic-sets", "Sets & Dynamic Sets", { contentDir: "ch10/60-sets-and-dynamic-sets", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134405/ltv-tableau/sets-and-dynamic-sets.mp4", durationLabel: "1 min 58 s" }),
+      L(61, "combined-sets-and-set-analysis", "Combined Sets & Set Analysis", { contentDir: "ch10/61-combined-sets-and-set-analysis", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134459/ltv-tableau/combined-sets-and-set-analysis.mp4", durationLabel: "1 min 43 s" }),
       L(62, "bins-distributions-segmentation", "Bins, Distributions & Segmentation", { contentDir: "ch10/62-bins-distributions-segmentation" }),
     ],
   },
