@@ -63,7 +63,7 @@ export const GIT_CICD_CHAPTERS: ChapterMeta[] = [
       L(16, "what-is-ci-cd", "What Is CI/CD, Really?", { contentDir: "ch04/16-what-is-ci-cd", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792119802/ltv-git-cicd/what-is-ci-cd.mp4", durationLabel: "1 min 42 s" }),
       L(17, "pipelines-as-code", "Pipelines as Code", { contentDir: "ch04/17-pipelines-as-code", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792119850/ltv-git-cicd/pipelines-as-code.mp4", durationLabel: "1 min 31 s" }),
       L(18, "github-actions-basics", "GitHub Actions Basics", { contentDir: "ch04/18-github-actions-basics", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792119888/ltv-git-cicd/github-actions-basics.mp4", durationLabel: "1 min 12 s" }),
-      L(19, "running-tests-automatically", "Running Tests Automatically on Every Commit", { contentDir: "ch04/19-running-tests-automatically" }),
+      L(19, "running-tests-automatically", "Running Tests Automatically on Every Commit", { contentDir: "ch04/19-running-tests-automatically", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120255/ltv-git-cicd/running-tests-automatically.mp4", durationLabel: "1 min 33 s" }),
     ],
   },
   {
@@ -71,7 +71,7 @@ export const GIT_CICD_CHAPTERS: ChapterMeta[] = [
     title: "Building a CI/CD Pipeline for a Data Project",
     lessons: [
       L(20, "a-real-github-actions-workflow", "A Real GitHub Actions Workflow, Start to Finish", { contentDir: "ch05/20-a-real-github-actions-workflow", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792119945/ltv-git-cicd/a-real-github-actions-workflow.mp4", durationLabel: "1 min 47 s" }),
-      L(21, "running-dbt-and-tests-in-ci", "Running dbt Models & Tests in CI", { contentDir: "ch05/21-running-dbt-and-tests-in-ci" }),
+      L(21, "running-dbt-and-tests-in-ci", "Running dbt Models & Tests in CI", { contentDir: "ch05/21-running-dbt-and-tests-in-ci", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120316/ltv-git-cicd/running-dbt-and-tests-in-ci.mp4", durationLabel: "2 min 5 s" }),
       L(22, "deploying-on-merge", "Deploying on Merge to Main", { contentDir: "ch05/22-deploying-on-merge", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120005/ltv-git-cicd/deploying-on-merge.mp4", durationLabel: "1 min 59 s" }),
       L(23, "environment-secrets", "Environment Variables & Secrets in CI/CD", { contentDir: "ch05/23-environment-secrets", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120055/ltv-git-cicd/environment-secrets.mp4", durationLabel: "1 min 42 s" }),
     ],
