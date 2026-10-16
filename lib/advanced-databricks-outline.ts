@@ -257,7 +257,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(38, "auto-loader-file-events", "Auto Loader With File Events", {
         contentDir: "ch08/38-auto-loader-file-events",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792152514/ltv-advanced-databricks/auto-loader-file-events.mp4",
+        durationLabel: "1 min 57 s",
       }),
       L(39, "real-time-mode-spark-declarative-pipelines", "Real-Time Mode for Spark Declarative Pipelines", {
         contentDir: "ch08/39-real-time-mode-spark-declarative-pipelines",
