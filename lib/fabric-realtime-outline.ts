@@ -200,7 +200,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(34, "handling-out-of-order-events", "Handling Out-of-Order Events", {
         contentDir: "ch02/34-handling-out-of-order-events",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144252/ltv-fabric-realtime/handling-out-of-order-events.mp4",
+        durationLabel: "1 min 13 s",
       }),
       L(35, "eventstream-transformations", "Eventstream Transformations", {
         contentDir: "ch02/35-eventstream-transformations",
