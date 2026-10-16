@@ -73,7 +73,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Data Transformation / ELT",
     lessons: [
-      L(21, "the-elt-pattern-in-snowflake", "Raw → Cleaned → Business-Ready: The ELT Pattern in Snowflake", { contentDir: "ch05/21-the-elt-pattern-in-snowflake" }),
+      L(21, "the-elt-pattern-in-snowflake", "Raw → Cleaned → Business-Ready: The ELT Pattern in Snowflake", { contentDir: "ch05/21-the-elt-pattern-in-snowflake", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127703/ltv-snowflake/the-elt-pattern-in-snowflake.mp4", durationLabel: "1 min 42 s" }),
       L(22, "ctas-and-sql-transformations", "CTAS & SQL-Based Transformations", { contentDir: "ch05/22-ctas-and-sql-transformations" }),
       L(23, "incremental-loading-patterns", "Incremental Loading Patterns", { contentDir: "ch05/23-incremental-loading-patterns" }),
       L(24, "deduplication-strategies", "Deduplication Strategies", { contentDir: "ch05/24-deduplication-strategies" }),
