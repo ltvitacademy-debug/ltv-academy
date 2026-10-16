@@ -330,6 +330,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(50, "kinesis-data-analytics", "Kinesis Data Analytics", {
         contentDir: "ch10/50-kinesis-data-analytics",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156350/ltv-aws-data-engineering/kinesis-data-analytics.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(51, "kinesis-vs-eventstreams-and-kafka", "Kinesis vs. Fabric Eventstreams & Kafka", {
         contentDir: "ch10/51-kinesis-vs-eventstreams-and-kafka",
