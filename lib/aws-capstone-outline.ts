@@ -70,6 +70,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(8, "orchestrating-with-step-functions", "Orchestrating With Step Functions", {
         contentDir: "ch02/08-orchestrating-with-step-functions",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157038/ltv-aws-capstone/orchestrating-with-step-functions.mp4",
+        durationLabel: "1 min 38 s",
       }),
     ],
   },
