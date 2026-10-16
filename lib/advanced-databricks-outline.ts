@@ -35,7 +35,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(2, "catalogs-schemas-external-locations", "Catalogs, Schemas & External Locations", {
         contentDir: "ch01/02-catalogs-schemas-external-locations",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150579/ltv-advanced-databricks/catalogs-schemas-external-locations.mp4",
+        durationLabel: "1 min 47 s",
       }),
       L(3, "managed-vs-external-tables", "Managed vs. External Tables", {
         contentDir: "ch01/03-managed-vs-external-tables",
