@@ -29,9 +29,9 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Snowflake Architecture & Getting Started",
     lessons: [
-      L(1, "welcome-to-snowflake-course-overview", "Welcome to Snowflake: Course Overview & What You'll Build", { contentDir: "ch01/01-welcome-to-snowflake-course-overview" }),
-      L(2, "snowflake-architecture-storage-compute-cloud-services", "Snowflake Architecture: Storage, Compute & Cloud Services", { contentDir: "ch01/02-snowflake-architecture-storage-compute-cloud-services" }),
-      L(3, "databases-schemas-and-tables", "Databases, Schemas & Tables in Snowflake", { contentDir: "ch01/03-databases-schemas-and-tables" }),
+      L(1, "welcome-to-snowflake-course-overview", "Welcome to Snowflake: Course Overview & What You'll Build", { contentDir: "ch01/01-welcome-to-snowflake-course-overview", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792126635/ltv-snowflake/welcome-to-snowflake-course-overview.mp4", durationLabel: "1 min 48 s" }),
+      L(2, "snowflake-architecture-storage-compute-cloud-services", "Snowflake Architecture: Storage, Compute & Cloud Services", { contentDir: "ch01/02-snowflake-architecture-storage-compute-cloud-services", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792126684/ltv-snowflake/snowflake-architecture-storage-compute-cloud-services.mp4", durationLabel: "1 min 40 s" }),
+      L(3, "databases-schemas-and-tables", "Databases, Schemas & Tables in Snowflake", { contentDir: "ch01/03-databases-schemas-and-tables", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792126732/ltv-snowflake/databases-schemas-and-tables.mp4", durationLabel: "1 min 31 s" }),
       L(4, "virtual-warehouses-scaling-auto-suspend-resume", "Virtual Warehouses, Scaling & Auto-Suspend/Auto-Resume", { contentDir: "ch01/04-virtual-warehouses-scaling-auto-suspend-resume" }),
       L(5, "lab-your-first-snowflake-account-and-warehouse", "Lab: Your First Snowflake Account & Warehouse", { contentDir: "ch01/05-lab-your-first-snowflake-account-and-warehouse" }),
     ],
