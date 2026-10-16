@@ -61,8 +61,8 @@ export const GIT_CICD_CHAPTERS: ChapterMeta[] = [
     title: "CI/CD Concepts",
     lessons: [
       L(16, "what-is-ci-cd", "What Is CI/CD, Really?", { contentDir: "ch04/16-what-is-ci-cd", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792119802/ltv-git-cicd/what-is-ci-cd.mp4", durationLabel: "1 min 42 s" }),
-      L(17, "pipelines-as-code", "Pipelines as Code", { contentDir: "ch04/17-pipelines-as-code" }),
-      L(18, "github-actions-basics", "GitHub Actions Basics", { contentDir: "ch04/18-github-actions-basics" }),
+      L(17, "pipelines-as-code", "Pipelines as Code", { contentDir: "ch04/17-pipelines-as-code", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792119850/ltv-git-cicd/pipelines-as-code.mp4", durationLabel: "1 min 31 s" }),
+      L(18, "github-actions-basics", "GitHub Actions Basics", { contentDir: "ch04/18-github-actions-basics", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792119888/ltv-git-cicd/github-actions-basics.mp4", durationLabel: "1 min 12 s" }),
       L(19, "running-tests-automatically", "Running Tests Automatically on Every Commit", { contentDir: "ch04/19-running-tests-automatically" }),
     ],
   },
