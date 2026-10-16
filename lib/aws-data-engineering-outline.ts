@@ -72,6 +72,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(8, "resource-based-policies", "Resource-Based Policies", {
         contentDir: "ch02/08-resource-based-policies",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154175/ltv-aws-data-engineering/resource-based-policies.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(9, "cross-account-access", "Cross-Account Access", {
         contentDir: "ch02/09-cross-account-access",
