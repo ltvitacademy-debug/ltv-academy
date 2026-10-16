@@ -125,7 +125,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     n: 10,
     title: "Performance Optimization",
     lessons: [
-      L(43, "query-profile-and-query-history", "Query Profile & Query History", { contentDir: "ch10/43-query-profile-and-query-history" }),
+      L(43, "query-profile-and-query-history", "Query Profile & Query History", { contentDir: "ch10/43-query-profile-and-query-history", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792128884/ltv-snowflake/query-profile-and-query-history.mp4", durationLabel: "1 min 27 s" }),
       L(44, "micro-partitions-and-partition-pruning", "Micro-Partitions & Partition Pruning", { contentDir: "ch10/44-micro-partitions-and-partition-pruning" }),
       L(45, "clustering-and-caching", "Clustering & Caching", { contentDir: "ch10/45-clustering-and-caching" }),
       L(46, "warehouse-sizing-and-expensive-queries", "Warehouse Sizing & Finding Expensive/Slow Queries", { contentDir: "ch10/46-warehouse-sizing-and-expensive-queries" }),
