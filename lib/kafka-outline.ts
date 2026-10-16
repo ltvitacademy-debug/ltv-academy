@@ -61,7 +61,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(6, "producer-basics", "Producer Basics", {
         contentDir: "ch02/06-producer-basics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148301/ltv-kafka/producer-basics.mp4",
+        durationLabel: "1 min 33 s",
       }),
       L(7, "consumer-basics", "Consumer Basics", {
         contentDir: "ch02/07-consumer-basics",
