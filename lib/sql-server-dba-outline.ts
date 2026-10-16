@@ -335,7 +335,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792169947/ltv-sql-server-dba/testing-upgrades.mp4",
         durationLabel: "1 min 15 s",
       }),
-      L(63, "rollback-planning", "Rollback Planning", { contentDir: "ch11/63-rollback-planning" }),
+      L(63, "rollback-planning", "Rollback Planning", { contentDir: "ch11/63-rollback-planning",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792169991/ltv-sql-server-dba/rollback-planning.mp4",
+        durationLabel: "1 min 11 s",
+      }),
     ],
   },
   {
