@@ -206,7 +206,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(29, "capstone-project", "Capstone: A Real-Time Event Pipeline on Kafka", {
         contentDir: "ch07/29-capstone-project",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149609/ltv-kafka/capstone-project.mp4",
+        durationLabel: "2 min 13 s",
       }),
       L(30, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", {
         contentDir: "ch07/30-capstone-wrap-up",
