@@ -116,8 +116,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     title: "Data Modeling",
     lessons: [
       L(47, "tableaus-data-model", "Understanding Tableau's Data Model", { contentDir: "ch08/47-tableaus-data-model", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133836/ltv-tableau/tableaus-data-model.mp4", durationLabel: "1 min 22 s" }),
-      L(48, "relationships-vs-joins", "Relationships vs. Joins", { contentDir: "ch08/48-relationships-vs-joins" }),
-      L(49, "creating-joins-and-multi-field-joins", "Creating Joins & Joining on Multiple Fields", { contentDir: "ch08/49-creating-joins-and-multi-field-joins" }),
+      L(48, "relationships-vs-joins", "Relationships vs. Joins", { contentDir: "ch08/48-relationships-vs-joins", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133876/ltv-tableau/relationships-vs-joins.mp4", durationLabel: "1 min 12 s" }),
+      L(49, "creating-joins-and-multi-field-joins", "Creating Joins & Joining on Multiple Fields", { contentDir: "ch08/49-creating-joins-and-multi-field-joins", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133915/ltv-tableau/creating-joins-and-multi-field-joins.mp4", durationLabel: "1 min 16 s" }),
       L(50, "duplicate-records-granularity-join-problems", "Duplicate Records, Granularity & Join Problems", { contentDir: "ch08/50-duplicate-records-granularity-join-problems" }),
       L(51, "unions-combining-data-vertically", "Unions & Combining Data Vertically", { contentDir: "ch08/51-unions-combining-data-vertically" }),
       L(52, "data-blending-cross-database-analysis", "Data Blending & Cross-Database Analysis", { contentDir: "ch08/52-data-blending-cross-database-analysis" }),
