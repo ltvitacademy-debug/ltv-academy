@@ -128,7 +128,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(17, "source-and-sink-connectors", "Source & Sink Connectors", {
         contentDir: "ch04/17-source-and-sink-connectors",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148879/ltv-kafka/source-and-sink-connectors.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(18, "kafka-streams-basics", "Kafka Streams Basics", {
         contentDir: "ch04/18-kafka-streams-basics",
