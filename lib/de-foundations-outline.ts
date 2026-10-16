@@ -263,7 +263,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(42, "reading-parquet", "Reading Parquet", {
         contentDir: "ch04/42-reading-parquet",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139707/ltv-de-foundations/reading-parquet.mp4",
+        durationLabel: "1 min 20 s",
       }),
       L(43, "defining-schemas", "Defining Schemas", {
         contentDir: "ch04/43-defining-schemas",
