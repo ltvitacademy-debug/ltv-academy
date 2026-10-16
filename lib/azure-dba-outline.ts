@@ -31,7 +31,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "course-introduction-becoming-an-azure-dba", "Course Introduction: Becoming an Azure Database Administrator", {
         contentDir: "ch01/01-course-introduction-becoming-an-azure-dba",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158232/ltv-azure-dba/course-introduction-becoming-an-azure-dba.mp4",
+        durationLabel: "1 min 18 s",
       }),
       L(2, "sql-server-on-prem-vs-azure-sql", "SQL Server On-Prem vs. Azure SQL — Understanding the Ecosystem", {
         contentDir: "ch01/02-sql-server-on-prem-vs-azure-sql",
