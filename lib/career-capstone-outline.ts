@@ -331,7 +331,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(59, "worked-example-ai-assisted-debugging", "A Worked Example: AI-Assisted Pipeline Debugging", {
         contentDir: "ch03/59-worked-example-ai-assisted-debugging",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149491/ltv-career-capstone/worked-example-ai-assisted-debugging.mp4",
+        durationLabel: "1 min 1 s",
       }),
       L(60, "ai-and-production-practices", "Where AI Fits in the Production Practices From Course 3", {
         contentDir: "ch03/60-ai-and-production-practices",
