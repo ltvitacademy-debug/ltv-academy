@@ -205,7 +205,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(34, "streaming-from-bronze-to-silver", "Streaming from Bronze to Silver", {
         contentDir: "ch03/34-streaming-from-bronze-to-silver",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144428/ltv-databricks-delta/streaming-from-bronze-to-silver.mp4",
+        durationLabel: "1 min 13 s",
       }),
       L(35, "handling-late-arriving-data", "Handling Late-Arriving Data", {
         contentDir: "ch03/35-handling-late-arriving-data",

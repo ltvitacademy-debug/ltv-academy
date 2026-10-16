@@ -215,7 +215,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(37, "activator-real-time-alerting", "Activator — Real-Time Alerting", {
         contentDir: "ch02/37-activator-real-time-alerting",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144410/ltv-fabric-realtime/activator-real-time-alerting.mp4",
+        durationLabel: "1 min 6 s",
       }),
       L(38, "change-data-capture-streamed", "Change Data Capture, Streamed", {
         contentDir: "ch02/38-change-data-capture-streamed",
