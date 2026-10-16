@@ -129,7 +129,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(20, "schema-evolution", "Schema Evolution", {
         contentDir: "ch02/20-schema-evolution",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143479/ltv-databricks-delta/schema-evolution.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(21, "time-travel", "Time Travel — Querying Historical Versions", {
         contentDir: "ch02/21-time-travel",
