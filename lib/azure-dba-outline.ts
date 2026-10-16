@@ -113,7 +113,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(15, "table-partitioning-and-large-database-strategies", "Table Partitioning & Large Database Strategies", {
         contentDir: "ch03/15-table-partitioning-and-large-database-strategies",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158875/ltv-azure-dba/table-partitioning-and-large-database-strategies.mp4",
+        durationLabel: "1 min 33 s",
       }),
       L(16, "data-compression-and-storage-optimization", "Data Compression & Storage Optimization", {
         contentDir: "ch03/16-data-compression-and-storage-optimization",
