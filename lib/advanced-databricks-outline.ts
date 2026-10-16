@@ -267,7 +267,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(40, "lakeflow-designer", "Lakeflow Designer", {
         contentDir: "ch08/40-lakeflow-designer",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792152658/ltv-advanced-databricks/lakeflow-designer.mp4",
+        durationLabel: "2 min 22 s",
       }),
       L(41, "agent-bricks-document-intelligence", "Agent Bricks & Document Intelligence", {
         contentDir: "ch08/41-agent-bricks-document-intelligence",
