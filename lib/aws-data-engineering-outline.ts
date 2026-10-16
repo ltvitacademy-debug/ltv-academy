@@ -242,6 +242,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(36, "building-a-state-machine", "Building a State Machine", {
         contentDir: "ch07/36-building-a-state-machine",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155658/ltv-aws-data-engineering/building-a-state-machine.mp4",
+        durationLabel: "1 min 46 s",
       }),
       L(37, "error-handling-in-step-functions", "Error Handling in Step Functions", {
         contentDir: "ch07/37-error-handling-in-step-functions",
