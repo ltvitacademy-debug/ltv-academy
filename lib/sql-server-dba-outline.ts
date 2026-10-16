@@ -297,7 +297,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 10,
     title: "Production Support Fundamentals",
     lessons: [
-      L(55, "triage-methodology", "Triage Methodology", { contentDir: "ch10/55-triage-methodology" }),
+      L(55, "triage-methodology", "Triage Methodology", { contentDir: "ch10/55-triage-methodology",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792169621/ltv-sql-server-dba/triage-methodology.mp4",
+        durationLabel: "1 min 10 s",
+      }),
       L(56, "common-production-issues", "Common Production Issues", { contentDir: "ch10/56-common-production-issues" }),
       L(57, "escalation-and-communication", "Escalation & Communication", { contentDir: "ch10/57-escalation-and-communication" }),
       L(58, "on-call-basics", "On-Call Basics", { contentDir: "ch10/58-on-call-basics" }),
