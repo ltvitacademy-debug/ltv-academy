@@ -40,7 +40,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(3, "managed-vs-external-tables", "Managed vs. External Tables", {
         contentDir: "ch01/03-managed-vs-external-tables",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150630/ltv-advanced-databricks/managed-vs-external-tables.mp4",
+        durationLabel: "1 min 42 s",
       }),
       L(4, "unity-catalog-volumes", "Unity Catalog Volumes", {
         contentDir: "ch01/04-unity-catalog-volumes",
