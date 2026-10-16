@@ -222,7 +222,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(35, "transformations-vs-actions", "Transformations vs. Actions", {
         contentDir: "ch03/35-transformations-vs-actions",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139291/ltv-de-foundations/transformations-vs-actions.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(36, "sparksession", "SparkSession", {
         contentDir: "ch03/36-sparksession",
