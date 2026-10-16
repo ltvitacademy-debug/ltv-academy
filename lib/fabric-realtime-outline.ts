@@ -296,7 +296,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(52, "observability-logs-metrics-traces", "Observability: Logs, Metrics, and Traces", {
         contentDir: "ch03/52-observability-logs-metrics-traces",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145272/ltv-fabric-realtime/observability-logs-metrics-traces.mp4",
+        durationLabel: "1 min 10 s",
       }),
       L(53, "alerts-for-pipeline-failures", "Setting Up Alerts for Pipeline Failures", {
         contentDir: "ch03/53-alerts-for-pipeline-failures",
