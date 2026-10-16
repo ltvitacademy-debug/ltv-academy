@@ -387,7 +387,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(69, "project-1-wrap-up", "Project 1: Wrap-Up and Retrospective", {
         contentDir: "ch04/69-project-1-wrap-up",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149928/ltv-career-capstone/project-1-wrap-up.mp4",
+        durationLabel: "1 min 14 s",
       }),
       L(70, "project-2-kickoff-warehouse-migration", "Project 2 Kickoff: A Multi-Source Data Warehouse Migration", {
         contentDir: "ch04/70-project-2-kickoff-warehouse-migration",
