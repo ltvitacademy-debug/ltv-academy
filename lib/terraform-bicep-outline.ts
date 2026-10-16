@@ -137,7 +137,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
       }),
       L(19, "importing-existing-resources", "Importing Existing Resources", {
         contentDir: "ch04/19-importing-existing-resources",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147661/ltv-terraform-bicep/importing-existing-resources.mp4",
+        durationLabel: "1 min 14 s",
       }),
       L(20, "iac-in-ci-cd", "IaC in CI/CD", {
         contentDir: "ch04/20-iac-in-ci-cd",

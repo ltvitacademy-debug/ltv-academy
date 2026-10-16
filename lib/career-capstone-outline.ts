@@ -144,7 +144,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(24, "presenting-a-system-design", "Presenting a System Design — Whiteboarding Like an Interview", {
         contentDir: "ch01/24-presenting-a-system-design",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147672/ltv-career-capstone/presenting-a-system-design.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(25, "system-design-chapter-recap", "System Design Chapter Recap", {
         contentDir: "ch01/25-system-design-chapter-recap",
