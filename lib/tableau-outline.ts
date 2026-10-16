@@ -142,14 +142,14 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
       L(59, "groups-and-hierarchies", "Groups & Hierarchies", { contentDir: "ch10/59-groups-and-hierarchies", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134343/ltv-tableau/groups-and-hierarchies.mp4", durationLabel: "1 min 59 s" }),
       L(60, "sets-and-dynamic-sets", "Sets & Dynamic Sets", { contentDir: "ch10/60-sets-and-dynamic-sets", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134405/ltv-tableau/sets-and-dynamic-sets.mp4", durationLabel: "1 min 58 s" }),
       L(61, "combined-sets-and-set-analysis", "Combined Sets & Set Analysis", { contentDir: "ch10/61-combined-sets-and-set-analysis", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134459/ltv-tableau/combined-sets-and-set-analysis.mp4", durationLabel: "1 min 43 s" }),
-      L(62, "bins-distributions-segmentation", "Bins, Distributions & Segmentation", { contentDir: "ch10/62-bins-distributions-segmentation" }),
+      L(62, "bins-distributions-segmentation", "Bins, Distributions & Segmentation", { contentDir: "ch10/62-bins-distributions-segmentation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134515/ltv-tableau/bins-distributions-segmentation.mp4", durationLabel: "1 min 50 s" }),
     ],
   },
   {
     n: 11,
     title: "Parameters",
     lessons: [
-      L(63, "understanding-and-creating-parameters", "Understanding & Creating Parameters", { contentDir: "ch11/63-understanding-and-creating-parameters" }),
+      L(63, "understanding-and-creating-parameters", "Understanding & Creating Parameters", { contentDir: "ch11/63-understanding-and-creating-parameters", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134563/ltv-tableau/understanding-and-creating-parameters.mp4", durationLabel: "1 min 37 s" }),
       L(64, "parameters-with-calculated-fields", "Parameters with Calculated Fields", { contentDir: "ch11/64-parameters-with-calculated-fields" }),
       L(65, "dynamic-measure-and-dimension-selection", "Dynamic Measure & Dimension Selection", { contentDir: "ch11/65-dynamic-measure-and-dimension-selection" }),
       L(66, "what-if-analysis-with-parameters", "What-If Analysis with Parameters", { contentDir: "ch11/66-what-if-analysis-with-parameters" }),
