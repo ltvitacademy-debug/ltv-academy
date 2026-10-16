@@ -289,6 +289,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(43, "emr-fundamentals", "EMR Fundamentals", {
         contentDir: "ch09/43-emr-fundamentals",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156025/ltv-aws-data-engineering/emr-fundamentals.mp4",
+        durationLabel: "1 min 36 s",
       }),
       L(44, "emr-vs-glue-vs-databricks", "EMR vs. Glue vs. Databricks", {
         contentDir: "ch09/44-emr-vs-glue-vs-databricks",
