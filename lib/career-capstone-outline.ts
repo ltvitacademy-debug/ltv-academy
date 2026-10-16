@@ -321,7 +321,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(57, "cost-and-latency-tradeoffs-of-ai", "Cost and Latency Trade-offs of AI-Augmented Pipelines", {
         contentDir: "ch03/57-cost-and-latency-tradeoffs-of-ai",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149405/ltv-career-capstone/cost-and-latency-tradeoffs-of-ai.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(58, "evaluating-ai-output", "Evaluating AI Output for Correctness", {
         contentDir: "ch03/58-evaluating-ai-output",
