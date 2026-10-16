@@ -46,7 +46,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792164105/ltv-t-sql-for-dbas/server-and-database-properties.mp4",
         durationLabel: "1 min 52 s",
       }),
-      L(5, "sessions-and-connections", "Sessions & Connections", { contentDir: "ch01/05-sessions-and-connections" }),
+      L(5, "sessions-and-connections", "Sessions & Connections", { contentDir: "ch01/05-sessions-and-connections",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792164167/ltv-t-sql-for-dbas/sessions-and-connections.mp4",
+        durationLabel: "1 min 45 s",
+      }),
     ],
   },
   {
