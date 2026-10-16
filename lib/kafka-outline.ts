@@ -102,7 +102,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(13, "retention", "Retention", {
         contentDir: "ch03/13-retention",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148676/ltv-kafka/retention.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(14, "zookeeper-vs-kraft", "ZooKeeper vs. KRaft", {
         contentDir: "ch03/14-zookeeper-vs-kraft",
