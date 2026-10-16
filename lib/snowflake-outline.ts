@@ -64,7 +64,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     n: 4,
     title: "Snowpipe & Automated Ingestion",
     lessons: [
-      L(18, "snowpipe-and-continuous-ingestion", "Snowpipe & Continuous Ingestion", { contentDir: "ch04/18-snowpipe-and-continuous-ingestion" }),
+      L(18, "snowpipe-and-continuous-ingestion", "Snowpipe & Continuous Ingestion", { contentDir: "ch04/18-snowpipe-and-continuous-ingestion", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127541/ltv-snowflake/snowpipe-and-continuous-ingestion.mp4", durationLabel: "1 min 37 s" }),
       L(19, "automated-file-loading-and-monitoring-loads", "Automated File Loading & Monitoring Loads", { contentDir: "ch04/19-automated-file-loading-and-monitoring-loads" }),
       L(20, "handling-failed-snowpipe-loads", "Handling Failed Snowpipe Loads", { contentDir: "ch04/20-handling-failed-snowpipe-loads" }),
     ],
