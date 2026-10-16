@@ -336,7 +336,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(60, "ai-and-production-practices", "Where AI Fits in the Production Practices From Course 3", {
         contentDir: "ch03/60-ai-and-production-practices",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149538/ltv-career-capstone/ai-and-production-practices.mp4",
+        durationLabel: "1 min 9 s",
       }),
       L(61, "the-limits-of-ai", "The Limits of AI in Data Engineering, Honestly", {
         contentDir: "ch03/61-the-limits-of-ai",
