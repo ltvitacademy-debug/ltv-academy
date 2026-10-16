@@ -65,6 +65,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(7, "compute-overview", "Compute Overview: EC2 & Lambda", {
         contentDir: "ch02/07-compute-overview",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153285/ltv-aws-fundamentals/compute-overview.mp4",
+        durationLabel: "1 min 6 s",
       }),
       L(8, "storage-overview", "Storage Overview: S3 & EBS", {
         contentDir: "ch02/08-storage-overview",
