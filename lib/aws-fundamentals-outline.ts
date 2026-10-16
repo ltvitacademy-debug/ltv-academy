@@ -29,7 +29,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "what-is-aws", "What Is AWS?", {
         contentDir: "ch01/01-what-is-aws",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153071/ltv-aws-fundamentals/what-is-aws.mp4",
+        durationLabel: "1 min 6 s",
       }),
       L(2, "aws-global-infrastructure", "AWS Global Infrastructure: Regions & Availability Zones", {
         contentDir: "ch01/02-aws-global-infrastructure",
