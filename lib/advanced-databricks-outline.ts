@@ -50,7 +50,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(5, "data-lineage-in-unity-catalog", "Data Lineage in Unity Catalog", {
         contentDir: "ch01/05-data-lineage-in-unity-catalog",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150739/ltv-advanced-databricks/data-lineage-in-unity-catalog.mp4",
+        durationLabel: "1 min 39 s",
       }),
       L(6, "access-control-at-scale", "Access Control at Scale", {
         contentDir: "ch01/06-access-control-at-scale",
