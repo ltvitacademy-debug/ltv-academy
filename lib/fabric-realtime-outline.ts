@@ -89,7 +89,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(13, "semantic-models-in-fabric", "Semantic Models in Fabric", {
         contentDir: "ch01/13-semantic-models-in-fabric",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142911/ltv-fabric-realtime/semantic-models-in-fabric.mp4",
+        durationLabel: "1 min 13 s",
       }),
       L(14, "fabric-capacities-and-skus", "Fabric Capacities and SKUs", {
         contentDir: "ch01/14-fabric-capacities-and-skus",
