@@ -94,7 +94,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(14, "fabric-capacities-and-skus", "Fabric Capacities and SKUs", {
         contentDir: "ch01/14-fabric-capacities-and-skus",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142978/ltv-fabric-realtime/fabric-capacities-and-skus.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(15, "git-integration-and-deployment-pipelines", "Git Integration and Deployment Pipelines", {
         contentDir: "ch01/15-git-integration-and-deployment-pipelines",

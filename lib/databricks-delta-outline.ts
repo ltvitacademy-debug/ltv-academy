@@ -94,7 +94,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(13, "what-is-delta-lake", "What Is Delta Lake?", {
         contentDir: "ch02/13-what-is-delta-lake",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143004/ltv-databricks-delta/what-is-delta-lake.mp4",
+        durationLabel: "1 min 31 s",
       }),
       L(14, "delta-tables-vs-parquet-tables", "Delta Tables vs. Parquet Tables", {
         contentDir: "ch02/14-delta-tables-vs-parquet-tables",
