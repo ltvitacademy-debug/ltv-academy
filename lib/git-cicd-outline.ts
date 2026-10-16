@@ -60,7 +60,7 @@ export const GIT_CICD_CHAPTERS: ChapterMeta[] = [
     n: 4,
     title: "CI/CD Concepts",
     lessons: [
-      L(16, "what-is-ci-cd", "What Is CI/CD, Really?", { contentDir: "ch04/16-what-is-ci-cd" }),
+      L(16, "what-is-ci-cd", "What Is CI/CD, Really?", { contentDir: "ch04/16-what-is-ci-cd", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792119802/ltv-git-cicd/what-is-ci-cd.mp4", durationLabel: "1 min 42 s" }),
       L(17, "pipelines-as-code", "Pipelines as Code", { contentDir: "ch04/17-pipelines-as-code" }),
       L(18, "github-actions-basics", "GitHub Actions Basics", { contentDir: "ch04/18-github-actions-basics" }),
       L(19, "running-tests-automatically", "Running Tests Automatically on Every Commit", { contentDir: "ch04/19-running-tests-automatically" }),
