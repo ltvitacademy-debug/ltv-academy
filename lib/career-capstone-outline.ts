@@ -417,7 +417,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(75, "project-3-kickoff-fraud-detector", "Project 3 Kickoff: An End-to-End Streaming Fraud Detector", {
         contentDir: "ch04/75-project-3-kickoff-fraud-detector",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150189/ltv-career-capstone/project-3-kickoff-fraud-detector.mp4",
+        durationLabel: "1 min 30 s",
       }),
       L(76, "project-3-ingestion-and-features", "Project 3: Streaming Ingestion and Feature Computation", {
         contentDir: "ch04/76-project-3-ingestion-and-features",
