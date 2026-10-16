@@ -169,7 +169,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(25, "troubleshooting-login-auth-permission-problems", "Troubleshooting Login, Authentication & Permission Problems", {
         contentDir: "ch04/25-troubleshooting-login-auth-permission-problems",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159391/ltv-azure-dba/troubleshooting-login-auth-permission-problems.mp4",
+        durationLabel: "1 min 48 s",
       }),
     ],
   },
