@@ -175,7 +175,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(28, "the-gold-layer", "The Gold Layer — Business-Level Aggregates", {
         contentDir: "ch03/28-the-gold-layer",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144039/ltv-databricks-delta/the-gold-layer.mp4",
+        durationLabel: "1 min 10 s",
       }),
       L(29, "designing-a-bronze-to-silver-pipeline", "Designing a Bronze-to-Silver Pipeline", {
         contentDir: "ch03/29-designing-a-bronze-to-silver-pipeline",
