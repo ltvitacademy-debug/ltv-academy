@@ -164,7 +164,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(23, "adaptive-query-execution", "Adaptive Query Execution", {
         contentDir: "ch05/23-adaptive-query-execution",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151566/ltv-advanced-databricks/adaptive-query-execution.mp4",
+        durationLabel: "1 min 40 s",
       }),
       L(24, "caching-strategies", "Caching Strategies", {
         contentDir: "ch05/24-caching-strategies",
