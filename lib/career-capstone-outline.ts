@@ -367,7 +367,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(65, "project-1-ingestion-design", "Project 1: Ingestion Design", {
         contentDir: "ch04/65-project-1-ingestion-design",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149776/ltv-career-capstone/project-1-ingestion-design.mp4",
+        durationLabel: "1 min 18 s",
       }),
       L(66, "project-1-transformation-and-modeling", "Project 1: Transformation and Modeling", {
         contentDir: "ch04/66-project-1-transformation-and-modeling",
