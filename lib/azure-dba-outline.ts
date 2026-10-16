@@ -359,7 +359,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(57, "resource-governor", "Resource Governor", {
         contentDir: "ch09/57-resource-governor",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161052/ltv-azure-dba/resource-governor.mp4",
+        durationLabel: "1 min 18 s",
       }),
       L(58, "scaling-and-troubleshooting-resource-bottlenecks", "Scaling Compute/Storage & Troubleshooting Resource Bottlenecks", {
         contentDir: "ch09/58-scaling-and-troubleshooting-resource-bottlenecks",
