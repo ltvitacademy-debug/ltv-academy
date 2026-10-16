@@ -200,7 +200,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
       L(73, "agent-identity-and-auditability", "Agent Identity and Auditability", { contentDir: "ch17/73-agent-identity-and-auditability", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792130936/ltv-snowflake/agent-identity-and-auditability.mp4", durationLabel: "2 min 43 s" }),
       L(74, "human-in-the-loop-approval-patterns-for-cortex-agents", "Human-in-the-Loop: Approval Patterns for Cortex Agents", { contentDir: "ch17/74-human-in-the-loop-approval-patterns-for-cortex-agents", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131026/ltv-snowflake/human-in-the-loop-approval-patterns-for-cortex-agents.mp4", durationLabel: "2 min 52 s" }),
       L(75, "governing-agent-access-rbac-masking-row-access", "Governing Agent Access: RBAC, Masking & Row Access Policies for AI", { contentDir: "ch17/75-governing-agent-access-rbac-masking-row-access", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131105/ltv-snowflake/governing-agent-access-rbac-masking-row-access.mp4", durationLabel: "2 min 29 s" }),
-      L(76, "lab-building-and-governing-a-cortex-agent", "Lab: Building and Governing a Cortex Search + Analyst Agent", { contentDir: "ch17/76-lab-building-and-governing-a-cortex-agent" }),
+      L(76, "lab-building-and-governing-a-cortex-agent", "Lab: Building and Governing a Cortex Search + Analyst Agent", { contentDir: "ch17/76-lab-building-and-governing-a-cortex-agent", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131199/ltv-snowflake/lab-building-and-governing-a-cortex-agent.mp4", durationLabel: "3 min 4 s" }),
     ],
   },
 ];
