@@ -172,8 +172,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     n: 13,
     title: "Advanced Visualizations",
     lessons: [
-      L(74, "dual-axis-and-combined-axis-charts", "Dual-Axis & Combined-Axis Charts", { contentDir: "ch13/74-dual-axis-and-combined-axis-charts" }),
-      L(75, "kpi-cards-bullet-charts-sparklines", "KPI Cards, Bullet Charts & Sparklines", { contentDir: "ch13/75-kpi-cards-bullet-charts-sparklines" }),
+      L(74, "dual-axis-and-combined-axis-charts", "Dual-Axis & Combined-Axis Charts", { contentDir: "ch13/74-dual-axis-and-combined-axis-charts", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135118/ltv-tableau/dual-axis-and-combined-axis-charts.mp4", durationLabel: "1 min 35 s" }),
+      L(75, "kpi-cards-bullet-charts-sparklines", "KPI Cards, Bullet Charts & Sparklines", { contentDir: "ch13/75-kpi-cards-bullet-charts-sparklines", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135171/ltv-tableau/kpi-cards-bullet-charts-sparklines.mp4", durationLabel: "1 min 42 s" }),
       L(76, "waterfall-funnel-pareto-charts", "Waterfall, Funnel & Pareto Charts", { contentDir: "ch13/76-waterfall-funnel-pareto-charts" }),
       L(77, "advanced-reference-lines-bands-dynamic-targets", "Advanced Reference Lines, Bands & Dynamic Targets", { contentDir: "ch13/77-advanced-reference-lines-bands-dynamic-targets" }),
       L(78, "advanced-chart-challenge", "Advanced Chart Challenge", { contentDir: "ch13/78-advanced-chart-challenge" }),
