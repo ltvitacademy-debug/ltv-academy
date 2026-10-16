@@ -117,7 +117,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(16, "lakeflow-deployment", "Lakeflow Deployment", {
         contentDir: "ch03/16-lakeflow-deployment",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151273/ltv-advanced-databricks/lakeflow-deployment.mp4",
+        durationLabel: "1 min 26 s",
       }),
     ],
   },
