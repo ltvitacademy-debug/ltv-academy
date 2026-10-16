@@ -225,7 +225,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(39, "exam-day-strategy", "Exam-Day Strategy and Time Management", {
         contentDir: "ch02/39-exam-day-strategy",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148502/ltv-career-capstone/exam-day-strategy.mp4",
+        durationLabel: "1 min 8 s",
       }),
       L(40, "full-length-practice-exam-part-1", "Full-Length Practice Exam, Part 1", {
         contentDir: "ch02/40-full-length-practice-exam-part-1",
