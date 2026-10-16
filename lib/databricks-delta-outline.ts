@@ -119,7 +119,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(18, "acid-transactions-in-delta-lake", "ACID Transactions in Delta Lake", {
         contentDir: "ch02/18-acid-transactions-in-delta-lake",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143345/ltv-databricks-delta/acid-transactions-in-delta-lake.mp4",
+        durationLabel: "1 min 33 s",
       }),
       L(19, "schema-enforcement", "Schema Enforcement", {
         contentDir: "ch02/19-schema-enforcement",
