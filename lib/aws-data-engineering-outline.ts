@@ -351,6 +351,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(53, "cloudwatch-fundamentals", "CloudWatch Fundamentals", {
         contentDir: "ch11/53-cloudwatch-fundamentals",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156495/ltv-aws-data-engineering/cloudwatch-fundamentals.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(54, "cloudwatch-alarms-and-dashboards", "CloudWatch Alarms & Dashboards", {
         contentDir: "ch11/54-cloudwatch-alarms-and-dashboards",
