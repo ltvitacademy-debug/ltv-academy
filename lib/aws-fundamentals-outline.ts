@@ -122,6 +122,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(16, "aws-sdk-overview", "AWS SDK, Overview", {
         contentDir: "ch04/16-aws-sdk-overview",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153703/ltv-aws-fundamentals/aws-sdk-overview.mp4",
+        durationLabel: "1 min 53 s",
       }),
       L(17, "deploying-your-first-resource", "Deploying Your First Resource", {
         contentDir: "ch04/17-deploying-your-first-resource",
