@@ -82,7 +82,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Index & Statistics Administration",
     lessons: [
-      L(11, "inspecting-indexes-and-fragmentation", "Inspecting Indexes & Fragmentation", { contentDir: "ch03/11-inspecting-indexes-and-fragmentation" }),
+      L(11, "inspecting-indexes-and-fragmentation", "Inspecting Indexes & Fragmentation", { contentDir: "ch03/11-inspecting-indexes-and-fragmentation",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792164549/ltv-t-sql-for-dbas/inspecting-indexes-and-fragmentation.mp4",
+        durationLabel: "1 min 34 s",
+      }),
       L(12, "missing-unused-duplicate-indexes", "Missing, Unused & Duplicate Indexes", { contentDir: "ch03/12-missing-unused-duplicate-indexes" }),
       L(13, "statistics-maintenance", "Statistics: Inspecting & Maintaining", { contentDir: "ch03/13-statistics-maintenance" }),
       L(14, "when-not-to-rebuild-an-index", "When Not to Rebuild an Index", { contentDir: "ch03/14-when-not-to-rebuild-an-index" }),
