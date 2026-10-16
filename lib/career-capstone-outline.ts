@@ -266,7 +266,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(46, "copilot-explaining-a-kql-query", "Using Copilot to Explain and Fix a KQL Query", {
         contentDir: "ch03/46-copilot-explaining-a-kql-query",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148857/ltv-career-capstone/copilot-explaining-a-kql-query.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(47, "ai-assisted-anomaly-detection", "AI-Assisted Data Quality — Anomaly Detection Basics", {
         contentDir: "ch03/47-ai-assisted-anomaly-detection",
