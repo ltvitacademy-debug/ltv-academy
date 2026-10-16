@@ -185,7 +185,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(30, "designing-a-silver-to-gold-pipeline", "Designing a Silver-to-Gold Pipeline", {
         contentDir: "ch03/30-designing-a-silver-to-gold-pipeline",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144173/ltv-databricks-delta/designing-a-silver-to-gold-pipeline.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(31, "incremental-processing-patterns", "Incremental Processing Patterns", {
         contentDir: "ch03/31-incremental-processing-patterns",
