@@ -106,7 +106,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(14, "compliance-basics", "Compliance Basics", {
         contentDir: "ch03/14-compliance-basics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157975/ltv-azure-fundamentals/compliance-basics.mp4",
+        durationLabel: "1 min 34 s",
       }),
     ],
   },
