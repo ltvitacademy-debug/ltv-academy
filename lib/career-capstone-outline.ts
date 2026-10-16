@@ -170,7 +170,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(28, "implementing-an-analytics-solution", "Implementing and Managing an Analytics Solution", {
         contentDir: "ch02/28-implementing-an-analytics-solution",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147916/ltv-career-capstone/implementing-an-analytics-solution.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(29, "ingesting-and-transforming-exam-focus", "Ingesting and Transforming Data — Exam Focus", {
         contentDir: "ch02/29-ingesting-and-transforming-exam-focus",
