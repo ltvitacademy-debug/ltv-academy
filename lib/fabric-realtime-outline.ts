@@ -281,7 +281,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(49, "unit-testing-pyspark-transformations", "Unit Testing PySpark Transformations", {
         contentDir: "ch03/49-unit-testing-pyspark-transformations",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145099/ltv-fabric-realtime/unit-testing-pyspark-transformations.mp4",
+        durationLabel: "1 min 1 s",
       }),
       L(50, "data-contracts", "Data Contracts", {
         contentDir: "ch03/50-data-contracts",
