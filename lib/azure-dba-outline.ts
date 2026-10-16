@@ -416,7 +416,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(66, "azure-cli-and-powershell-for-dbas", "Azure CLI & PowerShell for Database Administrators", {
         contentDir: "ch11/66-azure-cli-and-powershell-for-dbas",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161448/ltv-azure-dba/azure-cli-and-powershell-for-dbas.mp4",
+        durationLabel: "1 min 36 s",
       }),
       L(67, "arm-templates-and-bicep-for-azure-sql", "ARM Templates & Bicep for Azure SQL", {
         contentDir: "ch11/67-arm-templates-and-bicep-for-azure-sql",
