@@ -195,7 +195,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(28, "delta-sharing", "Delta Sharing", {
         contentDir: "ch06/28-delta-sharing",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151826/ltv-advanced-databricks/delta-sharing.mp4",
+        durationLabel: "1 min 51 s",
       }),
       L(29, "secrets-management", "Secrets Management", {
         contentDir: "ch06/29-secrets-management",
