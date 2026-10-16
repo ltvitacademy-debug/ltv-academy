@@ -118,7 +118,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(16, "data-compression-and-storage-optimization", "Data Compression & Storage Optimization", {
         contentDir: "ch03/16-data-compression-and-storage-optimization",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158928/ltv-azure-dba/data-compression-and-storage-optimization.mp4",
+        durationLabel: "1 min 40 s",
       }),
       L(17, "database-sharding-and-horizontal-scaling", "Database Sharding & Horizontal Scaling", {
         contentDir: "ch03/17-database-sharding-and-horizontal-scaling",
