@@ -190,7 +190,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(32, "practice-data-warehouses", "Practice Questions: Data Warehouses", {
         contentDir: "ch02/32-practice-data-warehouses",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148153/ltv-career-capstone/practice-data-warehouses.mp4",
+        durationLabel: "1 min 11 s",
       }),
       L(33, "practice-eventstreams-and-kql", "Practice Questions: Eventstreams and KQL", {
         contentDir: "ch02/33-practice-eventstreams-and-kql",
