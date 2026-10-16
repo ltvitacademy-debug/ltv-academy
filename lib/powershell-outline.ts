@@ -64,7 +64,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
       }),
       L(7, "objects-vs-text", "Objects vs. Text", {
         contentDir: "ch02/07-objects-vs-text",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163212/ltv-powershell/objects-vs-text.mp4",
+        durationLabel: "1 min 44 s",
       }),
       L(8, "where-select-foreach-object", "Where-Object, Select-Object & ForEach-Object", {
         contentDir: "ch02/08-where-select-foreach-object",
