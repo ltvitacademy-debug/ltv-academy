@@ -30,15 +30,15 @@ export const AIRFLOW_CHAPTERS: ChapterMeta[] = [
       L(2, "the-dag-concept", "The DAG Concept", { contentDir: "ch01/02-the-dag-concept", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120472/ltv-airflow/the-dag-concept.mp4", durationLabel: "1 min 42 s" }),
       L(3, "installing-and-running-airflow", "Installing & Running Airflow", { contentDir: "ch01/03-installing-and-running-airflow", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120522/ltv-airflow/installing-and-running-airflow.mp4", durationLabel: "1 min 40 s" }),
       L(4, "the-airflow-ui", "The Airflow UI, Tour", { contentDir: "ch01/04-the-airflow-ui", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120569/ltv-airflow/the-airflow-ui.mp4", durationLabel: "1 min 33 s" }),
-      L(5, "operators-overview", "Operators Overview", { contentDir: "ch01/05-operators-overview" }),
-      L(6, "your-first-dag", "Your First DAG", { contentDir: "ch01/06-your-first-dag" }),
+      L(5, "operators-overview", "Operators Overview", { contentDir: "ch01/05-operators-overview", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120619/ltv-airflow/operators-overview.mp4", durationLabel: "1 min 39 s" }),
+      L(6, "your-first-dag", "Your First DAG", { contentDir: "ch01/06-your-first-dag", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120668/ltv-airflow/your-first-dag.mp4", durationLabel: "1 min 36 s" }),
     ],
   },
   {
     n: 2,
     title: "Building DAGs",
     lessons: [
-      L(7, "tasks-and-dependencies", "Tasks & Dependencies", { contentDir: "ch02/07-tasks-and-dependencies" }),
+      L(7, "tasks-and-dependencies", "Tasks & Dependencies", { contentDir: "ch02/07-tasks-and-dependencies", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120718/ltv-airflow/tasks-and-dependencies.mp4", durationLabel: "1 min 39 s" }),
       L(8, "pythonoperator", "PythonOperator", { contentDir: "ch02/08-pythonoperator" }),
       L(9, "bashoperator", "BashOperator", { contentDir: "ch02/09-bashoperator" }),
       L(10, "scheduling-and-cron", "Scheduling & Cron Expressions", { contentDir: "ch02/10-scheduling-and-cron" }),
