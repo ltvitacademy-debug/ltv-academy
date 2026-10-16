@@ -170,7 +170,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(27, "the-silver-layer", "The Silver Layer — Cleaned and Conformed Data", {
         contentDir: "ch03/27-the-silver-layer",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143982/ltv-databricks-delta/the-silver-layer.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(28, "the-gold-layer", "The Gold Layer — Business-Level Aggregates", {
         contentDir: "ch03/28-the-gold-layer",
