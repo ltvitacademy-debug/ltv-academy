@@ -127,6 +127,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(17, "deploying-your-first-resource", "Deploying Your First Resource", {
         contentDir: "ch04/17-deploying-your-first-resource",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153760/ltv-aws-fundamentals/deploying-your-first-resource.mp4",
+        durationLabel: "1 min 50 s",
       }),
       L(18, "aws-certification-landscape", "The AWS Certification Landscape, Overview", {
         contentDir: "ch04/18-aws-certification-landscape",
