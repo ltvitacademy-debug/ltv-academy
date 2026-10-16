@@ -226,6 +226,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(34, "lambda-and-step-functions", "Lambda + Step Functions", {
         contentDir: "ch06/34-lambda-and-step-functions",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155548/ltv-aws-data-engineering/lambda-and-step-functions.mp4",
+        durationLabel: "1 min 12 s",
       }),
     ],
   },
