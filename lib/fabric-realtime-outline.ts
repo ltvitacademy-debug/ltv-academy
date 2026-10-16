@@ -261,7 +261,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(45, "ci-cd-for-data-pipelines", "CI/CD for Data Pipelines", {
         contentDir: "ch03/45-ci-cd-for-data-pipelines",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144887/ltv-fabric-realtime/ci-cd-for-data-pipelines.mp4",
+        durationLabel: "1 min 11 s",
       }),
       L(46, "version-control-for-notebooks-and-pipelines", "Version Control for Notebooks and Pipelines", {
         contentDir: "ch03/46-version-control-for-notebooks-and-pipelines",
