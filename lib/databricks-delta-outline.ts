@@ -236,7 +236,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(39, "the-three-level-namespace", "The Three-Level Namespace", {
         contentDir: "ch04/39-the-three-level-namespace",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144782/ltv-databricks-delta/the-three-level-namespace.mp4",
+        durationLabel: "1 min 23 s",
       }),
       L(40, "creating-a-catalog-and-schema", "Creating a Catalog and Schema", {
         contentDir: "ch04/40-creating-a-catalog-and-schema",
