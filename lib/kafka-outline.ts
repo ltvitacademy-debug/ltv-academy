@@ -71,7 +71,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(8, "consumer-groups", "Consumer Groups", {
         contentDir: "ch02/08-consumer-groups",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148406/ltv-kafka/consumer-groups.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(9, "delivery-semantics", "Delivery Semantics: At-Most/At-Least/Exactly-Once", {
         contentDir: "ch02/09-delivery-semantics",
