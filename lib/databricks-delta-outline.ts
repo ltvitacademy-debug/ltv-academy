@@ -139,7 +139,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(22, "update-delete-and-merge", "UPDATE, DELETE, and MERGE", {
         contentDir: "ch02/22-update-delete-and-merge",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143621/ltv-databricks-delta/update-delete-and-merge.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(23, "optimize-and-file-compaction", "OPTIMIZE and File Compaction", {
         contentDir: "ch02/23-optimize-and-file-compaction",
