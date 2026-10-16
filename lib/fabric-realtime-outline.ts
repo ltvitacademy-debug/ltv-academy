@@ -34,7 +34,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(2, "fabric-workspaces", "Fabric Workspaces", {
         contentDir: "ch01/02-fabric-workspaces",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142283/ltv-fabric-realtime/fabric-workspaces.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(3, "onelake", "OneLake — One Lake for the Whole Organization", {
         contentDir: "ch01/03-onelake",
