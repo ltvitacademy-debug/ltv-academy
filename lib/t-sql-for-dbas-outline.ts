@@ -152,7 +152,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
     n: 6,
     title: "Security Administration with T-SQL",
     lessons: [
-      L(24, "logins-users-roles-permissions", "Logins, Users, Roles & Permissions", { contentDir: "ch06/24-logins-users-roles-permissions" }),
+      L(24, "logins-users-roles-permissions", "Logins, Users, Roles & Permissions", { contentDir: "ch06/24-logins-users-roles-permissions",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792165430/ltv-t-sql-for-dbas/logins-users-roles-permissions.mp4",
+        durationLabel: "1 min 56 s",
+      }),
       L(25, "grant-deny-revoke-in-practice", "GRANT, DENY & REVOKE, in Practice", { contentDir: "ch06/25-grant-deny-revoke-in-practice" }),
       L(26, "finding-orphaned-users", "Finding Orphaned Users", { contentDir: "ch06/26-finding-orphaned-users" }),
       L(27, "auditing-and-security-queries", "Auditing & Security Queries", { contentDir: "ch06/27-auditing-and-security-queries" }),
