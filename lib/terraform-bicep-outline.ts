@@ -80,7 +80,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
       }),
       L(10, "provisioning-an-event-hub", "Provisioning an Event Hub", {
         contentDir: "ch02/10-provisioning-an-event-hub",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147123/ltv-terraform-bicep/provisioning-an-event-hub.mp4",
+        durationLabel: "1 min 33 s",
       }),
       L(11, "terraform-modules", "Terraform Modules", {
         contentDir: "ch02/11-terraform-modules",

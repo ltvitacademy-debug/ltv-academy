@@ -104,7 +104,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(16, "caching-strategies", "Caching Strategies for Analytics", {
         contentDir: "ch01/16-caching-strategies",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147123/ltv-career-capstone/caching-strategies.mp4",
+        durationLabel: "1 min 33 s",
       }),
       L(17, "designing-for-multi-tenancy", "Designing for Multi-Tenancy", {
         contentDir: "ch01/17-designing-for-multi-tenancy",
