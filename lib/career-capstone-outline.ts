@@ -235,7 +235,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(41, "full-length-practice-exam-part-2", "Full-Length Practice Exam, Part 2", {
         contentDir: "ch02/41-full-length-practice-exam-part-2",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148596/ltv-career-capstone/full-length-practice-exam-part-2.mp4",
+        durationLabel: "1 min 11 s",
       }),
       L(42, "dp-700-chapter-recap", "DP-700 Chapter Recap", {
         contentDir: "ch02/42-dp-700-chapter-recap",
