@@ -503,7 +503,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(81, "backup-to-azure-storage-and-disaster-recovery-scenarios", "Backup to Azure Storage & Disaster Recovery Scenarios", {
         contentDir: "ch13/81-backup-to-azure-storage-and-disaster-recovery-scenarios",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162166/ltv-azure-dba/backup-to-azure-storage-and-disaster-recovery-scenarios.mp4",
+        durationLabel: "1 min 42 s",
       }),
     ],
   },
