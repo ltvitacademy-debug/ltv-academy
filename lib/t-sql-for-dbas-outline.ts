@@ -142,7 +142,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792165288/ltv-t-sql-for-dbas/restore-verifyonly.mp4",
         durationLabel: "1 min 47 s",
       }),
-      L(23, "backup-history-and-validation", "Backup History & Recovery Validation", { contentDir: "ch05/23-backup-history-and-validation" }),
+      L(23, "backup-history-and-validation", "Backup History & Recovery Validation", { contentDir: "ch05/23-backup-history-and-validation",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792165360/ltv-t-sql-for-dbas/backup-history-and-validation.mp4",
+        durationLabel: "1 min 57 s",
+      }),
     ],
   },
   {
