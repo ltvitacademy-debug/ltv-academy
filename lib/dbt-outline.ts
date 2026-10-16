@@ -30,9 +30,9 @@ export const DBT_CHAPTERS: ChapterMeta[] = [
       L(1, "what-is-analytics-engineering", "What Is Analytics Engineering?", { contentDir: "ch01/01-what-is-analytics-engineering", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124153/ltv-dbt/what-is-analytics-engineering.mp4", durationLabel: "1 min 44 s" }),
       L(2, "dbt-fundamentals", "dbt Fundamentals: What Problem Does It Solve?", { contentDir: "ch01/02-dbt-fundamentals", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124201/ltv-dbt/dbt-fundamentals.mp4", durationLabel: "1 min 38 s" }),
       L(3, "dbt-cloud-vs-dbt-core", "dbt Cloud vs. dbt Core", { contentDir: "ch01/03-dbt-cloud-vs-dbt-core", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124248/ltv-dbt/dbt-cloud-vs-dbt-core.mp4", durationLabel: "1 min 34 s" }),
-      L(4, "dbt-project-structure", "dbt Project Structure", { contentDir: "ch01/04-dbt-project-structure" }),
-      L(5, "connecting-dbt-to-snowflake", "Connecting dbt to Snowflake", { contentDir: "ch01/05-connecting-dbt-to-snowflake" }),
-      L(6, "your-first-dbt-run", "Your First dbt Run", { contentDir: "ch01/06-your-first-dbt-run" }),
+      L(4, "dbt-project-structure", "dbt Project Structure", { contentDir: "ch01/04-dbt-project-structure", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124292/ltv-dbt/dbt-project-structure.mp4", durationLabel: "1 min 22 s" }),
+      L(5, "connecting-dbt-to-snowflake", "Connecting dbt to Snowflake", { contentDir: "ch01/05-connecting-dbt-to-snowflake", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124337/ltv-dbt/connecting-dbt-to-snowflake.mp4", durationLabel: "1 min 28 s" }),
+      L(6, "your-first-dbt-run", "Your First dbt Run", { contentDir: "ch01/06-your-first-dbt-run", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124378/ltv-dbt/your-first-dbt-run.mp4", durationLabel: "1 min 23 s" }),
     ],
   },
   {
