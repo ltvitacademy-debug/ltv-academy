@@ -48,7 +48,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(5, "all-purpose-vs-job-clusters", "All-Purpose vs. Job Clusters", {
         contentDir: "ch01/05-all-purpose-vs-job-clusters",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142462/ltv-databricks-delta/all-purpose-vs-job-clusters.mp4",
+        durationLabel: "1 min 26 s",
       }),
       L(6, "notebooks-cells-and-languages", "Notebooks, Cells, and Languages", {
         contentDir: "ch01/06-notebooks-cells-and-languages",
