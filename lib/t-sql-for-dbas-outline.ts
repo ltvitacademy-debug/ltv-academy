@@ -72,7 +72,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792164430/ltv-t-sql-for-dbas/blocking-chains.mp4",
         durationLabel: "1 min 40 s",
       }),
-      L(10, "tempdb-usage-and-database-space", "TempDB Usage & Database Space", { contentDir: "ch02/10-tempdb-usage-and-database-space" }),
+      L(10, "tempdb-usage-and-database-space", "TempDB Usage & Database Space", { contentDir: "ch02/10-tempdb-usage-and-database-space",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792164492/ltv-t-sql-for-dbas/tempdb-usage-and-database-space.mp4",
+        durationLabel: "1 min 47 s",
+      }),
     ],
   },
   {
