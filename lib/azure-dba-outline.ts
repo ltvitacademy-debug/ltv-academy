@@ -549,7 +549,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(89, "monitoring-testing-troubleshooting-ha-dr", "Monitoring, Testing & Troubleshooting HA/DR", {
         contentDir: "ch14/89-monitoring-testing-troubleshooting-ha-dr",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162522/ltv-azure-dba/monitoring-testing-troubleshooting-ha-dr.mp4",
+        durationLabel: "1 min 20 s",
       }),
     ],
   },
