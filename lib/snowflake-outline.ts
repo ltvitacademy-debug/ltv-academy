@@ -116,7 +116,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     title: "Security & RBAC",
     lessons: [
       L(39, "users-roles-and-role-hierarchy", "Users, Roles & the Snowflake Role Hierarchy", { contentDir: "ch09/39-users-roles-and-role-hierarchy", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792128668/ltv-snowflake/users-roles-and-role-hierarchy.mp4", durationLabel: "2 min 8 s" }),
-      L(40, "grant-privileges-and-least-privilege", "GRANT, Privileges & Least Privilege in Snowflake", { contentDir: "ch09/40-grant-privileges-and-least-privilege" }),
+      L(40, "grant-privileges-and-least-privilege", "GRANT, Privileges & Least Privilege in Snowflake", { contentDir: "ch09/40-grant-privileges-and-least-privilege", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792128729/ltv-snowflake/grant-privileges-and-least-privilege.mp4", durationLabel: "1 min 56 s" }),
       L(41, "secure-views-and-row-access-policies", "Secure Views & Row Access Policies", { contentDir: "ch09/41-secure-views-and-row-access-policies" }),
       L(42, "dynamic-data-masking-in-snowflake", "Dynamic Data Masking in Snowflake", { contentDir: "ch09/42-dynamic-data-masking-in-snowflake" }),
     ],
