@@ -149,7 +149,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(21, "logins-users-roles-security-principals", "Logins, Users, Roles & Security Principals", {
         contentDir: "ch04/21-logins-users-roles-security-principals",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159194/ltv-azure-dba/logins-users-roles-security-principals.mp4",
+        durationLabel: "1 min 31 s",
       }),
       L(22, "server-roles-database-roles-object-permissions", "Server Roles, Database Roles & Object Permissions", {
         contentDir: "ch04/22-server-roles-database-roles-object-permissions",
