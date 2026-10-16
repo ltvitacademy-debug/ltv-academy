@@ -170,7 +170,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     title: "End-to-End Capstone Project",
     lessons: [
       L(57, "capstone-kickoff-source-to-snowflake-to-power-bi", "Capstone Kickoff: SQL Server/CSV/JSON → Snowflake → Power BI", { contentDir: "ch15/57-capstone-kickoff-source-to-snowflake-to-power-bi", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792129738/ltv-snowflake/capstone-kickoff-source-to-snowflake-to-power-bi.mp4", durationLabel: "2 min 12 s" }),
-      L(58, "capstone-staging-loading-and-transformation", "Capstone: Staging, Loading & Transformation", { contentDir: "ch15/58-capstone-staging-loading-and-transformation" }),
+      L(58, "capstone-staging-loading-and-transformation", "Capstone: Staging, Loading & Transformation", { contentDir: "ch15/58-capstone-staging-loading-and-transformation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792129797/ltv-snowflake/capstone-staging-loading-and-transformation.mp4", durationLabel: "1 min 55 s" }),
       L(59, "capstone-dimensional-model-streams-tasks-rbac", "Capstone: Dimensional Model, Streams/Tasks & RBAC", { contentDir: "ch15/59-capstone-dimensional-model-streams-tasks-rbac" }),
       L(60, "capstone-performance-monitoring-and-presenting", "Capstone: Performance, Monitoring & Presenting Your Project", { contentDir: "ch15/60-capstone-performance-monitoring-and-presenting" }),
     ],
