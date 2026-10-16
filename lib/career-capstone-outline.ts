@@ -382,7 +382,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(68, "project-1-production-hardening", "Project 1: Production Hardening", {
         contentDir: "ch04/68-project-1-production-hardening",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149890/ltv-career-capstone/project-1-production-hardening.mp4",
+        durationLabel: "1 min 11 s",
       }),
       L(69, "project-1-wrap-up", "Project 1: Wrap-Up and Retrospective", {
         contentDir: "ch04/69-project-1-wrap-up",
