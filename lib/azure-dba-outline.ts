@@ -349,7 +349,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(55, "dbcc-checkdb-and-database-integrity", "DBCC CHECKDB & Database Integrity", {
         contentDir: "ch09/55-dbcc-checkdb-and-database-integrity",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160964/ltv-azure-dba/dbcc-checkdb-and-database-integrity.mp4",
+        durationLabel: "1 min 20 s",
       }),
       L(56, "database-scoped-configuration-and-server-settings", "Database-Scoped Configuration & Server Settings", {
         contentDir: "ch09/56-database-scoped-configuration-and-server-settings",
