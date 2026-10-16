@@ -276,7 +276,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(48, "llms-for-data-documentation", "LLMs for Automated Data Documentation", {
         contentDir: "ch03/48-llms-for-data-documentation",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148963/ltv-career-capstone/llms-for-data-documentation.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(49, "prompting-patterns-for-data-engineering", "Prompting Patterns for Data Engineering Tasks", {
         contentDir: "ch03/49-prompting-patterns-for-data-engineering",
