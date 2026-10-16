@@ -91,6 +91,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(11, "ci-cd-for-the-pipeline", "CI/CD for the Pipeline", {
         contentDir: "ch03/11-ci-cd-for-the-pipeline",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157185/ltv-aws-capstone/ci-cd-for-the-pipeline.mp4",
+        durationLabel: "1 min 36 s",
       }),
       L(12, "a-cost-optimization-pass", "A Cost Optimization Pass", {
         contentDir: "ch03/12-a-cost-optimization-pass",
