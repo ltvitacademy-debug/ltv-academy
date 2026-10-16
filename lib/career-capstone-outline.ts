@@ -240,7 +240,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(42, "dp-700-chapter-recap", "DP-700 Chapter Recap", {
         contentDir: "ch02/42-dp-700-chapter-recap",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148651/ltv-career-capstone/dp-700-chapter-recap.mp4",
+        durationLabel: "1 min 24 s",
       }),
     ],
   },
