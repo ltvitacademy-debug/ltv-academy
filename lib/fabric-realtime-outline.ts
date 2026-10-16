@@ -160,7 +160,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(26, "kql-time-series-functions", "KQL: Time Series Functions", {
         contentDir: "ch02/26-kql-time-series-functions",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143770/ltv-fabric-realtime/kql-time-series-functions.mp4",
+        durationLabel: "1 min 31 s",
       }),
       L(27, "ingesting-data-into-kql", "Ingesting Data Into a KQL Database", {
         contentDir: "ch02/27-ingesting-data-into-kql",
