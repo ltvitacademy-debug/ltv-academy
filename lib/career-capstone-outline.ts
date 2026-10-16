@@ -256,7 +256,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(44, "copilot-in-fabric", "Copilot in Microsoft Fabric", {
         contentDir: "ch03/44-copilot-in-fabric",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148750/ltv-career-capstone/copilot-in-fabric.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(45, "copilot-generating-a-notebook", "Using Copilot to Generate a Notebook", {
         contentDir: "ch03/45-copilot-generating-a-notebook",
