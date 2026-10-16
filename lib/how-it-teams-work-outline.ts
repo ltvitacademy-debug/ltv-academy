@@ -48,6 +48,8 @@ export const HOW_IT_TEAMS_WORK_CHAPTERS: ChapterMeta[] = [
       }),
       L(5, "version-control-with-git", "Version Control with Git", {
         contentDir: "ch01/05-version-control-with-git",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139736/ltv-how-it-teams-work/version-control-with-git.mp4",
+        durationLabel: "2 min 14 s",
       }),
       L(6, "releases-deployments-and-cicd", "Releases, Deployments & CI/CD", {
         contentDir: "ch01/06-releases-deployments-and-cicd",
