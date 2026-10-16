@@ -241,7 +241,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(37, "ledger-change-tracking-security-compliance-scenarios", "Ledger, Change Tracking & Security/Compliance Scenarios", {
         contentDir: "ch06/37-ledger-change-tracking-security-compliance-scenarios",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159954/ltv-azure-dba/ledger-change-tracking-security-compliance-scenarios.mp4",
+        durationLabel: "1 min 32 s",
       }),
     ],
   },
