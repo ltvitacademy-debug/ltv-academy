@@ -31,7 +31,8 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "system-databases", "System Databases: master, msdb, model & tempdb", {
         contentDir: "ch01/01-system-databases",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163875/ltv-t-sql-for-dbas/system-databases.mp4",
+        durationLabel: "1 min 26 s",
       }),
       L(2, "sys-catalog-views", "sys Catalog Views", { contentDir: "ch01/02-sys-catalog-views" }),
       L(3, "dmvs-and-dmfs-overview", "DMVs & DMFs, Overview", { contentDir: "ch01/03-dmvs-and-dmfs-overview" }),
