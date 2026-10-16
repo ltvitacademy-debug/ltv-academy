@@ -176,7 +176,7 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
       L(75, "kpi-cards-bullet-charts-sparklines", "KPI Cards, Bullet Charts & Sparklines", { contentDir: "ch13/75-kpi-cards-bullet-charts-sparklines", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135171/ltv-tableau/kpi-cards-bullet-charts-sparklines.mp4", durationLabel: "1 min 42 s" }),
       L(76, "waterfall-funnel-pareto-charts", "Waterfall, Funnel & Pareto Charts", { contentDir: "ch13/76-waterfall-funnel-pareto-charts", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135217/ltv-tableau/waterfall-funnel-pareto-charts.mp4", durationLabel: "1 min 27 s" }),
       L(77, "advanced-reference-lines-bands-dynamic-targets", "Advanced Reference Lines, Bands & Dynamic Targets", { contentDir: "ch13/77-advanced-reference-lines-bands-dynamic-targets", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135266/ltv-tableau/advanced-reference-lines-bands-dynamic-targets.mp4", durationLabel: "1 min 38 s" }),
-      L(78, "advanced-chart-challenge", "Advanced Chart Challenge", { contentDir: "ch13/78-advanced-chart-challenge" }),
+      L(78, "advanced-chart-challenge", "Advanced Chart Challenge", { contentDir: "ch13/78-advanced-chart-challenge", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792136210/ltv-tableau/advanced-chart-challenge.mp4", durationLabel: "1 min 45 s" }),
     ],
   },
   {
