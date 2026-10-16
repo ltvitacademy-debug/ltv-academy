@@ -273,7 +273,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(44, "select", "select()", {
         contentDir: "ch04/44-select",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139817/ltv-de-foundations/select.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(45, "filter-and-where", "filter() and where()", {
         contentDir: "ch04/45-filter-and-where",
