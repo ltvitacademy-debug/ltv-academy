@@ -59,7 +59,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(6, "the-pipeline", "The Pipeline", {
         contentDir: "ch02/06-the-pipeline",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163152/ltv-powershell/the-pipeline.mp4",
+        durationLabel: "1 min 31 s",
       }),
       L(7, "objects-vs-text", "Objects vs. Text", {
         contentDir: "ch02/07-objects-vs-text",
