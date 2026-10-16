@@ -120,7 +120,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(18, "what-is-real-time-intelligence", "What Is Real-Time Intelligence?", {
         contentDir: "ch02/18-what-is-real-time-intelligence",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143238/ltv-fabric-realtime/what-is-real-time-intelligence.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(19, "eventstreams", "Eventstreams — Ingesting Streaming Data", {
         contentDir: "ch02/19-eventstreams",
