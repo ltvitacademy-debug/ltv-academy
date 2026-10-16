@@ -308,7 +308,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(48, "query-store-fundamentals", "Query Store Fundamentals", {
         contentDir: "ch08/48-query-store-fundamentals",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160616/ltv-azure-dba/query-store-fundamentals.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(49, "using-query-store-to-find-regressed-queries", "Using Query Store to Find Regressed Queries", {
         contentDir: "ch08/49-using-query-store-to-find-regressed-queries",
