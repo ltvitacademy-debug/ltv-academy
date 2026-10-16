@@ -200,7 +200,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(30, "troubleshooting-azure-sql-connectivity", "Troubleshooting Azure SQL Connectivity", {
         contentDir: "ch05/30-troubleshooting-azure-sql-connectivity",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159616/ltv-azure-dba/troubleshooting-azure-sql-connectivity.mp4",
+        durationLabel: "1 min 25 s",
       }),
     ],
   },
