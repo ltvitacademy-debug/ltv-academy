@@ -112,6 +112,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(14, "presenting-your-aws-data-platform", "Presenting Your AWS Data Platform", {
         contentDir: "ch04/14-presenting-your-aws-data-platform",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157342/ltv-aws-capstone/presenting-your-aws-data-platform.mp4",
+        durationLabel: "1 min 37 s",
       }),
       L(15, "portfolio-and-interview-prep", "Portfolio & Interview Prep", {
         contentDir: "ch04/15-portfolio-and-interview-prep",
