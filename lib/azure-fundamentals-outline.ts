@@ -70,7 +70,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(8, "azure-networking-basics", "Azure Networking Basics: VNets", {
         contentDir: "ch02/08-azure-networking-basics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157720/ltv-azure-fundamentals/azure-networking-basics.mp4",
+        durationLabel: "55 s",
       }),
       L(9, "entra-id-basics", "Microsoft Entra ID Basics", {
         contentDir: "ch02/09-entra-id-basics",
