@@ -60,9 +60,9 @@ export const AIRFLOW_CHAPTERS: ChapterMeta[] = [
     n: 4,
     title: "Sensors, Branching & Trigger Rules",
     lessons: [
-      L(17, "sensors", "Sensors", { contentDir: "ch04/17-sensors" }),
-      L(18, "branching", "Branching", { contentDir: "ch04/18-branching" }),
-      L(19, "trigger-rules", "Trigger Rules", { contentDir: "ch04/19-trigger-rules" }),
+      L(17, "sensors", "Sensors", { contentDir: "ch04/17-sensors", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121237/ltv-airflow/sensors.mp4", durationLabel: "1 min 35 s" }),
+      L(18, "branching", "Branching", { contentDir: "ch04/18-branching", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121282/ltv-airflow/branching.mp4", durationLabel: "1 min 28 s" }),
+      L(19, "trigger-rules", "Trigger Rules", { contentDir: "ch04/19-trigger-rules", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121325/ltv-airflow/trigger-rules.mp4", durationLabel: "1 min 25 s" }),
       L(20, "dynamic-task-mapping", "Dynamic Task Mapping", { contentDir: "ch04/20-dynamic-task-mapping" }),
     ],
   },
