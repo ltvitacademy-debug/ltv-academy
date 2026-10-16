@@ -28,7 +28,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "setting-up-your-python-environment", "What Is Python & Setting Up Your Environment", { contentDir: "ch01/01-setting-up-your-python-environment", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142696/ltv-python-for-data-engineers/setting-up-your-python-environment.mp4", durationLabel: "2 min 43 s" }),
       L(2, "variables-data-types-and-operators", "Variables, Data Types & Operators", { contentDir: "ch01/02-variables-data-types-and-operators", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142830/ltv-python-for-data-engineers/variables-data-types-and-operators.mp4", durationLabel: "2 min 53 s" }),
-      L(3, "strings-and-string-formatting", "Strings & String Formatting", { contentDir: "ch01/03-strings-and-string-formatting" }),
+      L(3, "strings-and-string-formatting", "Strings & String Formatting", { contentDir: "ch01/03-strings-and-string-formatting", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142950/ltv-python-for-data-engineers/strings-and-string-formatting.mp4", durationLabel: "2 min 35 s" }),
       L(4, "lists-tuples-and-sets", "Lists, Tuples & Sets", { contentDir: "ch01/04-lists-tuples-and-sets" }),
       L(5, "dictionaries", "Dictionaries", { contentDir: "ch01/05-dictionaries" }),
       L(6, "control-flow-conditions-and-loops", "Control Flow: Conditions & Loops", { contentDir: "ch01/06-control-flow-conditions-and-loops" }),
