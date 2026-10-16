@@ -256,7 +256,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(44, "environments-dev-test-prod", "Environments: Dev, Test, and Prod", {
         contentDir: "ch03/44-environments-dev-test-prod",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144832/ltv-fabric-realtime/environments-dev-test-prod.mp4",
+        durationLabel: "1 min 11 s",
       }),
       L(45, "ci-cd-for-data-pipelines", "CI/CD for Data Pipelines", {
         contentDir: "ch03/45-ci-cd-for-data-pipelines",

@@ -241,7 +241,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(40, "creating-a-catalog-and-schema", "Creating a Catalog and Schema", {
         contentDir: "ch04/40-creating-a-catalog-and-schema",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144846/ltv-databricks-delta/creating-a-catalog-and-schema.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(41, "managed-vs-external-tables", "Managed Tables vs. External Tables", {
         contentDir: "ch04/41-managed-vs-external-tables",
