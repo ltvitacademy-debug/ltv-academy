@@ -268,7 +268,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(43, "defining-schemas", "Defining Schemas", {
         contentDir: "ch04/43-defining-schemas",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139761/ltv-de-foundations/defining-schemas.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(44, "select", "select()", {
         contentDir: "ch04/44-select",
