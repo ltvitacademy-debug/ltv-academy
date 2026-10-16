@@ -117,7 +117,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(15, "azure-cli-basics", "Azure CLI Basics", {
         contentDir: "ch04/15-azure-cli-basics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158020/ltv-azure-fundamentals/azure-cli-basics.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(16, "arm-and-bicep-overview", "ARM & Bicep, Overview", {
         contentDir: "ch04/16-arm-and-bicep-overview",
