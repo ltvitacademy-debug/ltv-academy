@@ -185,7 +185,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(26, "kafka-plus-snowflake-and-databricks", "Kafka + Snowflake & Databricks", {
         contentDir: "ch06/26-kafka-plus-snowflake-and-databricks",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149400/ltv-kafka/kafka-plus-snowflake-and-databricks.mp4",
+        durationLabel: "1 min 31 s",
       }),
       L(27, "error-handling-in-streaming-pipelines", "Error Handling in Streaming Pipelines", {
         contentDir: "ch06/27-error-handling-in-streaming-pipelines",
