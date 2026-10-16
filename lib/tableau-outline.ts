@@ -68,8 +68,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(22, "the-marks-card", "The Marks Card: Color, Size, Detail & Shape", { contentDir: "ch04/22-the-marks-card", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132439/ltv-tableau/the-marks-card.mp4", durationLabel: "1 min 52 s" }),
       L(23, "labels-tooltips-viz-in-tooltip", "Labels, Tooltips & Viz in Tooltip", { contentDir: "ch04/23-labels-tooltips-viz-in-tooltip", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132493/ltv-tableau/labels-tooltips-viz-in-tooltip.mp4", durationLabel: "1 min 52 s" }),
-      L(24, "formatting-numbers-dates-axes-headers", "Formatting Numbers, Dates, Axes & Headers", { contentDir: "ch04/24-formatting-numbers-dates-axes-headers" }),
-      L(25, "titles-captions-reference-lines-annotations", "Titles, Captions, Reference Lines & Annotations", { contentDir: "ch04/25-titles-captions-reference-lines-annotations" }),
+      L(24, "formatting-numbers-dates-axes-headers", "Formatting Numbers, Dates, Axes & Headers", { contentDir: "ch04/24-formatting-numbers-dates-axes-headers", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132553/ltv-tableau/formatting-numbers-dates-axes-headers.mp4", durationLabel: "1 min 58 s" }),
+      L(25, "titles-captions-reference-lines-annotations", "Titles, Captions, Reference Lines & Annotations", { contentDir: "ch04/25-titles-captions-reference-lines-annotations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132608/ltv-tableau/titles-captions-reference-lines-annotations.mp4", durationLabel: "1 min 50 s" }),
       L(26, "professional-design-avoiding-clutter", "Professional Visualization Design & Avoiding Clutter", { contentDir: "ch04/26-professional-design-avoiding-clutter" }),
     ],
   },
