@@ -131,7 +131,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
       }),
       L(18, "reading-and-modifying-an-existing-script", "Reading & Modifying an Existing Script", {
         contentDir: "ch04/18-reading-and-modifying-an-existing-script",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163801/ltv-powershell/reading-and-modifying-an-existing-script.mp4",
+        durationLabel: "1 min 52 s",
       }),
     ],
   },
