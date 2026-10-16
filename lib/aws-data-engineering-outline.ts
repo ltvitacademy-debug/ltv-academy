@@ -237,6 +237,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(35, "step-functions-fundamentals", "Step Functions Fundamentals", {
         contentDir: "ch07/35-step-functions-fundamentals",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155603/ltv-aws-data-engineering/step-functions-fundamentals.mp4",
+        durationLabel: "1 min 44 s",
       }),
       L(36, "building-a-state-machine", "Building a State Machine", {
         contentDir: "ch07/36-building-a-state-machine",
