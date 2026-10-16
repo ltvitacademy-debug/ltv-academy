@@ -126,7 +126,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
       }),
       L(17, "automating-a-routine-admin-task", "Automating a Routine Admin Task", {
         contentDir: "ch04/17-automating-a-routine-admin-task",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163740/ltv-powershell/automating-a-routine-admin-task.mp4",
+        durationLabel: "1 min 32 s",
       }),
       L(18, "reading-and-modifying-an-existing-script", "Reading & Modifying an Existing Script", {
         contentDir: "ch04/18-reading-and-modifying-an-existing-script",
