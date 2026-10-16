@@ -64,7 +64,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(8, "data-modeling-at-scale", "Data Modeling at Scale — Star Schema Revisited", {
         contentDir: "ch01/08-data-modeling-at-scale",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146533/ltv-career-capstone/data-modeling-at-scale.mp4",
+        durationLabel: "1 min 17 s",
       }),
       L(9, "partitioning-strategies", "Partitioning Strategies", {
         contentDir: "ch01/09-partitioning-strategies",
