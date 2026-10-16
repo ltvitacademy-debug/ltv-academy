@@ -181,7 +181,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(61, "cortex-ai-llm-functions-overview", "Snowflake Cortex AI: LLM Functions Overview", { contentDir: "ch16/61-cortex-ai-llm-functions-overview", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792130011/ltv-snowflake/cortex-ai-llm-functions-overview.mp4", durationLabel: "2 min 10 s" }),
       L(62, "cortex-analyst-natural-language-to-sql", "Cortex Analyst: Natural Language to SQL", { contentDir: "ch16/62-cortex-analyst-natural-language-to-sql", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792130088/ltv-snowflake/cortex-analyst-natural-language-to-sql.mp4", durationLabel: "2 min 38 s" }),
-      L(63, "cortex-search-hybrid-semantic-search", "Cortex Search: Hybrid Semantic Search for RAG", { contentDir: "ch16/63-cortex-search-hybrid-semantic-search" }),
+      L(63, "cortex-search-hybrid-semantic-search", "Cortex Search: Hybrid Semantic Search for RAG", { contentDir: "ch16/63-cortex-search-hybrid-semantic-search", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792130164/ltv-snowflake/cortex-search-hybrid-semantic-search.mp4", durationLabel: "2 min 31 s" }),
       L(64, "cortex-agents-multi-step-orchestration", "Cortex Agents: Multi-Step Agentic Orchestration", { contentDir: "ch16/64-cortex-agents-multi-step-orchestration" }),
       L(65, "agent-memory-and-context-threads", "Agent Memory & Context: Threads in Cortex Agents", { contentDir: "ch16/65-agent-memory-and-context-threads" }),
       L(66, "the-snowflake-managed-mcp-server", "The Snowflake-Managed MCP Server", { contentDir: "ch16/66-the-snowflake-managed-mcp-server" }),
