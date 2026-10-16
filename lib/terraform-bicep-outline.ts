@@ -49,7 +49,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
       }),
       L(5, "understanding-state", "Understanding State", {
         contentDir: "ch01/05-understanding-state",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146760/ltv-terraform-bicep/understanding-state.mp4",
+        durationLabel: "1 min 28 s",
       }),
     ],
   },

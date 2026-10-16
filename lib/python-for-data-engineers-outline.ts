@@ -91,7 +91,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
       L(33, "extracting-from-multiple-sources", "Extracting From Multiple Sources", { contentDir: "ch06/33-extracting-from-multiple-sources", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146394/ltv-python-for-data-engineers/extracting-from-multiple-sources.mp4", durationLabel: "2 min 31 s" }),
       L(34, "transformation-logic-and-data-validation", "Transformation Logic & Data Validation", { contentDir: "ch06/34-transformation-logic-and-data-validation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146503/ltv-python-for-data-engineers/transformation-logic-and-data-validation.mp4", durationLabel: "2 min 26 s" }),
       L(35, "loading-to-a-target", "Loading to a Target (File, Database, Warehouse)", { contentDir: "ch06/35-loading-to-a-target", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146632/ltv-python-for-data-engineers/loading-to-a-target.mp4", durationLabel: "2 min 47 s" }),
-      L(36, "incremental-loads-and-watermarks", "Incremental Loads & Watermarks", { contentDir: "ch06/36-incremental-loads-and-watermarks" }),
+      L(36, "incremental-loads-and-watermarks", "Incremental Loads & Watermarks", { contentDir: "ch06/36-incremental-loads-and-watermarks", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146750/ltv-python-for-data-engineers/incremental-loads-and-watermarks.mp4", durationLabel: "2 min 27 s" }),
       L(37, "idempotency-and-error-recovery", "Idempotency & Error Recovery", { contentDir: "ch06/37-idempotency-and-error-recovery" }),
       L(38, "building-a-config-driven-etl-script", "Building a Config-Driven ETL Script", { contentDir: "ch06/38-building-a-config-driven-etl-script" }),
     ],
