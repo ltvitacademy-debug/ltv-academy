@@ -288,7 +288,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(44, "sql-server-performance-troubleshooting-methodology", "SQL Server Performance Troubleshooting Methodology", {
         contentDir: "ch08/44-sql-server-performance-troubleshooting-methodology",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160406/ltv-azure-dba/sql-server-performance-troubleshooting-methodology.mp4",
+        durationLabel: "1 min 47 s",
       }),
       L(45, "reading-execution-plans-for-performance-problems", "Reading Execution Plans for Performance Problems", {
         contentDir: "ch08/45-reading-execution-plans-for-performance-problems",
