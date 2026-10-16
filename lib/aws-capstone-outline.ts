@@ -101,6 +101,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(13, "disaster-recovery-considerations", "Disaster Recovery Considerations", {
         contentDir: "ch03/13-disaster-recovery-considerations",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157291/ltv-aws-capstone/disaster-recovery-considerations.mp4",
+        durationLabel: "1 min 42 s",
       }),
     ],
   },
