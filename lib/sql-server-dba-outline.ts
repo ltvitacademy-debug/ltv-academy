@@ -245,7 +245,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 8,
     title: "Linked Servers & Connectivity",
     lessons: [
-      L(45, "linked-server-setup", "Linked Server Setup", { contentDir: "ch08/45-linked-server-setup" }),
+      L(45, "linked-server-setup", "Linked Server Setup", { contentDir: "ch08/45-linked-server-setup",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792169152/ltv-sql-server-dba/linked-server-setup.mp4",
+        durationLabel: "1 min 38 s",
+      }),
       L(46, "remote-queries", "Remote Queries", { contentDir: "ch08/46-remote-queries" }),
       L(47, "connectivity-troubleshooting", "Connectivity Troubleshooting", { contentDir: "ch08/47-connectivity-troubleshooting" }),
       L(48, "network-configuration", "Network Configuration", { contentDir: "ch08/48-network-configuration" }),
