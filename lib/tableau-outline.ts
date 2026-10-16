@@ -184,7 +184,7 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     title: "Dashboards",
     lessons: [
       L(79, "your-first-professional-dashboard", "Building Your First Professional Dashboard", { contentDir: "ch14/79-your-first-professional-dashboard", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135318/ltv-tableau/your-first-professional-dashboard.mp4", durationLabel: "1 min 45 s" }),
-      L(80, "dashboard-layout-containers-tiled-floating", "Dashboard Layout: Containers, Tiled & Floating Objects", { contentDir: "ch14/80-dashboard-layout-containers-tiled-floating" }),
+      L(80, "dashboard-layout-containers-tiled-floating", "Dashboard Layout: Containers, Tiled & Floating Objects", { contentDir: "ch14/80-dashboard-layout-containers-tiled-floating", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135378/ltv-tableau/dashboard-layout-containers-tiled-floating.mp4", durationLabel: "1 min 55 s" }),
       L(81, "kpi-headers-and-executive-summary", "Building KPI Headers & Executive Summary Sections", { contentDir: "ch14/81-kpi-headers-and-executive-summary" }),
       L(82, "filter-and-highlight-actions", "Filter & Highlight Actions", { contentDir: "ch14/82-filter-and-highlight-actions" }),
       L(83, "url-parameter-and-set-actions", "URL, Parameter & Set Actions", { contentDir: "ch14/83-url-parameter-and-set-actions" }),
