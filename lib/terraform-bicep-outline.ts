@@ -106,7 +106,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
       }),
       L(14, "deploying-a-resource-group", "Deploying a Resource Group", {
         contentDir: "ch03/14-deploying-a-resource-group",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147368/ltv-terraform-bicep/deploying-a-resource-group.mp4",
+        durationLabel: "1 min 8 s",
       }),
       L(15, "deploying-azure-sql", "Deploying Azure SQL With Bicep", {
         contentDir: "ch03/15-deploying-azure-sql",
