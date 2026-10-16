@@ -306,7 +306,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(54, "ai-drafted-root-cause-analysis", "Using an LLM to Draft a Root Cause Analysis", {
         contentDir: "ch03/54-ai-drafted-root-cause-analysis",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149268/ltv-career-capstone/ai-drafted-root-cause-analysis.mp4",
+        durationLabel: "1 min 2 s",
       }),
       L(55, "ai-assisted-schema-mapping", "AI-Assisted Schema Mapping", {
         contentDir: "ch03/55-ai-assisted-schema-mapping",
