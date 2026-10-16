@@ -261,7 +261,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(44, "data-lineage-in-unity-catalog", "Data Lineage in Unity Catalog", {
         contentDir: "ch04/44-data-lineage-in-unity-catalog",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145123/ltv-databricks-delta/data-lineage-in-unity-catalog.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(45, "unity-catalog-volumes", "Unity Catalog Volumes", {
         contentDir: "ch04/45-unity-catalog-volumes",
