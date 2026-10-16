@@ -230,7 +230,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(40, "fabric-realtime-vs-databricks-streaming", "Comparing Fabric Real-Time to Databricks Structured Streaming", {
         contentDir: "ch02/40-fabric-realtime-vs-databricks-streaming",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144588/ltv-fabric-realtime/fabric-realtime-vs-databricks-streaming.mp4",
+        durationLabel: "1 min 17 s",
       }),
       L(41, "a-real-time-nyc-taxi-dashboard", "A Real-Time NYC Taxi Dashboard, Start to Finish", {
         contentDir: "ch02/41-a-real-time-nyc-taxi-dashboard",
