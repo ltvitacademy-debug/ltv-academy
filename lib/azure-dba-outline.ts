@@ -565,7 +565,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(91, "project-migrate-and-secure-the-environment", "Project — Migrate & Secure the Environment", {
         contentDir: "ch15/91-project-migrate-and-secure-the-environment",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162623/ltv-azure-dba/project-migrate-and-secure-the-environment.mp4",
+        durationLabel: "1 min 48 s",
       }),
       L(92, "project-performance-and-automation", "Project — Performance & Automation", {
         contentDir: "ch15/92-project-performance-and-automation",
