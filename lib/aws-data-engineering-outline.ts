@@ -31,7 +31,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "s3-fundamentals", "S3 Fundamentals", {
         contentDir: "ch01/01-s3-fundamentals",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153891/ltv-aws-data-engineering/s3-fundamentals.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(2, "buckets-and-objects", "Buckets & Objects", {
         contentDir: "ch01/02-buckets-and-objects",
