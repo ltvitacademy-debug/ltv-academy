@@ -29,7 +29,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "what-is-system-design", "What Is System Design, for Data Engineers?", {
         contentDir: "ch01/01-what-is-system-design",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146206/ltv-career-capstone/what-is-system-design.mp4",
+        durationLabel: "1 min 4 s",
       }),
       L(2, "requirements-gathering", "Requirements Gathering — Functional vs. Non-Functional", {
         contentDir: "ch01/02-requirements-gathering",
