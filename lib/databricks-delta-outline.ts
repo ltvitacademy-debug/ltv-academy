@@ -160,7 +160,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(25, "what-is-medallion-architecture", "What Is Medallion Architecture?", {
         contentDir: "ch03/25-what-is-medallion-architecture",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143850/ltv-databricks-delta/what-is-medallion-architecture.mp4",
+        durationLabel: "1 min 38 s",
       }),
       L(26, "the-bronze-layer", "The Bronze Layer — Raw Ingestion", {
         contentDir: "ch03/26-the-bronze-layer",
