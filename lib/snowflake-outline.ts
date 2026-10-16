@@ -42,7 +42,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(6, "snowflake-sql-vs-t-sql", "Snowflake SQL vs. T-SQL: Syntax Differences That Matter", { contentDir: "ch02/06-snowflake-sql-vs-t-sql", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792126900/ltv-snowflake/snowflake-sql-vs-t-sql.mp4", durationLabel: "2 min 12 s" }),
       L(7, "ctes-and-window-functions", "CTEs and Window Functions in Snowflake", { contentDir: "ch02/07-ctes-and-window-functions", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792126946/ltv-snowflake/ctes-and-window-functions.mp4", durationLabel: "1 min 28 s" }),
-      L(8, "views-temporary-and-transient-tables", "Views, Temporary & Transient Tables", { contentDir: "ch02/08-views-temporary-and-transient-tables" }),
+      L(8, "views-temporary-and-transient-tables", "Views, Temporary & Transient Tables", { contentDir: "ch02/08-views-temporary-and-transient-tables", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792126997/ltv-snowflake/views-temporary-and-transient-tables.mp4", durationLabel: "1 min 37 s" }),
       L(9, "merge-in-snowflake", "MERGE in Snowflake", { contentDir: "ch02/09-merge-in-snowflake" }),
       L(10, "stored-procedures-and-udfs-basics", "Stored Procedures & User-Defined Functions, Basics", { contentDir: "ch02/10-stored-procedures-and-udfs-basics" }),
       L(11, "exercise-rewriting-t-sql-in-snowflake", "Exercise: Rewriting a T-SQL Query in Snowflake SQL", { contentDir: "ch02/11-exercise-rewriting-t-sql-in-snowflake" }),
