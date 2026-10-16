@@ -231,7 +231,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(38, "what-is-unity-catalog", "What Is Unity Catalog?", {
         contentDir: "ch04/38-what-is-unity-catalog",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144718/ltv-databricks-delta/what-is-unity-catalog.mp4",
+        durationLabel: "1 min 32 s",
       }),
       L(39, "the-three-level-namespace", "The Three-Level Namespace", {
         contentDir: "ch04/39-the-three-level-namespace",
