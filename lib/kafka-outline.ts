@@ -112,7 +112,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(15, "schema-registry", "Schema Registry", {
         contentDir: "ch03/15-schema-registry",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148769/ltv-kafka/schema-registry.mp4",
+        durationLabel: "1 min 8 s",
       }),
     ],
   },
