@@ -286,7 +286,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(50, "data-contracts", "Data Contracts", {
         contentDir: "ch03/50-data-contracts",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145155/ltv-fabric-realtime/data-contracts.mp4",
+        durationLabel: "1 min 5 s",
       }),
       L(51, "schema-drift-and-breaking-changes", "Schema Drift and Breaking Changes", {
         contentDir: "ch03/51-schema-drift-and-breaking-changes",
