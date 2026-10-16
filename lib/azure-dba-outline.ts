@@ -272,7 +272,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(42, "extended-events", "Extended Events", {
         contentDir: "ch07/42-extended-events",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160282/ltv-azure-dba/extended-events.mp4",
+        durationLabel: "2 min 18 s",
       }),
       L(43, "monitoring-sessions-cpu-memory-io-storage", "Monitoring Sessions, Connections, CPU, Memory, I/O & Storage", {
         contentDir: "ch07/43-monitoring-sessions-cpu-memory-io-storage",
