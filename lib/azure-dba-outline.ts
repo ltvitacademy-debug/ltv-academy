@@ -298,7 +298,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(46, "index-seeks-scans-lookups-plan-operators", "Index Seeks, Scans, Lookups & Common Plan Operators", {
         contentDir: "ch08/46-index-seeks-scans-lookups-plan-operators",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160509/ltv-azure-dba/index-seeks-scans-lookups-plan-operators.mp4",
+        durationLabel: "1 min 26 s",
       }),
       L(47, "finding-missing-duplicate-unused-indexes", "Finding Missing, Duplicate & Unused Indexes", {
         contentDir: "ch08/47-finding-missing-duplicate-unused-indexes",
