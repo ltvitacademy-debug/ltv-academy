@@ -63,7 +63,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(8, "dbfs-databricks-file-system", "DBFS — Databricks File System", {
         contentDir: "ch01/08-dbfs-databricks-file-system",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142646/ltv-databricks-delta/dbfs-databricks-file-system.mp4",
+        durationLabel: "1 min 32 s",
       }),
       L(9, "widgets-and-parameters", "Widgets and Parameters", {
         contentDir: "ch01/09-widgets-and-parameters",
