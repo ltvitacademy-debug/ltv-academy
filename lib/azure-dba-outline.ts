@@ -467,7 +467,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(75, "migration-troubleshooting-and-post-migration-validation", "Migration Troubleshooting & Post-Migration Validation", {
         contentDir: "ch12/75-migration-troubleshooting-and-post-migration-validation",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161901/ltv-azure-dba/migration-troubleshooting-and-post-migration-validation.mp4",
+        durationLabel: "1 min 52 s",
       }),
     ],
   },
