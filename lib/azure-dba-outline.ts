@@ -421,7 +421,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(67, "arm-templates-and-bicep-for-azure-sql", "ARM Templates & Bicep for Azure SQL", {
         contentDir: "ch11/67-arm-templates-and-bicep-for-azure-sql",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161496/ltv-azure-dba/arm-templates-and-bicep-for-azure-sql.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(68, "elastic-jobs-and-azure-database-tasks", "Elastic Jobs & Azure Database Tasks", {
         contentDir: "ch11/68-elastic-jobs-and-azure-database-tasks",
