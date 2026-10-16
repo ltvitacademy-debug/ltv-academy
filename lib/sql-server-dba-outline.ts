@@ -141,7 +141,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792167986/ltv-sql-server-dba/storage-best-practices.mp4",
         durationLabel: "1 min 22 s",
       }),
-      L(25, "disk-layout-for-sql-server", "Disk Layout for SQL Server", { contentDir: "ch04/25-disk-layout-for-sql-server" }),
+      L(25, "disk-layout-for-sql-server", "Disk Layout for SQL Server", { contentDir: "ch04/25-disk-layout-for-sql-server",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792168032/ltv-sql-server-dba/disk-layout-for-sql-server.mp4",
+        durationLabel: "1 min 18 s",
+      }),
     ],
   },
   {
