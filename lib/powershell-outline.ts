@@ -33,7 +33,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
       }),
       L(2, "the-console-ise-and-vs-code", "The Console, ISE & VS Code", {
         contentDir: "ch01/02-the-console-ise-and-vs-code",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162952/ltv-powershell/the-console-ise-and-vs-code.mp4",
+        durationLabel: "1 min 14 s",
       }),
       L(3, "cmdlets-and-syntax", "Cmdlets & Syntax", {
         contentDir: "ch01/03-cmdlets-and-syntax",
