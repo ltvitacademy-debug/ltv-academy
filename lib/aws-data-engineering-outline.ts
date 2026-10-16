@@ -149,6 +149,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(21, "partitioning-for-athena-performance", "Partitioning for Athena Performance", {
         contentDir: "ch04/21-partitioning-for-athena-performance",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154940/ltv-aws-data-engineering/partitioning-for-athena-performance.mp4",
+        durationLabel: "2 min 15 s",
       }),
       L(22, "athena-cost-optimization", "Athena Cost Optimization", {
         contentDir: "ch04/22-athena-cost-optimization",
