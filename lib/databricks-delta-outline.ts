@@ -104,7 +104,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(15, "creating-a-delta-table", "Creating a Delta Table", {
         contentDir: "ch02/15-creating-a-delta-table",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143130/ltv-databricks-delta/creating-a-delta-table.mp4",
+        durationLabel: "1 min 14 s",
       }),
       L(16, "reading-and-writing-delta-tables", "Reading and Writing Delta Tables", {
         contentDir: "ch02/16-reading-and-writing-delta-tables",
