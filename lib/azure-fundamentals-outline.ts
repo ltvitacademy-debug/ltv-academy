@@ -75,7 +75,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(9, "entra-id-basics", "Microsoft Entra ID Basics", {
         contentDir: "ch02/09-entra-id-basics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157752/ltv-azure-fundamentals/entra-id-basics.mp4",
+        durationLabel: "58 s",
       }),
       L(10, "azure-monitor-basics", "Azure Monitor Basics", {
         contentDir: "ch02/10-azure-monitor-basics",
