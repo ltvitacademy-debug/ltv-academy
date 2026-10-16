@@ -336,7 +336,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(60, "data-governance-in-production", "Data Governance in Production", {
         contentDir: "ch03/60-data-governance-in-production",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145722/ltv-fabric-realtime/data-governance-in-production.mp4",
+        durationLabel: "57 s",
       }),
       L(61, "handling-pii-and-sensitive-data", "Handling PII and Sensitive Data", {
         contentDir: "ch03/61-handling-pii-and-sensitive-data",
