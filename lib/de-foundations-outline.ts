@@ -166,7 +166,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(25, "connecting-python-to-sql", "Connecting Python to SQL", {
         contentDir: "ch02/25-connecting-python-to-sql",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138773/ltv-de-foundations/connecting-python-to-sql.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(26, "cleaning-data-with-python", "Cleaning Data With Python", {
         contentDir: "ch02/26-cleaning-data-with-python",
