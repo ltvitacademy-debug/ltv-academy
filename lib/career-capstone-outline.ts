@@ -69,7 +69,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(9, "partitioning-strategies", "Partitioning Strategies", {
         contentDir: "ch01/09-partitioning-strategies",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146603/ltv-career-capstone/partitioning-strategies.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(10, "sharding-a-data-store", "Sharding a Data Store", {
         contentDir: "ch01/10-sharding-a-data-store",
