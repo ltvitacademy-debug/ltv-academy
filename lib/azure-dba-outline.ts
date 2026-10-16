@@ -390,7 +390,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(62, "troubleshooting-failed-sql-agent-jobs", "Troubleshooting Failed SQL Agent Jobs", {
         contentDir: "ch10/62-troubleshooting-failed-sql-agent-jobs",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161265/ltv-azure-dba/troubleshooting-failed-sql-agent-jobs.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(63, "automating-dba-maintenance", "Automating DBA Maintenance", {
         contentDir: "ch10/63-automating-dba-maintenance",
