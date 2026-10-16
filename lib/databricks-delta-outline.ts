@@ -109,7 +109,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(16, "reading-and-writing-delta-tables", "Reading and Writing Delta Tables", {
         contentDir: "ch02/16-reading-and-writing-delta-tables",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143197/ltv-databricks-delta/reading-and-writing-delta-tables.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(17, "the-delta-transaction-log", "The Delta Transaction Log", {
         contentDir: "ch02/17-the-delta-transaction-log",
