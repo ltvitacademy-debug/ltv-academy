@@ -123,7 +123,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(17, "database-sharding-and-horizontal-scaling", "Database Sharding & Horizontal Scaling", {
         contentDir: "ch03/17-database-sharding-and-horizontal-scaling",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158976/ltv-azure-dba/database-sharding-and-horizontal-scaling.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(18, "azure-arc-hybrid-sql-and-fabric", "Azure Arc, Hybrid SQL & Azure SQL Database in Microsoft Fabric", {
         contentDir: "ch03/18-azure-arc-hybrid-sql-and-fabric",
