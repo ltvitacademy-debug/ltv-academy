@@ -286,7 +286,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(50, "rag-explained", "Retrieval-Augmented Generation (RAG), Explained", {
         contentDir: "ch03/50-rag-explained",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149066/ltv-career-capstone/rag-explained.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(51, "building-a-vector-index-over-a-catalog", "Building a Vector Index Over Your Data Catalog", {
         contentDir: "ch03/51-building-a-vector-index-over-a-catalog",
