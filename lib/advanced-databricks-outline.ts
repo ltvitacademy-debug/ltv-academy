@@ -277,7 +277,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(42, "genie-code-and-zeroops", "Genie Code & Genie ZeroOps", {
         contentDir: "ch08/42-genie-code-and-zeroops",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792152801/ltv-advanced-databricks/genie-code-and-zeroops.mp4",
+        durationLabel: "2 min 30 s",
       }),
     ],
   },
