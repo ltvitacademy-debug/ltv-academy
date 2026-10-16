@@ -133,7 +133,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(18, "workflows-ui", "The Workflows UI", {
         contentDir: "ch04/18-workflows-ui",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151351/ltv-advanced-databricks/workflows-ui.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(19, "task-dependencies", "Task Dependencies", {
         contentDir: "ch04/19-task-dependencies",
