@@ -57,9 +57,9 @@ export const POWER_AUTOMATE_CHAPTERS: ChapterMeta[] = [
       L(25, "environment-variables-and-connection-references", "Environment Variables and Connection References", { contentDir: "ch02/25-environment-variables-and-connection-references", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792123657/ltv-power-automate/environment-variables-and-connection-references.mp4", durationLabel: "2 min 38 s" }),
       L(26, "environments-and-environment-strategy", "Environments and Environment Strategy", { contentDir: "ch02/26-environments-and-environment-strategy", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792123725/ltv-power-automate/environments-and-environment-strategy.mp4", durationLabel: "2 min 25 s" }),
       L(27, "data-loss-prevention-policies", "Security: Data Loss Prevention (DLP) Policies", { contentDir: "ch02/27-data-loss-prevention-policies", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792123791/ltv-power-automate/data-loss-prevention-policies.mp4", durationLabel: "2 min 14 s" }),
-      L(28, "governance-and-the-admin-center", "Governance: Admin Center and Monitoring", { contentDir: "ch02/28-governance-and-the-admin-center" }),
-      L(29, "application-lifecycle-management", "Application Lifecycle Management: Dev/Test/Prod", { contentDir: "ch02/29-application-lifecycle-management" }),
-      L(30, "troubleshooting-flows", "Troubleshooting Flows: Run History and Error Diagnosis", { contentDir: "ch02/30-troubleshooting-flows" }),
+      L(28, "governance-and-the-admin-center", "Governance: Admin Center and Monitoring", { contentDir: "ch02/28-governance-and-the-admin-center", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792123859/ltv-power-automate/governance-and-the-admin-center.mp4", durationLabel: "2 min 15 s" }),
+      L(29, "application-lifecycle-management", "Application Lifecycle Management: Dev/Test/Prod", { contentDir: "ch02/29-application-lifecycle-management", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792123940/ltv-power-automate/application-lifecycle-management.mp4", durationLabel: "2 min 56 s" }),
+      L(30, "troubleshooting-flows", "Troubleshooting Flows: Run History and Error Diagnosis", { contentDir: "ch02/30-troubleshooting-flows", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792123999/ltv-power-automate/troubleshooting-flows.mp4", durationLabel: "2 min 3 s" }),
     ],
   },
 ];
