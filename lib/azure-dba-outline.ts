@@ -400,7 +400,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(64, "building-a-dba-maintenance-and-monitoring-strategy", "Building a DBA Maintenance & Monitoring Strategy", {
         contentDir: "ch10/64-building-a-dba-maintenance-and-monitoring-strategy",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161355/ltv-azure-dba/building-a-dba-maintenance-and-monitoring-strategy.mp4",
+        durationLabel: "1 min 15 s",
       }),
     ],
   },
