@@ -112,7 +112,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(15, "expectations-and-data-quality", "Expectations & Data Quality in Lakeflow", {
         contentDir: "ch03/15-expectations-and-data-quality",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151227/ltv-advanced-databricks/expectations-and-data-quality.mp4",
+        durationLabel: "1 min 20 s",
       }),
       L(16, "lakeflow-deployment", "Lakeflow Deployment", {
         contentDir: "ch03/16-lakeflow-deployment",
