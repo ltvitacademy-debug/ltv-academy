@@ -395,7 +395,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(63, "automating-dba-maintenance", "Automating DBA Maintenance", {
         contentDir: "ch10/63-automating-dba-maintenance",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161315/ltv-azure-dba/automating-dba-maintenance.mp4",
+        durationLabel: "1 min 35 s",
       }),
       L(64, "building-a-dba-maintenance-and-monitoring-strategy", "Building a DBA Maintenance & Monitoring Strategy", {
         contentDir: "ch10/64-building-a-dba-maintenance-and-monitoring-strategy",
