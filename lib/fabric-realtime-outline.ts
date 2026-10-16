@@ -125,7 +125,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(19, "eventstreams", "Eventstreams — Ingesting Streaming Data", {
         contentDir: "ch02/19-eventstreams",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143298/ltv-fabric-realtime/eventstreams.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(20, "event-sources", "Event Sources: Azure Event Hubs and IoT Hub", {
         contentDir: "ch02/20-event-sources",
