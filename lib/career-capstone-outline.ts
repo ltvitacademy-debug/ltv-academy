@@ -129,7 +129,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(21, "case-study-fraud-detection", "Case Study: A Real-Time Fraud Detection System", {
         contentDir: "ch01/21-case-study-fraud-detection",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147471/ltv-career-capstone/case-study-fraud-detection.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(22, "case-study-retail-inventory", "Case Study: A Retail Inventory Data Platform", {
         contentDir: "ch01/22-case-study-retail-inventory",
