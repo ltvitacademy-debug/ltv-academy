@@ -210,7 +210,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(35, "handling-late-arriving-data", "Handling Late-Arriving Data", {
         contentDir: "ch03/35-handling-late-arriving-data",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144500/ltv-databricks-delta/handling-late-arriving-data.mp4",
+        durationLabel: "1 min 23 s",
       }),
       L(36, "data-quality-checks", "Data Quality Checks in the Medallion Flow", {
         contentDir: "ch03/36-data-quality-checks",

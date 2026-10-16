@@ -225,7 +225,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(39, "real-time-data-quality", "Real-Time Data Quality", {
         contentDir: "ch02/39-real-time-data-quality",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144524/ltv-fabric-realtime/real-time-data-quality.mp4",
+        durationLabel: "1 min 10 s",
       }),
       L(40, "fabric-realtime-vs-databricks-streaming", "Comparing Fabric Real-Time to Databricks Structured Streaming", {
         contentDir: "ch02/40-fabric-realtime-vs-databricks-streaming",
