@@ -102,8 +102,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     n: 7,
     title: "Time Series & Table Calculations",
     lessons: [
-      L(40, "dates-year-quarter-month-week-day", "Dates: Year, Quarter, Month, Week & Day", { contentDir: "ch07/40-dates-year-quarter-month-week-day" }),
-      L(41, "continuous-vs-discrete-dates", "Continuous vs. Discrete Dates & Time-Series Analysis", { contentDir: "ch07/41-continuous-vs-discrete-dates" }),
+      L(40, "dates-year-quarter-month-week-day", "Dates: Year, Quarter, Month, Week & Day", { contentDir: "ch07/40-dates-year-quarter-month-week-day", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133501/ltv-tableau/dates-year-quarter-month-week-day.mp4", durationLabel: "1 min 44 s" }),
+      L(41, "continuous-vs-discrete-dates", "Continuous vs. Discrete Dates & Time-Series Analysis", { contentDir: "ch07/41-continuous-vs-discrete-dates", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133556/ltv-tableau/continuous-vs-discrete-dates.mp4", durationLabel: "1 min 54 s" }),
       L(42, "intro-to-table-calculations", "Introduction to Table Calculations", { contentDir: "ch07/42-intro-to-table-calculations" }),
       L(43, "percent-of-total-difference-percent-difference", "Percent of Total, Difference & Percent Difference", { contentDir: "ch07/43-percent-of-total-difference-percent-difference" }),
       L(44, "running-totals-and-moving-averages", "Running Totals & Moving Averages", { contentDir: "ch07/44-running-totals-and-moving-averages" }),
