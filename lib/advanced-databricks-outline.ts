@@ -200,7 +200,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(29, "secrets-management", "Secrets Management", {
         contentDir: "ch06/29-secrets-management",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151880/ltv-advanced-databricks/secrets-management.mp4",
+        durationLabel: "1 min 38 s",
       }),
       L(30, "compliance-patterns", "Compliance Patterns", {
         contentDir: "ch06/30-compliance-patterns",
