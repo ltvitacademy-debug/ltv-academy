@@ -52,8 +52,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Visualization Fundamentals",
     lessons: [
-      L(14, "bar-charts-and-show-me", "Bar Charts & Using Show Me", { contentDir: "ch03/14-bar-charts-and-show-me" }),
-      L(15, "line-and-area-charts", "Line Charts & Area Charts", { contentDir: "ch03/15-line-and-area-charts" }),
+      L(14, "bar-charts-and-show-me", "Bar Charts & Using Show Me", { contentDir: "ch03/14-bar-charts-and-show-me", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132076/ltv-tableau/bar-charts-and-show-me.mp4", durationLabel: "1 min 27 s" }),
+      L(15, "line-and-area-charts", "Line Charts & Area Charts", { contentDir: "ch03/15-line-and-area-charts", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132121/ltv-tableau/line-and-area-charts.mp4", durationLabel: "1 min 31 s" }),
       L(16, "pie-donut-treemap-charts", "Pie, Donut & Tree Map Charts", { contentDir: "ch03/16-pie-donut-treemap-charts" }),
       L(17, "highlight-tables-and-heat-maps", "Highlight Tables & Heat Maps", { contentDir: "ch03/17-highlight-tables-and-heat-maps" }),
       L(18, "scatter-plots", "Scatter Plots", { contentDir: "ch03/18-scatter-plots" }),
