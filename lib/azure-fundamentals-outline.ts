@@ -91,7 +91,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(11, "identity-and-access-management-basics", "Identity & Access Management Basics", {
         contentDir: "ch03/11-identity-and-access-management-basics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157834/ltv-azure-fundamentals/identity-and-access-management-basics.mp4",
+        durationLabel: "1 min 30 s",
       }),
       L(12, "azure-pricing-and-cost-management", "Azure Pricing & Cost Management", {
         contentDir: "ch03/12-azure-pricing-and-cost-management",
