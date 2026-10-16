@@ -82,6 +82,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(10, "iam-best-practices-for-pipelines", "IAM Best Practices for Pipelines", {
         contentDir: "ch02/10-iam-best-practices-for-pipelines",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154258/ltv-aws-data-engineering/iam-best-practices-for-pipelines.mp4",
+        durationLabel: "1 min 19 s",
       }),
     ],
   },
