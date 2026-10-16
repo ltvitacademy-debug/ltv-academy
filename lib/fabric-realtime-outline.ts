@@ -306,7 +306,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(54, "cost-management-and-optimization", "Cost Management and Optimization", {
         contentDir: "ch03/54-cost-management-and-optimization",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145384/ltv-fabric-realtime/cost-management-and-optimization.mp4",
+        durationLabel: "1 min 10 s",
       }),
       L(55, "right-sizing-compute", "Right-Sizing Compute", {
         contentDir: "ch03/55-right-sizing-compute",
