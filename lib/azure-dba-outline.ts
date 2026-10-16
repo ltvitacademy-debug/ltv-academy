@@ -36,7 +36,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(2, "sql-server-on-prem-vs-azure-sql", "SQL Server On-Prem vs. Azure SQL — Understanding the Ecosystem", {
         contentDir: "ch01/02-sql-server-on-prem-vs-azure-sql",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158271/ltv-azure-dba/sql-server-on-prem-vs-azure-sql.mp4",
+        durationLabel: "1 min 14 s",
       }),
       L(3, "azure-sql-database-vs-managed-instance-vs-vm", "Azure SQL Database vs. Managed Instance vs. SQL Server on Azure VM", {
         contentDir: "ch01/03-azure-sql-database-vs-managed-instance-vs-vm",
