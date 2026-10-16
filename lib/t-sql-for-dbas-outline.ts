@@ -94,7 +94,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792164679/ltv-t-sql-for-dbas/statistics-maintenance.mp4",
         durationLabel: "1 min 48 s",
       }),
-      L(14, "when-not-to-rebuild-an-index", "When Not to Rebuild an Index", { contentDir: "ch03/14-when-not-to-rebuild-an-index" }),
+      L(14, "when-not-to-rebuild-an-index", "When Not to Rebuild an Index", { contentDir: "ch03/14-when-not-to-rebuild-an-index",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792164743/ltv-t-sql-for-dbas/when-not-to-rebuild-an-index.mp4",
+        durationLabel: "1 min 45 s",
+      }),
     ],
   },
   {
