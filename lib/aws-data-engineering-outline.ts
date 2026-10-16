@@ -56,6 +56,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(6, "s3-as-a-data-lake-foundation", "S3 as a Data Lake Foundation", {
         contentDir: "ch01/06-s3-as-a-data-lake-foundation",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154095/ltv-aws-data-engineering/s3-as-a-data-lake-foundation.mp4",
+        durationLabel: "1 min 23 s",
       }),
     ],
   },
