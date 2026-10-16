@@ -215,7 +215,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 7,
     title: "SQL Server Agent Administration",
     lessons: [
-      L(39, "agent-architecture", "Agent Architecture", { contentDir: "ch07/39-agent-architecture" }),
+      L(39, "agent-architecture", "Agent Architecture", { contentDir: "ch07/39-agent-architecture",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792168815/ltv-sql-server-dba/agent-architecture.mp4",
+        durationLabel: "1 min 19 s",
+      }),
       L(40, "job-creation", "Job Creation", { contentDir: "ch07/40-job-creation" }),
       L(41, "schedules", "Schedules", { contentDir: "ch07/41-schedules" }),
       L(42, "alerts-and-operators", "Alerts & Operators", { contentDir: "ch07/42-alerts-and-operators" }),
