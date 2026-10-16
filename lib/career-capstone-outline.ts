@@ -397,7 +397,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(71, "project-2-assessment-and-migration-plan", "Project 2: Source Assessment and Migration Plan", {
         contentDir: "ch04/71-project-2-assessment-and-migration-plan",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150014/ltv-career-capstone/project-2-assessment-and-migration-plan.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(72, "project-2-building-the-target-warehouse", "Project 2: Building the Target Warehouse", {
         contentDir: "ch04/72-project-2-building-the-target-warehouse",
