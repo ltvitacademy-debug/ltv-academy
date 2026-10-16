@@ -29,7 +29,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "what-is-cloud-computing", "What Is Cloud Computing?", {
         contentDir: "ch01/01-what-is-cloud-computing",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157478/ltv-azure-fundamentals/what-is-cloud-computing.mp4",
+        durationLabel: "1 min 13 s",
       }),
       L(2, "iaas-paas-saas", "IaaS, PaaS & SaaS", {
         contentDir: "ch01/02-iaas-paas-saas",
