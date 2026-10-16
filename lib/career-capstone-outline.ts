@@ -311,7 +311,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(55, "ai-assisted-schema-mapping", "AI-Assisted Schema Mapping", {
         contentDir: "ch03/55-ai-assisted-schema-mapping",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149308/ltv-career-capstone/ai-assisted-schema-mapping.mp4",
+        durationLabel: "1 min 1 s",
       }),
       L(56, "guardrails-what-not-to-hand-an-llm", "Guardrails — What Not to Hand an LLM", {
         contentDir: "ch03/56-guardrails-what-not-to-hand-an-llm",
