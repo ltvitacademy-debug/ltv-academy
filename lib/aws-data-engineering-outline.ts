@@ -340,6 +340,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(52, "a-real-kinesis-pipeline", "A Real Kinesis Streaming Pipeline", {
         contentDir: "ch10/52-a-real-kinesis-pipeline",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156452/ltv-aws-data-engineering/a-real-kinesis-pipeline.mp4",
+        durationLabel: "1 min 43 s",
       }),
     ],
   },
