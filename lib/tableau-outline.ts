@@ -58,8 +58,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
       L(17, "highlight-tables-and-heat-maps", "Highlight Tables & Heat Maps", { contentDir: "ch03/17-highlight-tables-and-heat-maps", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132213/ltv-tableau/highlight-tables-and-heat-maps.mp4", durationLabel: "1 min 15 s" }),
       L(18, "scatter-plots", "Scatter Plots", { contentDir: "ch03/18-scatter-plots", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132255/ltv-tableau/scatter-plots.mp4", durationLabel: "1 min 20 s" }),
       L(19, "histograms-bins-distributions", "Histograms, Bins & Distributions", { contentDir: "ch03/19-histograms-bins-distributions", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132296/ltv-tableau/histograms-bins-distributions.mp4", durationLabel: "1 min 21 s" }),
-      L(20, "box-and-whisker-plots", "Box-and-Whisker Plots", { contentDir: "ch03/20-box-and-whisker-plots" }),
-      L(21, "choosing-the-right-visualization", "Choosing the Right Visualization", { contentDir: "ch03/21-choosing-the-right-visualization" }),
+      L(20, "box-and-whisker-plots", "Box-and-Whisker Plots", { contentDir: "ch03/20-box-and-whisker-plots", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132339/ltv-tableau/box-and-whisker-plots.mp4", durationLabel: "1 min 26 s" }),
+      L(21, "choosing-the-right-visualization", "Choosing the Right Visualization", { contentDir: "ch03/21-choosing-the-right-visualization", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132383/ltv-tableau/choosing-the-right-visualization.mp4", durationLabel: "1 min 29 s" }),
     ],
   },
   {
