@@ -159,7 +159,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(22, "the-photon-engine", "The Photon Engine", {
         contentDir: "ch05/22-the-photon-engine",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151515/ltv-advanced-databricks/the-photon-engine.mp4",
+        durationLabel: "1 min 26 s",
       }),
       L(23, "adaptive-query-execution", "Adaptive Query Execution", {
         contentDir: "ch05/23-adaptive-query-execution",
