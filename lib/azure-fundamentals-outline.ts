@@ -34,7 +34,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(2, "iaas-paas-saas", "IaaS, PaaS & SaaS", {
         contentDir: "ch01/02-iaas-paas-saas",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157519/ltv-azure-fundamentals/iaas-paas-saas.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(3, "azure-global-infrastructure", "Azure Global Infrastructure: Regions & Availability Zones", {
         contentDir: "ch01/03-azure-global-infrastructure",
