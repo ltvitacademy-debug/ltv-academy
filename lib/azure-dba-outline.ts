@@ -231,7 +231,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(35, "data-discovery-classification-sensitive-data", "Data Discovery, Classification & Sensitive Data", {
         contentDir: "ch06/35-data-discovery-classification-sensitive-data",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159856/ltv-azure-dba/data-discovery-classification-sensitive-data.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(36, "sql-auditing-and-compliance-monitoring", "SQL Auditing & Compliance Monitoring", {
         contentDir: "ch06/36-sql-auditing-and-compliance-monitoring",
