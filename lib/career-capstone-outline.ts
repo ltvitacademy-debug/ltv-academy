@@ -119,7 +119,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(19, "cap-theorem-for-data-engineers", "Trade-off Analysis — CAP Theorem for Data Engineers", {
         contentDir: "ch01/19-cap-theorem-for-data-engineers",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147337/ltv-career-capstone/cap-theorem-for-data-engineers.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(20, "case-study-ride-sharing-platform", "Case Study: A Ride-Sharing Analytics Platform", {
         contentDir: "ch01/20-case-study-ride-sharing-platform",
