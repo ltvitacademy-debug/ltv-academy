@@ -108,14 +108,14 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
       L(43, "percent-of-total-difference-percent-difference", "Percent of Total, Difference & Percent Difference", { contentDir: "ch07/43-percent-of-total-difference-percent-difference", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133645/ltv-tableau/percent-of-total-difference-percent-difference.mp4", durationLabel: "1 min 36 s" }),
       L(44, "running-totals-and-moving-averages", "Running Totals & Moving Averages", { contentDir: "ch07/44-running-totals-and-moving-averages", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133688/ltv-tableau/running-totals-and-moving-averages.mp4", durationLabel: "1 min 26 s" }),
       L(45, "rank-and-quick-table-calculations", "Rank & Other Quick Table Calculations", { contentDir: "ch07/45-rank-and-quick-table-calculations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133738/ltv-tableau/rank-and-quick-table-calculations.mp4", durationLabel: "1 min 43 s" }),
-      L(46, "compute-using-addressing-partitioning", "Compute Using: Addressing & Partitioning", { contentDir: "ch07/46-compute-using-addressing-partitioning" }),
+      L(46, "compute-using-addressing-partitioning", "Compute Using: Addressing & Partitioning", { contentDir: "ch07/46-compute-using-addressing-partitioning", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133794/ltv-tableau/compute-using-addressing-partitioning.mp4", durationLabel: "1 min 49 s" }),
     ],
   },
   {
     n: 8,
     title: "Data Modeling",
     lessons: [
-      L(47, "tableaus-data-model", "Understanding Tableau's Data Model", { contentDir: "ch08/47-tableaus-data-model" }),
+      L(47, "tableaus-data-model", "Understanding Tableau's Data Model", { contentDir: "ch08/47-tableaus-data-model", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133836/ltv-tableau/tableaus-data-model.mp4", durationLabel: "1 min 22 s" }),
       L(48, "relationships-vs-joins", "Relationships vs. Joins", { contentDir: "ch08/48-relationships-vs-joins" }),
       L(49, "creating-joins-and-multi-field-joins", "Creating Joins & Joining on Multiple Fields", { contentDir: "ch08/49-creating-joins-and-multi-field-joins" }),
       L(50, "duplicate-records-granularity-join-problems", "Duplicate Records, Granularity & Join Problems", { contentDir: "ch08/50-duplicate-records-granularity-join-problems" }),
