@@ -42,15 +42,15 @@ export const AIRFLOW_CHAPTERS: ChapterMeta[] = [
       L(8, "pythonoperator", "PythonOperator", { contentDir: "ch02/08-pythonoperator", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120767/ltv-airflow/pythonoperator.mp4", durationLabel: "1 min 32 s" }),
       L(9, "bashoperator", "BashOperator", { contentDir: "ch02/09-bashoperator", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120819/ltv-airflow/bashoperator.mp4", durationLabel: "1 min 43 s" }),
       L(10, "scheduling-and-cron", "Scheduling & Cron Expressions", { contentDir: "ch02/10-scheduling-and-cron", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120867/ltv-airflow/scheduling-and-cron.mp4", durationLabel: "1 min 37 s" }),
-      L(11, "task-instances-and-runs", "Task Instances & DAG Runs", { contentDir: "ch02/11-task-instances-and-runs" }),
-      L(12, "xcoms", "XComs: Passing Data Between Tasks", { contentDir: "ch02/12-xcoms" }),
+      L(11, "task-instances-and-runs", "Task Instances & DAG Runs", { contentDir: "ch02/11-task-instances-and-runs", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120914/ltv-airflow/task-instances-and-runs.mp4", durationLabel: "1 min 32 s" }),
+      L(12, "xcoms", "XComs: Passing Data Between Tasks", { contentDir: "ch02/12-xcoms", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120964/ltv-airflow/xcoms.mp4", durationLabel: "1 min 44 s" }),
     ],
   },
   {
     n: 3,
     title: "Connections, Hooks & Providers",
     lessons: [
-      L(13, "connections", "Connections", { contentDir: "ch03/13-connections" }),
+      L(13, "connections", "Connections", { contentDir: "ch03/13-connections", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121023/ltv-airflow/connections.mp4", durationLabel: "2 min 3 s" }),
       L(14, "hooks", "Hooks", { contentDir: "ch03/14-hooks" }),
       L(15, "provider-packages", "Provider Packages", { contentDir: "ch03/15-provider-packages" }),
       L(16, "connecting-to-snowflake-and-databases", "Connecting to Snowflake & Other Databases", { contentDir: "ch03/16-connecting-to-snowflake-and-databases" }),
