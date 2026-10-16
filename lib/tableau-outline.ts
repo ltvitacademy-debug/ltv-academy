@@ -94,8 +94,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
       L(35, "string-calculations", "String Calculations", { contentDir: "ch06/35-string-calculations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133162/ltv-tableau/string-calculations.mp4", durationLabel: "2 min 19 s" }),
       L(36, "date-calculations", "Date Calculations", { contentDir: "ch06/36-date-calculations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133231/ltv-tableau/date-calculations.mp4", durationLabel: "2 min 23 s" }),
       L(37, "if-then-else-case", "IF, THEN, ELSE & CASE", { contentDir: "ch06/37-if-then-else-case", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133298/ltv-tableau/if-then-else-case.mp4", durationLabel: "2 min 25 s" }),
-      L(38, "null-handling-and-data-type-calculations", "NULL Handling & Data-Type Calculations", { contentDir: "ch06/38-null-handling-and-data-type-calculations" }),
-      L(39, "aggregate-vs-non-aggregate-calculations", "Aggregate vs. Non-Aggregate Calculations & Common Errors", { contentDir: "ch06/39-aggregate-vs-non-aggregate-calculations" }),
+      L(38, "null-handling-and-data-type-calculations", "NULL Handling & Data-Type Calculations", { contentDir: "ch06/38-null-handling-and-data-type-calculations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133367/ltv-tableau/null-handling-and-data-type-calculations.mp4", durationLabel: "2 min 15 s" }),
+      L(39, "aggregate-vs-non-aggregate-calculations", "Aggregate vs. Non-Aggregate Calculations & Common Errors", { contentDir: "ch06/39-aggregate-vs-non-aggregate-calculations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133450/ltv-tableau/aggregate-vs-non-aggregate-calculations.mp4", durationLabel: "2 min 57 s" }),
     ],
   },
   {
