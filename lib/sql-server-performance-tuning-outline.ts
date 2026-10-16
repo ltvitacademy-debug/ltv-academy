@@ -29,7 +29,8 @@ export const SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "a-systematic-approach", "A Systematic Approach to Performance Tuning", {
         contentDir: "ch01/01-a-systematic-approach",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792170524/ltv-sql-server-performance-tuning/a-systematic-approach.mp4",
+        durationLabel: "1 min 17 s",
       }),
       L(2, "defining-slow", "Defining \"Slow\"", { contentDir: "ch01/02-defining-slow" }),
       L(3, "gathering-a-baseline", "Gathering a Performance Baseline", { contentDir: "ch01/03-gathering-a-baseline" }),
