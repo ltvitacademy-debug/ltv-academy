@@ -312,7 +312,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(53, "pipeline-modes-triggered-vs-continuous", "Pipeline Modes: Triggered vs. Continuous", {
         contentDir: "ch05/53-pipeline-modes-triggered-vs-continuous",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145759/ltv-databricks-delta/pipeline-modes-triggered-vs-continuous.mp4",
+        durationLabel: "1 min 30 s",
       }),
       L(54, "lakeflow-jobs-orchestration", "Lakeflow Jobs — Orchestration", {
         contentDir: "ch05/54-lakeflow-jobs-orchestration",

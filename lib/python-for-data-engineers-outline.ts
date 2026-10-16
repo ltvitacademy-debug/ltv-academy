@@ -76,7 +76,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
     title: "Database Connectivity and SQL Integration",
     lessons: [
       L(26, "connecting-python-to-sql-server", "Connecting Python to SQL Server", { contentDir: "ch05/26-connecting-python-to-sql-server", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145688/ltv-python-for-data-engineers/connecting-python-to-sql-server.mp4", durationLabel: "2 min 8 s" }),
-      L(27, "running-queries-and-loading-results-into-pandas", "Running Queries & Loading Results Into Pandas", { contentDir: "ch05/27-running-queries-and-loading-results-into-pandas" }),
+      L(27, "running-queries-and-loading-results-into-pandas", "Running Queries & Loading Results Into Pandas", { contentDir: "ch05/27-running-queries-and-loading-results-into-pandas", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145771/ltv-python-for-data-engineers/running-queries-and-loading-results-into-pandas.mp4", durationLabel: "1 min 52 s" }),
       L(28, "writing-data-back-to-a-database", "Writing Data Back to a Database", { contentDir: "ch05/28-writing-data-back-to-a-database" }),
       L(29, "parameterized-queries-and-sql-injection", "Parameterized Queries & SQL Injection", { contentDir: "ch05/29-parameterized-queries-and-sql-injection" }),
       L(30, "working-with-sqlalchemy", "Working With SQLAlchemy", { contentDir: "ch05/30-working-with-sqlalchemy" }),
