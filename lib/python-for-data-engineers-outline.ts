@@ -43,7 +43,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
       L(9, "scope-and-returning-multiple-values", "Scope & Returning Multiple Values", { contentDir: "ch02/09-scope-and-returning-multiple-values", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143716/ltv-python-for-data-engineers/scope-and-returning-multiple-values.mp4", durationLabel: "2 min 50 s" }),
       L(10, "modules-and-packages", "Modules & Packages", { contentDir: "ch02/10-modules-and-packages", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143856/ltv-python-for-data-engineers/modules-and-packages.mp4", durationLabel: "3 min 6 s" }),
       L(11, "list-and-dict-comprehensions", "List & Dict Comprehensions", { contentDir: "ch02/11-list-and-dict-comprehensions", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143981/ltv-python-for-data-engineers/list-and-dict-comprehensions.mp4", durationLabel: "2 min 27 s" }),
-      L(12, "working-with-dates-and-times", "Working With Dates & Times", { contentDir: "ch02/12-working-with-dates-and-times" }),
+      L(12, "working-with-dates-and-times", "Working With Dates & Times", { contentDir: "ch02/12-working-with-dates-and-times", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144137/ltv-python-for-data-engineers/working-with-dates-and-times.mp4", durationLabel: "3 min 16 s" }),
     ],
   },
   {

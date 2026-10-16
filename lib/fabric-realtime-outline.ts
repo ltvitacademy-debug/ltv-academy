@@ -190,7 +190,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(32, "session-windows", "Session Windows", {
         contentDir: "ch02/32-session-windows",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144133/ltv-fabric-realtime/session-windows.mp4",
+        durationLabel: "1 min 9 s",
       }),
       L(33, "watermarks-in-real-streaming-systems", "Watermarks in Real Streaming Systems", {
         contentDir: "ch02/33-watermarks-in-real-streaming-systems",
