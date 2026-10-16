@@ -221,6 +221,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(33, "lambda-limitations-for-data-workloads", "Lambda's Limitations for Data Workloads", {
         contentDir: "ch06/33-lambda-limitations-for-data-workloads",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155507/ltv-aws-data-engineering/lambda-limitations-for-data-workloads.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(34, "lambda-and-step-functions", "Lambda + Step Functions", {
         contentDir: "ch06/34-lambda-and-step-functions",
