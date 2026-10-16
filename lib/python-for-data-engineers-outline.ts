@@ -101,7 +101,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
     title: "Logging, Testing, Error Handling and Automation",
     lessons: [
       L(39, "logging-in-python", "Logging in Python (the logging Module)", { contentDir: "ch07/39-logging-in-python", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147110/ltv-python-for-data-engineers/logging-in-python.mp4", durationLabel: "2 min 30 s" }),
-      L(40, "writing-unit-tests-with-pytest", "Writing Unit Tests With pytest", { contentDir: "ch07/40-writing-unit-tests-with-pytest" }),
+      L(40, "writing-unit-tests-with-pytest", "Writing Unit Tests With pytest", { contentDir: "ch07/40-writing-unit-tests-with-pytest", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147210/ltv-python-for-data-engineers/writing-unit-tests-with-pytest.mp4", durationLabel: "2 min 12 s" }),
       L(41, "robust-error-handling-patterns", "Robust Error Handling Patterns", { contentDir: "ch07/41-robust-error-handling-patterns" }),
       L(42, "scheduling-and-automating-scripts", "Scheduling & Automating Scripts", { contentDir: "ch07/42-scheduling-and-automating-scripts" }),
       L(43, "environment-variables-and-secrets-management", "Environment Variables & Secrets Management", { contentDir: "ch07/43-environment-variables-and-secrets-management" }),

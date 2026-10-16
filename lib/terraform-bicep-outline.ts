@@ -85,7 +85,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
       }),
       L(11, "terraform-modules", "Terraform Modules", {
         contentDir: "ch02/11-terraform-modules",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147198/ltv-terraform-bicep/terraform-modules.mp4",
+        durationLabel: "1 min 34 s",
       }),
     ],
   },
