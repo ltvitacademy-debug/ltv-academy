@@ -90,7 +90,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
       }),
       L(11, "if-else-and-switch", "if/else & switch", {
         contentDir: "ch03/11-if-else-and-switch",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163423/ltv-powershell/if-else-and-switch.mp4",
+        durationLabel: "1 min 32 s",
       }),
       L(12, "loops", "Loops: foreach, while & for", {
         contentDir: "ch03/12-loops",
