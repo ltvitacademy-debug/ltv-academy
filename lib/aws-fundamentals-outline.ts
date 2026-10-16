@@ -80,6 +80,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(10, "aws-pricing-and-cost-management", "AWS Pricing & Cost Management", {
         contentDir: "ch02/10-aws-pricing-and-cost-management",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153388/ltv-aws-fundamentals/aws-pricing-and-cost-management.mp4",
+        durationLabel: "1 min 8 s",
       }),
     ],
   },
