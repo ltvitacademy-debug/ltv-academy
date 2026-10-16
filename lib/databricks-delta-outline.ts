@@ -292,7 +292,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(49, "lakeflow-connect", "Lakeflow Connect — Ingestion Basics", {
         contentDir: "ch05/49-lakeflow-connect",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145475/ltv-databricks-delta/lakeflow-connect.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(50, "lakeflow-declarative-pipelines", "Lakeflow Declarative Pipelines", {
         contentDir: "ch05/50-lakeflow-declarative-pipelines",
