@@ -39,7 +39,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(3, "azure-global-infrastructure", "Azure Global Infrastructure: Regions & Availability Zones", {
         contentDir: "ch01/03-azure-global-infrastructure",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157552/ltv-azure-fundamentals/azure-global-infrastructure.mp4",
+        durationLabel: "58 s",
       }),
       L(4, "azure-portal-tour", "Azure Portal Tour", {
         contentDir: "ch01/04-azure-portal-tour",
