@@ -113,7 +113,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(44, "introduction-to-pyspark-and-sparksession", "Introduction to PySpark & SparkSession", { contentDir: "ch08/44-introduction-to-pyspark-and-sparksession", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147729/ltv-python-for-data-engineers/introduction-to-pyspark-and-sparksession.mp4", durationLabel: "2 min 30 s" }),
       L(45, "pyspark-dataframes-reading-and-transforming-data", "PySpark DataFrames: Reading & Transforming Data", { contentDir: "ch08/45-pyspark-dataframes-reading-and-transforming-data", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147846/ltv-python-for-data-engineers/pyspark-dataframes-reading-and-transforming-data.mp4", durationLabel: "2 min 29 s" }),
-      L(46, "pyspark-aggregations-and-joins", "PySpark Aggregations & Joins", { contentDir: "ch08/46-pyspark-aggregations-and-joins" }),
+      L(46, "pyspark-aggregations-and-joins", "PySpark Aggregations & Joins", { contentDir: "ch08/46-pyspark-aggregations-and-joins", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147933/ltv-python-for-data-engineers/pyspark-aggregations-and-joins.mp4", durationLabel: "2 min 14 s" }),
       L(47, "mini-capstone-part-1-building-the-pipeline", "Mini Capstone Part 1: Building the Pipeline", { contentDir: "ch08/47-mini-capstone-part-1-building-the-pipeline" }),
       L(48, "mini-capstone-part-2-validating-and-presenting-results", "Mini Capstone Part 2: Validating & Presenting Results", { contentDir: "ch08/48-mini-capstone-part-2-validating-and-presenting-results" }),
     ],
