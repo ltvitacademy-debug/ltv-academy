@@ -291,7 +291,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(51, "schema-drift-and-breaking-changes", "Schema Drift and Breaking Changes", {
         contentDir: "ch03/51-schema-drift-and-breaking-changes",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145217/ltv-fabric-realtime/schema-drift-and-breaking-changes.mp4",
+        durationLabel: "1 min 10 s",
       }),
       L(52, "observability-logs-metrics-traces", "Observability: Logs, Metrics, and Traces", {
         contentDir: "ch03/52-observability-logs-metrics-traces",
