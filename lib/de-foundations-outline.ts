@@ -318,7 +318,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(53, "groupby", "groupBy()", {
         contentDir: "ch04/53-groupby",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792140241/ltv-de-foundations/groupby.mp4",
+        durationLabel: "1 min 10 s",
       }),
       L(54, "aggregations", "Aggregations", {
         contentDir: "ch04/54-aggregations",
