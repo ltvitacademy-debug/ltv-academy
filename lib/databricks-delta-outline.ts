@@ -287,7 +287,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(48, "what-is-lakeflow", "What Is Lakeflow?", {
         contentDir: "ch05/48-what-is-lakeflow",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145406/ltv-databricks-delta/what-is-lakeflow.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(49, "lakeflow-connect", "Lakeflow Connect — Ingestion Basics", {
         contentDir: "ch05/49-lakeflow-connect",
