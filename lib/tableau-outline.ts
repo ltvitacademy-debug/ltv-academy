@@ -78,8 +78,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     title: "Filters, Sorting & Analytics",
     lessons: [
       L(27, "sorting-basic-and-quick-filters", "Sorting, Basic Filters & Quick Filters", { contentDir: "ch05/27-sorting-basic-and-quick-filters", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132719/ltv-tableau/sorting-basic-and-quick-filters.mp4", durationLabel: "1 min 35 s" }),
-      L(28, "dimension-measure-date-filters", "Dimension, Measure & Date Filters", { contentDir: "ch05/28-dimension-measure-date-filters" }),
-      L(29, "relative-dates-top-n-conditional-filters", "Relative Dates, Top N & Conditional Filters", { contentDir: "ch05/29-relative-dates-top-n-conditional-filters" }),
+      L(28, "dimension-measure-date-filters", "Dimension, Measure & Date Filters", { contentDir: "ch05/28-dimension-measure-date-filters", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132761/ltv-tableau/dimension-measure-date-filters.mp4", durationLabel: "1 min 18 s" }),
+      L(29, "relative-dates-top-n-conditional-filters", "Relative Dates, Top N & Conditional Filters", { contentDir: "ch05/29-relative-dates-top-n-conditional-filters", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132813/ltv-tableau/relative-dates-top-n-conditional-filters.mp4", durationLabel: "1 min 35 s" }),
       L(30, "context-filters", "Context Filters", { contentDir: "ch05/30-context-filters" }),
       L(31, "tableaus-order-of-operations", "Understanding Tableau's Order of Operations", { contentDir: "ch05/31-tableaus-order-of-operations" }),
       L(32, "analytics-pane-trend-lines-forecasting", "Analytics Pane: Trend Lines, Forecasting & Reference Lines", { contentDir: "ch05/32-analytics-pane-trend-lines-forecasting" }),
