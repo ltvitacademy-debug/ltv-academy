@@ -301,7 +301,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(53, "alerts-for-pipeline-failures", "Setting Up Alerts for Pipeline Failures", {
         contentDir: "ch03/53-alerts-for-pipeline-failures",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145330/ltv-fabric-realtime/alerts-for-pipeline-failures.mp4",
+        durationLabel: "1 min 12 s",
       }),
       L(54, "cost-management-and-optimization", "Cost Management and Optimization", {
         contentDir: "ch03/54-cost-management-and-optimization",
