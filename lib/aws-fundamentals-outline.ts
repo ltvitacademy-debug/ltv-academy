@@ -60,6 +60,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(6, "iam-basics", "IAM Basics", {
         contentDir: "ch02/06-iam-basics",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153251/ltv-aws-fundamentals/iam-basics.mp4",
+        durationLabel: "1 min 9 s",
       }),
       L(7, "compute-overview", "Compute Overview: EC2 & Lambda", {
         contentDir: "ch02/07-compute-overview",
