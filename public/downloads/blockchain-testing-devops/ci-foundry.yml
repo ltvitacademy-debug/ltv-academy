@@ -1,0 +1,72 @@
+# .github/workflows/ci.yml — gated CI pipeline for a Foundry contract
+# project, assembled from this course's Chapter 2 (CI/CD for Smart
+# Contracts) start to finish:
+#   Lesson 8  -> foundry-toolchain, forge fmt/build/test
+#   Lesson 9  -> Solhint linting
+#   Lesson 10 -> Slither static analysis
+#   Lesson 11 -> branch protection makes this workflow a REQUIRED check
+#
+# This file alone does not gate anything — Lesson 11 is explicit that a
+# green run only blocks a merge once it is added as a required status
+# check in the repository's branch protection rules. Set that up in
+# Settings -> Branches after this workflow runs successfully at least once.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    name: Forge fmt / build / test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Forge fmt (check only, no rewrite)
+        run: forge fmt --check
+
+      - name: Forge build (and bytecode size check)
+        run: forge build --sizes
+
+      - name: Forge test — default profile (fast, local-equivalent)
+        run: forge test -vvv
+
+      - name: Forge test — ci profile (10,000 fuzz runs, 1,000 invariant runs)
+        run: forge test --profile ci -vvv
+
+  lint:
+    name: Solhint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install -g solhint
+      - run: solhint 'src/**/*.sol'
+
+  static-analysis:
+    name: Slither
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - name: Run Slither
+        uses: crytic/slither-action@v0.4.0
+        with:
+          fail-on: high
+          slither-args: --exclude-dependencies
+
+  # Gate: branch protection should require check/lint/static-analysis to
+  # pass before a PR into main can be merged. No step in this file enforces
+  # that by itself — it is a repository setting, not a workflow setting.

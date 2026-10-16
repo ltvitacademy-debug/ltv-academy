@@ -1,0 +1,59 @@
+# Agent Guardrail Config Template
+# Compiled from Chapter 6 (Agent Safety & Guardrails), Lessons 29-31.
+# Copy this into your own agent project and replace every REPLACE_ value.
+# Every number here is TASK-SPECIFIC — don't copy another agent's numbers
+# wholesale. A refund lookup and an open-ended research agent should NOT
+# share a budget (Lesson 30).
+
+stopping_conditions:
+  # Lesson 29 — catches a loop that never converges.
+  max_iterations: 8            # hard cap on tool-call round trips for THIS task
+  max_wall_clock_seconds: 120   # bounds slow steps even within the iteration cap
+  max_repeat_calls: 2           # same tool + same input, back to back
+
+budget:
+  # Lesson 30 — cost is a separate resource from iteration count.
+  usd_ceiling: 0.50
+  # token rates are illustrative placeholders — use your own provider's
+  # real current per-token pricing here, not these numbers:
+  input_token_rate_usd_per_million: REPLACE_ME
+  output_token_rate_usd_per_million: REPLACE_ME
+
+action_scope:
+  # Lesson 30 — bounds blast radius independent of cost.
+  max_records_modified: 1
+  max_distinct_tools: 3
+  max_external_calls: 5
+
+sandbox:
+  # Lesson 31 — environment isolation, not just credential scope.
+  network:
+    egress_allowlist:
+      - REPLACE_WITH_ONLY_THE_HOSTS_THIS_AGENT_ACTUALLY_NEEDS
+  filesystem:
+    mode: read_only
+    scratch_dir: /tmp/REPLACE_WITH_RUN_ID
+  credentials:
+    scope: REPLACE_WITH_NARROWEST_POSSIBLE_SCOPE
+    # Over-broad (never do this):
+    #   api_key: "sk_live_FULLACCESS...", scopes: ["*"]
+    # Scoped (do this):
+    #   api_key: "sk_live_REPLACE_scope_only", scopes: ["REPLACE:write", "REPLACE:read"]
+
+on_limit_tripped:
+  # A tripped limit should never be silent (Lesson 29).
+  log_entry: true                 # write to the append-only audit log (Lesson 27)
+  report_fields:
+    - what_the_agent_was_trying_to_do
+    - how_far_it_got
+    - which_limit_tripped
+    - last_n_steps_summary
+  behavior: stop_and_report        # never silently truncate the result
+
+monitoring_hooks:
+  # Lesson 33 — these four signals, tracked over time, not one-time checks.
+  track:
+    - rejection_rate_per_tool
+    - limit_trip_frequency
+    - injection_screen_flag_rate
+    - cost_per_task_trend

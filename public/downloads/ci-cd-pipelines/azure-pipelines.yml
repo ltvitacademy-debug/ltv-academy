@@ -1,0 +1,80 @@
+# azure-pipelines.yml — multi-stage Build -> Deploy pipeline for
+# storefront-api, assembled from this course's Chapter 3 (Azure DevOps
+# Pipelines) and Chapter 5 (Deploying & Promoting):
+#   Lesson 11 -> Azure DevOps overview (trigger/pool/stages/jobs/steps)
+#   Lesson 12 -> build pipeline YAML, task vs. script steps
+#   Lesson 13 -> release pipelines & stages
+#   Lesson 14 -> service connections & variable groups
+#   Lesson 21 -> deployment environments
+#   Lesson 22 -> environment promotion & manual approval
+#
+# The manual approval gate on the Production stage lives in the
+# environment's own settings (Pipelines -> Environments -> Production ->
+# Approvals and checks) — it is NOT expressed in this YAML file, the same
+# way Lesson 22 describes it.
+
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+variables:
+  - group: storefront-api-common  # variable group from Lesson 14
+
+stages:
+  - stage: Build
+    displayName: "Build & Test"
+    jobs:
+      - job: BuildAndTest
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - checkout: self
+
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: "3.12"
+
+          - script: pip install -r requirements.txt
+            displayName: "Install dependencies"
+
+          - script: pytest --cov=src --cov-fail-under=80
+            displayName: "Run tests with coverage gate"
+
+          - task: Docker@2
+            inputs:
+              containerRegistry: "northbridgeRetailACR" # service connection, Lesson 14
+              repository: "storefront-api"
+              command: "buildAndPush"
+              Dockerfile: "**/Dockerfile"
+              tags: |
+                $(Build.BuildId)
+
+  - stage: DeployStaging
+    displayName: "Deploy to Staging"
+    dependsOn: Build
+    jobs:
+      - deployment: DeployStaging
+        environment: "storefront-api-staging" # Lesson 21 — auto-promotes, no approval needed
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - script: echo "Deploying $(Build.BuildId) to staging"
+
+  - stage: DeployProduction
+    displayName: "Deploy to Production"
+    dependsOn: DeployStaging
+    jobs:
+      - deployment: DeployProduction
+        environment: "storefront-api-production" # Lesson 22 — approval check configured on this environment
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - script: echo "Deploying $(Build.BuildId) to production"

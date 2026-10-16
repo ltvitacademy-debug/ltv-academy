@@ -1,0 +1,67 @@
+# foundry.toml — production-grade test & deployment configuration
+#
+# Compiled from this course's own Chapter 1 (fuzz/invariant testing),
+# Chapter 3 (deployment scripts & RPC endpoints), and Chapter 4
+# (hosting/secrets). Copy this into a new Foundry project and fill in the
+# bracketed values — it is a starting point, not a drop-in secret store.
+# Real RPC URLs and API keys still belong in a .env file that is never
+# committed (Lesson 20), referenced here only as ${VAR} expansions.
+
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.26"
+optimizer = true
+optimizer_runs = 200
+via_ir = false
+gas_reports = ["*"]
+
+# Lesson 6 — coverage is measured, not just run; CI (Chapter 2) enforces a
+# minimum so a coverage number is a gate, not a statistic nobody reads.
+[profile.default.fuzz]
+# Lesson 2 — 256 is Forge's default; raise it here for CI runs that can
+# afford the extra wall-clock time without slowing down local iteration.
+runs = 1000
+max_test_rejects = 65536
+
+# Lesson 3 — invariant campaigns need their own run/depth settings,
+# distinct from single-function fuzzing above.
+[profile.default.invariant]
+runs = 256
+depth = 50
+fail_on_revert = true
+
+# A separate, deliberately slower profile for CI only — Lesson 2's point
+# that raising `runs` trades CI time for a wider random search. Invoke
+# with `forge test --profile ci`.
+[profile.ci.fuzz]
+runs = 10000
+max_test_rejects = 65536
+
+[profile.ci.invariant]
+runs = 1000
+depth = 100
+fail_on_revert = true
+
+# Lesson 13 — named RPC aliases instead of pasting full URLs into every
+# deploy command. Values are read from environment variables (.env, or a
+# CI secret store per Lesson 20) — never hardcoded here.
+[rpc_endpoints]
+sepolia = "${SEPOLIA_RPC_URL}"
+mainnet = "${MAINNET_RPC_URL}"
+arbitrum = "${ARBITRUM_RPC_URL}"
+base = "${BASE_RPC_URL}"
+
+# Lesson 14 — Etherscan-family verification, one block explorer per chain
+# this project actually deploys to (Lesson 17's multi-chain deployment).
+[etherscan]
+sepolia = { key = "${ETHERSCAN_API_KEY}" }
+mainnet = { key = "${ETHERSCAN_API_KEY}" }
+arbitrum = { key = "${ARBISCAN_API_KEY}" }
+base = { key = "${BASESCAN_API_KEY}" }
+
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = true

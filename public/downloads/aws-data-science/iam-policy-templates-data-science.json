@@ -1,0 +1,84 @@
+{
+  "_comment": "Reusable IAM policy templates for an AWS data science project, grounded in the course's own Riverbend Meals churn project (Lesson 5: IAM for Data Science Work). Replace the account ID, bucket name, and role name placeholders before use. These are illustrative templates for study, not a substitute for testing in a real account.",
+
+  "sagemaker_execution_role_trust_policy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": { "Service": "sagemaker.amazonaws.com" },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  },
+
+  "scoped_s3_access_for_churn_project": {
+    "_comment": "Attach alongside AmazonSageMakerFullAccess, which only covers buckets with 'sagemaker'/'aws-glue' in the name. This statement grants exactly what the Riverbend Meals project needs: read-only raw data, read-write processed and models prefixes.",
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "ListProjectPrefixOnly",
+        "Effect": "Allow",
+        "Action": "s3:ListBucket",
+        "Resource": "arn:aws:s3:::riverbend-ds-bucket",
+        "Condition": {
+          "StringLike": { "s3:prefix": ["churn-project/*"] }
+        }
+      },
+      {
+        "Sid": "ReadOnlyRawData",
+        "Effect": "Allow",
+        "Action": ["s3:GetObject"],
+        "Resource": "arn:aws:s3:::riverbend-ds-bucket/churn-project/raw/*"
+      },
+      {
+        "Sid": "ReadWriteProcessedAndModels",
+        "Effect": "Allow",
+        "Action": ["s3:GetObject", "s3:PutObject"],
+        "Resource": [
+          "arn:aws:s3:::riverbend-ds-bucket/churn-project/processed/*",
+          "arn:aws:s3:::riverbend-ds-bucket/churn-project/models/*"
+        ]
+      }
+    ]
+  },
+
+  "scoped_pass_role_for_training_jobs": {
+    "_comment": "Lets a data scientist's own IAM identity hand the execution role to SageMaker when starting a training job, without being able to pass any other role in the account.",
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": "iam:PassRole",
+        "Resource": "arn:aws:iam::111122223333:role/ChurnSageMakerRole",
+        "Condition": {
+          "StringEquals": { "iam:PassedToService": "sagemaker.amazonaws.com" }
+        }
+      }
+    ]
+  },
+
+  "glue_job_execution_role_trust_policy": {
+    "_comment": "For a Glue ETL job that promotes a pandas feature-prep script (Lesson 2) to scale.",
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": { "Service": "glue.amazonaws.com" },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  },
+
+  "redshift_unload_role_trust_policy": {
+    "_comment": "For the IAM_ROLE a Redshift UNLOAD statement assumes to write Parquet to S3 (Lesson 4).",
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": { "Service": "redshift.amazonaws.com" },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  }
+}

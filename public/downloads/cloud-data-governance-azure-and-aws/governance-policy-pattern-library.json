@@ -1,0 +1,172 @@
+{
+  "description": "A compiled reference of the real, syntactically valid policy and trust documents taught across this course — AWS IAM/S3/SCP/Lake Formation JSON and the shape of an Azure Policy assignment. Copy a pattern as a starting point and adapt the ARNs, account IDs, and resource names to your own environment; none of the identifiers below are real.",
+  "patterns": [
+    {
+      "name": "S3 read-only identity-based IAM policy (least privilege)",
+      "cloud": "AWS",
+      "lesson": "Lesson 9 — AWS IAM Fundamentals for Governance",
+      "document": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": ["s3:GetObject", "s3:ListBucket"],
+            "Resource": [
+              "arn:aws:s3:::governed-data-bucket",
+              "arn:aws:s3:::governed-data-bucket/*"
+            ],
+            "Condition": {
+              "Bool": { "aws:SecureTransport": "true" }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "IAM role trust policy, gated by an External ID",
+      "cloud": "AWS",
+      "lesson": "Lesson 9 — AWS IAM Fundamentals for Governance / Lesson 22 — Cross-Cloud Cataloging",
+      "document": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": { "AWS": "arn:aws:iam::111122223333:root" },
+            "Action": "sts:AssumeRole",
+            "Condition": {
+              "StringEquals": { "sts:ExternalId": "governance-audit-2026" }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Federated trust policy — AWS IAM role trusting Microsoft Entra ID",
+      "cloud": "AWS",
+      "lesson": "Lesson 23 — Multi-Cloud Governance Case Study",
+      "document": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": "https://sts.windows.net/<entra-tenant-id>/"
+            },
+            "Action": "sts:AssumeRoleWithSAML",
+            "Condition": {
+              "StringEquals": {
+                "SAML:aud": "https://signin.aws.amazon.com/saml"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "S3 bucket policy — one role allowed, insecure transport denied",
+      "cloud": "AWS",
+      "lesson": "Lesson 12 — Amazon S3 Governance",
+      "document": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "AllowReportingRoleReadOnly",
+            "Effect": "Allow",
+            "Principal": { "AWS": "arn:aws:iam::111122223333:role/ReportingRole" },
+            "Action": ["s3:GetObject", "s3:ListBucket"],
+            "Resource": [
+              "arn:aws:s3:::analytics-prod-bucket",
+              "arn:aws:s3:::analytics-prod-bucket/*"
+            ]
+          },
+          {
+            "Sid": "DenyInsecureTransport",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": [
+              "arn:aws:s3:::analytics-prod-bucket",
+              "arn:aws:s3:::analytics-prod-bucket/*"
+            ],
+            "Condition": { "Bool": { "aws:SecureTransport": "false" } }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Service control policy — deny tampering with CloudTrail",
+      "cloud": "AWS",
+      "lesson": "Lesson 19 — AWS Organizations and Service Controls",
+      "document": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "DenyCloudTrailChanges",
+            "Effect": "Deny",
+            "Action": [
+              "cloudtrail:StopLogging",
+              "cloudtrail:DeleteTrail",
+              "cloudtrail:UpdateTrail"
+            ],
+            "Resource": "*"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Service control policy — deny S3 uploads that aren't KMS-encrypted",
+      "cloud": "AWS",
+      "lesson": "Lesson 19 — AWS Organizations and Service Controls (extending the Lesson 12 bucket-policy Deny pattern to an organization-wide ceiling)",
+      "document": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "DenyUnencryptedObjectUploads",
+            "Effect": "Deny",
+            "Action": "s3:PutObject",
+            "Resource": "*",
+            "Condition": {
+              "StringNotEquals": {
+                "s3:x-amz-server-side-encryption": "aws:kms"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Lake Formation grant — column-restricted Select via the AWS CLI",
+      "cloud": "AWS",
+      "lesson": "Lesson 15 — AWS Lake Formation",
+      "document": {
+        "cli_command": "aws lakeformation grant-permissions",
+        "DataLakePrincipalIdentifier": "arn:aws:iam::111122223333:role/AnalyticsReadOnlyRole",
+        "Resource": {
+          "Table": {
+            "DatabaseName": "retail",
+            "Name": "inventory",
+            "ColumnWildcard": { "ExcludedColumnNames": ["ssn", "email"] }
+          }
+        },
+        "Permissions": ["SELECT"]
+      }
+    },
+    {
+      "name": "Azure Policy assignment skeleton — Deny effect, pinned definition version",
+      "cloud": "Azure",
+      "lesson": "Lesson 18 — Azure Policy and Governance Controls",
+      "document": {
+        "properties": {
+          "displayName": "Require customer-managed key encryption on storage accounts",
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/<built-in-definition-id>",
+          "definitionVersion": "1.*.*",
+          "enforcementMode": "Default",
+          "parameters": {
+            "effect": { "value": "Deny" }
+          }
+        },
+        "scope": "/subscriptions/<subscription-id>/resourceGroups/rg-analytics-prod"
+      }
+    }
+  ]
+}

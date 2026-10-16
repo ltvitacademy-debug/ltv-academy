@@ -1,0 +1,44 @@
+{
+  "name": "nyc_taxi_medallion_pipeline",
+  "catalog": "nyc_taxi",
+  "schema": "silver",
+  "edition": "ADVANCED",
+  "channel": "CURRENT",
+  "photon": true,
+  "continuous": false,
+  "development": true,
+  "root_path": "/Workspace/Repos/nyc-taxi/pipelines",
+  "libraries": [
+    { "notebook": { "path": "/Workspace/Repos/nyc-taxi/pipelines/bronze_trips" } },
+    { "notebook": { "path": "/Workspace/Repos/nyc-taxi/pipelines/silver_trips" } },
+    { "notebook": { "path": "/Workspace/Repos/nyc-taxi/pipelines/gold_daily_revenue" } }
+  ],
+  "clusters": [
+    {
+      "label": "default",
+      "autoscale": {
+        "min_workers": 1,
+        "max_workers": 4,
+        "mode": "ENHANCED"
+      },
+      "node_type_id": "Standard_DS3_v2"
+    }
+  ],
+  "configuration": {
+    "pipelines.autoOptimize.managed": "true",
+    "pipelines.reset.allowFullRefresh": "false"
+  },
+  "notifications": [
+    {
+      "email_recipients": ["data-team@example.com"],
+      "alerts": ["on-update-failure", "on-flow-failure"]
+    }
+  ],
+  "_comments": {
+    "development": "true while building/testing; set to false before scheduling in prod -- turns off fast-iteration shortcuts like skipping cluster restarts between runs",
+    "continuous": "false = triggered (Lesson 53) -- runs once per trigger, then stops. Set true only for a genuinely low-latency streaming need; triggered is the right default for a nightly bronze-to-gold batch.",
+    "edition": "ADVANCED unlocks expectations (@dlt.expect*) used throughout this pipeline's silver_trips definition -- CORE does not support them",
+    "pipelines.reset.allowFullRefresh": "false prevents an accidental full table rebuild from wiping gold's history -- mirrors Lesson 51's table_properties example",
+    "libraries": "one notebook per @dlt.table/@dlt.view module -- Lakeflow infers the bronze -> silver -> gold dependency graph from the dlt.read()/dlt.read_stream() calls inside them, not from this list's order"
+  }
+}
