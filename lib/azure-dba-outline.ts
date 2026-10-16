@@ -262,7 +262,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(40, "database-watcher", "Database Watcher", {
         contentDir: "ch07/40-database-watcher",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160141/ltv-azure-dba/database-watcher.mp4",
+        durationLabel: "1 min 52 s",
       }),
       L(41, "dmvs-for-dbas", "Dynamic Management Views for DBAs", {
         contentDir: "ch07/41-dmvs-for-dbas",
