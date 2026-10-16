@@ -101,7 +101,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
       }),
       L(13, "bicep-parameters-and-variables", "Parameters & Variables in Bicep", {
         contentDir: "ch03/13-bicep-parameters-and-variables",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147318/ltv-terraform-bicep/bicep-parameters-and-variables.mp4",
+        durationLabel: "1 min 12 s",
       }),
       L(14, "deploying-a-resource-group", "Deploying a Resource Group", {
         contentDir: "ch03/14-deploying-a-resource-group",
