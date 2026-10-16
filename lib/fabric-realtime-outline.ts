@@ -341,11 +341,13 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(61, "handling-pii-and-sensitive-data", "Handling PII and Sensitive Data", {
         contentDir: "ch03/61-handling-pii-and-sensitive-data",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145786/ltv-fabric-realtime/handling-pii-and-sensitive-data.mp4",
+        durationLabel: "1 min 18 s",
       }),
       L(62, "secrets-management", "Secrets Management", {
         contentDir: "ch03/62-secrets-management",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145848/ltv-fabric-realtime/secrets-management.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(63, "access-reviews-and-least-privilege", "Access Reviews and Least Privilege", {
         contentDir: "ch03/63-access-reviews-and-least-privilege",
