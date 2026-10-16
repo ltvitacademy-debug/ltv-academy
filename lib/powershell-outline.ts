@@ -43,7 +43,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
       }),
       L(4, "getting-help", "Getting Help: Get-Help & Get-Command", {
         contentDir: "ch01/04-getting-help",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163047/ltv-powershell/getting-help.mp4",
+        durationLabel: "1 min 9 s",
       }),
       L(5, "variables-and-data-types", "Variables & Data Types", {
         contentDir: "ch01/05-variables-and-data-types",
