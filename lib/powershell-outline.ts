@@ -69,7 +69,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
       }),
       L(8, "where-select-foreach-object", "Where-Object, Select-Object & ForEach-Object", {
         contentDir: "ch02/08-where-select-foreach-object",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163258/ltv-powershell/where-select-foreach-object.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(9, "sorting-and-filtering", "Sorting & Filtering", {
         contentDir: "ch02/09-sorting-and-filtering",
