@@ -427,7 +427,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(77, "project-3-scoring-and-alerting", "Project 3: Real-Time Scoring and Alerting", {
         contentDir: "ch04/77-project-3-scoring-and-alerting",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150285/ltv-career-capstone/project-3-scoring-and-alerting.mp4",
+        durationLabel: "1 min 38 s",
       }),
       L(78, "project-3-wrap-up", "Project 3: Wrap-Up and Retrospective", {
         contentDir: "ch04/78-project-3-wrap-up",
