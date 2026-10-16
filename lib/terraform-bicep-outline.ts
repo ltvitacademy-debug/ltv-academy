@@ -75,7 +75,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
       }),
       L(9, "provisioning-a-fabric-capacity", "Provisioning a Fabric Capacity", {
         contentDir: "ch02/09-provisioning-a-fabric-capacity",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147047/ltv-terraform-bicep/provisioning-a-fabric-capacity.mp4",
+        durationLabel: "1 min 44 s",
       }),
       L(10, "provisioning-an-event-hub", "Provisioning an Event Hub", {
         contentDir: "ch02/10-provisioning-an-event-hub",
