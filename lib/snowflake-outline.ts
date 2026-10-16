@@ -56,7 +56,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
       L(13, "file-formats-csv-json-parquet", "File Formats: CSV, JSON & Parquet", { contentDir: "ch03/13-file-formats-csv-json-parquet", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127272/ltv-snowflake/file-formats-csv-json-parquet.mp4", durationLabel: "1 min 39 s" }),
       L(14, "copy-into-bulk-loading-fundamentals", "COPY INTO — Bulk Loading Fundamentals", { contentDir: "ch03/14-copy-into-bulk-loading-fundamentals", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127325/ltv-snowflake/copy-into-bulk-loading-fundamentals.mp4", durationLabel: "1 min 33 s" }),
       L(15, "loading-from-cloud-storage", "Loading From Cloud Storage", { contentDir: "ch03/15-loading-from-cloud-storage", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127374/ltv-snowflake/loading-from-cloud-storage.mp4", durationLabel: "1 min 30 s" }),
-      L(16, "handling-load-errors-and-validation", "Handling Load Errors & Validation", { contentDir: "ch03/16-handling-load-errors-and-validation" }),
+      L(16, "handling-load-errors-and-validation", "Handling Load Errors & Validation", { contentDir: "ch03/16-handling-load-errors-and-validation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127433/ltv-snowflake/handling-load-errors-and-validation.mp4", durationLabel: "1 min 46 s" }),
       L(17, "lab-loading-a-real-dataset", "Lab: Loading a Real Dataset Into Snowflake", { contentDir: "ch03/17-lab-loading-a-real-dataset" }),
     ],
   },
