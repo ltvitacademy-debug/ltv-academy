@@ -165,7 +165,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(26, "the-bronze-layer", "The Bronze Layer — Raw Ingestion", {
         contentDir: "ch03/26-the-bronze-layer",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143918/ltv-databricks-delta/the-bronze-layer.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(27, "the-silver-layer", "The Silver Layer — Cleaned and Conformed Data", {
         contentDir: "ch03/27-the-silver-layer",
