@@ -96,6 +96,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(12, "a-cost-optimization-pass", "A Cost Optimization Pass", {
         contentDir: "ch03/12-a-cost-optimization-pass",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157239/ltv-aws-capstone/a-cost-optimization-pass.mp4",
+        durationLabel: "1 min 50 s",
       }),
       L(13, "disaster-recovery-considerations", "Disaster Recovery Considerations", {
         contentDir: "ch03/13-disaster-recovery-considerations",
