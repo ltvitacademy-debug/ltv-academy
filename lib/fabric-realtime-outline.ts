@@ -140,7 +140,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(22, "what-is-kql", "What Is KQL?", {
         contentDir: "ch02/22-what-is-kql",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143509/ltv-fabric-realtime/what-is-kql.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(23, "kql-where-and-project", "KQL: Basic Queries With where and project", {
         contentDir: "ch02/23-kql-where-and-project",
