@@ -364,7 +364,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(58, "scaling-and-troubleshooting-resource-bottlenecks", "Scaling Compute/Storage & Troubleshooting Resource Bottlenecks", {
         contentDir: "ch09/58-scaling-and-troubleshooting-resource-bottlenecks",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161097/ltv-azure-dba/scaling-and-troubleshooting-resource-bottlenecks.mp4",
+        durationLabel: "1 min 30 s",
       }),
     ],
   },
