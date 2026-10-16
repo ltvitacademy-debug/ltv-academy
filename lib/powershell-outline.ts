@@ -48,7 +48,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
       }),
       L(5, "variables-and-data-types", "Variables & Data Types", {
         contentDir: "ch01/05-variables-and-data-types",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163099/ltv-powershell/variables-and-data-types.mp4",
+        durationLabel: "1 min 27 s",
       }),
     ],
   },
