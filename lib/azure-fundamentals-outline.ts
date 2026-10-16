@@ -49,7 +49,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(5, "subscriptions-and-resource-groups", "Subscriptions & Resource Groups", {
         contentDir: "ch01/05-subscriptions-and-resource-groups",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157624/ltv-azure-fundamentals/subscriptions-and-resource-groups.mp4",
+        durationLabel: "1 min 4 s",
       }),
     ],
   },
