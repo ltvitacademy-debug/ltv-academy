@@ -169,7 +169,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(24, "caching-strategies", "Caching Strategies", {
         contentDir: "ch05/24-caching-strategies",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151614/ltv-advanced-databricks/caching-strategies.mp4",
+        durationLabel: "1 min 34 s",
       }),
       L(25, "cluster-sizing-for-large-workloads", "Cluster Sizing for Large Workloads", {
         contentDir: "ch05/25-cluster-sizing-for-large-workloads",
