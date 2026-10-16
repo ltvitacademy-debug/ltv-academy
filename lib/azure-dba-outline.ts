@@ -560,7 +560,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(90, "project-introduction-youre-the-dba", "Project Introduction — You're the DBA", {
         contentDir: "ch15/90-project-introduction-youre-the-dba",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162567/ltv-azure-dba/project-introduction-youre-the-dba.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(91, "project-migrate-and-secure-the-environment", "Project — Migrate & Secure the Environment", {
         contentDir: "ch15/91-project-migrate-and-secure-the-environment",
