@@ -208,7 +208,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792166057/ltv-t-sql-for-dbas/file-growth-and-autogrowth.mp4",
         durationLabel: "1 min 47 s",
       }),
-      L(35, "capacity-monitoring", "Capacity Monitoring", { contentDir: "ch08/35-capacity-monitoring" }),
+      L(35, "capacity-monitoring", "Capacity Monitoring", { contentDir: "ch08/35-capacity-monitoring",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792166118/ltv-t-sql-for-dbas/capacity-monitoring.mp4",
+        durationLabel: "1 min 43 s",
+      }),
     ],
   },
   {
