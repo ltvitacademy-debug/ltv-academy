@@ -46,7 +46,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(4, "iaas-vs-paas-for-sql-server", "IaaS vs. PaaS for SQL Server", {
         contentDir: "ch01/04-iaas-vs-paas-for-sql-server",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158359/ltv-azure-dba/iaas-vs-paas-for-sql-server.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(5, "azure-portal-ssms-and-azure-data-studio", "Azure Portal, SSMS & Azure Data Studio for DBAs", {
         contentDir: "ch01/05-azure-portal-ssms-and-azure-data-studio",
