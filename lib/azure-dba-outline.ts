@@ -216,7 +216,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(32, "always-encrypted-and-secure-enclaves", "Always Encrypted & Always Encrypted with Secure Enclaves", {
         contentDir: "ch06/32-always-encrypted-and-secure-enclaves",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159722/ltv-azure-dba/always-encrypted-and-secure-enclaves.mp4",
+        durationLabel: "1 min 52 s",
       }),
       L(33, "dynamic-data-masking", "Dynamic Data Masking", {
         contentDir: "ch06/33-dynamic-data-masking",
