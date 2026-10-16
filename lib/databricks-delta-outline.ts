@@ -124,7 +124,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(19, "schema-enforcement", "Schema Enforcement", {
         contentDir: "ch02/19-schema-enforcement",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143414/ltv-databricks-delta/schema-enforcement.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(20, "schema-evolution", "Schema Evolution", {
         contentDir: "ch02/20-schema-evolution",
