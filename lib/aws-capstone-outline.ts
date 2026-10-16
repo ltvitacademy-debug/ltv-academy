@@ -86,6 +86,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(10, "securing-with-iam-least-privilege", "Securing With IAM Least Privilege", {
         contentDir: "ch03/10-securing-with-iam-least-privilege",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157135/ltv-aws-capstone/securing-with-iam-least-privilege.mp4",
+        durationLabel: "1 min 26 s",
       }),
       L(11, "ci-cd-for-the-pipeline", "CI/CD for the Pipeline", {
         contentDir: "ch03/11-ci-cd-for-the-pipeline",
