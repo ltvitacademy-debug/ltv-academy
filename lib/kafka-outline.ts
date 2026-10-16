@@ -35,7 +35,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(2, "topics-partitions-offsets", "Topics, Partitions & Offsets", {
         contentDir: "ch01/02-topics-partitions-offsets",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148046/ltv-kafka/topics-partitions-offsets.mp4",
+        durationLabel: "1 min 20 s",
       }),
       L(3, "producers-and-consumers", "Producers & Consumers", {
         contentDir: "ch01/03-producers-and-consumers",
