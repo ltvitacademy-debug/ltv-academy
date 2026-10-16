@@ -211,7 +211,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(31, "transparent-data-encryption", "Transparent Data Encryption (TDE)", {
         contentDir: "ch06/31-transparent-data-encryption",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159663/ltv-azure-dba/transparent-data-encryption.mp4",
+        durationLabel: "1 min 30 s",
       }),
       L(32, "always-encrypted-and-secure-enclaves", "Always Encrypted & Always Encrypted with Secure Enclaves", {
         contentDir: "ch06/32-always-encrypted-and-secure-enclaves",
