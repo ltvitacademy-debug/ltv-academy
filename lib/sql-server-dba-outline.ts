@@ -205,7 +205,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792168708/ltv-sql-server-dba/integrity-check-jobs.mp4",
         durationLabel: "1 min 35 s",
       }),
-      L(38, "ola-hallengrens-scripts", "Ola Hallengren's Maintenance Scripts, the Industry Standard", { contentDir: "ch06/38-ola-hallengrens-scripts" }),
+      L(38, "ola-hallengrens-scripts", "Ola Hallengren's Maintenance Scripts, the Industry Standard", { contentDir: "ch06/38-ola-hallengrens-scripts",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792168767/ltv-sql-server-dba/ola-hallengrens-scripts.mp4",
+        durationLabel: "1 min 42 s",
+      }),
     ],
   },
   {
