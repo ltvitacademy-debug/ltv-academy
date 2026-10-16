@@ -106,6 +106,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(14, "cross-service-access-patterns", "Cross-Service Access Patterns", {
         contentDir: "ch03/14-cross-service-access-patterns",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153591/ltv-aws-fundamentals/cross-service-access-patterns.mp4",
+        durationLabel: "1 min 36 s",
       }),
     ],
   },
