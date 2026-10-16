@@ -115,7 +115,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792167740/ltv-sql-server-dba/auto-settings.mp4",
         durationLabel: "1 min 33 s",
       }),
-      L(20, "extended-database-properties", "Extended Database Properties", { contentDir: "ch03/20-extended-database-properties" }),
+      L(20, "extended-database-properties", "Extended Database Properties", { contentDir: "ch03/20-extended-database-properties",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792167787/ltv-sql-server-dba/extended-database-properties.mp4",
+        durationLabel: "1 min 19 s",
+      }),
     ],
   },
   {
