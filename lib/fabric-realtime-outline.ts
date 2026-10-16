@@ -99,7 +99,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(15, "git-integration-and-deployment-pipelines", "Git Integration and Deployment Pipelines", {
         contentDir: "ch01/15-git-integration-and-deployment-pipelines",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143040/ltv-fabric-realtime/git-integration-and-deployment-pipelines.mp4",
+        durationLabel: "1 min 17 s",
       }),
       L(16, "the-monitoring-hub", "The Monitoring Hub", {
         contentDir: "ch01/16-the-monitoring-hub",
