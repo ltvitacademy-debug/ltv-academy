@@ -74,9 +74,9 @@ export const DBT_CHAPTERS: ChapterMeta[] = [
     title: "Seeds, Snapshots & Incremental Models",
     lessons: [
       L(23, "seeds", "Seeds: Loading Static Reference Data", { contentDir: "ch05/23-seeds", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125217/ltv-dbt/seeds.mp4", durationLabel: "1 min 59 s" }),
-      L(24, "snapshots-for-scd", "Snapshots for Slowly Changing Dimensions", { contentDir: "ch05/24-snapshots-for-scd" }),
-      L(25, "incremental-models-fundamentals", "Incremental Models: Fundamentals", { contentDir: "ch05/25-incremental-models-fundamentals" }),
-      L(26, "incremental-strategies", "Incremental Strategies: merge, delete+insert, append", { contentDir: "ch05/26-incremental-strategies" }),
+      L(24, "snapshots-for-scd", "Snapshots for Slowly Changing Dimensions", { contentDir: "ch05/24-snapshots-for-scd", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125280/ltv-dbt/snapshots-for-scd.mp4", durationLabel: "2 min 6 s" }),
+      L(25, "incremental-models-fundamentals", "Incremental Models: Fundamentals", { contentDir: "ch05/25-incremental-models-fundamentals", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125334/ltv-dbt/incremental-models-fundamentals.mp4", durationLabel: "1 min 48 s" }),
+      L(26, "incremental-strategies", "Incremental Strategies: merge, delete+insert, append", { contentDir: "ch05/26-incremental-strategies", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125397/ltv-dbt/incremental-strategies.mp4", durationLabel: "2 min 7 s" }),
       L(27, "incremental-model-gotchas", "Incremental Model Gotchas & Full Refreshes", { contentDir: "ch05/27-incremental-model-gotchas" }),
     ],
   },
