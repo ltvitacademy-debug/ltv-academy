@@ -478,7 +478,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(76, "backup-fundamentals-full-differential-log", "SQL Server Backup Fundamentals: Full, Differential & Log", {
         contentDir: "ch13/76-backup-fundamentals-full-differential-log",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161940/ltv-azure-dba/backup-fundamentals-full-differential-log.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(77, "backup-and-restore-with-ssms-and-t-sql", "Backup & Restore with SSMS and T-SQL", {
         contentDir: "ch13/77-backup-and-restore-with-ssms-and-t-sql",
