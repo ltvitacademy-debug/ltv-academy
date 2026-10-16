@@ -89,7 +89,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(13, "designing-an-ingestion-layer", "Designing an Ingestion Layer", {
         contentDir: "ch01/13-designing-an-ingestion-layer",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146881/ltv-career-capstone/designing-an-ingestion-layer.mp4",
+        durationLabel: "1 min 18 s",
       }),
       L(14, "designing-a-transformation-layer", "Designing a Transformation Layer", {
         contentDir: "ch01/14-designing-a-transformation-layer",

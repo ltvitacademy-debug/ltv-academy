@@ -65,7 +65,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
       }),
       L(7, "variables-and-outputs", "Variables & Outputs", {
         contentDir: "ch02/07-variables-and-outputs",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146892/ltv-terraform-bicep/variables-and-outputs.mp4",
+        durationLabel: "1 min 20 s",
       }),
       L(8, "provisioning-a-storage-account", "Provisioning a Storage Account", {
         contentDir: "ch02/08-provisioning-a-storage-account",
