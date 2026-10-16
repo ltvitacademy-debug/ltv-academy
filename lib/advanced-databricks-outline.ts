@@ -242,7 +242,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(35, "agentic-data-engineering-paradigm", "Agentic Data Engineering: The New Paradigm", {
         contentDir: "ch08/35-agentic-data-engineering-paradigm",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792152299/ltv-advanced-databricks/agentic-data-engineering-paradigm.mp4",
+        durationLabel: "2 min 50 s",
       }),
       L(36, "zerobus-ingest", "Zerobus Ingest", {
         contentDir: "ch08/36-zerobus-ingest",
