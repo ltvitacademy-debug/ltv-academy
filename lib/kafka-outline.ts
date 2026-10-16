@@ -138,7 +138,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(19, "ksqldb-basics", "ksqlDB Basics", {
         contentDir: "ch04/19-ksqldb-basics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148995/ltv-kafka/ksqldb-basics.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(20, "comparing-to-fabric-eventstreams", "Comparing Kafka to Fabric Eventstreams", {
         contentDir: "ch04/20-comparing-to-fabric-eventstreams",
