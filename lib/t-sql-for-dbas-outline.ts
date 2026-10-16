@@ -186,7 +186,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792165808/ltv-t-sql-for-dbas/creating-and-managing-jobs-with-t-sql.mp4",
         durationLabel: "1 min 40 s",
       }),
-      L(31, "alerts-and-operators", "Alerts & Operators", { contentDir: "ch07/31-alerts-and-operators" }),
+      L(31, "alerts-and-operators", "Alerts & Operators", { contentDir: "ch07/31-alerts-and-operators",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792165865/ltv-t-sql-for-dbas/alerts-and-operators.mp4",
+        durationLabel: "1 min 30 s",
+      }),
     ],
   },
   {
