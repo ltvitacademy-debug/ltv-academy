@@ -64,11 +64,13 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(8, "fabric-data-factory-pipelines", "Fabric Data Factory — Pipelines", {
         contentDir: "ch01/08-fabric-data-factory-pipelines",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142599/ltv-fabric-realtime/fabric-data-factory-pipelines.mp4",
+        durationLabel: "1 min 23 s",
       }),
       L(9, "dataflows-gen2", "Dataflows Gen2", {
         contentDir: "ch01/09-dataflows-gen2",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142667/ltv-fabric-realtime/dataflows-gen2.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(10, "fabric-warehouse", "Fabric Warehouse", {
         contentDir: "ch01/10-fabric-warehouse",
