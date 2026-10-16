@@ -447,7 +447,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(71, "assessing-sql-server-before-migration", "Assessing SQL Server Before Migration", {
         contentDir: "ch12/71-assessing-sql-server-before-migration",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161687/ltv-azure-dba/assessing-sql-server-before-migration.mp4",
+        durationLabel: "1 min 30 s",
       }),
       L(72, "online-vs-offline-migration-strategies", "Online vs. Offline Migration Strategies", {
         contentDir: "ch12/72-online-vs-offline-migration-strategies",
