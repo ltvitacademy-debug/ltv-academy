@@ -221,7 +221,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(33, "dynamic-data-masking", "Dynamic Data Masking", {
         contentDir: "ch06/33-dynamic-data-masking",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159766/ltv-azure-dba/dynamic-data-masking.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(34, "row-level-security", "Row-Level Security", {
         contentDir: "ch06/34-row-level-security",
