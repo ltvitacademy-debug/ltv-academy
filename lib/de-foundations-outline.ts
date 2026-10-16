@@ -161,7 +161,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(24, "processing-json", "Processing JSON", {
         contentDir: "ch02/24-processing-json",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138725/ltv-de-foundations/processing-json.mp4",
+        durationLabel: "1 min 32 s",
       }),
       L(25, "connecting-python-to-sql", "Connecting Python to SQL", {
         contentDir: "ch02/25-connecting-python-to-sql",
