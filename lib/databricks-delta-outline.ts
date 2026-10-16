@@ -28,7 +28,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "what-is-azure-databricks", "What Is Azure Databricks?", {
         contentDir: "ch01/01-what-is-azure-databricks",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142216/ltv-databricks-delta/what-is-azure-databricks.mp4",
+        durationLabel: "1 min 37 s",
       }),
       L(2, "creating-a-databricks-workspace", "Creating a Databricks Workspace", {
         contentDir: "ch01/02-creating-a-databricks-workspace",
