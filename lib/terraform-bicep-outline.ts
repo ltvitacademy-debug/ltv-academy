@@ -127,7 +127,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(17, "state-management-and-remote-state", "State Management & Remote State", {
         contentDir: "ch04/17-state-management-and-remote-state",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147539/ltv-terraform-bicep/state-management-and-remote-state.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(18, "the-plan-apply-workflow", "The Plan → Apply Workflow", {
         contentDir: "ch04/18-the-plan-apply-workflow",
