@@ -139,7 +139,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(23, "case-study-social-media-analytics", "Case Study: A Social Media Analytics Pipeline", {
         contentDir: "ch01/23-case-study-social-media-analytics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147606/ltv-career-capstone/case-study-social-media-analytics.mp4",
+        durationLabel: "1 min 26 s",
       }),
       L(24, "presenting-a-system-design", "Presenting a System Design — Whiteboarding Like an Interview", {
         contentDir: "ch01/24-presenting-a-system-design",

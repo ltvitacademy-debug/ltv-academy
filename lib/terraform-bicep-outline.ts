@@ -132,7 +132,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
       }),
       L(18, "the-plan-apply-workflow", "The Plan → Apply Workflow", {
         contentDir: "ch04/18-the-plan-apply-workflow",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147601/ltv-terraform-bicep/the-plan-apply-workflow.mp4",
+        durationLabel: "1 min 17 s",
       }),
       L(19, "importing-existing-resources", "Importing Existing Resources", {
         contentDir: "ch04/19-importing-existing-resources",
