@@ -39,6 +39,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(3, "the-aws-console-tour", "The AWS Console, Tour", {
         contentDir: "ch01/03-the-aws-console-tour",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153141/ltv-aws-fundamentals/the-aws-console-tour.mp4",
+        durationLabel: "1 min 5 s",
       }),
       L(4, "aws-accounts-and-organizations", "AWS Accounts & Organizations, Basics", {
         contentDir: "ch01/04-aws-accounts-and-organizations",
