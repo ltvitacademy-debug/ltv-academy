@@ -81,7 +81,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(10, "serialization-formats", "Serialization Formats: Avro & JSON", {
         contentDir: "ch02/10-serialization-formats",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148516/ltv-kafka/serialization-formats.mp4",
+        durationLabel: "1 min 5 s",
       }),
     ],
   },
