@@ -39,7 +39,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(3, "onelake", "OneLake — One Lake for the Whole Organization", {
         contentDir: "ch01/03-onelake",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142331/ltv-fabric-realtime/onelake.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(4, "creating-a-lakehouse", "Creating a Lakehouse", {
         contentDir: "ch01/04-creating-a-lakehouse",
