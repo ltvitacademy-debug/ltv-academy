@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { PHONE } from "@/lib/copy";
 import { useEmbedMode } from "./useEmbedMode";
 
 export default function Footer() {
   const isEmbed = useEmbedMode();
+  const pathname = usePathname();
+  const isFocusedLanding = pathname?.startsWith("/vsl");
 
-  if (isEmbed) return null;
+  if (isEmbed || isFocusedLanding) return null;
 
   return (
     <footer className="bg-crimson-deep text-parchment">
