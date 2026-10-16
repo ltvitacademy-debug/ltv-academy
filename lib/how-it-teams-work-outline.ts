@@ -28,6 +28,8 @@ export const HOW_IT_TEAMS_WORK_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "agile-vs-waterfall", "Agile vs. Waterfall", {
         contentDir: "ch01/01-agile-vs-waterfall",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139388/ltv-how-it-teams-work/agile-vs-waterfall.mp4",
+        durationLabel: "2 min 21 s",
       }),
       L(2, "scrum-sprints-and-user-stories", "Scrum, Sprints & User Stories", {
         contentDir: "ch01/02-scrum-sprints-and-user-stories",
