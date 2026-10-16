@@ -164,7 +164,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(23, "managed-vs-self-hosted", "Managed vs. Self-Hosted Kafka", {
         contentDir: "ch05/23-managed-vs-self-hosted",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149214/ltv-kafka/managed-vs-self-hosted.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(24, "monitoring-kafka", "Monitoring Kafka", {
         contentDir: "ch05/24-monitoring-kafka",
