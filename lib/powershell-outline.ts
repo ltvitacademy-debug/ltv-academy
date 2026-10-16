@@ -111,7 +111,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(14, "azure-powershell-module-basics", "Azure PowerShell Module Basics", {
         contentDir: "ch04/14-azure-powershell-module-basics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163584/ltv-powershell/azure-powershell-module-basics.mp4",
+        durationLabel: "1 min 34 s",
       }),
       L(15, "connecting-to-azure", "Connecting to Azure From PowerShell", {
         contentDir: "ch04/15-connecting-to-azure",
