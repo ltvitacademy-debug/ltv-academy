@@ -175,6 +175,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(25, "loading-data-with-copy", "Loading Data Into Redshift: the COPY Command", {
         contentDir: "ch05/25-loading-data-with-copy",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155131/ltv-aws-data-engineering/loading-data-with-copy.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(26, "distribution-and-sort-keys", "Distribution & Sort Keys", {
         contentDir: "ch05/26-distribution-and-sort-keys",
