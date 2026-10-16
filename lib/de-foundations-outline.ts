@@ -298,7 +298,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(49, "string-functions", "String Functions", {
         contentDir: "ch04/49-string-functions",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792140072/ltv-de-foundations/string-functions.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(50, "date-functions", "Date Functions", {
         contentDir: "ch04/50-date-functions",
