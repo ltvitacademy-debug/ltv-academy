@@ -257,7 +257,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(39, "azure-monitor-metrics-and-alerts", "Azure Monitor, Metrics & Alerts", {
         contentDir: "ch07/39-azure-monitor-metrics-and-alerts",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160083/ltv-azure-dba/azure-monitor-metrics-and-alerts.mp4",
+        durationLabel: "2 min 17 s",
       }),
       L(40, "database-watcher", "Database Watcher", {
         contentDir: "ch07/40-database-watcher",
