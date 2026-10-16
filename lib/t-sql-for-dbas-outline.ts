@@ -196,7 +196,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
     n: 8,
     title: "Database Integrity & Maintenance",
     lessons: [
-      L(32, "dbcc-checkdb-in-practice", "DBCC CHECKDB, in Practice", { contentDir: "ch08/32-dbcc-checkdb-in-practice" }),
+      L(32, "dbcc-checkdb-in-practice", "DBCC CHECKDB, in Practice", { contentDir: "ch08/32-dbcc-checkdb-in-practice",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792165929/ltv-t-sql-for-dbas/dbcc-checkdb-in-practice.mp4",
+        durationLabel: "1 min 45 s",
+      }),
       L(33, "consistency-errors", "Consistency Errors", { contentDir: "ch08/33-consistency-errors" }),
       L(34, "file-growth-and-autogrowth", "File Growth & Autogrowth", { contentDir: "ch08/34-file-growth-and-autogrowth" }),
       L(35, "capacity-monitoring", "Capacity Monitoring", { contentDir: "ch08/35-capacity-monitoring" }),
