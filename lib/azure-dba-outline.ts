@@ -426,7 +426,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(68, "elastic-jobs-and-azure-database-tasks", "Elastic Jobs & Azure Database Tasks", {
         contentDir: "ch11/68-elastic-jobs-and-azure-database-tasks",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161546/ltv-azure-dba/elastic-jobs-and-azure-database-tasks.mp4",
+        durationLabel: "1 min 36 s",
       }),
       L(69, "automated-deployment-alerts-and-troubleshooting", "Automated Deployment, Alerts & Troubleshooting", {
         contentDir: "ch11/69-automated-deployment-alerts-and-troubleshooting",
