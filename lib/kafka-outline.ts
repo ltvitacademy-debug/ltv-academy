@@ -92,7 +92,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(11, "replication-and-fault-tolerance", "Replication & Fault Tolerance", {
         contentDir: "ch03/11-replication-and-fault-tolerance",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148571/ltv-kafka/replication-and-fault-tolerance.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(12, "partitioning-strategy", "Partitioning Strategy", {
         contentDir: "ch03/12-partitioning-strategy",
