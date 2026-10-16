@@ -151,7 +151,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(22, "reading-csv-and-json", "Reading CSV and JSON", {
         contentDir: "ch02/22-reading-csv-and-json",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138619/ltv-de-foundations/reading-csv-and-json.mp4",
+        durationLabel: "1 min 40 s",
       }),
       L(23, "rest-apis-with-python", "REST APIs with Python", {
         contentDir: "ch02/23-rest-apis-with-python",
