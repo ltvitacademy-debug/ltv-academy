@@ -50,6 +50,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(4, "cataloging-with-glue", "Cataloging With Glue", {
         contentDir: "ch02/04-cataloging-with-glue",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156825/ltv-aws-capstone/cataloging-with-glue.mp4",
+        durationLabel: "1 min 44 s",
       }),
       L(5, "transforming-with-glue-etl", "Transforming With Glue ETL", {
         contentDir: "ch02/05-transforming-with-glue-etl",
