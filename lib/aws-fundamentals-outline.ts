@@ -70,9 +70,13 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(8, "storage-overview", "Storage Overview: S3 & EBS", {
         contentDir: "ch02/08-storage-overview",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153320/ltv-aws-fundamentals/storage-overview.mp4",
+        durationLabel: "1 min 9 s",
       }),
       L(9, "networking-basics", "Networking Basics: VPC", {
         contentDir: "ch02/09-networking-basics",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153352/ltv-aws-fundamentals/networking-basics.mp4",
+        durationLabel: "59 s",
       }),
       L(10, "aws-pricing-and-cost-management", "AWS Pricing & Cost Management", {
         contentDir: "ch02/10-aws-pricing-and-cost-management",
