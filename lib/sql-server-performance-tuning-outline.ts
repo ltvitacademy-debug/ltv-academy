@@ -114,7 +114,10 @@ export const SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS: ChapterMeta[] = [
     n: 4,
     title: "Query Tuning Techniques",
     lessons: [
-      L(18, "rewriting-queries-for-performance", "Rewriting Queries for Performance", { contentDir: "ch04/18-rewriting-queries-for-performance" }),
+      L(18, "rewriting-queries-for-performance", "Rewriting Queries for Performance", { contentDir: "ch04/18-rewriting-queries-for-performance",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792171518/ltv-sql-server-performance-tuning/rewriting-queries-for-performance.mp4",
+        durationLabel: "1 min 54 s",
+      }),
       L(19, "set-based-vs-procedural-thinking", "Set-Based vs. Procedural Thinking", { contentDir: "ch04/19-set-based-vs-procedural-thinking" }),
       L(20, "avoiding-common-anti-patterns", "Avoiding Common Anti-Patterns", { contentDir: "ch04/20-avoiding-common-anti-patterns" }),
       L(21, "temp-tables-vs-table-variables", "Temp Tables vs. Table Variables", { contentDir: "ch04/21-temp-tables-vs-table-variables" }),
