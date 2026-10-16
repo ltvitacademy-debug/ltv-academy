@@ -200,7 +200,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(33, "structured-streaming-basics", "Structured Streaming Basics", {
         contentDir: "ch03/33-structured-streaming-basics",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144372/ltv-databricks-delta/structured-streaming-basics.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(34, "streaming-from-bronze-to-silver", "Streaming from Bronze to Silver", {
         contentDir: "ch03/34-streaming-from-bronze-to-silver",
