@@ -252,6 +252,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(38, "orchestrating-glue-and-lambda", "Orchestrating Glue & Lambda", {
         contentDir: "ch07/38-orchestrating-glue-and-lambda",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155763/ltv-aws-data-engineering/orchestrating-glue-and-lambda.mp4",
+        durationLabel: "1 min 37 s",
       }),
     ],
   },
