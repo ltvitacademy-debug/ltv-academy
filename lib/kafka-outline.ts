@@ -190,7 +190,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(27, "error-handling-in-streaming-pipelines", "Error Handling in Streaming Pipelines", {
         contentDir: "ch06/27-error-handling-in-streaming-pipelines",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149461/ltv-kafka/error-handling-in-streaming-pipelines.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(28, "kafka-security-basics", "Kafka Security Basics", {
         contentDir: "ch06/28-kafka-security-basics",
