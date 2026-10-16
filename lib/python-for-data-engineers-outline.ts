@@ -111,7 +111,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
     n: 8,
     title: "PySpark Foundations and Mini Capstone",
     lessons: [
-      L(44, "introduction-to-pyspark-and-sparksession", "Introduction to PySpark & SparkSession", { contentDir: "ch08/44-introduction-to-pyspark-and-sparksession" }),
+      L(44, "introduction-to-pyspark-and-sparksession", "Introduction to PySpark & SparkSession", { contentDir: "ch08/44-introduction-to-pyspark-and-sparksession", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147729/ltv-python-for-data-engineers/introduction-to-pyspark-and-sparksession.mp4", durationLabel: "2 min 30 s" }),
       L(45, "pyspark-dataframes-reading-and-transforming-data", "PySpark DataFrames: Reading & Transforming Data", { contentDir: "ch08/45-pyspark-dataframes-reading-and-transforming-data" }),
       L(46, "pyspark-aggregations-and-joins", "PySpark Aggregations & Joins", { contentDir: "ch08/46-pyspark-aggregations-and-joins" }),
       L(47, "mini-capstone-part-1-building-the-pipeline", "Mini Capstone Part 1: Building the Pipeline", { contentDir: "ch08/47-mini-capstone-part-1-building-the-pipeline" }),

@@ -149,7 +149,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(25, "system-design-chapter-recap", "System Design Chapter Recap", {
         contentDir: "ch01/25-system-design-chapter-recap",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147727/ltv-career-capstone/system-design-chapter-recap.mp4",
+        durationLabel: "1 min 12 s",
       }),
     ],
   },
