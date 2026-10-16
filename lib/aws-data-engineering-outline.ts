@@ -134,6 +134,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(18, "athena-fundamentals", "Athena Fundamentals", {
         contentDir: "ch04/18-athena-fundamentals",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154755/ltv-aws-data-engineering/athena-fundamentals.mp4",
+        durationLabel: "2 min 7 s",
       }),
       L(19, "querying-s3-data-with-athena", "Querying S3 Data With Athena", {
         contentDir: "ch04/19-querying-s3-data-with-athena",
