@@ -128,7 +128,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(18, "azure-arc-hybrid-sql-and-fabric", "Azure Arc, Hybrid SQL & Azure SQL Database in Microsoft Fabric", {
         contentDir: "ch03/18-azure-arc-hybrid-sql-and-fabric",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159045/ltv-azure-dba/azure-arc-hybrid-sql-and-fabric.mp4",
+        durationLabel: "2 min 10 s",
       }),
     ],
   },
