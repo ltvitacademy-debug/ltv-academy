@@ -104,7 +104,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
       L(40, "writing-unit-tests-with-pytest", "Writing Unit Tests With pytest", { contentDir: "ch07/40-writing-unit-tests-with-pytest", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147210/ltv-python-for-data-engineers/writing-unit-tests-with-pytest.mp4", durationLabel: "2 min 12 s" }),
       L(41, "robust-error-handling-patterns", "Robust Error Handling Patterns", { contentDir: "ch07/41-robust-error-handling-patterns", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147332/ltv-python-for-data-engineers/robust-error-handling-patterns.mp4", durationLabel: "2 min 38 s" }),
       L(42, "scheduling-and-automating-scripts", "Scheduling & Automating Scripts", { contentDir: "ch07/42-scheduling-and-automating-scripts", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147491/ltv-python-for-data-engineers/scheduling-and-automating-scripts.mp4", durationLabel: "3 min 20 s" }),
-      L(43, "environment-variables-and-secrets-management", "Environment Variables & Secrets Management", { contentDir: "ch07/43-environment-variables-and-secrets-management" }),
+      L(43, "environment-variables-and-secrets-management", "Environment Variables & Secrets Management", { contentDir: "ch07/43-environment-variables-and-secrets-management", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147608/ltv-python-for-data-engineers/environment-variables-and-secrets-management.mp4", durationLabel: "2 min 29 s" }),
     ],
   },
   {
