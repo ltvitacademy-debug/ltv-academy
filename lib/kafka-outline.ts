@@ -211,7 +211,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(30, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", {
         contentDir: "ch07/30-capstone-wrap-up",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149678/ltv-kafka/capstone-wrap-up.mp4",
+        durationLabel: "1 min 44 s",
       }),
     ],
   },
