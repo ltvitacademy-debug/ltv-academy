@@ -75,7 +75,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(21, "the-elt-pattern-in-snowflake", "Raw → Cleaned → Business-Ready: The ELT Pattern in Snowflake", { contentDir: "ch05/21-the-elt-pattern-in-snowflake", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127703/ltv-snowflake/the-elt-pattern-in-snowflake.mp4", durationLabel: "1 min 42 s" }),
       L(22, "ctas-and-sql-transformations", "CTAS & SQL-Based Transformations", { contentDir: "ch05/22-ctas-and-sql-transformations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127752/ltv-snowflake/ctas-and-sql-transformations.mp4", durationLabel: "1 min 33 s" }),
-      L(23, "incremental-loading-patterns", "Incremental Loading Patterns", { contentDir: "ch05/23-incremental-loading-patterns" }),
+      L(23, "incremental-loading-patterns", "Incremental Loading Patterns", { contentDir: "ch05/23-incremental-loading-patterns", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127799/ltv-snowflake/incremental-loading-patterns.mp4", durationLabel: "1 min 26 s" }),
       L(24, "deduplication-strategies", "Deduplication Strategies", { contentDir: "ch05/24-deduplication-strategies" }),
       L(25, "data-quality-checks-in-snowflake-sql", "Data Quality Checks in Snowflake SQL", { contentDir: "ch05/25-data-quality-checks-in-snowflake-sql" }),
     ],
