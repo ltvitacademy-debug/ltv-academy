@@ -51,6 +51,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(5, "s3-event-notifications", "S3 Event Notifications", {
         contentDir: "ch01/05-s3-event-notifications",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154053/ltv-aws-data-engineering/s3-event-notifications.mp4",
+        durationLabel: "1 min 17 s",
       }),
       L(6, "s3-as-a-data-lake-foundation", "S3 as a Data Lake Foundation", {
         contentDir: "ch01/06-s3-as-a-data-lake-foundation",
