@@ -53,27 +53,31 @@ const PATH_CONFIG: Record<string, { courseOrder: string[]; excludedCourses: Plan
   },
   "analytics-engineer": {
     courseOrder: ["how-it-teams-work", "t-sql-development", "power-bi", "snowflake", "dbt-analytics-engineering", "git-github-cicd-for-data"],
-    excludedCourses: [],
+    excludedCourses: [
+      { courseSlug: "python-for-data-engineers", title: "Python for Data Engineers", reason: "This is the path's separate 'Advanced' stage, not part of the Job Ready foundation — a natural next step after this plan, not part of it." },
+    ],
   },
   "azure-fabric-data-engineer": {
-    courseOrder: ["how-it-teams-work", "t-sql-development", "data-engineering-foundations", "data-factory", "azure-databricks-and-delta-lake", "microsoft-fabric-and-real-time-analytics", "data-engineering-career-and-capstone"],
+    courseOrder: ["how-it-teams-work", "t-sql-development", "python-for-data-engineers", "data-engineering-foundations", "data-factory", "azure-databricks-and-delta-lake", "microsoft-fabric-and-real-time-analytics", "data-engineering-career-and-capstone"],
     excludedCourses: [],
   },
   "databricks-lakehouse-engineer": {
-    courseOrder: ["how-it-teams-work", "t-sql-development", "data-engineering-foundations", "data-factory", "azure-databricks-and-delta-lake"],
+    courseOrder: ["how-it-teams-work", "t-sql-development", "python-for-data-engineers", "data-engineering-foundations", "data-factory", "azure-databricks-and-delta-lake"],
     excludedCourses: [],
   },
   "aws-data-engineer": {
-    courseOrder: ["how-it-teams-work", "t-sql-development", "data-engineering-foundations", "aws-fundamentals-for-data-engineers", "aws-data-engineering"],
+    courseOrder: ["how-it-teams-work", "t-sql-development", "python-for-data-engineers", "data-engineering-foundations", "aws-fundamentals-for-data-engineers", "aws-data-engineering"],
     excludedCourses: [],
   },
   "snowflake-data-engineer": {
-    courseOrder: ["how-it-teams-work", "t-sql-development", "snowflake", "dbt-analytics-engineering", "data-factory", "power-bi"],
+    courseOrder: ["how-it-teams-work", "t-sql-development", "python-for-data-engineers", "snowflake", "dbt-analytics-engineering", "data-factory", "power-bi"],
     excludedCourses: [],
   },
   "azure-database-engineer": {
     courseOrder: ["how-it-teams-work", "t-sql-development", "azure-fundamentals", "azure-database-administrator", "data-factory"],
-    excludedCourses: [],
+    excludedCourses: [
+      { courseSlug: "python-for-data-engineers", title: "Python for Data Engineers", reason: "This is the path's separate 'Advanced' stage, not part of the Job Ready foundation — a natural next step after this plan, not part of it." },
+    ],
   },
   "sql-server-database-administrator": {
     courseOrder: ["how-it-teams-work", "t-sql-development", "t-sql-for-database-administrators", "sql-server-database-administration", "sql-server-performance-tuning", "sql-server-ha-backup-and-disaster-recovery", "azure-database-administrator", "powershell-automation-and-devops-for-dbas", "cross-platform-relational-database-administration", "nosql-document-and-graph-databases"],

@@ -189,6 +189,7 @@ import { GOV_DATA_GOVERNANCE_CAREER_AND_CAPSTONE_CHAPTERS } from "./data-governa
 import { POWER_AUTOMATE_CHAPTERS } from "./power-automate-outline";
 import { POWER_AUTOMATE_AI_AGENTS_CHAPTERS } from "./power-automate-ai-agents-outline";
 import { HOW_IT_TEAMS_WORK_CHAPTERS } from "./how-it-teams-work-outline";
+import { PYTHON_FOR_DATA_ENGINEERS_CHAPTERS } from "./python-for-data-engineers-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -1905,6 +1906,15 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: HOW_IT_TEAMS_WORK_CHAPTERS,
     contentBase: "how-it-teams-work",
+  },
+  {
+    slug: "python-for-data-engineers",
+    title: "Python for Data Engineers",
+    tagline:
+      "From variables to a working PySpark mini-capstone — the Python a data engineer actually uses: files, APIs, Pandas, database connectivity, ETL pipelines, logging/testing, and automation.",
+    status: "available",
+    chapters: PYTHON_FOR_DATA_ENGINEERS_CHAPTERS,
+    contentBase: "python-for-data-engineers",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,

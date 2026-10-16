@@ -153,7 +153,7 @@ export const CAREER_PATHS: CareerPath[] = [
         label: "Job Ready",
         courseSlugs: ["how-it-teams-work", "t-sql-development", "power-bi", "snowflake", "dbt-analytics-engineering", "git-github-cicd-for-data"],
       },
-      { label: "Advanced", courseSlugs: ["data-factory", "airflow"] },
+      { label: "Advanced", courseSlugs: ["python-for-data-engineers", "data-factory", "airflow"] },
     ],
     destinationNote:
       "Analytics Engineer → Senior Analytics Engineer → Staff/Principal Analytics Engineer → Data/Analytics Architect. Worth calling out on the site explicitly — students hear far less about this path than Data Analyst or Data Engineer.",
@@ -172,6 +172,7 @@ export const CAREER_PATHS: CareerPath[] = [
         courseSlugs: [
           "how-it-teams-work",
           "t-sql-development",
+          "python-for-data-engineers",
           "data-engineering-foundations",
           "data-factory",
           "azure-databricks-and-delta-lake",
@@ -198,7 +199,7 @@ export const CAREER_PATHS: CareerPath[] = [
     stages: [
       {
         label: "Job Ready",
-        courseSlugs: ["how-it-teams-work", "t-sql-development", "data-engineering-foundations", "data-factory", "azure-databricks-and-delta-lake"],
+        courseSlugs: ["how-it-teams-work", "t-sql-development", "python-for-data-engineers", "data-engineering-foundations", "data-factory", "azure-databricks-and-delta-lake"],
       },
       {
         label: "Advanced",
@@ -225,7 +226,7 @@ export const CAREER_PATHS: CareerPath[] = [
     stages: [
       {
         label: "Job Ready",
-        courseSlugs: ["how-it-teams-work", "t-sql-development", "data-engineering-foundations", "aws-fundamentals-for-data-engineers", "aws-data-engineering"],
+        courseSlugs: ["how-it-teams-work", "t-sql-development", "python-for-data-engineers", "data-engineering-foundations", "aws-fundamentals-for-data-engineers", "aws-data-engineering"],
       },
       {
         label: "Advanced",
@@ -247,7 +248,7 @@ export const CAREER_PATHS: CareerPath[] = [
     stages: [
       {
         label: "Job Ready",
-        courseSlugs: ["how-it-teams-work", "t-sql-development", "snowflake", "dbt-analytics-engineering", "data-factory", "power-bi"],
+        courseSlugs: ["how-it-teams-work", "t-sql-development", "python-for-data-engineers", "snowflake", "dbt-analytics-engineering", "data-factory", "power-bi"],
       },
       { label: "Advanced", courseSlugs: ["airflow", "git-github-cicd-for-data", "terraform-bicep-for-data-engineers"] },
     ],
@@ -267,8 +268,11 @@ export const CAREER_PATHS: CareerPath[] = [
         label: "Job Ready",
         courseSlugs: ["how-it-teams-work", "t-sql-development", "azure-fundamentals", "azure-database-administrator", "data-factory"],
       },
-      { label: "Advanced", courseSlugs: ["powershell-fundamentals", "terraform-bicep-for-data-engineers", "git-github-cicd-for-data"] },
+      { label: "Advanced", courseSlugs: ["python-for-data-engineers", "powershell-fundamentals", "terraform-bicep-for-data-engineers", "git-github-cicd-for-data"] },
     ],
+    courseDetails: {
+      "python-for-data-engineers": "Focus on Chapters 5–7 — database connectivity, SQL integration, and automation — the Python a working Azure DBA actually reaches for, alongside the fundamentals that support it.",
+    },
     destinationNote:
       "SQL Developer/DBA → Azure DBA → Senior DBA → Database Engineer → Senior Database Engineer → Principal Database Engineer → Database Architect. Even this path needs some cloud and scripting skill to reach the highest levels.",
   },
