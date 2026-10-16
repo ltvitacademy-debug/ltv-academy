@@ -139,7 +139,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(19, "sql-authentication-vs-entra-authentication", "SQL Authentication vs. Microsoft Entra Authentication", {
         contentDir: "ch04/19-sql-authentication-vs-entra-authentication",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159095/ltv-azure-dba/sql-authentication-vs-entra-authentication.mp4",
+        durationLabel: "1 min 34 s",
       }),
       L(20, "configuring-entra-id-for-azure-sql", "Configuring Microsoft Entra ID for Azure SQL", {
         contentDir: "ch04/20-configuring-entra-id-for-azure-sql",
