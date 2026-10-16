@@ -323,7 +323,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 11,
     title: "Upgrades & Patching",
     lessons: [
-      L(60, "sql-server-upgrade-planning", "SQL Server Upgrade Planning", { contentDir: "ch11/60-sql-server-upgrade-planning" }),
+      L(60, "sql-server-upgrade-planning", "SQL Server Upgrade Planning", { contentDir: "ch11/60-sql-server-upgrade-planning",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792169857/ltv-sql-server-dba/sql-server-upgrade-planning.mp4",
+        durationLabel: "1 min 29 s",
+      }),
       L(61, "patching-strategy", "Patching Strategy", { contentDir: "ch11/61-patching-strategy" }),
       L(62, "testing-upgrades", "Testing Upgrades", { contentDir: "ch11/62-testing-upgrades" }),
       L(63, "rollback-planning", "Rollback Planning", { contentDir: "ch11/63-rollback-planning" }),
