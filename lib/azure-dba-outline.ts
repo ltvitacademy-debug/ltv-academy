@@ -190,7 +190,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(28, "private-endpoints-and-private-link", "Private Endpoints & Private Link", {
         contentDir: "ch05/28-private-endpoints-and-private-link",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159523/ltv-azure-dba/private-endpoints-and-private-link.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(29, "public-vs-private-database-connectivity", "Public vs. Private Database Connectivity", {
         contentDir: "ch05/29-public-vs-private-database-connectivity",
