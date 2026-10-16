@@ -195,6 +195,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(29, "redshift-performance-tuning", "Redshift Performance Tuning", {
         contentDir: "ch05/29-redshift-performance-tuning",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155322/ltv-aws-data-engineering/redshift-performance-tuning.mp4",
+        durationLabel: "1 min 28 s",
       }),
     ],
   },
