@@ -304,6 +304,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(46, "emr-cluster-configuration", "EMR Cluster Configuration", {
         contentDir: "ch09/46-emr-cluster-configuration",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156179/ltv-aws-data-engineering/emr-cluster-configuration.mp4",
+        durationLabel: "1 min 43 s",
       }),
       L(47, "emr-cost-optimization", "EMR Cost Optimization", {
         contentDir: "ch09/47-emr-cost-optimization",
