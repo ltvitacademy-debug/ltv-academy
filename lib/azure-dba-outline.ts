@@ -534,7 +534,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(86, "active-geo-replication", "Active Geo-Replication", {
         contentDir: "ch14/86-active-geo-replication",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162384/ltv-azure-dba/active-geo-replication.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(87, "azure-sql-failover-groups", "Azure SQL Failover Groups", {
         contentDir: "ch14/87-azure-sql-failover-groups",
