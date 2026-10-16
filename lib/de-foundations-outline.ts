@@ -333,7 +333,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(56, "union", "union()", {
         contentDir: "ch04/56-union",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792140382/ltv-de-foundations/union.mp4",
+        durationLabel: "1 min 31 s",
       }),
       L(57, "window-functions", "Window Functions", {
         contentDir: "ch04/57-window-functions",
