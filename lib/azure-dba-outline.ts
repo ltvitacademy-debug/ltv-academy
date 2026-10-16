@@ -293,7 +293,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(45, "reading-execution-plans-for-performance-problems", "Reading Execution Plans for Performance Problems", {
         contentDir: "ch08/45-reading-execution-plans-for-performance-problems",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160460/ltv-azure-dba/reading-execution-plans-for-performance-problems.mp4",
+        durationLabel: "1 min 34 s",
       }),
       L(46, "index-seeks-scans-lookups-plan-operators", "Index Seeks, Scans, Lookups & Common Plan Operators", {
         contentDir: "ch08/46-index-seeks-scans-lookups-plan-operators",
