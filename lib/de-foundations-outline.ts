@@ -232,11 +232,13 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(37, "spark-dataframes", "Spark DataFrames", {
         contentDir: "ch03/37-spark-dataframes",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139419/ltv-de-foundations/spark-dataframes.mp4",
+        durationLabel: "1 min 37 s",
       }),
       L(38, "spark-sql", "Spark SQL", {
         contentDir: "ch03/38-spark-sql",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139495/ltv-de-foundations/spark-sql.mp4",
+        durationLabel: "1 min 49 s",
       }),
     ],
   },
@@ -246,7 +248,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(39, "creating-dataframes", "Creating DataFrames", {
         contentDir: "ch04/39-creating-dataframes",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139546/ltv-de-foundations/creating-dataframes.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(40, "reading-csv", "Reading CSV", {
         contentDir: "ch04/40-reading-csv",
