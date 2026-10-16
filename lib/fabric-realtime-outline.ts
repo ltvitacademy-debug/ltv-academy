@@ -29,7 +29,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "what-is-microsoft-fabric", "What Is Microsoft Fabric?", {
         contentDir: "ch01/01-what-is-microsoft-fabric",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142224/ltv-fabric-realtime/what-is-microsoft-fabric.mp4",
+        durationLabel: "1 min 32 s",
       }),
       L(2, "fabric-workspaces", "Fabric Workspaces", {
         contentDir: "ch01/02-fabric-workspaces",
