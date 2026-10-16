@@ -159,7 +159,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(22, "azure-event-hubs-kafka-compatibility", "Azure Event Hubs' Kafka Compatibility", {
         contentDir: "ch05/22-azure-event-hubs-kafka-compatibility",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149161/ltv-kafka/azure-event-hubs-kafka-compatibility.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(23, "managed-vs-self-hosted", "Managed vs. Self-Hosted Kafka", {
         contentDir: "ch05/23-managed-vs-self-hosted",
