@@ -586,7 +586,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(94, "dp-300-exam-review-and-practice-assessment", "DP-300 Complete Exam Review & Practice Assessment", {
         contentDir: "ch16/94-dp-300-exam-review-and-practice-assessment",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162785/ltv-azure-dba/dp-300-exam-review-and-practice-assessment.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(95, "azure-dba-interview-preparation", "Azure DBA Interview Preparation", {
         contentDir: "ch16/95-azure-dba-interview-preparation",
