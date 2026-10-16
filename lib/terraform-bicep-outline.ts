@@ -70,7 +70,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
       }),
       L(8, "provisioning-a-storage-account", "Provisioning a Storage Account", {
         contentDir: "ch02/08-provisioning-a-storage-account",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146962/ltv-terraform-bicep/provisioning-a-storage-account.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(9, "provisioning-a-fabric-capacity", "Provisioning a Fabric Capacity", {
         contentDir: "ch02/09-provisioning-a-fabric-capacity",
