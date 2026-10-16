@@ -80,7 +80,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(10, "azure-monitor-basics", "Azure Monitor Basics", {
         contentDir: "ch02/10-azure-monitor-basics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157785/ltv-azure-fundamentals/azure-monitor-basics.mp4",
+        durationLabel: "59 s",
       }),
     ],
   },
