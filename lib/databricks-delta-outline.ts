@@ -99,7 +99,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(14, "delta-tables-vs-parquet-tables", "Delta Tables vs. Parquet Tables", {
         contentDir: "ch02/14-delta-tables-vs-parquet-tables",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143071/ltv-databricks-delta/delta-tables-vs-parquet-tables.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(15, "creating-a-delta-table", "Creating a Delta Table", {
         contentDir: "ch02/15-creating-a-delta-table",
