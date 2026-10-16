@@ -55,7 +55,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(6, "access-control-at-scale", "Access Control at Scale", {
         contentDir: "ch01/06-access-control-at-scale",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150794/ltv-advanced-databricks/access-control-at-scale.mp4",
+        durationLabel: "1 min 41 s",
       }),
     ],
   },
