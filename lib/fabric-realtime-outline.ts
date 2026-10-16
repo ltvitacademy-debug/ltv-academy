@@ -235,7 +235,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(41, "a-real-time-nyc-taxi-dashboard", "A Real-Time NYC Taxi Dashboard, Start to Finish", {
         contentDir: "ch02/41-a-real-time-nyc-taxi-dashboard",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144646/ltv-fabric-realtime/a-real-time-nyc-taxi-dashboard.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(42, "real-time-chapter-recap", "Real-Time Chapter Recap", {
         contentDir: "ch02/42-real-time-chapter-recap",

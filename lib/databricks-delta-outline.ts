@@ -220,7 +220,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(37, "building-a-full-medallion-pipeline", "Building a Full Medallion Pipeline", {
         contentDir: "ch03/37-building-a-full-medallion-pipeline",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144641/ltv-databricks-delta/building-a-full-medallion-pipeline.mp4",
+        durationLabel: "1 min 31 s",
       }),
     ],
   },
