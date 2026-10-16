@@ -313,7 +313,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792169763/ltv-sql-server-dba/on-call-basics.mp4",
         durationLabel: "1 min 9 s",
       }),
-      L(59, "incident-documentation", "Incident Documentation", { contentDir: "ch10/59-incident-documentation" }),
+      L(59, "incident-documentation", "Incident Documentation", { contentDir: "ch10/59-incident-documentation",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792169805/ltv-sql-server-dba/incident-documentation.mp4",
+        durationLabel: "1 min 8 s",
+      }),
     ],
   },
   {
