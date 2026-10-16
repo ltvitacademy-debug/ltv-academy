@@ -54,7 +54,10 @@ export const SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "Understanding Execution Plans Deeply",
     lessons: [
-      L(6, "reading-plans-in-depth", "Reading Execution Plans, in Depth", { contentDir: "ch02/06-reading-plans-in-depth" }),
+      L(6, "reading-plans-in-depth", "Reading Execution Plans, in Depth", { contentDir: "ch02/06-reading-plans-in-depth",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792170794/ltv-sql-server-performance-tuning/reading-plans-in-depth.mp4",
+        durationLabel: "1 min 38 s",
+      }),
       L(7, "actual-vs-estimated-plans", "Actual vs. Estimated Plans", { contentDir: "ch02/07-actual-vs-estimated-plans" }),
       L(8, "plan-operator-cost-analysis", "Plan Operator Cost Analysis", { contentDir: "ch02/08-plan-operator-cost-analysis" }),
       L(9, "parameter-sniffing", "Parameter Sniffing", { contentDir: "ch02/09-parameter-sniffing" }),
