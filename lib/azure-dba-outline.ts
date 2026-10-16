@@ -67,7 +67,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(7, "creating-azure-sql-servers-and-databases", "Creating Azure SQL Servers & Databases", {
         contentDir: "ch02/07-creating-azure-sql-servers-and-databases",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158496/ltv-azure-dba/creating-azure-sql-servers-and-databases.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(8, "purchasing-models-service-tiers-compute-options", "Azure SQL Purchasing Models, Service Tiers & Compute Options", {
         contentDir: "ch02/08-purchasing-models-service-tiers-compute-options",
