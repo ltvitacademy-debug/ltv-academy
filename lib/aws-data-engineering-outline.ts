@@ -185,6 +185,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(27, "redshift-spectrum", "Redshift Spectrum", {
         contentDir: "ch05/27-redshift-spectrum",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155231/ltv-aws-data-engineering/redshift-spectrum.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(28, "workload-management", "Workload Management", {
         contentDir: "ch05/28-workload-management",
