@@ -132,14 +132,14 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
       L(55, "symbol-maps-vs-filled-maps", "Symbol Maps vs. Filled Maps", { contentDir: "ch09/55-symbol-maps-vs-filled-maps", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134151/ltv-tableau/symbol-maps-vs-filled-maps.mp4", durationLabel: "1 min 21 s" }),
       L(56, "fixing-geographic-data-errors", "Fixing Geographic Data Errors", { contentDir: "ch09/56-fixing-geographic-data-errors", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134196/ltv-tableau/fixing-geographic-data-errors.mp4", durationLabel: "1 min 21 s" }),
       L(57, "geographic-hierarchies-groups-custom-territories", "Geographic Hierarchies, Groups & Custom Territories", { contentDir: "ch09/57-geographic-hierarchies-groups-custom-territories", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134235/ltv-tableau/geographic-hierarchies-groups-custom-territories.mp4", durationLabel: "1 min 14 s" }),
-      L(58, "spatial-data-and-advanced-mapping", "Spatial Data & Advanced Mapping", { contentDir: "ch09/58-spatial-data-and-advanced-mapping" }),
+      L(58, "spatial-data-and-advanced-mapping", "Spatial Data & Advanced Mapping", { contentDir: "ch09/58-spatial-data-and-advanced-mapping", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134278/ltv-tableau/spatial-data-and-advanced-mapping.mp4", durationLabel: "1 min 18 s" }),
     ],
   },
   {
     n: 10,
     title: "Groups, Sets, Bins & Hierarchies",
     lessons: [
-      L(59, "groups-and-hierarchies", "Groups & Hierarchies", { contentDir: "ch10/59-groups-and-hierarchies" }),
+      L(59, "groups-and-hierarchies", "Groups & Hierarchies", { contentDir: "ch10/59-groups-and-hierarchies", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134343/ltv-tableau/groups-and-hierarchies.mp4", durationLabel: "1 min 59 s" }),
       L(60, "sets-and-dynamic-sets", "Sets & Dynamic Sets", { contentDir: "ch10/60-sets-and-dynamic-sets" }),
       L(61, "combined-sets-and-set-analysis", "Combined Sets & Set Analysis", { contentDir: "ch10/61-combined-sets-and-set-analysis" }),
       L(62, "bins-distributions-segmentation", "Bins, Distributions & Segmentation", { contentDir: "ch10/62-bins-distributions-segmentation" }),
