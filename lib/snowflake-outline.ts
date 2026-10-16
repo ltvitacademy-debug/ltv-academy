@@ -44,7 +44,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
       L(7, "ctes-and-window-functions", "CTEs and Window Functions in Snowflake", { contentDir: "ch02/07-ctes-and-window-functions", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792126946/ltv-snowflake/ctes-and-window-functions.mp4", durationLabel: "1 min 28 s" }),
       L(8, "views-temporary-and-transient-tables", "Views, Temporary & Transient Tables", { contentDir: "ch02/08-views-temporary-and-transient-tables", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792126997/ltv-snowflake/views-temporary-and-transient-tables.mp4", durationLabel: "1 min 37 s" }),
       L(9, "merge-in-snowflake", "MERGE in Snowflake", { contentDir: "ch02/09-merge-in-snowflake", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127050/ltv-snowflake/merge-in-snowflake.mp4", durationLabel: "1 min 41 s" }),
-      L(10, "stored-procedures-and-udfs-basics", "Stored Procedures & User-Defined Functions, Basics", { contentDir: "ch02/10-stored-procedures-and-udfs-basics" }),
+      L(10, "stored-procedures-and-udfs-basics", "Stored Procedures & User-Defined Functions, Basics", { contentDir: "ch02/10-stored-procedures-and-udfs-basics", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127104/ltv-snowflake/stored-procedures-and-udfs-basics.mp4", durationLabel: "1 min 44 s" }),
       L(11, "exercise-rewriting-t-sql-in-snowflake", "Exercise: Rewriting a T-SQL Query in Snowflake SQL", { contentDir: "ch02/11-exercise-rewriting-t-sql-in-snowflake" }),
     ],
   },
