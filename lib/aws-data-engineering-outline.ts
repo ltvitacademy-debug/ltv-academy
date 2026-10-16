@@ -113,6 +113,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(15, "glue-studio", "Glue Studio", {
         contentDir: "ch03/15-glue-studio",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154573/ltv-aws-data-engineering/glue-studio.mp4",
+        durationLabel: "1 min 57 s",
       }),
       L(16, "glue-job-bookmarks", "Glue Job Bookmarks", {
         contentDir: "ch03/16-glue-job-bookmarks",
