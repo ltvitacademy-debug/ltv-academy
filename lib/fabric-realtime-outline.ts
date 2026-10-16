@@ -155,7 +155,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(25, "kql-joins", "KQL: Joins", {
         contentDir: "ch02/25-kql-joins",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143693/ltv-fabric-realtime/kql-joins.mp4",
+        durationLabel: "1 min 18 s",
       }),
       L(26, "kql-time-series-functions", "KQL: Time Series Functions", {
         contentDir: "ch02/26-kql-time-series-functions",

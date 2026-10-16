@@ -144,7 +144,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(23, "optimize-and-file-compaction", "OPTIMIZE and File Compaction", {
         contentDir: "ch02/23-optimize-and-file-compaction",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143696/ltv-databricks-delta/optimize-and-file-compaction.mp4",
+        durationLabel: "1 min 26 s",
       }),
       L(24, "vacuum-cleaning-up-old-files", "VACUUM — Cleaning Up Old Files", {
         contentDir: "ch02/24-vacuum-cleaning-up-old-files",
