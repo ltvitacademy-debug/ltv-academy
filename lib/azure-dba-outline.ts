@@ -82,7 +82,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(10, "serverless-provisioned-elastic-pools", "Serverless, Provisioned Compute & Elastic Pools", {
         contentDir: "ch02/10-serverless-provisioned-elastic-pools",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158617/ltv-azure-dba/serverless-provisioned-elastic-pools.mp4",
+        durationLabel: "1 min 18 s",
       }),
       L(11, "storage-compute-scaling-performance-configuration", "Storage, Compute Scaling & Performance Configuration", {
         contentDir: "ch02/11-storage-compute-scaling-performance-configuration",
