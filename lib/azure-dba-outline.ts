@@ -493,7 +493,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(79, "point-in-time-restore", "Point-in-Time Restore", {
         contentDir: "ch13/79-point-in-time-restore",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162072/ltv-azure-dba/point-in-time-restore.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(80, "long-term-retention-and-backup-policies", "Long-Term Retention & Backup Policies", {
         contentDir: "ch13/80-long-term-retention-and-backup-policies",
