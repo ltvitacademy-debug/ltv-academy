@@ -97,7 +97,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(12, "what-is-lakeflow", "What Is Lakeflow?", {
         contentDir: "ch03/12-what-is-lakeflow",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151100/ltv-advanced-databricks/what-is-lakeflow.mp4",
+        durationLabel: "1 min 40 s",
       }),
       L(13, "declarative-pipeline-syntax", "Declarative Pipeline Syntax", {
         contentDir: "ch03/13-declarative-pipeline-syntax",
