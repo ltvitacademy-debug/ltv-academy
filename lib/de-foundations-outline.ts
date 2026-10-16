@@ -258,7 +258,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(41, "reading-json", "Reading JSON", {
         contentDir: "ch04/41-reading-json",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139652/ltv-de-foundations/reading-json.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(42, "reading-parquet", "Reading Parquet", {
         contentDir: "ch04/42-reading-parquet",
