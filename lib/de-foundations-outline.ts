@@ -278,7 +278,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(45, "filter-and-where", "filter() and where()", {
         contentDir: "ch04/45-filter-and-where",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139873/ltv-de-foundations/filter-and-where.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(46, "withcolumn", "withColumn()", {
         contentDir: "ch04/46-withcolumn",
