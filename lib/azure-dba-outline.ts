@@ -144,7 +144,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(20, "configuring-entra-id-for-azure-sql", "Configuring Microsoft Entra ID for Azure SQL", {
         contentDir: "ch04/20-configuring-entra-id-for-azure-sql",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159145/ltv-azure-dba/configuring-entra-id-for-azure-sql.mp4",
+        durationLabel: "1 min 32 s",
       }),
       L(21, "logins-users-roles-security-principals", "Logins, Users, Roles & Security Principals", {
         contentDir: "ch04/21-logins-users-roles-security-principals",
