@@ -70,7 +70,7 @@ export const GIT_CICD_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Building a CI/CD Pipeline for a Data Project",
     lessons: [
-      L(20, "a-real-github-actions-workflow", "A Real GitHub Actions Workflow, Start to Finish", { contentDir: "ch05/20-a-real-github-actions-workflow" }),
+      L(20, "a-real-github-actions-workflow", "A Real GitHub Actions Workflow, Start to Finish", { contentDir: "ch05/20-a-real-github-actions-workflow", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792119945/ltv-git-cicd/a-real-github-actions-workflow.mp4", durationLabel: "1 min 47 s" }),
       L(21, "running-dbt-and-tests-in-ci", "Running dbt Models & Tests in CI", { contentDir: "ch05/21-running-dbt-and-tests-in-ci" }),
       L(22, "deploying-on-merge", "Deploying on Merge to Main", { contentDir: "ch05/22-deploying-on-merge" }),
       L(23, "environment-secrets", "Environment Variables & Secrets in CI/CD", { contentDir: "ch05/23-environment-secrets" }),
