@@ -363,7 +363,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(62, "spark-performance-fundamentals", "Spark Performance Fundamentals", {
         contentDir: "ch04/62-spark-performance-fundamentals",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792140643/ltv-de-foundations/spark-performance-fundamentals.mp4",
+        durationLabel: "1 min 39 s",
       }),
     ],
   },
