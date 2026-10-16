@@ -231,7 +231,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(34, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", {
         contentDir: "ch07/34-capstone-wrap-up",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792152155/ltv-advanced-databricks/capstone-wrap-up.mp4",
+        durationLabel: "1 min 13 s",
       }),
     ],
   },
