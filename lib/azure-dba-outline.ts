@@ -313,7 +313,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(49, "using-query-store-to-find-regressed-queries", "Using Query Store to Find Regressed Queries", {
         contentDir: "ch08/49-using-query-store-to-find-regressed-queries",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160680/ltv-azure-dba/using-query-store-to-find-regressed-queries.mp4",
+        durationLabel: "1 min 59 s",
       }),
       L(50, "blocking-locking-and-deadlocks", "Blocking, Locking & Deadlocks", {
         contentDir: "ch08/50-blocking-locking-and-deadlocks",
