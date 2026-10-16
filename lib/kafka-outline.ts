@@ -97,7 +97,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(12, "partitioning-strategy", "Partitioning Strategy", {
         contentDir: "ch03/12-partitioning-strategy",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148622/ltv-kafka/partitioning-strategy.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(13, "retention", "Retention", {
         contentDir: "ch03/13-retention",
