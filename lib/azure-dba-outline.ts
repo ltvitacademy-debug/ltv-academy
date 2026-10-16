@@ -318,7 +318,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(50, "blocking-locking-and-deadlocks", "Blocking, Locking & Deadlocks", {
         contentDir: "ch08/50-blocking-locking-and-deadlocks",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160733/ltv-azure-dba/blocking-locking-and-deadlocks.mp4",
+        durationLabel: "1 min 38 s",
       }),
       L(51, "dmvs-for-query-performance-troubleshooting", "DMVs for Query Performance Troubleshooting", {
         contentDir: "ch08/51-dmvs-for-query-performance-troubleshooting",
