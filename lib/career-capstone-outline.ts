@@ -271,7 +271,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(47, "ai-assisted-anomaly-detection", "AI-Assisted Data Quality — Anomaly Detection Basics", {
         contentDir: "ch03/47-ai-assisted-anomaly-detection",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148913/ltv-career-capstone/ai-assisted-anomaly-detection.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(48, "llms-for-data-documentation", "LLMs for Automated Data Documentation", {
         contentDir: "ch03/48-llms-for-data-documentation",
