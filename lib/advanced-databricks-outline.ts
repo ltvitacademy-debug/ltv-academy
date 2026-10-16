@@ -247,7 +247,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(36, "zerobus-ingest", "Zerobus Ingest", {
         contentDir: "ch08/36-zerobus-ingest",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792152375/ltv-advanced-databricks/zerobus-ingest.mp4",
+        durationLabel: "2 min 33 s",
       }),
       L(37, "lakebase", "Lakebase", {
         contentDir: "ch08/37-lakebase",
