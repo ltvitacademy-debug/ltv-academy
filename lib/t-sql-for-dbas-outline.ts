@@ -164,7 +164,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792165565/ltv-t-sql-for-dbas/finding-orphaned-users.mp4",
         durationLabel: "1 min 47 s",
       }),
-      L(27, "auditing-and-security-queries", "Auditing & Security Queries", { contentDir: "ch06/27-auditing-and-security-queries" }),
+      L(27, "auditing-and-security-queries", "Auditing & Security Queries", { contentDir: "ch06/27-auditing-and-security-queries",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792165632/ltv-t-sql-for-dbas/auditing-and-security-queries.mp4",
+        durationLabel: "1 min 51 s",
+      }),
     ],
   },
   {
