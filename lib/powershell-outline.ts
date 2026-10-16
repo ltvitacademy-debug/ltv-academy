@@ -28,7 +28,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "why-powershell-for-dbas", "What Is PowerShell & Why for DBAs and Admins?", {
         contentDir: "ch01/01-why-powershell-for-dbas",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162904/ltv-powershell/why-powershell-for-dbas.mp4",
+        durationLabel: "1 min 9 s",
       }),
       L(2, "the-console-ise-and-vs-code", "The Console, ISE & VS Code", {
         contentDir: "ch01/02-the-console-ise-and-vs-code",
