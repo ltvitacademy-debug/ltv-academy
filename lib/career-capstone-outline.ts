@@ -49,7 +49,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(5, "choosing-a-processing-model", "Choosing a Processing Model — Batch, Streaming, or Hybrid", {
         contentDir: "ch01/05-choosing-a-processing-model",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146381/ltv-career-capstone/choosing-a-processing-model.mp4",
+        durationLabel: "56 s",
       }),
       L(6, "the-lambda-architecture", "The Lambda Architecture", {
         contentDir: "ch01/06-the-lambda-architecture",
