@@ -281,7 +281,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(49, "prompting-patterns-for-data-engineering", "Prompting Patterns for Data Engineering Tasks", {
         contentDir: "ch03/49-prompting-patterns-for-data-engineering",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149010/ltv-career-capstone/prompting-patterns-for-data-engineering.mp4",
+        durationLabel: "1 min 17 s",
       }),
       L(50, "rag-explained", "Retrieval-Augmented Generation (RAG), Explained", {
         contentDir: "ch03/50-rag-explained",
