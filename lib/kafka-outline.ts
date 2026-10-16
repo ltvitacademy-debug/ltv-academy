@@ -123,7 +123,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(16, "kafka-connect-overview", "Kafka Connect Overview", {
         contentDir: "ch04/16-kafka-connect-overview",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148825/ltv-kafka/kafka-connect-overview.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(17, "source-and-sink-connectors", "Source & Sink Connectors", {
         contentDir: "ch04/17-source-and-sink-connectors",
