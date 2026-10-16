@@ -81,7 +81,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792167391/ltv-sql-server-dba/collations.mp4",
         durationLabel: "1 min 50 s",
       }),
-      L(13, "service-accounts-and-configuration-manager", "Service Accounts & Configuration Manager", { contentDir: "ch02/13-service-accounts-and-configuration-manager" }),
+      L(13, "service-accounts-and-configuration-manager", "Service Accounts & Configuration Manager", { contentDir: "ch02/13-service-accounts-and-configuration-manager",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792167447/ltv-sql-server-dba/service-accounts-and-configuration-manager.mp4",
+        durationLabel: "1 min 35 s",
+      }),
     ],
   },
   {
