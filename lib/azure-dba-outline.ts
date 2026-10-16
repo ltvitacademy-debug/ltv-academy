@@ -97,7 +97,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(13, "sql-server-on-azure-vms-and-hybrid-sql", "SQL Server on Azure Virtual Machines & Hybrid SQL", {
         contentDir: "ch02/13-sql-server-on-azure-vms-and-hybrid-sql",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158777/ltv-azure-dba/sql-server-on-azure-vms-and-hybrid-sql.mp4",
+        durationLabel: "1 min 50 s",
       }),
     ],
   },
