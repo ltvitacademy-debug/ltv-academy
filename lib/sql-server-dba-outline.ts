@@ -257,7 +257,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792169267/ltv-sql-server-dba/connectivity-troubleshooting.mp4",
         durationLabel: "1 min 49 s",
       }),
-      L(48, "network-configuration", "Network Configuration", { contentDir: "ch08/48-network-configuration" }),
+      L(48, "network-configuration", "Network Configuration", { contentDir: "ch08/48-network-configuration",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792169327/ltv-sql-server-dba/network-configuration.mp4",
+        durationLabel: "1 min 45 s",
+      }),
     ],
   },
   {
