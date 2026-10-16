@@ -143,7 +143,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     n: 12,
     title: "Power BI + Snowflake",
     lessons: [
-      L(49, "connecting-power-bi-to-snowflake", "Connecting Power BI to Snowflake", { contentDir: "ch12/49-connecting-power-bi-to-snowflake" }),
+      L(49, "connecting-power-bi-to-snowflake", "Connecting Power BI to Snowflake", { contentDir: "ch12/49-connecting-power-bi-to-snowflake", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792129251/ltv-snowflake/connecting-power-bi-to-snowflake.mp4", durationLabel: "2 min 6 s" }),
       L(50, "import-vs-directquery-considerations", "Import vs. DirectQuery Considerations", { contentDir: "ch12/50-import-vs-directquery-considerations" }),
       L(51, "reporting-views-and-performance-considerations", "Building Reporting Views & Performance Considerations", { contentDir: "ch12/51-reporting-views-and-performance-considerations" }),
     ],
