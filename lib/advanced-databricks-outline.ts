@@ -190,7 +190,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(27, "row-and-column-level-security", "Row- & Column-Level Security in Unity Catalog", {
         contentDir: "ch06/27-row-and-column-level-security",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151768/ltv-advanced-databricks/row-and-column-level-security.mp4",
+        durationLabel: "1 min 40 s",
       }),
       L(28, "delta-sharing", "Delta Sharing", {
         contentDir: "ch06/28-delta-sharing",
