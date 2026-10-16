@@ -190,7 +190,7 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
       L(83, "url-parameter-and-set-actions", "URL, Parameter & Set Actions", { contentDir: "ch14/83-url-parameter-and-set-actions", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135538/ltv-tableau/url-parameter-and-set-actions.mp4", durationLabel: "1 min 40 s" }),
       L(84, "navigation-show-hide-dynamic-titles", "Navigation, Show/Hide Containers & Dynamic Titles", { contentDir: "ch14/84-navigation-show-hide-dynamic-titles", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135594/ltv-tableau/navigation-show-hide-dynamic-titles.mp4", durationLabel: "1 min 46 s" }),
       L(85, "designing-for-desktop-and-mobile", "Designing Dashboards for Desktop & Mobile", { contentDir: "ch14/85-designing-for-desktop-and-mobile", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135646/ltv-tableau/designing-for-desktop-and-mobile.mp4", durationLabel: "1 min 37 s" }),
-      L(86, "dashboard-design-storytelling-performance", "Dashboard Design, Storytelling & Performance", { contentDir: "ch14/86-dashboard-design-storytelling-performance" }),
+      L(86, "dashboard-design-storytelling-performance", "Dashboard Design, Storytelling & Performance", { contentDir: "ch14/86-dashboard-design-storytelling-performance", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135704/ltv-tableau/dashboard-design-storytelling-performance.mp4", durationLabel: "1 min 57 s" }),
     ],
   },
   {
