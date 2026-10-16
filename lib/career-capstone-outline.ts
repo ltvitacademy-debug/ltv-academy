@@ -392,7 +392,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(70, "project-2-kickoff-warehouse-migration", "Project 2 Kickoff: A Multi-Source Data Warehouse Migration", {
         contentDir: "ch04/70-project-2-kickoff-warehouse-migration",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149968/ltv-career-capstone/project-2-kickoff-warehouse-migration.mp4",
+        durationLabel: "1 min 12 s",
       }),
       L(71, "project-2-assessment-and-migration-plan", "Project 2: Source Assessment and Migration Plan", {
         contentDir: "ch04/71-project-2-assessment-and-migration-plan",
