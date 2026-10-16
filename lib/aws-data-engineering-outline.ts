@@ -294,6 +294,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(44, "emr-vs-glue-vs-databricks", "EMR vs. Glue vs. Databricks", {
         contentDir: "ch09/44-emr-vs-glue-vs-databricks",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156078/ltv-aws-data-engineering/emr-vs-glue-vs-databricks.mp4",
+        durationLabel: "1 min 40 s",
       }),
       L(45, "running-spark-on-emr", "Running Spark on EMR", {
         contentDir: "ch09/45-running-spark-on-emr",
