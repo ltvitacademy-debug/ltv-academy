@@ -79,7 +79,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(11, "designing-for-idempotency", "Designing for Idempotency", {
         contentDir: "ch01/11-designing-for-idempotency",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146748/ltv-career-capstone/designing-for-idempotency.mp4",
+        durationLabel: "1 min 32 s",
       }),
       L(12, "delivery-guarantees", "Exactly-Once vs. At-Least-Once Delivery", {
         contentDir: "ch01/12-delivery-guarantees",
