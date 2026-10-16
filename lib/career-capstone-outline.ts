@@ -195,7 +195,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(33, "practice-eventstreams-and-kql", "Practice Questions: Eventstreams and KQL", {
         contentDir: "ch02/33-practice-eventstreams-and-kql",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148201/ltv-career-capstone/practice-eventstreams-and-kql.mp4",
+        durationLabel: "1 min 4 s",
       }),
       L(34, "practice-notebooks-and-spark", "Practice Questions: Notebooks and Spark", {
         contentDir: "ch02/34-practice-notebooks-and-spark",
