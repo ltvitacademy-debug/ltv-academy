@@ -109,7 +109,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(17, "fabric-chapter-recap", "Fabric Chapter Recap — Where This Fits With Databricks", {
         contentDir: "ch01/17-fabric-chapter-recap",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143171/ltv-fabric-realtime/fabric-chapter-recap.mp4",
+        durationLabel: "1 min 29 s",
       }),
     ],
   },
