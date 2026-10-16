@@ -40,7 +40,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(7, "writing-functions", "Writing Functions", { contentDir: "ch02/07-writing-functions", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143455/ltv-python-for-data-engineers/writing-functions.mp4", durationLabel: "2 min 48 s" }),
       L(8, "default-keyword-and-variable-arguments", "Default, Keyword & Variable Arguments", { contentDir: "ch02/08-default-keyword-and-variable-arguments", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143585/ltv-python-for-data-engineers/default-keyword-and-variable-arguments.mp4", durationLabel: "2 min 43 s" }),
-      L(9, "scope-and-returning-multiple-values", "Scope & Returning Multiple Values", { contentDir: "ch02/09-scope-and-returning-multiple-values" }),
+      L(9, "scope-and-returning-multiple-values", "Scope & Returning Multiple Values", { contentDir: "ch02/09-scope-and-returning-multiple-values", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143716/ltv-python-for-data-engineers/scope-and-returning-multiple-values.mp4", durationLabel: "2 min 50 s" }),
       L(10, "modules-and-packages", "Modules & Packages", { contentDir: "ch02/10-modules-and-packages" }),
       L(11, "list-and-dict-comprehensions", "List & Dict Comprehensions", { contentDir: "ch02/11-list-and-dict-comprehensions" }),
       L(12, "working-with-dates-and-times", "Working With Dates & Times", { contentDir: "ch02/12-working-with-dates-and-times" }),
