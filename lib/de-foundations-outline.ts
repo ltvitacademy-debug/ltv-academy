@@ -171,7 +171,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(26, "cleaning-data-with-python", "Cleaning Data With Python", {
         contentDir: "ch02/26-cleaning-data-with-python",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138825/ltv-de-foundations/cleaning-data-with-python.mp4",
+        durationLabel: "1 min 36 s",
       }),
       L(27, "building-a-simple-python-etl-process", "Building a Simple Python ETL Process", {
         contentDir: "ch02/27-building-a-simple-python-etl-process",
