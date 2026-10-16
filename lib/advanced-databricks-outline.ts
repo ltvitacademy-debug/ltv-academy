@@ -216,15 +216,18 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(31, "dp-750-exam-overview", "DP-750 Exam Overview", {
         contentDir: "ch07/31-dp-750-exam-overview",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151986/ltv-advanced-databricks/dp-750-exam-overview.mp4",
+        durationLabel: "1 min 33 s",
       }),
       L(32, "dp-750-practice-scenarios", "DP-750 Practice Scenarios", {
         contentDir: "ch07/32-dp-750-practice-scenarios",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792152050/ltv-advanced-databricks/dp-750-practice-scenarios.mp4",
+        durationLabel: "2 min 4 s",
       }),
       L(33, "capstone-project", "Capstone: An Advanced Lakehouse Pipeline", {
         contentDir: "ch07/33-capstone-project",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792152113/ltv-advanced-databricks/capstone-project.mp4",
+        durationLabel: "2 min 4 s",
       }),
       L(34, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", {
         contentDir: "ch07/34-capstone-wrap-up",
