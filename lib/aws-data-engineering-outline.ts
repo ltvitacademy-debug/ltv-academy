@@ -123,6 +123,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(17, "glue-triggers-and-workflows", "Glue Triggers & Workflows", {
         contentDir: "ch03/17-glue-triggers-and-workflows",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154692/ltv-aws-data-engineering/glue-triggers-and-workflows.mp4",
+        durationLabel: "1 min 53 s",
       }),
     ],
   },
