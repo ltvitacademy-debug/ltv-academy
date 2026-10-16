@@ -185,7 +185,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(27, "virtual-networks-and-service-endpoints", "Virtual Networks & Service Endpoints", {
         contentDir: "ch05/27-virtual-networks-and-service-endpoints",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159480/ltv-azure-dba/virtual-networks-and-service-endpoints.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(28, "private-endpoints-and-private-link", "Private Endpoints & Private Link", {
         contentDir: "ch05/28-private-endpoints-and-private-link",
