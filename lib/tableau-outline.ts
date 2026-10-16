@@ -199,7 +199,7 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(87, "desktop-vs-public-vs-cloud-vs-server", "Tableau Desktop vs. Public vs. Cloud vs. Server", { contentDir: "ch15/87-desktop-vs-public-vs-cloud-vs-server", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135753/ltv-tableau/desktop-vs-public-vs-cloud-vs-server.mp4", durationLabel: "1 min 39 s" }),
       L(88, "publishing-workbooks-data-sources-dashboards", "Publishing Workbooks, Data Sources & Dashboards", { contentDir: "ch15/88-publishing-workbooks-data-sources-dashboards", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135812/ltv-tableau/publishing-workbooks-data-sources-dashboards.mp4", durationLabel: "2 min 2 s" }),
-      L(89, "permissions-refreshes-subscriptions-alerts", "Permissions, Refreshes, Subscriptions, Alerts & Sharing", { contentDir: "ch15/89-permissions-refreshes-subscriptions-alerts" }),
+      L(89, "permissions-refreshes-subscriptions-alerts", "Permissions, Refreshes, Subscriptions, Alerts & Sharing", { contentDir: "ch15/89-permissions-refreshes-subscriptions-alerts", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792136280/ltv-tableau/permissions-refreshes-subscriptions-alerts.mp4", durationLabel: "2 min 16 s" }),
     ],
   },
   {
