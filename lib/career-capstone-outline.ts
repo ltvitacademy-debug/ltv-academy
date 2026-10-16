@@ -296,7 +296,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(52, "a-rag-pipeline-over-fabric-metadata", "A RAG Pipeline Over Fabric Metadata", {
         contentDir: "ch03/52-a-rag-pipeline-over-fabric-metadata",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149183/ltv-career-capstone/a-rag-pipeline-over-fabric-metadata.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(53, "ai-generated-test-cases", "AI-Generated Test Cases for Pipelines", {
         contentDir: "ch03/53-ai-generated-test-cases",
