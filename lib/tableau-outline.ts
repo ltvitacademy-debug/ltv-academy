@@ -183,7 +183,7 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     n: 14,
     title: "Dashboards",
     lessons: [
-      L(79, "your-first-professional-dashboard", "Building Your First Professional Dashboard", { contentDir: "ch14/79-your-first-professional-dashboard" }),
+      L(79, "your-first-professional-dashboard", "Building Your First Professional Dashboard", { contentDir: "ch14/79-your-first-professional-dashboard", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135318/ltv-tableau/your-first-professional-dashboard.mp4", durationLabel: "1 min 45 s" }),
       L(80, "dashboard-layout-containers-tiled-floating", "Dashboard Layout: Containers, Tiled & Floating Objects", { contentDir: "ch14/80-dashboard-layout-containers-tiled-floating" }),
       L(81, "kpi-headers-and-executive-summary", "Building KPI Headers & Executive Summary Sections", { contentDir: "ch14/81-kpi-headers-and-executive-summary" }),
       L(82, "filter-and-highlight-actions", "Filter & Highlight Actions", { contentDir: "ch14/82-filter-and-highlight-actions" }),
