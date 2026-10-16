@@ -180,7 +180,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(26, "azure-sql-firewalls-and-firewall-rules", "Azure SQL Firewalls & Firewall Rules", {
         contentDir: "ch05/26-azure-sql-firewalls-and-firewall-rules",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159436/ltv-azure-dba/azure-sql-firewalls-and-firewall-rules.mp4",
+        durationLabel: "1 min 20 s",
       }),
       L(27, "virtual-networks-and-service-endpoints", "Virtual Networks & Service Endpoints", {
         contentDir: "ch05/27-virtual-networks-and-service-endpoints",
