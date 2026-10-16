@@ -101,7 +101,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(13, "governance-policies-tags-management-groups", "Governance: Policies, Tags & Management Groups", {
         contentDir: "ch03/13-governance-policies-tags-management-groups",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157924/ltv-azure-fundamentals/governance-policies-tags-management-groups.mp4",
+        durationLabel: "1 min 17 s",
       }),
       L(14, "compliance-basics", "Compliance Basics", {
         contentDir: "ch03/14-compliance-basics",
