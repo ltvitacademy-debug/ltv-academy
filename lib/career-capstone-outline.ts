@@ -326,7 +326,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(58, "evaluating-ai-output", "Evaluating AI Output for Correctness", {
         contentDir: "ch03/58-evaluating-ai-output",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149450/ltv-career-capstone/evaluating-ai-output.mp4",
+        durationLabel: "1 min 4 s",
       }),
       L(59, "worked-example-ai-assisted-debugging", "A Worked Example: AI-Assisted Pipeline Debugging", {
         contentDir: "ch03/59-worked-example-ai-assisted-debugging",
