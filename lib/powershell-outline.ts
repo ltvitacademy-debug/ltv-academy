@@ -116,7 +116,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
       }),
       L(15, "connecting-to-azure", "Connecting to Azure From PowerShell", {
         contentDir: "ch04/15-connecting-to-azure",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163635/ltv-powershell/connecting-to-azure.mp4",
+        durationLabel: "1 min 30 s",
       }),
       L(16, "running-t-sql-from-powershell", "Running T-SQL From PowerShell: An Intro to dbatools", {
         contentDir: "ch04/16-running-t-sql-from-powershell",
