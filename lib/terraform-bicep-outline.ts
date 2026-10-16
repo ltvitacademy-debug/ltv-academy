@@ -29,11 +29,13 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "what-is-iac-and-why", "What Is Infrastructure as Code, and Why?", {
         contentDir: "ch01/01-what-is-iac-and-why",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146483/ltv-terraform-bicep/what-is-iac-and-why.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(2, "terraform-vs-bicep", "Terraform vs. Bicep", {
         contentDir: "ch01/02-terraform-vs-bicep",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146556/ltv-terraform-bicep/terraform-vs-bicep.mp4",
+        durationLabel: "1 min 35 s",
       }),
       L(3, "installing-the-tools", "Installing the Tools", {
         contentDir: "ch01/03-installing-the-tools",
