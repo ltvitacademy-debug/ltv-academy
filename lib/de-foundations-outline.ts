@@ -141,7 +141,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(20, "working-with-files", "Working With Files", {
         contentDir: "ch02/20-working-with-files",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138522/ltv-de-foundations/working-with-files.mp4",
+        durationLabel: "1 min 36 s",
       }),
       L(21, "pandas-dataframes", "Pandas DataFrames", {
         contentDir: "ch02/21-pandas-dataframes",
