@@ -205,7 +205,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(35, "eventstream-transformations", "Eventstream Transformations", {
         contentDir: "ch02/35-eventstream-transformations",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144305/ltv-fabric-realtime/eventstream-transformations.mp4",
+        durationLabel: "1 min 8 s",
       }),
       L(36, "routing-events-to-multiple-destinations", "Routing Events to Multiple Destinations", {
         contentDir: "ch02/36-routing-events-to-multiple-destinations",

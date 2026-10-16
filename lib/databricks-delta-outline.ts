@@ -195,7 +195,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(32, "autoloader", "Autoloader — Incremental File Ingestion", {
         contentDir: "ch03/32-autoloader",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144308/ltv-databricks-delta/autoloader.mp4",
+        durationLabel: "1 min 17 s",
       }),
       L(33, "structured-streaming-basics", "Structured Streaming Basics", {
         contentDir: "ch03/33-structured-streaming-basics",
