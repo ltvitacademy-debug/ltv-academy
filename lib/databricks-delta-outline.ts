@@ -190,7 +190,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(31, "incremental-processing-patterns", "Incremental Processing Patterns", {
         contentDir: "ch03/31-incremental-processing-patterns",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144243/ltv-databricks-delta/incremental-processing-patterns.mp4",
+        durationLabel: "1 min 26 s",
       }),
       L(32, "autoloader", "Autoloader — Incremental File Ingestion", {
         contentDir: "ch03/32-autoloader",
