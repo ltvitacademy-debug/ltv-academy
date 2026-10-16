@@ -263,6 +263,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(39, "dms-fundamentals", "DMS Fundamentals", {
         contentDir: "ch08/39-dms-fundamentals",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155816/ltv-aws-data-engineering/dms-fundamentals.mp4",
+        durationLabel: "1 min 41 s",
       }),
       L(40, "migrating-a-database-with-dms", "Migrating a Database With DMS", {
         contentDir: "ch08/40-migrating-a-database-with-dms",
