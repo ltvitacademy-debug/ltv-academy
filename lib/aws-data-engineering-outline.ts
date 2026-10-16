@@ -98,6 +98,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(12, "glue-crawlers", "Glue Crawlers", {
         contentDir: "ch03/12-glue-crawlers",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154386/ltv-aws-data-engineering/glue-crawlers.mp4",
+        durationLabel: "1 min 56 s",
       }),
       L(13, "the-glue-data-catalog", "The Glue Data Catalog", {
         contentDir: "ch03/13-the-glue-data-catalog",
