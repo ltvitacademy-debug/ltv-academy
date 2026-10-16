@@ -95,9 +95,9 @@ export const DBT_CHAPTERS: ChapterMeta[] = [
     title: "dbt + Git + CI/CD",
     lessons: [
       L(32, "version-controlling-a-dbt-project", "Version-Controlling a dbt Project", { contentDir: "ch07/32-version-controlling-a-dbt-project", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125673/ltv-dbt/version-controlling-a-dbt-project.mp4", durationLabel: "1 min 39 s" }),
-      L(33, "dbt-in-ci", "Running dbt in Continuous Integration", { contentDir: "ch07/33-dbt-in-ci" }),
-      L(34, "dbt-cloud-jobs-and-scheduling", "dbt Cloud Jobs & Scheduling", { contentDir: "ch07/34-dbt-cloud-jobs-and-scheduling" }),
-      L(35, "slim-ci", "Slim CI: Only Running What Changed", { contentDir: "ch07/35-slim-ci" }),
+      L(33, "dbt-in-ci", "Running dbt in Continuous Integration", { contentDir: "ch07/33-dbt-in-ci", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125722/ltv-dbt/dbt-in-ci.mp4", durationLabel: "1 min 38 s" }),
+      L(34, "dbt-cloud-jobs-and-scheduling", "dbt Cloud Jobs & Scheduling", { contentDir: "ch07/34-dbt-cloud-jobs-and-scheduling", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125771/ltv-dbt/dbt-cloud-jobs-and-scheduling.mp4", durationLabel: "1 min 39 s" }),
+      L(35, "slim-ci", "Slim CI: Only Running What Changed", { contentDir: "ch07/35-slim-ci", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125814/ltv-dbt/slim-ci.mp4", durationLabel: "1 min 24 s" }),
       L(36, "deployment-environments", "Deployment Environments: Dev, Staging & Prod", { contentDir: "ch07/36-deployment-environments" }),
     ],
   },
