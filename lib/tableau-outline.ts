@@ -215,7 +215,7 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     title: "Portfolio Projects",
     lessons: [
       L(92, "project-1-executive-sales-dashboard", "Project 1 — Executive Sales Dashboard", { contentDir: "ch17/92-project-1-executive-sales-dashboard", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135975/ltv-tableau/project-1-executive-sales-dashboard.mp4", durationLabel: "1 min 47 s" }),
-      L(93, "project-2-customer-segmentation-dashboard", "Project 2 — Customer Segmentation Dashboard", { contentDir: "ch17/93-project-2-customer-segmentation-dashboard" }),
+      L(93, "project-2-customer-segmentation-dashboard", "Project 2 — Customer Segmentation Dashboard", { contentDir: "ch17/93-project-2-customer-segmentation-dashboard", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792136029/ltv-tableau/project-2-customer-segmentation-dashboard.mp4", durationLabel: "1 min 52 s" }),
       L(94, "project-3-enterprise-performance-dashboard", "Project 3 — Enterprise Performance Dashboard", { contentDir: "ch17/94-project-3-enterprise-performance-dashboard" }),
     ],
   },
