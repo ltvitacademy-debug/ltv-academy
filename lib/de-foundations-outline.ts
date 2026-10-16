@@ -121,7 +121,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(16, "conditions", "Conditions", {
         contentDir: "ch02/16-conditions",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138329/ltv-de-foundations/conditions.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(17, "loops", "Loops", {
         contentDir: "ch02/17-loops",
