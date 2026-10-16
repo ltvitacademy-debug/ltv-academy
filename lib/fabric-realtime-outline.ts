@@ -170,7 +170,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(28, "real-time-dashboards", "Real-Time Dashboards", {
         contentDir: "ch02/28-real-time-dashboards",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143896/ltv-fabric-realtime/real-time-dashboards.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(29, "windowing-in-streaming-data", "Windowing in Streaming Data", {
         contentDir: "ch02/29-windowing-in-streaming-data",
