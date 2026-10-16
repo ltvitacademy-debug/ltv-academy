@@ -372,7 +372,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(66, "project-1-transformation-and-modeling", "Project 1: Transformation and Modeling", {
         contentDir: "ch04/66-project-1-transformation-and-modeling",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149818/ltv-career-capstone/project-1-transformation-and-modeling.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(67, "project-1-serving-and-dashboards", "Project 1: Serving and Dashboards", {
         contentDir: "ch04/67-project-1-serving-and-dashboards",
