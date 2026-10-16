@@ -273,6 +273,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(41, "cdc-with-dms", "CDC With DMS", {
         contentDir: "ch08/41-cdc-with-dms",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155920/ltv-aws-data-engineering/cdc-with-dms.mp4",
+        durationLabel: "1 min 43 s",
       }),
       L(42, "dms-troubleshooting", "DMS Troubleshooting", {
         contentDir: "ch08/42-dms-troubleshooting",
