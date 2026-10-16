@@ -160,8 +160,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     n: 12,
     title: "Level of Detail Expressions",
     lessons: [
-      L(68, "understanding-lod-expressions", "Understanding Level of Detail Expressions", { contentDir: "ch12/68-understanding-lod-expressions" }),
-      L(69, "fixed-lod", "FIXED LOD", { contentDir: "ch12/69-fixed-lod" }),
+      L(68, "understanding-lod-expressions", "Understanding Level of Detail Expressions", { contentDir: "ch12/68-understanding-lod-expressions", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134816/ltv-tableau/understanding-lod-expressions.mp4", durationLabel: "1 min 34 s" }),
+      L(69, "fixed-lod", "FIXED LOD", { contentDir: "ch12/69-fixed-lod", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134864/ltv-tableau/fixed-lod.mp4", durationLabel: "1 min 37 s" }),
       L(70, "include-and-exclude-lod", "INCLUDE & EXCLUDE LOD", { contentDir: "ch12/70-include-and-exclude-lod" }),
       L(71, "lod-expressions-and-filters", "LOD Expressions and Filters", { contentDir: "ch12/71-lod-expressions-and-filters" }),
       L(72, "lod-vs-table-calculations", "LOD vs. Table Calculations", { contentDir: "ch12/72-lod-vs-table-calculations" }),
