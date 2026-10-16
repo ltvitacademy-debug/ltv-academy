@@ -53,6 +53,8 @@ export const HOW_IT_TEAMS_WORK_CHAPTERS: ChapterMeta[] = [
       }),
       L(6, "releases-deployments-and-cicd", "Releases, Deployments & CI/CD", {
         contentDir: "ch01/06-releases-deployments-and-cicd",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139831/ltv-how-it-teams-work/releases-deployments-and-cicd.mp4",
+        durationLabel: "2 min 31 s",
       }),
     ],
   },
