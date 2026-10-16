@@ -104,7 +104,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
     n: 4,
     title: "Transactions, Locking & Deadlocks",
     lessons: [
-      L(15, "open-transactions", "Finding Open Transactions", { contentDir: "ch04/15-open-transactions" }),
+      L(15, "open-transactions", "Finding Open Transactions", { contentDir: "ch04/15-open-transactions",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792164811/ltv-t-sql-for-dbas/open-transactions.mp4",
+        durationLabel: "1 min 52 s",
+      }),
       L(16, "locks-and-blocking", "Locks & Blocking", { contentDir: "ch04/16-locks-and-blocking" }),
       L(17, "isolation-levels-in-practice", "Isolation Levels in Practice", { contentDir: "ch04/17-isolation-levels-in-practice" }),
       L(18, "deadlock-investigation", "Deadlock Investigation", { contentDir: "ch04/18-deadlock-investigation" }),
