@@ -385,7 +385,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(61, "alerts-operators-and-notifications", "Alerts, Operators & Notifications", {
         contentDir: "ch10/61-alerts-operators-and-notifications",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161223/ltv-azure-dba/alerts-operators-and-notifications.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(62, "troubleshooting-failed-sql-agent-jobs", "Troubleshooting Failed SQL Agent Jobs", {
         contentDir: "ch10/62-troubleshooting-failed-sql-agent-jobs",
