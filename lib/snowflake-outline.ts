@@ -95,7 +95,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     n: 7,
     title: "Semi-Structured Data",
     lessons: [
-      L(31, "json-and-the-variant-data-type", "JSON & the VARIANT Data Type", { contentDir: "ch07/31-json-and-the-variant-data-type" }),
+      L(31, "json-and-the-variant-data-type", "JSON & the VARIANT Data Type", { contentDir: "ch07/31-json-and-the-variant-data-type", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792128212/ltv-snowflake/json-and-the-variant-data-type.mp4", durationLabel: "1 min 43 s" }),
       L(32, "querying-nested-json", "Querying Nested JSON", { contentDir: "ch07/32-querying-nested-json" }),
       L(33, "flatten-semi-structured-to-relational", "FLATTEN — Converting Semi-Structured Data to Relational", { contentDir: "ch07/33-flatten-semi-structured-to-relational" }),
       L(34, "lab-json-feed-to-reporting-tables", "Lab: Turning a Raw JSON Feed Into Reporting Tables", { contentDir: "ch07/34-lab-json-feed-to-reporting-tables" }),
