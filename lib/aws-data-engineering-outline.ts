@@ -77,6 +77,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(9, "cross-account-access", "Cross-Account Access", {
         contentDir: "ch02/09-cross-account-access",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154217/ltv-aws-data-engineering/cross-account-access.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(10, "iam-best-practices-for-pipelines", "IAM Best Practices for Pipelines", {
         contentDir: "ch02/10-iam-best-practices-for-pipelines",
