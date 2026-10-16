@@ -205,7 +205,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(30, "compliance-patterns", "Compliance Patterns", {
         contentDir: "ch06/30-compliance-patterns",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151936/ltv-advanced-databricks/compliance-patterns.mp4",
+        durationLabel: "1 min 44 s",
       }),
     ],
   },
