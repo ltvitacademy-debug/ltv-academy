@@ -47,7 +47,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792167006/ltv-sql-server-dba/editions-and-versions.mp4",
         durationLabel: "1 min 42 s",
       }),
-      L(6, "system-databases-deep-dive", "System Databases, Deep Dive", { contentDir: "ch01/06-system-databases-deep-dive" }),
+      L(6, "system-databases-deep-dive", "System Databases, Deep Dive", { contentDir: "ch01/06-system-databases-deep-dive",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792167064/ltv-sql-server-dba/system-databases-deep-dive.mp4",
+        durationLabel: "1 min 45 s",
+      }),
     ],
   },
   {
