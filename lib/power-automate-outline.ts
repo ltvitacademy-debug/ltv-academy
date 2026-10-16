@@ -45,9 +45,9 @@ export const POWER_AUTOMATE_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "Enterprise Automation",
     lessons: [
-      L(16, "introduction-to-dataverse", "Introduction to Dataverse", { contentDir: "ch02/16-introduction-to-dataverse" }),
-      L(17, "automating-with-dataverse", "Automating with Dataverse Triggers and Actions", { contentDir: "ch02/17-automating-with-dataverse" }),
-      L(18, "connecting-to-sql-server", "Connecting to SQL Server from Power Automate", { contentDir: "ch02/18-connecting-to-sql-server" }),
+      L(16, "introduction-to-dataverse", "Introduction to Dataverse", { contentDir: "ch02/16-introduction-to-dataverse", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792123066/ltv-power-automate/introduction-to-dataverse.mp4", durationLabel: "2 min 33 s" }),
+      L(17, "automating-with-dataverse", "Automating with Dataverse Triggers and Actions", { contentDir: "ch02/17-automating-with-dataverse", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792123130/ltv-power-automate/automating-with-dataverse.mp4", durationLabel: "2 min 13 s" }),
+      L(18, "connecting-to-sql-server", "Connecting to SQL Server from Power Automate", { contentDir: "ch02/18-connecting-to-sql-server", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792123191/ltv-power-automate/connecting-to-sql-server.mp4", durationLabel: "2 min 4 s" }),
       L(19, "http-actions-and-rest-apis", "HTTP Actions and Calling REST APIs", { contentDir: "ch02/19-http-actions-and-rest-apis" }),
       L(20, "working-with-json", "Working with JSON: Parse JSON and Compose", { contentDir: "ch02/20-working-with-json" }),
       L(21, "authentication-and-connections", "Authentication: Connections, Service Principals and OAuth", { contentDir: "ch02/21-authentication-and-connections" }),
