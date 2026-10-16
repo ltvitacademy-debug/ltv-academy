@@ -121,7 +121,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
       }),
       L(16, "running-t-sql-from-powershell", "Running T-SQL From PowerShell: An Intro to dbatools", {
         contentDir: "ch04/16-running-t-sql-from-powershell",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163685/ltv-powershell/running-t-sql-from-powershell.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(17, "automating-a-routine-admin-task", "Automating a Routine Admin Task", {
         contentDir: "ch04/17-automating-a-routine-admin-task",
