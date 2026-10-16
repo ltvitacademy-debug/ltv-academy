@@ -246,7 +246,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(41, "managed-vs-external-tables", "Managed Tables vs. External Tables", {
         contentDir: "ch04/41-managed-vs-external-tables",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144925/ltv-databricks-delta/managed-vs-external-tables.mp4",
+        durationLabel: "1 min 39 s",
       }),
       L(42, "access-control-grant-and-revoke", "Access Control — GRANT and REVOKE", {
         contentDir: "ch04/42-access-control-grant-and-revoke",
