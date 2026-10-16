@@ -52,7 +52,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Loading Data Into Snowflake",
     lessons: [
-      L(12, "internal-vs-external-stages", "Internal vs. External Stages", { contentDir: "ch03/12-internal-vs-external-stages" }),
+      L(12, "internal-vs-external-stages", "Internal vs. External Stages", { contentDir: "ch03/12-internal-vs-external-stages", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127219/ltv-snowflake/internal-vs-external-stages.mp4", durationLabel: "1 min 45 s" }),
       L(13, "file-formats-csv-json-parquet", "File Formats: CSV, JSON & Parquet", { contentDir: "ch03/13-file-formats-csv-json-parquet" }),
       L(14, "copy-into-bulk-loading-fundamentals", "COPY INTO — Bulk Loading Fundamentals", { contentDir: "ch03/14-copy-into-bulk-loading-fundamentals" }),
       L(15, "loading-from-cloud-storage", "Loading From Cloud Storage", { contentDir: "ch03/15-loading-from-cloud-storage" }),
