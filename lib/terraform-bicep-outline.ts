@@ -142,7 +142,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
       }),
       L(20, "iac-in-ci-cd", "IaC in CI/CD", {
         contentDir: "ch04/20-iac-in-ci-cd",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147719/ltv-terraform-bicep/iac-in-ci-cd.mp4",
+        durationLabel: "1 min 14 s",
       }),
     ],
   },
