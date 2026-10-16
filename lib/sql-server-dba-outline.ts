@@ -185,7 +185,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 6,
     title: "Maintenance Plans & Routine Administration",
     lessons: [
-      L(33, "maintenance-plan-basics", "Maintenance Plan Basics", { contentDir: "ch06/33-maintenance-plan-basics" }),
+      L(33, "maintenance-plan-basics", "Maintenance Plan Basics", { contentDir: "ch06/33-maintenance-plan-basics",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792168483/ltv-sql-server-dba/maintenance-plan-basics.mp4",
+        durationLabel: "1 min 51 s",
+      }),
       L(34, "index-maintenance-jobs", "Index Maintenance Jobs", { contentDir: "ch06/34-index-maintenance-jobs" }),
       L(35, "statistics-jobs", "Statistics Jobs", { contentDir: "ch06/35-statistics-jobs" }),
       L(36, "backup-jobs", "Backup Jobs", { contentDir: "ch06/36-backup-jobs" }),
