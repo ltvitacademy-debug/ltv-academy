@@ -154,6 +154,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(22, "athena-cost-optimization", "Athena Cost Optimization", {
         contentDir: "ch04/22-athena-cost-optimization",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155000/ltv-aws-data-engineering/athena-cost-optimization.mp4",
+        durationLabel: "2 min 2 s",
       }),
     ],
   },
