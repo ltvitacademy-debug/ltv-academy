@@ -30,7 +30,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "unity-catalog-architecture-review", "Unity Catalog Architecture, Revisited", {
         contentDir: "ch01/01-unity-catalog-architecture-review",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150524/ltv-advanced-databricks/unity-catalog-architecture-review.mp4",
+        durationLabel: "1 min 2 s",
       }),
       L(2, "catalogs-schemas-external-locations", "Catalogs, Schemas & External Locations", {
         contentDir: "ch01/02-catalogs-schemas-external-locations",
