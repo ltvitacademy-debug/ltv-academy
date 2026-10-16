@@ -162,7 +162,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(54, "query-history-and-load-history-for-troubleshooting", "Query History & Load History for Troubleshooting", { contentDir: "ch14/54-query-history-and-load-history-for-troubleshooting" }),
       L(55, "diagnosing-warehouse-and-permissions-problems", "Diagnosing Warehouse & Permissions Problems", { contentDir: "ch14/55-diagnosing-warehouse-and-permissions-problems", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792129599/ltv-snowflake/diagnosing-warehouse-and-permissions-problems.mp4", durationLabel: "2 min 15 s" }),
-      L(56, "pipeline-troubleshooting-end-to-end", "Pipeline Troubleshooting, End to End", { contentDir: "ch14/56-pipeline-troubleshooting-end-to-end" }),
+      L(56, "pipeline-troubleshooting-end-to-end", "Pipeline Troubleshooting, End to End", { contentDir: "ch14/56-pipeline-troubleshooting-end-to-end", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792129672/ltv-snowflake/pipeline-troubleshooting-end-to-end.mp4", durationLabel: "2 min 8 s" }),
     ],
   },
   {
