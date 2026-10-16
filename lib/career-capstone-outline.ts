@@ -114,7 +114,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(18, "designing-for-freshness-slas", "Designing for Data Freshness SLAs", {
         contentDir: "ch01/18-designing-for-freshness-slas",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147266/ltv-career-capstone/designing-for-freshness-slas.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(19, "cap-theorem-for-data-engineers", "Trade-off Analysis — CAP Theorem for Data Engineers", {
         contentDir: "ch01/19-cap-theorem-for-data-engineers",

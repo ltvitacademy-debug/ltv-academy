@@ -96,7 +96,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(12, "bicep-syntax-basics", "Bicep Syntax Basics", {
         contentDir: "ch03/12-bicep-syntax-basics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147254/ltv-terraform-bicep/bicep-syntax-basics.mp4",
+        durationLabel: "1 min 12 s",
       }),
       L(13, "bicep-parameters-and-variables", "Parameters & Variables in Bicep", {
         contentDir: "ch03/13-bicep-parameters-and-variables",
