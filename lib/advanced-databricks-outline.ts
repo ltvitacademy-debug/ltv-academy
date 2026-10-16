@@ -102,7 +102,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(13, "declarative-pipeline-syntax", "Declarative Pipeline Syntax", {
         contentDir: "ch03/13-declarative-pipeline-syntax",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151144/ltv-advanced-databricks/declarative-pipeline-syntax.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(14, "lakeflow-vs-traditional-notebooks", "Lakeflow vs. Traditional Notebooks", {
         contentDir: "ch03/14-lakeflow-vs-traditional-notebooks",
