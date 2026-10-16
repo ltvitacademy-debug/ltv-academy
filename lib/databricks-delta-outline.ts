@@ -73,7 +73,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(10, "databricks-runtime-and-versions", "Databricks Runtime and Versions", {
         contentDir: "ch01/10-databricks-runtime-and-versions",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142787/ltv-databricks-delta/databricks-runtime-and-versions.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(11, "jobs-scheduling-notebook-runs", "Jobs — Scheduling Notebook Runs", {
         contentDir: "ch01/11-jobs-scheduling-notebook-runs",

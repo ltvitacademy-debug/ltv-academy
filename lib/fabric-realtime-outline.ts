@@ -79,7 +79,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(11, "lakehouse-vs-warehouse", "Lakehouse vs. Warehouse — Choosing the Right Engine", {
         contentDir: "ch01/11-lakehouse-vs-warehouse",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142787/ltv-fabric-realtime/lakehouse-vs-warehouse.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(12, "direct-lake-mode", "Direct Lake Mode", {
         contentDir: "ch01/12-direct-lake-mode",
