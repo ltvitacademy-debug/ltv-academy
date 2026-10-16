@@ -366,7 +366,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(66, "rollback-strategies", "Rollback Strategies", {
         contentDir: "ch03/66-rollback-strategies",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146062/ltv-fabric-realtime/rollback-strategies.mp4",
+        durationLabel: "1 min 9 s",
       }),
       L(67, "documentation-that-gets-used", "Documentation That Actually Gets Used", {
         contentDir: "ch03/67-documentation-that-gets-used",

@@ -332,7 +332,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(57, "course-recap", "Course Recap — From Storage to Orchestrated Pipelines", {
         contentDir: "ch05/57-course-recap",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146057/ltv-databricks-delta/course-recap.mp4",
+        durationLabel: "1 min 49 s",
       }),
     ],
   },
