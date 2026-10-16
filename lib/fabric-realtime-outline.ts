@@ -210,7 +210,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(36, "routing-events-to-multiple-destinations", "Routing Events to Multiple Destinations", {
         contentDir: "ch02/36-routing-events-to-multiple-destinations",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144359/ltv-fabric-realtime/routing-events-to-multiple-destinations.mp4",
+        durationLabel: "1 min 10 s",
       }),
       L(37, "activator-real-time-alerting", "Activator — Real-Time Alerting", {
         contentDir: "ch02/37-activator-real-time-alerting",
