@@ -326,7 +326,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(58, "root-cause-analysis", "Root Cause Analysis, Step by Step", {
         contentDir: "ch03/58-root-cause-analysis",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145615/ltv-fabric-realtime/root-cause-analysis.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(59, "disaster-recovery-and-backup", "Disaster Recovery and Backup Strategies", {
         contentDir: "ch03/59-disaster-recovery-and-backup",

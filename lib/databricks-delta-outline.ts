@@ -302,7 +302,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(51, "defining-a-pipeline-with-dlt-table", "Defining a Pipeline With @dlt.table", {
         contentDir: "ch05/51-defining-a-pipeline-with-dlt-table",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145613/ltv-databricks-delta/defining-a-pipeline-with-dlt-table.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(52, "expectations-declarative-data-quality", "Expectations — Declarative Data Quality", {
         contentDir: "ch05/52-expectations-declarative-data-quality",
