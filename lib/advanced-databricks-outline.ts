@@ -252,7 +252,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(37, "lakebase", "Lakebase", {
         contentDir: "ch08/37-lakebase",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792152455/ltv-advanced-databricks/lakebase.mp4",
+        durationLabel: "2 min 45 s",
       }),
       L(38, "auto-loader-file-events", "Auto Loader With File Events", {
         contentDir: "ch08/38-auto-loader-file-events",
