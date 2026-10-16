@@ -524,7 +524,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(84, "always-on-availability-groups", "Always On Availability Groups", {
         contentDir: "ch14/84-always-on-availability-groups",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162304/ltv-azure-dba/always-on-availability-groups.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(85, "failover-cluster-instances", "Failover Cluster Instances", {
         contentDir: "ch14/85-failover-cluster-instances",
