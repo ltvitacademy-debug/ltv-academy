@@ -220,7 +220,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(38, "change-data-capture-streamed", "Change Data Capture, Streamed", {
         contentDir: "ch02/38-change-data-capture-streamed",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144466/ltv-fabric-realtime/change-data-capture-streamed.mp4",
+        durationLabel: "1 min 9 s",
       }),
       L(39, "real-time-data-quality", "Real-Time Data Quality", {
         contentDir: "ch02/39-real-time-data-quality",
