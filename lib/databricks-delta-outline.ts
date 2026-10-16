@@ -134,7 +134,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(21, "time-travel", "Time Travel — Querying Historical Versions", {
         contentDir: "ch02/21-time-travel",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143542/ltv-databricks-delta/time-travel.mp4",
+        durationLabel: "1 min 17 s",
       }),
       L(22, "update-delete-and-merge", "UPDATE, DELETE, and MERGE", {
         contentDir: "ch02/22-update-delete-and-merge",
