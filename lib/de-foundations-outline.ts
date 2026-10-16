@@ -343,7 +343,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(58, "temporary-views", "Temporary Views", {
         contentDir: "ch04/58-temporary-views",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792140464/ltv-de-foundations/temporary-views.mp4",
+        durationLabel: "1 min 13 s",
       }),
       L(59, "spark-sql-with-dataframes", "Spark SQL With DataFrames", {
         contentDir: "ch04/59-spark-sql-with-dataframes",
