@@ -361,6 +361,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(55, "monitoring-a-pipeline-end-to-end", "Monitoring a Pipeline End to End", {
         contentDir: "ch11/55-monitoring-a-pipeline-end-to-end",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156600/ltv-aws-data-engineering/monitoring-a-pipeline-end-to-end.mp4",
+        durationLabel: "2 min 8 s",
       }),
     ],
   },
