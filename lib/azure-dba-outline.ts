@@ -303,7 +303,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(47, "finding-missing-duplicate-unused-indexes", "Finding Missing, Duplicate & Unused Indexes", {
         contentDir: "ch08/47-finding-missing-duplicate-unused-indexes",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160566/ltv-azure-dba/finding-missing-duplicate-unused-indexes.mp4",
+        durationLabel: "1 min 52 s",
       }),
       L(48, "query-store-fundamentals", "Query Store Fundamentals", {
         contentDir: "ch08/48-query-store-fundamentals",
