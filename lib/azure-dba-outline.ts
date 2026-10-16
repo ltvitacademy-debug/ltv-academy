@@ -529,7 +529,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(85, "failover-cluster-instances", "Failover Cluster Instances", {
         contentDir: "ch14/85-failover-cluster-instances",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162340/ltv-azure-dba/failover-cluster-instances.mp4",
+        durationLabel: "1 min 7 s",
       }),
       L(86, "active-geo-replication", "Active Geo-Replication", {
         contentDir: "ch14/86-active-geo-replication",
