@@ -316,7 +316,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(56, "slas-and-slos", "SLAs and SLOs for Data Pipelines", {
         contentDir: "ch03/56-slas-and-slos",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145493/ltv-fabric-realtime/slas-and-slos.mp4",
+        durationLabel: "1 min 10 s",
       }),
       L(57, "incident-response", "Incident Response for Data Pipelines", {
         contentDir: "ch03/57-incident-response",
