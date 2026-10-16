@@ -55,6 +55,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(5, "transforming-with-glue-etl", "Transforming With Glue ETL", {
         contentDir: "ch02/05-transforming-with-glue-etl",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156880/ltv-aws-capstone/transforming-with-glue-etl.mp4",
+        durationLabel: "1 min 43 s",
       }),
       L(6, "loading-into-redshift", "Loading Into Redshift", {
         contentDir: "ch02/06-loading-into-redshift",
