@@ -51,9 +51,9 @@ export const AIRFLOW_CHAPTERS: ChapterMeta[] = [
     title: "Connections, Hooks & Providers",
     lessons: [
       L(13, "connections", "Connections", { contentDir: "ch03/13-connections", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121023/ltv-airflow/connections.mp4", durationLabel: "2 min 3 s" }),
-      L(14, "hooks", "Hooks", { contentDir: "ch03/14-hooks" }),
-      L(15, "provider-packages", "Provider Packages", { contentDir: "ch03/15-provider-packages" }),
-      L(16, "connecting-to-snowflake-and-databases", "Connecting to Snowflake & Other Databases", { contentDir: "ch03/16-connecting-to-snowflake-and-databases" }),
+      L(14, "hooks", "Hooks", { contentDir: "ch03/14-hooks", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121080/ltv-airflow/hooks.mp4", durationLabel: "1 min 53 s" }),
+      L(15, "provider-packages", "Provider Packages", { contentDir: "ch03/15-provider-packages", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121135/ltv-airflow/provider-packages.mp4", durationLabel: "1 min 57 s" }),
+      L(16, "connecting-to-snowflake-and-databases", "Connecting to Snowflake & Other Databases", { contentDir: "ch03/16-connecting-to-snowflake-and-databases", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121188/ltv-airflow/connecting-to-snowflake-and-databases.mp4", durationLabel: "1 min 46 s" }),
     ],
   },
   {
