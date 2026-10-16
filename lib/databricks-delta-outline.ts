@@ -43,7 +43,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(4, "clusters-and-compute", "Clusters and Compute", {
         contentDir: "ch01/04-clusters-and-compute",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142407/ltv-databricks-delta/clusters-and-compute.mp4",
+        durationLabel: "1 min 30 s",
       }),
       L(5, "all-purpose-vs-job-clusters", "All-Purpose vs. Job Clusters", {
         contentDir: "ch01/05-all-purpose-vs-job-clusters",
