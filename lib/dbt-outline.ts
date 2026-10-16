@@ -62,9 +62,9 @@ export const DBT_CHAPTERS: ChapterMeta[] = [
     n: 4,
     title: "Testing & Documentation",
     lessons: [
-      L(18, "generic-tests", "Generic Tests: not_null, unique, relationships", { contentDir: "ch04/18-generic-tests" }),
-      L(19, "singular-tests", "Singular Tests", { contentDir: "ch04/19-singular-tests" }),
-      L(20, "schema-yml", "schema.yml & Column-Level Documentation", { contentDir: "ch04/20-schema-yml" }),
+      L(18, "generic-tests", "Generic Tests: not_null, unique, relationships", { contentDir: "ch04/18-generic-tests", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124957/ltv-dbt/generic-tests.mp4", durationLabel: "1 min 45 s" }),
+      L(19, "singular-tests", "Singular Tests", { contentDir: "ch04/19-singular-tests", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125003/ltv-dbt/singular-tests.mp4", durationLabel: "1 min 35 s" }),
+      L(20, "schema-yml", "schema.yml & Column-Level Documentation", { contentDir: "ch04/20-schema-yml", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125047/ltv-dbt/schema-yml.mp4", durationLabel: "1 min 29 s" }),
       L(21, "generating-dbt-docs", "Generating and Reading dbt Docs", { contentDir: "ch04/21-generating-dbt-docs" }),
       L(22, "exposures", "Exposures: Connecting Models to Downstream BI", { contentDir: "ch04/22-exposures" }),
     ],
