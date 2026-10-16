@@ -39,7 +39,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(3, "back-of-the-envelope-estimation", "Back-of-the-Envelope Estimation", {
         contentDir: "ch01/03-back-of-the-envelope-estimation",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146300/ltv-career-capstone/back-of-the-envelope-estimation.mp4",
+        durationLabel: "60 s",
       }),
       L(4, "choosing-storage", "Choosing Storage — OLTP vs. OLAP vs. Object Storage", {
         contentDir: "ch01/04-choosing-storage",

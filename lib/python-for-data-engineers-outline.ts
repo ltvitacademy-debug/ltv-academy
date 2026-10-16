@@ -87,7 +87,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
     n: 6,
     title: "Python ETL Pipeline Development",
     lessons: [
-      L(32, "designing-an-etl-pipeline", "Designing an ETL Pipeline", { contentDir: "ch06/32-designing-an-etl-pipeline" }),
+      L(32, "designing-an-etl-pipeline", "Designing an ETL Pipeline", { contentDir: "ch06/32-designing-an-etl-pipeline", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146301/ltv-python-for-data-engineers/designing-an-etl-pipeline.mp4", durationLabel: "2 min 35 s" }),
       L(33, "extracting-from-multiple-sources", "Extracting From Multiple Sources", { contentDir: "ch06/33-extracting-from-multiple-sources" }),
       L(34, "transformation-logic-and-data-validation", "Transformation Logic & Data Validation", { contentDir: "ch06/34-transformation-logic-and-data-validation" }),
       L(35, "loading-to-a-target", "Loading to a Target (File, Database, Warehouse)", { contentDir: "ch06/35-loading-to-a-target" }),
