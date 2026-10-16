@@ -192,11 +192,13 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(29, "distributed-computing", "Distributed Computing", {
         contentDir: "ch03/29-distributed-computing",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138981/ltv-de-foundations/distributed-computing.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(30, "spark-architecture", "Spark Architecture", {
         contentDir: "ch03/30-spark-architecture",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139034/ltv-de-foundations/spark-architecture.mp4",
+        durationLabel: "1 min 42 s",
       }),
       L(31, "driver-and-executors", "Driver and Executors", {
         contentDir: "ch03/31-driver-and-executors",
