@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced Databricks · Chapter 8, Lesson 36",
+    "titlePlain": "Zerobus ",
+    "titleEmphasis": "Ingest",
+    "titleSuffix": "",
+    "subtitle": "No message bus in the middle at all"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The hop Zerobus removes",
+    "code": "Traditional path:  Producer -> Message bus (Kafka/etc.) -> Spark Structured Streaming -> Delta table\nZerobus path:      Producer -> Zerobus API -> Delta table",
+    "caption": "When the lakehouse is the only destination, the middle hop is pure overhead."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Real, published specifications",
+    "titlePlain": "Not ",
+    "titleEmphasis": "Estimates",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "INGESTION LATENCY", "sub": "Near real-time — under 5 seconds" },
+      { "label": "THROUGHPUT PER CLIENT", "sub": "Up to 100 MB/sec, thousands of concurrent clients" },
+      { "label": "REAL-TIME FOREACHWRITER", "sub": "200-300ms Delta -> Lakebase" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Writing a client — the entire surface",
+    "code": "from zerobus.sdk.aio import ZerobusSdk\nfrom zerobus.sdk.shared import StreamConfigurationOptions, TableProperties\n\n# 1. Authenticate with OAuth, open a stream\nstream = await sdk.create_stream(\n    CLIENT_ID, CLIENT_SECRET, table_properties, options\n)\n\n# 2. Ingest records\nawait stream.ingest_record(telemetry)",
+    "caption": "No topic configuration, no partition count, no consumer group to manage."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The real limitation: no native Change Data Feed",
+    "code": "# Workaround: stream into a second, CDF-enabled table\ndf = spark.readStream.table(\"catalog.schema.rideshare_events\")\ndf.writeStream.format(\"delta\") \\\n  .option(\"checkpointLocation\", \"/Volumes/catalog/schema/checkpoints\") \\\n  .table(\"catalog.schema.rideshare_events_processed\")",
+    "caption": "A real, current product gap — not a design flaw to pretend around."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 37",
+    "titlePlain": "",
+    "titleEmphasis": "Lakebase",
+    "titleSuffix": "",
+    "subtitle": "Serving that Delta data back out to an operational app"
+  }
+]

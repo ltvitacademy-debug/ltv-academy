@@ -1,0 +1,41 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced Databricks · Chapter 8, Lesson 39",
+    "titlePlain": "Real-Time Mode for Declarative ",
+    "titleEmphasis": "Pipelines",
+    "titleSuffix": "",
+    "subtitle": "p99 latency in the tens of milliseconds — no second engine"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Two primitives — and no writeStream, no checkpoints to manage",
+    "code": "from pyspark import pipelines as dp\n\n# 1. Declare an external sink\ndp.create_sink(name=\"lakebase_sink\", format=..., options={...})\n\n# 2. An update flow, switched to Real-Time Mode\n@dp.update_flow(\n    name=\"positions_flow\",\n    target=\"lakebase_sink\",\n    spark_conf={\n        \"pipelines.trigger\": \"RealTime\",\n        \"pipelines.trigger.interval\": \"5 minutes\",  # checkpoint cadence, not batch size\n    },\n)\ndef positions_flow():\n    ...",
+    "caption": "Announced in Public Preview, June 2026 — targets p99 in tens to low hundreds of ms."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Stateful flow — Databricks' own aircraft-tracking demo",
+    "code": "class ZoneCounter(StatefulProcessor):\n    def init(self, handle):\n        self._aircraft = handle.getMapState(\"aircraft\", KEY_SCHEMA, VAL_SCHEMA)\n        self._timer = handle.getValueState(\"sweepTimer\", TIMER_SCHEMA)\n\n    def handleInputRows(self, key, rows, timerValues):\n        now_ms = timerValues.getCurrentProcessingTimeInMs()\n        for r in rows:\n            self._aircraft.updateValue(Row(icao24=r.icao24), Row(last_ms=now_ms))\n        active = self._sweep(now_ms)\n        self._ensure_timer(now_ms)\n        yield self._alert_row(key[0], active, now_ms / 1000.0)",
+    "caption": "One shuffle, one stateful operator, keyed by zone — how many aircraft are in each zone right now?"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two patterns worth lifting directly",
+    "titlePlain": "Staleness Eviction, Idempotent ",
+    "titleEmphasis": "Timers",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "STALENESS-BASED EVICTION", "sub": "A recurring sweep evicts anything not seen within a TTL" },
+      { "label": "IDEMPOTENT TIMERS", "sub": "Only register a sweep timer if one isn't already pending" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 40",
+    "titlePlain": "Lakeflow ",
+    "titleEmphasis": "Designer",
+    "titleSuffix": "",
+    "subtitle": "Visual pipeline authoring with zero translation loss"
+  }
+]
