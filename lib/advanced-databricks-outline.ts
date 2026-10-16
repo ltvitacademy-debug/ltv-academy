@@ -143,7 +143,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(20, "job-clusters-vs-all-purpose-clusters", "Job Clusters vs. All-Purpose Clusters", {
         contentDir: "ch04/20-job-clusters-vs-all-purpose-clusters",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151429/ltv-advanced-databricks/job-clusters-vs-all-purpose-clusters.mp4",
+        durationLabel: "1 min 9 s",
       }),
       L(21, "orchestrating-multi-step-pipelines", "Orchestrating Multi-Step Pipelines", {
         contentDir: "ch04/21-orchestrating-multi-step-pipelines",
