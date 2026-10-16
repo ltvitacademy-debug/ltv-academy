@@ -156,7 +156,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(23, "rest-apis-with-python", "REST APIs with Python", {
         contentDir: "ch02/23-rest-apis-with-python",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138675/ltv-de-foundations/rest-apis-with-python.mp4",
+        durationLabel: "1 min 45 s",
       }),
       L(24, "processing-json", "Processing JSON", {
         contentDir: "ch02/24-processing-json",
