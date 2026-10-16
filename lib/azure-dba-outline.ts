@@ -252,7 +252,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(38, "database-monitoring-and-performance-baseline", "Understanding Database Monitoring & Creating a Performance Baseline", {
         contentDir: "ch07/38-database-monitoring-and-performance-baseline",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160010/ltv-azure-dba/database-monitoring-and-performance-baseline.mp4",
+        durationLabel: "1 min 47 s",
       }),
       L(39, "azure-monitor-metrics-and-alerts", "Azure Monitor, Metrics & Alerts", {
         contentDir: "ch07/39-azure-monitor-metrics-and-alerts",
