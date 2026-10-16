@@ -190,6 +190,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(28, "workload-management", "Workload Management", {
         contentDir: "ch05/28-workload-management",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155276/ltv-aws-data-engineering/workload-management.mp4",
+        durationLabel: "1 min 26 s",
       }),
       L(29, "redshift-performance-tuning", "Redshift Performance Tuning", {
         contentDir: "ch05/29-redshift-performance-tuning",
