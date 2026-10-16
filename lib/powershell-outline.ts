@@ -85,7 +85,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(10, "writing-a-ps1-script", "Writing a .ps1 Script", {
         contentDir: "ch03/10-writing-a-ps1-script",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163369/ltv-powershell/writing-a-ps1-script.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(11, "if-else-and-switch", "if/else & switch", {
         contentDir: "ch03/11-if-else-and-switch",
