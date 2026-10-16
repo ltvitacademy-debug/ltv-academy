@@ -57,7 +57,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "Installing & Configuring SQL Server",
     lessons: [
-      L(7, "installation-planning", "Installation Planning", { contentDir: "ch02/07-installation-planning" }),
+      L(7, "installation-planning", "Installation Planning", { contentDir: "ch02/07-installation-planning",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792167113/ltv-sql-server-dba/installation-planning.mp4",
+        durationLabel: "1 min 25 s",
+      }),
       L(8, "installing-sql-server", "Installing SQL Server", { contentDir: "ch02/08-installing-sql-server" }),
       L(9, "post-install-configuration", "Post-Install Configuration", { contentDir: "ch02/09-post-install-configuration" }),
       L(10, "instance-configuration", "Instance Configuration", { contentDir: "ch02/10-instance-configuration" }),
