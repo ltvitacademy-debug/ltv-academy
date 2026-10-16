@@ -386,7 +386,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(70, "course-recap", "Production Data Engineering Recap — and This Course's Finale", {
         contentDir: "ch03/70-course-recap",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146312/ltv-fabric-realtime/course-recap.mp4",
+        durationLabel: "1 min 37 s",
       }),
     ],
   },
