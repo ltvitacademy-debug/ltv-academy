@@ -49,7 +49,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(5, "fabric-lakehouse-vs-databricks-lakehouse", "Fabric Lakehouse vs. Databricks Lakehouse", {
         contentDir: "ch01/05-fabric-lakehouse-vs-databricks-lakehouse",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142429/ltv-fabric-realtime/fabric-lakehouse-vs-databricks-lakehouse.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(6, "fabric-notebooks", "Fabric Notebooks", {
         contentDir: "ch01/06-fabric-notebooks",
