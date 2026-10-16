@@ -283,7 +283,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(46, "withcolumn", "withColumn()", {
         contentDir: "ch04/46-withcolumn",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139924/ltv-de-foundations/withcolumn.mp4",
+        durationLabel: "1 min 23 s",
       }),
       L(47, "when-and-conditional-logic", "when() and Conditional Logic", {
         contentDir: "ch04/47-when-and-conditional-logic",
