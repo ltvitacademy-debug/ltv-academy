@@ -244,7 +244,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
     n: 10,
     title: "Build Your DBA Toolkit",
     lessons: [
-      L(41, "the-toolkit-concept", "The Toolkit Concept: Reusable, Reliable, Documented", { contentDir: "ch10/41-the-toolkit-concept" }),
+      L(41, "the-toolkit-concept", "The Toolkit Concept: Reusable, Reliable, Documented", { contentDir: "ch10/41-the-toolkit-concept",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792166514/ltv-t-sql-for-dbas/the-toolkit-concept.mp4",
+        durationLabel: "1 min 49 s",
+      }),
       L(42, "server-health-check-and-database-space-scripts", "Server Health Check & Database Space Scripts", { contentDir: "ch10/42-server-health-check-and-database-space-scripts" }),
       L(43, "backup-status-and-failed-jobs-scripts", "Backup Status & Failed Jobs Scripts", { contentDir: "ch10/43-backup-status-and-failed-jobs-scripts" }),
       L(44, "blocking-and-long-running-query-scripts", "Blocking & Long-Running Query Scripts", { contentDir: "ch10/44-blocking-and-long-running-query-scripts" }),
