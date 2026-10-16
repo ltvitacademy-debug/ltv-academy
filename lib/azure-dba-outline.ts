@@ -375,7 +375,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(59, "sql-server-agent-fundamentals", "SQL Server Agent Fundamentals", {
         contentDir: "ch10/59-sql-server-agent-fundamentals",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161137/ltv-azure-dba/sql-server-agent-fundamentals.mp4",
+        durationLabel: "1 min 12 s",
       }),
       L(60, "creating-jobs-steps-and-schedules", "Creating Jobs, Steps & Schedules", {
         contentDir: "ch10/60-creating-jobs-steps-and-schedules",
