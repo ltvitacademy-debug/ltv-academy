@@ -179,7 +179,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(26, "cost-optimization", "Cost Optimization", {
         contentDir: "ch05/26-cost-optimization",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151716/ltv-advanced-databricks/cost-optimization.mp4",
+        durationLabel: "1 min 42 s",
       }),
     ],
   },
