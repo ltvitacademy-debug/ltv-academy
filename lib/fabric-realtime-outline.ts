@@ -351,7 +351,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(63, "access-reviews-and-least-privilege", "Access Reviews and Least Privilege", {
         contentDir: "ch03/63-access-reviews-and-least-privilege",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145908/ltv-fabric-realtime/access-reviews-and-least-privilege.mp4",
+        durationLabel: "1 min 17 s",
       }),
       L(64, "capacity-planning", "Capacity Planning", {
         contentDir: "ch03/64-capacity-planning",
