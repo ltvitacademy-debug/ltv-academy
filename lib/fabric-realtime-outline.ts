@@ -145,7 +145,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(23, "kql-where-and-project", "KQL: Basic Queries With where and project", {
         contentDir: "ch02/23-kql-where-and-project",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143566/ltv-fabric-realtime/kql-where-and-project.mp4",
+        durationLabel: "1 min 8 s",
       }),
       L(24, "kql-summarize", "KQL: summarize and Aggregations", {
         contentDir: "ch02/24-kql-summarize",
