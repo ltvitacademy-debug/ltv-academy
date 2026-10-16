@@ -338,7 +338,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(57, "window-functions", "Window Functions", {
         contentDir: "ch04/57-window-functions",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792140425/ltv-de-foundations/window-functions.mp4",
+        durationLabel: "1 min 17 s",
       }),
       L(58, "temporary-views", "Temporary Views", {
         contentDir: "ch04/58-temporary-views",
