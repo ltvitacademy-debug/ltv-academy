@@ -104,7 +104,10 @@ export const SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792171385/ltv-sql-server-performance-tuning/columnstore-indexes-for-analytics.mp4",
         durationLabel: "1 min 56 s",
       }),
-      L(17, "the-index-tuning-workflow", "The Index Tuning Workflow", { contentDir: "ch03/17-the-index-tuning-workflow" }),
+      L(17, "the-index-tuning-workflow", "The Index Tuning Workflow", { contentDir: "ch03/17-the-index-tuning-workflow",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792171450/ltv-sql-server-performance-tuning/the-index-tuning-workflow.mp4",
+        durationLabel: "1 min 55 s",
+      }),
     ],
   },
   {
