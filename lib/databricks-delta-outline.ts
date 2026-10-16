@@ -180,7 +180,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(29, "designing-a-bronze-to-silver-pipeline", "Designing a Bronze-to-Silver Pipeline", {
         contentDir: "ch03/29-designing-a-bronze-to-silver-pipeline",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144108/ltv-databricks-delta/designing-a-bronze-to-silver-pipeline.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(30, "designing-a-silver-to-gold-pipeline", "Designing a Silver-to-Gold Pipeline", {
         contentDir: "ch03/30-designing-a-silver-to-gold-pipeline",
