@@ -39,9 +39,9 @@ export const DBT_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "Sources, Models & ref()",
     lessons: [
-      L(7, "defining-sources", "Defining Sources", { contentDir: "ch02/07-defining-sources" }),
-      L(8, "staging-models", "Staging Models", { contentDir: "ch02/08-staging-models" }),
-      L(9, "the-ref-function", "The ref() Function", { contentDir: "ch02/09-the-ref-function" }),
+      L(7, "defining-sources", "Defining Sources", { contentDir: "ch02/07-defining-sources", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124422/ltv-dbt/defining-sources.mp4", durationLabel: "1 min 21 s" }),
+      L(8, "staging-models", "Staging Models", { contentDir: "ch02/08-staging-models", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124467/ltv-dbt/staging-models.mp4", durationLabel: "1 min 31 s" }),
+      L(9, "the-ref-function", "The ref() Function", { contentDir: "ch02/09-the-ref-function", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124510/ltv-dbt/the-ref-function.mp4", durationLabel: "1 min 23 s" }),
       L(10, "building-your-first-model", "Building Your First dbt Model", { contentDir: "ch02/10-building-your-first-model" }),
       L(11, "model-materializations", "Model Materializations: View, Table, Incremental & Ephemeral", { contentDir: "ch02/11-model-materializations" }),
       L(12, "organizing-models", "Organizing Models Across a Project", { contentDir: "ch02/12-organizing-models" }),
