@@ -51,7 +51,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(5, "azure-portal-ssms-and-azure-data-studio", "Azure Portal, SSMS & Azure Data Studio for DBAs", {
         contentDir: "ch01/05-azure-portal-ssms-and-azure-data-studio",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158400/ltv-azure-dba/azure-portal-ssms-and-azure-data-studio.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(6, "lab-build-your-first-azure-sql-environment", "Lab: Build Your First Azure SQL Environment", {
         contentDir: "ch01/06-lab-build-your-first-azure-sql-environment",
