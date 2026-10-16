@@ -442,7 +442,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(80, "telling-your-project-story", "Telling Your Project Story in an Interview", {
         contentDir: "ch04/80-telling-your-project-story",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150394/ltv-career-capstone/telling-your-project-story.mp4",
+        durationLabel: "1 min 9 s",
       }),
       L(81, "course-and-track-finale", "Data Engineering Career & Capstone — Course and Track Finale", {
         contentDir: "ch04/81-course-and-track-finale",
