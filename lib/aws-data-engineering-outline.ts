@@ -41,6 +41,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(3, "storage-classes", "Storage Classes", {
         contentDir: "ch01/03-storage-classes",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153972/ltv-aws-data-engineering/storage-classes.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(4, "partitioning-strategy-in-s3", "Partitioning Strategy in S3", {
         contentDir: "ch01/04-partitioning-strategy-in-s3",
