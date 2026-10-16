@@ -313,7 +313,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(52, "removing-duplicates", "Removing Duplicates", {
         contentDir: "ch04/52-removing-duplicates",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792140203/ltv-de-foundations/removing-duplicates.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(53, "groupby", "groupBy()", {
         contentDir: "ch04/53-groupby",
