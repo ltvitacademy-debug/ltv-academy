@@ -519,7 +519,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(83, "rpo-and-rto-designing-from-business-requirements", "RPO & RTO — Designing from Business Requirements", {
         contentDir: "ch14/83-rpo-and-rto-designing-from-business-requirements",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162258/ltv-azure-dba/rpo-and-rto-designing-from-business-requirements.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(84, "always-on-availability-groups", "Always On Availability Groups", {
         contentDir: "ch14/84-always-on-availability-groups",
