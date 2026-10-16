@@ -591,7 +591,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(95, "azure-dba-interview-preparation", "Azure DBA Interview Preparation", {
         contentDir: "ch16/95-azure-dba-interview-preparation",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162838/ltv-azure-dba/azure-dba-interview-preparation.mp4",
+        durationLabel: "1 min 16 s",
       }),
     ],
   },
