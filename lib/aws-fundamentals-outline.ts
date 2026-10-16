@@ -44,6 +44,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(4, "aws-accounts-and-organizations", "AWS Accounts & Organizations, Basics", {
         contentDir: "ch01/04-aws-accounts-and-organizations",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153172/ltv-aws-fundamentals/aws-accounts-and-organizations.mp4",
+        durationLabel: "59 s",
       }),
       L(5, "the-shared-responsibility-model", "The Shared Responsibility Model", {
         contentDir: "ch01/05-the-shared-responsibility-model",
