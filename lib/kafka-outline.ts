@@ -154,7 +154,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(21, "confluent-cloud", "Confluent Cloud", {
         contentDir: "ch05/21-confluent-cloud",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149099/ltv-kafka/confluent-cloud.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(22, "azure-event-hubs-kafka-compatibility", "Azure Event Hubs' Kafka Compatibility", {
         contentDir: "ch05/22-azure-event-hubs-kafka-compatibility",
