@@ -136,7 +136,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(19, "exception-handling", "Exception Handling", {
         contentDir: "ch02/19-exception-handling",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138471/ltv-de-foundations/exception-handling.mp4",
+        durationLabel: "1 min 38 s",
       }),
       L(20, "working-with-files", "Working With Files", {
         contentDir: "ch02/20-working-with-files",
