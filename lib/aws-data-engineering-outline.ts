@@ -356,6 +356,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(54, "cloudwatch-alarms-and-dashboards", "CloudWatch Alarms & Dashboards", {
         contentDir: "ch11/54-cloudwatch-alarms-and-dashboards",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156536/ltv-aws-data-engineering/cloudwatch-alarms-and-dashboards.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(55, "monitoring-a-pipeline-end-to-end", "Monitoring a Pipeline End to End", {
         contentDir: "ch11/55-monitoring-a-pipeline-end-to-end",
