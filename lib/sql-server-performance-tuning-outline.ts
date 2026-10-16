@@ -134,7 +134,10 @@ export const SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792171776/ltv-sql-server-performance-tuning/function-performance-pitfalls.mp4",
         durationLabel: "1 min 45 s",
       }),
-      L(23, "batch-processing-techniques", "Batch Processing Techniques", { contentDir: "ch04/23-batch-processing-techniques" }),
+      L(23, "batch-processing-techniques", "Batch Processing Techniques", { contentDir: "ch04/23-batch-processing-techniques",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792171834/ltv-sql-server-performance-tuning/batch-processing-techniques.mp4",
+        durationLabel: "1 min 41 s",
+      }),
     ],
   },
   {
