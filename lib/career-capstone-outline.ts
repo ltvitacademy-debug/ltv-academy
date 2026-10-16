@@ -124,7 +124,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(20, "case-study-ride-sharing-platform", "Case Study: A Ride-Sharing Analytics Platform", {
         contentDir: "ch01/20-case-study-ride-sharing-platform",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147403/ltv-career-capstone/case-study-ride-sharing-platform.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(21, "case-study-fraud-detection", "Case Study: A Real-Time Fraud Detection System", {
         contentDir: "ch01/21-case-study-fraud-detection",

@@ -111,7 +111,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
       }),
       L(15, "deploying-azure-sql", "Deploying Azure SQL With Bicep", {
         contentDir: "ch03/15-deploying-azure-sql",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147415/ltv-terraform-bicep/deploying-azure-sql.mp4",
+        durationLabel: "1 min 3 s",
       }),
       L(16, "arm-vs-bicep", "ARM Templates vs. Bicep", {
         contentDir: "ch03/16-arm-vs-bicep",
