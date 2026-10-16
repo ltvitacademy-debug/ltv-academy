@@ -132,6 +132,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(18, "aws-certification-landscape", "The AWS Certification Landscape, Overview", {
         contentDir: "ch04/18-aws-certification-landscape",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153824/ltv-aws-fundamentals/aws-certification-landscape.mp4",
+        durationLabel: "2 min 8 s",
       }),
     ],
   },
