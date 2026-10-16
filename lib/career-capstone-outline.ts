@@ -165,7 +165,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(27, "exam-domains-and-weighting", "Exam Domains and Weighting", {
         contentDir: "ch02/27-exam-domains-and-weighting",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147860/ltv-career-capstone/exam-domains-and-weighting.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(28, "implementing-an-analytics-solution", "Implementing and Managing an Analytics Solution", {
         contentDir: "ch02/28-implementing-an-analytics-solution",
