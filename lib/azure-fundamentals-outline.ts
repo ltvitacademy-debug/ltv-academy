@@ -60,7 +60,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(6, "azure-compute-overview", "Azure Compute Overview: VMs & App Service", {
         contentDir: "ch02/06-azure-compute-overview",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157657/ltv-azure-fundamentals/azure-compute-overview.mp4",
+        durationLabel: "60 s",
       }),
       L(7, "azure-storage-overview", "Azure Storage Overview", {
         contentDir: "ch02/07-azure-storage-overview",
