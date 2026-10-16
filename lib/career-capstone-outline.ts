@@ -422,7 +422,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(76, "project-3-ingestion-and-features", "Project 3: Streaming Ingestion and Feature Computation", {
         contentDir: "ch04/76-project-3-ingestion-and-features",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150232/ltv-career-capstone/project-3-ingestion-and-features.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(77, "project-3-scoring-and-alerting", "Project 3: Real-Time Scoring and Alerting", {
         contentDir: "ch04/77-project-3-scoring-and-alerting",
