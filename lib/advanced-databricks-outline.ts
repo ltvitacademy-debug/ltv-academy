@@ -128,7 +128,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(17, "databricks-jobs", "Databricks Jobs", {
         contentDir: "ch04/17-databricks-jobs",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151310/ltv-advanced-databricks/databricks-jobs.mp4",
+        durationLabel: "1 min 9 s",
       }),
       L(18, "workflows-ui", "The Workflows UI", {
         contentDir: "ch04/18-workflows-ui",
