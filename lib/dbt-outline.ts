@@ -65,15 +65,15 @@ export const DBT_CHAPTERS: ChapterMeta[] = [
       L(18, "generic-tests", "Generic Tests: not_null, unique, relationships", { contentDir: "ch04/18-generic-tests", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124957/ltv-dbt/generic-tests.mp4", durationLabel: "1 min 45 s" }),
       L(19, "singular-tests", "Singular Tests", { contentDir: "ch04/19-singular-tests", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125003/ltv-dbt/singular-tests.mp4", durationLabel: "1 min 35 s" }),
       L(20, "schema-yml", "schema.yml & Column-Level Documentation", { contentDir: "ch04/20-schema-yml", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125047/ltv-dbt/schema-yml.mp4", durationLabel: "1 min 29 s" }),
-      L(21, "generating-dbt-docs", "Generating and Reading dbt Docs", { contentDir: "ch04/21-generating-dbt-docs" }),
-      L(22, "exposures", "Exposures: Connecting Models to Downstream BI", { contentDir: "ch04/22-exposures" }),
+      L(21, "generating-dbt-docs", "Generating and Reading dbt Docs", { contentDir: "ch04/21-generating-dbt-docs", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125096/ltv-dbt/generating-dbt-docs.mp4", durationLabel: "1 min 39 s" }),
+      L(22, "exposures", "Exposures: Connecting Models to Downstream BI", { contentDir: "ch04/22-exposures", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125159/ltv-dbt/exposures.mp4", durationLabel: "2 min 5 s" }),
     ],
   },
   {
     n: 5,
     title: "Seeds, Snapshots & Incremental Models",
     lessons: [
-      L(23, "seeds", "Seeds: Loading Static Reference Data", { contentDir: "ch05/23-seeds" }),
+      L(23, "seeds", "Seeds: Loading Static Reference Data", { contentDir: "ch05/23-seeds", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125217/ltv-dbt/seeds.mp4", durationLabel: "1 min 59 s" }),
       L(24, "snapshots-for-scd", "Snapshots for Slowly Changing Dimensions", { contentDir: "ch05/24-snapshots-for-scd" }),
       L(25, "incremental-models-fundamentals", "Incremental Models: Fundamentals", { contentDir: "ch05/25-incremental-models-fundamentals" }),
       L(26, "incremental-strategies", "Incremental Strategies: merge, delete+insert, append", { contentDir: "ch05/26-incremental-strategies" }),
