@@ -132,7 +132,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(18, "az-900-exam-overview", "AZ-900 Exam Overview", {
         contentDir: "ch04/18-az-900-exam-overview",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158166/ltv-azure-fundamentals/az-900-exam-overview.mp4",
+        durationLabel: "1 min 33 s",
       }),
     ],
   },
