@@ -447,7 +447,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(81, "course-and-track-finale", "Data Engineering Career & Capstone — Course and Track Finale", {
         contentDir: "ch04/81-course-and-track-finale",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150450/ltv-career-capstone/course-and-track-finale.mp4",
+        durationLabel: "1 min 40 s",
       }),
     ],
   },
