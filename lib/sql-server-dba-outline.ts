@@ -267,7 +267,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 9,
     title: "Change Management",
     lessons: [
-      L(49, "version-control-for-database-objects", "Version Control for Database Objects", { contentDir: "ch09/49-version-control-for-database-objects" }),
+      L(49, "version-control-for-database-objects", "Version Control for Database Objects", { contentDir: "ch09/49-version-control-for-database-objects",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792169369/ltv-sql-server-dba/version-control-for-database-objects.mp4",
+        durationLabel: "1 min 7 s",
+      }),
       L(50, "deployment-strategies", "Deployment Strategies", { contentDir: "ch09/50-deployment-strategies" }),
       L(51, "change-tracking", "Change Tracking", { contentDir: "ch09/51-change-tracking" }),
       L(52, "database-documentation", "Database Documentation", { contentDir: "ch09/52-database-documentation" }),
