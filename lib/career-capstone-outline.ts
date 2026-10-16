@@ -346,7 +346,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(62, "ai-chapter-recap", "AI for Data Engineers Chapter Recap", {
         contentDir: "ch03/62-ai-chapter-recap",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149644/ltv-career-capstone/ai-chapter-recap.mp4",
+        durationLabel: "1 min 34 s",
       }),
     ],
   },
