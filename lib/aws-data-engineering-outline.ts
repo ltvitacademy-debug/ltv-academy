@@ -144,6 +144,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(20, "athena-and-the-glue-catalog", "Athena + Glue Catalog Integration", {
         contentDir: "ch04/20-athena-and-the-glue-catalog",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154873/ltv-aws-data-engineering/athena-and-the-glue-catalog.mp4",
+        durationLabel: "1 min 43 s",
       }),
       L(21, "partitioning-for-athena-performance", "Partitioning for Athena Performance", {
         contentDir: "ch04/21-partitioning-for-athena-performance",
