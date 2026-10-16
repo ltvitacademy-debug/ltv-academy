@@ -109,7 +109,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(17, "designing-for-multi-tenancy", "Designing for Multi-Tenancy", {
         contentDir: "ch01/17-designing-for-multi-tenancy",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147196/ltv-career-capstone/designing-for-multi-tenancy.mp4",
+        durationLabel: "1 min 31 s",
       }),
       L(18, "designing-for-freshness-slas", "Designing for Data Freshness SLAs", {
         contentDir: "ch01/18-designing-for-freshness-slas",
