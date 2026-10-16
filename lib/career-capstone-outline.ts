@@ -357,7 +357,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(63, "capstone-overview", "Capstone Overview — What You'll Build", {
         contentDir: "ch04/63-capstone-overview",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149691/ltv-career-capstone/capstone-overview.mp4",
+        durationLabel: "1 min 14 s",
       }),
       L(64, "project-1-kickoff-retail-analytics", "Project 1 Kickoff: A Real-Time Retail Analytics Platform", {
         contentDir: "ch04/64-project-1-kickoff-retail-analytics",
