@@ -86,15 +86,15 @@ export const DBT_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(28, "jinja-basics", "Jinja Basics Inside dbt", { contentDir: "ch06/28-jinja-basics", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125463/ltv-dbt/jinja-basics.mp4", durationLabel: "1 min 53 s" }),
       L(29, "custom-macros", "Writing Custom Macros", { contentDir: "ch06/29-custom-macros", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125516/ltv-dbt/custom-macros.mp4", durationLabel: "1 min 43 s" }),
-      L(30, "dbt-packages", "dbt Packages", { contentDir: "ch06/30-dbt-packages" }),
-      L(31, "dbt-utils", "dbt_utils: The Macros You'll Actually Reuse", { contentDir: "ch06/31-dbt-utils" }),
+      L(30, "dbt-packages", "dbt Packages", { contentDir: "ch06/30-dbt-packages", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125570/ltv-dbt/dbt-packages.mp4", durationLabel: "1 min 47 s" }),
+      L(31, "dbt-utils", "dbt_utils: The Macros You'll Actually Reuse", { contentDir: "ch06/31-dbt-utils", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125625/ltv-dbt/dbt-utils.mp4", durationLabel: "1 min 55 s" }),
     ],
   },
   {
     n: 7,
     title: "dbt + Git + CI/CD",
     lessons: [
-      L(32, "version-controlling-a-dbt-project", "Version-Controlling a dbt Project", { contentDir: "ch07/32-version-controlling-a-dbt-project" }),
+      L(32, "version-controlling-a-dbt-project", "Version-Controlling a dbt Project", { contentDir: "ch07/32-version-controlling-a-dbt-project", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125673/ltv-dbt/version-controlling-a-dbt-project.mp4", durationLabel: "1 min 39 s" }),
       L(33, "dbt-in-ci", "Running dbt in Continuous Integration", { contentDir: "ch07/33-dbt-in-ci" }),
       L(34, "dbt-cloud-jobs-and-scheduling", "dbt Cloud Jobs & Scheduling", { contentDir: "ch07/34-dbt-cloud-jobs-and-scheduling" }),
       L(35, "slim-ci", "Slim CI: Only Running What Changed", { contentDir: "ch07/35-slim-ci" }),
