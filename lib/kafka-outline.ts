@@ -66,7 +66,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(7, "consumer-basics", "Consumer Basics", {
         contentDir: "ch02/07-consumer-basics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148349/ltv-kafka/consumer-basics.mp4",
+        durationLabel: "1 min 14 s",
       }),
       L(8, "consumer-groups", "Consumer Groups", {
         contentDir: "ch02/08-consumer-groups",

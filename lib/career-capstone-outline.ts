@@ -210,7 +210,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(36, "practice-monitoring-and-deployment", "Practice Questions: Monitoring and Deployment", {
         contentDir: "ch02/36-practice-monitoring-and-deployment",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148350/ltv-career-capstone/practice-monitoring-and-deployment.mp4",
+        durationLabel: "1 min 23 s",
       }),
       L(37, "common-dp-700-traps", "Common DP-700 Traps and Gotchas", {
         contentDir: "ch02/37-common-dp-700-traps",
