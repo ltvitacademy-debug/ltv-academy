@@ -180,7 +180,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(25, "a-real-producer-to-consumer-pipeline", "A Real Producer-to-Kafka-to-Consumer Pipeline", {
         contentDir: "ch06/25-a-real-producer-to-consumer-pipeline",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149340/ltv-kafka/a-real-producer-to-consumer-pipeline.mp4",
+        durationLabel: "1 min 44 s",
       }),
       L(26, "kafka-plus-snowflake-and-databricks", "Kafka + Snowflake & Databricks", {
         contentDir: "ch06/26-kafka-plus-snowflake-and-databricks",
