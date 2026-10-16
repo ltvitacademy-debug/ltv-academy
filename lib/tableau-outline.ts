@@ -164,8 +164,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
       L(69, "fixed-lod", "FIXED LOD", { contentDir: "ch12/69-fixed-lod", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134864/ltv-tableau/fixed-lod.mp4", durationLabel: "1 min 37 s" }),
       L(70, "include-and-exclude-lod", "INCLUDE & EXCLUDE LOD", { contentDir: "ch12/70-include-and-exclude-lod", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134913/ltv-tableau/include-and-exclude-lod.mp4", durationLabel: "1 min 35 s" }),
       L(71, "lod-expressions-and-filters", "LOD Expressions and Filters", { contentDir: "ch12/71-lod-expressions-and-filters", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134963/ltv-tableau/lod-expressions-and-filters.mp4", durationLabel: "1 min 40 s" }),
-      L(72, "lod-vs-table-calculations", "LOD vs. Table Calculations", { contentDir: "ch12/72-lod-vs-table-calculations" }),
-      L(73, "real-world-lod-analysis", "Real-World LOD Analysis: Customer Lifetime Sales & First Purchase", { contentDir: "ch12/73-real-world-lod-analysis" }),
+      L(72, "lod-vs-table-calculations", "LOD vs. Table Calculations", { contentDir: "ch12/72-lod-vs-table-calculations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135012/ltv-tableau/lod-vs-table-calculations.mp4", durationLabel: "1 min 36 s" }),
+      L(73, "real-world-lod-analysis", "Real-World LOD Analysis: Customer Lifetime Sales & First Purchase", { contentDir: "ch12/73-real-world-lod-analysis", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792135068/ltv-tableau/real-world-lod-analysis.mp4", durationLabel: "1 min 53 s" }),
     ],
   },
   {
