@@ -207,7 +207,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(32, "clusters-and-nodes", "Clusters and Nodes", {
         contentDir: "ch03/32-clusters-and-nodes",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139134/ltv-de-foundations/clusters-and-nodes.mp4",
+        durationLabel: "1 min 33 s",
       }),
       L(33, "spark-partitions", "Spark Partitions", {
         contentDir: "ch03/33-spark-partitions",
