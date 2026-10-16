@@ -107,7 +107,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(14, "zookeeper-vs-kraft", "ZooKeeper vs. KRaft", {
         contentDir: "ch03/14-zookeeper-vs-kraft",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148724/ltv-kafka/zookeeper-vs-kraft.mp4",
+        durationLabel: "1 min 11 s",
       }),
       L(15, "schema-registry", "Schema Registry", {
         contentDir: "ch03/15-schema-registry",
