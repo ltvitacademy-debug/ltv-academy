@@ -83,7 +83,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(12, "databricks-cli-and-rest-api-basics", "Databricks CLI and REST API Basics", {
         contentDir: "ch01/12-databricks-cli-and-rest-api-basics",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142933/ltv-databricks-delta/databricks-cli-and-rest-api-basics.mp4",
+        durationLabel: "1 min 25 s",
       }),
     ],
   },
