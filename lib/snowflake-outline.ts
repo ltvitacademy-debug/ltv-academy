@@ -87,7 +87,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
       L(26, "star-schemas-fact-and-dimension-tables-in-snowflake", "Star Schemas, Fact & Dimension Tables — Implementing Them in Snowflake", { contentDir: "ch06/26-star-schemas-fact-and-dimension-tables-in-snowflake", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127947/ltv-snowflake/star-schemas-fact-and-dimension-tables-in-snowflake.mp4", durationLabel: "1 min 40 s" }),
       L(27, "surrogate-keys-in-snowflake", "Surrogate Keys in Snowflake", { contentDir: "ch06/27-surrogate-keys-in-snowflake", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127991/ltv-snowflake/surrogate-keys-in-snowflake.mp4", durationLabel: "1 min 21 s" }),
       L(28, "scd-type-1-in-snowflake", "SCD Type 1 in Snowflake", { contentDir: "ch06/28-scd-type-1-in-snowflake", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792128042/ltv-snowflake/scd-type-1-in-snowflake.mp4", durationLabel: "1 min 37 s" }),
-      L(29, "scd-type-2-in-snowflake", "SCD Type 2 in Snowflake", { contentDir: "ch06/29-scd-type-2-in-snowflake" }),
+      L(29, "scd-type-2-in-snowflake", "SCD Type 2 in Snowflake", { contentDir: "ch06/29-scd-type-2-in-snowflake", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792128101/ltv-snowflake/scd-type-2-in-snowflake.mp4", durationLabel: "1 min 55 s" }),
       L(30, "staging-warehouse-reporting-layers", "Staging → Warehouse → Reporting Layers", { contentDir: "ch06/30-staging-warehouse-reporting-layers" }),
     ],
   },
