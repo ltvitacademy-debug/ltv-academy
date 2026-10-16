@@ -108,6 +108,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(14, "glue-etl-jobs", "Glue ETL Jobs: Python & Scala Spark", {
         contentDir: "ch03/14-glue-etl-jobs",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154513/ltv-aws-data-engineering/glue-etl-jobs.mp4",
+        durationLabel: "1 min 57 s",
       }),
       L(15, "glue-studio", "Glue Studio", {
         contentDir: "ch03/15-glue-studio",
