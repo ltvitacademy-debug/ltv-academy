@@ -24,9 +24,9 @@ export const POWER_AUTOMATE_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Business Process Automation",
     lessons: [
-      L(1, "what-is-power-automate", "What Is Power Automate? Platform Overview", { contentDir: "ch01/01-what-is-power-automate" }),
-      L(2, "flows-triggers-and-actions", "Flows, Triggers and Actions", { contentDir: "ch01/02-flows-triggers-and-actions" }),
-      L(3, "building-your-first-flow", "Building Your First Flow: An Approval on a New SharePoint Item", { contentDir: "ch01/03-building-your-first-flow" }),
+      L(1, "what-is-power-automate", "What Is Power Automate? Platform Overview", { contentDir: "ch01/01-what-is-power-automate", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792122089/ltv-power-automate/what-is-power-automate.mp4", durationLabel: "2 min 2 s" }),
+      L(2, "flows-triggers-and-actions", "Flows, Triggers and Actions", { contentDir: "ch01/02-flows-triggers-and-actions", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792122155/ltv-power-automate/flows-triggers-and-actions.mp4", durationLabel: "2 min 21 s" }),
+      L(3, "building-your-first-flow", "Building Your First Flow: An Approval on a New SharePoint Item", { contentDir: "ch01/03-building-your-first-flow", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792122232/ltv-power-automate/building-your-first-flow.mp4", durationLabel: "2 min 16 s" }),
       L(4, "conditions-if-else-logic", "Conditions: If/Else Logic in Flows", { contentDir: "ch01/04-conditions-if-else-logic" }),
       L(5, "loops-apply-to-each-and-do-until", "Loops: Apply to Each and Do Until", { contentDir: "ch01/05-loops-apply-to-each-and-do-until" }),
       L(6, "variables-and-initializing-data", "Variables and Initializing Data", { contentDir: "ch01/06-variables-and-initializing-data" }),
