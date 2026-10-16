@@ -180,6 +180,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(26, "distribution-and-sort-keys", "Distribution & Sort Keys", {
         contentDir: "ch05/26-distribution-and-sort-keys",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155186/ltv-aws-data-engineering/distribution-and-sort-keys.mp4",
+        durationLabel: "1 min 44 s",
       }),
       L(27, "redshift-spectrum", "Redshift Spectrum", {
         contentDir: "ch05/27-redshift-spectrum",
