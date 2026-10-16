@@ -236,7 +236,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(36, "sql-auditing-and-compliance-monitoring", "SQL Auditing & Compliance Monitoring", {
         contentDir: "ch06/36-sql-auditing-and-compliance-monitoring",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159906/ltv-azure-dba/sql-auditing-and-compliance-monitoring.mp4",
+        durationLabel: "1 min 32 s",
       }),
       L(37, "ledger-change-tracking-security-compliance-scenarios", "Ledger, Change Tracking & Security/Compliance Scenarios", {
         contentDir: "ch06/37-ledger-change-tracking-security-compliance-scenarios",
