@@ -344,7 +344,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(54, "statistics-maintenance", "Statistics Maintenance", {
         contentDir: "ch09/54-statistics-maintenance",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160918/ltv-azure-dba/statistics-maintenance.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(55, "dbcc-checkdb-and-database-integrity", "DBCC CHECKDB & Database Integrity", {
         contentDir: "ch09/55-dbcc-checkdb-and-database-integrity",
