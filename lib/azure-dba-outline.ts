@@ -498,7 +498,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(80, "long-term-retention-and-backup-policies", "Long-Term Retention & Backup Policies", {
         contentDir: "ch13/80-long-term-retention-and-backup-policies",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162112/ltv-azure-dba/long-term-retention-and-backup-policies.mp4",
+        durationLabel: "1 min 10 s",
       }),
       L(81, "backup-to-azure-storage-and-disaster-recovery-scenarios", "Backup to Azure Storage & Disaster Recovery Scenarios", {
         contentDir: "ch13/81-backup-to-azure-storage-and-disaster-recovery-scenarios",
