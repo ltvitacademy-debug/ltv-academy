@@ -118,8 +118,8 @@ export const DBT_CHAPTERS: ChapterMeta[] = [
       L(41, "capstone-kickoff", "Capstone Kickoff: Raw Data to Reporting", { contentDir: "ch09/41-capstone-kickoff", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792126097/ltv-dbt/capstone-kickoff.mp4", durationLabel: "2 min 20 s" }),
       L(42, "capstone-staging-and-intermediate", "Capstone: Staging & Intermediate Models", { contentDir: "ch09/42-capstone-staging-and-intermediate", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792126144/ltv-dbt/capstone-staging-and-intermediate.mp4", durationLabel: "1 min 35 s" }),
       L(43, "capstone-marts-tests-and-docs", "Capstone: Marts, Tests & Documentation", { contentDir: "ch09/43-capstone-marts-tests-and-docs", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792126189/ltv-dbt/capstone-marts-tests-and-docs.mp4", durationLabel: "1 min 28 s" }),
-      L(44, "capstone-connecting-to-power-bi", "Capstone: Connecting to Power BI", { contentDir: "ch09/44-capstone-connecting-to-power-bi" }),
-      L(45, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch09/45-capstone-wrap-up" }),
+      L(44, "capstone-connecting-to-power-bi", "Capstone: Connecting to Power BI", { contentDir: "ch09/44-capstone-connecting-to-power-bi", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792126244/ltv-dbt/capstone-connecting-to-power-bi.mp4", durationLabel: "1 min 47 s" }),
+      L(45, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch09/45-capstone-wrap-up", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792126314/ltv-dbt/capstone-wrap-up.mp4", durationLabel: "2 min 22 s" }),
     ],
   },
 ];
