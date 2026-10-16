@@ -187,7 +187,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(28, "why-apache-spark", "Why Apache Spark?", {
         contentDir: "ch03/28-why-apache-spark",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138935/ltv-de-foundations/why-apache-spark.mp4",
+        durationLabel: "1 min 40 s",
       }),
       L(29, "distributed-computing", "Distributed Computing", {
         contentDir: "ch03/29-distributed-computing",
