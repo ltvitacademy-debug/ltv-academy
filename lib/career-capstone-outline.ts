@@ -215,7 +215,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(37, "common-dp-700-traps", "Common DP-700 Traps and Gotchas", {
         contentDir: "ch02/37-common-dp-700-traps",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148397/ltv-career-capstone/common-dp-700-traps.mp4",
+        durationLabel: "1 min 9 s",
       }),
       L(38, "building-a-study-plan", "Building a Study Plan", {
         contentDir: "ch02/38-building-a-study-plan",
