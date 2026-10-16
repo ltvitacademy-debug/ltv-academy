@@ -307,7 +307,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(52, "expectations-declarative-data-quality", "Expectations — Declarative Data Quality", {
         contentDir: "ch05/52-expectations-declarative-data-quality",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145686/ltv-databricks-delta/expectations-declarative-data-quality.mp4",
+        durationLabel: "1 min 31 s",
       }),
       L(53, "pipeline-modes-triggered-vs-continuous", "Pipeline Modes: Triggered vs. Continuous", {
         contentDir: "ch05/53-pipeline-modes-triggered-vs-continuous",
