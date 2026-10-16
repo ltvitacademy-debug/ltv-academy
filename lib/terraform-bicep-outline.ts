@@ -60,7 +60,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(6, "resource-blocks", "Resource Blocks", {
         contentDir: "ch02/06-resource-blocks",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146830/ltv-terraform-bicep/resource-blocks.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(7, "variables-and-outputs", "Variables & Outputs", {
         contentDir: "ch02/07-variables-and-outputs",
