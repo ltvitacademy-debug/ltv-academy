@@ -174,7 +174,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
     n: 7,
     title: "SQL Server Agent & Automation",
     lessons: [
-      L(28, "querying-job-history", "Querying Job History", { contentDir: "ch07/28-querying-job-history" }),
+      L(28, "querying-job-history", "Querying Job History", { contentDir: "ch07/28-querying-job-history",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792165690/ltv-t-sql-for-dbas/querying-job-history.mp4",
+        durationLabel: "1 min 30 s",
+      }),
       L(29, "identifying-failed-jobs", "Identifying Failed Jobs", { contentDir: "ch07/29-identifying-failed-jobs" }),
       L(30, "creating-and-managing-jobs-with-t-sql", "Creating & Managing Jobs With T-SQL", { contentDir: "ch07/30-creating-and-managing-jobs-with-t-sql" }),
       L(31, "alerts-and-operators", "Alerts & Operators", { contentDir: "ch07/31-alerts-and-operators" }),
