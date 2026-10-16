@@ -36,6 +36,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(2, "buckets-and-objects", "Buckets & Objects", {
         contentDir: "ch01/02-buckets-and-objects",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153929/ltv-aws-data-engineering/buckets-and-objects.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(3, "storage-classes", "Storage Classes", {
         contentDir: "ch01/03-storage-classes",
