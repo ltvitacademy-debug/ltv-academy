@@ -291,7 +291,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(51, "building-a-vector-index-over-a-catalog", "Building a Vector Index Over Your Data Catalog", {
         contentDir: "ch03/51-building-a-vector-index-over-a-catalog",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149125/ltv-career-capstone/building-a-vector-index-over-a-catalog.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(52, "a-rag-pipeline-over-fabric-metadata", "A RAG Pipeline Over Fabric Metadata", {
         contentDir: "ch03/52-a-rag-pipeline-over-fabric-metadata",
