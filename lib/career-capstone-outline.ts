@@ -402,7 +402,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(72, "project-2-building-the-target-warehouse", "Project 2: Building the Target Warehouse", {
         contentDir: "ch04/72-project-2-building-the-target-warehouse",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150055/ltv-career-capstone/project-2-building-the-target-warehouse.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(73, "project-2-cutover-strategy", "Project 2: Cutover Strategy", {
         contentDir: "ch04/73-project-2-cutover-strategy",
