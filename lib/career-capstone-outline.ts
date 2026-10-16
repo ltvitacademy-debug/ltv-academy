@@ -99,7 +99,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(15, "designing-a-serving-layer", "Designing a Serving Layer", {
         contentDir: "ch01/15-designing-a-serving-layer",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147047/ltv-career-capstone/designing-a-serving-layer.mp4",
+        durationLabel: "1 min 34 s",
       }),
       L(16, "caching-strategies", "Caching Strategies for Analytics", {
         contentDir: "ch01/16-caching-strategies",
