@@ -193,7 +193,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     n: 17,
     title: "AI Governance, Evaluation & Security",
     lessons: [
-      L(69, "ai-observability-and-evaluations-in-cortex", "AI Observability and Evaluations in Cortex", { contentDir: "ch17/69-ai-observability-and-evaluations-in-cortex" }),
+      L(69, "ai-observability-and-evaluations-in-cortex", "AI Observability and Evaluations in Cortex", { contentDir: "ch17/69-ai-observability-and-evaluations-in-cortex", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792130619/ltv-snowflake/ai-observability-and-evaluations-in-cortex.mp4", durationLabel: "2 min 59 s" }),
       L(70, "horizon-catalog-governance-for-enterprise-ai", "Horizon Catalog: Governance for Enterprise AI", { contentDir: "ch17/70-horizon-catalog-governance-for-enterprise-ai" }),
       L(71, "ai-readiness-score-and-horizon-context", "AI Readiness Score and Horizon Context", { contentDir: "ch17/71-ai-readiness-score-and-horizon-context" }),
       L(72, "ai-guardrails-prompt-injection-and-jailbreak-prevention", "AI Guardrails: Prompt Injection & Jailbreak Prevention", { contentDir: "ch17/72-ai-guardrails-prompt-injection-and-jailbreak-prevention" }),
