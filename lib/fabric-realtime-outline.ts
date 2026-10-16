@@ -195,7 +195,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(33, "watermarks-in-real-streaming-systems", "Watermarks in Real Streaming Systems", {
         contentDir: "ch02/33-watermarks-in-real-streaming-systems",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144195/ltv-fabric-realtime/watermarks-in-real-streaming-systems.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(34, "handling-out-of-order-events", "Handling Out-of-Order Events", {
         contentDir: "ch02/34-handling-out-of-order-events",
