@@ -126,7 +126,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(17, "loops", "Loops", {
         contentDir: "ch02/17-loops",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138371/ltv-de-foundations/loops.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(18, "functions", "Functions", {
         contentDir: "ch02/18-functions",
