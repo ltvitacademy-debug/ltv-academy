@@ -125,7 +125,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 4,
     title: "Storage & Files",
     lessons: [
-      L(21, "data-file-and-log-file-management", "Data File & Log File Management", { contentDir: "ch04/21-data-file-and-log-file-management" }),
+      L(21, "data-file-and-log-file-management", "Data File & Log File Management", { contentDir: "ch04/21-data-file-and-log-file-management",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792167835/ltv-sql-server-dba/data-file-and-log-file-management.mp4",
+        durationLabel: "1 min 20 s",
+      }),
       L(22, "tempdb-configuration", "TempDB Configuration", { contentDir: "ch04/22-tempdb-configuration" }),
       L(23, "file-growth-strategy", "File Growth Strategy", { contentDir: "ch04/23-file-growth-strategy" }),
       L(24, "storage-best-practices", "Storage Best Practices", { contentDir: "ch04/24-storage-best-practices" }),
