@@ -76,7 +76,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(9, "delivery-semantics", "Delivery Semantics: At-Most/At-Least/Exactly-Once", {
         contentDir: "ch02/09-delivery-semantics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148469/ltv-kafka/delivery-semantics.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(10, "serialization-formats", "Serialization Formats: Avro & JSON", {
         contentDir: "ch02/10-serialization-formats",
