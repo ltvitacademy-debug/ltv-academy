@@ -143,7 +143,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(20, "comparing-to-fabric-eventstreams", "Comparing Kafka to Fabric Eventstreams", {
         contentDir: "ch04/20-comparing-to-fabric-eventstreams",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149050/ltv-kafka/comparing-to-fabric-eventstreams.mp4",
+        durationLabel: "1 min 27 s",
       }),
     ],
   },
