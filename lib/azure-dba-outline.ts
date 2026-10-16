@@ -339,7 +339,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(53, "index-maintenance-and-fragmentation", "Index Maintenance & Fragmentation", {
         contentDir: "ch09/53-index-maintenance-and-fragmentation",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160878/ltv-azure-dba/index-maintenance-and-fragmentation.mp4",
+        durationLabel: "1 min 21 s",
       }),
       L(54, "statistics-maintenance", "Statistics Maintenance", {
         contentDir: "ch09/54-statistics-maintenance",
