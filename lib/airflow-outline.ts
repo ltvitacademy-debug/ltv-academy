@@ -39,9 +39,9 @@ export const AIRFLOW_CHAPTERS: ChapterMeta[] = [
     title: "Building DAGs",
     lessons: [
       L(7, "tasks-and-dependencies", "Tasks & Dependencies", { contentDir: "ch02/07-tasks-and-dependencies", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120718/ltv-airflow/tasks-and-dependencies.mp4", durationLabel: "1 min 39 s" }),
-      L(8, "pythonoperator", "PythonOperator", { contentDir: "ch02/08-pythonoperator" }),
-      L(9, "bashoperator", "BashOperator", { contentDir: "ch02/09-bashoperator" }),
-      L(10, "scheduling-and-cron", "Scheduling & Cron Expressions", { contentDir: "ch02/10-scheduling-and-cron" }),
+      L(8, "pythonoperator", "PythonOperator", { contentDir: "ch02/08-pythonoperator", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120767/ltv-airflow/pythonoperator.mp4", durationLabel: "1 min 32 s" }),
+      L(9, "bashoperator", "BashOperator", { contentDir: "ch02/09-bashoperator", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120819/ltv-airflow/bashoperator.mp4", durationLabel: "1 min 43 s" }),
+      L(10, "scheduling-and-cron", "Scheduling & Cron Expressions", { contentDir: "ch02/10-scheduling-and-cron", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792120867/ltv-airflow/scheduling-and-cron.mp4", durationLabel: "1 min 37 s" }),
       L(11, "task-instances-and-runs", "Task Instances & DAG Runs", { contentDir: "ch02/11-task-instances-and-runs" }),
       L(12, "xcoms", "XComs: Passing Data Between Tasks", { contentDir: "ch02/12-xcoms" }),
     ],
