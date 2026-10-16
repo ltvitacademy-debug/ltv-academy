@@ -247,6 +247,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(37, "error-handling-in-step-functions", "Error Handling in Step Functions", {
         contentDir: "ch07/37-error-handling-in-step-functions",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155709/ltv-aws-data-engineering/error-handling-in-step-functions.mp4",
+        durationLabel: "1 min 34 s",
       }),
       L(38, "orchestrating-glue-and-lambda", "Orchestrating Glue & Lambda", {
         contentDir: "ch07/38-orchestrating-glue-and-lambda",
