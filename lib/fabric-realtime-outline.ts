@@ -356,7 +356,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(64, "capacity-planning", "Capacity Planning", {
         contentDir: "ch03/64-capacity-planning",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145958/ltv-fabric-realtime/capacity-planning.mp4",
+        durationLabel: "1 min 1 s",
       }),
       L(65, "blue-green-and-canary-deployments", "Blue-Green and Canary Deployments for Pipelines", {
         contentDir: "ch03/65-blue-green-and-canary-deployments",
