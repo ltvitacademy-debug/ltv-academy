@@ -287,7 +287,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792169535/ltv-sql-server-dba/managing-schema-drift.mp4",
         durationLabel: "1 min 4 s",
       }),
-      L(54, "rolling-back-a-bad-deployment", "Rolling Back a Bad Deployment", { contentDir: "ch09/54-rolling-back-a-bad-deployment" }),
+      L(54, "rolling-back-a-bad-deployment", "Rolling Back a Bad Deployment", { contentDir: "ch09/54-rolling-back-a-bad-deployment",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792169578/ltv-sql-server-dba/rolling-back-a-bad-deployment.mp4",
+        durationLabel: "1 min 11 s",
+      }),
     ],
   },
   {
