@@ -93,6 +93,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(11, "glue-architecture", "Glue Architecture", {
         contentDir: "ch03/11-glue-architecture",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154321/ltv-aws-data-engineering/glue-architecture.mp4",
+        durationLabel: "2 min 4 s",
       }),
       L(12, "glue-crawlers", "Glue Crawlers", {
         contentDir: "ch03/12-glue-crawlers",
