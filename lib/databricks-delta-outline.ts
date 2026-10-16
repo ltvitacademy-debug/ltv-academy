@@ -317,7 +317,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(54, "lakeflow-jobs-orchestration", "Lakeflow Jobs — Orchestration", {
         contentDir: "ch05/54-lakeflow-jobs-orchestration",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145825/ltv-databricks-delta/lakeflow-jobs-orchestration.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(55, "monitoring-pipeline-runs", "Monitoring Pipeline Runs", {
         contentDir: "ch05/55-monitoring-pipeline-runs",
