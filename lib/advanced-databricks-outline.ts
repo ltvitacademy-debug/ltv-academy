@@ -45,7 +45,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(4, "unity-catalog-volumes", "Unity Catalog Volumes", {
         contentDir: "ch01/04-unity-catalog-volumes",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150685/ltv-advanced-databricks/unity-catalog-volumes.mp4",
+        durationLabel: "1 min 47 s",
       }),
       L(5, "data-lineage-in-unity-catalog", "Data Lineage in Unity Catalog", {
         contentDir: "ch01/05-data-lineage-in-unity-catalog",
