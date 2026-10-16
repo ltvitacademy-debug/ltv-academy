@@ -251,7 +251,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(43, "why-ai-matters-now", "Why AI Matters for Data Engineers Now", {
         contentDir: "ch03/43-why-ai-matters-now",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148699/ltv-career-capstone/why-ai-matters-now.mp4",
+        durationLabel: "1 min 13 s",
       }),
       L(44, "copilot-in-fabric", "Copilot in Microsoft Fabric", {
         contentDir: "ch03/44-copilot-in-fabric",
