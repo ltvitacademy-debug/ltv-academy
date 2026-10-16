@@ -412,7 +412,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(74, "project-2-wrap-up", "Project 2: Wrap-Up and Retrospective", {
         contentDir: "ch04/74-project-2-wrap-up",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150142/ltv-career-capstone/project-2-wrap-up.mp4",
+        durationLabel: "1 min 14 s",
       }),
       L(75, "project-3-kickoff-fraud-detector", "Project 3 Kickoff: An End-to-End Streaming Fraud Detector", {
         contentDir: "ch04/75-project-3-kickoff-fraud-detector",
