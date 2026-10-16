@@ -45,6 +45,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(3, "ingesting-data-into-s3", "Ingesting Data Into S3", {
         contentDir: "ch02/03-ingesting-data-into-s3",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156768/ltv-aws-capstone/ingesting-data-into-s3.mp4",
+        durationLabel: "1 min 31 s",
       }),
       L(4, "cataloging-with-glue", "Cataloging With Glue", {
         contentDir: "ch02/04-cataloging-with-glue",
