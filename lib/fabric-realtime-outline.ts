@@ -361,7 +361,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(65, "blue-green-and-canary-deployments", "Blue-Green and Canary Deployments for Pipelines", {
         contentDir: "ch03/65-blue-green-and-canary-deployments",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146008/ltv-fabric-realtime/blue-green-and-canary-deployments.mp4",
+        durationLabel: "1 min 5 s",
       }),
       L(66, "rollback-strategies", "Rollback Strategies", {
         contentDir: "ch03/66-rollback-strategies",
