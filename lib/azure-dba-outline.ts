@@ -154,7 +154,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(22, "server-roles-database-roles-object-permissions", "Server Roles, Database Roles & Object Permissions", {
         contentDir: "ch04/22-server-roles-database-roles-object-permissions",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159241/ltv-azure-dba/server-roles-database-roles-object-permissions.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(23, "grant-deny-revoke", "GRANT, DENY & REVOKE", {
         contentDir: "ch04/23-grant-deny-revoke",
