@@ -169,7 +169,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(24, "monitoring-kafka", "Monitoring Kafka", {
         contentDir: "ch05/24-monitoring-kafka",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149272/ltv-kafka/monitoring-kafka.mp4",
+        durationLabel: "1 min 26 s",
       }),
     ],
   },
