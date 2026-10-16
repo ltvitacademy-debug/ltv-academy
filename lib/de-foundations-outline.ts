@@ -358,7 +358,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(61, "partitioning-output", "Partitioning Output", {
         contentDir: "ch04/61-partitioning-output",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792140593/ltv-de-foundations/partitioning-output.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(62, "spark-performance-fundamentals", "Spark Performance Fundamentals", {
         contentDir: "ch04/62-spark-performance-fundamentals",
