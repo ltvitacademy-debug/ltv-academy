@@ -90,8 +90,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     title: "Calculated Fields",
     lessons: [
       L(33, "intro-to-calculated-fields", "Introduction to Calculated Fields", { contentDir: "ch06/33-intro-to-calculated-fields", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133017/ltv-tableau/intro-to-calculated-fields.mp4", durationLabel: "2 min 34 s" }),
-      L(34, "arithmetic-and-kpi-calculations", "Arithmetic & KPI Calculations", { contentDir: "ch06/34-arithmetic-and-kpi-calculations" }),
-      L(35, "string-calculations", "String Calculations", { contentDir: "ch06/35-string-calculations" }),
+      L(34, "arithmetic-and-kpi-calculations", "Arithmetic & KPI Calculations", { contentDir: "ch06/34-arithmetic-and-kpi-calculations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133095/ltv-tableau/arithmetic-and-kpi-calculations.mp4", durationLabel: "2 min 41 s" }),
+      L(35, "string-calculations", "String Calculations", { contentDir: "ch06/35-string-calculations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133162/ltv-tableau/string-calculations.mp4", durationLabel: "2 min 19 s" }),
       L(36, "date-calculations", "Date Calculations", { contentDir: "ch06/36-date-calculations" }),
       L(37, "if-then-else-case", "IF, THEN, ELSE & CASE", { contentDir: "ch06/37-if-then-else-case" }),
       L(38, "null-handling-and-data-type-calculations", "NULL Handling & Data-Type Calculations", { contentDir: "ch06/38-null-handling-and-data-type-calculations" }),
