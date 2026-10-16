@@ -54,8 +54,8 @@ export const DBT_CHAPTERS: ChapterMeta[] = [
       L(13, "staging-layer-patterns", "Staging Layer Patterns", { contentDir: "ch03/13-staging-layer-patterns", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124695/ltv-dbt/staging-layer-patterns.mp4", durationLabel: "1 min 47 s" }),
       L(14, "intermediate-models", "Intermediate Models", { contentDir: "ch03/14-intermediate-models", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124742/ltv-dbt/intermediate-models.mp4", durationLabel: "1 min 28 s" }),
       L(15, "marts-layer", "The Marts Layer", { contentDir: "ch03/15-marts-layer", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124795/ltv-dbt/marts-layer.mp4", durationLabel: "1 min 48 s" }),
-      L(16, "naming-conventions", "Naming Conventions That Scale", { contentDir: "ch03/16-naming-conventions" }),
-      L(17, "the-layering-philosophy", "The Layering Philosophy: Why Three Layers", { contentDir: "ch03/17-the-layering-philosophy" }),
+      L(16, "naming-conventions", "Naming Conventions That Scale", { contentDir: "ch03/16-naming-conventions", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124852/ltv-dbt/naming-conventions.mp4", durationLabel: "1 min 54 s" }),
+      L(17, "the-layering-philosophy", "The Layering Philosophy: Why Three Layers", { contentDir: "ch03/17-the-layering-philosophy", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792124901/ltv-dbt/the-layering-philosophy.mp4", durationLabel: "1 min 39 s" }),
     ],
   },
   {
