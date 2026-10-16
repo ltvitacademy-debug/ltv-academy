@@ -462,7 +462,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(74, "migrating-to-azure-sql-managed-instance", "Migrating to Azure SQL Managed Instance", {
         contentDir: "ch12/74-migrating-to-azure-sql-managed-instance",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161842/ltv-azure-dba/migrating-to-azure-sql-managed-instance.mp4",
+        durationLabel: "1 min 47 s",
       }),
       L(75, "migration-troubleshooting-and-post-migration-validation", "Migration Troubleshooting & Post-Migration Validation", {
         contentDir: "ch12/75-migration-troubleshooting-and-post-migration-validation",
