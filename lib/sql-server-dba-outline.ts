@@ -151,7 +151,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Security Fundamentals for SQL Server",
     lessons: [
-      L(26, "authentication-modes", "Authentication Modes", { contentDir: "ch05/26-authentication-modes" }),
+      L(26, "authentication-modes", "Authentication Modes", { contentDir: "ch05/26-authentication-modes",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792168091/ltv-sql-server-dba/authentication-modes.mp4",
+        durationLabel: "1 min 41 s",
+      }),
       L(27, "server-principals-and-logins", "Server Principals & Logins", { contentDir: "ch05/27-server-principals-and-logins" }),
       L(28, "database-principals-and-users", "Database Principals & Users", { contentDir: "ch05/28-database-principals-and-users" }),
       L(29, "fixed-roles", "Fixed Roles", { contentDir: "ch05/29-fixed-roles" }),
