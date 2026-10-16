@@ -362,7 +362,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(64, "project-1-kickoff-retail-analytics", "Project 1 Kickoff: A Real-Time Retail Analytics Platform", {
         contentDir: "ch04/64-project-1-kickoff-retail-analytics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149734/ltv-career-capstone/project-1-kickoff-retail-analytics.mp4",
+        durationLabel: "1 min 20 s",
       }),
       L(65, "project-1-ingestion-design", "Project 1: Ingestion Design", {
         contentDir: "ch04/65-project-1-ingestion-design",
