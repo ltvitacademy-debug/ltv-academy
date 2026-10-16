@@ -376,7 +376,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(68, "on-call-for-data-engineers", "On-Call for Data Engineers", {
         contentDir: "ch03/68-on-call-for-data-engineers",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146165/ltv-fabric-realtime/on-call-for-data-engineers.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(69, "a-production-incident-start-to-finish", "A Production Incident, Start to Finish", {
         contentDir: "ch03/69-a-production-incident-start-to-finish",
