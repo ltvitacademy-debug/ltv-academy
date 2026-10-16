@@ -539,7 +539,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(87, "azure-sql-failover-groups", "Azure SQL Failover Groups", {
         contentDir: "ch14/87-azure-sql-failover-groups",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162429/ltv-azure-dba/azure-sql-failover-groups.mp4",
+        durationLabel: "1 min 23 s",
       }),
       L(88, "log-shipping-and-hybrid-ha-dr", "Log Shipping & Hybrid HA/DR", {
         contentDir: "ch14/88-log-shipping-and-hybrid-ha-dr",
