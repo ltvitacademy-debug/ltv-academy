@@ -335,6 +335,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(51, "kinesis-vs-eventstreams-and-kafka", "Kinesis vs. Fabric Eventstreams & Kafka", {
         contentDir: "ch10/51-kinesis-vs-eventstreams-and-kafka",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156399/ltv-aws-data-engineering/kinesis-vs-eventstreams-and-kafka.mp4",
+        durationLabel: "1 min 36 s",
       }),
       L(52, "a-real-kinesis-pipeline", "A Real Kinesis Streaming Pipeline", {
         contentDir: "ch10/52-a-real-kinesis-pipeline",
