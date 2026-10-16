@@ -81,6 +81,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(9, "monitoring-with-cloudwatch", "Monitoring With CloudWatch", {
         contentDir: "ch03/09-monitoring-with-cloudwatch",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157086/ltv-aws-capstone/monitoring-with-cloudwatch.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(10, "securing-with-iam-least-privilege", "Securing With IAM Least Privilege", {
         contentDir: "ch03/10-securing-with-iam-least-privilege",
