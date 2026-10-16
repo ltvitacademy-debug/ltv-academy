@@ -170,6 +170,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(24, "cluster-vs-serverless", "Cluster vs. Serverless", {
         contentDir: "ch05/24-cluster-vs-serverless",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155087/ltv-aws-data-engineering/cluster-vs-serverless.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(25, "loading-data-with-copy", "Loading Data Into Redshift: the COPY Command", {
         contentDir: "ch05/25-loading-data-with-copy",
