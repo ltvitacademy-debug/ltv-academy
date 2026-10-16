@@ -345,7 +345,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 12,
     title: "Capstone",
     lessons: [
-      L(64, "capstone-kickoff", "Capstone Kickoff: You Inherit a Production Server", { contentDir: "ch12/64-capstone-kickoff" }),
+      L(64, "capstone-kickoff", "Capstone Kickoff: You Inherit a Production Server", { contentDir: "ch12/64-capstone-kickoff",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792170055/ltv-sql-server-dba/capstone-kickoff.mp4",
+        durationLabel: "1 min 54 s",
+      }),
       L(65, "capstone-install-and-configure", "Capstone: Install & Configure", { contentDir: "ch12/65-capstone-install-and-configure" }),
       L(66, "capstone-secure-and-maintain", "Capstone: Secure & Maintain", { contentDir: "ch12/66-capstone-secure-and-maintain" }),
       L(67, "capstone-production-support-scenario", "Capstone: A Production Support Scenario", { contentDir: "ch12/67-capstone-production-support-scenario" }),
