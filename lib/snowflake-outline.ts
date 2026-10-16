@@ -77,7 +77,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
       L(22, "ctas-and-sql-transformations", "CTAS & SQL-Based Transformations", { contentDir: "ch05/22-ctas-and-sql-transformations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127752/ltv-snowflake/ctas-and-sql-transformations.mp4", durationLabel: "1 min 33 s" }),
       L(23, "incremental-loading-patterns", "Incremental Loading Patterns", { contentDir: "ch05/23-incremental-loading-patterns", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127799/ltv-snowflake/incremental-loading-patterns.mp4", durationLabel: "1 min 26 s" }),
       L(24, "deduplication-strategies", "Deduplication Strategies", { contentDir: "ch05/24-deduplication-strategies", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127848/ltv-snowflake/deduplication-strategies.mp4", durationLabel: "1 min 38 s" }),
-      L(25, "data-quality-checks-in-snowflake-sql", "Data Quality Checks in Snowflake SQL", { contentDir: "ch05/25-data-quality-checks-in-snowflake-sql" }),
+      L(25, "data-quality-checks-in-snowflake-sql", "Data Quality Checks in Snowflake SQL", { contentDir: "ch05/25-data-quality-checks-in-snowflake-sql", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127896/ltv-snowflake/data-quality-checks-in-snowflake-sql.mp4", durationLabel: "1 min 35 s" }),
     ],
   },
   {
