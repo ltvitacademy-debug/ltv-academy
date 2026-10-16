@@ -74,7 +74,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(10, "fabric-warehouse", "Fabric Warehouse", {
         contentDir: "ch01/10-fabric-warehouse",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142728/ltv-fabric-realtime/fabric-warehouse.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(11, "lakehouse-vs-warehouse", "Lakehouse vs. Warehouse — Choosing the Right Engine", {
         contentDir: "ch01/11-lakehouse-vs-warehouse",
