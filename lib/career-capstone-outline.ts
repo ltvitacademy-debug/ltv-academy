@@ -134,7 +134,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(22, "case-study-retail-inventory", "Case Study: A Retail Inventory Data Platform", {
         contentDir: "ch01/22-case-study-retail-inventory",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147536/ltv-career-capstone/case-study-retail-inventory.mp4",
+        durationLabel: "1 min 25 s",
       }),
       L(23, "case-study-social-media-analytics", "Case Study: A Social Media Analytics Pipeline", {
         contentDir: "ch01/23-case-study-social-media-analytics",
