@@ -253,7 +253,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(40, "reading-csv", "Reading CSV", {
         contentDir: "ch04/40-reading-csv",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139600/ltv-de-foundations/reading-csv.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(41, "reading-json", "Reading JSON", {
         contentDir: "ch04/41-reading-json",
