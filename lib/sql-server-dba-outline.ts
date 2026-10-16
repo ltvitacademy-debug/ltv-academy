@@ -175,7 +175,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792168367/ltv-sql-server-dba/encryption-overview.mp4",
         durationLabel: "1 min 34 s",
       }),
-      L(32, "auditing-setup", "Auditing Setup", { contentDir: "ch05/32-auditing-setup" }),
+      L(32, "auditing-setup", "Auditing Setup", { contentDir: "ch05/32-auditing-setup",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792168422/ltv-sql-server-dba/auditing-setup.mp4",
+        durationLabel: "1 min 37 s",
+      }),
     ],
   },
   {
