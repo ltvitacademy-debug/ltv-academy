@@ -67,6 +67,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(7, "iam-roles-for-services", "IAM Roles for Services", {
         contentDir: "ch02/07-iam-roles-for-services",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154136/ltv-aws-data-engineering/iam-roles-for-services.mp4",
+        durationLabel: "1 min 17 s",
       }),
       L(8, "resource-based-policies", "Resource-Based Policies", {
         contentDir: "ch02/08-resource-based-policies",
