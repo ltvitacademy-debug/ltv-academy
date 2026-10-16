@@ -81,9 +81,9 @@ export const AIRFLOW_CHAPTERS: ChapterMeta[] = [
     n: 6,
     title: "Deploying & Monitoring Airflow",
     lessons: [
-      L(26, "deployment-options", "Deployment Options: Managed vs. Self-Hosted", { contentDir: "ch06/26-deployment-options" }),
-      L(27, "monitoring-and-logging", "Monitoring & Logging", { contentDir: "ch06/27-monitoring-and-logging" }),
-      L(28, "troubleshooting-failed-dags", "Troubleshooting Failed DAGs", { contentDir: "ch06/28-troubleshooting-failed-dags" }),
+      L(26, "deployment-options", "Deployment Options: Managed vs. Self-Hosted", { contentDir: "ch06/26-deployment-options", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121710/ltv-airflow/deployment-options.mp4", durationLabel: "1 min 43 s" }),
+      L(27, "monitoring-and-logging", "Monitoring & Logging", { contentDir: "ch06/27-monitoring-and-logging", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121757/ltv-airflow/monitoring-and-logging.mp4", durationLabel: "1 min 30 s" }),
+      L(28, "troubleshooting-failed-dags", "Troubleshooting Failed DAGs", { contentDir: "ch06/28-troubleshooting-failed-dags", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121807/ltv-airflow/troubleshooting-failed-dags.mp4", durationLabel: "1 min 41 s" }),
     ],
   },
   {
