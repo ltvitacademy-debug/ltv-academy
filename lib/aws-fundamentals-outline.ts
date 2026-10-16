@@ -91,6 +91,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(11, "users-groups-and-roles", "Users, Groups & Roles", {
         contentDir: "ch03/11-users-groups-and-roles",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153430/ltv-aws-fundamentals/users-groups-and-roles.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(12, "policies-and-permissions", "Policies & Permissions", {
         contentDir: "ch03/12-policies-and-permissions",
