@@ -160,7 +160,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(26, "what-is-dp-700", "What Is the DP-700 Certification?", {
         contentDir: "ch02/26-what-is-dp-700",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147802/ltv-career-capstone/what-is-dp-700.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(27, "exam-domains-and-weighting", "Exam Domains and Weighting", {
         contentDir: "ch02/27-exam-domains-and-weighting",
