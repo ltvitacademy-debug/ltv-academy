@@ -211,6 +211,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(31, "event-driven-data-processing", "Event-Driven Data Processing", {
         contentDir: "ch06/31-event-driven-data-processing",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155417/ltv-aws-data-engineering/event-driven-data-processing.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(32, "lambda-and-s3-triggers", "Lambda + S3 Triggers", {
         contentDir: "ch06/32-lambda-and-s3-triggers",
