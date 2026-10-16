@@ -411,7 +411,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(65, "automating-azure-sql-administration", "Automating Azure SQL Administration", {
         contentDir: "ch11/65-automating-azure-sql-administration",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161400/ltv-azure-dba/automating-azure-sql-administration.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(66, "azure-cli-and-powershell-for-dbas", "Azure CLI & PowerShell for Database Administrators", {
         contentDir: "ch11/66-azure-cli-and-powershell-for-dbas",
