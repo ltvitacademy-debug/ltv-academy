@@ -31,8 +31,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
       L(2, "installing-tableau-desktop-and-public", "Installing Tableau Desktop & Tableau Public", { contentDir: "ch01/02-installing-tableau-desktop-and-public", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131467/ltv-tableau/installing-tableau-desktop-and-public.mp4", durationLabel: "1 min 37 s" }),
       L(3, "course-datasets", "Downloading and Understanding the Course Datasets", { contentDir: "ch01/03-course-datasets", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131521/ltv-tableau/course-datasets.mp4", durationLabel: "1 min 46 s" }),
       L(4, "navigating-tableau-desktop", "Navigating Tableau Desktop", { contentDir: "ch01/04-navigating-tableau-desktop", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131577/ltv-tableau/navigating-tableau-desktop.mp4", durationLabel: "1 min 50 s" }),
-      L(5, "dimensions-measures-discrete-continuous", "Dimensions, Measures, Discrete & Continuous Fields", { contentDir: "ch01/05-dimensions-measures-discrete-continuous" }),
-      L(6, "exercise-first-visualization", "Exercise: Build Your First Tableau Visualization", { contentDir: "ch01/06-exercise-first-visualization" }),
+      L(5, "dimensions-measures-discrete-continuous", "Dimensions, Measures, Discrete & Continuous Fields", { contentDir: "ch01/05-dimensions-measures-discrete-continuous", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131633/ltv-tableau/dimensions-measures-discrete-continuous.mp4", durationLabel: "1 min 47 s" }),
+      L(6, "exercise-first-visualization", "Exercise: Build Your First Tableau Visualization", { contentDir: "ch01/06-exercise-first-visualization", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131669/ltv-tableau/exercise-first-visualization.mp4", durationLabel: "1 min 6 s" }),
     ],
   },
   {
