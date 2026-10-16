@@ -251,7 +251,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(42, "access-control-grant-and-revoke", "Access Control — GRANT and REVOKE", {
         contentDir: "ch04/42-access-control-grant-and-revoke",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144990/ltv-databricks-delta/access-control-grant-and-revoke.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(43, "row-and-column-level-security", "Row-Level and Column-Level Security", {
         contentDir: "ch04/43-row-and-column-level-security",

@@ -271,7 +271,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(47, "infrastructure-as-code", "Infrastructure as Code — ARM/Bicep and Terraform Basics", {
         contentDir: "ch03/47-infrastructure-as-code",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144998/ltv-fabric-realtime/infrastructure-as-code.mp4",
+        durationLabel: "1 min 8 s",
       }),
       L(48, "testing-data-pipelines", "Testing Data Pipelines", {
         contentDir: "ch03/48-testing-data-pipelines",
