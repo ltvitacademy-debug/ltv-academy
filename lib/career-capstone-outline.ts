@@ -59,7 +59,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(7, "the-kappa-architecture", "The Kappa Architecture", {
         contentDir: "ch01/07-the-kappa-architecture",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146473/ltv-career-capstone/the-kappa-architecture.mp4",
+        durationLabel: "51 s",
       }),
       L(8, "data-modeling-at-scale", "Data Modeling at Scale — Star Schema Revisited", {
         contentDir: "ch01/08-data-modeling-at-scale",
