@@ -144,7 +144,10 @@ export const SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Wait Statistics & Bottleneck Analysis",
     lessons: [
-      L(24, "wait-stats-methodology", "Wait Stats Methodology", { contentDir: "ch05/24-wait-stats-methodology" }),
+      L(24, "wait-stats-methodology", "Wait Stats Methodology", { contentDir: "ch05/24-wait-stats-methodology",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792171902/ltv-sql-server-performance-tuning/wait-stats-methodology.mp4",
+        durationLabel: "2 min 2 s",
+      }),
       L(25, "cpu-bound-troubleshooting", "CPU-Bound Troubleshooting", { contentDir: "ch05/25-cpu-bound-troubleshooting" }),
       L(26, "io-bound-troubleshooting", "I/O-Bound Troubleshooting", { contentDir: "ch05/26-io-bound-troubleshooting" }),
       L(27, "memory-pressure-diagnosis", "Memory Pressure Diagnosis", { contentDir: "ch05/27-memory-pressure-diagnosis" }),
