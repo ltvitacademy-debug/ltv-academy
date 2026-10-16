@@ -46,6 +46,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(4, "partitioning-strategy-in-s3", "Partitioning Strategy in S3", {
         contentDir: "ch01/04-partitioning-strategy-in-s3",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154011/ltv-aws-data-engineering/partitioning-strategy-in-s3.mp4",
+        durationLabel: "1 min 18 s",
       }),
       L(5, "s3-event-notifications", "S3 Event Notifications", {
         contentDir: "ch01/05-s3-event-notifications",
