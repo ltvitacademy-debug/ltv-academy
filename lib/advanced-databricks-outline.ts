@@ -262,7 +262,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(39, "real-time-mode-spark-declarative-pipelines", "Real-Time Mode for Spark Declarative Pipelines", {
         contentDir: "ch08/39-real-time-mode-spark-declarative-pipelines",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792152588/ltv-advanced-databricks/real-time-mode-spark-declarative-pipelines.mp4",
+        durationLabel: "2 min 34 s",
       }),
       L(40, "lakeflow-designer", "Lakeflow Designer", {
         contentDir: "ch08/40-lakeflow-designer",
