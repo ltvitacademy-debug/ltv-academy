@@ -407,7 +407,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(73, "project-2-cutover-strategy", "Project 2: Cutover Strategy", {
         contentDir: "ch04/73-project-2-cutover-strategy",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150102/ltv-career-capstone/project-2-cutover-strategy.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(74, "project-2-wrap-up", "Project 2: Wrap-Up and Retrospective", {
         contentDir: "ch04/74-project-2-wrap-up",
