@@ -148,7 +148,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(21, "orchestrating-multi-step-pipelines", "Orchestrating Multi-Step Pipelines", {
         contentDir: "ch04/21-orchestrating-multi-step-pipelines",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151469/ltv-advanced-databricks/orchestrating-multi-step-pipelines.mp4",
+        durationLabel: "1 min 17 s",
       }),
     ],
   },
