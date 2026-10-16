@@ -195,7 +195,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(28, "kafka-security-basics", "Kafka Security Basics", {
         contentDir: "ch06/28-kafka-security-basics",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149523/ltv-kafka/kafka-security-basics.mp4",
+        durationLabel: "1 min 34 s",
       }),
     ],
   },
