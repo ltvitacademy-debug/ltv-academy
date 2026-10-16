@@ -316,7 +316,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(56, "guardrails-what-not-to-hand-an-llm", "Guardrails — What Not to Hand an LLM", {
         contentDir: "ch03/56-guardrails-what-not-to-hand-an-llm",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149354/ltv-career-capstone/guardrails-what-not-to-hand-an-llm.mp4",
+        durationLabel: "1 min 6 s",
       }),
       L(57, "cost-and-latency-tradeoffs-of-ai", "Cost and Latency Trade-offs of AI-Augmented Pipelines", {
         contentDir: "ch03/57-cost-and-latency-tradeoffs-of-ai",
