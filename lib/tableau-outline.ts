@@ -128,8 +128,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     n: 9,
     title: "Maps & Geographic Analysis",
     lessons: [
-      L(54, "geographic-roles-and-creating-maps", "Geographic Roles & Creating Maps", { contentDir: "ch09/54-geographic-roles-and-creating-maps" }),
-      L(55, "symbol-maps-vs-filled-maps", "Symbol Maps vs. Filled Maps", { contentDir: "ch09/55-symbol-maps-vs-filled-maps" }),
+      L(54, "geographic-roles-and-creating-maps", "Geographic Roles & Creating Maps", { contentDir: "ch09/54-geographic-roles-and-creating-maps", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134106/ltv-tableau/geographic-roles-and-creating-maps.mp4", durationLabel: "1 min 9 s" }),
+      L(55, "symbol-maps-vs-filled-maps", "Symbol Maps vs. Filled Maps", { contentDir: "ch09/55-symbol-maps-vs-filled-maps", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134151/ltv-tableau/symbol-maps-vs-filled-maps.mp4", durationLabel: "1 min 21 s" }),
       L(56, "fixing-geographic-data-errors", "Fixing Geographic Data Errors", { contentDir: "ch09/56-fixing-geographic-data-errors" }),
       L(57, "geographic-hierarchies-groups-custom-territories", "Geographic Hierarchies, Groups & Custom Territories", { contentDir: "ch09/57-geographic-hierarchies-groups-custom-territories" }),
       L(58, "spatial-data-and-advanced-mapping", "Spatial Data & Advanced Mapping", { contentDir: "ch09/58-spatial-data-and-advanced-mapping" }),
