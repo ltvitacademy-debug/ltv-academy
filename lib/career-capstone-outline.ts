@@ -180,11 +180,13 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(30, "monitoring-and-optimizing-exam-focus", "Monitoring and Optimizing a Solution — Exam Focus", {
         contentDir: "ch02/30-monitoring-and-optimizing-exam-focus",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148046/ltv-career-capstone/monitoring-and-optimizing-exam-focus.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(31, "practice-onelake-and-lakehouses", "Practice Questions: OneLake and Lakehouses", {
         contentDir: "ch02/31-practice-onelake-and-lakehouses",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148097/ltv-career-capstone/practice-onelake-and-lakehouses.mp4",
+        durationLabel: "1 min 0 s",
       }),
       L(32, "practice-data-warehouses", "Practice Questions: Data Warehouses", {
         contentDir: "ch02/32-practice-data-warehouses",
