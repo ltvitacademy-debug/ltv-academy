@@ -160,7 +160,10 @@ export const SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792172084/ltv-sql-server-performance-tuning/memory-pressure-diagnosis.mp4",
         durationLabel: "1 min 47 s",
       }),
-      L(28, "network-related-waits", "Network-Related Waits", { contentDir: "ch05/28-network-related-waits" }),
+      L(28, "network-related-waits", "Network-Related Waits", { contentDir: "ch05/28-network-related-waits",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792172150/ltv-sql-server-performance-tuning/network-related-waits.mp4",
+        durationLabel: "2 min 1 s",
+      }),
     ],
   },
   {
