@@ -63,15 +63,15 @@ export const AIRFLOW_CHAPTERS: ChapterMeta[] = [
       L(17, "sensors", "Sensors", { contentDir: "ch04/17-sensors", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121237/ltv-airflow/sensors.mp4", durationLabel: "1 min 35 s" }),
       L(18, "branching", "Branching", { contentDir: "ch04/18-branching", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121282/ltv-airflow/branching.mp4", durationLabel: "1 min 28 s" }),
       L(19, "trigger-rules", "Trigger Rules", { contentDir: "ch04/19-trigger-rules", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121325/ltv-airflow/trigger-rules.mp4", durationLabel: "1 min 25 s" }),
-      L(20, "dynamic-task-mapping", "Dynamic Task Mapping", { contentDir: "ch04/20-dynamic-task-mapping" }),
+      L(20, "dynamic-task-mapping", "Dynamic Task Mapping", { contentDir: "ch04/20-dynamic-task-mapping", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121384/ltv-airflow/dynamic-task-mapping.mp4", durationLabel: "1 min 59 s" }),
     ],
   },
   {
     n: 5,
     title: "Practical Data Pipelines With Airflow",
     lessons: [
-      L(21, "building-an-elt-dag", "Building an ELT DAG", { contentDir: "ch05/21-building-an-elt-dag" }),
-      L(22, "airflow-plus-dbt", "Airflow + dbt", { contentDir: "ch05/22-airflow-plus-dbt" }),
+      L(21, "building-an-elt-dag", "Building an ELT DAG", { contentDir: "ch05/21-building-an-elt-dag", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121442/ltv-airflow/building-an-elt-dag.mp4", durationLabel: "2 min 1 s" }),
+      L(22, "airflow-plus-dbt", "Airflow + dbt", { contentDir: "ch05/22-airflow-plus-dbt", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121493/ltv-airflow/airflow-plus-dbt.mp4", durationLabel: "1 min 47 s" }),
       L(23, "airflow-plus-snowflake-copy-into", "Airflow + Snowflake COPY INTO", { contentDir: "ch05/23-airflow-plus-snowflake-copy-into" }),
       L(24, "error-handling-and-retries", "Error Handling & Retries", { contentDir: "ch05/24-error-handling-and-retries" }),
       L(25, "alerting-from-airflow", "Alerting From Airflow", { contentDir: "ch05/25-alerting-from-airflow" }),
