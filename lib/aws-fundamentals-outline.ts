@@ -117,6 +117,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(15, "aws-cli-basics", "AWS CLI Basics", {
         contentDir: "ch04/15-aws-cli-basics",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153643/ltv-aws-fundamentals/aws-cli-basics.mp4",
+        durationLabel: "1 min 35 s",
       }),
       L(16, "aws-sdk-overview", "AWS SDK, Overview", {
         contentDir: "ch04/16-aws-sdk-overview",
