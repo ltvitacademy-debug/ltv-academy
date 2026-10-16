@@ -101,6 +101,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(13, "least-privilege-for-data-pipelines", "Least Privilege for Data Pipelines", {
         contentDir: "ch03/13-least-privilege-for-data-pipelines",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153540/ltv-aws-fundamentals/least-privilege-for-data-pipelines.mp4",
+        durationLabel: "1 min 48 s",
       }),
       L(14, "cross-service-access-patterns", "Cross-Service Access Patterns", {
         contentDir: "ch03/14-cross-service-access-patterns",
