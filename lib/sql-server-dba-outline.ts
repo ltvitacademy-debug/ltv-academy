@@ -91,7 +91,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Database Creation & Configuration",
     lessons: [
-      L(14, "creating-databases", "Creating Databases", { contentDir: "ch03/14-creating-databases" }),
+      L(14, "creating-databases", "Creating Databases", { contentDir: "ch03/14-creating-databases",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792167492/ltv-sql-server-dba/creating-databases.mp4",
+        durationLabel: "1 min 18 s",
+      }),
       L(15, "file-and-filegroup-design", "File & Filegroup Design", { contentDir: "ch03/15-file-and-filegroup-design" }),
       L(16, "database-options", "Database Options", { contentDir: "ch03/16-database-options" }),
       L(17, "recovery-models", "Recovery Models", { contentDir: "ch03/17-recovery-models" }),
