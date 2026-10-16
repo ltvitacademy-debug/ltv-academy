@@ -353,7 +353,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(60, "writing-data", "Writing Data", {
         contentDir: "ch04/60-writing-data",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792140547/ltv-de-foundations/writing-data.mp4",
+        durationLabel: "1 min 18 s",
       }),
       L(61, "partitioning-output", "Partitioning Output", {
         contentDir: "ch04/61-partitioning-output",
