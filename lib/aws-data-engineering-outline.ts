@@ -268,6 +268,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(40, "migrating-a-database-with-dms", "Migrating a Database With DMS", {
         contentDir: "ch08/40-migrating-a-database-with-dms",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155868/ltv-aws-data-engineering/migrating-a-database-with-dms.mp4",
+        durationLabel: "1 min 41 s",
       }),
       L(41, "cdc-with-dms", "CDC With DMS", {
         contentDir: "ch08/41-cdc-with-dms",
