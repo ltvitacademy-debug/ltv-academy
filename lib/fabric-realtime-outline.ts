@@ -44,7 +44,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(4, "creating-a-lakehouse", "Creating a Lakehouse", {
         contentDir: "ch01/04-creating-a-lakehouse",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142381/ltv-fabric-realtime/creating-a-lakehouse.mp4",
+        durationLabel: "1 min 17 s",
       }),
       L(5, "fabric-lakehouse-vs-databricks-lakehouse", "Fabric Lakehouse vs. Databricks Lakehouse", {
         contentDir: "ch01/05-fabric-lakehouse-vs-databricks-lakehouse",
