@@ -328,7 +328,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(52, "intelligent-query-processing-and-automatic-tuning", "Intelligent Query Processing & Automatic Tuning", {
         contentDir: "ch08/52-intelligent-query-processing-and-automatic-tuning",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160835/ltv-azure-dba/intelligent-query-processing-and-automatic-tuning.mp4",
+        durationLabel: "1 min 31 s",
       }),
     ],
   },
