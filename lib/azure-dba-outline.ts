@@ -72,7 +72,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(8, "purchasing-models-service-tiers-compute-options", "Azure SQL Purchasing Models, Service Tiers & Compute Options", {
         contentDir: "ch02/08-purchasing-models-service-tiers-compute-options",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158536/ltv-azure-dba/purchasing-models-service-tiers-compute-options.mp4",
+        durationLabel: "1 min 12 s",
       }),
       L(9, "dtu-vs-vcore", "DTU vs. vCore & Choosing the Right Database Configuration", {
         contentDir: "ch02/09-dtu-vs-vcore",
