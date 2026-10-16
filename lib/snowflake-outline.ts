@@ -53,7 +53,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     title: "Loading Data Into Snowflake",
     lessons: [
       L(12, "internal-vs-external-stages", "Internal vs. External Stages", { contentDir: "ch03/12-internal-vs-external-stages", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127219/ltv-snowflake/internal-vs-external-stages.mp4", durationLabel: "1 min 45 s" }),
-      L(13, "file-formats-csv-json-parquet", "File Formats: CSV, JSON & Parquet", { contentDir: "ch03/13-file-formats-csv-json-parquet" }),
+      L(13, "file-formats-csv-json-parquet", "File Formats: CSV, JSON & Parquet", { contentDir: "ch03/13-file-formats-csv-json-parquet", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792127272/ltv-snowflake/file-formats-csv-json-parquet.mp4", durationLabel: "1 min 39 s" }),
       L(14, "copy-into-bulk-loading-fundamentals", "COPY INTO — Bulk Loading Fundamentals", { contentDir: "ch03/14-copy-into-bulk-loading-fundamentals" }),
       L(15, "loading-from-cloud-storage", "Loading From Cloud Storage", { contentDir: "ch03/15-loading-from-cloud-storage" }),
       L(16, "handling-load-errors-and-validation", "Handling Load Errors & Validation", { contentDir: "ch03/16-handling-load-errors-and-validation" }),
