@@ -150,7 +150,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(24, "kql-summarize", "KQL: summarize and Aggregations", {
         contentDir: "ch02/24-kql-summarize",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143626/ltv-fabric-realtime/kql-summarize.mp4",
+        durationLabel: "1 min 15 s",
       }),
       L(25, "kql-joins", "KQL: Joins", {
         contentDir: "ch02/25-kql-joins",
