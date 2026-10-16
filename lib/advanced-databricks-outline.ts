@@ -71,7 +71,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(8, "schema-inference-and-evolution", "Schema Inference & Evolution", {
         contentDir: "ch02/08-schema-inference-and-evolution",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150893/ltv-advanced-databricks/schema-inference-and-evolution.mp4",
+        durationLabel: "1 min 34 s",
       }),
       L(9, "file-notification-mode", "File Notification Mode", {
         contentDir: "ch02/09-file-notification-mode",
