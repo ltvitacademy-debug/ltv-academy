@@ -60,6 +60,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(6, "loading-into-redshift", "Loading Into Redshift", {
         contentDir: "ch02/06-loading-into-redshift",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156932/ltv-aws-capstone/loading-into-redshift.mp4",
+        durationLabel: "1 min 35 s",
       }),
       L(7, "querying-with-athena", "Querying With Athena", {
         contentDir: "ch02/07-querying-with-athena",
