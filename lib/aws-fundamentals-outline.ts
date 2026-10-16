@@ -49,6 +49,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(5, "the-shared-responsibility-model", "The Shared Responsibility Model", {
         contentDir: "ch01/05-the-shared-responsibility-model",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153213/ltv-aws-fundamentals/the-shared-responsibility-model.mp4",
+        durationLabel: "1 min 14 s",
       }),
     ],
   },
