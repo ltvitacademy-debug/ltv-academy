@@ -267,7 +267,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(41, "dmvs-for-dbas", "Dynamic Management Views for DBAs", {
         contentDir: "ch07/41-dmvs-for-dbas",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160210/ltv-azure-dba/dmvs-for-dbas.mp4",
+        durationLabel: "2 min 16 s",
       }),
       L(42, "extended-events", "Extended Events", {
         contentDir: "ch07/42-extended-events",
