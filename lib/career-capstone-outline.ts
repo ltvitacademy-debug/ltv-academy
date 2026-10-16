@@ -84,7 +84,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(12, "delivery-guarantees", "Exactly-Once vs. At-Least-Once Delivery", {
         contentDir: "ch01/12-delivery-guarantees",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146819/ltv-career-capstone/delivery-guarantees.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(13, "designing-an-ingestion-layer", "Designing an Ingestion Layer", {
         contentDir: "ch01/13-designing-an-ingestion-layer",
