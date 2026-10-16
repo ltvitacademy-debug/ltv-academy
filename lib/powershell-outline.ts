@@ -38,7 +38,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
       }),
       L(3, "cmdlets-and-syntax", "Cmdlets & Syntax", {
         contentDir: "ch01/03-cmdlets-and-syntax",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163002/ltv-powershell/cmdlets-and-syntax.mp4",
+        durationLabel: "1 min 23 s",
       }),
       L(4, "getting-help", "Getting Help: Get-Help & Get-Command", {
         contentDir: "ch01/04-getting-help",
