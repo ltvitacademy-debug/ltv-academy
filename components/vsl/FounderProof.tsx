@@ -1,16 +1,11 @@
 import { ABOUT_STORY, TESTIMONIALS } from "@/lib/copy";
 import TestimonialVideos from "./TestimonialVideos";
 
-const VIDEO_NAMES = new Set([
-  "lauren",
-  "okey",
-  "ian",
-]);
-
 export default function FounderProof() {
-  const textOnly = TESTIMONIALS.filter(
-    (t) => !VIDEO_NAMES.has(t.name.toLowerCase())
-  );
+  // Only reviews with a real screenshot are shown here — a typed-up quote
+  // with no image to back it isn't independently verifiable, so it's left
+  // out rather than mixed in with the ones that are.
+  const screenshots = TESTIMONIALS.filter((t) => t.image);
 
   return (
     <section className="bg-crimson-deep">
@@ -23,37 +18,23 @@ export default function FounderProof() {
 
         <TestimonialVideos />
 
-        {textOnly.length > 0 && (
+        {screenshots.length > 0 && (
           <div className="mt-10">
-            <p className="eyebrow mb-4 text-gold">More from the community</p>
-            <div className="columns-1 gap-4 sm:columns-2 lg:columns-3">
-              {textOnly.map((t) =>
-                t.image ? (
-                  <div
-                    key={t.name}
-                    className="mb-4 overflow-hidden break-inside-avoid rounded-[2px] border border-gold/20 bg-white"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={t.image}
-                      alt={`Real Facebook review from ${t.name}`}
-                      className="w-full"
-                    />
-                  </div>
-                ) : (
-                  <blockquote
-                    key={t.name}
-                    className="mb-4 break-inside-avoid rounded-[2px] border border-gold/20 bg-ink/15 p-5"
-                  >
-                    <p className="text-sm leading-relaxed text-parchment/85">
-                      &ldquo;{t.quote}&rdquo;
-                    </p>
-                    <cite className="mt-3 block text-xs font-semibold not-italic tracking-wide text-gold-pale">
-                      — {t.name}
-                    </cite>
-                  </blockquote>
-                )
-              )}
+            <p className="eyebrow mb-4 text-gold">Real reviews, from our Facebook community</p>
+            <div className="grid grid-cols-2 items-start gap-4 sm:grid-cols-3 lg:grid-cols-5">
+              {screenshots.map((t) => (
+                <div
+                  key={t.name}
+                  className="overflow-hidden rounded-[2px] border border-gold/20 bg-white"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={t.image}
+                    alt={`Real Facebook review from ${t.name}`}
+                    className="block h-auto w-full"
+                  />
+                </div>
+              ))}
             </div>
           </div>
         )}

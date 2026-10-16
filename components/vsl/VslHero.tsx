@@ -53,8 +53,8 @@ export default function VslHero() {
           <div className="overflow-hidden rounded-[2px] border border-gold/30">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/photos/laptop-code.jpg"
-              alt="Writing code on a laptop"
+              src="/careers/hero.jpg"
+              alt="Walking toward a career in technology"
               className="h-72 w-full object-cover sm:h-96"
             />
           </div>
