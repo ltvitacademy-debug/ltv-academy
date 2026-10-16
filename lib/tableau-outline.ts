@@ -120,8 +120,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
       L(49, "creating-joins-and-multi-field-joins", "Creating Joins & Joining on Multiple Fields", { contentDir: "ch08/49-creating-joins-and-multi-field-joins", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133915/ltv-tableau/creating-joins-and-multi-field-joins.mp4", durationLabel: "1 min 16 s" }),
       L(50, "duplicate-records-granularity-join-problems", "Duplicate Records, Granularity & Join Problems", { contentDir: "ch08/50-duplicate-records-granularity-join-problems", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133955/ltv-tableau/duplicate-records-granularity-join-problems.mp4", durationLabel: "1 min 17 s" }),
       L(51, "unions-combining-data-vertically", "Unions & Combining Data Vertically", { contentDir: "ch08/51-unions-combining-data-vertically", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133992/ltv-tableau/unions-combining-data-vertically.mp4", durationLabel: "1 min 10 s" }),
-      L(52, "data-blending-cross-database-analysis", "Data Blending & Cross-Database Analysis", { contentDir: "ch08/52-data-blending-cross-database-analysis" }),
-      L(53, "relationships-vs-joins-vs-blending", "Relationships vs. Joins vs. Blending — Which Should You Use?", { contentDir: "ch08/53-relationships-vs-joins-vs-blending" }),
+      L(52, "data-blending-cross-database-analysis", "Data Blending & Cross-Database Analysis", { contentDir: "ch08/52-data-blending-cross-database-analysis", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134028/ltv-tableau/data-blending-cross-database-analysis.mp4", durationLabel: "1 min 5 s" }),
+      L(53, "relationships-vs-joins-vs-blending", "Relationships vs. Joins vs. Blending — Which Should You Use?", { contentDir: "ch08/53-relationships-vs-joins-vs-blending", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134068/ltv-tableau/relationships-vs-joins-vs-blending.mp4", durationLabel: "1 min 16 s" }),
     ],
   },
   {
