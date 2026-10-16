@@ -442,7 +442,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(70, "planning-a-sql-server-migration-to-azure", "Planning a SQL Server Migration to Azure", {
         contentDir: "ch12/70-planning-a-sql-server-migration-to-azure",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161641/ltv-azure-dba/planning-a-sql-server-migration-to-azure.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(71, "assessing-sql-server-before-migration", "Assessing SQL Server Before Migration", {
         contentDir: "ch12/71-assessing-sql-server-before-migration",
