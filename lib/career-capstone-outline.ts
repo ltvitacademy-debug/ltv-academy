@@ -377,7 +377,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(67, "project-1-serving-and-dashboards", "Project 1: Serving and Dashboards", {
         contentDir: "ch04/67-project-1-serving-and-dashboards",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149851/ltv-career-capstone/project-1-serving-and-dashboards.mp4",
+        durationLabel: "1 min 1 s",
       }),
       L(68, "project-1-production-hardening", "Project 1: Production Hardening", {
         contentDir: "ch04/68-project-1-production-hardening",
