@@ -152,7 +152,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     n: 13,
     title: "Snowflake in the Modern Data Stack",
     lessons: [
-      L(52, "snowflake-and-the-modern-data-stack", "Snowflake + ADF, dbt, Python & Airflow — Where Each Tool Fits", { contentDir: "ch13/52-snowflake-and-the-modern-data-stack" }),
+      L(52, "snowflake-and-the-modern-data-stack", "Snowflake + ADF, dbt, Python & Airflow — Where Each Tool Fits", { contentDir: "ch13/52-snowflake-and-the-modern-data-stack", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792129456/ltv-snowflake/snowflake-and-the-modern-data-stack.mp4", durationLabel: "2 min 5 s" }),
       L(53, "choosing-the-right-tool-for-the-job", "Choosing the Right Tool for the Job", { contentDir: "ch13/53-choosing-the-right-tool-for-the-job" }),
     ],
   },
