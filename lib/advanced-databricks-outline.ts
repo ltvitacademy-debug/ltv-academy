@@ -272,7 +272,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(41, "agent-bricks-document-intelligence", "Agent Bricks & Document Intelligence", {
         contentDir: "ch08/41-agent-bricks-document-intelligence",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792152727/ltv-advanced-databricks/agent-bricks-document-intelligence.mp4",
+        durationLabel: "2 min 18 s",
       }),
       L(42, "genie-code-and-zeroops", "Genie Code & Genie ZeroOps", {
         contentDir: "ch08/42-genie-code-and-zeroops",
