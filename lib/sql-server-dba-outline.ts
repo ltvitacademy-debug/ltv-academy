@@ -369,7 +369,10 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792170317/ltv-sql-server-dba/capstone-presenting-your-work.mp4",
         durationLabel: "1 min 39 s",
       }),
-      L(70, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch12/70-capstone-wrap-up" }),
+      L(70, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch12/70-capstone-wrap-up",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792170368/ltv-sql-server-dba/capstone-wrap-up.mp4",
+        durationLabel: "1 min 30 s",
+      }),
     ],
   },
 ];
