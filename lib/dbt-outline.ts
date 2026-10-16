@@ -98,14 +98,14 @@ export const DBT_CHAPTERS: ChapterMeta[] = [
       L(33, "dbt-in-ci", "Running dbt in Continuous Integration", { contentDir: "ch07/33-dbt-in-ci", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125722/ltv-dbt/dbt-in-ci.mp4", durationLabel: "1 min 38 s" }),
       L(34, "dbt-cloud-jobs-and-scheduling", "dbt Cloud Jobs & Scheduling", { contentDir: "ch07/34-dbt-cloud-jobs-and-scheduling", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125771/ltv-dbt/dbt-cloud-jobs-and-scheduling.mp4", durationLabel: "1 min 39 s" }),
       L(35, "slim-ci", "Slim CI: Only Running What Changed", { contentDir: "ch07/35-slim-ci", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125814/ltv-dbt/slim-ci.mp4", durationLabel: "1 min 24 s" }),
-      L(36, "deployment-environments", "Deployment Environments: Dev, Staging & Prod", { contentDir: "ch07/36-deployment-environments" }),
+      L(36, "deployment-environments", "Deployment Environments: Dev, Staging & Prod", { contentDir: "ch07/36-deployment-environments", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125856/ltv-dbt/deployment-environments.mp4", durationLabel: "1 min 20 s" }),
     ],
   },
   {
     n: 8,
     title: "Semantic Layer & Advanced Patterns",
     lessons: [
-      L(37, "semantic-layer-concepts", "Semantic Layer Concepts", { contentDir: "ch08/37-semantic-layer-concepts" }),
+      L(37, "semantic-layer-concepts", "Semantic Layer Concepts", { contentDir: "ch08/37-semantic-layer-concepts", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792125899/ltv-dbt/semantic-layer-concepts.mp4", durationLabel: "1 min 25 s" }),
       L(38, "defining-metrics", "Defining Metrics in dbt", { contentDir: "ch08/38-defining-metrics" }),
       L(39, "scd-type-2-in-dbt", "SCD Type 2 in dbt", { contentDir: "ch08/39-scd-type-2-in-dbt" }),
       L(40, "data-quality-in-dbt", "Data Quality Patterns in dbt", { contentDir: "ch08/40-data-quality-in-dbt" }),
