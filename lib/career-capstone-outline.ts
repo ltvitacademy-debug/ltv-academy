@@ -94,7 +94,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(14, "designing-a-transformation-layer", "Designing a Transformation Layer", {
         contentDir: "ch01/14-designing-a-transformation-layer",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146963/ltv-career-capstone/designing-a-transformation-layer.mp4",
+        durationLabel: "1 min 30 s",
       }),
       L(15, "designing-a-serving-layer", "Designing a Serving Layer", {
         contentDir: "ch01/15-designing-a-serving-layer",
