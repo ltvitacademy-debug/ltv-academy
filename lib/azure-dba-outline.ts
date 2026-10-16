@@ -277,7 +277,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(43, "monitoring-sessions-cpu-memory-io-storage", "Monitoring Sessions, Connections, CPU, Memory, I/O & Storage", {
         contentDir: "ch07/43-monitoring-sessions-cpu-memory-io-storage",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792160349/ltv-azure-dba/monitoring-sessions-cpu-memory-io-storage.mp4",
+        durationLabel: "2 min 10 s",
       }),
     ],
   },
