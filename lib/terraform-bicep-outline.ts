@@ -158,7 +158,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
       }),
       L(22, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", {
         contentDir: "ch05/22-capstone-wrap-up",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147827/ltv-terraform-bicep/capstone-wrap-up.mp4",
+        durationLabel: "1 min 5 s",
       }),
     ],
   },
