@@ -223,7 +223,7 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     n: 18,
     title: "Interview & Portfolio",
     lessons: [
-      L(95, "tableau-interview-prep-and-portfolio-strategy", "Tableau Interview Preparation & Portfolio Strategy", { contentDir: "ch18/95-tableau-interview-prep-and-portfolio-strategy" }),
+      L(95, "tableau-interview-prep-and-portfolio-strategy", "Tableau Interview Preparation & Portfolio Strategy", { contentDir: "ch18/95-tableau-interview-prep-and-portfolio-strategy", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792136131/ltv-tableau/tableau-interview-prep-and-portfolio-strategy.mp4", durationLabel: "1 min 43 s" }),
     ],
   },
 ];
