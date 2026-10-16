@@ -36,9 +36,9 @@ export const POWER_AUTOMATE_CHAPTERS: ChapterMeta[] = [
       L(10, "automating-excel", "Automating Excel: Tables and Rows", { contentDir: "ch01/10-automating-excel", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792122674/ltv-power-automate/automating-excel.mp4", durationLabel: "1 min 57 s" }),
       L(11, "automating-sharepoint", "Automating SharePoint: Lists, Libraries and Document Automation", { contentDir: "ch01/11-automating-sharepoint", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792122744/ltv-power-automate/automating-sharepoint.mp4", durationLabel: "2 min 26 s" }),
       L(12, "connecting-power-bi", "Connecting Power BI: Data Alerts and Refresh Notifications", { contentDir: "ch01/12-connecting-power-bi", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792122809/ltv-power-automate/connecting-power-bi.mp4", durationLabel: "2 min 12 s" }),
-      L(13, "approval-workflows", "Approval Workflows: Start and Wait for an Approval", { contentDir: "ch01/13-approval-workflows" }),
-      L(14, "error-handling-in-flows", "Error Handling: Configure Run After and Try/Catch Patterns", { contentDir: "ch01/14-error-handling-in-flows" }),
-      L(15, "scheduled-and-recurring-flows", "Scheduled and Recurring Flows", { contentDir: "ch01/15-scheduled-and-recurring-flows" }),
+      L(13, "approval-workflows", "Approval Workflows: Start and Wait for an Approval", { contentDir: "ch01/13-approval-workflows", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792122870/ltv-power-automate/approval-workflows.mp4", durationLabel: "2 min 2 s" }),
+      L(14, "error-handling-in-flows", "Error Handling: Configure Run After and Try/Catch Patterns", { contentDir: "ch01/14-error-handling-in-flows", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792122931/ltv-power-automate/error-handling-in-flows.mp4", durationLabel: "2 min 5 s" }),
+      L(15, "scheduled-and-recurring-flows", "Scheduled and Recurring Flows", { contentDir: "ch01/15-scheduled-and-recurring-flows", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792122992/ltv-power-automate/scheduled-and-recurring-flows.mp4", durationLabel: "2 min 3 s" }),
     ],
   },
   {
