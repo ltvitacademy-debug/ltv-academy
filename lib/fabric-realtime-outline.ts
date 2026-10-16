@@ -54,11 +54,13 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(6, "fabric-notebooks", "Fabric Notebooks", {
         contentDir: "ch01/06-fabric-notebooks",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142480/ltv-fabric-realtime/fabric-notebooks.mp4",
+        durationLabel: "1 min 20 s",
       }),
       L(7, "shortcuts", "Shortcuts — Referencing Data Without Copying It", {
         contentDir: "ch01/07-shortcuts",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142538/ltv-fabric-realtime/shortcuts.mp4",
+        durationLabel: "1 min 23 s",
       }),
       L(8, "fabric-data-factory-pipelines", "Fabric Data Factory — Pipelines", {
         contentDir: "ch01/08-fabric-data-factory-pipelines",

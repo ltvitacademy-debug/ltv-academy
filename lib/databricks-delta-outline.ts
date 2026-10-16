@@ -53,11 +53,13 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(6, "notebooks-cells-and-languages", "Notebooks, Cells, and Languages", {
         contentDir: "ch01/06-notebooks-cells-and-languages",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142524/ltv-databricks-delta/notebooks-cells-and-languages.mp4",
+        durationLabel: "1 min 31 s",
       }),
       L(7, "attaching-a-notebook-to-a-cluster", "Attaching a Notebook to a Cluster", {
         contentDir: "ch01/07-attaching-a-notebook-to-a-cluster",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142575/ltv-databricks-delta/attaching-a-notebook-to-a-cluster.mp4",
+        durationLabel: "1 min 11 s",
       }),
       L(8, "dbfs-databricks-file-system", "DBFS — Databricks File System", {
         contentDir: "ch01/08-dbfs-databricks-file-system",
