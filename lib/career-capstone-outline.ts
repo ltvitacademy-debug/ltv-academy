@@ -261,7 +261,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(45, "copilot-generating-a-notebook", "Using Copilot to Generate a Notebook", {
         contentDir: "ch03/45-copilot-generating-a-notebook",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148803/ltv-career-capstone/copilot-generating-a-notebook.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(46, "copilot-explaining-a-kql-query", "Using Copilot to Explain and Fix a KQL Query", {
         contentDir: "ch03/46-copilot-explaining-a-kql-query",
