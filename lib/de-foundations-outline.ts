@@ -227,7 +227,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(36, "sparksession", "SparkSession", {
         contentDir: "ch03/36-sparksession",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139350/ltv-de-foundations/sparksession.mp4",
+        durationLabel: "1 min 30 s",
       }),
       L(37, "spark-dataframes", "Spark DataFrames", {
         contentDir: "ch03/37-spark-dataframes",
