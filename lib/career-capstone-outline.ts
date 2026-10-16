@@ -44,7 +44,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(4, "choosing-storage", "Choosing Storage — OLTP vs. OLAP vs. Object Storage", {
         contentDir: "ch01/04-choosing-storage",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146343/ltv-career-capstone/choosing-storage.mp4",
+        durationLabel: "1 min 3 s",
       }),
       L(5, "choosing-a-processing-model", "Choosing a Processing Model — Batch, Streaming, or Hybrid", {
         contentDir: "ch01/05-choosing-a-processing-model",
