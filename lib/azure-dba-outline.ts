@@ -92,7 +92,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(12, "azure-sql-managed-instance-deployment", "Azure SQL Managed Instance Deployment & Configuration", {
         contentDir: "ch02/12-azure-sql-managed-instance-deployment",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158718/ltv-azure-dba/azure-sql-managed-instance-deployment.mp4",
+        durationLabel: "1 min 37 s",
       }),
       L(13, "sql-server-on-azure-vms-and-hybrid-sql", "SQL Server on Azure Virtual Machines & Hybrid SQL", {
         contentDir: "ch02/13-sql-server-on-azure-vms-and-hybrid-sql",
