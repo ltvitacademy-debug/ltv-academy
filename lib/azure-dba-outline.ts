@@ -575,7 +575,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(93, "project-ha-dr-and-disaster-simulation", "Project — HA/DR & Disaster Simulation", {
         contentDir: "ch15/93-project-ha-dr-and-disaster-simulation",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162742/ltv-azure-dba/project-ha-dr-and-disaster-simulation.mp4",
+        durationLabel: "1 min 59 s",
       }),
     ],
   },
