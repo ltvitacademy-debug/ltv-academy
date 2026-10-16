@@ -165,7 +165,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(27, "ingesting-data-into-kql", "Ingesting Data Into a KQL Database", {
         contentDir: "ch02/27-ingesting-data-into-kql",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143833/ltv-fabric-realtime/ingesting-data-into-kql.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(28, "real-time-dashboards", "Real-Time Dashboards", {
         contentDir: "ch02/28-real-time-dashboards",
