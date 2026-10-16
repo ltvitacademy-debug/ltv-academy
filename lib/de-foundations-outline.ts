@@ -217,7 +217,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(34, "lazy-evaluation", "Lazy Evaluation", {
         contentDir: "ch03/34-lazy-evaluation",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139239/ltv-de-foundations/lazy-evaluation.mp4",
+        durationLabel: "1 min 39 s",
       }),
       L(35, "transformations-vs-actions", "Transformations vs. Actions", {
         contentDir: "ch03/35-transformations-vs-actions",
