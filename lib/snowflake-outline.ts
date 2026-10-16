@@ -185,7 +185,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
       L(64, "cortex-agents-multi-step-orchestration", "Cortex Agents: Multi-Step Agentic Orchestration", { contentDir: "ch16/64-cortex-agents-multi-step-orchestration", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792130227/ltv-snowflake/cortex-agents-multi-step-orchestration.mp4", durationLabel: "2 min 5 s" }),
       L(65, "agent-memory-and-context-threads", "Agent Memory & Context: Threads in Cortex Agents", { contentDir: "ch16/65-agent-memory-and-context-threads", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792130299/ltv-snowflake/agent-memory-and-context-threads.mp4", durationLabel: "2 min 26 s" }),
       L(66, "the-snowflake-managed-mcp-server", "The Snowflake-Managed MCP Server", { contentDir: "ch16/66-the-snowflake-managed-mcp-server", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792130379/ltv-snowflake/the-snowflake-managed-mcp-server.mp4", durationLabel: "2 min 37 s" }),
-      L(67, "connecting-agents-across-platforms-via-mcp", "Connecting Agents Across Platforms via MCP", { contentDir: "ch16/67-connecting-agents-across-platforms-via-mcp" }),
+      L(67, "connecting-agents-across-platforms-via-mcp", "Connecting Agents Across Platforms via MCP", { contentDir: "ch16/67-connecting-agents-across-platforms-via-mcp", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792130453/ltv-snowflake/connecting-agents-across-platforms-via-mcp.mp4", durationLabel: "2 min 33 s" }),
       L(68, "fine-tuning-models-in-snowflake", "Fine-Tuning Models in Snowflake with Cortex", { contentDir: "ch16/68-fine-tuning-models-in-snowflake" }),
     ],
   },
