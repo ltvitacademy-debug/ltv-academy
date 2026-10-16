@@ -457,7 +457,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(73, "migrating-to-azure-sql-database", "Migrating SQL Server to Azure SQL Database", {
         contentDir: "ch12/73-migrating-to-azure-sql-database",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161787/ltv-azure-dba/migrating-to-azure-sql-database.mp4",
+        durationLabel: "1 min 40 s",
       }),
       L(74, "migrating-to-azure-sql-managed-instance", "Migrating to Azure SQL Managed Instance", {
         contentDir: "ch12/74-migrating-to-azure-sql-managed-instance",
