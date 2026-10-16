@@ -56,7 +56,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "DBA Monitoring with T-SQL",
     lessons: [
-      L(6, "monitoring-cpu-memory-io", "Monitoring CPU, Memory & I/O With T-SQL", { contentDir: "ch02/06-monitoring-cpu-memory-io" }),
+      L(6, "monitoring-cpu-memory-io", "Monitoring CPU, Memory & I/O With T-SQL", { contentDir: "ch02/06-monitoring-cpu-memory-io",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792164225/ltv-t-sql-for-dbas/monitoring-cpu-memory-io.mp4",
+        durationLabel: "1 min 47 s",
+      }),
       L(7, "active-sessions-and-expensive-queries", "Active Sessions & Expensive Queries", { contentDir: "ch02/07-active-sessions-and-expensive-queries" }),
       L(8, "wait-statistics", "Wait Statistics", { contentDir: "ch02/08-wait-statistics" }),
       L(9, "blocking-chains", "Finding Blocking Chains", { contentDir: "ch02/09-blocking-chains" }),
