@@ -34,7 +34,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(2, "requirements-gathering", "Requirements Gathering — Functional vs. Non-Functional", {
         contentDir: "ch01/02-requirements-gathering",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146249/ltv-career-capstone/requirements-gathering.mp4",
+        durationLabel: "55 s",
       }),
       L(3, "back-of-the-envelope-estimation", "Back-of-the-Envelope Estimation", {
         contentDir: "ch01/03-back-of-the-envelope-estimation",

@@ -381,7 +381,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(69, "a-production-incident-start-to-finish", "A Production Incident, Start to Finish", {
         contentDir: "ch03/69-a-production-incident-start-to-finish",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146236/ltv-fabric-realtime/a-production-incident-start-to-finish.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(70, "course-recap", "Production Data Engineering Recap — and This Course's Finale", {
         contentDir: "ch03/70-course-recap",
