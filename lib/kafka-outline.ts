@@ -40,7 +40,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(3, "producers-and-consumers", "Producers & Consumers", {
         contentDir: "ch01/03-producers-and-consumers",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148102/ltv-kafka/producers-and-consumers.mp4",
+        durationLabel: "1 min 5 s",
       }),
       L(4, "brokers-and-clusters", "Brokers & Clusters", {
         contentDir: "ch01/04-brokers-and-clusters",
