@@ -514,7 +514,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(82, "high-availability-vs-disaster-recovery", "High Availability vs. Disaster Recovery", {
         contentDir: "ch14/82-high-availability-vs-disaster-recovery",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162217/ltv-azure-dba/high-availability-vs-disaster-recovery.mp4",
+        durationLabel: "1 min 36 s",
       }),
       L(83, "rpo-and-rto-designing-from-business-requirements", "RPO & RTO — Designing from Business Requirements", {
         contentDir: "ch14/83-rpo-and-rto-designing-from-business-requirements",
