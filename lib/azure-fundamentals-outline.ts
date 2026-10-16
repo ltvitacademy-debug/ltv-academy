@@ -44,7 +44,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(4, "azure-portal-tour", "Azure Portal Tour", {
         contentDir: "ch01/04-azure-portal-tour",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157588/ltv-azure-fundamentals/azure-portal-tour.mp4",
+        durationLabel: "1 min 8 s",
       }),
       L(5, "subscriptions-and-resource-groups", "Subscriptions & Resource Groups", {
         contentDir: "ch01/05-subscriptions-and-resource-groups",
