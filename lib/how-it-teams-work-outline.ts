@@ -43,6 +43,8 @@ export const HOW_IT_TEAMS_WORK_CHAPTERS: ChapterMeta[] = [
       }),
       L(4, "sdlc-dev-qa-uat-and-production", "SDLC: Dev, QA, UAT & Production", {
         contentDir: "ch01/04-sdlc-dev-qa-uat-and-production",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139653/ltv-how-it-teams-work/sdlc-dev-qa-uat-and-production.mp4",
+        durationLabel: "2 min 12 s",
       }),
       L(5, "version-control-with-git", "Version Control with Git", {
         contentDir: "ch01/05-version-control-with-git",
