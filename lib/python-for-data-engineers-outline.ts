@@ -62,7 +62,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
     n: 4,
     title: "Pandas and Data Transformation",
     lessons: [
-      L(19, "pandas-series-and-dataframes", "Pandas Series & DataFrames", { contentDir: "ch04/19-pandas-series-and-dataframes" }),
+      L(19, "pandas-series-and-dataframes", "Pandas Series & DataFrames", { contentDir: "ch04/19-pandas-series-and-dataframes", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144954/ltv-python-for-data-engineers/pandas-series-and-dataframes.mp4", durationLabel: "2 min 15 s" }),
       L(20, "reading-data-into-pandas", "Reading Data Into Pandas (CSV, JSON, Excel)", { contentDir: "ch04/20-reading-data-into-pandas" }),
       L(21, "selecting-filtering-and-indexing", "Selecting, Filtering & Indexing", { contentDir: "ch04/21-selecting-filtering-and-indexing" }),
       L(22, "cleaning-data-missing-values-and-duplicates", "Cleaning Data: Missing Values & Duplicates", { contentDir: "ch04/22-cleaning-data-missing-values-and-duplicates" }),

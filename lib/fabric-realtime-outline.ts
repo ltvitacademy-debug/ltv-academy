@@ -266,7 +266,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(46, "version-control-for-notebooks-and-pipelines", "Version Control for Notebooks and Pipelines", {
         contentDir: "ch03/46-version-control-for-notebooks-and-pipelines",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144943/ltv-fabric-realtime/version-control-for-notebooks-and-pipelines.mp4",
+        durationLabel: "1 min 12 s",
       }),
       L(47, "infrastructure-as-code", "Infrastructure as Code — ARM/Bicep and Terraform Basics", {
         contentDir: "ch03/47-infrastructure-as-code",
