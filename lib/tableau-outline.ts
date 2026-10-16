@@ -82,14 +82,14 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
       L(29, "relative-dates-top-n-conditional-filters", "Relative Dates, Top N & Conditional Filters", { contentDir: "ch05/29-relative-dates-top-n-conditional-filters", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132813/ltv-tableau/relative-dates-top-n-conditional-filters.mp4", durationLabel: "1 min 35 s" }),
       L(30, "context-filters", "Context Filters", { contentDir: "ch05/30-context-filters", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132856/ltv-tableau/context-filters.mp4", durationLabel: "1 min 13 s" }),
       L(31, "tableaus-order-of-operations", "Understanding Tableau's Order of Operations", { contentDir: "ch05/31-tableaus-order-of-operations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132890/ltv-tableau/tableaus-order-of-operations.mp4", durationLabel: "59 s" }),
-      L(32, "analytics-pane-trend-lines-forecasting", "Analytics Pane: Trend Lines, Forecasting & Reference Lines", { contentDir: "ch05/32-analytics-pane-trend-lines-forecasting" }),
+      L(32, "analytics-pane-trend-lines-forecasting", "Analytics Pane: Trend Lines, Forecasting & Reference Lines", { contentDir: "ch05/32-analytics-pane-trend-lines-forecasting", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792132939/ltv-tableau/analytics-pane-trend-lines-forecasting.mp4", durationLabel: "1 min 30 s" }),
     ],
   },
   {
     n: 6,
     title: "Calculated Fields",
     lessons: [
-      L(33, "intro-to-calculated-fields", "Introduction to Calculated Fields", { contentDir: "ch06/33-intro-to-calculated-fields" }),
+      L(33, "intro-to-calculated-fields", "Introduction to Calculated Fields", { contentDir: "ch06/33-intro-to-calculated-fields", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792133017/ltv-tableau/intro-to-calculated-fields.mp4", durationLabel: "2 min 34 s" }),
       L(34, "arithmetic-and-kpi-calculations", "Arithmetic & KPI Calculations", { contentDir: "ch06/34-arithmetic-and-kpi-calculations" }),
       L(35, "string-calculations", "String Calculations", { contentDir: "ch06/35-string-calculations" }),
       L(36, "date-calculations", "Date Calculations", { contentDir: "ch06/36-date-calculations" }),
