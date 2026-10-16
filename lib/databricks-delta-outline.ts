@@ -68,7 +68,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(9, "widgets-and-parameters", "Widgets and Parameters", {
         contentDir: "ch01/09-widgets-and-parameters",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142718/ltv-databricks-delta/widgets-and-parameters.mp4",
+        durationLabel: "1 min 31 s",
       }),
       L(10, "databricks-runtime-and-versions", "Databricks Runtime and Versions", {
         contentDir: "ch01/10-databricks-runtime-and-versions",

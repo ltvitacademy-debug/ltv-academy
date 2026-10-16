@@ -26,7 +26,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Python Fundamentals",
     lessons: [
-      L(1, "setting-up-your-python-environment", "What Is Python & Setting Up Your Environment", { contentDir: "ch01/01-setting-up-your-python-environment" }),
+      L(1, "setting-up-your-python-environment", "What Is Python & Setting Up Your Environment", { contentDir: "ch01/01-setting-up-your-python-environment", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142696/ltv-python-for-data-engineers/setting-up-your-python-environment.mp4", durationLabel: "2 min 43 s" }),
       L(2, "variables-data-types-and-operators", "Variables, Data Types & Operators", { contentDir: "ch01/02-variables-data-types-and-operators" }),
       L(3, "strings-and-string-formatting", "Strings & String Formatting", { contentDir: "ch01/03-strings-and-string-formatting" }),
       L(4, "lists-tuples-and-sets", "Lists, Tuples & Sets", { contentDir: "ch01/04-lists-tuples-and-sets" }),
