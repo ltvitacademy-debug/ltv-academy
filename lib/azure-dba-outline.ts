@@ -195,7 +195,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(29, "public-vs-private-database-connectivity", "Public vs. Private Database Connectivity", {
         contentDir: "ch05/29-public-vs-private-database-connectivity",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159572/ltv-azure-dba/public-vs-private-database-connectivity.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(30, "troubleshooting-azure-sql-connectivity", "Troubleshooting Azure SQL Connectivity", {
         contentDir: "ch05/30-troubleshooting-azure-sql-connectivity",
