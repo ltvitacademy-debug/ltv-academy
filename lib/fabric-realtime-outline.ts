@@ -311,7 +311,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(55, "right-sizing-compute", "Right-Sizing Compute", {
         contentDir: "ch03/55-right-sizing-compute",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145438/ltv-fabric-realtime/right-sizing-compute.mp4",
+        durationLabel: "1 min 2 s",
       }),
       L(56, "slas-and-slos", "SLAs and SLOs for Data Pipelines", {
         contentDir: "ch03/56-slas-and-slos",
