@@ -81,7 +81,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(10, "auto-loader-plus-streaming", "Auto Loader + Structured Streaming", {
         contentDir: "ch02/10-auto-loader-plus-streaming",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150996/ltv-advanced-databricks/auto-loader-plus-streaming.mp4",
+        durationLabel: "1 min 52 s",
       }),
       L(11, "ingestion-patterns-at-scale", "Ingestion Patterns at Scale", {
         contentDir: "ch02/11-ingestion-patterns-at-scale",
