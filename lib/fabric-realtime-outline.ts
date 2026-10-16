@@ -135,7 +135,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(21, "eventhouse-and-kql-database", "Eventhouse and KQL Database", {
         contentDir: "ch02/21-eventhouse-and-kql-database",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143443/ltv-fabric-realtime/eventhouse-and-kql-database.mp4",
+        durationLabel: "1 min 32 s",
       }),
       L(22, "what-is-kql", "What Is KQL?", {
         contentDir: "ch02/22-what-is-kql",

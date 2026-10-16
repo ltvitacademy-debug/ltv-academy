@@ -38,7 +38,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "Functions, Modules and Data Structures",
     lessons: [
-      L(7, "writing-functions", "Writing Functions", { contentDir: "ch02/07-writing-functions" }),
+      L(7, "writing-functions", "Writing Functions", { contentDir: "ch02/07-writing-functions", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143455/ltv-python-for-data-engineers/writing-functions.mp4", durationLabel: "2 min 48 s" }),
       L(8, "default-keyword-and-variable-arguments", "Default, Keyword & Variable Arguments", { contentDir: "ch02/08-default-keyword-and-variable-arguments" }),
       L(9, "scope-and-returning-multiple-values", "Scope & Returning Multiple Values", { contentDir: "ch02/09-scope-and-returning-multiple-values" }),
       L(10, "modules-and-packages", "Modules & Packages", { contentDir: "ch02/10-modules-and-packages" }),
