@@ -34,6 +34,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(2, "architecture-planning", "Architecture Planning", {
         contentDir: "ch01/02-architecture-planning",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156717/ltv-aws-capstone/architecture-planning.mp4",
+        durationLabel: "1 min 30 s",
       }),
     ],
   },
