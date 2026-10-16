@@ -63,7 +63,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
     title: "Pandas and Data Transformation",
     lessons: [
       L(19, "pandas-series-and-dataframes", "Pandas Series & DataFrames", { contentDir: "ch04/19-pandas-series-and-dataframes", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144954/ltv-python-for-data-engineers/pandas-series-and-dataframes.mp4", durationLabel: "2 min 15 s" }),
-      L(20, "reading-data-into-pandas", "Reading Data Into Pandas (CSV, JSON, Excel)", { contentDir: "ch04/20-reading-data-into-pandas" }),
+      L(20, "reading-data-into-pandas", "Reading Data Into Pandas (CSV, JSON, Excel)", { contentDir: "ch04/20-reading-data-into-pandas", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145049/ltv-python-for-data-engineers/reading-data-into-pandas.mp4", durationLabel: "1 min 59 s" }),
       L(21, "selecting-filtering-and-indexing", "Selecting, Filtering & Indexing", { contentDir: "ch04/21-selecting-filtering-and-indexing" }),
       L(22, "cleaning-data-missing-values-and-duplicates", "Cleaning Data: Missing Values & Duplicates", { contentDir: "ch04/22-cleaning-data-missing-values-and-duplicates" }),
       L(23, "transforming-columns-and-applying-functions", "Transforming Columns & Applying Functions", { contentDir: "ch04/23-transforming-columns-and-applying-functions" }),
