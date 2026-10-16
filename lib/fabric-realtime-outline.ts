@@ -371,7 +371,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(67, "documentation-that-gets-used", "Documentation That Actually Gets Used", {
         contentDir: "ch03/67-documentation-that-gets-used",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146112/ltv-fabric-realtime/documentation-that-gets-used.mp4",
+        durationLabel: "1 min 14 s",
       }),
       L(68, "on-call-for-data-engineers", "On-Call for Data Engineers", {
         contentDir: "ch03/68-on-call-for-data-engineers",
