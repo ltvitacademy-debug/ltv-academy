@@ -301,7 +301,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(53, "ai-generated-test-cases", "AI-Generated Test Cases for Pipelines", {
         contentDir: "ch03/53-ai-generated-test-cases",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149226/ltv-career-capstone/ai-generated-test-cases.mp4",
+        durationLabel: "1 min 1 s",
       }),
       L(54, "ai-drafted-root-cause-analysis", "Using an LLM to Draft a Root Cause Analysis", {
         contentDir: "ch03/54-ai-drafted-root-cause-analysis",
