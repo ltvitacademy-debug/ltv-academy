@@ -34,6 +34,8 @@ export const AWS_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(2, "aws-global-infrastructure", "AWS Global Infrastructure: Regions & Availability Zones", {
         contentDir: "ch01/02-aws-global-infrastructure",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792153107/ltv-aws-fundamentals/aws-global-infrastructure.mp4",
+        durationLabel: "1 min 5 s",
       }),
       L(3, "the-aws-console-tour", "The AWS Console, Tour", {
         contentDir: "ch01/03-the-aws-console-tour",
