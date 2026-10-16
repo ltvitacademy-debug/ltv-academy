@@ -56,7 +56,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(6, "lab-build-your-first-azure-sql-environment", "Lab: Build Your First Azure SQL Environment", {
         contentDir: "ch01/06-lab-build-your-first-azure-sql-environment",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158451/ltv-azure-dba/lab-build-your-first-azure-sql-environment.mp4",
+        durationLabel: "1 min 35 s",
       }),
     ],
   },
