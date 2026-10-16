@@ -308,7 +308,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(51, "null-handling", "Null Handling", {
         contentDir: "ch04/51-null-handling",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792140158/ltv-de-foundations/null-handling.mp4",
+        durationLabel: "1 min 18 s",
       }),
       L(52, "removing-duplicates", "Removing Duplicates", {
         contentDir: "ch04/52-removing-duplicates",
