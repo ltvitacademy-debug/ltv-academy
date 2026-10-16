@@ -260,7 +260,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792166695/ltv-t-sql-for-dbas/blocking-and-long-running-query-scripts.mp4",
         durationLabel: "1 min 47 s",
       }),
-      L(45, "capstone-assembling-the-toolkit", "Capstone: Assembling & Presenting Your DBA Toolkit", { contentDir: "ch10/45-capstone-assembling-the-toolkit" }),
+      L(45, "capstone-assembling-the-toolkit", "Capstone: Assembling & Presenting Your DBA Toolkit", { contentDir: "ch10/45-capstone-assembling-the-toolkit",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792166764/ltv-t-sql-for-dbas/capstone-assembling-the-toolkit.mp4",
+        durationLabel: "2 min 7 s",
+      }),
     ],
   },
 ];
