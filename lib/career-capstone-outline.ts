@@ -432,7 +432,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(78, "project-3-wrap-up", "Project 3: Wrap-Up and Retrospective", {
         contentDir: "ch04/78-project-3-wrap-up",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150322/ltv-career-capstone/project-3-wrap-up.mp4",
+        durationLabel: "1 min 3 s",
       }),
       L(79, "building-your-portfolio", "Building Your Data Engineering Portfolio", {
         contentDir: "ch04/79-building-your-portfolio",
