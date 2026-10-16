@@ -87,7 +87,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(11, "storage-compute-scaling-performance-configuration", "Storage, Compute Scaling & Performance Configuration", {
         contentDir: "ch02/11-storage-compute-scaling-performance-configuration",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158666/ltv-azure-dba/storage-compute-scaling-performance-configuration.mp4",
+        durationLabel: "1 min 33 s",
       }),
       L(12, "azure-sql-managed-instance-deployment", "Azure SQL Managed Instance Deployment & Configuration", {
         contentDir: "ch02/12-azure-sql-managed-instance-deployment",
