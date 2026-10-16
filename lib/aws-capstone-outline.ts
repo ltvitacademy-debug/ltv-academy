@@ -117,6 +117,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(15, "portfolio-and-interview-prep", "Portfolio & Interview Prep", {
         contentDir: "ch04/15-portfolio-and-interview-prep",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157401/ltv-aws-capstone/portfolio-and-interview-prep.mp4",
+        durationLabel: "1 min 53 s",
       }),
     ],
   },
