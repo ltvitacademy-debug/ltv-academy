@@ -33,7 +33,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(2, "creating-a-databricks-workspace", "Creating a Databricks Workspace", {
         contentDir: "ch01/02-creating-a-databricks-workspace",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142287/ltv-databricks-delta/creating-a-databricks-workspace.mp4",
+        durationLabel: "1 min 36 s",
       }),
       L(3, "the-workspace-ui-tour", "The Workspace UI Tour", {
         contentDir: "ch01/03-the-workspace-ui-tour",
