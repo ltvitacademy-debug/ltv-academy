@@ -325,6 +325,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(49, "kinesis-data-firehose", "Kinesis Data Firehose", {
         contentDir: "ch10/49-kinesis-data-firehose",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156308/ltv-aws-data-engineering/kinesis-data-firehose.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(50, "kinesis-data-analytics", "Kinesis Data Analytics", {
         contentDir: "ch10/50-kinesis-data-analytics",
