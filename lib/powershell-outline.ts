@@ -95,11 +95,13 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
       }),
       L(12, "loops", "Loops: foreach, while & for", {
         contentDir: "ch03/12-loops",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163480/ltv-powershell/loops.mp4",
+        durationLabel: "1 min 35 s",
       }),
       L(13, "functions", "Functions", {
         contentDir: "ch03/13-functions",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163531/ltv-powershell/functions.mp4",
+        durationLabel: "1 min 34 s",
       }),
     ],
   },
