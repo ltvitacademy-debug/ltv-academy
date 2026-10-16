@@ -106,15 +106,18 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(13, "python-for-data-engineering", "Python for Data Engineering", {
         contentDir: "ch02/13-python-for-data-engineering",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138189/ltv-de-foundations/python-for-data-engineering.mp4",
+        durationLabel: "2 min 50 s",
       }),
       L(14, "variables-and-data-types", "Variables and Data Types", {
         contentDir: "ch02/14-variables-and-data-types",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138234/ltv-de-foundations/variables-and-data-types.mp4",
+        durationLabel: "1 min 23 s",
       }),
       L(15, "lists-and-dictionaries", "Lists and Dictionaries", {
         contentDir: "ch02/15-lists-and-dictionaries",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138282/ltv-de-foundations/lists-and-dictionaries.mp4",
+        durationLabel: "1 min 38 s",
       }),
       L(16, "conditions", "Conditions", {
         contentDir: "ch02/16-conditions",
