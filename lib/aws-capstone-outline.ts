@@ -29,7 +29,8 @@ export const AWS_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "capstone-kickoff-and-business-scenario", "Capstone Kickoff & Business Scenario", {
         contentDir: "ch01/01-capstone-kickoff-and-business-scenario",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156669/ltv-aws-capstone/capstone-kickoff-and-business-scenario.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(2, "architecture-planning", "Architecture Planning", {
         contentDir: "ch01/02-architecture-planning",
