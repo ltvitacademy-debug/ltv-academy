@@ -65,7 +65,8 @@ export const AZURE_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
       }),
       L(7, "azure-storage-overview", "Azure Storage Overview", {
         contentDir: "ch02/07-azure-storage-overview",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792157690/ltv-azure-fundamentals/azure-storage-overview.mp4",
+        durationLabel: "1 min 4 s",
       }),
       L(8, "azure-networking-basics", "Azure Networking Basics: VNets", {
         contentDir: "ch02/08-azure-networking-basics",
