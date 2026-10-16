@@ -288,7 +288,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(47, "when-and-conditional-logic", "when() and Conditional Logic", {
         contentDir: "ch04/47-when-and-conditional-logic",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139977/ltv-de-foundations/when-and-conditional-logic.mp4",
+        durationLabel: "1 min 31 s",
       }),
       L(48, "data-type-conversion", "Data Type Conversion", {
         contentDir: "ch04/48-data-type-conversion",
