@@ -104,7 +104,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(16, "the-monitoring-hub", "The Monitoring Hub", {
         contentDir: "ch01/16-the-monitoring-hub",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143102/ltv-fabric-realtime/the-monitoring-hub.mp4",
+        durationLabel: "1 min 18 s",
       }),
       L(17, "fabric-chapter-recap", "Fabric Chapter Recap — Where This Fits With Databricks", {
         contentDir: "ch01/17-fabric-chapter-recap",
