@@ -153,7 +153,8 @@ export const TERRAFORM_BICEP_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(21, "capstone-project", "Capstone: Provisioning a Data Platform's Infrastructure", {
         contentDir: "ch05/21-capstone-project",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792147776/ltv-terraform-bicep/capstone-project.mp4",
+        durationLabel: "1 min 14 s",
       }),
       L(22, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", {
         contentDir: "ch05/22-capstone-wrap-up",
