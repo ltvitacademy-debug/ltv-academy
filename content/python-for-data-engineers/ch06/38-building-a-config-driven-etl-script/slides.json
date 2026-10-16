@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for Data Engineers · Chapter 6, Lesson 38",
+    "titlePlain": "Building a Config-Driven ",
+    "titleEmphasis": "ETL Script",
+    "titleSuffix": "",
+    "subtitle": "Every piece from Lessons 32 through 37, assembled into one real script."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A config dictionary — or a config file",
+    "code": "CONFIG = {\n    \"source_csv\": \"orders.csv\",\n    \"warehouse_db\": \"orders_warehouse.db\",\n    \"watermark_file\": \"last_loaded_date.txt\",\n    \"table_name\": \"orders\",\n}\n\n# config.json\n{\n    \"source_csv\": \"orders.csv\",\n    \"warehouse_db\": \"orders_warehouse.db\",\n    \"watermark_file\": \"last_loaded_date.txt\",\n    \"table_name\": \"orders\"\n}",
+    "caption": "Change the source file or target database by editing config.json — never the Python code itself."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Loading the config",
+    "code": "import json\n\ndef load_config(path=\"config.json\"):\n    with open(path, \"r\") as f:\n        return json.load(f)",
+    "caption": "A JSON config file means changing the pipeline's behavior doesn't require touching the Python code at all."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The orchestrator, now config-driven",
+    "code": "def run_pipeline(config):\n    new_rows = extract_incremental(config)\n    if new_rows.empty:\n        print(\"No new rows since last run.\")\n        return\n    clean_rows = clean_orders(new_rows)\n    rows_loaded = load_upsert(clean_rows, config)\n    new_watermark = clean_rows[\"order_date\"].max().strftime(\"%Y-%m-%d\")\n    write_watermark(config[\"watermark_file\"], new_watermark)\n    print(f\"Loaded {rows_loaded} row(s). Watermark now {new_watermark}.\")",
+    "caption": "Validation and cleaning from Lesson 34, SQLite load from 35, watermarks from 36, upsert idempotency from 37 — wired by config."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A runnable main()",
+    "code": "def main():\n    config = load_config(\"config.json\")\n    try:\n        run_pipeline(config)\n    except Exception as err:\n        print(f\"Pipeline failed: {err}\")\n        raise\n\nif __name__ == \"__main__\":\n    main()",
+    "caption": "Runnable from a terminal as python etl.py — every setting comes from config, nothing is hardcoded inside the functions."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 7, Lesson 39",
+    "titlePlain": "Logging in ",
+    "titleEmphasis": "Python",
+    "titleSuffix": "",
+    "subtitle": "Replacing these print() calls with real logging, plus pytest and a schedule."
+  }
+]

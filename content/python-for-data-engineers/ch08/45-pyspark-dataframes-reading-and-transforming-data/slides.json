@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for Data Engineers · Chapter 8, Lesson 45",
+    "titlePlain": "PySpark DataFrames: Reading & ",
+    "titleEmphasis": "Transforming",
+    "titleSuffix": " Data",
+    "subtitle": "select(), filter(), withColumn(), and handling real nulls."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Reading both real files this dataset ships with",
+    "code": "from pyspark.sql import SparkSession\n\nspark = SparkSession.builder.appName(\"TaxiTransform\").getOrCreate()\n\ntrips = spark.read.parquet(\"/data/nyc_taxi/yellow_tripdata_2024-01.parquet\")\nzones = spark.read.csv(\"/data/nyc_taxi/taxi_zone_lookup.csv\", header=True, inferSchema=True)\n\nzones.show(5)",
+    "caption": "header=True treats row one as column names; inferSchema=True has Spark guess real types instead of defaulting to strings."
+  },
+  {
+    "type": "code",
+    "eyebrow": "select() and filter()",
+    "code": "from pyspark.sql.functions import col\n\nfares = trips.select(\"VendorID\", \"passenger_count\", \"trip_distance\", \"fare_amount\")\n\nvalid_fares = fares.filter(col(\"fare_amount\") > 0)\nlong_trips = fares.filter((col(\"trip_distance\") > 10) & (col(\"passenger_count\") >= 1))",
+    "caption": "select() narrows to the columns you need. Combining filter conditions needs & and |, not Python's and/or."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Why col() instead of a plain Python comparison",
+    "code": "# Works, but fragile with compound conditions:\ntrips.filter(trips.fare_amount > 0)\n\n# More common, more flexible:\ntrips.filter(col(\"fare_amount\") > 0)",
+    "caption": "col() isn't tied to one DataFrame variable — essential once you're combining columns from two DataFrames, as in Lesson 46's joins."
+  },
+  {
+    "type": "code",
+    "eyebrow": "withColumn() — adding or replacing a column",
+    "code": "from pyspark.sql.functions import round as spark_round\n\ntrips = trips.withColumn(\"fare_per_mile\", spark_round(col(\"fare_amount\") / col(\"trip_distance\"), 2))\ntrips.select(\"trip_distance\", \"fare_amount\", \"fare_per_mile\").show(5)",
+    "caption": "withColumn() replaces a column if the name exists, or adds a new one if it doesn't — the real shape of most transform logic."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Handling nulls",
+    "code": "trips.filter(col(\"passenger_count\").isNull()).count()\n\ncleaned = trips.na.drop(subset=[\"passenger_count\", \"fare_amount\"])\nfilled = trips.na.fill({\"passenger_count\": 1})",
+    "caption": "na.drop() removes rows missing a required field; na.fill() substitutes a reasonable default instead."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 46",
+    "titlePlain": "PySpark ",
+    "titleEmphasis": "Aggregations",
+    "titleSuffix": " & Joins",
+    "subtitle": "groupBy().agg() and joining trips to real zone names."
+  }
+]

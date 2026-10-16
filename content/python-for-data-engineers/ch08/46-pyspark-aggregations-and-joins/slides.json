@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for Data Engineers · Chapter 8, Lesson 46",
+    "titlePlain": "PySpark ",
+    "titleEmphasis": "Aggregations",
+    "titleSuffix": " & Joins",
+    "subtitle": "Turning numeric location IDs into real, readable zone names."
+  },
+  {
+    "type": "code",
+    "eyebrow": "groupBy() and agg() — real aggregations, at scale",
+    "code": "from pyspark.sql.functions import col, avg, count, round as spark_round\n\ntrips = spark.read.parquet(\"/data/nyc_taxi/yellow_tripdata_2024-01.parquet\")\n\nby_vendor = (\n    trips.groupBy(\"VendorID\")\n    .agg(\n        count(\"*\").alias(\"trip_count\"),\n        spark_round(avg(\"fare_amount\"), 2).alias(\"avg_fare\"),\n        spark_round(avg(\"trip_distance\"), 2).alias(\"avg_distance\"),\n    )\n)\nby_vendor.show()",
+    "caption": "Pandas' groupby().agg() from Lesson 24, now over millions of real trip records. alias() keeps column names clean and referenceable."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Multiple grouping columns",
+    "code": "by_vendor_and_passengers = (\n    trips.filter(col(\"passenger_count\") > 0)\n    .groupBy(\"VendorID\", \"passenger_count\")\n    .agg(count(\"*\").alias(\"trip_count\"), spark_round(avg(\"fare_amount\"), 2).alias(\"avg_fare\"))\n    .orderBy(\"VendorID\", \"passenger_count\")\n)\nby_vendor_and_passengers.show(10)",
+    "caption": "Each unique VendorID/passenger_count combination becomes its own group. orderBy() sorts after the aggregation runs."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Joining trips to the real zone lookup table",
+    "code": "zones = spark.read.csv(\"/data/nyc_taxi/taxi_zone_lookup.csv\", header=True, inferSchema=True)\n\ntrips_with_zones = trips.join(\n    zones, trips.PULocationID == zones.LocationID, \"left\"\n).select(\n    trips.VendorID, trips.fare_amount, trips.trip_distance,\n    zones.Zone.alias(\"pickup_zone\"), zones.Borough.alias(\"pickup_borough\"),\n)",
+    "caption": "A raw PULocationID isn't useful in a report. The left join turns it into a real Zone and Borough name, keeping every trip."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A real aggregation after the join: average fare by zone",
+    "code": "fare_by_zone = (\n    trips_with_zones\n    .filter(col(\"fare_amount\") > 0)\n    .groupBy(\"pickup_zone\", \"pickup_borough\")\n    .agg(\n        count(\"*\").alias(\"trip_count\"),\n        spark_round(avg(\"fare_amount\"), 2).alias(\"avg_fare\"),\n    )\n    .orderBy(col(\"avg_fare\").desc())\n)\nfare_by_zone.show(10)",
+    "caption": "Join first to get readable names, filter out bad fares, then aggregate — exactly the shape of the mini capstone's pipeline."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 47",
+    "titlePlain": "Mini Capstone Part 1: Building the ",
+    "titleEmphasis": "Pipeline",
+    "titleSuffix": "",
+    "subtitle": "Extract, clean, transform, aggregate, load — one real pipeline."
+  }
+]

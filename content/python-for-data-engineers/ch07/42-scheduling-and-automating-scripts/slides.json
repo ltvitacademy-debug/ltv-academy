@@ -1,0 +1,56 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for Data Engineers · Chapter 7, Lesson 42",
+    "titlePlain": "Scheduling & Automating ",
+    "titleEmphasis": "Scripts",
+    "titleSuffix": "",
+    "subtitle": "Lesson 42 · Python for Data Engineers"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Cron: scheduling on Linux/macOS",
+    "code": "crontab -e\n\n# minute hour day month weekday  command\n0 6 * * *  /usr/bin/python3 /home/data/etl_pipeline.py >> /home/data/etl_run.log 2>&1\n\n# \"every 4 hours, at :30 past the hour\"\n30 */4 * * *  /usr/bin/python3 /home/data/etl_pipeline.py",
+    "caption": "Each * is a field cron doesn't restrict. >> ... 2>&1 appends output and errors to the log — cron has no terminal, so without it everything is lost."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Reading a crontab line",
+    "titlePlain": "Five fields, left to ",
+    "titleEmphasis": "right",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "MINUTE", "sub": "0–59" },
+      { "label": "HOUR", "sub": "0–23" },
+      { "label": "DAY OF MONTH", "sub": "1–31" },
+      { "label": "MONTH", "sub": "1–12" },
+      { "label": "WEEKDAY", "sub": "0–7, e.g. 1-5 for Mon–Fri" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Task Scheduler on Windows",
+    "code": "# GUI: Task Scheduler -> Create Task\n# Trigger: Daily, at a specific time (e.g., 6:00 AM)\n# Action: Start a program -- python.exe, with the script's full path as an argument\n# Settings: \"Run whether user is logged on or not\"\n\n# Scriptable from PowerShell:\n$action = New-ScheduledTaskAction -Execute \"python.exe\" -Argument \"C:\\data\\etl_pipeline.py\"\n$trigger = New-ScheduledTaskTrigger -Daily -At 6am\nRegister-ScheduledTask -TaskName \"DailyETL\" -Action $action -Trigger $trigger",
+    "caption": "\"Run whether user is logged on or not\" matters — otherwise the task silently skips if nobody's signed in."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Why a script that works by hand can fail unattended",
+    "code": "import os\n\n# Works from your own terminal in the project folder --\n# silently fails under cron/Task Scheduler, which starts elsewhere:\ndf = pd.read_csv(\"orders.csv\")\n\n# The fix -- always use an absolute path, or build one relative\n# to the script's own location:\nSCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))\ndf = pd.read_csv(os.path.join(SCRIPT_DIR, \"orders.csv\"))",
+    "caption": "A scheduler's working directory is often your home directory, or C:\\Windows\\System32 — never the folder you'd cd into by hand."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Confirming the schedule actually ran",
+    "code": "# Linux/macOS -- check cron's own log of what it attempted to run\ngrep CRON /var/log/syslog\n\n# Windows -- check Task Scheduler's history for the task\nGet-ScheduledTaskInfo -TaskName \"DailyETL\"",
+    "caption": "The pipeline's own log tells you if the script succeeded. The scheduler's log tells you if it was even launched — a run that never fired leaves an empty log, not an error."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 43",
+    "titlePlain": "Environment Variables & Secrets ",
+    "titleEmphasis": "Management",
+    "titleSuffix": "",
+    "subtitle": "Keeping a database password out of the script entirely."
+  }
+]

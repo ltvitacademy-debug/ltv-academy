@@ -1,0 +1,50 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for Data Engineers · Chapter 8, Lesson 48",
+    "titlePlain": "Mini Capstone Part 2: Validating & ",
+    "titleEmphasis": "Presenting",
+    "titleSuffix": " Results",
+    "subtitle": "\"It ran\" is not the same as \"it's right.\""
+  },
+  {
+    "type": "code",
+    "eyebrow": "Row-count sanity check",
+    "code": "from pyspark.sql import SparkSession\nfrom pyspark.sql.functions import col\nimport logging\n\nlogger = logging.getLogger(__name__)\nspark = SparkSession.builder.appName(\"TaxiFareValidation\").getOrCreate()\n\nresult = spark.read.parquet(\"/data/nyc_taxi/output/avg_fare_by_zone\")\n\ndef validate_row_count(df, min_expected=5):\n    n = df.count()\n    logger.info(\"Result has %d rows\", n)\n    if n < min_expected:\n        logger.error(\"Only %d zones -- expected at least %d\", n, min_expected)\n        raise ValueError(\"Result has suspiciously few rows\")\n    return True\n\nvalidate_row_count(result)",
+    "caption": "A result with far fewer rows than expected is often the first visible sign that a filter or join upstream went wrong."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Checking value ranges make sense",
+    "code": "def validate_fare_range(df):\n    stats = df.agg({\"avg_fare\": \"min\"}).collect()[0]\n    min_fare = stats[\"min(avg_fare)\"]\n\n    if min_fare <= 0:\n        logger.error(\"Found a non-positive average fare\")\n        raise ValueError(\"avg_fare should never be zero or negative after cleaning\")\n\n    max_fare_row = df.orderBy(col(\"avg_fare\").desc()).first()\n    if max_fare_row[\"avg_fare\"] > 500:\n        logger.warning(\"Top average fare (%.2f) looks unusually high\", max_fare_row[\"avg_fare\"])\n\nvalidate_fare_range(result)",
+    "caption": "This checks the business logic directly: a fare of $0 or less here proves the cleaning step has a real bug."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A pytest-style data test, reusing Lesson 40's pattern",
+    "code": "# file: test_capstone_result.py\nimport pytest\nfrom pyspark.sql import SparkSession\n\n@pytest.fixture(scope=\"module\")\ndef result_df():\n    spark = SparkSession.builder.appName(\"TestCapstoneResult\").getOrCreate()\n    return spark.read.parquet(\"/data/nyc_taxi/output/avg_fare_by_zone\")\n\ndef test_result_has_rows(result_df):\n    assert result_df.count() > 0\n\ndef test_no_negative_average_fares(result_df):\n    assert result_df.filter(result_df.avg_fare <= 0).count() == 0\n\ndef test_every_zone_has_a_trip_count(result_df):\n    assert result_df.filter(result_df.trip_count.isNull()).count() == 0",
+    "caption": "Same tool as Lesson 40's unit tests, now checking a pipeline's output — a real data test."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Structuring the write-up",
+    "titlePlain": "Communicating the ",
+    "titleEmphasis": "finding",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "THE QUESTION", "sub": "One sentence stating what you set out to answer" },
+      { "label": "THE DATA", "sub": "One sentence naming the real source files used" },
+      { "label": "THE METHOD", "sub": "Two or three sentences: extract, clean, join, aggregate" },
+      { "label": "THE FINDING", "sub": "The actual top zones, as a small table" },
+      { "label": "THE VALIDATION", "sub": "What was checked, and that it passed" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Course complete",
+    "titlePlain": "You can build a real pipeline — ",
+    "titleEmphasis": "end to end",
+    "titleSuffix": "",
+    "subtitle": "From a raw file to a validated, written-up finding. That's data engineering."
+  }
+]

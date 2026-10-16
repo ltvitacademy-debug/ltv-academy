@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for Data Engineers · Chapter 6, Lesson 33",
+    "titlePlain": "Extracting From ",
+    "titleEmphasis": "Multiple Sources",
+    "titleSuffix": "",
+    "subtitle": "orders.csv, plus a live query against AdventureWorks2012."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Extract function 1 — the CSV",
+    "code": "import pandas as pd\n\ndef extract_orders(path=\"orders.csv\"):\n    return pd.read_csv(path)",
+    "caption": "This is Lesson 32's extract(), just renamed — because there's about to be a second extract function next to it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Extract function 2 — a database query",
+    "code": "import pyodbc\n\ndef extract_product_categories():\n    conn = pyodbc.connect(\n        \"DRIVER={ODBC Driver 18 for SQL Server};\"\n        \"SERVER=localhost;DATABASE=AdventureWorks2012;Trusted_Connection=yes;\"\n    )\n    try:\n        query = \"SELECT ProductCategoryID, Name FROM Production.ProductCategory;\"\n        return pd.read_sql(query, conn)\n    finally:\n        conn.close()",
+    "caption": "Production.ProductCategory has nothing to do with orders.csv — that's the point. Each source gets its own extract function."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Running both extracts together",
+    "code": "def extract_all():\n    return {\n        \"orders\": extract_orders(\"orders.csv\"),\n        \"product_categories\": extract_product_categories(),\n    }\n\nsources = extract_all()\nprint(sources[\"orders\"].shape)\nprint(sources[\"product_categories\"].shape)",
+    "caption": "A dictionary keyed by source name, not one merged DataFrame — adding a third source means adding one more key."
+  },
+  {
+    "type": "code",
+    "eyebrow": "What happens when one source fails",
+    "code": "def extract_all():\n    sources = {}\n    sources[\"orders\"] = extract_orders(\"orders.csv\")\n    try:\n        sources[\"product_categories\"] = extract_product_categories()\n    except pyodbc.Error as err:\n        print(f\"Database source unavailable, continuing without it: {err}\")\n        sources[\"product_categories\"] = None\n    return sources",
+    "caption": "A database outage doesn't block loading the CSV data that's still perfectly usable on its own."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 34",
+    "titlePlain": "Transformation Logic & ",
+    "titleEmphasis": "Data Validation",
+    "titleSuffix": "",
+    "subtitle": "orders.csv's two real problems, handled on purpose."
+  }
+]

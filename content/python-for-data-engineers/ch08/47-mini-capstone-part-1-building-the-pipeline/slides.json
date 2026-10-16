@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for Data Engineers · Chapter 8, Lesson 47",
+    "titlePlain": "Mini Capstone Part 1: Building the ",
+    "titleEmphasis": "Pipeline",
+    "titleSuffix": "",
+    "subtitle": "Extract, clean, transform, aggregate, load — all of it, for real."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The goal: state it before writing any code",
+    "titlePlain": "The business ",
+    "titleEmphasis": "question",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "THE QUESTION", "sub": "Which pickup zones have the highest average fare?" },
+      { "label": "WHY IT MATTERS", "sub": "A real task starts with a question, not \"write some PySpark\"" },
+      { "label": "THE CHECK", "sub": "A written goal lets you verify the pipeline actually did its job" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Extract: reading the real source files",
+    "code": "from pyspark.sql import SparkSession\nfrom pyspark.sql.functions import col, count, avg, round as spark_round\nimport logging\n\nlogging.basicConfig(level=logging.INFO, format=\"%(asctime)s [%(levelname)s] %(message)s\")\nlogger = logging.getLogger(__name__)\n\nspark = SparkSession.builder.appName(\"TaxiFareCapstone\").getOrCreate()\n\ndef extract():\n    logger.info(\"Extracting trips and zone lookup\")\n    trips = spark.read.parquet(\"/data/nyc_taxi/yellow_tripdata_2024-01.parquet\")\n    zones = spark.read.csv(\"/data/nyc_taxi/taxi_zone_lookup.csv\", header=True, inferSchema=True)\n    logger.info(\"Extracted %d trip rows, %d zone rows\", trips.count(), zones.count())\n    return trips, zones",
+    "caption": "Lesson 39's logging pattern — when this runs unattended, the log tells you exactly how many rows came in."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Clean: removing bad records before trusting anything",
+    "code": "def clean(trips):\n    logger.info(\"Cleaning trip data\")\n    before = trips.count()\n\n    cleaned = (\n        trips\n        .filter(col(\"fare_amount\") > 0)\n        .filter(col(\"trip_distance\") > 0)\n        .filter(col(\"PULocationID\").isNotNull())\n        .na.drop(subset=[\"passenger_count\"])\n    )\n\n    after = cleaned.count()\n    logger.info(\"Dropped %d invalid/incomplete rows (%d -> %d)\", before - after, before, after)\n    return cleaned",
+    "caption": "Fares of $0 or less, zero-distance trips, and missing fields would quietly drag an average fare toward meaningless numbers."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Transform and aggregate: real zone names, then the answer",
+    "code": "def transform(trips, zones):\n    joined = trips.join(\n        zones, trips.PULocationID == zones.LocationID, \"left\"\n    ).select(\n        trips.VendorID, trips.fare_amount, trips.trip_distance,\n        zones.Zone.alias(\"pickup_zone\"), zones.Borough.alias(\"pickup_borough\"),\n    )\n    unmatched = joined.filter(col(\"pickup_zone\").isNull()).count()\n    if unmatched > 0:\n        logger.warning(\"%d trips have no matching pickup zone\", unmatched)\n    return joined\n\ndef aggregate(joined):\n    return (\n        joined\n        .groupBy(\"pickup_zone\", \"pickup_borough\")\n        .agg(count(\"*\").alias(\"trip_count\"), spark_round(avg(\"fare_amount\"), 2).alias(\"avg_fare\"))\n        .filter(col(\"trip_count\") >= 50)   # ignore zones with too few trips to be meaningful\n        .orderBy(col(\"avg_fare\").desc())\n    )",
+    "caption": "A zone with 3 trips and one pricey fare shouldn't top the ranking — real work includes judgment calls like a minimum-trip threshold."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Load: saving the result, and running the whole thing",
+    "code": "def load(result):\n    logger.info(\"Writing result to output path\")\n    result.write.mode(\"overwrite\").parquet(\"/data/nyc_taxi/output/avg_fare_by_zone\")\n\ndef run_pipeline():\n    trips, zones = extract()\n    cleaned = clean(trips)\n    joined = transform(cleaned, zones)\n    result = aggregate(joined)\n    load(result)\n    return result\n\nif __name__ == \"__main__\":\n    run_pipeline()",
+    "caption": "Small, named functions mirror Chapter 6's ETL design — and make Lesson 48's validation step possible."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 48",
+    "titlePlain": "Mini Capstone Part 2: Validating & ",
+    "titleEmphasis": "Presenting",
+    "titleSuffix": " Results",
+    "subtitle": "Why finishing without an error isn't the same as being correct."
+  }
+]

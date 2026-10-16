@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for Data Engineers · Chapter 6, Lesson 35",
+    "titlePlain": "Loading to a ",
+    "titleEmphasis": "Target",
+    "titleSuffix": "",
+    "subtitle": "File, database, or warehouse — same cleaned DataFrame, different destination."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "A Load step's target is usually one of three things",
+    "titlePlain": "Three kinds of ",
+    "titleEmphasis": "target",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "FILE", "sub": "CSV, JSON, Parquet — portable, no server required" },
+      { "label": "DATABASE", "sub": "A real SQL Server database, via pyodbc / SQLAlchemy" },
+      { "label": "WAREHOUSE", "sub": "Built for analytics at scale, loaded the same way" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Loading to SQLite — a lightweight stand-in for a warehouse",
+    "code": "import sqlite3\nimport pandas as pd\n\ndef load_to_warehouse(df, db_path=\"orders_warehouse.db\", table=\"orders\"):\n    conn = sqlite3.connect(db_path)\n    try:\n        df.to_sql(table, conn, if_exists=\"replace\", index=False)\n        return len(df)\n    finally:\n        conn.close()",
+    "caption": "sqlite3 is built into Python — no install, no server. df.to_sql() works the same way it did in Lesson 30's SQLAlchemy engine."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Confirming the load",
+    "code": "def count_rows(db_path=\"orders_warehouse.db\", table=\"orders\"):\n    conn = sqlite3.connect(db_path)\n    try:\n        cursor = conn.cursor()\n        cursor.execute(f\"SELECT COUNT(*) FROM {table};\")\n        return cursor.fetchone()[0]\n    finally:\n        conn.close()\n\nprint(count_rows())",
+    "caption": "Loading isn't done until you've confirmed the row count in the target matches what you expected to load."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The same pattern, pointed at AdventureWorks2012",
+    "code": "from sqlalchemy import create_engine\n\nengine = create_engine(\n    \"mssql+pyodbc://@localhost/AdventureWorks2012\"\n    \"?driver=ODBC+Driver+18+for+SQL+Server&trusted_connection=yes\"\n)\ndf.to_sql(\"OrdersStaging\", engine, schema=\"Staging\", if_exists=\"append\", index=False)",
+    "caption": "Same to_sql() call, same DataFrame — only the connection changes. The rest of the pipeline doesn't need to care."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 36",
+    "titlePlain": "Incremental Loads & ",
+    "titleEmphasis": "Watermarks",
+    "titleSuffix": "",
+    "subtitle": "Stop reloading everything on every single run."
+  }
+]

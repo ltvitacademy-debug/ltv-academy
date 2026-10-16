@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for Data Engineers · Chapter 6, Lesson 36",
+    "titlePlain": "Incremental Loads & ",
+    "titleEmphasis": "Watermarks",
+    "titleSuffix": "",
+    "subtitle": "Remembering where the last run left off."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The problem with reloading everything",
+    "code": "def load_to_warehouse(df, db_path=\"orders_warehouse.db\", table=\"orders\"):\n    df.to_sql(table, conn, if_exists=\"replace\", index=False)\n\n# Fine at 20 rows.\n# Not fine at millions of rows, re-run every hour.",
+    "caption": "if_exists=\"replace\" wipes and reloads everything, every run — wasting time on data that hasn't changed."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Reading and writing a watermark file",
+    "code": "import os\n\nWATERMARK_FILE = \"last_loaded_date.txt\"\n\ndef read_watermark():\n    if not os.path.exists(WATERMARK_FILE):\n        return \"1900-01-01\"   # no prior run - load everything\n    with open(WATERMARK_FILE, \"r\") as f:\n        return f.read().strip()\n\ndef write_watermark(value):\n    with open(WATERMARK_FILE, \"w\") as f:\n        f.write(str(value))",
+    "caption": "A watermark is the highest value of an ordering column already loaded. orders.csv's current watermark: 2026-01-19."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Extracting only new rows",
+    "code": "import pandas as pd\n\ndef extract_incremental(path=\"orders.csv\"):\n    df = pd.read_csv(path, parse_dates=[\"order_date\"])\n    watermark = pd.Timestamp(read_watermark())\n    new_rows = df[df[\"order_date\"] > watermark]\n    return new_rows",
+    "caption": "parse_dates=[\"order_date\"] makes the > comparison compare real dates, not text."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Updating the watermark only after a successful load",
+    "code": "def run_incremental_pipeline(path=\"orders.csv\"):\n    new_rows = extract_incremental(path)\n    if new_rows.empty:\n        print(\"No new rows since last run.\")\n        return\n    clean_rows = clean_orders(new_rows)\n    load_to_warehouse(clean_rows)\n\n    new_watermark = clean_rows[\"order_date\"].max()\n    write_watermark(new_watermark.strftime(\"%Y-%m-%d\"))\n    print(f\"Loaded {len(clean_rows)} new row(s). Watermark now {new_watermark.date()}.\")",
+    "caption": "Update before the load succeeds, and a failed run would silently skip those rows forever on the next attempt."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 37",
+    "titlePlain": "Idempotency & ",
+    "titleEmphasis": "Error Recovery",
+    "titleSuffix": "",
+    "subtitle": "Making it safe to rerun a pipeline that already partly ran."
+  }
+]

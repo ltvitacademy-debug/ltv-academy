@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for Data Engineers · Chapter 5, Lesson 27",
+    "titlePlain": "Running Queries & Loading Results Into ",
+    "titleEmphasis": "Pandas",
+    "titleSuffix": "",
+    "subtitle": "pd.read_sql() -- a query straight into a DataFrame."
+  },
+  {
+    "type": "code",
+    "eyebrow": "pd.read_sql(): query in, DataFrame out",
+    "code": "import pyodbc\nimport pandas as pd\n\nconn = pyodbc.connect(\n    \"DRIVER={ODBC Driver 18 for SQL Server};\"\n    \"SERVER=localhost;DATABASE=AdventureWorks2012;\"\n    \"Trusted_Connection=yes;\"\n)\n\nquery = \"\"\"\nSELECT TOP 10 ProductID, Name, ListPrice\nFROM Production.Product\nWHERE ListPrice > 0\nORDER BY ListPrice DESC;\n\"\"\"\n\ndf = pd.read_sql(query, conn)\nprint(df.head())",
+    "caption": "No manual loop over cursor rows -- column types are already inferred."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Joining tables inside the query",
+    "code": "query = \"\"\"\nSELECT soh.SalesOrderID, soh.OrderDate, p.Name AS ProductName,\n       sod.OrderQty, sod.UnitPrice, sod.LineTotal\nFROM Sales.SalesOrderHeader AS soh\nJOIN Sales.SalesOrderDetail AS sod\n    ON sod.SalesOrderID = soh.SalesOrderID\nJOIN Production.Product AS p ON p.ProductID = sod.ProductID\nWHERE soh.OrderDate >= '2011-01-01'\nORDER BY soh.OrderDate;\n\"\"\"\n\norders_df = pd.read_sql(query, conn)",
+    "caption": "Three real AdventureWorks2012 tables joined entirely inside SQL Server."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Large result sets: chunksize",
+    "code": "query = \"SELECT * FROM Sales.SalesOrderDetail;\"\n\ntotal_rows = 0\nfor chunk in pd.read_sql(query, conn, chunksize=5000):\n    total_rows += len(chunk)\n    # process each chunk here, instead of holding\n    # the whole table in memory\n\nprint(total_rows)",
+    "caption": "chunksize turns read_sql() into an iterator of smaller DataFrames."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why push the join down to SQL",
+    "titlePlain": "Let the database do the ",
+    "titleEmphasis": "join",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "LESS NETWORK", "sub": "Only the joined result travels, not three whole tables" },
+      { "label": "LESS WORK FOR PANDAS", "sub": "No three separate .merge() calls needed" },
+      { "label": "DATABASE ENGINE STRENGTH", "sub": "SQL Server already does joins well -- use that" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 28",
+    "titlePlain": "Writing Data Back to a ",
+    "titleEmphasis": "Database",
+    "titleSuffix": "",
+    "subtitle": "Pushing rows into SQL Server from Python."
+  }
+]

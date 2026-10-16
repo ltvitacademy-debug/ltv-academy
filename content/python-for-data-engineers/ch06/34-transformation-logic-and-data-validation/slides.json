@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for Data Engineers · Chapter 6, Lesson 34",
+    "titlePlain": "Transformation Logic & ",
+    "titleEmphasis": "Data Validation",
+    "titleSuffix": "",
+    "subtitle": "Validate first, clean second — and know when to raise instead of drop."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Two real problems in orders.csv",
+    "code": "1005,504,,West,Camp Stove Duo,Camping,3,45.25,2026-01-06,Shipped\n1014,502,Marcus Ibeh,East,Insulated Bottle 1L,Accessories,-1,22.00,2026-01-14,Shipped",
+    "caption": "Order 1005 has no customer_name. Order 1014 has quantity -1. Neither raises a Python error on its own."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Validate first, separately from cleaning",
+    "code": "def validate_orders(df):\n    issues = []\n    if df[\"customer_name\"].isna().any():\n        bad_ids = df.loc[df[\"customer_name\"].isna(), \"order_id\"].tolist()\n        issues.append(f\"Missing customer_name for order_id(s): {bad_ids}\")\n    if (df[\"quantity\"] <= 0).any():\n        bad_ids = df.loc[df[\"quantity\"] <= 0, \"order_id\"].tolist()\n        issues.append(f\"Non-positive quantity for order_id(s): {bad_ids}\")\n    return issues",
+    "caption": "validate_orders() only reports problems — it names order_id 1005 and 1014 specifically, instead of silently dropping rows."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Deciding what to do about each issue",
+    "code": "def clean_orders(df):\n    df = df.copy()\n    missing_name_mask = df[\"customer_name\"].isna()\n    df.loc[missing_name_mask, \"customer_name\"] = \"Unknown Customer\"\n\n    bad_quantity_mask = df[\"quantity\"] <= 0\n    dropped = df.loc[bad_quantity_mask, \"order_id\"].tolist()\n    df = df[~bad_quantity_mask]\n\n    print(f\"Flagged {missing_name_mask.sum()} row(s) with unknown customer name.\")\n    print(f\"Dropped {len(dropped)} row(s) with non-positive quantity: {dropped}\")\n    return df",
+    "caption": "A missing name is recoverable — flag it and keep the row. A negative quantity isn't — drop it and log it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Raising instead of dropping, when the stakes are higher",
+    "code": "def clean_orders_strict(df):\n    if (df[\"quantity\"] <= 0).any():\n        bad_ids = df.loc[df[\"quantity\"] <= 0, \"order_id\"].tolist()\n        raise ValueError(f\"Invalid quantity for order_id(s): {bad_ids}\")\n    return df",
+    "caption": "For a pipeline feeding a billing system, silently dropping a bad row might be the wrong call entirely."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 35",
+    "titlePlain": "Loading to a ",
+    "titleEmphasis": "Target",
+    "titleSuffix": "",
+    "subtitle": "File, database, or warehouse — same cleaned DataFrame."
+  }
+]

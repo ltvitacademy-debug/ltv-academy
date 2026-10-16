@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for Data Engineers · Chapter 5, Lesson 28",
+    "titlePlain": "Writing Data Back to a ",
+    "titleEmphasis": "Database",
+    "titleSuffix": "",
+    "subtitle": "execute(), executemany(), and the commit you can't skip."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A single INSERT with execute()",
+    "code": "cursor.execute(\n    \"INSERT INTO Production.ProductCategory \"\n    \"(Name, rowguid, ModifiedDate) \"\n    \"VALUES (?, NEWID(), GETDATE());\",\n    (\"Test Category\",)\n)\nconn.commit()\nconn.close()",
+    "caption": "The ? placeholder -- the value is passed separately, never pasted into the string."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Many rows at once with executemany()",
+    "code": "rows = [\n    (\"Trail Runner GTX\", 2, 129.99),\n    (\"Alpine 2P Tent\", 1, 249.50),\n    (\"Summit Daypack 22L\", 1, 79.00),\n]\n\ncursor.executemany(\n    \"INSERT INTO Staging.ProductSnapshot \"\n    \"(ProductName, Quantity, UnitPrice) VALUES (?, ?, ?);\",\n    rows\n)\nconn.commit()",
+    "caption": "Same statement, once per row -- the driver batches the round trips to the server."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Forget commit(), and it never happened",
+    "code": "cursor.execute(\n    \"INSERT INTO Staging.ProductSnapshot (ProductName) \"\n    \"VALUES (?);\",\n    (\"Untracked Row\",)\n)\n# conn.commit()  <- forget this, and SQL Server rolls\n#                   it back when the connection closes\nconn.close()",
+    "caption": "pyodbc connections are NOT in autocommit mode by default."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A realistic staging-table pattern",
+    "code": "cursor.execute(\"TRUNCATE TABLE Staging.ProductSnapshot;\")\ncursor.executemany(\n    \"INSERT INTO Staging.ProductSnapshot \"\n    \"(ProductName, Quantity, UnitPrice) VALUES (?, ?, ?);\",\n    rows\n)\nconn.commit()",
+    "caption": "Truncate the staging table first, so it only ever holds the current run's data."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 29",
+    "titlePlain": "Parameterized Queries & ",
+    "titleEmphasis": "SQL Injection",
+    "titleSuffix": "",
+    "subtitle": "Why that ? placeholder isn't just a style choice."
+  }
+]

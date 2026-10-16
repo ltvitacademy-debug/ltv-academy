@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for Data Engineers · Chapter 5, Lesson 31",
+    "titlePlain": "Transactions & Error Handling in ",
+    "titleEmphasis": "Database Code",
+    "titleSuffix": "",
+    "subtitle": "All or nothing -- and a safe pattern to reuse."
+  },
+  {
+    "type": "code",
+    "eyebrow": "rollback(): undoing before committing",
+    "code": "try:\n    cursor.execute(\"TRUNCATE TABLE Staging.ProductSnapshot;\")\n    cursor.executemany(\n        \"INSERT INTO Staging.ProductSnapshot \"\n        \"(ProductName, Quantity, UnitPrice) VALUES (?, ?, ?);\",\n        [(\"Trail Runner GTX\", 2, 129.99), (\"Alpine 2P Tent\", 1, 249.50)]\n    )\n    conn.commit()\nexcept pyodbc.Error as err:\n    conn.rollback()\n    print(f\"Load failed, rolled back: {err}\")\nfinally:\n    conn.close()",
+    "caption": "A failed executemany() rolls back the TRUNCATE too -- the table ends up exactly as it started."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Catching the right exception",
+    "code": "try:\n    cursor.execute(\n        \"INSERT INTO Staging.ProductSnapshot (Quantity) VALUES (?);\",\n        (\"not a number\",)\n    )\n    conn.commit()\nexcept pyodbc.Error as err:\n    conn.rollback()\n    print(\"Database error:\", err)\nexcept Exception as err:\n    conn.rollback()\n    print(\"Unexpected error:\", err)\n    raise",
+    "caption": "Specific exception first, general exception second, re-raise what you don't expect."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A safe write function -- Chapter 6's pattern",
+    "code": "def load_rows(rows, conn):\n    cursor = conn.cursor()\n    try:\n        cursor.execute(\"TRUNCATE TABLE Staging.ProductSnapshot;\")\n        cursor.executemany(\n            \"INSERT INTO Staging.ProductSnapshot \"\n            \"(ProductName, Quantity, UnitPrice) VALUES (?, ?, ?);\",\n            rows\n        )\n        conn.commit()\n        return len(rows)\n    except pyodbc.Error:\n        conn.rollback()\n        raise",
+    "caption": "Work inside try, commit only on full success, rollback and re-raise on any database error."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What a transaction guarantees",
+    "titlePlain": "All of it, or ",
+    "titleEmphasis": "none",
+    "titleSuffix": " of it",
+    "steps": [
+      { "label": "TRANSACTION", "sub": "Everything between opening a connection and commit() is one unit" },
+      { "label": "ROLLBACK", "sub": "Discards every uncommitted change in that transaction" },
+      { "label": "pyodbc.Error FIRST", "sub": "Catch the specific database error before a bare Exception" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 6, Lesson 1",
+    "titlePlain": "Designing an ETL ",
+    "titleEmphasis": "Pipeline",
+    "titleSuffix": "",
+    "subtitle": "Where connect, query, write, and transaction all come together."
+  }
+]

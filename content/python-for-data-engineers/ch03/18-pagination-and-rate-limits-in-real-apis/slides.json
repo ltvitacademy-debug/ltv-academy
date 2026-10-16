@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python for Data Engineers · Chapter 3, Lesson 18",
+    "titlePlain": "Pagination & Rate Limits in Real ",
+    "titleEmphasis": "APIs",
+    "titleSuffix": "",
+    "subtitle": "Walking every page of a real API without getting rate-limited."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Why pagination exists",
+    "code": "response = requests.get(\n    \"https://api.github.com/repos/pandas-dev/pandas/contributors\",\n    params={\"per_page\": 100, \"page\": 1},\n)\npage_1 = response.json()\nprint(len(page_1))",
+    "caption": "per_page=100 is GitHub's max per request; page=2 would fetch the next 100 after that."
+  },
+  {
+    "type": "code",
+    "eyebrow": "response.links: following the Link header",
+    "code": "response = requests.get(\n    \"https://api.github.com/repos/pandas-dev/pandas/contributors\",\n    params={\"per_page\": 100, \"page\": 1},\n)\nprint(response.links)\n# {'next': {'url': '...page=2', 'rel': 'next'}, 'last': {...}}",
+    "caption": "response.links is requests' parsed version of the Link header — when \"next\" disappears, you're on the last page."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A loop that walks every page",
+    "code": "contributors = []\nurl = \"https://api.github.com/repos/pandas-dev/pandas/contributors\"\nparams = {\"per_page\": 100, \"page\": 1}\n\nwhile url:\n    response = requests.get(url, params=params)\n    response.raise_for_status()\n    contributors.extend(response.json())\n\n    if \"next\" in response.links:\n        url = response.links[\"next\"][\"url\"]\n        params = None\n    else:\n        url = None",
+    "caption": "No hardcoded page count, no guessing — it stops the moment \"next\" disappears from response.links."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Rate limits: a real ceiling",
+    "code": "response = requests.get(\"https://api.github.com/repos/pandas-dev/pandas\")\n\nremaining = int(response.headers[\"X-RateLimit-Remaining\"])\nif remaining < 5:\n    print(\"Getting close to the rate limit -- slow down or wait for reset.\")",
+    "caption": "Unauthenticated requests are capped at 60/hour per IP — go over it and GitHub returns a 403, not a crash."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 4, Lesson 19",
+    "titlePlain": "Pandas Series & ",
+    "titleEmphasis": "DataFrames",
+    "titleSuffix": "",
+    "subtitle": "You've got clean, real data — now it's time for pandas."
+  }
+]
