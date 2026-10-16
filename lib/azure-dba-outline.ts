@@ -108,7 +108,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(14, "choosing-the-correct-azure-sql-solution", "Choosing the Correct Azure SQL Solution for Business Requirements", {
         contentDir: "ch03/14-choosing-the-correct-azure-sql-solution",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792158827/ltv-azure-dba/choosing-the-correct-azure-sql-solution.mp4",
+        durationLabel: "1 min 37 s",
       }),
       L(15, "table-partitioning-and-large-database-strategies", "Table Partitioning & Large Database Strategies", {
         contentDir: "ch03/15-table-partitioning-and-large-database-strategies",
