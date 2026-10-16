@@ -341,7 +341,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(61, "the-limits-of-ai", "The Limits of AI in Data Engineering, Honestly", {
         contentDir: "ch03/61-the-limits-of-ai",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792149581/ltv-career-capstone/the-limits-of-ai.mp4",
+        durationLabel: "1 min 2 s",
       }),
       L(62, "ai-chapter-recap", "AI for Data Engineers Chapter Recap", {
         contentDir: "ch03/62-ai-chapter-recap",
