@@ -86,7 +86,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(11, "ingestion-patterns-at-scale", "Ingestion Patterns at Scale", {
         contentDir: "ch02/11-ingestion-patterns-at-scale",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151049/ltv-advanced-databricks/ingestion-patterns-at-scale.mp4",
+        durationLabel: "1 min 40 s",
       }),
     ],
   },
