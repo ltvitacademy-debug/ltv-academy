@@ -234,7 +234,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792166389/ltv-t-sql-for-dbas/parameter-sensitivity.mp4",
         durationLabel: "1 min 56 s",
       }),
-      L(40, "recompilation-and-baselines", "Recompilation & Performance Baselines", { contentDir: "ch09/40-recompilation-and-baselines" }),
+      L(40, "recompilation-and-baselines", "Recompilation & Performance Baselines", { contentDir: "ch09/40-recompilation-and-baselines",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792166453/ltv-t-sql-for-dbas/recompilation-and-baselines.mp4",
+        durationLabel: "1 min 47 s",
+      }),
     ],
   },
   {
