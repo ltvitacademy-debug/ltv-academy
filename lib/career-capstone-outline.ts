@@ -54,7 +54,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(6, "the-lambda-architecture", "The Lambda Architecture", {
         contentDir: "ch01/06-the-lambda-architecture",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146435/ltv-career-capstone/the-lambda-architecture.mp4",
+        durationLabel: "1 min 6 s",
       }),
       L(7, "the-kappa-architecture", "The Kappa Architecture", {
         contentDir: "ch01/07-the-kappa-architecture",
