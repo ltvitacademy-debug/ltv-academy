@@ -174,7 +174,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(25, "cluster-sizing-for-large-workloads", "Cluster Sizing for Large Workloads", {
         contentDir: "ch05/25-cluster-sizing-for-large-workloads",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151663/ltv-advanced-databricks/cluster-sizing-for-large-workloads.mp4",
+        durationLabel: "1 min 32 s",
       }),
       L(26, "cost-optimization", "Cost Optimization", {
         contentDir: "ch05/26-cost-optimization",
