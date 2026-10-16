@@ -297,7 +297,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(50, "lakeflow-declarative-pipelines", "Lakeflow Declarative Pipelines", {
         contentDir: "ch05/50-lakeflow-declarative-pipelines",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145548/ltv-databricks-delta/lakeflow-declarative-pipelines.mp4",
+        durationLabel: "1 min 26 s",
       }),
       L(51, "defining-a-pipeline-with-dlt-table", "Defining a Pipeline With @dlt.table", {
         contentDir: "ch05/51-defining-a-pipeline-with-dlt-table",

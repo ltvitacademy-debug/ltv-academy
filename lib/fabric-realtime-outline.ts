@@ -321,7 +321,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(57, "incident-response", "Incident Response for Data Pipelines", {
         contentDir: "ch03/57-incident-response",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145551/ltv-fabric-realtime/incident-response.mp4",
+        durationLabel: "1 min 13 s",
       }),
       L(58, "root-cause-analysis", "Root Cause Analysis, Step by Step", {
         contentDir: "ch03/58-root-cause-analysis",
