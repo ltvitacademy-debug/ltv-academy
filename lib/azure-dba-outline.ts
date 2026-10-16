@@ -380,7 +380,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(60, "creating-jobs-steps-and-schedules", "Creating Jobs, Steps & Schedules", {
         contentDir: "ch10/60-creating-jobs-steps-and-schedules",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161181/ltv-azure-dba/creating-jobs-steps-and-schedules.mp4",
+        durationLabel: "1 min 29 s",
       }),
       L(61, "alerts-operators-and-notifications", "Alerts, Operators & Notifications", {
         contentDir: "ch10/61-alerts-operators-and-notifications",
