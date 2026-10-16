@@ -130,8 +130,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(54, "geographic-roles-and-creating-maps", "Geographic Roles & Creating Maps", { contentDir: "ch09/54-geographic-roles-and-creating-maps", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134106/ltv-tableau/geographic-roles-and-creating-maps.mp4", durationLabel: "1 min 9 s" }),
       L(55, "symbol-maps-vs-filled-maps", "Symbol Maps vs. Filled Maps", { contentDir: "ch09/55-symbol-maps-vs-filled-maps", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134151/ltv-tableau/symbol-maps-vs-filled-maps.mp4", durationLabel: "1 min 21 s" }),
-      L(56, "fixing-geographic-data-errors", "Fixing Geographic Data Errors", { contentDir: "ch09/56-fixing-geographic-data-errors" }),
-      L(57, "geographic-hierarchies-groups-custom-territories", "Geographic Hierarchies, Groups & Custom Territories", { contentDir: "ch09/57-geographic-hierarchies-groups-custom-territories" }),
+      L(56, "fixing-geographic-data-errors", "Fixing Geographic Data Errors", { contentDir: "ch09/56-fixing-geographic-data-errors", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134196/ltv-tableau/fixing-geographic-data-errors.mp4", durationLabel: "1 min 21 s" }),
+      L(57, "geographic-hierarchies-groups-custom-territories", "Geographic Hierarchies, Groups & Custom Territories", { contentDir: "ch09/57-geographic-hierarchies-groups-custom-territories", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792134235/ltv-tableau/geographic-hierarchies-groups-custom-territories.mp4", durationLabel: "1 min 14 s" }),
       L(58, "spatial-data-and-advanced-mapping", "Spatial Data & Advanced Mapping", { contentDir: "ch09/58-spatial-data-and-advanced-mapping" }),
     ],
   },
