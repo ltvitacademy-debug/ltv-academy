@@ -76,7 +76,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(9, "file-notification-mode", "File Notification Mode", {
         contentDir: "ch02/09-file-notification-mode",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150939/ltv-advanced-databricks/file-notification-mode.mp4",
+        durationLabel: "1 min 28 s",
       }),
       L(10, "auto-loader-plus-streaming", "Auto Loader + Structured Streaming", {
         contentDir: "ch02/10-auto-loader-plus-streaming",
