@@ -309,6 +309,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(47, "emr-cost-optimization", "EMR Cost Optimization", {
         contentDir: "ch09/47-emr-cost-optimization",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156226/ltv-aws-data-engineering/emr-cost-optimization.mp4",
+        durationLabel: "1 min 31 s",
       }),
     ],
   },
