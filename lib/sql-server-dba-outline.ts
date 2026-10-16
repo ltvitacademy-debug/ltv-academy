@@ -31,7 +31,8 @@ export const SQL_SERVER_DBA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(1, "the-database-engine", "The Database Engine", {
         contentDir: "ch01/01-the-database-engine",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792166830/ltv-sql-server-dba/the-database-engine.mp4",
+        durationLabel: "1 min 18 s",
       }),
       L(2, "storage-engine-internals", "Storage Engine Internals", { contentDir: "ch01/02-storage-engine-internals" }),
       L(3, "memory-architecture", "Memory Architecture", { contentDir: "ch01/03-memory-architecture" }),
