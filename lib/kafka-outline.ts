@@ -50,7 +50,8 @@ export const KAFKA_CHAPTERS: ChapterMeta[] = [
       }),
       L(5, "kafka-vs-other-streaming-tools", "Kafka vs. Other Streaming Tools", {
         contentDir: "ch01/05-kafka-vs-other-streaming-tools",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148238/ltv-kafka/kafka-vs-other-streaming-tools.mp4",
+        durationLabel: "1 min 34 s",
       }),
     ],
   },

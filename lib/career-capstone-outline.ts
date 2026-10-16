@@ -200,7 +200,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(34, "practice-notebooks-and-spark", "Practice Questions: Notebooks and Spark", {
         contentDir: "ch02/34-practice-notebooks-and-spark",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148240/ltv-career-capstone/practice-notebooks-and-spark.mp4",
+        durationLabel: "58 s",
       }),
       L(35, "practice-security-and-governance", "Practice Questions: Security and Governance", {
         contentDir: "ch02/35-practice-security-and-governance",
