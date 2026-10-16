@@ -80,7 +80,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
       L(28, "writing-data-back-to-a-database", "Writing Data Back to a Database", { contentDir: "ch05/28-writing-data-back-to-a-database", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145868/ltv-python-for-data-engineers/writing-data-back-to-a-database.mp4", durationLabel: "2 min 2 s" }),
       L(29, "parameterized-queries-and-sql-injection", "Parameterized Queries & SQL Injection", { contentDir: "ch05/29-parameterized-queries-and-sql-injection", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145974/ltv-python-for-data-engineers/parameterized-queries-and-sql-injection.mp4", durationLabel: "2 min 9 s" }),
       L(30, "working-with-sqlalchemy", "Working With SQLAlchemy", { contentDir: "ch05/30-working-with-sqlalchemy", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146083/ltv-python-for-data-engineers/working-with-sqlalchemy.mp4", durationLabel: "2 min 17 s" }),
-      L(31, "transactions-and-error-handling-in-database-code", "Transactions & Error Handling in Database Code", { contentDir: "ch05/31-transactions-and-error-handling-in-database-code" }),
+      L(31, "transactions-and-error-handling-in-database-code", "Transactions & Error Handling in Database Code", { contentDir: "ch05/31-transactions-and-error-handling-in-database-code", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146174/ltv-python-for-data-engineers/transactions-and-error-handling-in-database-code.mp4", durationLabel: "2 min 15 s" }),
     ],
   },
   {
