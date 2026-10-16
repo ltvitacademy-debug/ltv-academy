@@ -38,7 +38,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(3, "the-workspace-ui-tour", "The Workspace UI Tour", {
         contentDir: "ch01/03-the-workspace-ui-tour",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792142347/ltv-databricks-delta/the-workspace-ui-tour.mp4",
+        durationLabel: "1 min 33 s",
       }),
       L(4, "clusters-and-compute", "Clusters and Compute", {
         contentDir: "ch01/04-clusters-and-compute",
