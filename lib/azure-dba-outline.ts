@@ -488,7 +488,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(78, "azure-sql-automated-backups", "Azure SQL Automated Backups", {
         contentDir: "ch13/78-azure-sql-automated-backups",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162025/ltv-azure-dba/azure-sql-automated-backups.mp4",
+        durationLabel: "1 min 9 s",
       }),
       L(79, "point-in-time-restore", "Point-in-Time Restore", {
         contentDir: "ch13/79-point-in-time-restore",
