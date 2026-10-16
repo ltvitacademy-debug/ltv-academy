@@ -39,8 +39,8 @@ export const TABLEAU_CHAPTERS: ChapterMeta[] = [
     n: 2,
     title: "Connecting & Preparing Data",
     lessons: [
-      L(7, "connecting-to-excel-and-csv", "Connecting to Excel & CSV Files", { contentDir: "ch02/07-connecting-to-excel-and-csv" }),
-      L(8, "connecting-to-sql-server", "Connecting Tableau to SQL Server", { contentDir: "ch02/08-connecting-to-sql-server" }),
+      L(7, "connecting-to-excel-and-csv", "Connecting to Excel & CSV Files", { contentDir: "ch02/07-connecting-to-excel-and-csv", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131723/ltv-tableau/connecting-to-excel-and-csv.mp4", durationLabel: "1 min 43 s" }),
+      L(8, "connecting-to-sql-server", "Connecting Tableau to SQL Server", { contentDir: "ch02/08-connecting-to-sql-server", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131774/ltv-tableau/connecting-to-sql-server.mp4", durationLabel: "1 min 41 s" }),
       L(9, "live-connections-vs-extracts", "Live Connections vs. Extracts", { contentDir: "ch02/09-live-connections-vs-extracts" }),
       L(10, "creating-refreshing-managing-extracts", "Creating, Refreshing & Managing Extracts", { contentDir: "ch02/10-creating-refreshing-managing-extracts" }),
       L(11, "data-types-metadata-field-properties", "Data Types, Metadata & Field Properties", { contentDir: "ch02/11-data-types-metadata-field-properties" }),
