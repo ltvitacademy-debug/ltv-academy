@@ -139,6 +139,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(19, "querying-s3-data-with-athena", "Querying S3 Data With Athena", {
         contentDir: "ch04/19-querying-s3-data-with-athena",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792154820/ltv-aws-data-engineering/querying-s3-data-with-athena.mp4",
+        durationLabel: "2 min 10 s",
       }),
       L(20, "athena-and-the-glue-catalog", "Athena + Glue Catalog Integration", {
         contentDir: "ch04/20-athena-and-the-glue-catalog",
