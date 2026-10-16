@@ -218,7 +218,10 @@ export const TSQL_FOR_DBAS_CHAPTERS: ChapterMeta[] = [
     n: 9,
     title: "Performance Troubleshooting with T-SQL",
     lessons: [
-      L(36, "query-store-queries", "Query Store Queries", { contentDir: "ch09/36-query-store-queries" }),
+      L(36, "query-store-queries", "Query Store Queries", { contentDir: "ch09/36-query-store-queries",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792166184/ltv-t-sql-for-dbas/query-store-queries.mp4",
+        durationLabel: "1 min 53 s",
+      }),
       L(37, "execution-plans-and-plan-cache", "Execution Plans & the Plan Cache", { contentDir: "ch09/37-execution-plans-and-plan-cache" }),
       L(38, "top-resource-consuming-queries", "Top Resource-Consuming Queries", { contentDir: "ch09/38-top-resource-consuming-queries" }),
       L(39, "parameter-sensitivity", "Parameter Sensitivity", { contentDir: "ch09/39-parameter-sensitivity" }),
