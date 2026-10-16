@@ -220,7 +220,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(38, "building-a-study-plan", "Building a Study Plan", {
         contentDir: "ch02/38-building-a-study-plan",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792148457/ltv-career-capstone/building-a-study-plan.mp4",
+        durationLabel: "1 min 26 s",
       }),
       L(39, "exam-day-strategy", "Exam-Day Strategy and Time Management", {
         contentDir: "ch02/39-exam-day-strategy",
