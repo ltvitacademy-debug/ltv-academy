@@ -216,6 +216,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(32, "lambda-and-s3-triggers", "Lambda + S3 Triggers", {
         contentDir: "ch06/32-lambda-and-s3-triggers",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792155461/ltv-aws-data-engineering/lambda-and-s3-triggers.mp4",
+        durationLabel: "1 min 22 s",
       }),
       L(33, "lambda-limitations-for-data-workloads", "Lambda's Limitations for Data Workloads", {
         contentDir: "ch06/33-lambda-limitations-for-data-workloads",
