@@ -146,7 +146,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(21, "pandas-dataframes", "Pandas DataFrames", {
         contentDir: "ch02/21-pandas-dataframes",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792138567/ltv-de-foundations/pandas-dataframes.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(22, "reading-csv-and-json", "Reading CSV and JSON", {
         contentDir: "ch02/22-reading-csv-and-json",
