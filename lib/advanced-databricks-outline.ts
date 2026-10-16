@@ -66,7 +66,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(7, "auto-loader-fundamentals", "Auto Loader Fundamentals", {
         contentDir: "ch02/07-auto-loader-fundamentals",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150843/ltv-advanced-databricks/auto-loader-fundamentals.mp4",
+        durationLabel: "1 min 33 s",
       }),
       L(8, "schema-inference-and-evolution", "Schema Inference & Evolution", {
         contentDir: "ch02/08-schema-inference-and-evolution",
