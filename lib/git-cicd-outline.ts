@@ -53,7 +53,7 @@ export const GIT_CICD_CHAPTERS: ChapterMeta[] = [
       L(12, "gitignore-for-data-projects", ".gitignore for Data Projects", { contentDir: "ch03/12-gitignore-for-data-projects", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792119582/ltv-git-cicd/gitignore-for-data-projects.mp4", durationLabel: "1 min 35 s" }),
       L(13, "notebooks-in-git", "Notebooks in Git: The Diff Problem", { contentDir: "ch03/13-notebooks-in-git", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792119638/ltv-git-cicd/notebooks-in-git.mp4", durationLabel: "1 min 48 s" }),
       L(14, "large-file-handling", "Large File Handling & Git LFS", { contentDir: "ch03/14-large-file-handling", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792119697/ltv-git-cicd/large-file-handling.mp4", durationLabel: "2 min 2 s" }),
-      L(15, "versioning-sql-dbt-notebooks", "Versioning SQL, dbt Projects & Notebooks", { contentDir: "ch03/15-versioning-sql-dbt-notebooks" }),
+      L(15, "versioning-sql-dbt-notebooks", "Versioning SQL, dbt Projects & Notebooks", { contentDir: "ch03/15-versioning-sql-dbt-notebooks", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792119749/ltv-git-cicd/versioning-sql-dbt-notebooks.mp4", durationLabel: "1 min 41 s" }),
     ],
   },
   {
