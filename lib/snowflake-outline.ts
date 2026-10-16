@@ -136,7 +136,7 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     title: "Cost Management",
     lessons: [
       L(47, "snowflake-credits-and-warehouse-costs", "Snowflake Credits & Warehouse Costs", { contentDir: "ch11/47-snowflake-credits-and-warehouse-costs", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792129122/ltv-snowflake/snowflake-credits-and-warehouse-costs.mp4", durationLabel: "2 min 21 s" }),
-      L(48, "resource-monitors-preventing-runaway-costs", "Resource Monitors — Preventing Runaway Compute Costs", { contentDir: "ch11/48-resource-monitors-preventing-runaway-compute-costs" }),
+      L(48, "resource-monitors-preventing-runaway-costs", "Resource Monitors — Preventing Runaway Compute Costs", { contentDir: "ch11/48-resource-monitors-preventing-runaway-compute-costs", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792129186/ltv-snowflake/resource-monitors-preventing-runaway-compute-costs.mp4", durationLabel: "2 min 2 s" }),
     ],
   },
   {
