@@ -544,7 +544,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(88, "log-shipping-and-hybrid-ha-dr", "Log Shipping & Hybrid HA/DR", {
         contentDir: "ch14/88-log-shipping-and-hybrid-ha-dr",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792162480/ltv-azure-dba/log-shipping-and-hybrid-ha-dr.mp4",
+        durationLabel: "1 min 38 s",
       }),
       L(89, "monitoring-testing-troubleshooting-ha-dr", "Monitoring, Testing & Troubleshooting HA/DR", {
         contentDir: "ch14/89-monitoring-testing-troubleshooting-ha-dr",
