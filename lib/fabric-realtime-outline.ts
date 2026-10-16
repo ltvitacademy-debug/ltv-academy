@@ -175,11 +175,13 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(29, "windowing-in-streaming-data", "Windowing in Streaming Data", {
         contentDir: "ch02/29-windowing-in-streaming-data",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792143962/ltv-fabric-realtime/windowing-in-streaming-data.mp4",
+        durationLabel: "1 min 16 s",
       }),
       L(30, "tumbling-windows", "Tumbling Windows", {
         contentDir: "ch02/30-tumbling-windows",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144015/ltv-fabric-realtime/tumbling-windows.mp4",
+        durationLabel: "1 min 11 s",
       }),
       L(31, "hopping-and-sliding-windows", "Hopping and Sliding Windows", {
         contentDir: "ch02/31-hopping-and-sliding-windows",
