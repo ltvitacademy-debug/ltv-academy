@@ -293,7 +293,8 @@ export const DE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
       }),
       L(48, "data-type-conversion", "Data Type Conversion", {
         contentDir: "ch04/48-data-type-conversion",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792140029/ltv-de-foundations/data-type-conversion.mp4",
+        durationLabel: "1 min 40 s",
       }),
       L(49, "string-functions", "String Functions", {
         contentDir: "ch04/49-string-functions",
