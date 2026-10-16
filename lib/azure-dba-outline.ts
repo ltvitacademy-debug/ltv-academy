@@ -164,7 +164,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(24, "principle-of-least-privilege", "Principle of Least Privilege", {
         contentDir: "ch04/24-principle-of-least-privilege",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792159334/ltv-azure-dba/principle-of-least-privilege.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(25, "troubleshooting-login-auth-permission-problems", "Troubleshooting Login, Authentication & Permission Problems", {
         contentDir: "ch04/25-troubleshooting-login-auth-permission-problems",
