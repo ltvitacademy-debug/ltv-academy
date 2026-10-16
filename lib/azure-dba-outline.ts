@@ -354,7 +354,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(56, "database-scoped-configuration-and-server-settings", "Database-Scoped Configuration & Server Settings", {
         contentDir: "ch09/56-database-scoped-configuration-and-server-settings",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161011/ltv-azure-dba/database-scoped-configuration-and-server-settings.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(57, "resource-governor", "Resource Governor", {
         contentDir: "ch09/57-resource-governor",
