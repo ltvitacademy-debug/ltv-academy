@@ -185,7 +185,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(31, "hopping-and-sliding-windows", "Hopping and Sliding Windows", {
         contentDir: "ch02/31-hopping-and-sliding-windows",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792144075/ltv-fabric-realtime/hopping-and-sliding-windows.mp4",
+        durationLabel: "1 min 12 s",
       }),
       L(32, "session-windows", "Session Windows", {
         contentDir: "ch02/32-session-windows",
