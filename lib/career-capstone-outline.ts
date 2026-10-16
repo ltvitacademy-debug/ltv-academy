@@ -437,7 +437,8 @@ export const CAREER_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       }),
       L(79, "building-your-portfolio", "Building Your Data Engineering Portfolio", {
         contentDir: "ch04/79-building-your-portfolio",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792150356/ltv-career-capstone/building-your-portfolio.mp4",
+        durationLabel: "58 s",
       }),
       L(80, "telling-your-project-story", "Telling Your Project Story in an Interview", {
         contentDir: "ch04/80-telling-your-project-story",
