@@ -89,7 +89,7 @@ export const PYTHON_FOR_DATA_ENGINEERS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(32, "designing-an-etl-pipeline", "Designing an ETL Pipeline", { contentDir: "ch06/32-designing-an-etl-pipeline", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146301/ltv-python-for-data-engineers/designing-an-etl-pipeline.mp4", durationLabel: "2 min 35 s" }),
       L(33, "extracting-from-multiple-sources", "Extracting From Multiple Sources", { contentDir: "ch06/33-extracting-from-multiple-sources", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146394/ltv-python-for-data-engineers/extracting-from-multiple-sources.mp4", durationLabel: "2 min 31 s" }),
-      L(34, "transformation-logic-and-data-validation", "Transformation Logic & Data Validation", { contentDir: "ch06/34-transformation-logic-and-data-validation" }),
+      L(34, "transformation-logic-and-data-validation", "Transformation Logic & Data Validation", { contentDir: "ch06/34-transformation-logic-and-data-validation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792146503/ltv-python-for-data-engineers/transformation-logic-and-data-validation.mp4", durationLabel: "2 min 26 s" }),
       L(35, "loading-to-a-target", "Loading to a Target (File, Database, Warehouse)", { contentDir: "ch06/35-loading-to-a-target" }),
       L(36, "incremental-loads-and-watermarks", "Incremental Loads & Watermarks", { contentDir: "ch06/36-incremental-loads-and-watermarks" }),
       L(37, "idempotency-and-error-recovery", "Idempotency & Error Recovery", { contentDir: "ch06/37-idempotency-and-error-recovery" }),
