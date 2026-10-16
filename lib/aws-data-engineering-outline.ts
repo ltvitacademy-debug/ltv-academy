@@ -299,6 +299,8 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
       }),
       L(45, "running-spark-on-emr", "Running Spark on EMR", {
         contentDir: "ch09/45-running-spark-on-emr",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156126/ltv-aws-data-engineering/running-spark-on-emr.mp4",
+        durationLabel: "1 min 27 s",
       }),
       L(46, "emr-cluster-configuration", "EMR Cluster Configuration", {
         contentDir: "ch09/46-emr-cluster-configuration",
