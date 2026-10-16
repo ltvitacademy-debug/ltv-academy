@@ -173,6 +173,71 @@ export const TESTIMONIALS = [
     quote: "I quadrupled my income...",
     name: "Johnny",
   },
+  // Real comments from LTV Academy's Facebook community, screenshotted by
+  // the founder. Kept verbatim, including where the source comment itself
+  // was truncated by Facebook's "See More" — do not invent the missing text.
+  // `image` is the actual screenshot — shown instead of reformatted text so
+  // the quote is independently verifiable (real avatar, real engagement),
+  // not just typed-up copy that could be mistaken for fabricated.
+  {
+    quote:
+      "This class has changed my life. Went from unemployed to making $35 for the first time in my life. And have risen ever since. Trust Sub, trust the process and you will win like I have.",
+    name: "Mark Atiemo",
+    image: "/vsl/reviews/mark-atiemo.png",
+  },
+  {
+    quote:
+      "On my second interview because of the skill set. Had my first one last year in a similar field due to knowledge!! Let me say I'd be moving up in a new career I started last year.",
+    name: "Bri Elaine",
+    image: "/vsl/reviews/bri-elaine.png",
+  },
+  {
+    quote:
+      "I was in a rough place when I found Sub's course. My business was floundering and I didn't know how I would be able to financially support my children. I'm now on my 4th assignment and I get to work from home with my kids during this pandemic. I'm in the $40/hr range now and expect to increase my rate next yr.",
+    name: "Lauren Florentino Johnson",
+    image: "/vsl/reviews/lauren-florentino-johnson.png",
+  },
+  {
+    quote:
+      "After taking the LTV course, I personally found a un-tapped level of confidence in myself. Learning something that takes practice and more practice paid off in the end. And also I gained life long friends in this course!",
+    name: "Luke Stewart",
+    image: "/vsl/reviews/luke-stewart.png",
+  },
+  {
+    quote:
+      "Taking Subs bootcamp saved me a lot of time once I made the decision to rebrand my skill set. LTV classes directly teaches real world cutting-edge skills. I was able to leverage skills learned thru LTV into a career that can go as far as I choose. All while working from home. It was by far, the best career decision for me and my family.",
+    name: "Gwen Humphrey",
+    image: "/vsl/reviews/gwen-humphrey.png",
+  },
+  {
+    quote:
+      "Taking this training will change your life for the better. Very supportive community, great teachers, relative skills that are in high demand today... You get to have choices in your life when you are making $50/hr. Form a study group, hold everyone accountable, and you all will be a great success. Never give up and you will command your future.",
+    name: "Tony Anderson",
+    image: "/vsl/reviews/tony-anderson.png",
+  },
+  {
+    quote:
+      "I'm glad I took Sub's class, because of it I landed a full time position as a Technical Business Analyst @ $31.25/hr. because of what I learned in the class.",
+    name: "Louis Jordan",
+    image: "/vsl/reviews/louis-jordan.png",
+  },
+  {
+    quote:
+      "I took Subs course several years back and it's been nothing but progression in my life ever since. I never been the guy that gets excited about tech, I get excited about the freedom the money from tech gives me. The goal was to take the course and get the…",
+    name: "Drew El Oso",
+    image: "/vsl/reviews/drew-el-oso.png",
+  },
+  {
+    quote:
+      'I just want to say "Thank you" Sub Zero because the name "Lifting the Veil IT Academy" is a great name — I have truly grown personally and professionally after taking your class. At first I didn\'t get the name but it is great because that\'s what your scho…',
+    name: "Tootie Reneek",
+    image: "/vsl/reviews/tootie-reneek.png",
+  },
+  {
+    quote: "Great class with Sub. Just about to finish my first contract 45/hr.",
+    name: "Euston Thorton",
+    image: "/vsl/reviews/euston-thorton.png",
+  },
 ];
 
 export const ABOUT_STORY =
