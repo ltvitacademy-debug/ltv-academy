@@ -84,7 +84,10 @@ export const SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Index Tuning in Depth",
     lessons: [
-      L(12, "index-design-principles", "Index Design Principles", { contentDir: "ch03/12-index-design-principles" }),
+      L(12, "index-design-principles", "Index Design Principles", { contentDir: "ch03/12-index-design-principles",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792171138/ltv-sql-server-performance-tuning/index-design-principles.mp4",
+        durationLabel: "2 min 2 s",
+      }),
       L(13, "covering-indexes", "Covering Indexes", { contentDir: "ch03/13-covering-indexes" }),
       L(14, "included-columns", "Included Columns", { contentDir: "ch03/14-included-columns" }),
       L(15, "filtered-indexes", "Filtered Indexes", { contentDir: "ch03/15-filtered-indexes" }),
