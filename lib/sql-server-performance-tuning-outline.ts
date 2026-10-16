@@ -44,7 +44,10 @@ export const SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS: ChapterMeta[] = [
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792170687/ltv-sql-server-performance-tuning/the-tuning-workflow.mp4",
         durationLabel: "1 min 40 s",
       }),
-      L(5, "tools-overview", "Tools Overview", { contentDir: "ch01/05-tools-overview" }),
+      L(5, "tools-overview", "Tools Overview", { contentDir: "ch01/05-tools-overview",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792170737/ltv-sql-server-performance-tuning/tools-overview.mp4",
+        durationLabel: "1 min 23 s",
+      }),
     ],
   },
   {
