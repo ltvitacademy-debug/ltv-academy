@@ -276,7 +276,8 @@ export const FABRIC_REALTIME_CHAPTERS: ChapterMeta[] = [
       }),
       L(48, "testing-data-pipelines", "Testing Data Pipelines", {
         contentDir: "ch03/48-testing-data-pipelines",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145051/ltv-fabric-realtime/testing-data-pipelines.mp4",
+        durationLabel: "1 min 10 s",
       }),
       L(49, "unit-testing-pyspark-transformations", "Unit Testing PySpark Transformations", {
         contentDir: "ch03/49-unit-testing-pyspark-transformations",

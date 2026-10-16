@@ -256,7 +256,8 @@ export const DATABRICKS_DELTA_CHAPTERS: ChapterMeta[] = [
       }),
       L(43, "row-and-column-level-security", "Row-Level and Column-Level Security", {
         contentDir: "ch04/43-row-and-column-level-security",
-        // videoUrl/durationLabel pending — ElevenLabs renews 2026-09-18
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792145058/ltv-databricks-delta/row-and-column-level-security.mp4",
+        durationLabel: "1 min 24 s",
       }),
       L(44, "data-lineage-in-unity-catalog", "Data Lineage in Unity Catalog", {
         contentDir: "ch04/44-data-lineage-in-unity-catalog",
