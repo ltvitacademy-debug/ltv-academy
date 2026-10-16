@@ -431,7 +431,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(69, "automated-deployment-alerts-and-troubleshooting", "Automated Deployment, Alerts & Troubleshooting", {
         contentDir: "ch11/69-automated-deployment-alerts-and-troubleshooting",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161596/ltv-azure-dba/automated-deployment-alerts-and-troubleshooting.mp4",
+        durationLabel: "1 min 33 s",
       }),
     ],
   },
