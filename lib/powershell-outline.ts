@@ -74,7 +74,8 @@ export const POWERSHELL_CHAPTERS: ChapterMeta[] = [
       }),
       L(9, "sorting-and-filtering", "Sorting & Filtering", {
         contentDir: "ch02/09-sorting-and-filtering",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792163315/ltv-powershell/sorting-and-filtering.mp4",
+        durationLabel: "1 min 42 s",
       }),
     ],
   },
