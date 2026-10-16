@@ -452,7 +452,8 @@ export const AZURE_DBA_CHAPTERS: ChapterMeta[] = [
       }),
       L(72, "online-vs-offline-migration-strategies", "Online vs. Offline Migration Strategies", {
         contentDir: "ch12/72-online-vs-offline-migration-strategies",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792161737/ltv-azure-dba/online-vs-offline-migration-strategies.mp4",
+        durationLabel: "1 min 36 s",
       }),
       L(73, "migrating-to-azure-sql-database", "Migrating SQL Server to Azure SQL Database", {
         contentDir: "ch12/73-migrating-to-azure-sql-database",
