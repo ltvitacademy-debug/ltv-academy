@@ -138,7 +138,8 @@ export const ADVANCED_DATABRICKS_CHAPTERS: ChapterMeta[] = [
       }),
       L(19, "task-dependencies", "Task Dependencies", {
         contentDir: "ch04/19-task-dependencies",
-        // videoUrl/durationLabel pending
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792151392/ltv-advanced-databricks/task-dependencies.mp4",
+        durationLabel: "1 min 19 s",
       }),
       L(20, "job-clusters-vs-all-purpose-clusters", "Job Clusters vs. All-Purpose Clusters", {
         contentDir: "ch04/20-job-clusters-vs-all-purpose-clusters",
