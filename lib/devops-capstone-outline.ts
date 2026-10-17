@@ -1,6 +1,10 @@
-// The DevOps Capstone course outline — FRAMEWORK ONLY (chapter and lesson
-// titles, no lesson content yet). Lessons without a contentDir render as
-// "in production". Step 13 of the DevOps Engineer path. Students build one real system end to end: a code change pushed to GitHub is automatically built, tested, packaged, and deployed. Closes with resume, portfolio, certification, and interview preparation.
+// The DevOps Capstone course outline. All 25 lessons have real guide.md
+// content (the header here previously, incorrectly, called this
+// "framework only" — fixed 2026-10-17). Lessons without a contentDir
+// render as "in production". Step 13 of the DevOps Engineer path.
+// Students build one real system end to end: a code change pushed to
+// GitHub is automatically built, tested, packaged, and deployed. Closes
+// with resume, portfolio, certification, and interview preparation.
 
 export type LessonMeta = {
   n: number;

@@ -1,6 +1,10 @@
-// The Python & Bash Automation course outline — FRAMEWORK ONLY (chapter and lesson
-// titles, no lesson content yet). Lessons without a contentDir render as
-// "in production". Step 4 of the DevOps Engineer path (Git & GitHub is step 3, reused from the software-engineering course). Automation-focused Python, distinct from Python for Data Science and Python for AI Engineering.
+// The Python & Bash Automation course outline. All 24 lessons have real
+// guide.md/script.md content (the header here previously, incorrectly,
+// called this "framework only" — fixed 2026-10-17). Lessons without a
+// contentDir render as "in production". Step 4 of the DevOps Engineer
+// path (Git & GitHub is step 3, reused from the software-engineering
+// course). Automation-focused Python, distinct from Python for Data
+// Science and Python for AI Engineering.
 
 export type LessonMeta = {
   n: number;
