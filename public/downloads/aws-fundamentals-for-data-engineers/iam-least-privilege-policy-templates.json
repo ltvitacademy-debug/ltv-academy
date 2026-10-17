@@ -1,0 +1,100 @@
+{
+  "_comment": "Least-privilege IAM templates for a three-stage ingestion pipeline (ingestion Lambda -> Glue transform job -> analyst read-only role), grounded in this course's own Lesson 13 example. Replace account-id, bucket-name, and role-name placeholders before use. Study templates, not a substitute for testing in a real account.",
+
+  "ingestion_lambda_trust_policy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": { "Service": "lambda.amazonaws.com" },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  },
+
+  "ingestion_lambda_permissions_policy": {
+    "_comment": "Writes new raw files only. Cannot read the curated bucket at all -- it has no reason to.",
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "WriteRawOnly",
+        "Effect": "Allow",
+        "Action": "s3:PutObject",
+        "Resource": "arn:aws:s3:::etl-landing/raw/*"
+      }
+    ]
+  },
+
+  "glue_transform_job_trust_policy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": { "Service": "glue.amazonaws.com" },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  },
+
+  "glue_transform_job_permissions_policy": {
+    "_comment": "Reads raw, writes processed. Scoped to exactly the two prefixes this job touches.",
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "ReadRaw",
+        "Effect": "Allow",
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::etl-landing/raw/*"
+      },
+      {
+        "Sid": "WriteCurated",
+        "Effect": "Allow",
+        "Action": "s3:PutObject",
+        "Resource": "arn:aws:s3:::etl-curated/processed/*"
+      },
+      {
+        "Sid": "CatalogAccessForThisDatabaseOnly",
+        "Effect": "Allow",
+        "Action": ["glue:GetTable", "glue:UpdateTable", "glue:GetDatabase"],
+        "Resource": [
+          "arn:aws:glue:us-east-1:111122223333:catalog",
+          "arn:aws:glue:us-east-1:111122223333:database/etl_db",
+          "arn:aws:glue:us-east-1:111122223333:table/etl_db/*"
+        ]
+      }
+    ]
+  },
+
+  "analyst_read_only_role_permissions_policy": {
+    "_comment": "Read-only on curated data only -- cannot touch raw, and cannot write anywhere.",
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "ListCuratedPrefixOnly",
+        "Effect": "Allow",
+        "Action": "s3:ListBucket",
+        "Resource": "arn:aws:s3:::etl-curated",
+        "Condition": { "StringLike": { "s3:prefix": ["processed/*"] } }
+      },
+      {
+        "Sid": "ReadCuratedOnly",
+        "Effect": "Allow",
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::etl-curated/processed/*"
+      }
+    ]
+  },
+
+  "cross_account_analyst_assume_role_trust_policy": {
+    "_comment": "If the analyst sits in a separate AWS account, this trust policy lets their role assume access here via sts:AssumeRole, without issuing a permanent user in either account.",
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": { "AWS": "arn:aws:iam::444455556666:root" },
+        "Action": "sts:AssumeRole",
+        "Condition": { "StringEquals": { "sts:ExternalId": "riverbend-analytics-2026" } }
+      }
+    ]
+  }
+}
