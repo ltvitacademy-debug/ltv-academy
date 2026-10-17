@@ -1,6 +1,6 @@
 # Lesson 1 — What Is Ethereum? Smart Contracts & the EVM
 
-**Chapter 4 · Ethereum & Smart Contracts · Lesson 1 of 2**
+**Chapter 4 · Ethereum & Smart Contracts · Lesson 1 of 4**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine.
 

@@ -1,6 +1,6 @@
 # Lesson 4 — Structs: Grouping Related Data
 
-**Chapter 6 · Token Standards · Lesson 4 of 4**
+**Chapter 6 · Token Standards · Lesson 4 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

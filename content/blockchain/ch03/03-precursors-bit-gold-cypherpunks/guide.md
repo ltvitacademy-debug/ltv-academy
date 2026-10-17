@@ -1,6 +1,6 @@
 # Lesson 3 — Precursors to Bitcoin: Bit Gold, e-gold & the Cypherpunks
 
-**Chapter 3 · Bitcoin Deep Dive · Lesson 3 of 4**
+**Chapter 3 · Bitcoin Deep Dive · Lesson 3 of 5**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine.
 

@@ -1,6 +1,6 @@
 # Lesson 10 — Minting & Burning Your Own Tokens
 
-**Chapter 6 · Token Standards · Lesson 10 of 12**
+**Chapter 6 · Token Standards · Lesson 10 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

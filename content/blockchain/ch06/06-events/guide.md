@@ -1,6 +1,6 @@
 # Lesson 6 — Events: How Contracts Talk to the Outside World
 
-**Chapter 6 · Token Standards · Lesson 6 of 7**
+**Chapter 6 · Token Standards · Lesson 6 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

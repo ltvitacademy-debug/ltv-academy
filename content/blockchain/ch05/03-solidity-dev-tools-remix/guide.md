@@ -1,6 +1,6 @@
 # Lesson 3 — Solidity Dev Tools: Remix, Foundry & Hardhat
 
-**Chapter 5 · Solidity Programming · Lesson 3 of 4**
+**Chapter 5 · Solidity Programming · Lesson 3 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, referencing the real Foundry Book and ethereum.org documentation on screen.
 

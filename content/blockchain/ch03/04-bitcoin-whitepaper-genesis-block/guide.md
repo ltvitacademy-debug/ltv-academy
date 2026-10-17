@@ -1,6 +1,6 @@
 # Lesson 4 — The Bitcoin Whitepaper & the Genesis Block
 
-**Chapter 3 · Bitcoin Deep Dive · Lesson 4 of 4**
+**Chapter 3 · Bitcoin Deep Dive · Lesson 4 of 5**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine.
 

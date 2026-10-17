@@ -1,6 +1,6 @@
 # Lesson 5 — Function Modifiers: onlyOwner & Access Control
 
-**Chapter 6 · Token Standards · Lesson 5 of 7**
+**Chapter 6 · Token Standards · Lesson 5 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

@@ -1,6 +1,6 @@
 # Lesson 7 — Deploying Your Contract to a Test Network
 
-**Chapter 5 · Solidity Programming · Lesson 7 of 8**
+**Chapter 5 · Solidity Programming · Lesson 7 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-deploying the actual "Hello" contract in Remix.
 

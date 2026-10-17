@@ -1,6 +1,6 @@
 # Lesson 1 — Building an Ether Wallet
 
-**Chapter 8 · Full-Stack DApp Development · Lesson 1 of 1**
+**Chapter 8 · Full-Stack DApp Development · Lesson 1 of 4**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

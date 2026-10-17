@@ -1,6 +1,6 @@
 # Lesson 8 — How the EVM Works: Stack, Opcodes & Gas
 
-**Chapter 5 · Solidity Programming · Lesson 8 of 8**
+**Chapter 5 · Solidity Programming · Lesson 8 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, referencing the real evm.codes opcode reference on screen.
 

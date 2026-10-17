@@ -1,6 +1,6 @@
 # Lesson 1 — What Is Solidity? High-Level vs. Low-Level Languages
 
-**Chapter 5 · Solidity Programming · Lesson 1 of 4**
+**Chapter 5 · Solidity Programming · Lesson 1 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine.
 

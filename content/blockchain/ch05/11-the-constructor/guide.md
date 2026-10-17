@@ -1,6 +1,6 @@
 # Lesson 11 — The Constructor: Initializing Your Contract
 
-**Chapter 5 · Solidity Programming · Lesson 11 of 12**
+**Chapter 5 · Solidity Programming · Lesson 11 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

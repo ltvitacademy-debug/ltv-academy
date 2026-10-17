@@ -1,6 +1,6 @@
 # Lesson 12 — How Tokens Actually Get Bought and Sold
 
-**Chapter 6 · Token Standards · Lesson 12 of 12**
+**Chapter 6 · Token Standards · Lesson 12 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE and answering real student questions.
 

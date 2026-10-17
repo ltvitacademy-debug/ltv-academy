@@ -1,6 +1,6 @@
 # Lesson 2 — The Multi-Signature Wallet: Setting Up Shared Control
 
-**Chapter 8 · Full-Stack DApp Development · Lesson 2 of 2**
+**Chapter 8 · Full-Stack DApp Development · Lesson 2 of 4**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

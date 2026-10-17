@@ -1,6 +1,6 @@
 # Lesson 11 — Building an ERC-20 Token with OpenZeppelin
 
-**Chapter 6 · Token Standards · Lesson 11 of 12**
+**Chapter 6 · Token Standards · Lesson 11 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-browsing the actual OpenZeppelin GitHub repository.
 

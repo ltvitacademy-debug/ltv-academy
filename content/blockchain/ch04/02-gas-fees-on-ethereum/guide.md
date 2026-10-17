@@ -1,6 +1,6 @@
 # Lesson 2 — Gas Fees on Ethereum
 
-**Chapter 4 · Ethereum & Smart Contracts · Lesson 2 of 2**
+**Chapter 4 · Ethereum & Smart Contracts · Lesson 2 of 4**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, reading directly from a real Investopedia article on screen.
 

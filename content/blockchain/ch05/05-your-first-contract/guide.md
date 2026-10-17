@@ -1,6 +1,6 @@
 # Lesson 5 — Your First Solidity Contract: Pragma, Contracts & Strings
 
-**Chapter 5 · Solidity Programming · Lesson 5 of 6**
+**Chapter 5 · Solidity Programming · Lesson 5 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

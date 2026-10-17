@@ -1,6 +1,6 @@
 # Lesson 3 — Arrays in Practice: push, pop & removeAtIndex
 
-**Chapter 6 · Token Standards · Lesson 3 of 3**
+**Chapter 6 · Token Standards · Lesson 3 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

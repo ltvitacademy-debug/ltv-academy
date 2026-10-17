@@ -1,6 +1,6 @@
 # Lesson 7 — A Simple Token Transfer Function
 
-**Chapter 6 · Token Standards · Lesson 7 of 7**
+**Chapter 6 · Token Standards · Lesson 7 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

@@ -1,6 +1,6 @@
 # Lesson 2 — Why Solidity? Alternatives, the EVM & Compilation
 
-**Chapter 5 · Solidity Programming · Lesson 2 of 4**
+**Chapter 5 · Solidity Programming · Lesson 2 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine.
 

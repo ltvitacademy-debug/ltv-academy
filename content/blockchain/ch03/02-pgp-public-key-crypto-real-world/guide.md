@@ -1,6 +1,6 @@
 # Lesson 2 — PGP: Public Key Cryptography in the Real World
 
-**Chapter 3 · Bitcoin Deep Dive · Lesson 2 of 2**
+**Chapter 3 · Bitcoin Deep Dive · Lesson 2 of 5**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine.
 

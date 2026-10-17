@@ -1,6 +1,6 @@
 # Lesson 1 — Mappings: Solidity's Key-Value Store
 
-**Chapter 6 · Token Standards · Lesson 1 of 1**
+**Chapter 6 · Token Standards · Lesson 1 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

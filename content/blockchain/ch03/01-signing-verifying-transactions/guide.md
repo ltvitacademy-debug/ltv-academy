@@ -1,6 +1,6 @@
 # Lesson 1 — Signing & Verifying Blockchain Transactions
 
-**Chapter 3 · Bitcoin Deep Dive · Lesson 1 of 2**
+**Chapter 3 · Bitcoin Deep Dive · Lesson 1 of 5**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine — using a live, interactive blockchain demo tool.
 

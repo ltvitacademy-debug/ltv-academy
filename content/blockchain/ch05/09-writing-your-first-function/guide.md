@@ -1,6 +1,6 @@
 # Lesson 9 — Writing Your First Function: setMessage
 
-**Chapter 5 · Solidity Programming · Lesson 9 of 10**
+**Chapter 5 · Solidity Programming · Lesson 9 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

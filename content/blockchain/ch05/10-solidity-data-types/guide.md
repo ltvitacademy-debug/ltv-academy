@@ -1,6 +1,6 @@
 # Lesson 10 — Solidity Data Types: uint, int, bool & address
 
-**Chapter 5 · Solidity Programming · Lesson 10 of 10**
+**Chapter 5 · Solidity Programming · Lesson 10 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

@@ -1,6 +1,6 @@
 # Lesson 12 — Reading vs. Writing State: the view Keyword
 
-**Chapter 5 · Solidity Programming · Lesson 12 of 12**
+**Chapter 5 · Solidity Programming · Lesson 12 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

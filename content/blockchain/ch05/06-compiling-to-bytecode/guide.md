@@ -1,6 +1,6 @@
 # Lesson 6 — Compiling Your Contract & Viewing Bytecode
 
-**Chapter 5 · Solidity Programming · Lesson 6 of 6**
+**Chapter 5 · Solidity Programming · Lesson 6 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding and compiling in the actual Remix IDE.
 

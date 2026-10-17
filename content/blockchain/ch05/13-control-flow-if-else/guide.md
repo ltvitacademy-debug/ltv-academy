@@ -1,6 +1,6 @@
 # Lesson 13 — Control Flow: if/else Statements & the Ternary Operator
 
-**Chapter 5 · Solidity Programming · Lesson 13 of 13**
+**Chapter 5 · Solidity Programming · Lesson 13 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

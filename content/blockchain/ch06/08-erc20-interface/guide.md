@@ -1,6 +1,6 @@
 # Lesson 8 — The ERC-20 Interface & Token Metadata
 
-**Chapter 6 · Token Standards · Lesson 8 of 12**
+**Chapter 6 · Token Standards · Lesson 8 of 14**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 
