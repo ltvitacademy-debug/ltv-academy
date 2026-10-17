@@ -5,6 +5,15 @@
 // CTEs, indexes, PK/FK, fact/dimension tables aren't retaught) — every
 // lesson teaches how that already-known work gets done in Snowflake
 // specifically.
+//
+// Chapter 18 (lessons 77-79) is a deliberate exception added 2026-10-17:
+// written case studies on Snowpark for Python (DataFrames/lazy evaluation,
+// UDFs, stored procedures) and the Native App Framework, closing a real gap
+// for the Snowflake Data Engineer path — a large share of current Snowflake
+// postings ask for Snowpark by name, and the course previously had zero
+// coverage of it. Researched and verified against current Snowflake docs —
+// no video, contentDir only, same guide-only pattern used elsewhere in this
+// catalog (e.g. AWS Data Engineering's Chapter 12).
 
 export type LessonMeta = {
   n: number;
@@ -201,6 +210,21 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
       L(74, "human-in-the-loop-approval-patterns-for-cortex-agents", "Human-in-the-Loop: Approval Patterns for Cortex Agents", { contentDir: "ch17/74-human-in-the-loop-approval-patterns-for-cortex-agents", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131026/ltv-snowflake/human-in-the-loop-approval-patterns-for-cortex-agents.mp4", durationLabel: "2 min 52 s" }),
       L(75, "governing-agent-access-rbac-masking-row-access", "Governing Agent Access: RBAC, Masking & Row Access Policies for AI", { contentDir: "ch17/75-governing-agent-access-rbac-masking-row-access", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131105/ltv-snowflake/governing-agent-access-rbac-masking-row-access.mp4", durationLabel: "2 min 29 s" }),
       L(76, "lab-building-and-governing-a-cortex-agent", "Lab: Building and Governing a Cortex Search + Analyst Agent", { contentDir: "ch17/76-lab-building-and-governing-a-cortex-agent", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792131199/ltv-snowflake/lab-building-and-governing-a-cortex-agent.mp4", durationLabel: "3 min 4 s" }),
+    ],
+  },
+  {
+    n: 18,
+    title: "Snowpark & the Native Apps Framework",
+    lessons: [
+      L(77, "snowpark-dataframes-and-lazy-evaluation", "Snowpark for Python: DataFrames That Run Inside Snowflake", {
+        contentDir: "ch18/77-snowpark-dataframes-and-lazy-evaluation",
+      }),
+      L(78, "snowpark-udfs-and-stored-procedures", "Snowpark UDFs, Stored Procedures, and Where the Code Actually Runs", {
+        contentDir: "ch18/78-snowpark-udfs-and-stored-procedures",
+      }),
+      L(79, "native-apps-framework", "The Snowflake Native App Framework: Packaging Logic, Not Just Data", {
+        contentDir: "ch18/79-native-apps-framework",
+      }),
     ],
   },
 ];
