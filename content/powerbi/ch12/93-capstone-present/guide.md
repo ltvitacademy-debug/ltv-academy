@@ -9,6 +9,27 @@
 - The one question that decides whether this project actually succeeded
 - What to build next, now that this course is complete
 
+## Acceptance criteria
+
+Before you consider this capstone finished, confirm each of these
+against your own published app — check each box only once you've
+verified it yourself:
+
+- [ ] Every requirement from Lesson 84's written scope has a real,
+      locatable answer in the finished dashboard (see the table
+      below) — not an assumption that it's covered somewhere.
+- [ ] The model is a real star schema — fact and dimension tables, not
+      one flat imported table.
+- [ ] At least one DAX measure does real calculation work (a ratio,
+      a year-over-year comparison, a running total) — not just a
+      renamed column.
+- [ ] Row-level security is configured and actually tested — viewed
+      as a restricted role, not just set up and assumed correct.
+- [ ] The app is published and scheduled to refresh on its own, not
+      only refreshed manually before a demo.
+- [ ] A stranger can find the single most important number on the
+      page in under ten seconds, unprompted.
+
 ## Presenting like it's a real stakeholder meeting
 
 Open your published app (Lesson 91) and walk through it the way

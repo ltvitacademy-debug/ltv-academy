@@ -12,6 +12,27 @@
 - Where this course's skills fit into the rest of the Analytics
   Engineer path, and into daily work, going forward
 
+## Acceptance criteria
+
+Before you consider this capstone finished, confirm each of these
+against your own project — check each box only once you've verified
+it yourself, not once it should work:
+
+- [ ] `dbt build` and `dbt test` both run clean with zero failures.
+- [ ] `dim_customers` is built from a real snapshot and shows at least
+      one row with `is_current = false` after a tracked attribute
+      changed (proof SCD Type 2 history is real, not just configured).
+- [ ] `fct_orders` is materialized `incremental` and a second `dbt run`
+      demonstrably only processes new/changed rows.
+- [ ] At least one singular test encodes a real business rule generic
+      tests can't express (not just `unique`/`not_null` everywhere).
+- [ ] `dbt docs generate` produces a lineage graph that actually shows
+      the real raw → staging → intermediate → marts chain, with real
+      column descriptions, not blank tooltips.
+- [ ] The Power BI report connects to the reporting layer (not the raw
+      or staging layer), with the Import/DirectQuery choice stated and
+      justified in one sentence.
+
 ## What to actually show
 
 A real, running dbt project is more convincing than a slide deck. In

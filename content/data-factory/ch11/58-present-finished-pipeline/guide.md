@@ -9,6 +9,26 @@
 - Turning this capstone into a real portfolio artifact
 - Where to go next from here
 
+## Acceptance criteria
+
+Before you consider this capstone finished, confirm each of these
+against your own pipeline — check each box only once you've verified
+it yourself:
+
+- [ ] The pipeline runs end to end on its own trigger, not only when
+      manually started.
+- [ ] Every one of Lesson 53's original four requirements has a real,
+      demonstrable answer (see the table below) — not an assumption.
+- [ ] Error handling actually fires — a deliberately broken run shows
+      the retry, the log entry, and the alert, not just the happy path.
+- [ ] No password or connection secret appears in plain text anywhere
+      in the pipeline definition — Key Vault is used on both source
+      and sink.
+- [ ] The Log Analytics query from Lesson 57 returns real run history
+      you can point at, not a hypothetical.
+- [ ] A short README exists, documenting the business problem, the
+      architecture, and at least one real design decision.
+
 ## Why presenting the work is part of the work
 
 A pipeline nobody can explain is a pipeline nobody else can safely

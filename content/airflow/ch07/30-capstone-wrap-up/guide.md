@@ -9,6 +9,27 @@
 - The specific questions this project should make you ready to answer
 - Where this course — and this entire path — leaves you going forward
 
+## Acceptance criteria
+
+Before you consider this capstone finished, confirm each of these
+against your own DAG — check each box only once you've verified it
+yourself:
+
+- [ ] The DAG's dependency structure (extract → load → branch/sensor
+      → dbt trigger) is real and visible in the Graph view, not just
+      described.
+- [ ] A genuinely passing run exists in the Grid view — the pipeline
+      has actually executed successfully at least once, not only
+      compiled.
+- [ ] `retries`, `retry_delay`, and an `on_failure_callback` are
+      configured, and you've deliberately triggered a failure to
+      confirm they actually fire.
+- [ ] The dbt trigger task runs against real data your pipeline
+      loaded, not a disconnected, separately-scheduled dbt run.
+- [ ] You can explain, from memory, what happens if the Snowflake
+      load fails at 3 AM — and the DAG's actual behavior matches that
+      explanation.
+
 ## What to actually show
 
 A real, running DAG is more convincing than a slide deck describing

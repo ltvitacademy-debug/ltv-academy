@@ -10,6 +10,27 @@
 - The specific questions this project should make you ready to answer
 - Where this course's skills fit going forward
 
+## Acceptance criteria
+
+Before you consider this capstone finished, confirm each of these
+against your own Snowflake account — check each box only once you've
+verified it yourself:
+
+- [ ] Raw, staging, and warehouse layers are distinct real schemas, not
+      one flat set of tables.
+- [ ] The dimension uses real SCD Type 2 history (a changed attribute
+      produces a new row, not an overwrite) — confirmed by an actual
+      query showing both the old and new version.
+- [ ] `TASK_HISTORY` shows real, successful incremental runs, not a
+      single manual load.
+- [ ] `SHOW GRANTS` on the analyst role confirms it genuinely cannot
+      see the raw layer — checked directly, not assumed.
+- [ ] One performance decision (clustering, warehouse sizing, or
+      scaling) is backed by real `QUERY_HISTORY` or
+      `WAREHOUSE_LOAD_HISTORY` evidence, not a guess.
+- [ ] Power BI connects to the reporting layer with the Import/
+      DirectQuery choice stated and justified in one sentence.
+
 ## Apply real performance tuning
 
 Not a checklist of every optimization from Chapter 10 — one real,
