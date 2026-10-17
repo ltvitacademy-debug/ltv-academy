@@ -1,6 +1,6 @@
 # Lesson 1 — Imports, Libraries & OpenZeppelin
 
-**Chapter 7 · Testing & Tooling (Foundry) · Lesson 1 of 1**
+**Chapter 7 · OpenZeppelin, Imports & Developer Tooling · Lesson 1 of 2**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding in the actual Remix IDE.
 

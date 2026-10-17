@@ -324,7 +324,7 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
   },
   {
     n: 7,
-    title: "Testing & Tooling (Foundry)",
+    title: "OpenZeppelin, Imports & Developer Tooling",
     lessons: [
       L(46, "imports-libraries-openzeppelin", "Imports, Libraries & OpenZeppelin", {
         contentDir: "ch07/01-imports-libraries-openzeppelin",

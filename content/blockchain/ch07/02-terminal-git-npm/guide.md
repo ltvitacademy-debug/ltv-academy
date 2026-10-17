@@ -1,6 +1,6 @@
 # Lesson 2 — Command Line Basics: npm, git & the Terminal
 
-**Chapter 7 · Testing & Tooling (Foundry) · Lesson 2 of 2**
+**Chapter 7 · OpenZeppelin, Imports & Developer Tooling · Lesson 2 of 2**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, using the real macOS Terminal (the same commands work in Windows Command Prompt).
 
