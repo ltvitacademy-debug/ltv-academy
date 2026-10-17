@@ -1,0 +1,60 @@
+{
+  "lesson": "access-control-parity-multisig",
+  "questions": [
+    {
+      "q": "A shared library contract has an `initWallet` function with no access check. A user who isn't the deployer calls it directly and becomes the library's owner. What's the root cause?",
+      "options": [
+        "A sensitive function (claiming ownership) had no check on who was allowed to call it, relying only on the assumption that only the deployer ever would",
+        "The library contract had a reentrancy vulnerability in its withdraw function",
+        "The attacker exploited a flash loan to manipulate the library's price oracle",
+        "The library's Solidity compiler version had a known bug"
+      ],
+      "answer": 0,
+      "explain": "This is an access control failure: a function that performs a sensitive, ownership-defining action with no restriction on who can call it. \"Only meant to be called once by the deployer\" was never actually enforced in code."
+    },
+    {
+      "q": "Why did one person gaining ownership of a single library contract freeze hundreds of separate wallets, instead of just that one contract?",
+      "options": [
+        "Every one of those wallets used delegatecall to run its logic against that one shared library, so destroying the library left every dependent wallet pointing at code that no longer existed",
+        "The attacker had admin access to Parity's company servers",
+        "All the wallets shared the same private key",
+        "Ethereum's protocol automatically links all multisig wallets together"
+      ],
+      "answer": 0,
+      "explain": "The shared-library pattern meant many wallets depended on one piece of deployed code for their actual logic. Selfdestructing that one library broke every wallet relying on it, not just the library contract itself."
+    },
+    {
+      "q": "What made the November 2017 Parity freeze different from a typical hack like the DAO exploit?",
+      "options": [
+        "No funds were stolen — the bug permanently destroyed the shared code every affected wallet depended on, locking the funds with no attacker benefiting",
+        "It only affected testnet contracts, not real funds",
+        "It was immediately reversed by a hard fork, unlike the DAO hack",
+        "It required the attacker to have been a Parity employee"
+      ],
+      "answer": 0,
+      "explain": "Unlike the DAO hack, where an attacker drained real value for themselves, the Parity freeze destroyed the library's code and froze the funds with no path to recovery — an availability failure, not a theft."
+    },
+    {
+      "q": "What's the standard fix pattern this lesson describes for a setup function like `initWallet`?",
+      "options": [
+        "A one-time initialization guard (a boolean flag checked and set on first call) combined with an explicit ownership check on any function meant to be restricted afterward",
+        "Removing the initWallet function entirely and hard-coding the owners at compile time",
+        "Adding a time delay before the function can be called",
+        "Requiring the function to be called from a specific IP address"
+      ],
+      "answer": 0,
+      "explain": "An initialization guard prevents the setup function from running more than once or from an unexpected caller, and a separate onlyOwner-style check protects any function that should only ever be callable by a legitimately-set owner afterward."
+    },
+    {
+      "q": "Per this lesson, why does \"no funds were stolen\" not mean \"no real damage was done\" in the Parity freeze?",
+      "options": [
+        "Because availability — whether legitimate owners can still access their own funds — is itself a security property, and this bug permanently destroyed that for roughly $150 million worth of ETH with no recovery path",
+        "Because the frozen ETH later lost all its market value anyway",
+        "Because Parity was legally required to reimburse every affected wallet in full",
+        "Because the bug was later shown to have also leaked private keys"
+      ],
+      "answer": 0,
+      "explain": "Confidentiality and integrity of funds are only part of security — availability matters too. A bug that leaves legitimate owners permanently unable to reach their own funds is a real, severe failure, even though no attacker ever profited from the funds themselves."
+    }
+  ]
+}

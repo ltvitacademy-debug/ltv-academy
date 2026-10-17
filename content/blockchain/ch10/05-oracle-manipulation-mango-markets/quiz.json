@@ -1,0 +1,60 @@
+{
+  "lesson": "oracle-manipulation-mango-markets",
+  "questions": [
+    {
+      "q": "A trader opens a large position on a perpetual swap protocol, then spends 30 minutes buying that asset on the thin external exchanges feeding the protocol's price oracle, pushing the oracle-reported price up 13x. The protocol then lets them borrow against the inflated paper value of their position. What's the root cause?",
+      "options": [
+        "The protocol trusted an oracle price sourced from markets thin enough for the trader to move it directly, with no check on the size or speed of the move",
+        "The protocol's withdraw function sent funds before updating the trader's balance",
+        "The trader exploited a reentrancy bug in the lending contract",
+        "The protocol's smart contract had an unprotected selfdestruct function"
+      ],
+      "answer": 0,
+      "explain": "Nothing was technically broken — every transaction executed as written. The vulnerability was trusting a price from markets the trader had enough capital to move himself."
+    },
+    {
+      "q": "Why didn't the Mango Markets attacker need a flash loan, unlike the Harvest Finance attacker?",
+      "options": [
+        "He used his own capital over a 30-minute window rather than needing to borrow and repay within a single atomic transaction",
+        "Flash loans don't exist on Solana",
+        "Mango Markets had a rule against flash loans",
+        "He partnered with Mango's own developers"
+      ],
+      "answer": 0,
+      "explain": "The Harvest attack needed to borrow, manipulate, and undo everything within one transaction to repay the loan. Eisenberg's position didn't need to be reversed within a transaction, so he gradually moved the price with his own capital instead."
+    },
+    {
+      "q": "What ultimately made Eisenberg's $110M+ extraction possible, mechanically?",
+      "options": [
+        "The inflated oracle price made his long position's paper value enormous, and the protocol let him borrow against that inflated collateral",
+        "He found the private key to Mango's treasury wallet",
+        "He exploited an integer overflow in the swap contract's balance tracking",
+        "A Mango Markets employee approved the withdrawal manually"
+      ],
+      "answer": 0,
+      "explain": "The protocol calculated his collateral value using the same oracle price he'd just manipulated, then let him borrow against that inflated number — draining the treasury of real assets in exchange for collateral that was never really worth what the oracle said."
+    },
+    {
+      "q": "What's a practical mitigation this lesson describes for an asset with thin external liquidity?",
+      "options": [
+        "A deviation check that compares the spot oracle price against a slower reference price (like a TWAP) and rejects values that moved too far, too fast",
+        "Increasing the protocol's gas limit",
+        "Requiring two-factor authentication before opening a position",
+        "Switching the protocol's programming language"
+      ],
+      "answer": 0,
+      "explain": "A deviation check catches exactly this pattern — a price that moved far more, far faster, than legitimate trading would normally produce — without needing to predict the specific manipulation technique in advance."
+    },
+    {
+      "q": "Why does this lesson say the gap between \"what the code technically allows\" and \"what the team intended\" matters for review, using Eisenberg's own defense as the example?",
+      "options": [
+        "Because he argued his trades were legal, protocol-compliant actions, which is exactly the kind of exploit that passes every require() check and still drains a protocol",
+        "Because he claimed a compiler bug caused the loss, which was later proven false",
+        "Because the protocol's legal terms of service were ambiguous about trading limits",
+        "Because he was a registered employee of Mango Markets at the time"
+      ],
+      "answer": 0,
+      "explain": "A security review that only asks \"does this code have bugs\" misses this class of exploit entirely — every function executed correctly. The review also has to ask what a technically-valid sequence of actions is capable of doing, which is a design question, not just a correctness question."
+    }
+  ]
+}

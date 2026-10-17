@@ -1,6 +1,6 @@
 # Lesson 1 — Understanding Reentrancy: The DAO Hack
 
-**Chapter 10 · Security Auditing · Lesson 1 of 3**
+**Chapter 10 · Security Auditing · Lesson 1 of 6**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, referencing the real Chainlink blog on-screen.
 

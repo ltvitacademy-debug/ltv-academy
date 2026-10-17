@@ -1,10 +1,15 @@
-// The Blockchain Development course outline. Unlike the other three courses,
-// lesson videos here are real clipped footage from Bill Green's "BlockChain
+// The Blockchain Development course outline. Lessons 1-54 (chapters 1-9 plus
+// ch10 lessons 1-3) use real clipped footage from Bill Green's "BlockChain
 // 2025" class recordings (owned by LTV Academy), not synthetic narrated
-// slides — so guide.md screenshots are real video frames, not Microsoft
+// slides — so those guide.md screenshots are real video frames, not stock
 // documentation screenshots, and durationLabel reflects genuine clip length.
-// Only lessons with a contentDir + videoUrl are playable; everything else
-// renders as "in production". Mirrors the pattern in powerbi-outline.ts.
+// Chapter 10 lessons 4-6 are a deliberate exception: written case studies
+// on vulnerability classes no classroom footage ever covered (flash loans,
+// oracle manipulation, access control) — contentDir but no videoUrl, same
+// pattern already used across this path's other three courses. A lesson
+// with a contentDir but no videoUrl still renders fully (guide, quiz, AI
+// assistant, navigation) — only the video player itself is replaced with
+// an "in production" placeholder. Mirrors the pattern in powerbi-outline.ts.
 
 import type { ChapterMeta, LessonMeta } from "./powerbi-outline";
 
@@ -391,6 +396,18 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
         videoUrl:
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788909857/ltv-blockchain/ch10-03-fixing-reentrancy.mp4",
         durationLabel: "12 min 23 s",
+      }),
+      // Lessons 4-6: written case studies, no video — see the comment
+      // at the top of this file. Guide + quiz only, same as the other
+      // three courses in this career path.
+      L(55, "flash-loan-attacks-harvest-finance", "Flash Loan Attacks: The Harvest Finance Exploit", {
+        contentDir: "ch10/04-flash-loan-attacks-harvest-finance",
+      }),
+      L(56, "oracle-manipulation-mango-markets", "Oracle Manipulation: The Mango Markets Exploit", {
+        contentDir: "ch10/05-oracle-manipulation-mango-markets",
+      }),
+      L(57, "access-control-parity-multisig", "Access Control Failures: The Parity Multisig Freeze", {
+        contentDir: "ch10/06-access-control-parity-multisig",
       }),
     ],
   },

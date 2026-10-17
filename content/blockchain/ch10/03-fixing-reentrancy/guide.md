@@ -1,6 +1,6 @@
 # Lesson 3 — Fixing Reentrancy: Checks-Effects-Interactions & the Guard Modifier
 
-**Chapter 10 · Security Auditing · Lesson 3 of 3**
+**Chapter 10 · Security Auditing · Lesson 3 of 6**
 
 > Real classroom footage from the LTV Academy Blockchain Development course, taught by instructor Harris Lavine, live-coding both real fixes in Remix.
 
@@ -86,7 +86,7 @@ that sends value or calls external contracts.
 
 ## Check yourself
 
-You've finished Chapter 10 when you can explain, in your own words, why
-these two fixes are genuinely independent — a contract could use
-either one alone and still be protected from the exact exploit built
-in the previous lesson.
+Before moving to the next lesson, make sure you can explain, in your
+own words, why these two fixes are genuinely independent — a contract
+could use either one alone and still be protected from the exact
+exploit built in the previous lesson.
