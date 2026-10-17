@@ -1,0 +1,75 @@
+# GitHub Actions workflow template for a dbt project.
+# From Lessons 20-23. Copy into .github/workflows/ci.yml, rename the
+# project/schema values, and swap the dbt adapter package if you're
+# not on Postgres (e.g. dbt-snowflake, dbt-bigquery).
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    # Runs on every pull request, against a disposable CI schema.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dbt
+        run: pip install dbt-postgres==1.7.4  # swap adapter package as needed
+
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: Run models and tests
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: dbt build --profiles-dir . --target ci
+
+  deploy:
+    # IMPORTANT: both conditions are required. event_name == 'push'
+    # alone also matches a push to a feature/PR branch -- the ref
+    # check is what actually restricts this to a real merge to main.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install dbt-postgres==1.7.4
+      - run: dbt deps
+
+      - name: Deploy to production
+        env:
+          DB_HOST: ${{ secrets.PROD_DB_HOST }}        # separate from DB_HOST above
+          DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }} # separate from DB_PASSWORD above
+        run: dbt build --profiles-dir . --target prod
+
+# profiles.yml companion (not a workflow file, but required for the
+# --target flag above to resolve to two separate schemas):
+#
+# your_project:
+#   target: ci
+#   outputs:
+#     ci:
+#       type: postgres
+#       host: "{{ env_var('DB_HOST') }}"
+#       schema: ci
+#     prod:
+#       type: postgres
+#       host: "{{ env_var('DB_HOST') }}"
+#       schema: analytics
