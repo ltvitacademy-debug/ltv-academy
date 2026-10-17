@@ -1,0 +1,60 @@
+{
+  "lesson": "orchestrating-with-airflow",
+  "questions": [
+    {
+      "q": "Why does validate_billing_load run as its own separate task before load_billing?",
+      "options": [
+        "So a malformed export fails at the very first task with a specific signal, instead of loading bad data or failing confusingly later",
+        "Because Airflow requires every DAG to start with a validation task",
+        "To make the DAG diagram look more complete",
+        "Because SnowflakeOperator cannot run COPY INTO without a prior validation step"
+      ],
+      "answer": 0,
+      "explain": "Validating first catches a malformed file at the earliest possible point, with a clear, specific failure signal rather than a confusing downstream error."
+    },
+    {
+      "q": "Why must both load_billing and load_usage succeed before dbt_run starts?",
+      "options": [
+        "int_subscriber_activity joins billing and usage data together -- running dbt against only half the day's raw data would produce quietly wrong numbers, not an error",
+        "Airflow requires exactly two upstream tasks before any BashOperator can run",
+        "load_billing and load_usage must run sequentially, never in parallel",
+        "dbt cannot run unless usage_events table is empty"
+      ],
+      "answer": 0,
+      "explain": "A join against incomplete raw data wouldn't error -- it would silently produce an incorrect result, which is exactly the failure mode this dependency ordering prevents."
+    },
+    {
+      "q": "Why are dbt_run and dbt_test separate tasks instead of one combined step?",
+      "options": [
+        "So Airflow's task-level status distinguishes \"models built but a test caught a real data problem\" from \"the dbt run itself broke\" -- a materially different, more actionable failure signal",
+        "dbt does not support running tests and models in the same command under any circumstances",
+        "Separate tasks run faster than combined ones",
+        "This is a stylistic choice with no functional difference"
+      ],
+      "answer": 0,
+      "explain": "Separating these tasks makes the specific failure type visible at a glance in Airflow's UI -- the same pattern the Airflow course's own Airflow + dbt lesson teaches."
+    },
+    {
+      "q": "Why do load_billing and load_usage run in parallel rather than sequentially?",
+      "options": [
+        "Neither task depends on the other's output, so there's no reason to force them to wait on each other",
+        "Snowflake requires all COPY INTO statements to run simultaneously",
+        "Parallel execution is required by Airflow's scheduler",
+        "Sequential execution would cause a SQL syntax error"
+      ],
+      "answer": 0,
+      "explain": "They load into two separate, independent raw tables -- running them in parallel is simply faster with no correctness downside, since neither reads the other's output."
+    },
+    {
+      "q": "What does the `>>` operator do in this DAG's final line?",
+      "options": [
+        "Declares the task dependency order -- each task (or list of tasks) only runs after the one(s) before it succeed",
+        "Pipes the SQL output of one task directly into the next task's input",
+        "Comments out the line for debugging purposes",
+        "Runs all listed tasks simultaneously with no ordering"
+      ],
+      "answer": 0,
+      "explain": "`>>` is Airflow's dependency-declaration operator -- it establishes the order tasks must complete in, which is what makes this a real orchestrated sequence rather than independent tasks."
+    }
+  ]
+}

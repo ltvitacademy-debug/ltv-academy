@@ -38,6 +38,7 @@ import { SALESFORCE_ANALYTICS_CAPSTONE_CHAPTERS } from "./salesforce-analytics-c
 import { AWS_FUNDAMENTALS_CHAPTERS } from "./aws-fundamentals-outline";
 import { AWS_DATA_ENGINEERING_CHAPTERS } from "./aws-data-engineering-outline";
 import { AWS_CAPSTONE_CHAPTERS } from "./aws-capstone-outline";
+import { SNOWFLAKE_CAPSTONE_CHAPTERS } from "./snowflake-capstone-outline";
 import { SSIS_CHAPTERS } from "./ssis-outline";
 import { SSRS_CHAPTERS } from "./ssrs-outline";
 import { DATA_WAREHOUSING_CHAPTERS } from "./data-warehousing-outline";
@@ -547,6 +548,15 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: AWS_CAPSTONE_CHAPTERS,
     contentBase: "aws-capstone",
+  },
+  {
+    slug: "snowflake-data-engineering-capstone",
+    title: "Snowflake Data Engineering Capstone",
+    tagline:
+      "Snowflake, dbt, Airflow, and Power BI, tied into one working subscription-analytics platform — with the RBAC, CI/CD, Terraform, and disaster-recovery practices that make it job-ready.",
+    status: "available",
+    chapters: SNOWFLAKE_CAPSTONE_CHAPTERS,
+    contentBase: "snowflake-capstone",
   },
   {
     slug: "ssis-development",

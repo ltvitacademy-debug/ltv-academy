@@ -1,0 +1,60 @@
+{
+  "lesson": "connecting-power-bi-to-the-marts",
+  "questions": [
+    {
+      "q": "Why does Driftwood's dashboard use Import mode instead of DirectQuery?",
+      "options": [
+        "The actual requirement is a daily number, not a live one -- Import's snapshot-and-refresh model fits that requirement better than re-querying Snowflake on every click",
+        "DirectQuery cannot connect to Snowflake at all",
+        "Import mode is always the objectively superior choice for every Power BI report",
+        "Snowflake does not support DirectQuery connections"
+      ],
+      "answer": 0,
+      "explain": "The choice follows directly from the stated business requirement (daily refresh), not a blanket preference for Import over DirectQuery."
+    },
+    {
+      "q": "Which Snowflake objects does Power BI actually connect to in this capstone?",
+      "options": [
+        "Only the marts: fct_subscriptions and dim_subscribers",
+        "The raw billing_events and usage_events tables directly",
+        "The int_subscriber_activity intermediate model",
+        "All layers simultaneously -- raw, intermediate, and marts"
+      ],
+      "answer": 0,
+      "explain": "Power BI connects only to the tested, documented mart tables -- never raw or intermediate models, which haven't been validated by dbt's tests."
+    },
+    {
+      "q": "Why would connecting Power BI directly to raw.billing_events undermine Lesson 5's testing and documentation work?",
+      "options": [
+        "It would bypass every dbt test and every grain/column documentation the marts layer was specifically built to provide before data reaches a report",
+        "Raw tables are physically inaccessible to Power BI",
+        "It would have no real effect since raw and marts contain identical data",
+        "Power BI cannot technically connect to any table outside the marts schema"
+      ],
+      "answer": 0,
+      "explain": "The marts layer is where dbt's tests and documentation actually apply -- connecting upstream of that bypasses all the quality guarantees this project built."
+    },
+    {
+      "q": "Why is Power BI's scheduled refresh set to 7 AM, one hour after the Airflow DAG's 6 AM start?",
+      "options": [
+        "To give the full load/transform/test sequence time to finish, avoiding a refresh that captures the marts mid-build",
+        "7 AM is Power BI's only available scheduled refresh time",
+        "The one-hour gap has no real purpose and is arbitrary",
+        "Airflow requires exactly one hour between DAG start and any downstream refresh"
+      ],
+      "answer": 0,
+      "explain": "The buffer is a deliberate decision based on how long the DAG's sequence takes -- refreshing too early risks showing an incomplete or inconsistent snapshot."
+    },
+    {
+      "q": "What would happen if Power BI refreshed at 6:05 AM instead of 7 AM?",
+      "options": [
+        "It could capture the marts mid-build, partway through dbt_run, showing leadership an incomplete or inconsistent number with no indication anything was wrong",
+        "The refresh would simply fail with a clear error message",
+        "Nothing different would happen -- the timing has no effect on data consistency",
+        "Power BI would automatically wait for the DAG to finish before refreshing"
+      ],
+      "answer": 0,
+      "explain": "A too-early refresh risks silently capturing a half-updated state -- the dangerous failure mode the one-hour buffer is specifically designed to avoid."
+    }
+  ]
+}

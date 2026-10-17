@@ -251,6 +251,12 @@ export const CAREER_PATHS: CareerPath[] = [
         courseSlugs: ["how-it-teams-work", "t-sql-development", "python-for-data-engineers", "snowflake", "dbt-analytics-engineering", "data-factory", "power-bi"],
       },
       { label: "Advanced", courseSlugs: ["airflow", "git-github-cicd-for-data", "terraform-bicep-for-data-engineers"] },
+      {
+        label: "Capstone",
+        note: "Final capstone: ties Snowflake, dbt, Airflow, Power BI, Git/CI-CD, and Terraform into one platform",
+        courseSlugs: ["snowflake-data-engineering-capstone"],
+        capstone: true,
+      },
     ],
     destinationNote:
       "SQL Developer → Snowflake Developer → Analytics/Data Engineer → Senior Snowflake Engineer → Lead Data Engineer → Principal Data Engineer → Snowflake/Data Architect — converging into the same ceiling as the other engineering paths.",

@@ -1,0 +1,60 @@
+{
+  "lesson": "monitoring-pipeline-health-and-warehouse-cost",
+  "questions": [
+    {
+      "q": "What does ON 100 PERCENT DO SUSPEND actually do on driftwood_etl_monitor?",
+      "options": [
+        "Stops the warehouse from accepting new queries once its credit quota is fully consumed",
+        "Sends a Slack notification with no other effect",
+        "Automatically increases the credit quota by 100%",
+        "Deletes the warehouse entirely"
+      ],
+      "answer": 0,
+      "explain": "DO SUSPEND is the real guardrail -- the warehouse stops running new queries, preventing a runaway cost from continuing past the budget."
+    },
+    {
+      "q": "What real failure shape does retries=1 with a 10-minute delay handle in the Airflow DAG?",
+      "options": [
+        "A transient Snowflake connection hiccup that succeeds on a second attempt, without paging anyone unnecessarily",
+        "A permanent data quality bug in the source files",
+        "A Terraform state lock conflict",
+        "A Power BI refresh failure"
+      ],
+      "answer": 0,
+      "explain": "A single retry with a short delay is specifically sized to absorb transient issues, not mask a genuine persistent failure, which still triggers on_failure_callback after retries are exhausted."
+    },
+    {
+      "q": "Why does on_failure_callback matter for trust in the dashboard, specifically?",
+      "options": [
+        "It alerts the data team the same morning a run fails, before leadership opens a dashboard built on stale or half-built data without anyone knowing",
+        "It automatically fixes the failed task without human intervention",
+        "It prevents the DAG from ever failing again",
+        "It only matters for reducing Snowflake compute costs"
+      ],
+      "answer": 0,
+      "explain": "The real risk without this alert is a silent failure -- leadership trusting a number built on stale or incomplete data with no indication anything went wrong."
+    },
+    {
+      "q": "What is the recommended troubleshooting order when a stakeholder reports \"the MRR number looks off\"?",
+      "options": [
+        "Check the Airflow run status first, then dbt test results, then Snowflake query history -- before suspecting the DAX measure itself",
+        "Immediately rewrite the DAX measure from scratch",
+        "Check the DAX measure first, since that's where numbers are calculated",
+        "Restart the entire pipeline from the beginning without investigating"
+      ],
+      "answer": 0,
+      "explain": "Following the pipeline's own dependency order finds the real cause faster than guessing -- the DAX measure logic is usually the least likely culprit once the pipeline's own correctness is confirmed."
+    },
+    {
+      "q": "Why is the resource monitor's 50-credit quota described as \"deliberately generous\" for a once-daily batch job?",
+      "options": [
+        "The point isn't constraining normal operation -- it's catching the specific failure mode of a runaway query or a forgotten auto-resumed warehouse before it becomes a cost surprise",
+        "50 credits is the minimum value Snowflake allows for a resource monitor",
+        "A generous quota means the monitor will never actually trigger",
+        "It's set high specifically to allow unlimited ad hoc analyst queries"
+      ],
+      "answer": 0,
+      "explain": "The quota is a guardrail against a specific abnormal failure mode, not a tight operational constraint on expected daily usage."
+    }
+  ]
+}

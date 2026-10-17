@@ -1,0 +1,322 @@
+{
+  "questions": [
+    {
+      "id": "sfcap-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Driftwood's architecture uses two separate warehouses, DRIFTWOOD_ETL_WH and DRIFTWOOD_BI_WH, instead of one shared warehouse. Why?",
+      "options": [
+        "So transformation and reporting workloads don't queue behind each other, and each one's cost and auto-suspend can be tuned and tracked independently",
+        "Snowflake requires a separate warehouse for every schema in a database",
+        "dbt cannot technically run on the same warehouse Power BI connects to",
+        "It makes the architecture diagram easier to draw"
+      ],
+      "correctIndex": 0,
+      "explain": "Separating ETL and BI workloads lets each warehouse be sized, auto-suspended, and billed independently -- the same cost-visibility reasoning the Snowflake course's own cost management material teaches."
+    },
+    {
+      "id": "sfcap-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: every resource in this capstone -- the database, both warehouses, both custom roles -- is prefixed `________`, so a teammate or interviewer can tell at a glance which resources belong to this project.",
+      "acceptedAnswers": ["driftwood", "DRIFTWOOD"],
+      "explain": "Lesson 2's naming convention prefixes every resource DRIFTWOOD (or driftwood_, underscored, for Snowflake objects that don't allow hyphens) -- the same recognizability-at-a-glance naming discipline the AWS Capstone course applies to its own resources."
+    },
+    {
+      "id": "sfcap-03",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Match each named resource to what it actually is in Driftwood's architecture.",
+      "left": [
+        "DRIFTWOOD_ANALYTICS.MARTS",
+        "@driftwood_raw_stage",
+        "DRIFTWOOD_TRANSFORMER",
+        "driftwood_daily_elt"
+      ],
+      "right": [
+        "The Airflow DAG orchestrating the daily load/transform/test sequence",
+        "The role dbt and Airflow use to read raw and write staging/intermediate/marts",
+        "An internal Snowflake stage files land in before COPY INTO loads them",
+        "The schema holding the clean, tested tables Power BI and analysts query"
+      ],
+      "correctMap": [3, 2, 1, 0],
+      "explain": "DRIFTWOOD_ANALYTICS.MARTS is the final consumable schema; @driftwood_raw_stage is the landing stage for files; DRIFTWOOD_TRANSFORMER is the pipeline's service role; driftwood_daily_elt is the Airflow DAG tying the whole sequence together."
+    },
+    {
+      "id": "sfcap-04",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "In Snowflake, what does running a COPY INTO statement with VALIDATION_MODE = 'RETURN_ERRORS' actually do?",
+      "options": [
+        "Reports which rows would fail to load and why, without actually loading any data into the table",
+        "Loads all valid rows immediately and silently discards invalid ones with no report",
+        "Permanently deletes any row that fails validation from the source file",
+        "Pauses the warehouse until a human manually approves the load",
+        "Automatically corrects malformed values before loading them",
+        "Runs the load twice to double-check consistency"
+      ],
+      "correctIndex": 0,
+      "explain": "VALIDATION_MODE is a dry run -- it tells you exactly what would fail, before any real data is committed, which is why Driftwood's DAG runs it as its own task ahead of the real load.",
+      "distractorExplain": "Option B describes what ON_ERROR = 'CONTINUE' does on a real load, not what VALIDATION_MODE does -- VALIDATION_MODE never actually loads data at all, valid or otherwise, which is exactly what makes it safe to run as a pre-check."
+    },
+    {
+      "id": "sfcap-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Why does Driftwood's pipeline use a scheduled batch COPY INTO instead of Snowpipe?",
+      "options": [
+        "Driftwood's actual requirement is a once-daily refresh, not sub-minute freshness -- standing up Snowpipe's continuous-loading infrastructure would solve a problem the business doesn't have",
+        "Snowpipe cannot load CSV files under any circumstances",
+        "COPY INTO is always faster than Snowpipe regardless of data volume",
+        "Snowpipe requires a Snowflake edition Driftwood doesn't have"
+      ],
+      "correctIndex": 0,
+      "explain": "The decision follows directly from the stated business requirement -- a daily number, not real-time -- the same right-sized-tool reasoning the AWS Capstone applies to its own ingestion choice."
+    },
+    {
+      "id": "sfcap-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "What is the purpose of dbt's ref() function, as used throughout Driftwood's project (e.g. ref('stg_billing_events'))?",
+      "options": [
+        "It lets dbt automatically build the project's dependency graph and run models in the correct order, instead of relying on a hardcoded schema.table reference",
+        "It's purely stylistic and has no functional effect on how models run",
+        "It only works inside staging models, never intermediate or mart models",
+        "It replaces the need for any SQL JOIN clause"
+      ],
+      "correctIndex": 0,
+      "explain": "ref() is what makes dbt aware of model dependencies, so it can compile and run everything in the correct order automatically -- a hardcoded table name gives dbt no such information."
+    },
+    {
+      "id": "sfcap-07",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Driftwood's dbt layering (staging, intermediate, marts).",
+      "options": [
+        "Staging models clean and rename one raw source at a time, with no joins or business logic yet",
+        "The user_id-to-subscriber_id rename happens in staging, so it's resolved once instead of in every downstream model",
+        "int_subscriber_activity is the first model where billing and usage data are actually joined together",
+        "Marts models contain raw, unvalidated data straight from the source systems",
+        "fct_subscriptions and dim_subscribers are staging models, not marts"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Staging cleans one source with no joins; the rename happens there deliberately; intermediate is the first real join point. Marts are the final, tested, documented layer -- not raw data -- and fct_subscriptions/dim_subscribers are marts, not staging models."
+    },
+    {
+      "id": "sfcap-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Why does the driftwood_daily_elt DAG require both load_billing and load_usage to succeed before dbt_run starts, rather than letting dbt_run begin as soon as either finishes?",
+      "options": [
+        "int_subscriber_activity joins billing and usage data together -- running dbt against only half the day's raw data would produce quietly wrong numbers, not an error",
+        "Airflow technically cannot run more than one upstream task before any downstream task",
+        "load_billing and load_usage always take exactly the same amount of time to run",
+        "dbt_run requires the usage_events table to be completely empty"
+      ],
+      "correctIndex": 0,
+      "explain": "A join against incomplete raw data wouldn't error -- it would silently produce a wrong, half-populated result, which is exactly the failure mode this dependency ordering is designed to prevent."
+    },
+    {
+      "id": "sfcap-09",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Driftwood's Power BI dataset uses ________ mode rather than DirectQuery, because the actual requirement is a daily number, not a live one.",
+      "acceptedAnswers": ["import", "Import"],
+      "explain": "Import loads a snapshot refreshed on a schedule -- the right fit for a once-daily freshness requirement, versus DirectQuery's live-but-query-per-interaction model."
+    },
+    {
+      "id": "sfcap-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Why does Driftwood's MRR DAX measure wrap SUM(fct_subscriptions[amount_usd]) in a CALCULATE with two filters, instead of using a plain SUM?",
+      "options": [
+        "A plain SUM would include cancel-type events and revenue from already-cancelled subscribers, both inflating the total -- the filters restrict to revenue-generating events from currently-active subscribers only",
+        "CALCULATE is required any time a measure references more than one table",
+        "A plain SUM would cause a DAX compilation error on an event-grained fact table",
+        "The filters exist only to improve query performance, with no effect on the result's correctness"
+      ],
+      "correctIndex": 0,
+      "explain": "fct_subscriptions is event-grained, so an unfiltered SUM adds up every event ever recorded, including cancellations and historical events from subscribers who've since left -- both filters are necessary to get a correct MRR."
+    },
+    {
+      "id": "sfcap-11",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put these driftwood_daily_elt DAG tasks in the order a successful daily run executes them.",
+      "items": [
+        "validate_billing_load checks the day's export for parse errors without loading anything",
+        "load_billing and load_usage run in parallel, both committing data to raw tables",
+        "dbt_run builds the staging, intermediate, and marts models",
+        "dbt_test runs the project's generic and singular tests against the freshly built models"
+      ],
+      "explain": "The DAG validates first, loads both raw sources (which can run in parallel since neither depends on the other), builds the dbt models only once both loads succeed, then tests the result -- exactly the order Lesson 6 wires with the >> dependency operator."
+    },
+    {
+      "id": "sfcap-12",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "In Snowflake, what does a dynamic data masking policy do?",
+      "options": [
+        "Substitutes a masked value for a column at query time, based on the querying role, without ever changing the value actually stored",
+        "Physically deletes sensitive column values from the table permanently",
+        "Filters out entire rows a role shouldn't be able to see",
+        "Encrypts an entire table so no role, including the owner, can read it",
+        "Prevents a column from ever being queried by any role, including admins",
+        "Hides a view's underlying SQL definition from everyone but its owner"
+      ],
+      "correctIndex": 0,
+      "explain": "Masking operates at query time and column level -- the stored value never changes, and the same SELECT returns a different result depending purely on the querying role.",
+      "distractorExplain": "Option C describes a row access policy (Lesson 9's other mechanism), and option F describes a secure view -- both are real Snowflake features, but neither is what a masking policy specifically does."
+    },
+    {
+      "id": "sfcap-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Why does this lesson prefer masking the email column over simply not granting DRIFTWOOD_ANALYST any privilege on that column at all?",
+      "options": [
+        "Masking lets a broad SELECT * report keep working with the value safely hidden, instead of erroring out entirely for any query that references the column",
+        "Snowflake technically does not allow revoking access to a single column",
+        "Masking is computationally faster than a privilege restriction",
+        "There is no real functional difference between the two approaches"
+      ],
+      "correctIndex": 0,
+      "explain": "A column-level access restriction breaks any query referencing it, including SELECT *; masking lets the query succeed while the sensitive value stays hidden -- a materially better failure mode for a BI report."
+    },
+    {
+      "id": "sfcap-14",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about why Driftwood's CI/CD workflow runs dbt against a dedicated CI schema rather than prod.",
+      "options": [
+        "A bad model in a pull request can fail its tests without ever touching the data leadership's dashboard reads from",
+        "Testing against prod would mean running untested PR code against the real production marts",
+        "The CI schema is built and torn down fresh for each run",
+        "Running against a CI schema makes dbt tests run twice as fast",
+        "Snowflake requires every dbt project to have exactly one schema"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "The CI schema's whole purpose is isolation from prod, not speed -- a bad PR can fail loudly in CI without any risk to what leadership's dashboard is actually reading from."
+    },
+    {
+      "id": "sfcap-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "What does --select state:modified+ accomplish in Driftwood's CI workflow, and why does it matter as the project grows?",
+      "options": [
+        "It scopes the CI run to only changed models plus everything downstream of them, keeping CI fast regardless of project size -- an unscoped run that re-tests everything eventually gets slow enough that people start skipping it",
+        "It runs every model in the project twice, for extra safety",
+        "It is required syntax with no effect on which models actually run",
+        "It disables dbt tests entirely, running only model builds"
+      ],
+      "correctIndex": 0,
+      "explain": "Slim CI's value isn't just today's speed -- it's that a CI check people stop waiting for is a CI check that stops protecting anything, which is exactly what happens to an unscoped run as a project grows."
+    },
+    {
+      "id": "sfcap-16",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each Terraform resource to what it provisions in Driftwood's Snowflake account.",
+      "left": [
+        "snowflake_database",
+        "snowflake_warehouse",
+        "snowflake_role",
+        "snowflake_grant_privileges_to_role"
+      ],
+      "right": [
+        "A virtual warehouse like DRIFTWOOD_ETL_WH, with sizing and auto-suspend settings",
+        "DRIFTWOOD_ANALYTICS itself, including its Time Travel retention setting",
+        "A privilege grant, such as SELECT on every table in the marts schema",
+        "A role like DRIFTWOOD_ANALYST, before any privileges are attached to it"
+      ],
+      "correctMap": [1, 0, 3, 2],
+      "explain": "Each Terraform resource maps to exactly one real Snowflake object type: database, warehouse, role, and a separate grant resource that attaches privileges to an already-defined role."
+    },
+    {
+      "id": "sfcap-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "On driftwood_etl_monitor, what is the functional difference between the ON 75 PERCENT DO NOTIFY trigger and the ON 100 PERCENT DO SUSPEND trigger?",
+      "options": [
+        "DO NOTIFY only warns at 75% usage; DO SUSPEND actually stops the warehouse from accepting new queries once the full quota is consumed",
+        "Both triggers do exactly the same thing at different percentages",
+        "DO SUSPEND only warns; DO NOTIFY is what actually stops the warehouse",
+        "Neither trigger has any real effect on the warehouse's behavior"
+      ],
+      "correctIndex": 0,
+      "explain": "DO NOTIFY is an early warning with no operational effect; DO SUSPEND is the real guardrail that prevents a runaway query or forgotten warehouse from running past the budget."
+    },
+    {
+      "id": "sfcap-18",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: if someone accidentally runs DROP TABLE on a Driftwood mart, running ________ TABLE within the Time Travel window reverses it completely.",
+      "acceptedAnswers": ["undrop", "UNDROP"],
+      "explain": "UNDROP TABLE reverses a DROP, but only works inside the table's Time Travel retention window -- once that window passes, only Snowflake-support-only Fail-safe recovery remains."
+    },
+    {
+      "id": "sfcap-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Why does Driftwood's architecture use permanent tables throughout raw, staging, and marts, instead of marking staging tables transient the way a pure reload-from-source staging table normally would be?",
+      "options": [
+        "Driftwood's raw billing and usage exports aren't reliably reproducible from the source systems later -- they're the only copy once the source file is gone, which justifies full Time Travel and Fail-safe recovery throughout the project",
+        "Snowflake does not allow transient tables to be referenced by dbt models",
+        "Transient tables are always more expensive to store than permanent tables",
+        "Permanent tables are required for any table a dbt project writes to"
+      ],
+      "correctIndex": 0,
+      "explain": "The usual TRANSIENT case (a staging table reproducible by reloading from source) doesn't apply here -- Driftwood's raw exports are the only surviving copy of a given day's data, which is the specific reasoning that justifies permanent tables everywhere in this project."
+    },
+    {
+      "id": "sfcap-20",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each part of Driftwood's platform to how this course recommends presenting it in an interview.",
+      "left": [
+        "The Power BI executive dashboard",
+        "The full Airflow DAG graph",
+        "The dbt lineage graph from dbt docs generate",
+        "A live Snowflake query against marts.fct_subscriptions"
+      ],
+      "right": [
+        "Describe verbally from a diagram -- dense and easy to misread live",
+        "Show live -- immediately legible and the actual deliverable leadership asked for",
+        "Show live as a strong, fast second demo",
+        "Describe verbally from a diagram -- same reasoning as the DAG graph"
+      ],
+      "correctMap": [1, 0, 3, 2],
+      "explain": "The dashboard and a live query are fast, legible live demos; the DAG graph and lineage graph are dense enough that a prepared, verbal walkthrough communicates more clearly than live scrolling."
+    }
+  ]
+}

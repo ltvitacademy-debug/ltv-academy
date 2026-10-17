@@ -1,0 +1,60 @@
+{
+  "lesson": "disaster-recovery-with-time-travel-and-fail-safe",
+  "questions": [
+    {
+      "q": "Why does this capstone use permanent tables for raw.*, staging.*, and marts.*, instead of transient?",
+      "options": [
+        "Driftwood's raw data isn't reliably reproducible from the source system later, so full Time Travel + Fail-safe recovery matters throughout the project, not just on the marts",
+        "Snowflake requires all data warehouse tables to be permanent by default",
+        "Transient tables cannot be queried by dbt",
+        "Permanent tables are always cheaper than transient tables"
+      ],
+      "answer": 0,
+      "explain": "Unlike a reload-from-source staging table (the classic TRANSIENT case), Driftwood's raw exports are the only copy once the source file is gone, justifying permanent tables everywhere."
+    },
+    {
+      "q": "What does AT (OFFSET => -7200) do when querying a table?",
+      "options": [
+        "Queries the table as it existed 2 hours (7200 seconds) in the past, using Time Travel",
+        "Deletes the last 7200 rows from the table",
+        "Offsets the table's column order by 7200 positions",
+        "Schedules a query to run 7200 seconds from now"
+      ],
+      "answer": 0,
+      "explain": "Time Travel's AT (OFFSET => ...) syntax queries a table as it existed at a specific past point directly, in seconds offset from now."
+    },
+    {
+      "q": "What's required to recover data from Fail-safe, as opposed to Time Travel?",
+      "options": [
+        "Contacting Snowflake support directly -- it isn't a self-service recovery mechanism",
+        "Running UNDROP TABLE, identical to Time Travel recovery",
+        "Nothing extra -- Fail-safe recovery is fully self-service via SQL",
+        "Fail-safe data cannot be recovered under any circumstances"
+      ],
+      "answer": 0,
+      "explain": "Fail-safe exists for genuine disaster recovery and requires contacting Snowflake support -- it's not a convenient undo button the way Time Travel's self-service window is."
+    },
+    {
+      "q": "What does Time Travel NOT protect against, according to this lesson?",
+      "options": [
+        "A corrupted source export that passed through the pipeline unnoticed -- Time Travel can restore the table to a prior state, but that prior state was also built from the same bad data",
+        "An accidental DROP TABLE",
+        "A bad dbt model overwriting a table with wrong data",
+        "Any form of data loss whatsoever"
+      ],
+      "answer": 0,
+      "explain": "Time Travel protects against bad operations on correct data, not bad data arriving in the first place -- which is why load validation and dbt tests exist as a separate defense layer."
+    },
+    {
+      "q": "Within what window does UNDROP TABLE actually work?",
+      "options": [
+        "Only within the table's Time Travel retention window",
+        "Indefinitely, with no time limit",
+        "Only within the Fail-safe window, never during Time Travel",
+        "Only within the first 5 minutes after the DROP"
+      ],
+      "answer": 0,
+      "explain": "UNDROP relies on Time Travel -- once that window passes, the data moves into the support-only Fail-safe period, and UNDROP itself no longer works."
+    }
+  ]
+}
