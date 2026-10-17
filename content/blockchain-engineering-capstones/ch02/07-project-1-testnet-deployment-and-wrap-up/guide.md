@@ -76,6 +76,33 @@ or interrupted deploy can resume rather than starting over, and the
 addresses it produced are there for your README and your frontend's
 config to reference.
 
+## Acceptance criteria
+
+Before you consider Project 1 finished, confirm each of these against
+your own deployed contract, not just against the lesson code — check
+each box only once you've verified it yourself:
+
+- [ ] `forge test` (or your toolchain's equivalent) passes with zero
+      failures, including the fuzz and invariant tests from Lesson 6.
+- [ ] The first-depositor path (`totalShares == 0`) is covered by an
+      explicit test, not just exercised incidentally by a later one.
+- [ ] `swapAforB` and `swapBforA` both update reserves *before* making
+      any external token transfer (checks-effects-interactions,
+      confirmed by reading the deployed bytecode's source on the
+      block explorer, not just your local file).
+- [ ] The six-item security-review checklist from Lesson 6 is filled
+      in with real findings, not left as the blank template.
+- [ ] The pool and both `TeachingToken` contracts are deployed to
+      Sepolia **and verified** — a reviewer can read the real source
+      on the block explorer, not just see a bytecode address.
+- [ ] The README documents every item in this list's actual result,
+      plus what's deliberately simplified away (Lesson 4).
+
+A project that fails any box above isn't yet a finished capstone — it's
+still in progress, which is a fine place to be mid-course, but it's the
+honest distinction between "working on my laptop" and "ready to show a
+reviewer."
+
 ## What belongs in the finished README
 
 This is the document an interviewer actually reads before they read your

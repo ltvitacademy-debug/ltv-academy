@@ -9,15 +9,18 @@
 - How to demo the proposal lifecycle live, in under three minutes
 - How to talk about this project's tradeoffs in an interview, not just its features
 
-## The testing checklist
+## Acceptance criteria
 
-Before you consider this project finished, confirm each of these against your own deployment, not just against the lesson code:
+Before you consider Project 3 finished, confirm each of these against
+your own deployment — check each box only once you've verified it
+yourself, not against the lesson code alone:
 
-- **Delegation works.** A freshly minted holder who calls `delegate()` on themselves shows nonzero voting power from `getVotes()`.
-- **A proposal moves through every state correctly.** Pending → Active → Succeeded (or Defeated) → Queued → Executed, with no step skipped or stuck.
-- **Quorum actually gates execution.** A proposal with too few votes resolves as Defeated, not Succeeded, even if every vote cast was in favor.
-- **The timelock delay is real.** Attempting to execute a queued proposal before its `eta` reverts; attempting it after succeeds.
-- **The deployer's admin role is gone.** `hasRole(TIMELOCK_ADMIN_ROLE, deployerAddress)` returns `false` after setup — confirm this explicitly, don't just assume the renounce call worked.
+- [ ] **Delegation works.** A freshly minted holder who calls `delegate()` on themselves shows nonzero voting power from `getVotes()`.
+- [ ] **A proposal moves through every state correctly.** Pending → Active → Succeeded (or Defeated) → Queued → Executed, with no step skipped or stuck.
+- [ ] **Quorum actually gates execution.** A proposal with too few votes resolves as Defeated, not Succeeded, even if every vote cast was in favor.
+- [ ] **The timelock delay is real.** Attempting to execute a queued proposal before its `eta` reverts; attempting it after succeeds.
+- [ ] **The deployer's admin role is gone.** `hasRole(TIMELOCK_ADMIN_ROLE, deployerAddress)` returns `false` after setup — confirm this explicitly, don't just assume the renounce call worked.
+- [ ] **The single point of failure is named in the README**, not glossed over — see the security questions below.
 
 ## Security questions you should be able to answer about your own design
 

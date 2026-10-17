@@ -9,6 +9,29 @@
 - Why explaining tradeoffs beats reciting what the code does
 - How to close out this project before moving to Project 3's DAO governance system
 
+## Acceptance criteria
+
+Before you consider Project 2 finished, confirm each of these against
+your own deployment — check each box only once you've verified it
+yourself, not once you believe it should work:
+
+- [ ] `listItem`, `buyItem`, and `cancelListing` all behave correctly
+      against a real, locally-deployed test collection — not just
+      against hand-waved expectations.
+- [ ] `buyItem` deletes the listing *before* any external call
+      (NFT transfer or payment) — confirmed by reading the deployed
+      source, not just your local file.
+- [ ] At least one test confirms `buyItem` reverts when `msg.value`
+      doesn't match the listed price.
+- [ ] ERC-2981 royalty payout is confirmed working end-to-end against
+      a collection that actually implements `IERC2981` — not merely
+      assumed to work because the code compiles.
+- [ ] The indexer (subgraph or custom listener, per Lesson 10) returns
+      a correct, queryable list of active listings — confirmed with a
+      real query, not just "the code looks right."
+- [ ] The README follows the skeleton below, including the "known
+      limitations" section stated plainly, not omitted.
+
 ## From working demo to portfolio piece
 
 A marketplace that runs on your laptop isn't yet a portfolio project -- it's a prototype. The gap
