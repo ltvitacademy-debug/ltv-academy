@@ -1,6 +1,13 @@
-// The full AWS Data Engineering course outline. Only lessons with a
-// contentDir + videoUrl are playable; everything else renders as "in
-// production". Assumes AWS Fundamentals for Data Engineers and the SQL/
+// The full AWS Data Engineering course outline. Lessons 1-55 (chapters
+// 1-11) have real video. Chapter 12 (lessons 56-58) is a deliberate
+// exception added 2026-10-17: written case studies on modern lakehouse
+// patterns (S3 Tables/Iceberg, Lake Formation fine-grained permissions,
+// Glue Data Quality/DQDL) researched and verified against current AWS
+// docs — no video, contentDir only, same pattern used elsewhere in this
+// catalog for guide-only lessons. A lesson with a contentDir but no
+// videoUrl still renders fully (guide, quiz, AI assistant, navigation)
+// — only the video player itself is replaced with an "in production"
+// placeholder. Assumes AWS Fundamentals for Data Engineers and the SQL/
 // Spark foundation from T-SQL Development and Data Engineering
 // Foundations — this course goes straight into the AWS services current
 // AWS data engineering postings actually ask for: S3, Glue, Athena,
@@ -363,6 +370,21 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
         contentDir: "ch11/55-monitoring-a-pipeline-end-to-end",
         videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792156600/ltv-aws-data-engineering/monitoring-a-pipeline-end-to-end.mp4",
         durationLabel: "2 min 8 s",
+      }),
+    ],
+  },
+  {
+    n: 12,
+    title: "Modern Lakehouse Patterns on AWS",
+    lessons: [
+      L(56, "iceberg-and-s3-tables", "Table Formats for a Data Lake: Apache Iceberg via S3 Tables", {
+        contentDir: "ch12/56-iceberg-and-s3-tables",
+      }),
+      L(57, "lake-formation-fine-grained-permissions", "AWS Lake Formation: Fine-Grained Permissions for the Lake", {
+        contentDir: "ch12/57-lake-formation-fine-grained-permissions",
+      }),
+      L(58, "glue-data-quality-dqdl", "AWS Glue Data Quality: Defining and Enforcing Data Quality Rules", {
+        contentDir: "ch12/58-glue-data-quality-dqdl",
       }),
     ],
   },
