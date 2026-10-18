@@ -1,6 +1,9 @@
-// The LTV Customer Management System course outline — FRAMEWORK ONLY (chapter and lesson
-// titles, no lesson content yet). Lessons without a contentDir render as
-// "in production". Part of the Salesforce Technical Architect career path.
+// The LTV Customer Management System course outline. All 20 lessons have
+// real guide.md content (the header here previously, incorrectly, called
+// this "framework only" — fixed 2026-10-17). Lessons without a contentDir
+// render as "in production". This is the Salesforce Administrator path's
+// capstone (not the Technical Architect path, as a prior version of this
+// comment said) — see career-paths.ts's "salesforce-administrator" entry.
 
 export type LessonMeta = {
   n: number;

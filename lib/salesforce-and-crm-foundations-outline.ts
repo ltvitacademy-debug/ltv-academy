@@ -1,6 +1,9 @@
-// The Salesforce & CRM Foundations course outline — FRAMEWORK ONLY (chapter and lesson
-// titles, no lesson content yet). Lessons without a contentDir render as
-// "in production". Part of the Salesforce Technical Architect career path.
+// The Salesforce & CRM Foundations course outline. All lessons have real
+// guide.md content (the header here previously, incorrectly, called this
+// "framework only" — fixed 2026-10-17). Lessons without a contentDir
+// render as "in production". Part of the Salesforce Administrator path's
+// "Salesforce Foundations" stage (not the Technical Architect path, as a
+// prior version of this comment said).
 
 export type LessonMeta = {
   n: number;
