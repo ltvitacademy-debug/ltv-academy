@@ -1,5 +1,4 @@
-// The Time Series & Financial Modeling course outline — FRAMEWORK ONLY (chapter and lesson
-// titles, no lesson content yet). Lessons without a contentDir render as
+// The Time Series & Financial Modeling course outline. Lessons without a contentDir render as
 // "in production". Step 5 of the Quantitative Developer / Researcher path. Goes well past the time-series basics in Advanced Data Science, into the models financial data specifically demands.
 
 export type LessonMeta = {
@@ -102,6 +101,17 @@ export const TIME_SERIES_AND_FINANCIAL_MODELING_CHAPTERS: ChapterMeta[] = [
       L(33, "capstone-kickoff-model-returns-and-volatility-for-a-universe-of-assets", "Capstone Kickoff: Model Returns and Volatility for a Universe of Assets", { contentDir: "ch08/33-capstone-kickoff-model-returns-and-volatility-for-a-universe-of-assets" }),
       L(34, "capstone-build-it", "Capstone: Build It", { contentDir: "ch08/34-capstone-build-it" }),
       L(35, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch08/35-capstone-wrap-up-and-portfolio-presentation" }),
+    ],
+  },
+  {
+    n: 9,
+    title: "Portfolio Construction",
+    lessons: [
+      L(36, "mean-variance-optimization-and-the-efficient-frontier", "Mean-Variance Optimization & the Efficient Frontier", { contentDir: "ch09/36-mean-variance-optimization-and-the-efficient-frontier" }),
+      L(37, "risk-parity-and-alternative-risk-budgeting", "Risk Parity & Alternative Risk Budgeting", { contentDir: "ch09/37-risk-parity-and-alternative-risk-budgeting" }),
+      L(38, "drawdowns-and-portfolio-level-exposure-limits", "Drawdowns & Portfolio-Level Exposure Limits", { contentDir: "ch09/38-drawdowns-and-portfolio-level-exposure-limits" }),
+      L(39, "portfolio-rebalancing-turnover-vs-optimality", "Portfolio Rebalancing: Turnover vs. Optimality", { contentDir: "ch09/39-portfolio-rebalancing-turnover-vs-optimality" }),
+      L(40, "capstone-building-a-portfolio-optimizer-vs-a-benchmark", "Capstone: Building a Portfolio Optimizer vs. a Benchmark", { contentDir: "ch09/40-capstone-building-a-portfolio-optimizer-vs-a-benchmark" }),
     ],
   },
 ];
