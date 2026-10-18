@@ -28,8 +28,8 @@ export const HYBRID_QUANTUM_CLASSICAL_COMPUTING_CHAPTERS: ChapterMeta[] = [
       L(1, "why-almost-every-real-quantum-application-is-hybrid", "Why Almost Every Real Quantum Application Is Hybrid", { contentDir: "ch01/01-why-almost-every-real-quantum-application-is-hybrid", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792357083/ltv-quantum/hybrid-quantum-classical-computing-ch01-01-why-almost-every-real-quantum-application-is-hybrid.mp4", durationLabel: "02:53" }),
       L(2, "the-variational-hybrid-loop-pattern", "The Variational Hybrid Loop Pattern", { contentDir: "ch01/02-the-variational-hybrid-loop-pattern", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792357187/ltv-quantum/hybrid-quantum-classical-computing-ch01-02-the-variational-hybrid-loop-pattern.mp4", durationLabel: "02:32" }),
       L(3, "quantum-as-a-coprocessor-vs-quantum-as-the-whole-program", "Quantum as a Coprocessor vs. Quantum as the Whole Program", { contentDir: "ch01/03-quantum-as-a-coprocessor-vs-quantum-as-the-whole-program", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792357263/ltv-quantum/hybrid-quantum-classical-computing-ch01-03-quantum-as-a-coprocessor-vs-quantum-as-the-whole-program.mp4", durationLabel: "02:32" }),
-      L(4, "architecture-patterns-problem-solving-lab", "Architecture Patterns Problem-Solving Lab", { contentDir: "ch01/04-architecture-patterns-problem-solving-lab", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792358046/ltv-quantum/hybrid-quantum-classical-computing-ch01-04-architecture-patterns-problem-solving-lab.mp4", durationLabel: "02:26" }),
-      L(5, "common-hybrid-architecture-mistakes", "Common Hybrid Architecture Mistakes", { contentDir: "ch01/05-common-hybrid-architecture-mistakes", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792358049/ltv-quantum/hybrid-quantum-classical-computing-ch01-05-common-hybrid-architecture-mistakes.mp4", durationLabel: "02:32" }),
+      L(4, "architecture-patterns-problem-solving-lab", "Architecture Patterns Problem-Solving Lab", { contentDir: "ch01/04-architecture-patterns-problem-solving-lab", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792358694/ltv-quantum/hybrid-quantum-classical-computing-ch01-04-architecture-patterns-problem-solving-lab.mp4", durationLabel: "02:28" }),
+      L(5, "common-hybrid-architecture-mistakes", "Common Hybrid Architecture Mistakes", { contentDir: "ch01/05-common-hybrid-architecture-mistakes", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792358697/ltv-quantum/hybrid-quantum-classical-computing-ch01-05-common-hybrid-architecture-mistakes.mp4", durationLabel: "02:28" }),
     ],
   },
   {
@@ -58,19 +58,19 @@ export const HYBRID_QUANTUM_CLASSICAL_COMPUTING_CHAPTERS: ChapterMeta[] = [
     title: "Cost, Latency & Resource Management",
     lessons: [
       L(15, "understanding-quantum-cloud-pricing-models", "Understanding Quantum Cloud Pricing Models", { contentDir: "ch04/15-understanding-quantum-cloud-pricing-models", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792358092/ltv-quantum/hybrid-quantum-classical-computing-ch04-15-understanding-quantum-cloud-pricing-models.mp4", durationLabel: "02:10" }),
-      L(16, "latency-budgets-for-hybrid-workflows", "Latency Budgets for Hybrid Workflows", { contentDir: "ch04/16-latency-budgets-for-hybrid-workflows" }),
-      L(17, "shot-budgets-and-their-cost-and-accuracy-tradeoff", "Shot Budgets & Their Cost-vs-Accuracy Tradeoff", { contentDir: "ch04/17-shot-budgets-and-their-cost-and-accuracy-tradeoff" }),
-      L(18, "resource-management-lab", "Resource-Management Lab", { contentDir: "ch04/18-resource-management-lab" }),
+      L(16, "latency-budgets-for-hybrid-workflows", "Latency Budgets for Hybrid Workflows", { contentDir: "ch04/16-latency-budgets-for-hybrid-workflows", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792358155/ltv-quantum/hybrid-quantum-classical-computing-ch04-16-latency-budgets-for-hybrid-workflows.mp4", durationLabel: "02:15" }),
+      L(17, "shot-budgets-and-their-cost-and-accuracy-tradeoff", "Shot Budgets & Their Cost-vs-Accuracy Tradeoff", { contentDir: "ch04/17-shot-budgets-and-their-cost-and-accuracy-tradeoff", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792358210/ltv-quantum/hybrid-quantum-classical-computing-ch04-17-shot-budgets-and-their-cost-and-accuracy-tradeoff.mp4", durationLabel: "01:59" }),
+      L(18, "resource-management-lab", "Resource-Management Lab", { contentDir: "ch04/18-resource-management-lab", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792358271/ltv-quantum/hybrid-quantum-classical-computing-ch04-18-resource-management-lab.mp4", durationLabel: "02:21" }),
     ],
   },
   {
     n: 5,
     title: "Hybrid Workflow Project",
     lessons: [
-      L(19, "project-kickoff-define-the-hybrid-workflow", "Project Kickoff: Define the Hybrid Workflow", { contentDir: "ch05/19-project-kickoff-define-the-hybrid-workflow" }),
-      L(20, "project-build-the-orchestration-layer", "Project: Build the Orchestration Layer", { contentDir: "ch05/20-project-build-the-orchestration-layer" }),
-      L(21, "project-add-error-handling-and-cost-tracking", "Project: Add Error Handling & Cost Tracking", { contentDir: "ch05/21-project-add-error-handling-and-cost-tracking" }),
-      L(22, "project-wrap-up-and-architecture-review", "Project Wrap-Up & Architecture Review", { contentDir: "ch05/22-project-wrap-up-and-architecture-review" }),
+      L(19, "project-kickoff-define-the-hybrid-workflow", "Project Kickoff: Define the Hybrid Workflow", { contentDir: "ch05/19-project-kickoff-define-the-hybrid-workflow", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792358328/ltv-quantum/hybrid-quantum-classical-computing-ch05-19-project-kickoff-define-the-hybrid-workflow.mp4", durationLabel: "02:09" }),
+      L(20, "project-build-the-orchestration-layer", "Project: Build the Orchestration Layer", { contentDir: "ch05/20-project-build-the-orchestration-layer", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792358383/ltv-quantum/hybrid-quantum-classical-computing-ch05-20-project-build-the-orchestration-layer.mp4", durationLabel: "02:06" }),
+      L(21, "project-add-error-handling-and-cost-tracking", "Project: Add Error Handling & Cost Tracking", { contentDir: "ch05/21-project-add-error-handling-and-cost-tracking", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792358443/ltv-quantum/hybrid-quantum-classical-computing-ch05-21-project-add-error-handling-and-cost-tracking.mp4", durationLabel: "02:17" }),
+      L(22, "project-wrap-up-and-architecture-review", "Project Wrap-Up & Architecture Review", { contentDir: "ch05/22-project-wrap-up-and-architecture-review", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792358500/ltv-quantum/hybrid-quantum-classical-computing-ch05-22-project-wrap-up-and-architecture-review.mp4", durationLabel: "02:13" }),
     ],
   },
 ];
