@@ -7,6 +7,9 @@
 - A systematic order to check Salesforce's access layers when a user
   reports a visibility problem
 - How to use the built-in access-checking tools instead of guessing
+- A second full walkthrough: a rep who can see a record but can't
+  edit one specific field — the field-level-security case, not the
+  record-access case
 - What a periodic access review is, and what it should catch that
   day-to-day troubleshooting misses
 - How to document a fix so the next admin (or future you) understands
@@ -81,6 +84,43 @@ to them on a case team. Following the layered order:
 The fix: change the case-team role template so Tier 2 members are
 added with Edit access, not just Read — fixing the rule that's
 actually responsible, not manually re-sharing this one case.
+
+## A second walkthrough: can view, can't edit one field
+
+The Tier 1 agent case above is a *record-access* problem — it resolved at layer 5. This one is
+the other common shape of ticket, and it resolves at a different layer entirely.
+
+**The ticket:** a Meridian Outfitters sales rep, Dana, reports she can open an Opportunity and
+see every field on it — including the deal amount — but when she tries to update the **Discount
+Approved %** field, it's greyed out. Every other field on the same record edits normally.
+
+**Working the layered order, the same discipline as before — don't skip to a guess:**
+
+1. **Object permissions** — Dana's profile has Edit on Opportunity (she just edited two other
+   fields on this exact record). Not the issue.
+2. **Field-level security** — check this next, specifically *because* the symptom is scoped to
+   one field on a record she otherwise has full access to. Object Manager → Opportunity →
+   Discount Approved % → Field-Level Security → Dana's profile shows Read checked, Edit
+   unchecked. **This is where the problem turns out to be.**
+3. **OWD, role hierarchy, sharing** — never checked, because the record is already confirmed
+   visible and mostly editable; these layers only control whether she reaches the record at all,
+   and she clearly does.
+
+**The fix:** enable Edit on Discount Approved % for Dana's profile — *if* that's actually a
+mistake. First, check whether the restriction is deliberate: at Meridian, discount approval
+above a threshold is meant to be a manager-only action, and Discount Approved % is intentionally
+locked for the Sales Rep profile so reps can't self-approve their own discounts. In this case,
+Dana's ticket isn't a bug — it's the security model working as designed, and the actual fix is
+explaining the business reason to Dana, not changing the field's security.
+
+**Why this one resolves faster than the Tier 1 case, and why that's not an accident.** A symptom
+scoped to exactly one field, on a record the user otherwise has full access to, almost always
+points straight at layer 2 — there's rarely a reason to check layers 3-6 first, since none of
+them operate at the single-field grain. The Tier 1 case took longer specifically because "can't
+open the record at all" is a record-level symptom, which could plausibly be caused by four
+different layers (3 through 6) before landing on the real one. Reading what a symptom's *shape*
+(whole-record vs. single-field) already rules out is what makes this order fast in practice, not
+just correct in theory.
 
 ## Access reviews: catching what tickets don't
 
