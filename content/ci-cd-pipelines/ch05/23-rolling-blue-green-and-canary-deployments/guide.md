@@ -8,6 +8,7 @@ An approved deployment still has to actually happen without taking the applicati
 - Why blue-green deployment keeps two complete environments running and switches traffic instantly
 - How canary deployment sends a small slice of real traffic to the new version before trusting it fully
 - Which strategy fits which situation, and why Northbridge Retail doesn't use just one
+- How to make a canary's rollback automatic instead of something an on-call engineer has to decide and trigger by hand
 
 ## Rolling update: Kubernetes' default
 
@@ -51,6 +52,57 @@ Canary is the strategy best suited to catching a problem that only shows up unde
 
 Northbridge Retail doesn't commit to one strategy forever. Routine `storefront-api` releases use a rolling update — simple, no extra infrastructure. A release touching the checkout payment flow uses canary, because the blast radius of a subtle bug there needs to be a small percentage of orders, not every order placed in the next ten minutes. Blue-green comes out for changes where even brief version-mixing is unacceptable — typically changes to the database schema itself.
 
+## Making canary rollback automatic, not manual
+
+"Watch error rates... if not, roll back" above describes canary analysis as something a human
+does — reasonable for a first canary release, but it has a real weakness: it only works if
+someone is actually watching the dashboard in real time, at exactly the moment a problem starts.
+Northbridge Retail's checkout canaries use **Flagger**, a Kubernetes controller that runs that
+same watch-and-decide loop automatically, against the Prometheus metrics Lesson 14 territory
+(monitoring) already produces:
+
+```yaml
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: checkout
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: checkout
+  service:
+    port: 8080
+  analysis:
+    interval: 1m
+    threshold: 10       # 10 consecutive failed checks triggers rollback
+    maxWeight: 50
+    stepWeight: 5        # shift 5% more traffic every interval, if healthy
+    metrics:
+      - name: request-success-rate
+        thresholdRange:
+          min: 99
+        interval: 1m
+      - name: request-duration
+        thresholdRange:
+          max: 500
+        interval: 1m
+```
+
+On every `interval`, Flagger checks the canary's real traffic against both thresholds — success
+rate must stay at or above 99%, p99 duration at or below 500ms. If both hold, it shifts 5% more
+traffic to the canary and tries again; if a check fails enough times in a row to hit `threshold`,
+Flagger rolls the canary back to 0% traffic itself, with no human needing to notice the dashboard
+degrading and no human needing to run `kubectl rollout undo` under pressure. If the canary
+reaches `maxWeight` healthy the whole way, Flagger promotes it to the primary version
+automatically.
+
+This doesn't replace the manual rollback mechanics from the next lesson — Flagger's automated
+analysis only covers metrics it's told to watch, and a genuinely novel failure mode (one nobody
+thought to put a threshold on) can still slip through needing a human response. What it does
+remove is the single point of failure in "a person has to be watching, at the right moment, and
+has to decide fast enough" for the failure modes that *are* already known and measurable.
+
 ## Key terms
 
 | Term | Meaning |
@@ -59,3 +111,5 @@ Northbridge Retail doesn't commit to one strategy forever. Routine `storefront-a
 | Blue-green deployment | Running two full environments and switching all traffic over in one atomic cutover |
 | Canary deployment | Sending a small percentage of real traffic to a new version before trusting it fully |
 | Blast radius | How much of real traffic/users is exposed to a new version if it turns out to be broken |
+| Flagger | A Kubernetes controller that automates canary traffic shifting and rollback based on live metric thresholds |
+| `thresholdRange` | The acceptable min/max value for a metric Flagger checks on each analysis interval |

@@ -8,6 +8,7 @@ Last lesson's `terraform-aws-modules/vpc/aws` call pinned `version = "~> 5.0"` w
 - The standard module folder layout: `main.tf`, `variables.tf`, `outputs.tf`, `README.md`
 - Pinning a local module isn't needed — only registry (or other remote) sources take `version`
 - A rule of thumb for when a resource pattern is worth turning into a module
+- How to actually test a module before trusting it in production, using Terraform's built-in `terraform test`
 
 ## Version constraints
 
@@ -47,9 +48,56 @@ Not every resource belongs in a module. A reasonable rule of thumb:
 
 Turning everything into a module "for consistency" adds a layer of indirection with no payoff — Terraform doesn't reward over-modularizing, and every extra module is one more `source` and `version` to keep track of.
 
+## Testing a module before trusting it
+
+A module reused across dev, staging, and prod is exactly the kind of code where a silent
+mistake has the widest blast radius — and "it applied without an error" isn't proof it created
+what you actually intended. Terraform's built-in `terraform test` command runs real,
+checkable assertions against a module, either as a dry-run `plan` (fast, no real resources) or a
+full `apply` against short-lived test infrastructure that's destroyed automatically afterward.
+
+```hcl
+# modules/storage-account/tests/naming.tftest.hcl
+
+variables {
+  environment = "test"
+  prefix      = "northbridge"
+}
+
+run "name_follows_convention" {
+  command = plan   # just validate the logic -- nothing gets created
+
+  assert {
+    condition     = azurerm_storage_account.this.name == "sttestnorthbridge"
+    error_message = "Storage account name didn't follow the expected prefix-environment convention"
+  }
+}
+
+run "private_by_default" {
+  command = plan
+
+  assert {
+    condition     = azurerm_storage_account.this.public_network_access_enabled == false
+    error_message = "Storage account must not be publicly accessible by default"
+  }
+}
+```
+
+The second test here matters more than it looks — it's not checking that the module *works*,
+it's checking that it's *safe by default*: a storage account module whose `plan` output shows
+`public_network_access_enabled = true` under default inputs would pass a casual "did it apply"
+check while quietly shipping an insecure default to every environment that uses it.
+
+Running `terraform test` from the module's own directory executes every `.tftest.hcl` file found,
+reports pass/fail per `run` block, and — critically — tears down any real resources an `apply`-mode
+run created, so testing a module never leaves orphaned infrastructure behind the way a manual
+"apply it somewhere and check" trial run would.
+
 ## Key terms
 
 - **Version constraint** — the `version` argument restricting which published module releases are acceptable
 - **`~>` (pessimistic constraint)** — allows the rightmost version segment to increase, blocks the one left of it
 - **Standard module layout** — `main.tf`, `variables.tf`, `outputs.tf`, `README.md`
 - **Module judgment call** — extract a module when a pattern repeats or is complex; leave a one-off resource inline
+- **`terraform test`** — runs assertions from `.tftest.hcl` files against a module, in `plan` (no real resources) or `apply` (real, auto-destroyed resources) mode
+- **Safe-by-default assertion** — a module test checking that default inputs produce a secure configuration, not just a successful apply
