@@ -12,6 +12,8 @@
 - The named people you'll see again and again through Lesson 20
 - The business situations that drive the custom objects, security rules,
   and automation you'll build in later chapters
+- How to practice turning these raw business facts into requirements
+  yourself, before checking your work against Lesson 1's finished list
 
 **A note before we start, repeated throughout this capstone:** everything
 below about "Cascade Foodservice Equipment Co." is a fictional,
@@ -123,6 +125,48 @@ objects, and they become the two custom objects you'll build in Lesson 9:
   end date, a service tier, and an annual value, independent of any one
   Opportunity.
 
+## Practicing discovery, before you see the finished requirements list
+
+Lesson 1 already handed you a finished 10-row requirements checklist — which is realistic for
+*this* capstone's pacing, but not realistic for the job itself. On a real implementation
+project, nobody hands an administrator a finished requirements list; the administrator has to
+produce one, by talking to stakeholders and translating what they say into something buildable.
+This exercise lets you practice that translation, using exactly the raw material you just read
+above, before you compare your own work against Lesson 1's answer.
+
+Using the Career Preparation course's five-step discovery framework (identify stakeholders → run
+workshops → document functional/non-functional requirements → prioritize → validate), work
+through Cascade using only what this lesson told you:
+
+**1. Identify stakeholders.** From the departments table above, name who you'd actually need to
+talk to before building anything — not everyone in the company, the specific people whose work
+this org has to support. (Hint: a department existing doesn't automatically mean its manager is
+a stakeholder for *this* project — Finance & Order Operations is listed, but is there anything in
+this lesson suggesting they need new Salesforce functionality, or are they out of scope for now?)
+
+**2. Translate raw facts into functional requirements.** Take three specific details from this
+lesson — the two business realities under "What drives the custom objects," the fact that Key
+Accounts and New Business are separate teams with different data-sensitivity needs, and the
+four-channel Lead Source list — and write one requirement sentence for each, in the style of
+Lesson 1's checklist ("the system must support X, because Y"), *before* looking at Lesson 1
+again.
+
+**3. Flag what's still ambiguous.** Real discovery surfaces open questions, not just answers.
+Name at least one real ambiguity this lesson leaves unresolved — for example, does Jordan
+Kessler's SDR role need its own distinct profile, or does "New Business" cover him under Tom
+Baptiste's profile? The lesson doesn't say; a real discovery conversation would ask Derek
+Oyelaran or Monica Reyes directly rather than guessing.
+
+**4. Compare against Lesson 1.** Now re-read Lesson 1's 10-row checklist. Where does your own
+list match it? Where does it go further, or miss something Lesson 1 included? The gaps are the
+actual learning here — a requirement you missed is worth asking *why* you missed it, not just
+noting that you did.
+
+This exercise doesn't change what you build in later chapters — Lesson 1's checklist is still
+the capstone's official Definition of Done. It changes whether you've practiced the skill of
+*producing* that kind of list yourself, which is the part a real job (and a real interview)
+actually tests.
+
 ## Key terms
 
 | Term | Meaning |
@@ -131,6 +175,7 @@ objects, and they become the two custom objects you'll build in Lesson 9:
 | Key Accounts | Cascade's large, multi-location customers, owned by a separate sales team from New Business |
 | Equipment package | An Opportunity that bundles several products (e.g., a range, a hood, and a dishwasher) into one deal |
 | Install lifecycle | The sequence an installation moves through after an Opportunity is won: scheduled, in progress, complete |
+| Discovery | The process of turning stakeholder input and business facts into documented, buildable requirements — the skill this lesson's exercise practices directly |
 
 ## Lab
 

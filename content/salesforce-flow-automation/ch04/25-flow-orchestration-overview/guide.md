@@ -8,6 +8,7 @@
 - The three building blocks: orchestrations, stages, and steps
 - The difference between an interactive step and a background step
 - Why Flow Orchestration became a standard part of every org's toolkit in 2026, not a paid add-on
+- A real, hands-on build: the two-stage hiring orchestration shown in the screenshots above, built element by element
 
 ## Everything so far has been one flow. Orchestration coordinates several
 
@@ -34,6 +35,80 @@ Stack several stages, with Decision elements branching between them, and the can
 ## No longer a paid add-on
 
 For a long time, Flow Orchestration required a separate licensed add-on beyond a limited number of free runs. As of February 2026, Salesforce made **Flow Orchestration a standard Flow type**, included for all customers at no additional cost, subject to the same per-edition limits as any other Flow type. That removes what used to be the real barrier to using it — it's now just another flow type in the toolbox, for the specific job none of the others are built for: coordinating a process across multiple flows and multiple people over time.
+
+## Building it: the hiring orchestration from the screenshots above
+
+Everything shown in this lesson's screenshots is buildable with elements and patterns already
+covered in this course — a screen flow is just the flow type from Chapter 2, an autolaunched flow
+is the background-step equivalent of what Lesson 29's lab already built. Here's the same
+"Recruiter Screening" stage, built step by step.
+
+### Step 1 — Create the two flows the orchestration will coordinate
+
+Before building the orchestration itself, build the two flows its first stage needs, following
+Lesson 27's naming convention:
+
+```
+Flow: "Candidate - Screen - Recruiter Phone Screen"
+  Type: Screen Flow
+  Screens: one screen with fields for interview notes and a
+           Pass/Reject decision, matching the screen flow patterns
+           from Chapter 2.
+
+Flow: "Candidate - Autolaunched - Notify Candidate"
+  Type: Autolaunched Flow (no trigger, called by the orchestration)
+  Elements: one Action element (Send Email), using the candidate's
+            email from the input record.
+```
+
+### Step 2 — Create the orchestration and the first stage
+
+```
+New Flow -> Flow Orchestration
+Canvas -> Add Element -> Stage
+  Stage Label: "Recruiter Screening"
+```
+
+### Step 3 — Add the three steps from the screenshot, in order
+
+```
+Step 1 (Interactive): "Create a job application"
+  Runs: a screen flow collecting the candidate's initial application data
+  Assigned to: the recruiter's queue
+
+Step 2 (Background): "Notify candidate"
+  Runs: the "Candidate - Autolaunched - Notify Candidate" flow from Step 1
+  Runs automatically once Step 1 completes -- no assignment needed
+
+Step 3 (Interactive): "Recruiter phone screen"
+  Runs: the "Candidate - Screen - Recruiter Phone Screen" flow from Step 1
+  Assigned to: the recruiter
+```
+
+Notice Step 2 doesn't need a person assigned — it's a background step, so it simply runs the
+moment Step 1 finishes, the same way an autolaunched flow runs without anyone clicking anything.
+
+### Step 4 — Add a Decision and the second stage
+
+```
+Canvas -> Add Element -> Decision, after the "Recruiter Screening" stage
+  Outcome "Advance": recruiter marked Pass on the phone screen
+  Default: "Candidate Rejected"
+
+Stage: "Hiring Manager Interview" (on the Advance path)
+  2 steps, following the same Interactive/Background pattern as
+  Stage 1 -- an interactive step for the hiring manager's interview,
+  a background step notifying the candidate of the outcome.
+
+Stage: "Candidate Rejected" (on the Default path)
+  1 background step: send a rejection notification, then End.
+```
+
+### Step 5 — Activate and test, the same discipline as any other flow
+
+Per Lesson 21, debug the orchestration before activating it: run it against a test candidate
+record, confirm each interactive step actually appears as a work item in the assigned queue, and
+confirm the background steps fire automatically without anyone needing to act on them.
 
 ## Key terms
 

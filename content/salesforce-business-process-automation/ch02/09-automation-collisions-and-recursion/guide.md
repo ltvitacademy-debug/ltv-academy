@@ -8,6 +8,7 @@
 - How Salesforce prevents infinite loops during a recursive save, and what it deliberately skips when it does
 - Common causes of unwanted recursion: workflow field updates, Flow updating the record that triggered it, and Apex triggers re-saving their own records
 - Practical patterns for avoiding recursion before it becomes a production incident
+- A full worked scenario: two independently-reasonable Flows on Case caught in a live loop, diagnosed and fixed
 
 ## What a collision actually is
 
@@ -35,6 +36,93 @@ Straight from the Apex Developer Guide: **during a recursive save, Salesforce sk
 2. **Document what each automation touches** — which fields it reads, which it writes. Two automations writing the same field is the single most common collision source.
 3. **Use entry/exit conditions in Flow** deliberately, so a Flow doesn't re-fire on a change it just made itself.
 4. **Favor record-triggered flows over legacy workflow rules for new builds** — partly because of the ordering guarantees Lesson 8 covered, and partly because Salesforce itself is steering orgs away from Workflow Rules and Process Builder.
+
+## Troubleshooting scenario: a Case flipping between Priority values every few seconds
+
+**Business context.** Two Case flows exist, built separately, months apart, by two different
+people — each individually reasonable:
+
+```
+Flow A — "SLA Priority Escalation" (record-triggered, after save)
+  When: Case.SLA_Breach_Risk__c becomes true
+  Does: sets Case.Priority = "High"
+
+Flow B — "Reset Status on Priority Change" (record-triggered, after save)
+  When: Case.Priority changes
+  Does: sets Case.Status = "New" (so it re-enters the triage queue for review)
+```
+
+**Symptoms.** A support rep reports that a specific Case's Priority field is visibly flipping
+between "High" and "Medium" every few seconds while they're looking at it, and the Case's Status
+keeps resetting to "New" even though they just manually set it to "In Progress" moments ago.
+
+**Available evidence.**
+
+```
+Case Edit History for the affected Case, last 2 minutes:
+14:03:01  Priority: Medium -> High        (Flow A)
+14:03:02  Status: In Progress -> New       (Flow B, triggered by Priority change)
+14:03:03  Priority: High -> Medium         (a separate automation not shown here,
+                                             reacting to Status = New)
+14:03:04  Status: New -> ...               (Flow B fires again, Priority changed again)
+14:03:05  Priority: Medium -> High         (repeats)
+```
+
+**Diagnostic questions.**
+
+- Flow A and Flow B are each, individually, doing exactly what they were built to do — so where
+  does "neither one is wrong" leave the actual bug?
+- What does Flow B's trigger condition ("Priority changes") actually mean once Flow A is also in
+  the picture — does it fire once, or does it fire every time *anything* changes Priority,
+  including another automation?
+- Per this lesson's own order-of-execution material, is there a platform-level ceiling that
+  should have stopped this — and if so, why didn't it?
+
+**Expected investigation sequence.**
+
+```
+# Step 1 -- read the Edit History as a sequence, not as isolated events
+# Each row's automation is reacting to the row immediately before it --
+# this is the signature of a live automation loop, not four unrelated
+# bugs.
+
+# Step 2 -- identify which automation is actually causing which
+Flow A changes Priority -> Flow B's trigger condition ("Priority
+changes") fires -> Flow B changes Status -> a THIRD existing
+automation (a Status-based Priority reset, built even earlier,
+for an unrelated reason) changes Priority back -> Flow A's
+condition fires again -> loop.
+
+# Step 3 -- check why the platform's recursion safeguards didn't
+# stop this
+Per this lesson's own material: the automatic one-extra-save ceiling
+applies specifically to WORKFLOW RULE field updates. All three
+automations here are record-triggered Flows, which have no
+equivalent automatic ceiling -- each one is a genuinely new,
+separate transaction triggered by the previous one's save, not a
+single recursing transaction the platform's safeguard would catch.
+```
+
+**Root-cause explanation.** No single Flow is malfunctioning — each one correctly does what it
+was built to do, in isolation. The actual defect is systemic: three separately-built automations
+each react to a field the others write, with no entry condition on any of them checking whether
+the change they're about to make is the same one that's already been made. Flow B's condition
+("Priority changes") is satisfied by *any* source of a Priority change — including a different
+automation's own write — which is exactly the gap this lesson's "entry/exit conditions" pattern
+exists to close.
+
+**The fix.** Add an entry condition to Flow B specifically checking that the new Priority value
+is actually different from what it would set Status based on *and* hasn't already been processed
+in this way — in practice, this often means adding a condition like "only run if Status is not
+already New" so a redundant re-trigger exits immediately instead of repeating the write. The same
+discipline applies to the third automation causing the Priority reset: add a condition that
+prevents it from reacting to a Priority value it just set itself.
+
+**Prevention.** This is exactly what the "document what each automation touches" practice above
+is for — a simple table of which automation reads and writes which fields on Case would have
+shown, before any of this shipped, that Priority and Status were each being written by two
+different automations that also *read* the other field. That overlap is the actual risk signal,
+visible on paper before a single Case ever flips in production.
 
 ## Recap
 
