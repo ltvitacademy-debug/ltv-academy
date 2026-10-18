@@ -51,6 +51,15 @@ az aks nodepool add \
 
 Northbridge already runs other services on Azure, so AKS means one less control plane to operate, billing on the same invoice, and native integration with Azure identity and networking — the next lesson covers exactly that integration. The trade-off is less control over control-plane internals, which is rarely something a team wants to manage by hand anyway.
 
+## Free-tier reality check
+
+The commands above create real, billed Azure infrastructure — be deliberate about it before you run them on your own account:
+
+- **The control plane itself can be free, but check which tier you're on.** Azure splits AKS into a **Free tier** (no SLA, no control-plane charge — exactly what "a managed, free control plane" above assumes) and a paid **Standard tier** (financially backed uptime SLA, billed hourly per cluster). Pass `--tier free` explicitly on `az aks create` for a lab cluster, and confirm it with `az aks show --resource-group northbridge-rg --name northbridge-aks --query sku`, rather than trusting whatever your subscription defaults to.
+- **The real cost is the node pool, not the control plane.** Three nodes at a general-purpose VM size add up fast. For a lab, drop to `--node-count 1` and the smallest burstable size you can get (e.g. `Standard_B2s`) with `--node-vm-size`, instead of the three-node example above.
+- **Pause the cluster between study sessions instead of leaving it running.** `az aks stop --resource-group northbridge-rg --name northbridge-aks` deallocates the nodes (and stops node compute billing) while keeping the cluster's configuration intact; `az aks start` brings it back when you're ready to continue. It's not free to leave stopped forever — attached disks, public IPs, and a Standard-tier charge (if you're on it) keep billing — so when you're done with the lab for good, delete it: `az aks delete --resource-group northbridge-rg --name northbridge-aks`.
+- **Don't default to AKS for everything in this lesson.** Anything that doesn't specifically require a real Azure load balancer or Azure AD/Entra integration — practicing node pool commands, trying out manifests, anything covered in Chapters 1–6 — works identically on the `kind` cluster from Chapter 1, at zero cost. Save the real AKS cluster for the parts that actually need Azure underneath it.
+
 ## Key terms
 
 - **AKS (Azure Kubernetes Service)** — Azure's managed Kubernetes offering; Azure runs the control plane, the customer runs the node pools

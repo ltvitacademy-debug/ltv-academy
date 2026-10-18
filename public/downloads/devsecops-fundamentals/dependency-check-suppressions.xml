@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  dependency-check-suppressions.xml: Northbridge Retail's OWASP
+  Dependency-Check suppression file (Lesson 16's SCA triage principle,
+  applied to the OWASP tool specifically rather than Dependabot). Every
+  entry here is a documented, reviewed decision, never a blanket
+  "silence everything" rule, matching Lesson 27's point that dismissing
+  a finding without review just hides the backlog instead of closing it.
+
+  Wire this into a Dependency-Check run with the suppression flag:
+    dependency-check.sh [suppression flag] dependency-check-suppressions.xml
+  or, in the Maven/Gradle plugin, via the suppressionFile config option.
+-->
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+
+  <!--
+    Example 1: a specific CVE, suppressed with a reviewed reason and an
+    expiration date. Mirrors Lesson 16's transitive-logging-library
+    scenario: the CVE is real, but Northbridge's checkout service never
+    calls the vulnerable code path, confirmed during triage. The
+    `until` date forces this to be re-reviewed rather than suppressed
+    forever once the library is actually upgraded.
+  -->
+  <suppress>
+    <notes><![CDATA[
+      CVE-2024-99999 in logging-core, pulled in transitively via the web
+      framework -> templating library -> logging-core chain. Triaged
+      2026-09-02 by platform-security: the vulnerable code path (JNDI
+      lookup in the message-formatting layer) is never reached because
+      Northbridge's logging config disables message-lookup substitution
+      entirely. Tracked for a real upgrade in ticket PLAT-4821; re-review
+      before this suppression's expiration.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.example/logging\-core@.*$</packageUrl>
+    <cve>CVE-2024-99999</cve>
+    <until>2026-12-31Z</until>
+  </suppress>
+
+  <!--
+    Example 2: a known false positive, where Dependency-Check's CPE
+    matching confuses this package with an unrelated product of the same
+    name. No expiration needed: this isn't a real finding to revisit,
+    it's a permanent matching correction.
+  -->
+  <suppress>
+    <notes><![CDATA[
+      False positive: Dependency-Check matches this internal "catalog"
+      package against CVEs for an unrelated third-party product also
+      named "catalog". Confirmed false match 2026-08-15 by
+      platform-security; northbridgeretail/catalog-client is a private,
+      internally-published package with no relation to the CVE's actual
+      affected product.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:npm/%40northbridgeretail/catalog\-client@.*$</packageUrl>
+    <cpe>cpe:/a:catalog_project:catalog</cpe>
+  </suppress>
+
+  <!--
+    Example 3: suppress one specific vulnerability ID (not an entire
+    package) for a dev-only dependency that never ships in the production
+    image, consistent with Lesson 27's point that a finding in code
+    that's installed but never invoked at runtime carries far less real
+    risk.
+  -->
+  <suppress>
+    <notes><![CDATA[
+      Dev-only test runner dependency, excluded from the production image
+      by the multi-stage build's final stage (see the Dockerfile in the
+      docker-and-containers course's resource vault for the same pattern).
+      Triaged 2026-09-20 by platform-security: not present at runtime, so
+      not exploitable in any deployed environment.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:npm/mocha@.*$</packageUrl>
+    <vulnerabilityName>CVE-2023-45678</vulnerabilityName>
+  </suppress>
+
+</suppressions>

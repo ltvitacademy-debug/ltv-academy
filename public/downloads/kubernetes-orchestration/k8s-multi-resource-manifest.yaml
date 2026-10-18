@@ -1,0 +1,145 @@
+# ---------------------------------------------------------------------------
+# Multi-resource Kubernetes manifest template -- Northbridge Retail's
+# product-catalog service: ConfigMap + Deployment + Service + Ingress + HPA,
+# all correctly cross-referenced the way Chapters 2-5 build them up.
+#
+# Apply with: kubectl apply -f k8s-multi-resource-manifest.yaml
+# (Kubernetes doesn't care about file order within a multi-doc YAML --
+# objects below reference each other by NAME, which is what actually wires
+# them together, not the order they appear in this file.)
+# ---------------------------------------------------------------------------
+
+# 1. ConfigMap -- externalizes non-sensitive settings (Chapter 4, Lesson 15)
+# so the same image runs in any environment without a rebuild.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalog-config
+  namespace: northbridge-retail
+data:
+  LOG_LEVEL: "info"
+  FEATURE_RECOMMENDATIONS: "true"
+  DB_HOST: "catalog-db.northbridge-retail.svc.cluster.local"
+
+---
+# 2. Deployment -- manages the ReplicaSet and rollout for product-catalog
+# (Chapter 2, Lesson 7). Consumes the ConfigMap above via envFrom, and
+# declares the resource requests the HPA below needs to compute utilization
+# (Chapter 5, Lesson 19/21).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-catalog
+  namespace: northbridge-retail
+  labels:
+    app: product-catalog
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: product-catalog
+  template:
+    metadata:
+      labels:
+        app: product-catalog
+    spec:
+      containers:
+        - name: product-catalog
+          image: northbridgeretail/product-catalog:2.4.0
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: catalog-config
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+
+---
+# 3. Service -- stable virtual IP/DNS in front of the Deployment's Pods
+# (Chapter 3, Lesson 11). selector must match the Deployment's Pod labels
+# above, not its own metadata.name.
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-catalog
+  namespace: northbridge-retail
+spec:
+  type: ClusterIP
+  selector:
+    app: product-catalog
+  ports:
+    - port: 80
+      targetPort: 8080
+
+---
+# 4. Ingress -- routes catalog.northbridge.example to the Service above
+# (Chapter 3, Lesson 13). backend.service.name must match the Service's
+# metadata.name, and ingressClassName must match an IngressClass that
+# actually exists in the cluster -- Lesson 13's troubleshooting scenario
+# covers exactly what happens when it's left out.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: catalog-ingress
+  namespace: northbridge-retail
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - catalog.northbridge.example
+      secretName: catalog-tls-cert
+  rules:
+    - host: catalog.northbridge.example
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: product-catalog
+                port:
+                  number: 80
+
+---
+# 5. HorizontalPodAutoscaler -- scales the Deployment above between 3 and 30
+# replicas on CPU utilization (Chapter 5, Lesson 21). scaleTargetRef.name
+# must match the Deployment's metadata.name, and this only works because
+# the Deployment's containers already declare resources.requests.cpu.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: catalog-hpa
+  namespace: northbridge-retail
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: product-catalog
+  minReplicas: 3
+  maxReplicas: 30
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

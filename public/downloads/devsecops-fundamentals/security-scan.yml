@@ -1,0 +1,180 @@
+# ---------------------------------------------------------------------------
+# .github/workflows/security-scan.yml -- Northbridge Retail's checkout
+# service: every scan from Chapters 4-5 wired into one pipeline. Each job
+# maps to a specific lesson, and the build-image job is gated behind all
+# four scan jobs with `needs:`, so a scan failure blocks the image from
+# ever being built, let alone pushed.
+# ---------------------------------------------------------------------------
+name: Security Scan
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    # Nightly run so a newly-disclosed CVE in an existing dependency or base
+    # image gets caught even with no code change (Lesson 27's "nightly scan
+    # flags a critical CVE" scenario).
+    - cron: "0 3 * * *"
+
+permissions:
+  contents: read
+  security-events: write   # required for both CodeQL and Trivy to upload SARIF to the Security tab
+  pull-requests: read       # required for dependency-review-action on PRs
+
+jobs:
+  # ---------------------------------------------------------------------
+  # SAST (Lesson 15) -- GitHub code scanning / CodeQL against source code,
+  # before anything is built or deployed.
+  # ---------------------------------------------------------------------
+  sast:
+    name: SAST (CodeQL)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+
+      - name: Run CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+
+  # ---------------------------------------------------------------------
+  # Secrets detection (Lesson 17) -- scans the diff (and, on a schedule,
+  # full history) for committed credentials using pattern matching and
+  # entropy analysis.
+  # ---------------------------------------------------------------------
+  secrets-detection:
+    name: Secrets Detection (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history, so a secret committed in an earlier commit is still caught
+
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ---------------------------------------------------------------------
+  # Dependency & composition scanning (Lesson 16) -- checks manifest and
+  # lockfiles against known-CVE databases, including transitive
+  # dependencies.
+  # ---------------------------------------------------------------------
+  dependency-scan:
+    name: Dependency Scan (SCA)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependency Review (pull requests)
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+      - name: OSV-Scanner (push / nightly)
+        if: github.event_name != 'pull_request'
+        uses: google/osv-scanner-action@v1
+        with:
+          scan-args: |-
+            --lockfile=./package-lock.json
+
+  # ---------------------------------------------------------------------
+  # Infrastructure as Code scanning (Lesson 18) -- scans the Terraform
+  # under /infra against known misconfiguration patterns at plan time,
+  # never against live infrastructure.
+  # ---------------------------------------------------------------------
+  iac-scan:
+    name: IaC Scan (Checkov)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: infra/
+          framework: terraform
+          output_format: sarif
+          output_file_path: checkov-results.sarif
+          soft_fail: false   # a real misconfiguration fails the pipeline, per Lesson 18
+
+      - name: Upload Checkov SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: checkov-results.sarif
+
+  # ---------------------------------------------------------------------
+  # Build, scan, and SBOM the image -- gated behind every scan job above.
+  # Pushing to the registry only happens after image scanning passes too
+  # (Lesson 20), and an SBOM is generated at build time (Lesson 19), not
+  # on demand later.
+  # ---------------------------------------------------------------------
+  build-scan-image:
+    name: Build, Scan & Push Image
+    runs-on: ubuntu-latest
+    needs: [sast, secrets-detection, dependency-scan, iac-scan]
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t northbridgeretail/checkout:${{ github.sha }} .
+
+      - name: Scan image (Trivy)
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: northbridgeretail/checkout:${{ github.sha }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+          exit-code: "1"   # fail the build on any CRITICAL/HIGH with a fix available, per Lesson 20
+
+      - name: Upload Trivy SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
+      - name: Generate SBOM (Syft, CycloneDX format)
+        uses: anchore/sbom-action@v0.17.0
+        with:
+          image: northbridgeretail/checkout:${{ github.sha }}
+          format: cyclonedx-json
+          output-file: checkout-sbom.cdx.json
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: checkout-sbom.cdx.json
+
+      - name: Log in to registry
+        run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login -u "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
+
+      - name: Push image (commit-SHA tag, not :latest)
+        run: docker push northbridgeretail/checkout:${{ github.sha }}
+
+  # ---------------------------------------------------------------------
+  # Deploy to the production ENVIRONMENT -- this is where the required-
+  # reviewer protection rule from Lesson 22 actually applies. Even with
+  # every job above green, this job pauses for human approval before it
+  # runs, because the "production" environment below has required
+  # reviewers configured under Settings -> Environments.
+  # ---------------------------------------------------------------------
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build-scan-image]
+    if: github.event_name == 'push'
+    environment:
+      name: production
+    steps:
+      - name: Deploy
+        run: echo "Deploying northbridgeretail/checkout:${{ github.sha }} to production"

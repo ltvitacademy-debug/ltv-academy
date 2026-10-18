@@ -1,0 +1,132 @@
+# ---------------------------------------------------------------------------
+# docker-compose.yml -- local dev stack for Northbridge Retail's storefront:
+# catalog (product-catalog), checkout (checkout API), and catalog-db
+# (Postgres). Brings together Chapters 5-7: Compose basics (Lesson 23),
+# multi-container wiring (Lesson 24), health checks & restart policies
+# (Lesson 25), env/secrets (Lesson 26), resource limits (Lesson 27), and
+# non-root hardening (Lesson 29).
+#
+# Usage:
+#   cp .env.example .env        # fill in real local values, never commit .env
+#   docker compose up -d
+#   docker compose ps           # confirm all three show "healthy"
+#   docker compose down         # stops containers, keeps catalog-db-data
+# ---------------------------------------------------------------------------
+
+services:
+  catalog:
+    build:
+      context: ./catalog
+      dockerfile: Dockerfile
+    image: northbridge/catalog:1.5
+    ports:
+      - "8080:3000"
+    environment:
+      LOG_LEVEL: info
+    depends_on:
+      catalog-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/healthz', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+
+  checkout:
+    build:
+      context: ./checkout
+      dockerfile: Dockerfile
+    image: northbridge/storefront-api:2.1
+    ports:
+      - "4000:4000"
+    environment:
+      DB_HOST: catalog-db
+      DB_NAME: northbridge
+      CATALOG_URL: http://catalog:3000
+    env_file:
+      - .env
+    secrets:
+      - db_password
+    depends_on:
+      catalog-db:
+        condition: service_healthy
+      catalog:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+
+  catalog-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: northbridge
+      POSTGRES_USER: postgres
+      # Postgres's own image reads the password from a file path (rather
+      # than a plain env var) when POSTGRES_PASSWORD_FILE is set -- this
+      # points at the Compose secret mounted below, so the real password
+      # value never appears in `docker inspect` or `compose.yaml` itself.
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - catalog-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1G
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+
+volumes:
+  # Named volume, per Chapter 5 Lesson 19 -- survives `docker compose down`
+  # (not `down -v`), so a restart never silently erases storefront data.
+  catalog-db-data:
+
+secrets:
+  # Chapter 6, Lesson 26: mounted as a file at /run/secrets/db_password
+  # inside the container, not exposed as a plain environment variable.
+  # ./secrets/db_password.txt must exist locally and must stay gitignored --
+  # it is never committed, matching .dockerignore and .gitignore in this
+  # same resource set.
+  db_password:
+    file: ./secrets/db_password.txt

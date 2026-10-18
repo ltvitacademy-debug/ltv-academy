@@ -1,0 +1,99 @@
+# ---------------------------------------------------------------------------
+# values.yaml template -- the knobs exposed by a Helm chart for Northbridge
+# Retail's product-catalog service, matching the chart Chapter 8 (Lesson 33,
+# Writing Helm Charts) builds with `helm create`. Every value here is a
+# default; an environment-specific file (values-dev.yaml, values-prod.yaml)
+# only needs to override the ones that actually differ, then gets applied
+# with `helm install catalog ./product-catalog --values values-prod.yaml`.
+# ---------------------------------------------------------------------------
+
+replicaCount: 3
+
+image:
+  repository: northbridgeretail/product-catalog
+  tag: "1.5.2"
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  className: nginx
+  host: catalog.northbridgeretail.com
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  tls:
+    enabled: true
+    secretName: catalog-tls-cert
+
+resources:
+  requests:
+    cpu: "250m"
+    memory: "256Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 30
+  targetCPUUtilizationPercentage: 70
+
+probes:
+  readiness:
+    path: /healthz
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  liveness:
+    path: /healthz
+    initialDelaySeconds: 15
+    periodSeconds: 20
+
+config:
+  logLevel: info
+  featureRecommendations: true
+  dbHost: catalog-db.northbridge-retail.svc.cluster.local
+
+serviceAccount:
+  create: true
+  name: ""
+
+podSecurityContext:
+  runAsNonRoot: true
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# ---------------------------------------------------------------------------
+# Per-environment overrides -- these are NOT read automatically; they
+# document what values-dev.yaml / values-staging.yaml / values-prod.yaml
+# typically change relative to the defaults above (per Lesson 32's
+# dev/staging/production example).
+#
+# values-dev.yaml:
+#   replicaCount: 1
+#   image: { tag: "latest" }
+#   resources: { requests: { cpu: "50m", memory: "64Mi" } }
+#   autoscaling: { enabled: false }
+#
+# values-prod.yaml:
+#   replicaCount: 6
+#   image: { tag: "1.5.2" }
+#   autoscaling: { minReplicas: 6, maxReplicas: 30 }
+# ---------------------------------------------------------------------------

@@ -1,0 +1,106 @@
+# ---------------------------------------------------------------------------
+# NetworkPolicy template -- default-deny-then-allow pattern (Chapter 3,
+# Lesson 14), using Northbridge Retail's PCI-scoped `payments` namespace
+# example: everything is blocked by default, then one narrow exception lets
+# `checkout` reach `payment-processing` on its API port. Nothing else in
+# the cluster -- including Pods in other namespaces -- can reach it.
+#
+# Requires a CNI plugin that implements NetworkPolicy (Calico, Cilium,
+# Antrea, etc.) -- some simpler CNI plugins silently ignore these objects.
+# Apply with: kubectl apply -f network-policy-template.yaml
+# ---------------------------------------------------------------------------
+
+# 1. Default-deny-all -- an empty podSelector matches every Pod in the
+# namespace. With no ingress/egress rules listed, this blocks all inbound
+# AND outbound traffic for every Pod in `payments` until explicitly allowed
+# below.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: payments
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+
+---
+# 2. Allow checkout -> payment-processing on 8443 only. podSelector at the
+# top level picks which Pods this policy applies TO; the `from` block
+# inside `ingress` picks which Pods may send traffic IN. This rule is
+# additive with the default-deny policy above -- a Pod's effective access
+# is the union of every policy that selects it.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-checkout-to-payments
+  namespace: payments
+spec:
+  podSelector:
+    matchLabels:
+      app: payment-processing
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: checkout
+      ports:
+        - protocol: TCP
+          port: 8443
+
+---
+# 3. Allow the monitoring namespace to scrape metrics from every Pod in
+# `payments`, without opening anything else. namespaceSelector matches an
+# entire namespace by its built-in kubernetes.io/metadata.name label,
+# rather than a specific Pod label -- useful for cluster-wide tooling like
+# a Prometheus scraper that shouldn't need per-app allow rules.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-monitoring-scrape
+  namespace: payments
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9090
+
+---
+# 4. Egress example -- restrict payment-processing's OUTBOUND traffic to
+# only DNS (so name resolution keeps working) and the on-prem payment
+# gateway's CIDR range, via ipBlock. This is how a compromised Pod gets
+# stopped from exfiltrating data outward, not just from being reached from
+# unexpected places.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: restrict-payment-processing-egress
+  namespace: payments
+spec:
+  podSelector:
+    matchLabels:
+      app: payment-processing
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.50.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

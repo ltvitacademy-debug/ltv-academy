@@ -55,6 +55,22 @@ aws eks update-kubeconfig \
 
 From there, every `kubectl` command from earlier in this course works exactly the same against EKS as it does against AKS or a self-managed cluster.
 
+## Free-tier reality check
+
+EKS is less forgiving than AKS on cost, so plan the lab deliberately:
+
+- **The control plane is never free.** Unlike AKS's Free tier, EKS bills its control plane at a flat hourly rate (around $0.10/hour per cluster at the time of writing — check AWS's current EKS pricing page, since this isn't guaranteed to stay the same) from the moment the cluster exists until you delete it, regardless of whether any Pods are running.
+- **You can't "stop" an EKS cluster the way you can stop an AKS cluster.** Scaling a managed node group to zero nodes (`eksctl scale nodegroup --nodes 0 ...`) stops the EC2 charges, but the control-plane hourly fee keeps running as long as the cluster exists. The only way to actually stop paying is to delete the cluster.
+- **Minimize node cost for the lab itself.** Use the smallest burstable instance type you can (`t3.small` or `t3.micro` instead of `t3.medium`) and `--nodes 1` instead of 3 — or skip managed nodes entirely and run the lab's Pods on a Fargate profile, so you're not paying for idle EC2 capacity between commands.
+- **Tear the cluster down the moment you're done with it:**
+
+  ```bash
+  eksctl delete cluster --name northbridge-eks --region us-east-1
+  ```
+
+  This removes the control plane, the node group, and the VPC/networking `eksctl` created for it — don't leave it running overnight or between study sessions.
+- **Reach for EKS only when you specifically need it.** Anything that doesn't require testing against a real AWS load balancer or IAM integration — the `kubectl` mechanics covered in Chapters 1–6 — works identically, for free, on the `kind` cluster from Chapter 1. Treat the real EKS cluster as something you spin up for this lesson's specific exercises and delete right after, not something to leave running for the rest of the course.
+
 ## Key terms
 
 - **EKS (Amazon Elastic Kubernetes Service)** — AWS's managed Kubernetes offering; AWS runs the (billed) control plane, the customer runs node groups or Fargate

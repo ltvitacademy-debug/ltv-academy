@@ -1,0 +1,91 @@
+# ---------------------------------------------------------------------------
+# prometheus-alerting-rules.yml -- Northbridge Retail's checkout alerting
+# rules (Chapter 4, Lesson 19; latency/error-rate queries from Lesson 16;
+# SLO/error-budget math from Chapter 1, Lesson 3). Loaded by the Prometheus
+# server via `rule_files:` in prometheus.yml, evaluated continuously, and
+# pushed to Alertmanager (alertmanager.yml, this same resource) when a
+# condition matches.
+# ---------------------------------------------------------------------------
+
+groups:
+  - name: checkout-alerts
+    rules:
+      # Same alert built in Lesson 19: condition must hold for 5 straight
+      # minutes before it actually fires, so a brief blip never pages anyone.
+      - alert: CheckoutHighErrorRate
+        expr: |
+          sum(rate(checkout_requests_total{status="failed"}[5m]))
+          / sum(rate(checkout_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          team: checkout
+        annotations:
+          summary: "Checkout error rate above 5%"
+          description: "{{ $value | humanizePercentage }} of checkout requests are failing over the last 5 minutes"
+
+      # p95 latency, using the exact histogram_quantile() pattern from
+      # Lesson 16.
+      - alert: CheckoutHighLatency
+        expr: |
+          histogram_quantile(0.95, rate(checkout_duration_seconds_bucket[5m])) > 2
+        for: 10m
+        labels:
+          severity: warning
+          team: checkout
+        annotations:
+          summary: "Checkout p95 latency above 2s"
+          description: "p95 latency has been above the 2-second SLI threshold for 10 minutes"
+
+      # No healthy pods at all -- the most severe, and what the
+      # CheckoutHighLatency inhibit rule in alertmanager.yml defers to.
+      - alert: CheckoutServiceDown
+        expr: count(up{job="checkout"} == 1) == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: checkout
+        annotations:
+          summary: "Checkout has zero healthy instances"
+          description: "No checkout pods have reported up in the last 2 minutes"
+
+  - name: checkout-error-budget
+    rules:
+      # Recording rule: pre-computes the 30-day success ratio so the
+      # alerting rule below (and any Grafana panel) doesn't recompute a
+      # heavy range query on every evaluation.
+      - record: checkout:success_ratio:30d
+        expr: |
+          sum(rate(checkout_requests_total{status="success"}[30d]))
+          / sum(rate(checkout_requests_total[30d]))
+
+      # SLO is 99.9% success over 30 days (Chapter 1, Lesson 3's worked
+      # example). This fires a WARNING once the rolling success ratio dips
+      # below the SLO itself -- i.e. the error budget for the window is
+      # already exhausted, not just getting low.
+      - alert: CheckoutErrorBudgetExhausted
+        expr: checkout:success_ratio:30d < 0.999
+        for: 15m
+        labels:
+          severity: warning
+          team: checkout
+          alert_class: error_budget
+        annotations:
+          summary: "Checkout 30-day error budget exhausted"
+          description: "30-day rolling success ratio is {{ $value | humanizePercentage }}, below the 99.9% SLO -- no risky checkout deploys until the budget recovers"
+
+      # Fast-burn warning: catches a severe incident burning the budget
+      # much faster than the 30-day rolling check alone would, over a
+      # short 1-hour window.
+      - alert: CheckoutErrorBudgetFastBurn
+        expr: |
+          (sum(rate(checkout_requests_total{status="failed"}[1h]))
+          / sum(rate(checkout_requests_total[1h]))) > (14.4 * 0.001)
+        for: 5m
+        labels:
+          severity: critical
+          team: checkout
+          alert_class: error_budget
+        annotations:
+          summary: "Checkout burning its error budget 14x faster than sustainable"
+          description: "At this 1-hour burn rate the entire 30-day error budget would be exhausted in about 2 days"
