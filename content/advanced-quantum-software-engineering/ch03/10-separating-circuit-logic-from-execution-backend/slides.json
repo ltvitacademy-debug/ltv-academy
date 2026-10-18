@@ -1,0 +1,66 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced Quantum Software Engineering · Chapter 3",
+    "titlePlain": "Separating Circuit Logic From Execution ",
+    "titleEmphasis": "Backend",
+    "subtitle": "Lesson 10 · Quantum Software Architecture & Design Patterns"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What you'll learn",
+    "titlePlain": "The One Decision That Makes ",
+    "titleEmphasis": "Everything Else",
+    "titleSuffix": " Possible",
+    "steps": [
+      { "label": "Why mixing construction and execution hides coupling", "sub": "Two responsibilities, two different reasons to change" },
+      { "label": "Dependency injection for quantum backends", "sub": "The function receives the backend, rather than importing it" },
+      { "label": "Refactoring a \"does everything\" function", "sub": "Into construction + execution + analysis" },
+      { "label": "What this unlocks later in the chapter", "sub": "Backend abstraction, multi-SDK support, fast CI tests" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The coupling problem, concretely",
+    "code": "def run_bell_experiment():\n  qc = QuantumCircuit(2)\n  qc.h(0); qc.cx(0, 1)\n  qc.measure_all()\n  sim = AerSimulator()\n  result = sim.run(qc, shots=1024)\n    .result()\n  return result.get_counts()",
+    "caption": "Three responsibilities glued into one function, with no way to change any of them independently."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three concrete costs of that coupling",
+    "titlePlain": "What You ",
+    "titleEmphasis": "Can't",
+    "titleSuffix": " Do",
+    "steps": [
+      { "label": "Can't unit-test construction alone", "sub": "There's no way to write a fast, deterministic test against this" },
+      { "label": "Can't run on a different backend", "sub": "Not without editing this function's source every time" },
+      { "label": "Can't reuse the circuit-building logic", "sub": "Not without copy-pasting the construction lines out" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The fix: inject the backend, don't import it",
+    "code": "def build_bell_pair() -> QuantumCircuit:\n  qc = QuantumCircuit(2)\n  qc.h(0); qc.cx(0, 1)\n  qc.measure_all()\n  return qc\n\ndef run_circuit(circuit, backend,\n                shots=1024) -> dict:\n  return backend.run(circuit,\n    shots=shots).result().get_counts()",
+    "caption": "Now the caller decides the backend — and a test can exercise build_bell_pair() alone, with zero backend involvement."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "A refactoring checklist",
+    "titlePlain": "Splitting a Tangled ",
+    "titleEmphasis": "Function",
+    "steps": [
+      { "label": "Extract every line that builds the circuit", "sub": "Into its own function returning a QuantumCircuit" },
+      { "label": "Extract every line that executes it", "sub": "Taking the circuit and backend as parameters" },
+      { "label": "Make the backend a required parameter", "sub": "No default pointing at a specific real backend" },
+      { "label": "Write a construction test against the first function", "sub": "With no backend import anywhere in that test file" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 11",
+    "titlePlain": "The ",
+    "titleEmphasis": "Backend-Abstraction",
+    "titleSuffix": " Pattern",
+    "subtitle": "Formalizing what kind of object the backend parameter should be."
+  }
+]

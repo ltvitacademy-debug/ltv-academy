@@ -1,0 +1,58 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced Quantum Software Engineering · Chapter 2",
+    "titlePlain": "Unit-Testing Circuit-",
+    "titleEmphasis": "Construction",
+    "titleSuffix": " Logic",
+    "subtitle": "Lesson 6 · Testing & Debugging Quantum Programs"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What you'll learn",
+    "titlePlain": "Verify a Circuit ",
+    "titleEmphasis": "Without Running It",
+    "steps": [
+      { "label": "Inspecting a QuantumCircuit's structure directly", "sub": "Gate sequence, qubit count, parameter wiring — no execution" },
+      { "label": "Testing parameterized circuits", "sub": "Correct parameter binding, correct gate count per layer" },
+      { "label": "Testing decomposition deterministically", "sub": "Fixing the transpiler seed makes depth and gate count testable" },
+      { "label": "Why these belong in every CI run", "sub": "No backend, no network, no randomness — sub-second for a whole suite" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Inspecting circuit.data directly",
+    "code": "def test_ghz_circuit_structure():\n  qc = build_ghz_circuit(4)\n  assert qc.num_qubits == 4\n  names = [i.operation.name\n           for i in qc.data]\n  assert names == [\"h\",\"cx\",\"cx\",\"cx\"]\n  cx_ctrl = {i.qubits[0]._index\n    for i in qc.data\n    if i.operation.name==\"cx\"}\n  assert cx_ctrl == {0}",
+    "caption": "Runs in milliseconds, needs no simulator — catches an off-by-one, swapped qubits, or a missing Hadamard."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Fixing the transpiler seed makes depth testable",
+    "code": "def test_bell_transpiles_within_budget():\n  qc = build_bell_pair()\n  backend = FakeManilaV2()\n  t = transpile(qc, backend=backend,\n    optimization_level=1,\n    seed_transpiler=42)\n  assert t.depth() <= 6\n  assert t.num_qubits == backend.num_qubits",
+    "caption": "Without pinning seed_transpiler, randomized layout heuristics make depth vary between otherwise-identical runs."
+  },
+  {
+    "type": "code",
+    "eyebrow": "One test, many sizes, via parametrize",
+    "code": "@pytest.mark.parametrize(\n  \"n_qubits\", [2, 3, 5, 8])\ndef test_ghz_structure_across_sizes(\n    n_qubits):\n  qc = build_ghz_circuit(n_qubits)\n  assert qc.num_qubits == n_qubits\n  cx = sum(1 for i in qc.data\n    if i.operation.name==\"cx\")\n  assert cx == n_qubits - 1",
+    "caption": "Valuable for construction tests because a bug like an off-by-one often only shows up at specific sizes."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why these belong in every CI run",
+    "titlePlain": "No Backend, No Network, No ",
+    "titleEmphasis": "Randomness",
+    "steps": [
+      { "label": "Sub-second for a whole suite", "sub": "Once seeds are pinned, nothing here is flaky" },
+      { "label": "Run on every single commit", "sub": "Construction tests have zero backend dependency" },
+      { "label": "Statistical tests (Lesson 7) run less often", "sub": "Slower, need a shot budget — merges to main or a nightly job" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 7",
+    "titlePlain": "Statistical Testing of ",
+    "titleEmphasis": "Measurement Outcomes",
+    "subtitle": "A calculated, justified pass/fail threshold instead of a guess."
+  }
+]

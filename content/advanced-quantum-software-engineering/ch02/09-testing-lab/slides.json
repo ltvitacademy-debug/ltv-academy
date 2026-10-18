@@ -1,0 +1,71 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced Quantum Software Engineering · Chapter 2",
+    "titlePlain": "Testing ",
+    "titleEmphasis": "Lab",
+    "subtitle": "Lesson 9 · Testing & Debugging Quantum Programs"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What you'll learn",
+    "titlePlain": "A Complete, ",
+    "titleEmphasis": "Tiered",
+    "titleSuffix": " Test Suite",
+    "steps": [
+      { "label": "A tests/ directory mixing fast and slow tests", "sub": "Structured the way a real CI pipeline would run it" },
+      { "label": "pytest markers to tier by speed and cost", "sub": "So CI can run the cheap ones on every push" },
+      { "label": "A complete test file for a 3-qubit GHZ state", "sub": "Combining every technique from this chapter" },
+      { "label": "A deliberately-introduced failing case", "sub": "To practice the debugging order from Lesson 8" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The circuit under test, and marker tiering",
+    "code": "def build_ghz_circuit(n_qubits):\n  if n_qubits < 2:\n    raise ValueError(\"need >= 2\")\n  qc = QuantumCircuit(n_qubits)\n  qc.h(0)\n  for i in range(1, n_qubits):\n    qc.cx(0, i)\n  qc.measure_all()\n  return qc",
+    "caption": "pytest -m construction runs sub-second on every push; pytest -m statistical runs on merge to main or nightly."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Construction + statevector tests",
+    "code": "@pytest.mark.construction\n@pytest.mark.parametrize(\n  \"n\", [2,3,5,8])\ndef test_ghz_gate_sequence(n): ...\n\n@pytest.mark.construction\ndef test_ghz_statevector_is_exact():\n  sv = Statevector.from_instruction(...)\n  assert probs[\"000\"] ~ 0.5\n  assert probs[\"111\"] ~ 0.5",
+    "caption": "Construction tests and the statevector check run first and fastest — the ones most likely to catch a real logic bug."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The statistical test, last and tiered separately",
+    "code": "@pytest.mark.statistical\ndef test_ghz_measurement_distribution():\n  sim = AerSimulator(seed_simulator=42)\n  counts = sim.run(qc, shots=1024)...\n  k = counts.get(\"000\", 0)\n  z = (k/1024 - 0.5) / sqrt(.5*.5/1024)\n  assert abs(z) < 2.58",
+    "caption": "The one test that can occasionally fail by chance even on correct code — which is why it carries an explicit confidence threshold."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "A deliberately broken case",
+    "titlePlain": "Practicing the ",
+    "titleEmphasis": "Debugging Order",
+    "steps": [
+      { "label": "Someone swaps to qc.cx(i, 0)", "sub": "Control and target reversed in the loop" },
+      { "label": "test_ghz_gate_sequence still passes", "sub": "It only counts gate names, not which qubit is control" },
+      { "label": "test_ghz_statevector_is_exact fails immediately", "sub": "The resulting entangled state is structurally different" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Test-suite completeness checklist",
+    "titlePlain": "Before Calling Coverage \"",
+    "titleEmphasis": "Done",
+    "titleSuffix": "\"",
+    "steps": [
+      { "label": "Construction tests, parametrized across sizes", "sub": "Gate sequence, qubit count, parameter wiring" },
+      { "label": "A statevector test, zero sampling noise", "sub": "Catches logic bugs before a single shot is run" },
+      { "label": "A statistical test, explicit confidence level", "sub": "Not just a shot count, but a documented tolerance" },
+      { "label": "Tests marked and tiered for CI", "sub": "Fast ones every push, slow ones less often" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 3",
+    "titlePlain": "Separating Circuit Logic From Execution ",
+    "titleEmphasis": "Backend",
+    "subtitle": "Lesson 10 — the architectural decision that makes everything else possible."
+  }
+]
