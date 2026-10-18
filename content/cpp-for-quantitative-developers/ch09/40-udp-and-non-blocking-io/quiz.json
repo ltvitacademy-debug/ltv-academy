@@ -1,0 +1,60 @@
+{
+  "lesson": "udp-and-non-blocking-io",
+  "questions": [
+    {
+      "q": "What guarantees does UDP NOT provide that TCP does?",
+      "options": [
+        "Guaranteed delivery, guaranteed ordering, and automatic retransmission of lost packets",
+        "The ability to send any data at all",
+        "A valid IP address format",
+        "The ability to use port numbers"
+      ],
+      "answer": 0,
+      "explain": "UDP sends self-contained datagrams with no handshake and no guarantee they arrive, arrive in order, or get retransmitted if lost -- all guarantees TCP provides."
+    },
+    {
+      "q": "Why do real exchange market-data feeds use UDP multicast rather than TCP, despite UDP's lack of reliability guarantees?",
+      "options": [
+        "Multicast lets the sender transmit one packet that the network replicates to every subscriber, which has a fundamentally cheaper cost structure than TCP's one connection and one message copy per subscriber at exchange scale",
+        "UDP is simply newer technology than TCP and therefore always preferred",
+        "TCP cannot be used to send numeric price data",
+        "UDP guarantees faster delivery than TCP in every single case"
+      ],
+      "answer": 0,
+      "explain": "At the scale of thousands of subscribers, one-to-many multicast delivery (send once, network replicates) is a different cost structure than TCP's one-to-one connections -- this is the real reason, not raw speed."
+    },
+    {
+      "q": "Since UDP guarantees nothing about delivery, who is responsible for detecting a gap (a lost packet) in a UDP market-data feed?",
+      "options": [
+        "The receiving application itself, typically by tracking sequence numbers embedded in the application-level message format",
+        "UDP automatically detects and retransmits lost packets, identically to TCP",
+        "Gaps in UDP are impossible by design",
+        "The network switch silently repairs any lost packets before they are counted as lost"
+      ],
+      "answer": 0,
+      "explain": "UDP provides no gap detection on its own -- the receiving application has to track sequence numbers itself and decide whether to tolerate the loss or request a retransmission through a separate channel."
+    },
+    {
+      "q": "What problem does marking a socket non-blocking solve, and what new problem does it introduce?",
+      "options": [
+        "It stops recv() from blocking the calling thread when no data is ready, but introduces the question of how one thread efficiently knows which of many sockets actually has data ready",
+        "It makes TCP behave exactly like UDP",
+        "It eliminates the need to check return values from send() or recv()",
+        "It guarantees the socket will always have data ready to read"
+      ],
+      "answer": 0,
+      "explain": "Non-blocking I/O removes the thread-per-connection blocking problem, but a thread now needs an efficient way to discover which of many sockets is actually ready -- which is exactly what select()/poll()/epoll() solve."
+    },
+    {
+      "q": "Why is epoll() generally preferred over select() or poll() for a server handling thousands of concurrent connections?",
+      "options": [
+        "epoll() lets the kernel maintain the interest list persistently and only returns sockets that actually became ready, avoiding the full-list rescan that select() and poll() repeat on every call",
+        "epoll() is available on more operating systems than select() or poll()",
+        "epoll() automatically multiplies the number of connections a server can accept",
+        "select() and poll() cannot monitor more than one socket at a time"
+      ],
+      "answer": 0,
+      "explain": "select() and poll() rescan the entire monitored list on every call (and select() also caps how many descriptors it can track); epoll()'s persistent interest list and ready-only results are what make it scale to thousands of connections."
+    }
+  ]
+}

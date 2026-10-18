@@ -1,0 +1,60 @@
+{
+  "lesson": "custom-allocators-arena-and-pool-allocation",
+  "questions": [
+    {
+      "q": "Why is general-purpose `new`/`delete` a poor fit for a market-data processor allocating one small object per tick thousands of times a second?",
+      "options": [
+        "Its generality (handling any size, tracking variable-size free blocks, often synchronizing shared state) makes individual allocation cost unpredictable, creating exactly the kind of tail-latency risk a low-latency system needs to avoid",
+        "new and delete are incapable of allocating small objects",
+        "new and delete only work in single-threaded programs",
+        "There is no real performance difference between general-purpose and custom allocators"
+      ],
+      "answer": 0,
+      "explain": "General-purpose allocators trade predictability for flexibility -- a given new call's cost can vary noticeably depending on internal allocator state, which is a real problem for latency-sensitive, high-frequency allocation."
+    },
+    {
+      "q": "How does an arena (bump) allocator satisfy an allocation request?",
+      "options": [
+        "By advancing a pointer within one large pre-allocated block -- no searching or per-allocation bookkeeping required",
+        "By calling the operating system for new memory on every single allocation",
+        "By searching a list of free blocks of varying sizes to find the best fit",
+        "By asking the garbage collector to find available memory"
+      ],
+      "answer": 0,
+      "explain": "Arena allocation is just pointer arithmetic -- about as fast as an allocator can be, at the cost of having no way to free an individual object."
+    },
+    {
+      "q": "What is the real limitation of an arena allocator that makes it unsuitable for objects with unpredictable, individually varying lifetimes?",
+      "options": [
+        "It has no way to free an individual object -- memory can only be reclaimed all at once via reset()",
+        "It can only allocate objects smaller than 8 bytes",
+        "It requires a garbage collector to function",
+        "It is slower than general-purpose new for every allocation"
+      ],
+      "answer": 0,
+      "explain": "An arena's only reclamation mechanism is resetting the whole block at once -- fine for batch-lifetime objects, but wrong for objects (like individual Orders) that come and go unpredictably."
+    },
+    {
+      "q": "How does a pool allocator support individual allocate/deallocate calls, unlike an arena?",
+      "options": [
+        "It pre-allocates fixed-size slots and threads a free list through unused ones, so deallocating a slot just pushes it back onto the free list for reuse",
+        "It calls the operating system to free memory on every deallocate() call",
+        "It is identical to an arena allocator in every respect",
+        "It uses a different-sized block for every single allocation request"
+      ],
+      "answer": 0,
+      "explain": "A pool's free list of fixed-size slots is what enables cheap individual allocate/deallocate -- deallocating just pushes the slot back onto the list rather than reclaiming the whole block."
+    },
+    {
+      "q": "What is the specific job of placement new, as distinct from an allocator's allocate() call?",
+      "options": [
+        "It constructs an object (runs its constructor) at a specific, already-allocated memory address, rather than also allocating memory for it",
+        "It allocates memory but never runs a constructor",
+        "It is a synonym for calling delete on an object",
+        "It automatically chooses the best allocator for a given object type"
+      ],
+      "answer": 0,
+      "explain": "Placement new separates 'get memory' (the allocator's job) from 'construct a valid object in that memory' (placement new's job) -- a distinction ordinary new T(...) hides by doing both at once."
+    }
+  ]
+}

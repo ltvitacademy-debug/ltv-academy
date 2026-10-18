@@ -1,5 +1,4 @@
-// The C++ for Quantitative Developers course outline — FRAMEWORK ONLY (chapter and lesson
-// titles, no lesson content yet). Lessons without a contentDir render as
+// The C++ for Quantitative Developers course outline. Lessons without a contentDir render as
 // "in production". Step 3 of the Quantitative Developer / Researcher path. Assumes programming experience (Python); teaches modern C++ (C++17/20) with a performance-engineering focus.
 
 export type LessonMeta = {
@@ -104,6 +103,18 @@ export const CPP_FOR_QUANTITATIVE_DEVELOPERS_CHAPTERS: ChapterMeta[] = [
       L(35, "capstone-kickoff-a-high-performance-cplusplus-pricing-library", "Capstone Kickoff: A High-Performance C++ Pricing Library", { contentDir: "ch08/35-capstone-kickoff-a-high-performance-cplusplus-pricing-library" }),
       L(36, "capstone-build-it", "Capstone: Build It", { contentDir: "ch08/36-capstone-build-it" }),
       L(37, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch08/37-capstone-wrap-up-and-portfolio-presentation" }),
+    ],
+  },
+  {
+    n: 9,
+    title: "Networking, Allocators & Latency Engineering",
+    lessons: [
+      L(38, "linux-sockets-fundamentals", "Linux Sockets Fundamentals", { contentDir: "ch09/38-linux-sockets-fundamentals" }),
+      L(39, "tcp-in-practice-framing-nagle-and-backpressure", "TCP in Practice: Framing, Nagle's Algorithm & Backpressure", { contentDir: "ch09/39-tcp-in-practice-framing-nagle-and-backpressure" }),
+      L(40, "udp-and-non-blocking-io", "UDP & Non-Blocking I/O", { contentDir: "ch09/40-udp-and-non-blocking-io" }),
+      L(41, "custom-allocators-arena-and-pool-allocation", "Custom Allocators: Arena & Pool Allocation", { contentDir: "ch09/41-custom-allocators-arena-and-pool-allocation" }),
+      L(42, "percentile-latency-and-throughput-benchmarking", "Percentile Latency & Throughput Benchmarking", { contentDir: "ch09/42-percentile-latency-and-throughput-benchmarking" }),
+      L(43, "capstone-building-and-benchmarking-a-market-data-processor", "Capstone: Building & Benchmarking a Market-Data Processor", { contentDir: "ch09/43-capstone-building-and-benchmarking-a-market-data-processor" }),
     ],
   },
 ];
