@@ -115,6 +115,25 @@ const PATH_CONFIG: Record<string, { courseOrder: string[]; excludedCourses: Plan
     courseOrder: ["how-it-teams-work", "js-ts-blockchain", "blockchain", "blockchain-apis-backend", "defi-token-engineering", "blockchain-testing-devops", "blockchain-engineering-capstones"],
     excludedCourses: [],
   },
+  "quantum-computing-engineer": {
+    courseOrder: [
+      "mathematics-for-quantum-computing",
+      "python-scientific-computing-for-quantum",
+      "quantum-mechanics-for-computing",
+      "quantum-computing-fundamentals",
+      "quantum-programming-with-qiskit",
+      "quantum-programming-with-qsharp-azure",
+      "quantum-algorithms-and-complexity-theory",
+      "quantum-hardware-and-architectures",
+      "quantum-error-correction-and-fault-tolerance",
+      "quantum-machine-learning",
+      "quantum-optimization-and-financial-applications",
+      "hybrid-quantum-classical-computing",
+      "advanced-quantum-software-engineering",
+      "quantum-computing-research-and-capstone",
+    ],
+    excludedCourses: [],
+  },
 };
 
 const HOURS_PER_DAY = 2;
