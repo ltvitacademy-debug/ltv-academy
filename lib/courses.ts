@@ -192,6 +192,34 @@ import { POWER_AUTOMATE_CHAPTERS } from "./power-automate-outline";
 import { POWER_AUTOMATE_AI_AGENTS_CHAPTERS } from "./power-automate-ai-agents-outline";
 import { HOW_IT_TEAMS_WORK_CHAPTERS } from "./how-it-teams-work-outline";
 import { PYTHON_FOR_DATA_ENGINEERS_CHAPTERS } from "./python-for-data-engineers-outline";
+import { MATHEMATICS_FOR_QUANTUM_COMPUTING_CHAPTERS } from "./mathematics-for-quantum-computing-outline";
+import { PYTHON_SCIENTIFIC_COMPUTING_FOR_QUANTUM_CHAPTERS } from "./python-scientific-computing-for-quantum-outline";
+import { QUANTUM_MECHANICS_FOR_COMPUTING_CHAPTERS } from "./quantum-mechanics-for-computing-outline";
+import { QUANTUM_COMPUTING_FUNDAMENTALS_CHAPTERS } from "./quantum-computing-fundamentals-outline";
+import { QUANTUM_PROGRAMMING_WITH_QISKIT_CHAPTERS } from "./quantum-programming-with-qiskit-outline";
+import { QUANTUM_PROGRAMMING_WITH_QSHARP_AZURE_CHAPTERS } from "./quantum-programming-with-qsharp-azure-outline";
+import { QUANTUM_ALGORITHMS_AND_COMPLEXITY_THEORY_CHAPTERS } from "./quantum-algorithms-and-complexity-theory-outline";
+import { QUANTUM_HARDWARE_AND_ARCHITECTURES_CHAPTERS } from "./quantum-hardware-and-architectures-outline";
+import { QUANTUM_ERROR_CORRECTION_AND_FAULT_TOLERANCE_CHAPTERS } from "./quantum-error-correction-and-fault-tolerance-outline";
+import { QUANTUM_MACHINE_LEARNING_CHAPTERS } from "./quantum-machine-learning-outline";
+import { QUANTUM_OPTIMIZATION_AND_FINANCIAL_APPLICATIONS_CHAPTERS } from "./quantum-optimization-and-financial-applications-outline";
+import { HYBRID_QUANTUM_CLASSICAL_COMPUTING_CHAPTERS } from "./hybrid-quantum-classical-computing-outline";
+import { ADVANCED_QUANTUM_SOFTWARE_ENGINEERING_CHAPTERS } from "./advanced-quantum-software-engineering-outline";
+import { QUANTUM_COMPUTING_RESEARCH_AND_CAPSTONE_CHAPTERS } from "./quantum-computing-research-and-capstone-outline";
+import { ITSM_ITIL4_FOUNDATIONS_CHAPTERS } from "./itsm-itil4-foundations-outline";
+import { SERVICENOW_PLATFORM_FUNDAMENTALS_CHAPTERS } from "./servicenow-platform-fundamentals-outline";
+import { SERVICENOW_SYSTEM_ADMINISTRATION_CHAPTERS } from "./servicenow-system-administration-outline";
+import { SERVICENOW_FLOW_DESIGNER_AUTOMATION_CHAPTERS } from "./servicenow-flow-designer-automation-outline";
+import { JAVASCRIPT_FOR_SERVICENOW_DEVELOPERS_CHAPTERS } from "./javascript-for-servicenow-developers-outline";
+import { SERVICENOW_SCRIPTING_APPLICATION_DEVELOPMENT_CHAPTERS } from "./servicenow-scripting-application-development-outline";
+import { SERVICENOW_INTEGRATIONHUB_REST_APIS_CHAPTERS } from "./servicenow-integrationhub-rest-apis-outline";
+import { SERVICENOW_ITSM_IMPLEMENTATION_CHAPTERS } from "./servicenow-itsm-implementation-outline";
+import { SERVICENOW_CMDB_CSDM_DISCOVERY_CHAPTERS } from "./servicenow-cmdb-csdm-discovery-outline";
+import { SERVICENOW_SECURITY_ACCESS_CONTROLS_CHAPTERS } from "./servicenow-security-access-controls-outline";
+import { SERVICENOW_DEVOPS_TESTING_DEPLOYMENT_CHAPTERS } from "./servicenow-devops-testing-deployment-outline";
+import { SERVICENOW_PERFORMANCE_TROUBLESHOOTING_CHAPTERS } from "./servicenow-performance-troubleshooting-outline";
+import { SERVICENOW_TECHNICAL_ARCHITECTURE_CHAPTERS } from "./servicenow-technical-architecture-outline";
+import { SERVICENOW_CAREER_AND_CAPSTONE_CHAPTERS } from "./servicenow-career-and-capstone-outline";
 
 // Every external link in a lesson guide should open in a new tab, so a
 // student never loses their place in the course. Applied once, here, so
@@ -1935,6 +1963,258 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: PYTHON_FOR_DATA_ENGINEERS_CHAPTERS,
     contentBase: "python-for-data-engineers",
+  },
+  {
+    slug: "mathematics-for-quantum-computing",
+    title: "Mathematics for Quantum Computing",
+    tagline:
+      "Linear algebra, complex numbers, eigenvalues, and tensor products — the math foundation every later quantum computing course assumes, taught for software engineers, not physics majors.",
+    status: "available",
+    chapters: MATHEMATICS_FOR_QUANTUM_COMPUTING_CHAPTERS,
+    contentBase: "mathematics-for-quantum-computing",
+  },
+  {
+    slug: "python-scientific-computing-for-quantum",
+    title: "Python & Scientific Computing for Quantum Applications",
+    tagline:
+      "NumPy linear algebra, complex-matrix computation, Bloch-sphere visualization, and reproducible scientific workflow — the coding fluency every quantum programming course builds on.",
+    status: "available",
+    chapters: PYTHON_SCIENTIFIC_COMPUTING_FOR_QUANTUM_CHAPTERS,
+    contentBase: "python-scientific-computing-for-quantum",
+  },
+  {
+    slug: "quantum-mechanics-for-computing",
+    title: "Quantum Mechanics for Computing",
+    tagline:
+      "States, superposition, entanglement, measurement, and the no-cloning theorem — real quantum mechanics, taught specifically for the software engineer building on top of it.",
+    status: "available",
+    chapters: QUANTUM_MECHANICS_FOR_COMPUTING_CHAPTERS,
+    contentBase: "quantum-mechanics-for-computing",
+  },
+  {
+    slug: "quantum-computing-fundamentals",
+    title: "Quantum Computing Fundamentals",
+    tagline:
+      "Qubits, gates, circuits, teleportation, superdense coding, and simulating circuits from scratch — the core building blocks every quantum programming tool wraps.",
+    status: "available",
+    chapters: QUANTUM_COMPUTING_FUNDAMENTALS_CHAPTERS,
+    contentBase: "quantum-computing-fundamentals",
+  },
+  {
+    slug: "quantum-programming-with-qiskit",
+    title: "Quantum Programming with Qiskit",
+    tagline:
+      "Real IBM Quantum development workflows — building circuits, simulating, visualizing, running on real hardware, and a capstone circuit simulator project.",
+    status: "available",
+    chapters: QUANTUM_PROGRAMMING_WITH_QISKIT_CHAPTERS,
+    contentBase: "quantum-programming-with-qiskit",
+  },
+  {
+    slug: "quantum-programming-with-qsharp-azure",
+    title: "Quantum Programming with Q# & Azure Quantum",
+    tagline:
+      "A second major quantum toolchain — Q# language fundamentals, the Azure Quantum resource estimator, and a comparative project against Qiskit.",
+    status: "available",
+    chapters: QUANTUM_PROGRAMMING_WITH_QSHARP_AZURE_CHAPTERS,
+    contentBase: "quantum-programming-with-qsharp-azure",
+  },
+  {
+    slug: "quantum-algorithms-and-complexity-theory",
+    title: "Quantum Algorithms & Complexity Theory",
+    tagline:
+      "Grover's algorithm, the quantum Fourier transform, phase estimation, and Shor's algorithm — with honest coverage of what quantum speedup does and doesn't mean today.",
+    status: "available",
+    chapters: QUANTUM_ALGORITHMS_AND_COMPLEXITY_THEORY_CHAPTERS,
+    contentBase: "quantum-algorithms-and-complexity-theory",
+  },
+  {
+    slug: "quantum-hardware-and-architectures",
+    title: "Quantum Hardware & Architectures",
+    tagline:
+      "Superconducting, trapped-ion, photonic, and neutral-atom qubits — real hardware tradeoffs, connectivity, calibration, and how to choose a platform for a given workload.",
+    status: "available",
+    chapters: QUANTUM_HARDWARE_AND_ARCHITECTURES_CHAPTERS,
+    contentBase: "quantum-hardware-and-architectures",
+  },
+  {
+    slug: "quantum-error-correction-and-fault-tolerance",
+    title: "Quantum Error Correction & Fault Tolerance",
+    tagline:
+      "Noise models, stabilizer codes, the surface code, logical vs. physical qubits, and fault-tolerant computing — what it actually takes to make a quantum computer reliable.",
+    status: "available",
+    chapters: QUANTUM_ERROR_CORRECTION_AND_FAULT_TOLERANCE_CHAPTERS,
+    contentBase: "quantum-error-correction-and-fault-tolerance",
+  },
+  {
+    slug: "quantum-machine-learning",
+    title: "Quantum Machine Learning",
+    tagline:
+      "Variational circuits, quantum classifiers, and hybrid training loops — taught with honest framing about where QML stands versus classical ML today.",
+    status: "available",
+    chapters: QUANTUM_MACHINE_LEARNING_CHAPTERS,
+    contentBase: "quantum-machine-learning",
+  },
+  {
+    slug: "quantum-optimization-and-financial-applications",
+    title: "Quantum Optimization & Financial Applications",
+    tagline:
+      "QAOA, VQE, and QUBO-formulated optimization problems, including portfolio optimization — benchmarked honestly against classical solvers, not oversold.",
+    status: "available",
+    chapters: QUANTUM_OPTIMIZATION_AND_FINANCIAL_APPLICATIONS_CHAPTERS,
+    contentBase: "quantum-optimization-and-financial-applications",
+  },
+  {
+    slug: "hybrid-quantum-classical-computing",
+    title: "Hybrid Quantum-Classical Computing",
+    tagline:
+      "The real engineering of orchestrating quantum and classical compute together — architecture patterns, error handling, and cost/latency management for production-shaped workflows.",
+    status: "available",
+    chapters: HYBRID_QUANTUM_CLASSICAL_COMPUTING_CHAPTERS,
+    contentBase: "hybrid-quantum-classical-computing",
+  },
+  {
+    slug: "advanced-quantum-software-engineering",
+    title: "Advanced Quantum Software Engineering",
+    tagline:
+      "Real software-engineering discipline applied to quantum code — testing, architecture, reproducibility, and a capstone quantum software library.",
+    status: "available",
+    chapters: ADVANCED_QUANTUM_SOFTWARE_ENGINEERING_CHAPTERS,
+    contentBase: "advanced-quantum-software-engineering",
+  },
+  {
+    slug: "quantum-computing-research-and-capstone",
+    title: "Quantum Computing Research & Capstone",
+    tagline:
+      "Research methods, reproducing a published experiment, a full capstone project end to end, and career preparation for quantum computing roles.",
+    status: "available",
+    chapters: QUANTUM_COMPUTING_RESEARCH_AND_CAPSTONE_CHAPTERS,
+    contentBase: "quantum-computing-research-and-capstone",
+  },
+  {
+    slug: "itsm-itil4-foundations",
+    title: "ITSM & ITIL 4 Foundations",
+    tagline:
+      "The service-management concepts every ServiceNow process module implements — guiding principles, the service value chain, and the core ITIL 4 practices.",
+    status: "available",
+    chapters: ITSM_ITIL4_FOUNDATIONS_CHAPTERS,
+    contentBase: "itsm-itil4-foundations",
+  },
+  {
+    slug: "servicenow-platform-fundamentals",
+    title: "ServiceNow Platform Fundamentals",
+    tagline:
+      "Navigation, tables, the dictionary, forms, import sets, and reporting — real Now Platform orientation using an actual Personal Developer Instance.",
+    status: "available",
+    chapters: SERVICENOW_PLATFORM_FUNDAMENTALS_CHAPTERS,
+    contentBase: "servicenow-platform-fundamentals",
+  },
+  {
+    slug: "servicenow-system-administration",
+    title: "ServiceNow System Administration",
+    tagline:
+      "Users, groups, roles, ACLs, the service catalog, notifications, and update sets — the Certified System Administrator (CSA) exam's core territory.",
+    status: "available",
+    chapters: SERVICENOW_SYSTEM_ADMINISTRATION_CHAPTERS,
+    contentBase: "servicenow-system-administration",
+  },
+  {
+    slug: "servicenow-flow-designer-automation",
+    title: "ServiceNow Flow Designer & Automation",
+    tagline:
+      "Low-code automation with Flow Designer — flows, actions, subflows, catalog automation, and IntegrationHub actions, the admin-facing bridge toward scripted development.",
+    status: "available",
+    chapters: SERVICENOW_FLOW_DESIGNER_AUTOMATION_CHAPTERS,
+    contentBase: "servicenow-flow-designer-automation",
+  },
+  {
+    slug: "javascript-for-servicenow-developers",
+    title: "JavaScript for ServiceNow Developers",
+    tagline:
+      "GlideRecord, GlideAjax, the GlideForm API, and server/client-side JavaScript on the Now Platform — the scripting fluency every later development course assumes.",
+    status: "available",
+    chapters: JAVASCRIPT_FOR_SERVICENOW_DEVELOPERS_CHAPTERS,
+    contentBase: "javascript-for-servicenow-developers",
+  },
+  {
+    slug: "servicenow-scripting-application-development",
+    title: "ServiceNow Scripting & Application Development",
+    tagline:
+      "Business Rules, Client Scripts, Script Includes, and scoped application development end to end — the Certified Application Developer (CAD) exam's core territory.",
+    status: "available",
+    chapters: SERVICENOW_SCRIPTING_APPLICATION_DEVELOPMENT_CHAPTERS,
+    contentBase: "servicenow-scripting-application-development",
+  },
+  {
+    slug: "servicenow-integrationhub-rest-apis",
+    title: "ServiceNow IntegrationHub & REST APIs",
+    tagline:
+      "Real integration patterns — REST messages, OAuth 2.0, Scripted REST APIs, IntegrationHub spokes, and the error handling, logging, and retries a production integration needs.",
+    status: "available",
+    chapters: SERVICENOW_INTEGRATIONHUB_REST_APIS_CHAPTERS,
+    contentBase: "servicenow-integrationhub-rest-apis",
+  },
+  {
+    slug: "servicenow-itsm-implementation",
+    title: "ServiceNow ITSM Implementation",
+    tagline:
+      "Implementing Incident, Problem, Change, Request, Knowledge, and SLA management end to end — aligned with the CIS-ITSM certification.",
+    status: "available",
+    chapters: SERVICENOW_ITSM_IMPLEMENTATION_CHAPTERS,
+    contentBase: "servicenow-itsm-implementation",
+  },
+  {
+    slug: "servicenow-cmdb-csdm-discovery",
+    title: "ServiceNow CMDB, CSDM & Discovery",
+    tagline:
+      "Configuration items, relationships, the Common Service Data Model, Discovery fundamentals, and real CMDB data-quality governance.",
+    status: "available",
+    chapters: SERVICENOW_CMDB_CSDM_DISCOVERY_CHAPTERS,
+    contentBase: "servicenow-cmdb-csdm-discovery",
+  },
+  {
+    slug: "servicenow-security-access-controls",
+    title: "ServiceNow Security & Access Controls",
+    tagline:
+      "Platform security in depth — advanced ACL design, SSO, data protection, security operations, and governance beyond the administration course's intro-level coverage.",
+    status: "available",
+    chapters: SERVICENOW_SECURITY_ACCESS_CONTROLS_CHAPTERS,
+    contentBase: "servicenow-security-access-controls",
+  },
+  {
+    slug: "servicenow-devops-testing-deployment",
+    title: "ServiceNow DevOps, Testing & Deployment",
+    tagline:
+      "Application lifecycle management, source control integration, the Automated Test Framework, and real CI/CD-style delivery for ServiceNow applications.",
+    status: "available",
+    chapters: SERVICENOW_DEVOPS_TESTING_DEPLOYMENT_CHAPTERS,
+    contentBase: "servicenow-devops-testing-deployment",
+  },
+  {
+    slug: "servicenow-performance-troubleshooting",
+    title: "ServiceNow Performance & Troubleshooting",
+    tagline:
+      "Diagnosing slow forms, slow scripts, database performance, and production incidents — the Slow Request Log, Script Performance Profiler, and real troubleshooting workflow.",
+    status: "available",
+    chapters: SERVICENOW_PERFORMANCE_TROUBLESHOOTING_CHAPTERS,
+    contentBase: "servicenow-performance-troubleshooting",
+  },
+  {
+    slug: "servicenow-technical-architecture",
+    title: "ServiceNow Technical Architecture",
+    tagline:
+      "Platform, data, integration, and security architecture decisions at enterprise scale — governance and multi-department implementation strategy for the Technical Architect destination.",
+    status: "available",
+    chapters: SERVICENOW_TECHNICAL_ARCHITECTURE_CHAPTERS,
+    contentBase: "servicenow-technical-architecture",
+  },
+  {
+    slug: "servicenow-career-and-capstone",
+    title: "ServiceNow Career & Capstone",
+    tagline:
+      "Certification pathway planning, a full enterprise implementation capstone for a 5,000-employee organization, and real job-search preparation.",
+    status: "available",
+    chapters: SERVICENOW_CAREER_AND_CAPSTONE_CHAPTERS,
+    contentBase: "servicenow-career-and-capstone",
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,

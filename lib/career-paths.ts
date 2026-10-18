@@ -1702,6 +1702,301 @@ export const CAREER_PATHS: CareerPath[] = [
     destinationNote:
       "Level 6 is specialization: Quantitative Trader (reading order flow, pricing in real time, and managing a book under a live risk limit), Market Maker (continuous two-sided pricing and inventory management), or Proprietary / Execution Trader (discretionary or systematic position-taking and trade execution). Top firms hire very selectively, and the highest compensation levels typically take years of proven, consistent P&L rather than being a promise on graduation.",
   },
+  {
+    slug: "quantum-computing-engineer",
+    title: "Quantum Computing Software Engineer",
+    targetJobs: [
+      "Quantum Software Developer",
+      "Quantum Application Engineer",
+      "Quantum Algorithms Engineer",
+      "Quantum Computing Researcher",
+      "Quantum Research Engineer",
+    ],
+    description:
+      "Learn the mathematics, quantum mechanics, programming tools, algorithms, and software engineering techniques required to develop quantum applications, simulate quantum systems, and work toward advanced quantum computing engineering and research roles. Starts from linear algebra and Python — no physics degree assumed.",
+    longDescription: [
+      "This path builds real quantum computing fluency from the ground up: the linear algebra and complex-number math quantum computing actually runs on, the quantum mechanics concepts (superposition, entanglement, measurement) that explain why it works, then real programming fluency in both major toolchains — Qiskit (IBM Quantum) and Q# (Azure Quantum).",
+      "From there, the path goes deep on the landmark algorithms (Grover's, the quantum Fourier transform, phase estimation, Shor's algorithm), real quantum hardware across all four major modalities, quantum error correction and fault tolerance, quantum machine learning, and quantum optimization for problems like portfolio construction — each taught with honest coverage of where quantum computing actually stands today, not inflated claims of proven advantage.",
+      "It closes with advanced quantum software engineering practice (testing, architecture, reproducibility) and a research capstone where students reproduce a real published experiment and present their own findings professionally.",
+      "Advanced research and hardware-focused positions in this field typically expect graduate-level mathematics, physics, or engineering qualifications beyond what any single curriculum teaches — this path builds the real software-engineering and algorithmic foundation that graduate study or a research-engineering role would build on, not a substitute for either.",
+    ],
+    salaryRange:
+      "$90K–$140K as a Quantum Software Developer · $140K–$190K+ as a Quantum Algorithms Engineer · $160K–$260K+ at senior quantum research/hardware labs — this is a small, early, fast-changing field, and the most advanced and highest-paid roles typically require a PhD or equivalent research experience, not a guarantee from completing this path",
+    certification:
+      "No single industry-standard certification governs quantum computing the way CompTIA or AWS certifications do for other fields. This path builds real, verifiable project work (a circuit simulator, algorithm implementations, an error-correction lab, a reproduced research experiment) as the credential that actually matters for hiring in this space, alongside vendor-recognized completions (IBM Quantum, Microsoft Learn for Azure Quantum) along the way.",
+    showLessonTotals: true,
+    positioning: {
+      heading: "Read this first: what this path is — and is not",
+      paragraphs: [
+        "A student does not graduate from this path and walk into a quantum hardware or research lab role — those positions are genuinely scarce and typically expect graduate-level qualifications.",
+        "What this path does teach, completely and for real: the math, physics, and both major programming toolchains (Qiskit and Q#) needed to build real quantum software, implement the landmark algorithms from scratch, understand why today's hardware is noisy and error-prone, and reproduce a real published experiment end to end.",
+        "Quantum Software Developer and Quantum Algorithms Engineer are realistic destinations for a strong portfolio built through this path. Quantum Research Engineer — hardware-focused or research-lab roles — is named honestly as a destination that typically requires further graduate study or direct research experience this path alone does not replace.",
+      ],
+    },
+    freeLab: {
+      eyebrow: "Start free",
+      heading: "Free Quantum Computing Development Environment",
+      intro: [
+        "This entire path can be completed on free tools — no paid quantum hardware access is required to finish any course or project.",
+        "Qiskit and the Qiskit Aer simulator are free and open source. IBM Quantum offers a free tier for running real circuits on actual quantum hardware, used as an optional, not required, experience.",
+      ],
+      listLabel: "Students will use these free tools and environments to:",
+      items: [
+        "Build and simulate quantum circuits locally with Qiskit Aer",
+        "Visualize quantum states (Bloch sphere, Q-sphere, histograms)",
+        "Implement Grover's algorithm, QFT, and phase estimation",
+        "Run select circuits on real IBM Quantum hardware (free tier)",
+        "Build and estimate resources with Q# and the Azure Quantum free credits",
+        "Model noise and implement basic error-correcting codes",
+        "Build a hybrid quantum-classical optimization workflow",
+        "Reproduce a real published quantum computing experiment",
+      ],
+      buttons: [
+        { label: "IBM Quantum (free tier)", url: "https://quantum.ibm.com/" },
+        { label: "Azure Quantum", url: "https://azure.microsoft.com/en-us/products/quantum" },
+      ],
+      notes: [
+        "Optional cloud hardware execution (IBM Quantum's free tier, Azure Quantum free credits) is never required to complete a course or project — every hands-on lab is designed to be fully completable on a local simulator.",
+        "IBM Quantum, Qiskit, and Azure Quantum are products of their respective companies. LTV Academy is independent and is not sponsored, endorsed, or operated by IBM or Microsoft.",
+      ],
+    },
+    milestones: [
+      { label: "Foundations", value: "Math, Quantum Mechanics & Python" },
+      { label: "Programming", value: "Qiskit & Q# / Azure Quantum" },
+      { label: "Milestone", value: "Quantum Software Developer" },
+      { label: "Advanced", value: "Algorithms, Hardware, Error Correction, QML & Optimization" },
+      { label: "Milestone", value: "Quantum Algorithms Engineer" },
+      { label: "Destination", value: "Quantum Research Engineer (graduate study/research experience typically required)" },
+    ],
+    stages: [
+      {
+        label: "Foundations",
+        note: "The math, physics, and scientific-Python fluency every later course assumes",
+        courseSlugs: ["mathematics-for-quantum-computing", "python-scientific-computing-for-quantum", "quantum-mechanics-for-computing", "quantum-computing-fundamentals"],
+      },
+      {
+        label: "Quantum Programming",
+        courseSlugs: ["quantum-programming-with-qiskit", "quantum-programming-with-qsharp-azure"],
+        checkpoint: {
+          kind: "milestone",
+          label: "Milestone",
+          items: ["Quantum Software Developer — real fluency in both major quantum SDKs"],
+        },
+      },
+      {
+        label: "Algorithms & Hardware",
+        courseSlugs: ["quantum-algorithms-and-complexity-theory", "quantum-hardware-and-architectures"],
+      },
+      {
+        label: "Error Correction, Machine Learning & Optimization",
+        courseSlugs: ["quantum-error-correction-and-fault-tolerance", "quantum-machine-learning", "quantum-optimization-and-financial-applications"],
+        checkpoint: {
+          kind: "milestone",
+          label: "Milestone",
+          items: ["Quantum Algorithms Engineer — advanced algorithms, complexity, and hardware-aware design"],
+        },
+      },
+      {
+        label: "Advanced Quantum Engineering",
+        courseSlugs: ["hybrid-quantum-classical-computing", "advanced-quantum-software-engineering"],
+      },
+      {
+        label: "Research & Capstone",
+        note: "Reproducing a published experiment and a full original capstone — the destination this path can actually teach",
+        courseSlugs: ["quantum-computing-research-and-capstone"],
+        capstone: true,
+        checkpoint: {
+          kind: "destination",
+          label: "Destination",
+          items: ["Quantum Research Engineer — foundational research skills; hardware-focused/research-lab roles typically require graduate study beyond this path"],
+          note: "Quantum Research Engineer and hardware-focused research positions are named honestly as a destination this path builds real foundations for, not a credential this path alone confers. Most research-track and hardware-lab roles expect graduate-level mathematics, physics, or engineering qualifications.",
+        },
+      },
+    ],
+    principalProjects: {
+      heading: "Five Hands-On Quantum Computing Projects",
+      intro: "Substantial portfolio projects built across this path's courses — every one completable on free, local simulators.",
+      projects: [
+        {
+          title: "Quantum Circuit Simulator",
+          description: "Build and simulate quantum circuits from scratch, validate measurement outcomes against theory, and explain state-vector evolution step by step.",
+        },
+        {
+          title: "Quantum Algorithms Laboratory",
+          description: "Implement Grover's algorithm and the quantum Fourier transform, explore phase estimation, and compare theoretical predictions against observed simulation results.",
+        },
+        {
+          title: "Quantum Error Correction Laboratory",
+          description: "Model realistic noise, implement elementary error-correcting codes, and compare physical vs. logical error rates under different noise levels.",
+        },
+        {
+          title: "Hybrid Quantum Optimization",
+          description: "Build a real hybrid quantum-classical optimization workflow (QAOA or VQE), compare results against a credible classical baseline, and document the limitations and computational cost honestly.",
+        },
+        {
+          title: "Quantum Research Capstone",
+          description: "Reproduce a published educational or research experiment: define a hypothesis, document methods, results, and limitations, and present findings the way a real research team would.",
+        },
+      ],
+    },
+    destinationNote:
+      "Quantum Software Developer → Quantum Algorithms Engineer → Quantum Research Engineer. The first two are realistic destinations for a strong portfolio built through this path; the third typically requires graduate study or direct research/hardware experience this path provides the foundation for, not a substitute for.",
+  },
+  {
+    slug: "servicenow-developer-architect",
+    title: "ServiceNow Administrator → Developer → Technical Architect",
+    targetJobs: [
+      "ServiceNow Administrator",
+      "ServiceNow Developer",
+      "ServiceNow Business Analyst",
+      "ServiceNow Implementation Specialist",
+      "ServiceNow Technical Architect",
+    ],
+    description:
+      "Learn to administer, configure, develop, integrate, secure, and architect enterprise solutions on the ServiceNow platform, progressing from platform administration through application development and enterprise technical architecture.",
+    longDescription: [
+      "This path starts with the ITSM/ITIL 4 concepts ServiceNow's process modules actually implement, then moves into real platform administration — users, roles, ACLs, the service catalog, and Flow Designer automation — the Certified System Administrator (CSA) exam's core territory.",
+      "From there, it builds real JavaScript fluency on the platform (GlideRecord, GlideAjax, Business Rules, Client Scripts, Script Includes) and scoped application development, aligned with the Certified Application Developer (CAD) exam, then REST/IntegrationHub integration patterns and a full ITSM implementation course aligned with CIS-ITSM.",
+      "The path closes with CMDB/CSDM, platform security, DevOps/testing/deployment, performance troubleshooting, and a Technical Architecture course covering the enterprise-scale decisions a Certified Technical Architect (CTA) is expected to make — ending in a capstone implementation for a simulated 5,000-employee organization.",
+      "Technical Architect is the destination this path builds toward — not the student's first ServiceNow job. Students should pursue Administrator and Developer roles while progressing through the later, more advanced courses.",
+    ],
+    salaryRange:
+      "$65K–$95K as a ServiceNow Administrator · $90K–$140K as a ServiceNow Developer · $140K–$220K+ as a ServiceNow Technical Architect — senior architecture-level compensation requires substantial real-world implementation experience, not a promise on graduation",
+    certification:
+      "Aligned with ServiceNow's real certification ladder: Certified System Administrator (CSA), Certified Application Developer (CAD), the relevant Certified Implementation Specialist (CIS) tracks, and Certified Technical Architect (CTA) as the long-term advanced destination. Certification names, requirements, and eligibility change — verify current requirements on ServiceNow's own certification site before scheduling an exam. LTV Academy does not issue ServiceNow certifications and completing this coursework does not by itself guarantee certification eligibility.",
+    showLessonTotals: true,
+    positioning: {
+      heading: "Read this first: what this path is — and is not",
+      paragraphs: [
+        "A student does not graduate from this path and instantly become a ServiceNow Technical Architect — CTA-level roles require substantial real-world implementation experience across multiple enterprise deployments.",
+        "Administrator and Developer roles are realistic, earlier destinations on this same path — students do not need to finish the Technical Architecture course to pursue them.",
+        "Where a lab would require a licensed ServiceNow feature not available on a free Personal Developer Instance, the course provides a realistic simulator, design exercise, or documented alternative instead of assuming paid access.",
+      ],
+    },
+    certificationRoadmap: {
+      heading: "Certification journey",
+      steps: [
+        { label: "Foundation", items: ["ITIL 4 Foundation (optional but recommended)"] },
+        { label: "Administrator", items: ["ServiceNow Certified System Administrator (CSA)"] },
+        { label: "Developer", items: ["ServiceNow Certified Application Developer (CAD)"] },
+        { label: "Implementation specialization", items: ["ServiceNow Certified Implementation Specialist (CIS) — ITSM track, with other CIS tracks available depending on specialization"] },
+        { label: "Destination", items: ["ServiceNow Certified Technical Architect (CTA)"] },
+      ],
+      notice:
+        "ServiceNow certification names, requirements, and eligibility criteria change over time and vary by release. LTV Academy prepares students for the relevant skills and exam objectives but does not issue ServiceNow certifications — verify current requirements on ServiceNow's own certification site before scheduling an exam.",
+    },
+    freeLab: {
+      eyebrow: "Start free",
+      heading: "Free ServiceNow Personal Developer Instance",
+      intro: [
+        "This path can be completed on a free ServiceNow Personal Developer Instance (PDI) — no paid ServiceNow license is required for most of the curriculum.",
+        "Some advanced features (certain IntegrationHub spokes, full Discovery, and some licensed CIS-track capabilities) are not available on a free PDI — where a lab needs one of these, the course provides a realistic simulator, design exercise, or documented alternative instead.",
+      ],
+      listLabel: "Students will use a free Personal Developer Instance to:",
+      items: [
+        "Configure users, groups, roles, and ACLs",
+        "Build and automate a service catalog with Flow Designer",
+        "Write Business Rules, Client Scripts, and Script Includes",
+        "Build a real scoped application end to end",
+        "Build and test REST integrations",
+        "Model a CMDB and apply CSDM concepts",
+        "Build Automated Test Framework (ATF) coverage",
+        "Complete a full enterprise ITSM implementation capstone",
+      ],
+      buttons: [
+        { label: "Request a Personal Developer Instance", url: "https://developer.servicenow.com/" },
+      ],
+      notes: [
+        "ServiceNow, the ServiceNow logo, and related product names are trademarks of ServiceNow, Inc. LTV Academy is independent and is not sponsored, endorsed, or operated by ServiceNow.",
+      ],
+    },
+    milestones: [
+      { label: "Foundation", value: "ITSM/ITIL 4 & Platform Fundamentals" },
+      { label: "Milestone", value: "ServiceNow Administrator (CSA)" },
+      { label: "Developer", value: "JavaScript, Scripting & Application Development" },
+      { label: "Milestone", value: "ServiceNow Developer (CAD)" },
+      { label: "Implementation", value: "Integrations, ITSM, CMDB, Security, DevOps & Performance" },
+      { label: "Destination", value: "ServiceNow Technical Architect (CTA)" },
+    ],
+    stages: [
+      {
+        label: "ITSM Foundation & Platform Orientation",
+        courseSlugs: ["itsm-itil4-foundations", "servicenow-platform-fundamentals"],
+      },
+      {
+        label: "System Administration",
+        courseSlugs: ["servicenow-system-administration", "servicenow-flow-designer-automation"],
+        checkpoint: {
+          kind: "milestone",
+          label: "Milestone",
+          items: ["ServiceNow Certified System Administrator (CSA) exam objectives"],
+        },
+      },
+      {
+        label: "Application Development",
+        courseSlugs: ["javascript-for-servicenow-developers", "servicenow-scripting-application-development", "servicenow-integrationhub-rest-apis"],
+        checkpoint: {
+          kind: "milestone",
+          label: "Milestone",
+          items: ["ServiceNow Certified Application Developer (CAD) exam objectives"],
+        },
+      },
+      {
+        label: "Enterprise Implementation",
+        courseSlugs: ["servicenow-itsm-implementation", "servicenow-cmdb-csdm-discovery", "servicenow-security-access-controls"],
+        checkpoint: {
+          kind: "checkpoint",
+          label: "Certification checkpoint",
+          items: ["ServiceNow Certified Implementation Specialist — ITSM (CIS-ITSM) exam objectives"],
+        },
+      },
+      {
+        label: "DevOps, Performance & Operations",
+        courseSlugs: ["servicenow-devops-testing-deployment", "servicenow-performance-troubleshooting"],
+      },
+      {
+        label: "Technical Architecture",
+        note: "The destination — an advanced professional credential, not a graduation outcome",
+        courseSlugs: ["servicenow-technical-architecture", "servicenow-career-and-capstone"],
+        capstone: true,
+        checkpoint: {
+          kind: "destination",
+          label: "Destination",
+          items: ["ServiceNow Certified Technical Architect (CTA) exam objectives"],
+          note: "The Certified Technical Architect (CTA) credential is an advanced destination credential that requires substantial real-world implementation experience. It is not an entry-level certification and should never be treated as one.",
+        },
+      },
+    ],
+    principalProjects: {
+      heading: "Five Hands-On ServiceNow Projects",
+      intro: "Substantial portfolio projects built across this path's courses, each completable on a free Personal Developer Instance.",
+      projects: [
+        {
+          title: "Enterprise IT Service Desk",
+          description: "Configure Incident, Problem, Change, and Request workflows end to end, and establish SLAs and reporting.",
+        },
+        {
+          title: "Custom Scoped Application",
+          description: "Build a real business application: tables, forms, security, Flow Designer workflows, and both server-side and client-side scripts.",
+        },
+        {
+          title: "Enterprise REST Integration",
+          description: "Build and test a real integration, handling authentication, error handling, logging, and retries the way a production integration actually needs.",
+        },
+        {
+          title: "CMDB & Data Quality Implementation",
+          description: "Model configuration items and relationships, apply CSDM concepts, and validate data quality and governance.",
+        },
+        {
+          title: "Enterprise Technical Architecture Capstone",
+          description: "Simulate an organization of roughly 5,000 employees: design service workflows and platform integrations, produce architecture diagrams, configuration specs, test plans, and deployment documentation, and defend the technical design decisions.",
+          deliverables: ["Requirements", "Architecture diagrams", "Configuration specifications", "Test plans", "Deployment documentation", "Design defense"],
+        },
+      ],
+    },
+    destinationNote:
+      "ServiceNow Administrator → ServiceNow Developer → ServiceNow Technical Architect. Administrator and Developer are realistic, earlier destinations on this same path — students don't need to finish the Technical Architecture course to pursue them. Technical Architect (CTA) is the long-term destination this path builds toward, requiring substantial real-world implementation experience beyond any coursework.",
+  },
 ];
 
 export const getCareerPath = (slug: string) => CAREER_PATHS.find((p) => p.slug === slug);
