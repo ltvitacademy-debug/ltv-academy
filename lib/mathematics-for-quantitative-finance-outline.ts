@@ -1,6 +1,18 @@
-// The Mathematics for Quantitative Finance course outline — FRAMEWORK ONLY (chapter and lesson
-// titles, no lesson content yet). Lessons without a contentDir render as
-// "in production". Step 1 of the Quantitative Developer / Researcher destination path. Assumes the Data Scientist path (basic statistics and Python); this course goes to the depth quant interviews and research actually require.
+// The Mathematics for Quantitative Finance course outline. All lessons
+// have real guide.md content (the header here previously, incorrectly,
+// called this "framework only" — fixed 2026-10-18). Lessons without a
+// contentDir render as "in production". Step 1 of the Quantitative
+// Developer / Researcher destination path. Assumes the Data Scientist
+// path (basic statistics and Python); this course goes to the depth
+// quant interviews and research actually require.
+//
+// Chapter 9 (lessons 42-43) is a deliberate exception added 2026-10-18:
+// a 5-parallel-agent audit against an external 15-lesson upgrade
+// proposal found 7 of 9 proposed topics already at genuine interview
+// depth — game theory was the one real gap (zero coverage anywhere),
+// and the other real gap was pedagogical: every "problem" in Chapter 7
+// is a narrated worked example, never one the student solves themselves.
+// Chapter 9 closes both with 2 lessons instead of 15.
 
 export type LessonMeta = {
   n: number;
@@ -108,6 +120,18 @@ export const MATHEMATICS_FOR_QUANTITATIVE_FINANCE_CHAPTERS: ChapterMeta[] = [
       L(39, "capstone-kickoff-a-mathematical-model-of-asset-prices", "Capstone Kickoff: A Mathematical Model of Asset Prices", { contentDir: "ch08/39-capstone-kickoff-a-mathematical-model-of-asset-prices" }),
       L(40, "capstone-build-it", "Capstone: Build It", { contentDir: "ch08/40-capstone-build-it" }),
       L(41, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch08/41-capstone-wrap-up-and-portfolio-presentation" }),
+    ],
+  },
+  {
+    n: 9,
+    title: "Game Theory & Problem-Solving Practice",
+    lessons: [
+      L(42, "game-theory-for-quant-interviews", "Game Theory for Quant Interviews", {
+        contentDir: "ch09/42-game-theory-for-quant-interviews",
+      }),
+      L(43, "interview-problem-set-solve-it-yourself", "Interview Problem Set: Solve It Yourself", {
+        contentDir: "ch09/43-interview-problem-set-solve-it-yourself",
+      }),
     ],
   },
 ];
