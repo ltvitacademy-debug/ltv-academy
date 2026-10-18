@@ -59,28 +59,28 @@ export const QUANTUM_PROGRAMMING_WITH_QSHARP_AZURE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(15, "implementing-grovers-algorithm-in-q-sharp", "Implementing Grover's Algorithm in Q#", { contentDir: "ch04/15-implementing-grovers-algorithm-in-q-sharp", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792362510/ltv-quantum/quantum-programming-with-qsharp-azure-ch04-15-implementing-grovers-algorithm-in-q-sharp.mp4", durationLabel: "2:31" }),
       L(16, "implementing-quantum-fourier-transform-in-q-sharp", "Implementing Quantum Fourier Transform in Q#", { contentDir: "ch04/16-implementing-quantum-fourier-transform-in-q-sharp", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792362640/ltv-quantum/quantum-programming-with-qsharp-azure-ch04-16-implementing-quantum-fourier-transform-in-q-sharp.mp4", durationLabel: "2:47" }),
-      L(17, "implementing-teleportation-in-q-sharp", "Implementing Teleportation in Q#", { contentDir: "ch04/17-implementing-teleportation-in-q-sharp" }),
-      L(18, "q-sharp-algorithms-lab", "Q# Algorithms Lab", { contentDir: "ch04/18-q-sharp-algorithms-lab" }),
+      L(17, "implementing-teleportation-in-q-sharp", "Implementing Teleportation in Q#", { contentDir: "ch04/17-implementing-teleportation-in-q-sharp", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792362777/ltv-quantum/quantum-programming-with-qsharp-azure-ch04-17-implementing-teleportation-in-q-sharp.mp4", durationLabel: "2:54" }),
+      L(18, "q-sharp-algorithms-lab", "Q# Algorithms Lab", { contentDir: "ch04/18-q-sharp-algorithms-lab", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792362910/ltv-quantum/quantum-programming-with-qsharp-azure-ch04-18-q-sharp-algorithms-lab.mp4", durationLabel: "2:46" }),
     ],
   },
   {
     n: 5,
     title: "Interoperability: Python + Q#",
     lessons: [
-      L(19, "calling-q-sharp-from-python", "Calling Q# From Python", { contentDir: "ch05/19-calling-q-sharp-from-python" }),
-      L(20, "the-qsharp-python-package-workflow", "The qsharp Python Package Workflow", { contentDir: "ch05/20-the-qsharp-python-package-workflow" }),
-      L(21, "mixed-language-project-structure", "Mixed-Language Project Structure", { contentDir: "ch05/21-mixed-language-project-structure" }),
-      L(22, "interoperability-lab", "Interoperability Lab", { contentDir: "ch05/22-interoperability-lab" }),
+      L(19, "calling-q-sharp-from-python", "Calling Q# From Python", { contentDir: "ch05/19-calling-q-sharp-from-python", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363026/ltv-quantum/quantum-programming-with-qsharp-azure-ch05-19-calling-q-sharp-from-python.mp4", durationLabel: "2:05" }),
+      L(20, "the-qsharp-python-package-workflow", "The qsharp Python Package Workflow", { contentDir: "ch05/20-the-qsharp-python-package-workflow", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363148/ltv-quantum/quantum-programming-with-qsharp-azure-ch05-20-the-qsharp-python-package-workflow.mp4", durationLabel: "2:30" }),
+      L(21, "mixed-language-project-structure", "Mixed-Language Project Structure", { contentDir: "ch05/21-mixed-language-project-structure", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363264/ltv-quantum/quantum-programming-with-qsharp-azure-ch05-21-mixed-language-project-structure.mp4", durationLabel: "2:48" }),
+      L(22, "interoperability-lab", "Interoperability Lab", { contentDir: "ch05/22-interoperability-lab", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363370/ltv-quantum/quantum-programming-with-qsharp-azure-ch05-22-interoperability-lab.mp4", durationLabel: "2:25" }),
     ],
   },
   {
     n: 6,
     title: "Q# vs. Qiskit: Comparative Project",
     lessons: [
-      L(23, "comparing-language-design-philosophies", "Comparing Language Design Philosophies", { contentDir: "ch06/23-comparing-language-design-philosophies" }),
-      L(24, "comparing-resource-estimation-approaches", "Comparing Resource-Estimation Approaches", { contentDir: "ch06/24-comparing-resource-estimation-approaches" }),
-      L(25, "capstone-port-a-circuit-between-qiskit-and-q-sharp", "Capstone: Port a Circuit Between Qiskit & Q#", { contentDir: "ch06/25-capstone-port-a-circuit-between-qiskit-and-q-sharp" }),
-      L(26, "capstone-wrap-up-choosing-the-right-tool", "Capstone: Wrap-Up — Choosing the Right Tool", { contentDir: "ch06/26-capstone-wrap-up-choosing-the-right-tool" }),
+      L(23, "comparing-language-design-philosophies", "Comparing Language Design Philosophies", { contentDir: "ch06/23-comparing-language-design-philosophies", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363499/ltv-quantum/quantum-programming-with-qsharp-azure-ch06-23-comparing-language-design-philosophies.mp4", durationLabel: "2:55" }),
+      L(24, "comparing-resource-estimation-approaches", "Comparing Resource-Estimation Approaches", { contentDir: "ch06/24-comparing-resource-estimation-approaches", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363600/ltv-quantum/quantum-programming-with-qsharp-azure-ch06-24-comparing-resource-estimation-approaches.mp4", durationLabel: "2:20" }),
+      L(25, "capstone-port-a-circuit-between-qiskit-and-q-sharp", "Capstone: Port a Circuit Between Qiskit & Q#", { contentDir: "ch06/25-capstone-port-a-circuit-between-qiskit-and-q-sharp", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363719/ltv-quantum/quantum-programming-with-qsharp-azure-ch06-25-capstone-port-a-circuit-between-qiskit-and-q-sharp.mp4", durationLabel: "2:54" }),
+      L(26, "capstone-wrap-up-choosing-the-right-tool", "Capstone: Wrap-Up — Choosing the Right Tool", { contentDir: "ch06/26-capstone-wrap-up-choosing-the-right-tool", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363836/ltv-quantum/quantum-programming-with-qsharp-azure-ch06-26-capstone-wrap-up-choosing-the-right-tool.mp4", durationLabel: "2:40" }),
     ],
   },
 ];
