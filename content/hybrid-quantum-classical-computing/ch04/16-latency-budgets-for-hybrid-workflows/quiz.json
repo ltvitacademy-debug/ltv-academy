@@ -1,0 +1,60 @@
+{
+  "lesson": "latency-budgets-for-hybrid-workflows",
+  "questions": [
+    {
+      "q": "In the per-stage latency budget (total 38,361 ms), what percentage of total time is queue wait, and what does that imply about where optimization effort should go?",
+      "options": [
+        "About 99.07% -- effort should go toward reducing queue wait or how often it's paid, not toward the classical prep/post-process stages that together make up a fraction of a percent",
+        "About 50%, so effort should be split evenly between queue wait and QPU execution time",
+        "About 10%, so classical prep is actually the dominant cost",
+        "0%, since queue wait isn't part of the latency budget"
+      ],
+      "answer": 0,
+      "explain": "Queue wait (38,000ms of 38,361ms total) is about 99.07% of total latency, making it overwhelmingly the dominant variable -- optimizing the 21ms of classical work would have negligible effect on the total."
+    },
+    {
+      "q": "For a 150-iteration run with NO batching, using the 38,361ms per-iteration total, what is the approximate end-to-end deadline?",
+      "options": [
+        "About 95.9 minutes (~1.6 hours), computed as 150 x 38,361 ms",
+        "About 40 minutes, based on the QPU execution time scaled up",
+        "About 1.6 hours regardless of batching, since batching has no effect on total latency",
+        "About 10 minutes, since classical prep dominates"
+      ],
+      "answer": 0,
+      "explain": "150 x 38,361 ms = 5,754,150 ms, which is about 95.9 minutes or roughly 1.6 hours -- the honest estimate based on queue-wait-dominated per-iteration timing, not based on the 40ms execution time alone."
+    },
+    {
+      "q": "Why does batching change the 150-iteration latency budget from roughly 29.9 hours (unbatched) to roughly 1.78 hours (batched)?",
+      "options": [
+        "Batching doesn't eliminate queue wait itself, but it eliminates paying that queue wait separately for each of the 17 evaluations per iteration -- all 17 now share one queue wait instead of 17",
+        "Batching makes the QPU execute circuits faster",
+        "Batching removes the need for any classical pre/post-processing",
+        "Batching reduces the number of shots needed per circuit"
+      ],
+      "answer": 0,
+      "explain": "The underlying per-submission queue wait doesn't change; what changes is how many times it's paid. Batching collapses 17 separate queue waits per iteration into 1, which is why the total drops by roughly the same ~16.8x factor shown in the orchestration lesson."
+    },
+    {
+      "q": "What does the lesson recommend when communicating a latency budget to a stakeholder, instead of giving a single confident number?",
+      "options": [
+        "Present a range tied to an explicit assumption (e.g., observed average queue wait), naming the dominant variable so the stakeholder understands why the estimate could change",
+        "Always quote the best-case number only, to keep the estimate simple",
+        "Refuse to give any estimate at all, since queue wait is unpredictable",
+        "Quote only the QPU execution time, since that's the most impressive-sounding number"
+      ],
+      "answer": 0,
+      "explain": "The lesson recommends naming queue wait as the dominant, variable factor and giving a range tied to that assumption, so a later deviation is understood as a change in device demand rather than evidence the original estimate was simply wrong."
+    },
+    {
+      "q": "If observed average queue wait rises from 38 seconds to 90 seconds, what happens to the batched per-iteration total (originally ~42,750 ms with 38,000ms queue wait)?",
+      "options": [
+        "It rises by roughly 52,000 ms (90,000 - 38,000) to about 94,750 ms per iteration, since queue wait is the dominant term being added once per iteration under batching",
+        "It stays exactly the same, since batching makes the system immune to queue wait changes",
+        "It decreases, since higher queue wait triggers automatic re-batching",
+        "It becomes unbatched automatically, reverting to the ~717,150 ms per-iteration figure"
+      ],
+      "answer": 0,
+      "explain": "Under batching, queue wait is paid once per iteration. Replacing 38,000ms with 90,000ms in the per-iteration total (150+90,000+680+8 ~= 94,750ms using 40ms x17 execution) shows the new total scales almost directly with the new queue wait value, since it remains the dominant term."
+    }
+  ]
+}

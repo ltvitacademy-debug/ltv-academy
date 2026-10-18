@@ -1,0 +1,60 @@
+{
+  "lesson": "retry-and-fallback-strategies-for-queued-hardware",
+  "questions": [
+    {
+      "q": "Why does fixed-interval retrying (e.g., always retry after exactly 1 second) make provider-side congestion worse rather than better?",
+      "options": [
+        "All clients retrying on the same fixed interval synchronize into retry storms that hit the congested system simultaneously, worsening the congestion",
+        "Fixed-interval retrying is actually always optimal and the lesson recommends it",
+        "Fixed-interval retries are billed at a higher rate than exponential backoff retries",
+        "Fixed intervals cause circuits to fail validation"
+      ],
+      "answer": 0,
+      "explain": "When many clients retry on the same fixed schedule, their retries pile up simultaneously on the already-congested system, worsening rather than relieving the congestion -- the core motivation for exponential backoff with jitter."
+    },
+    {
+      "q": "With a base delay of 500ms and a cap of 60,000ms, what is the deterministic backoff cap for attempt 3 (0-indexed), and what is the total worst-case wait across 6 attempts (0-5)?",
+      "options": [
+        "Attempt 3: 4,000 ms; total across 6 attempts: 31,500 ms (~31.5 sec)",
+        "Attempt 3: 500 ms; total across 6 attempts: 3,000 ms",
+        "Attempt 3: 60,000 ms; total across 6 attempts: 360,000 ms",
+        "Attempt 3: 8,000 ms; total across 6 attempts: 48,000 ms"
+      ],
+      "answer": 0,
+      "explain": "min(60000, 500*2^3) = 4,000 ms for attempt 3. Summing 500+1000+2000+4000+8000+16000 = 31,500 ms across all 6 attempts (0 through 5)."
+    },
+    {
+      "q": "What does 'full jitter' add on top of the deterministic exponential backoff cap?",
+      "options": [
+        "It picks the actual retry delay as a random value uniformly between 0 and the computed cap, so simultaneous retriers don't all retry in lockstep",
+        "It doubles the deterministic cap for extra safety margin",
+        "It removes the cap entirely, allowing unlimited delay growth",
+        "It replaces exponential growth with a fixed, constant delay"
+      ],
+      "answer": 0,
+      "explain": "Full jitter randomizes the delay within [0, cap] for that attempt, which is what actually desynchronizes multiple clients that hit the same failure at the same time -- a plain deterministic exponential delay alone doesn't achieve that."
+    },
+    {
+      "q": "According to the lesson, what are the two stopping rules a retry loop should combine, rather than relying on just one?",
+      "options": [
+        "A max-attempt count AND a cumulative-time budget tied to the job's latency requirement",
+        "Only a max-attempt count, since time budgets are irrelevant to retries",
+        "Only a cumulative-cost budget, since attempt count and time don't matter",
+        "A random coin flip combined with provider approval"
+      ],
+      "answer": 0,
+      "explain": "The lesson recommends combining a max-attempt count with a cumulative-time budget, since there's no point retrying past the point where a result would arrive too late to be useful, regardless of how many attempts remain."
+    },
+    {
+      "q": "What is the preferred order of fallback options the lesson gives once retrying is no longer worthwhile?",
+      "options": [
+        "(1) Retry on a different available device, (2) fall back to a classical simulator with a clear lower-fidelity flag, (3) explicitly fail the iteration rather than silently substituting a wrong value",
+        "(1) Silently substitute a zero value, (2) retry forever, (3) crash the whole pipeline",
+        "(1) Explicitly fail immediately with no other options considered",
+        "(1) Always fall back to a classical simulator first, before ever trying a different device"
+      ],
+      "answer": 0,
+      "explain": "The lesson orders fallbacks by preference: switching devices first (often lowest cost/latency penalty), then a flagged simulator substitute, and only as a last resort an explicit failure -- never a silent, unflagged substitution, which would repeat Lesson 12's silent-corruption warning."
+    }
+  ]
+}

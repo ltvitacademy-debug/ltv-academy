@@ -1,0 +1,60 @@
+{
+  "lesson": "project-add-error-handling-and-cost-tracking",
+  "questions": [
+    {
+      "q": "When an iteration's submission fails due to a circuit validation error, what does this project's error-handling logic do, per the Lesson 12 decision table it applies?",
+      "options": [
+        "Logs it as a code bug and does NOT retry, since retrying an invalid circuit would fail identically every time",
+        "Immediately falls back to a classical simulator without checking the failure reason",
+        "Retries up to 3 times with exponential backoff, the same as a device-offline failure",
+        "Ignores the failure and proceeds to the next iteration as if it succeeded"
+      ],
+      "answer": 0,
+      "explain": "Per the Lesson 12 decision table, a validation failure is a classical code bug that will fail identically on retry -- the correct response is to log it and not retry, unlike a device-offline or queue-timeout failure."
+    },
+    {
+      "q": "In the running cost ledger, if iteration 23 fails once (billed $12.00) before succeeding on retry (billed another $12.00), how should this be recorded?",
+      "options": [
+        "As two separate $12.00 ledger entries (one FAILED, one DONE), making the wasted spend from the failed attempt visible rather than silently merged into a single entry",
+        "As a single $12.00 entry, since only the successful attempt should be logged",
+        "As a single $24.00 entry with no indication that a failure occurred",
+        "As a $0.00 entry, since failed attempts are never billed"
+      ],
+      "answer": 0,
+      "explain": "Logging both attempts separately (one FAILED at $12.00, one DONE at $12.00) makes the $12.00 of wasted spend from the failure visible in the ledger, consistent with the orchestration lab's requirement to surface wasted-retry cost as its own line item."
+    },
+    {
+      "q": "The cost circuit-breaker is set to $1,200 (25% headroom above the $960 planned budget). What does the circuit-breaker do, and when is it checked?",
+      "options": [
+        "It checks cumulative ledger cost after every submission, independent of the iteration counter, and halts the loop with an alert if cumulative cost crosses $1,200",
+        "It only checks cost once, after all 80 iterations complete",
+        "It checks only the iteration counter, ignoring actual dollar cost",
+        "It automatically increases the budget ceiling whenever cost approaches it"
+      ],
+      "answer": 0,
+      "explain": "The circuit-breaker is checked after every submission (not just at the end or based on iteration count alone) and halts the loop immediately if cumulative spend crosses the $1,200 ceiling, exactly as the Lesson 5 Mistake 3 fix specifies."
+    },
+    {
+      "q": "Why does the project use fault injection (forcing a specific submission to return FAILED on command) instead of waiting for a real device failure to test error handling?",
+      "options": [
+        "Real device failures are too rare and unpredictable to reliably trigger during testing, while fault injection lets specific failure scenarios (device-offline, validation failure, repeated failures) be tested deterministically",
+        "Fault injection is required by all cloud quantum providers before deployment",
+        "Real failures cannot be simulated in any software system",
+        "Fault injection eliminates the need for a cost ledger"
+      ],
+      "answer": 0,
+      "explain": "Deterministic fault injection lets the test harness verify specific error-handling paths (backoff-and-retry, no-retry-on-validation-failure, fallback-after-exhausted-retries) on command, rather than depending on an unpredictable real failure occurring at a convenient testing moment."
+    },
+    {
+      "q": "What should a completed or halted run's log allow a reviewer to determine WITHOUT re-running the system?",
+      "options": [
+        "Total cost, total wall-clock time, which iterations failed/retried and their cost, whether any fallback was used, and the final converged value with its standard error",
+        "Only whether the run succeeded or failed, with no further detail",
+        "Only the source code of the orchestration layer",
+        "Nothing; logs are not expected to answer any of these questions"
+      ],
+      "answer": 0,
+      "explain": "This is the same post-hoc answerability requirement from the orchestration lab (Lesson 14), now applied concretely: the log must let a reviewer reconstruct cost, timing, failures, and the final statistically-reported result without re-executing anything."
+    }
+  ]
+}

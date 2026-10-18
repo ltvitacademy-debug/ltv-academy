@@ -1,0 +1,60 @@
+{
+  "lesson": "cloud-quantum-provider-apis-overview",
+  "questions": [
+    {
+      "q": "What is the common API lifecycle shape shared by major quantum cloud providers, as described in the lesson?",
+      "options": [
+        "Asynchronous submit(circuit) -> job_id, then poll(job_id) -> status, then get_result(job_id) -- because a job can queue for seconds to hours",
+        "A synchronous call-and-block model identical to calling a local function",
+        "Submitting a job always returns the final result immediately with no queueing",
+        "Each provider has a completely unrelated lifecycle with no common pattern at all"
+      ],
+      "answer": 0,
+      "explain": "Because queue times vary widely and can be long, every major provider uses an asynchronous submit-then-poll (or subscribe) lifecycle rather than a blocking call -- orchestration code must be built around this from the start."
+    },
+    {
+      "q": "How does IBM Quantum's dominant cost unit differ from AWS Braket's?",
+      "options": [
+        "IBM bills primarily by wall-clock runtime seconds, while Braket bills by a per-task fee plus a per-shot fee",
+        "Both providers bill using an identical per-shot formula",
+        "IBM charges nothing for compute; only Braket charges money",
+        "Braket bills by runtime seconds; IBM bills by shot count"
+      ],
+      "answer": 0,
+      "explain": "Braket's cost scales with (tasks, shots); IBM's Pay-As-You-Go pricing scales with billable runtime seconds -- a fundamentally different pricing dimension that a cost-estimation adapter must account for."
+    },
+    {
+      "q": "Why should orchestration code check a device's status and calibration metadata before submitting a job, according to the lesson?",
+      "options": [
+        "It's a cheap, zero-cost check that can prevent submitting an expensive, slow job to a device that's offline, mid-recalibration, or has a long queue -- all of which degrade or waste the submission",
+        "Device metadata is required by law before any quantum job can run",
+        "Checking metadata guarantees the job will never fail",
+        "Metadata checks replace the need for any retry logic"
+      ],
+      "answer": 0,
+      "explain": "Device metadata (queue depth, operational status, calibration data) is available before submission at no cost -- skipping it risks submitting to a degraded or backlogged device when that information could have redirected the job."
+    },
+    {
+      "q": "Why can't the abstraction layer's estimate_cost() method use a single shared formula like 'shots x price_per_shot' across all providers?",
+      "options": [
+        "Because providers bill on different pricing dimensions -- Braket on tasks/shots, IBM on runtime seconds -- so the adapter behind estimate_cost() needs provider-specific logic even though the caller's interface stays the same",
+        "Because estimate_cost() is not actually a useful method for any provider",
+        "Because shots are never a billing factor for any provider",
+        "Because all providers already charge an identical flat rate regardless of usage"
+      ],
+      "answer": 0,
+      "explain": "The complexity of translating between pricing dimensions (shots vs. runtime seconds) has to live inside each provider's adapter, so that calling code can call one consistent estimate_cost(circuit, shots) interface regardless of which provider is actually selected."
+    },
+    {
+      "q": "What is the key difference between how 'program sets' (AWS Braket) and Qiskit Runtime 'primitives/sessions' (IBM) serve a similar purpose?",
+      "options": [
+        "Both batch multiple circuit executions to amortize overhead -- Braket's program sets share one per-task fee across circuits, while IBM's primitives/sessions batch executions within a runtime session",
+        "They are unrelated features that serve completely different, unconnected purposes",
+        "Only Azure Quantum offers any form of batching",
+        "Program sets and sessions both eliminate queueing entirely"
+      ],
+      "answer": 0,
+      "explain": "Both mechanisms exist to batch related circuit executions and reduce per-execution overhead, but they map onto each provider's own pricing/session model differently -- exactly the kind of provider-specific behavior the abstraction layer needs to understand."
+    }
+  ]
+}
