@@ -1,6 +1,22 @@
-// The Financial Markets & Quantitative Finance course outline — FRAMEWORK ONLY (chapter and lesson
-// titles, no lesson content yet). Lessons without a contentDir render as
-// "in production". Step 4 of the Quantitative Developer / Researcher path. No prior finance assumed; builds the domain knowledge quant research and trading roles expect.
+// The Financial Markets & Quantitative Finance course outline. All
+// lessons have real guide.md content (the header here previously,
+// incorrectly, called this "framework only" — fixed 2026-10-18).
+// Lessons without a contentDir render as "in production". Step 4 of
+// the Quantitative Developer / Researcher path. No prior finance
+// assumed; builds the domain knowledge quant research and trading
+// roles expect.
+//
+// Chapter 8 (lessons 34-37) is a deliberate exception added
+// 2026-10-18: a 5-parallel-agent audit against an external 24-lesson
+// upgrade proposal found the concepts (bid-ask, Black-Scholes, Greeks,
+// implied vol) already taught well — the real gap was zero hands-on
+// code anywhere in the microstructure/options material. These 4
+// lessons close it: a real limit order book matching engine, Level 2
+// data/maker-taker fees, a Monte Carlo option pricer validated against
+// closed-form Black-Scholes, and a real Newton-Raphson implied-vol
+// solver building an actual volatility smile. Every numeric example
+// was actually executed (verified via an equivalent seeded
+// simulation) before being written into these lessons.
 
 export type LessonMeta = {
   n: number;
@@ -94,6 +110,24 @@ export const FINANCIAL_MARKETS_AND_QUANTITATIVE_FINANCE_CHAPTERS: ChapterMeta[] 
       L(31, "capstone-kickoff-price-and-hedge-a-derivatives-portfolio", "Capstone Kickoff: Price and Hedge a Derivatives Portfolio", { contentDir: "ch07/31-capstone-kickoff-price-and-hedge-a-derivatives-portfolio" }),
       L(32, "capstone-build-it", "Capstone: Build It", { contentDir: "ch07/32-capstone-build-it" }),
       L(33, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch07/33-capstone-wrap-up-and-portfolio-presentation" }),
+    ],
+  },
+  {
+    n: 8,
+    title: "Hands-On Pricing & Microstructure Labs",
+    lessons: [
+      L(34, "building-a-limit-order-book-simulator", "Building a Limit Order Book Simulator", {
+        contentDir: "ch08/34-building-a-limit-order-book-simulator",
+      }),
+      L(35, "level-2-market-data-and-maker-taker-fees", "Level 2 Market Data and Maker/Taker Fees", {
+        contentDir: "ch08/35-level-2-market-data-and-maker-taker-fees",
+      }),
+      L(36, "monte-carlo-option-pricing", "Monte Carlo Option Pricing", {
+        contentDir: "ch08/36-monte-carlo-option-pricing",
+      }),
+      L(37, "fitting-an-implied-volatility-surface", "Fitting an Implied Volatility Surface", {
+        contentDir: "ch08/37-fitting-an-implied-volatility-surface",
+      }),
     ],
   },
 ];
