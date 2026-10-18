@@ -1,0 +1,60 @@
+{
+  "lesson": "architecture-lab",
+  "questions": [
+    {
+      "q": "What anti-pattern does the original `estimate_ghz_fidelity(n_qubits, shots, use_real_hardware=False)` use to select its backend, and what does the lab replace it with?",
+      "options": [
+        "A boolean flag branching inside the function; replaced with injecting a QuantumBackend instance as a parameter",
+        "A global variable; replaced with an environment variable",
+        "A command-line argument; replaced with a config file only",
+        "There was no backend-selection problem in the original function"
+      ],
+      "answer": 0,
+      "explain": "The original function used a use_real_hardware boolean to branch between AerSimulator and real-hardware code inline. The lab replaces this with dependency injection (Lesson 11), passing a QuantumBackend instance as a parameter instead."
+    },
+    {
+      "q": "After the refactor, which extracted function can be tested with a hand-constructed counts dictionary and zero quantum execution at all?",
+      "options": [
+        "build_ghz_circuit, because it never touches counts",
+        "run_and_get_counts, because it directly calls the backend",
+        "fidelity_from_counts, because it's pure analysis logic taking counts, n_qubits, and shots as plain data",
+        "estimate_ghz_fidelity, because it's the top-level composed function"
+      ],
+      "answer": 2,
+      "explain": "fidelity_from_counts only operates on a plain dict of counts plus two integers -- no circuit, no backend, no execution -- so it can be tested with entirely synthetic input data, which was impossible in the original tangled function."
+    },
+    {
+      "q": "How does the lab verify that `build_ghz_circuit` is behavior-preserving relative to the original inline circuit-building code?",
+      "options": [
+        "By assuming it must be correct since the code looks similar",
+        "By asserting the extracted function's gate sequence (circuit.data) matches what the original inline code would have produced",
+        "By running it on real IBM hardware and comparing cost",
+        "By checking that the function's name contains the word 'build'"
+      ],
+      "answer": 1,
+      "explain": "The lab writes a construction test asserting the gate_names sequence from build_ghz_circuit matches the structure the original inline code produced -- a concrete, checkable claim rather than an assumption."
+    },
+    {
+      "q": "Why does the lab deliberately NOT add an SDK-adapter layer (Lesson 12) during this refactor?",
+      "options": [
+        "Because SDK adapters are impossible to implement",
+        "Because this project only targets Qiskit-compatible backends, and adding that layer with no second SDK in sight would be the speculative over-engineering Lesson 12 warned against",
+        "Because SDK adapters are only for statistical tests, not architecture",
+        "Because Lesson 12 was about documentation, not architecture"
+      ],
+      "answer": 1,
+      "explain": "The lab explicitly stops at backend abstraction (Lesson 11) rather than adding a multi-SDK adapter layer, since there's no actual second-SDK requirement -- directly applying Lesson 12's warning against building abstraction before it's needed."
+    },
+    {
+      "q": "According to the lab's architecture review checklist, what should be true of each function extracted during the refactor?",
+      "options": [
+        "Each extracted function should have an independent test that doesn't require the other extracted functions",
+        "Each extracted function must call every other extracted function to be valid",
+        "Extracted functions should be merged back together before deployment",
+        "Only the top-level composed function needs any test coverage"
+      ],
+      "answer": 0,
+      "explain": "The checklist specifically requires that each extracted function (construction, execution, analysis) has its own independent test -- exactly what made fidelity_from_counts testable with synthetic data and build_ghz_circuit testable with no backend."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "the-backend-abstraction-pattern",
+  "questions": [
+    {
+      "q": "What two methods does the lesson's `QuantumBackend` abstract base class require every concrete backend to implement?",
+      "options": [
+        "connect() and disconnect()",
+        "run(circuit, shots) and name()",
+        "build() and measure()",
+        "install() and configure()"
+      ],
+      "answer": 1,
+      "explain": "The shared interface defines run(circuit, shots) -> dict (execute and return counts) and name() -> str (a human-readable identifier for logging/reproducibility), which both LocalSimulatorBackend and IBMHardwareBackend implement identically."
+    },
+    {
+      "q": "Why does `run_bell_experiment(backend, shots)` work unmodified whether it's given a `LocalSimulatorBackend` or an `IBMHardwareBackend`?",
+      "options": [
+        "Because both classes happen to have identical internal code",
+        "Because the function depends only on the shared QuantumBackend interface and never imports AerSimulator or QiskitRuntimeService directly",
+        "Because Qiskit automatically converts between simulator and hardware backends",
+        "Because the function ignores the backend parameter entirely"
+      ],
+      "answer": 1,
+      "explain": "Because run_bell_experiment is written against the abstract interface rather than a concrete backend class, swapping which concrete implementation is passed in requires no change to the function itself -- the direct payoff of Lesson 10's dependency injection."
+    },
+    {
+      "q": "What does `backend_from_config()` enable, combined with Lesson 2's configuration-file pattern?",
+      "options": [
+        "Choosing which backend to use based on external configuration (e.g. a CI env var or config file) rather than hardcoding it in algorithm code",
+        "Automatically detecting the fastest backend at runtime",
+        "Running on all backends simultaneously",
+        "Bypassing the need for an abstract interface entirely"
+      ],
+      "answer": 0,
+      "explain": "backend_from_config() reads a config value (like backend_type: 'simulator' vs 'ibm_hardware') and returns the matching concrete backend -- letting CI and production select different backends through configuration alone, with the exact same deployed code."
+    },
+    {
+      "q": "Why does the lesson argue against adding `get_calibration_data()` to the shared `QuantumBackend` interface?",
+      "options": [
+        "Because calibration data doesn't exist on any backend",
+        "Because a simulator has no meaningful calibration data, so forcing it into the shared contract would require simulators to fake a meaningless return value -- a capability-leakage mistake",
+        "Because calibration data is classified information",
+        "Because Python ABCs cannot have more than two abstract methods"
+      ],
+      "answer": 1,
+      "explain": "Calibration data is a real-hardware-specific concept with no meaningful simulator equivalent. Forcing it into the shared interface would require every backend, including simulators, to implement it somehow -- the capability-leakage problem the lesson warns against."
+    },
+    {
+      "q": "Where does the lesson recommend exposing hardware-specific capabilities like queue position or calibration data instead of the shared interface?",
+      "options": [
+        "Nowhere -- those capabilities should simply not be accessible in code",
+        "Through a separate, optional interface or a hardware-specific subclass that algorithm code reaches for only when it explicitly knows it's targeting real hardware",
+        "By adding them to the shared interface anyway and returning None on simulators",
+        "By requiring all simulators to also implement a fake hardware queue"
+      ],
+      "answer": 1,
+      "explain": "The lesson recommends a separate optional interface or hardware-specific subclass for capabilities that don't generalize across all backend types, keeping the shared QuantumBackend contract limited to what every implementation can genuinely support."
+    }
+  ]
+}

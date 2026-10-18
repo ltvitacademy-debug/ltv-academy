@@ -1,0 +1,60 @@
+{
+  "lesson": "designing-for-multiple-sdks-qiskit-and-q-sharp-together",
+  "questions": [
+    {
+      "q": "Why can't Q# simply be wrapped in a `QSharpBackend(QuantumBackend)` class living in the same process as Qiskit-based backends, the way Lesson 11's two Qiskit backends did?",
+      "options": [
+        "Because Q# doesn't support measurement",
+        "Because Q#/QDK uses a fundamentally different toolchain and dependency ecosystem than Qiskit, which Lesson 3 already flagged as needing an isolated environment rather than coexisting in one process",
+        "Because abstract base classes only work with one SDK at a time",
+        "Because Q# circuits cannot return counts"
+      ],
+      "answer": 1,
+      "explain": "Unlike two Qiskit-based backends (both ordinary Python objects sharing Qiskit's dependency tree), Q# runs through a separate .NET/QDK-based toolchain with its own release cadence -- exactly the environment-isolation concern raised in Lesson 3."
+    },
+    {
+      "q": "What is the purpose of the `NeutralResult` dataclass in the SDK-adapter pattern?",
+      "options": [
+        "To store only Qiskit-specific result formats",
+        "To represent a measurement result in an SDK-neutral format (counts, shots, sdk_name, sdk_version) so results from different SDKs can be compared directly",
+        "To replace the need for any statistical testing",
+        "To automatically convert Q# code into Qiskit code"
+      ],
+      "answer": 1,
+      "explain": "NeutralResult gives both QiskitAdapter and QSharpAdapter a common return shape, which is what makes cross-SDK comparison (reusing Lesson 7's statistical-testing reasoning) possible without SDK-specific branching in the comparison code."
+    },
+    {
+      "q": "Why does `QSharpAdapter` communicate via `subprocess.run()` rather than a direct Python import?",
+      "options": [
+        "Subprocess calls are always faster than imports",
+        "It keeps Q#'s dependency tree in a separate, isolated environment (qsharp-env/) rather than requiring the main process to reconcile Qiskit's and Q#'s packages together",
+        "subprocess.run() is required by the Q# license",
+        "Direct imports are deprecated in all Python versions"
+      ],
+      "answer": 1,
+      "explain": "The subprocess boundary deliberately avoids mixing Q#'s and Qiskit's dependency trees in one process, implementing the environment isolation recommended in Lesson 3 for SDKs that aren't designed to coexist."
+    },
+    {
+      "q": "What statistical-testing concept from Lesson 7 does cross-SDK result comparison reuse, according to the lesson?",
+      "options": [
+        "Comparing two observed count distributions against each other for statistical consistency, the same chi-square-style reasoning used against a single theoretical expectation",
+        "A completely new testing framework specific to multi-SDK code",
+        "Construction tests, since cross-SDK comparison never involves execution",
+        "Manual visual inspection of histograms only"
+      ],
+      "answer": 0,
+      "explain": "Comparing two SDKs' results for the same logical circuit is structurally the same statistical reasoning as comparing one sample against a theoretical expectation (Lesson 7) -- just applied to two observed samples instead of one sample and one theory."
+    },
+    {
+      "q": "According to the lesson, when is building the multi-SDK adapter layer NOT worth the added complexity?",
+      "options": [
+        "Whenever a project might conceivably need a second SDK someday, so it should always be built proactively",
+        "For a project that only ever targets one SDK -- building it speculatively 'in case Q# is needed later' is discouraged",
+        "Only when running on real hardware, never on simulators",
+        "The adapter layer is always worth building regardless of actual need"
+      ],
+      "answer": 1,
+      "explain": "The lesson explicitly warns against speculative abstraction: build the SDK-adapter layer when a second SDK is an actual, current requirement (comparing vendors, validating independent of one SDK's bugs), not preemptively for a hypothetical future need."
+    }
+  ]
+}
