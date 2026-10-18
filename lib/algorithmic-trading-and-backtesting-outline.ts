@@ -1,6 +1,20 @@
-// The Algorithmic Trading & Backtesting course outline — FRAMEWORK ONLY (chapter and lesson
-// titles, no lesson content yet). Lessons without a contentDir render as
-// "in production". Step 7 of the Quantitative Developer / Researcher path. Turns models into tradable strategies and teaches how to tell a real edge from an artifact of the backtest.
+// The Algorithmic Trading & Backtesting course outline. All lessons have
+// real guide.md content (the header here previously, incorrectly, called
+// this "framework only" — fixed 2026-10-18). Lessons without a contentDir
+// render as "in production". Step 7 of the Quantitative Developer /
+// Researcher path. Turns models into tradable strategies and teaches how
+// to tell a real edge from an artifact of the backtest.
+//
+// Chapter 8 (lessons 34-39) is a deliberate exception added 2026-10-18:
+// market making, a topic confirmed 100% absent from this course and the
+// whole Quant Developer/Researcher + Quantitative Trader path's 264
+// existing lessons (Phase 1 audit, 5 parallel agents). The reservation-
+// price/inventory-skew mechanics are grounded in the Avellaneda-Stoikov
+// framework, verified against current sources before writing — guide-only
+// (no video yet), same content-first pattern used elsewhere in this
+// catalog. This is also the content gap that makes the Quantitative
+// Trader destination (which shares this exact course) genuinely distinct
+// from Quant Developer/Researcher, not just differently named.
 
 export type LessonMeta = {
   n: number;
@@ -94,6 +108,30 @@ export const ALGORITHMIC_TRADING_AND_BACKTESTING_CHAPTERS: ChapterMeta[] = [
       L(31, "capstone-kickoff-design-backtest-and-stress-test-a-strategy", "Capstone Kickoff: Design, Backtest, and Stress-Test a Strategy", { contentDir: "ch07/31-capstone-kickoff-design-backtest-and-stress-test-a-strategy" }),
       L(32, "capstone-build-it", "Capstone: Build It", { contentDir: "ch07/32-capstone-build-it" }),
       L(33, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch07/33-capstone-wrap-up-and-portfolio-presentation" }),
+    ],
+  },
+  {
+    n: 8,
+    title: "Market Making",
+    lessons: [
+      L(34, "fair-value-estimation-for-market-making", "Fair Value Estimation: What a Market Maker Actually Prices Around", {
+        contentDir: "ch08/34-fair-value-estimation-for-market-making",
+      }),
+      L(35, "two-sided-quoting-and-the-reservation-price", "Two-Sided Quoting and the Reservation Price", {
+        contentDir: "ch08/35-two-sided-quoting-and-the-reservation-price",
+      }),
+      L(36, "inventory-limits-and-spread-sizing", "Inventory Limits and Spread Sizing", {
+        contentDir: "ch08/36-inventory-limits-and-spread-sizing",
+      }),
+      L(37, "adverse-selection-and-toxic-flow", "Adverse Selection and Toxic Flow", {
+        contentDir: "ch08/37-adverse-selection-and-toxic-flow",
+      }),
+      L(38, "market-maker-pnl-decomposition", "Market-Maker P&L: Spread Capture, Inventory Risk, and Execution Costs", {
+        contentDir: "ch08/38-market-maker-pnl-decomposition",
+      }),
+      L(39, "capstone-building-a-market-making-simulator", "Capstone: Building a Market-Making Simulator", {
+        contentDir: "ch08/39-capstone-building-a-market-making-simulator",
+      }),
     ],
   },
 ];
