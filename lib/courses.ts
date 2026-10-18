@@ -55,6 +55,7 @@ import { AZURE_AI_CLOUD_CHAPTERS } from "./azure-ai-cloud-outline";
 import { DOCKER_AI_DEPLOYMENT_CHAPTERS } from "./docker-ai-deployment-outline";
 import { AI_SECURITY_EVAL_MONITORING_CHAPTERS } from "./ai-security-eval-monitoring-outline";
 import { AI_ENGINEERING_CAPSTONES_CHAPTERS } from "./ai-engineering-capstones-outline";
+import { AI_ENGINEERING_LEADERSHIP_AND_ARCHITECTURE_CHAPTERS } from "./ai-engineering-leadership-and-architecture-outline";
 import { DEEP_LEARNING_AND_PYTORCH_CHAPTERS } from "./deep-learning-and-pytorch-outline";
 import { ADVANCED_LLM_TRAINING_AND_ML_SYSTEMS_CHAPTERS } from "./advanced-llm-training-and-ml-systems-outline";
 import { REINFORCEMENT_LEARNING_AND_RL_FOR_LLMS_CHAPTERS } from "./reinforcement-learning-and-rl-for-llms-outline";
@@ -701,6 +702,15 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: AI_ENGINEERING_CAPSTONES_CHAPTERS,
     contentBase: "ai-engineering-capstones",
+  },
+  {
+    slug: "ai-engineering-leadership-and-architecture",
+    title: "AI Engineering Leadership & Architecture",
+    tagline:
+      "System design at scale, architecture decision records, build-vs-buy, and the technical leadership skills that separate a Senior AI Engineer from a Staff or Principal one — built for the Principal/Staff AI Engineer destination.",
+    status: "available",
+    chapters: AI_ENGINEERING_LEADERSHIP_AND_ARCHITECTURE_CHAPTERS,
+    contentBase: "ai-engineering-leadership-and-architecture",
   },
   {
     slug: "deep-learning-and-pytorch",

@@ -999,7 +999,7 @@ export const CAREER_PATHS: CareerPath[] = [
       heading: "Read this first: what this destination is — and is not",
       paragraphs: [
         "A student does not graduate from the AI Engineer path and immediately become a Principal AI Engineer or AI Architect.",
-        "This page names the real ladder from AI Engineer to Principal/Staff and shows what separates each level — it is not a second curriculum, because the skills that actually matter at this stage (system design at scale, production ownership, mentoring, architecture trade-offs) come from years of real production experience, not more coursework.",
+        "This page names the real ladder from AI Engineer to Principal/Staff — it is not a second curriculum, because most of what separates each level (production ownership, mentoring, organizational influence) comes from years of real experience, not coursework. The one exception: system design at scale and architecture decision-making ARE teachable directly, so this destination adds exactly one course for that specific gap, not a parallel 4-course program.",
         "If what you actually want is deeper technical specialization rather than a leadership ladder, see the AI/ML Research & Alignment Engineer destination below — it's the one real next step already built on this same AI Engineer foundation.",
       ],
     },
@@ -1039,7 +1039,7 @@ export const CAREER_PATHS: CareerPath[] = [
     principalProjects: {
       heading: "You Should Be Able to Build This",
       intro:
-        "Three projects scoped at what a Principal or Staff AI Engineer is actually expected to own — not a bigger version of the AI Engineer capstones.",
+        "Five projects scoped at what a Principal or Staff AI Engineer is actually expected to own — not a bigger version of the AI Engineer capstones.",
       projects: [
         {
           title: "Enterprise AI Knowledge Platform",
@@ -1050,6 +1050,16 @@ export const CAREER_PATHS: CareerPath[] = [
           title: "Production Multi-Agent System",
           description:
             "Multiple specialized agents, tool and API use, orchestration, human approval, observability and failure handling.",
+        },
+        {
+          title: "Build vs. Buy Decision & Migration Plan",
+          description:
+            "Given a real AI component (retrieval, re-ranking, or evaluation), produce a full build-vs-buy analysis with real cost modeling, write the ADR, and plan the migration path if the current approach needs to change later.",
+        },
+        {
+          title: "Incident Postmortem & Standards Rollout",
+          description:
+            "Given a realistic production incident, lead a blameless postmortem to a real root cause, then design and roll out the engineering standard (ideally tooling-enforced) that prevents it from recurring.",
         },
         {
           title: "Enterprise AI Architecture Capstone",
@@ -1097,9 +1107,14 @@ export const CAREER_PATHS: CareerPath[] = [
     },
     stages: [
       { label: "Foundation", note: "The full AI Engineer path — no prior course assumed", pathChoiceSlugs: ["ai-engineer"] },
+      {
+        label: "AI Engineering Leadership & Architecture",
+        note: "The one real gap: system design at scale, architecture decision-making, technical leadership, and production/strategy ownership — specifically for AI systems",
+        courseSlugs: ["ai-engineering-leadership-and-architecture"],
+      },
     ],
     destinationNote:
-      "AI Application Developer → AI Engineer → Senior AI Engineer → Staff/Lead AI Engineer → Principal AI Engineer → AI Architect. Same rule as Principal Data Engineer: no need to invent a second curriculum just so the card looks impressive — the ladder from here is years of production experience, system ownership, architecture, mentoring and scale, not more coursework.",
+      "AI Application Developer → AI Engineer → Senior AI Engineer → Staff/Lead AI Engineer → Principal AI Engineer → AI Architect. Same rule as Principal Data Engineer: the ladder from here is mostly years of production experience, system ownership, mentoring and scale, not more coursework — which is why this destination adds exactly one course (not a parallel curriculum) for the specific leadership and architecture skills nothing else in the catalog taught directly.",
   },
   {
     slug: "ai-ml-research-and-alignment-engineer",
