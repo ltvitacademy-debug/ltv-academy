@@ -10,6 +10,9 @@ Almost every example in the rest of this course — NumPy experiments, plots, sm
 - Useful built-in "magic" commands for scientific work
 - How to export a notebook and why that matters for sharing results
 
+![The Jupyter Notebook Dashboard, the first screen shown after running jupyter notebook](/courses/python-scientific-computing-for-quantum/ch01/04-working-with-jupyter-notebooks/jupyter-dashboard.png)
+*The Notebook Dashboard — a file browser into your project folder, where you open or create notebooks.*
+
 ## Cells, the kernel, and persistent state
 
 A notebook is a sequence of **cells** — small, independently runnable chunks of code or text — connected to a single running Python process called the **kernel**. When you run a code cell, its code executes in the kernel, and any variables it defines stay alive in the kernel's memory for every other cell to use, not just the one where they were defined:
@@ -26,9 +29,15 @@ print(x)   # [1.+0.j 0.+0.j]  -- x is still in memory from Cell 1
 
 This persistence is what makes notebooks good for exploration: you can build up a NumPy array in one cell, inspect it, tweak a gate matrix in the next cell, and re-run just that part without re-running everything from scratch. It is also the single most common source of notebook confusion — more on that below.
 
+![The default Jupyter notebook editor interface with menu bar, toolbar, and cells](/courses/python-scientific-computing-for-quantum/ch01/04-working-with-jupyter-notebooks/jupyter-notebook-editor.png)
+*The notebook editor — menu bar, toolbar, and a mix of Markdown and code cells.*
+
 ## Code cells vs. Markdown cells
 
 A notebook mixes two cell types. **Code cells** run Python and show output directly beneath them (printed text, a number, a plot). **Markdown cells** render formatted text — headings, bullet points, bold/italic, even LaTeX math like `$|\psi\rangle = \alpha|0\rangle + \beta|1\rangle$` — and are meant for explaining what the surrounding code is doing, not for running anything. A well-organized notebook alternates between the two: a Markdown cell explaining what's about to happen, then a code cell doing it, repeated down the page. This is also exactly the shape this course's own lesson guides follow — explanation, then a runnable example.
+
+![A Jupyter notebook with cells shown in edit mode](/courses/python-scientific-computing-for-quantum/ch01/04-working-with-jupyter-notebooks/jupyter-notebook-edit-mode.png)
+*Cells in edit mode — each one runs in the same shared kernel, so variables persist across cells.*
 
 ## Execution order is not reading order
 
