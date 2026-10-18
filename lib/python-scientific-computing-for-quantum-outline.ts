@@ -69,17 +69,17 @@ export const PYTHON_SCIENTIFIC_COMPUTING_FOR_QUANTUM_CHAPTERS: ChapterMeta[] = [
       L(18, "random-seeds-and-reproducible-simulation", "Random Seeds & Reproducible Simulation", { contentDir: "ch05/18-random-seeds-and-reproducible-simulation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792362389/ltv-quantum/python-scientific-computing-for-quantum-ch05-18-random-seeds-and-reproducible-simulation.mp4", durationLabel: "2:06" }),
       L(19, "organizing-a-scientific-computing-project", "Organizing a Scientific Computing Project", { contentDir: "ch05/19-organizing-a-scientific-computing-project", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792362504/ltv-quantum/python-scientific-computing-for-quantum-ch05-19-organizing-a-scientific-computing-project.mp4", durationLabel: "2:10" }),
       L(20, "documenting-numerical-results-honestly", "Documenting Numerical Results Honestly", { contentDir: "ch05/20-documenting-numerical-results-honestly", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792362616/ltv-quantum/python-scientific-computing-for-quantum-ch05-20-documenting-numerical-results-honestly.mp4", durationLabel: "2:01" }),
-      L(21, "version-control-for-research-code", "Version Control for Research Code", { contentDir: "ch05/21-version-control-for-research-code" }),
+      L(21, "version-control-for-research-code", "Version Control for Research Code", { contentDir: "ch05/21-version-control-for-research-code", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792362729/ltv-quantum/python-scientific-computing-for-quantum-ch05-21-version-control-for-research-code.mp4", durationLabel: "1:58" }),
     ],
   },
   {
     n: 6,
     title: "Capstone: A Mini Quantum Math Toolkit",
     lessons: [
-      L(22, "capstone-kickoff-planning-the-toolkit", "Capstone Kickoff: Planning the Toolkit", { contentDir: "ch06/22-capstone-kickoff-planning-the-toolkit" }),
-      L(23, "capstone-build-state-vector-and-gate-operations", "Capstone: Build State-Vector & Gate Operations", { contentDir: "ch06/23-capstone-build-state-vector-and-gate-operations" }),
-      L(24, "capstone-build-measurement-and-visualization", "Capstone: Build Measurement & Visualization", { contentDir: "ch06/24-capstone-build-measurement-and-visualization" }),
-      L(25, "capstone-wrap-up-and-code-review", "Capstone: Wrap-Up & Code Review", { contentDir: "ch06/25-capstone-wrap-up-and-code-review" }),
+      L(22, "capstone-kickoff-planning-the-toolkit", "Capstone Kickoff: Planning the Toolkit", { contentDir: "ch06/22-capstone-kickoff-planning-the-toolkit", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792362823/ltv-quantum/python-scientific-computing-for-quantum-ch06-22-capstone-kickoff-planning-the-toolkit.mp4", durationLabel: "2:03" }),
+      L(23, "capstone-build-state-vector-and-gate-operations", "Capstone: Build State-Vector & Gate Operations", { contentDir: "ch06/23-capstone-build-state-vector-and-gate-operations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792362931/ltv-quantum/python-scientific-computing-for-quantum-ch06-23-capstone-build-state-vector-and-gate-operations.mp4", durationLabel: "1:59" }),
+      L(24, "capstone-build-measurement-and-visualization", "Capstone: Build Measurement & Visualization", { contentDir: "ch06/24-capstone-build-measurement-and-visualization", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363040/ltv-quantum/python-scientific-computing-for-quantum-ch06-24-capstone-build-measurement-and-visualization.mp4", durationLabel: "2:05" }),
+      L(25, "capstone-wrap-up-and-code-review", "Capstone: Wrap-Up & Code Review", { contentDir: "ch06/25-capstone-wrap-up-and-code-review", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363162/ltv-quantum/python-scientific-computing-for-quantum-ch06-25-capstone-wrap-up-and-code-review.mp4", durationLabel: "2:23" }),
     ],
   },
 ];
