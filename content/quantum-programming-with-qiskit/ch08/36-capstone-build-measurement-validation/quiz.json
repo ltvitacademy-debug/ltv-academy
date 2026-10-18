@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-build-measurement-validation",
+  "questions": [
+    {
+      "q": "What statistical quantity does the `validate` function use to decide whether an observed deviation is worth flagging?",
+      "options": [
+        "The raw difference in counts between the two most frequent outcomes",
+        "The standard error, SE = √(p_exact(1 − p_exact)/shots), compared against the actual deviation scaled by n_sigma",
+        "The total number of distinct outcomes observed",
+        "The ratio of shots to qubits in the circuit"
+      ],
+      "answer": 1,
+      "explain": "The validator computes the standard error of the sampled proportion from the exact probability and shot count, then flags an outcome only if its observed deviation exceeds n_sigma (default 3) standard errors."
+    },
+    {
+      "q": "For the GHZ case (exact P(000)=0.5, observed 1069/2048=0.52197, SE≈0.011049), how many standard errors is the deviation, and should it be flagged?",
+      "options": [
+        "About 1.99 standard errors; should NOT be flagged, since it's within the normal 3-sigma range for shot noise",
+        "About 5.5 standard errors; SHOULD be flagged as a bug",
+        "Exactly 0 standard errors, meaning the tool is broken",
+        "About 1.99 standard errors; SHOULD be flagged regardless, because any deviation from 0.5 indicates an error"
+      ],
+      "answer": 0,
+      "explain": "|0.52197 − 0.5| / 0.011049 ≈ 1.988, which is comfortably below the 3-sigma threshold, so this is ordinary statistical shot noise and the validator correctly does not flag it."
+    },
+    {
+      "q": "Why does the standard-error formula break down when the exact probability p_exact is exactly 0 or exactly 1?",
+      "options": [
+        "Because the formula requires at least 10,000 shots to be valid",
+        "Because √(p(1−p)/N) evaluates to zero at p=0 or p=1, making any nonzero deviation appear infinitely large in sigma terms rather than giving a meaningful threshold",
+        "Because AerSimulator cannot produce outcomes with probability exactly 0",
+        "Because Qiskit's Statevector class does not support probabilities of exactly 0 or 1"
+      ],
+      "answer": 1,
+      "explain": "When p_exact is 0 or 1, p(1−p) is 0, so SE becomes 0 — any nonzero observed deviation would divide by zero or appear as an undefined/infinite number of sigmas, which is why the validator special-cases this rather than relying on the SE formula directly."
+    },
+    {
+      "q": "In the noisy depolarizing Bell circuit example, why is a nonzero count on outcome '01' (observed frequency 0.002686 at shots=4096) automatically flagged, even though the number looks small?",
+      "options": [
+        "Because 4096 shots is considered too few for any reliable measurement",
+        "Because the exact noiseless prediction says P(01) is exactly zero, so any nonzero count represents a classically impossible transition and is itself the signal of gate error, regardless of how small it looks in absolute terms",
+        "Because '01' is alphabetically out of order compared to '00' and '11'",
+        "Because the validator flags every outcome with fewer than 100 counts automatically"
+      ],
+      "answer": 1,
+      "explain": "Theory predicts P(01)=0 exactly for a noiseless Bell circuit, so any nonzero count — however small in absolute terms — can only arise from a real error process like gate noise, making it a genuine anomaly rather than ordinary shot noise."
+    },
+    {
+      "q": "What is the central diagnostic value the validation layer adds, as illustrated by contrasting the GHZ and noisy Bell examples?",
+      "options": [
+        "It proves that AerSimulator is always more accurate than real hardware",
+        "It distinguishes statistically normal shot noise (like the GHZ case's ~2-sigma wobble) from genuine anomalies (like the Bell case's impossible nonzero outcome), rather than judging mismatches by raw size alone",
+        "It guarantees that every circuit will produce exactly the expected counts if run long enough",
+        "It eliminates the need to ever compute an exact statevector"
+      ],
+      "answer": 1,
+      "explain": "The two examples show that a numerically larger-looking mismatch (GHZ's ~2% frequency gap) can be statistically unremarkable, while a numerically smaller-looking one (Bell's 0.27% on a theoretically impossible outcome) can be a genuine red flag — the validator's statistical reasoning, not raw size, is what correctly tells these apart."
+    }
+  ]
+}

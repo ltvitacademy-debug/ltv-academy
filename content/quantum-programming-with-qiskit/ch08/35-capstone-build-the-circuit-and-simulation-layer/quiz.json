@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-build-the-circuit-and-simulation-layer",
+  "questions": [
+    {
+      "q": "In the `build_circuit` function, what does the loop over the spec actually do for each gate tuple?",
+      "options": [
+        "It reads the gate name from the tuple's first element and calls the matching QuantumCircuit method on the given qubit index or indices",
+        "It immediately runs the circuit on AerSimulator and stores the result",
+        "It converts the gate name into a matrix and multiplies it by the statevector directly",
+        "It discards the gate name and applies a Hadamard to every qubit by default"
+      ],
+      "answer": 0,
+      "explain": "build_circuit loops over the spec, reads each tuple's first element as the gate name (e.g. 'h' or 'cx'), and dispatches to the corresponding QuantumCircuit method (qc.h(...) or qc.cx(...)) using the remaining tuple elements as qubit indices."
+    },
+    {
+      "q": "Why does the shot-based layer operate on `qc.copy()` with measurement added, rather than adding measurement directly to the same circuit used for `Statevector(qc)`?",
+      "options": [
+        "Because Statevector requires the circuit to already contain measurement operations",
+        "Because copying is required by AerSimulator's API and has no other purpose",
+        "Because adding measurement to the original circuit would make it invalid for computing the exact, measurement-free statevector used as ground truth",
+        "Because transpile() only works on copied circuits"
+      ],
+      "answer": 2,
+      "explain": "Statevector(qc) needs the measurement-free circuit to compute the exact closed-form amplitudes; copying the circuit before adding measurement keeps that original circuit intact for the exact layer while still allowing the shot-based layer to measure its own copy."
+    },
+    {
+      "q": "What is the correct current (post-2.0) Qiskit pattern for running a shot-based simulation, replacing the old `qiskit.execute` function?",
+      "options": [
+        "qiskit.execute(qc, backend, shots=2048)",
+        "backend.run(transpile(qc, backend), shots=2048)",
+        "Statevector(qc).run(shots=2048)",
+        "qc.run(backend, shots=2048)"
+      ],
+      "answer": 1,
+      "explain": "qiskit.execute was removed; the current pattern transpiles the circuit for the target backend with transpile(qc, backend), then calls backend.run(...) directly on the transpiled circuit, passing shots as a keyword argument."
+    },
+    {
+      "q": "For the GHZ test case, the exact statevector predicts amplitude 0.7071068 on which two basis states, with all six others at exactly zero?",
+      "options": [
+        "'010' and '101'",
+        "'000' and '111'",
+        "'001' and '110'",
+        "'000' and '001'"
+      ],
+      "answer": 1,
+      "explain": "The GHZ circuit's final exact state is (|000⟩ + |111⟩)/√2, giving amplitude 0.7071068 on '000' and '111' and exactly zero amplitude on all six other 3-qubit basis states."
+    },
+    {
+      "q": "The seeded shot-based run gave counts {'000': 1069, '111': 979} at shots=2048, with zero counts on all other outcomes. What does this result demonstrate about the tool at this stage?",
+      "options": [
+        "That the tool is broken, because 1069 and 979 are not exactly equal",
+        "That the empirical distribution clusters around the exact 0.5/0.5 prediction with no counts on theoretically impossible outcomes — evidence both layers are working correctly on a known-answer case",
+        "That shots=2048 is too few shots to ever produce a trustworthy result",
+        "That the circuit must contain a bug because real hardware would give exactly 1024/1024"
+      ],
+      "answer": 1,
+      "explain": "1069/2048 and 979/2048 both land close to the exact 0.5 prediction, and no counts appear on any of the six outcomes the exact statevector says are impossible — exactly the pattern you'd expect from a correctly working tool being validated against a known answer."
+    }
+  ]
+}

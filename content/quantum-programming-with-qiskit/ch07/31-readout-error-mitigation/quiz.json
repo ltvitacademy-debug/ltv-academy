@@ -1,0 +1,60 @@
+{
+  "lesson": "readout-error-mitigation",
+  "questions": [
+    {
+      "q": "Why is readout error correctable after the fact in a way that gate error generally is not?",
+      "options": [
+        "Readout error doesn't actually exist on real hardware",
+        "Readout error is a classical post-processing distortion with known statistics, applied after the quantum computation is already complete",
+        "Gate error is always smaller than readout error",
+        "Readout error only affects simulators, never real hardware"
+      ],
+      "answer": 1,
+      "explain": "Readout error happens after the quantum state is already fixed — it's a known, fixed classical distortion on the measurement outcome, so it can be inverted using its known statistics. Gate error corrupts the quantum state itself before measurement, so there's no clean way to invert it from counts alone."
+    },
+    {
+      "q": "Given the calibration matrix M = [[0.98, 0.03], [0.02, 0.97]], what does the entry M[1][0] = 0.02 mean?",
+      "options": [
+        "2% of all shots return state 1",
+        "When the qubit is truly prepared in state 0, it is measured as state 1 2% of the time",
+        "The qubit is in a 2% mixed state",
+        "The circuit has a 2% chance of failing to run"
+      ],
+      "answer": 1,
+      "explain": "M[i][j] = P(measured i | prepared j), so M[1][0] is the probability of measuring 1 given the qubit was truly prepared in state 0 — here, 2%."
+    },
+    {
+      "q": "True probabilities P(0)=0.5, P(1)=0.5 are passed through the readout matrix M = [[0.98, 0.03], [0.02, 0.97]]. What are the resulting observed probabilities, and how do you recover the truth?",
+      "options": [
+        "Observed = [0.505, 0.495]; recover the truth by applying M⁻¹ to the observed vector",
+        "Observed = [0.5, 0.5]; no correction is needed since M doesn't change anything",
+        "Observed = [1.0, 0.0]; apply M directly again to fix it",
+        "Observed = [0.98, 0.02]; divide by 2 to recover the truth"
+      ],
+      "answer": 0,
+      "explain": "observed = M · truth gives [0.505, 0.495]. The true distribution is recovered exactly by applying the inverse matrix M⁻¹ to that observed vector: corrected = M⁻¹ · observed."
+    },
+    {
+      "q": "A seeded 4096-shot draw of the noisy distribution gives observed fractions of about 0.498/0.502 instead of the exact 0.505/0.495 computed from probabilities. Applying M⁻¹ to these sampled fractions gives roughly [0.4929, 0.5071] rather than exactly [0.5, 0.5]. What does this illustrate?",
+      "options": [
+        "The calibration matrix was built incorrectly",
+        "Readout mitigation corrects the systematic bias from known readout error, but doesn't eliminate statistical shot noise, which inversion can even slightly amplify",
+        "Shot noise and readout error are the same phenomenon",
+        "4096 shots is never enough to get a useful measurement"
+      ],
+      "answer": 1,
+      "explain": "Matrix inversion exactly undoes the systematic bias when applied to exact probabilities, but real data also carries shot noise from finite sampling, which the correction step doesn't remove and can mildly amplify, leaving the corrected estimate close to, but not exactly, the true value."
+    },
+    {
+      "q": "Why don't real workflows build and invert a hand-written calibration matrix for more than a few qubits?",
+      "options": [
+        "Qiskit doesn't allow matrices larger than 2x2",
+        "The calibration matrix grows as 2^n x 2^n, making it impractical to build and invert by hand past a handful of qubits",
+        "Readout error disappears automatically on multi-qubit devices",
+        "Larger matrices always have a determinant of zero"
+      ],
+      "answer": 1,
+      "explain": "The confusion matrix's size scales exponentially with qubit count, so tools like qiskit-experiments' characterization experiments and the mthree package exist specifically to make readout correction tractable at scale without forming that full matrix by hand."
+    }
+  ]
+}
