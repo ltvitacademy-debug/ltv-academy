@@ -656,13 +656,7 @@ export const CAREER_PATHS: CareerPath[] = [
         "Create users",
         "Build reports and dashboards",
         "Create Flow automations",
-        "Write Apex",
-        "Build Lightning Web Components",
-        "Work with APIs",
-        "Practice integrations",
-        "Use Salesforce CLI",
-        "Practice deployment",
-        "Create scratch orgs",
+        "Practice deployment with change sets",
         "Complete LTV projects"
       ],
       "buttons": [
