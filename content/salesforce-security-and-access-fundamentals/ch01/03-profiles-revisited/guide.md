@@ -39,8 +39,10 @@ password policy don't live anywhere else.
 Salesforce ships a set of **standard profiles** (System Administrator,
 Standard User, and others depending on edition) that most of their
 attributes can't be edited on directly — as Lesson 2 covered, CRUD on
-standard objects for standard profiles has been locked since Winter '21.
-**Custom profiles**, cloned from a standard one or built from scratch,
+standard objects for standard profiles is locked by design (Salesforce's
+documentation says you can never edit object permissions on a standard
+profile; it isn't tied to a specific release). **Custom profiles**,
+cloned from a standard one or built from scratch,
 are fully editable, which is why real orgs do almost all profile
 configuration on custom profiles rather than the ones Salesforce ships.
 
@@ -62,7 +64,7 @@ permission sets handle the rest. Lesson 4 covers that side in full.
 | Term | Meaning |
 |---|---|
 | Profile | The mandatory, single-per-user baseline — object CRUD, apps, tabs, login hours, password policy |
-| Standard profile | Salesforce-shipped, mostly non-editable since Winter '21 |
+| Standard profile | Salesforce-shipped, mostly non-editable by platform design (not tied to a specific release) |
 | Custom profile | Editable profile, cloned or built from scratch — where real configuration happens |
 
 ## Check yourself

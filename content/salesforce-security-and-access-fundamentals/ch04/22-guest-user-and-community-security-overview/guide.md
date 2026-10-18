@@ -40,15 +40,16 @@ the entire internet.
 
 ## Secure guest user record access
 
-Since Summer '20, Salesforce enforces **Secure guest user record
-access**, found on the Sharing Settings page: guest users no longer
-get implicit record access from a permissive OWD the way internal
-users historically could. Record access for guest users must now come
-from an **explicit** grant — a sharing rule or a sharing set built
-specifically for guest users. This setting **cannot be disabled** — it's
-a platform-level floor, not an admin preference, because the exposure
-risk of implicit guest access was serious enough that Salesforce made
-it mandatory going forward.
+Salesforce rolled this out in two stages: **Secure guest user record
+access**, found on the Sharing Settings page, was auto-enabled (with an
+opt-out) starting Summer '20, then made mandatory with no opt-out from
+Winter '21 onward. Today, guest users no longer get implicit record
+access from a permissive OWD the way internal users historically could.
+Record access for guest users must now come from an **explicit** grant —
+a sharing rule or a sharing set built specifically for guest users. This
+setting **cannot be disabled** — it's a platform-level floor, not an
+admin preference, because the exposure risk of implicit guest access was
+serious enough that Salesforce made it mandatory going forward.
 
 ## Configuring the guest user profile safely
 

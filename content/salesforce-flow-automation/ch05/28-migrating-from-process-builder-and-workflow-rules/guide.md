@@ -11,7 +11,7 @@
 
 ## End of support, not a shutdown
 
-As of December 31, 2025, Salesforce **no longer supports** Workflow Rules and Process Builder — no further bug fixes, no new features, no guaranteed troubleshooting help. That is not the same as a shutdown: existing active workflow rules and processes **continue to run and execute automation** exactly as before. The practical message is "move off these on your own timeline, because we're not maintaining them anymore," not "this breaks on a specific date."
+As of December 31, 2025, Salesforce **no longer supports** Workflow Rules and Process Builder — no further bug fixes, no new features, no guaranteed troubleshooting help. This date comes directly from Salesforce's own help documentation ("Salesforce no longer supports Workflow Rules and Process Builder as of December 31, 2025"), not a third-party estimate. That is not the same as a shutdown: existing active workflow rules and processes **continue to run and execute automation** exactly as before. The practical message is "move off these on your own timeline, because we're not maintaining them anymore," not "this breaks on a specific date." Salesforce occasionally adjusts retirement timelines in its release notes, so if you're reading this well after this course was built, confirm the current status in Salesforce Help before treating the date itself as gospel.
 
 ## The Migrate to Flow tool: one rule in, one flow out
 

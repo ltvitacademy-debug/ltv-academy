@@ -57,9 +57,10 @@ of truth when a user's access doesn't match what you expected.
 Even before you reach CRUD checkboxes, the **User Profiles** list in
 classic Setup distinguishes standard profiles (fixed, non-custom) from
 custom ones — a reminder that CRUD on standard objects, for standard
-profiles, has been locked down by Salesforce since Winter '21. Custom
-profiles and permission sets are where real CRUD configuration happens
-today.
+profiles, is locked by design: Salesforce's own documentation states you
+can never edit the object permissions on a standard profile, full stop,
+not as a result of any single release. Custom profiles and permission
+sets are where real CRUD configuration happens today.
 
 ![The User Profiles list — Custom column flags which profiles an admin can actually edit the attributes of.](/courses/salesforce-security-and-access-fundamentals/ch01/02-object-permissions-and-crud/user-profiles-list.jpg)
 
