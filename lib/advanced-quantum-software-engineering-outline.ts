@@ -58,27 +58,27 @@ export const ADVANCED_QUANTUM_SOFTWARE_ENGINEERING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(14, "version-control-practices-for-research-code", "Version Control Practices for Research Code", { contentDir: "ch04/14-version-control-practices-for-research-code", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792362474/ltv-quantum/advanced-quantum-software-engineering-ch04-14-version-control-practices-for-research-code.mp4", durationLabel: "2:33" }),
       L(15, "pinning-sdk-versions-and-why-it-matters-more-here", "Pinning SDK Versions — and Why It Matters More Here", { contentDir: "ch04/15-pinning-sdk-versions-and-why-it-matters-more-here", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792362598/ltv-quantum/advanced-quantum-software-engineering-ch04-15-pinning-sdk-versions-and-why-it-matters-more-here.mp4", durationLabel: "2:30" }),
-      L(16, "recording-random-seeds-shots-and-backend-versions", "Recording Random Seeds, Shots & Backend Versions", { contentDir: "ch04/16-recording-random-seeds-shots-and-backend-versions" }),
-      L(17, "reproducibility-lab", "Reproducibility Lab", { contentDir: "ch04/17-reproducibility-lab" }),
+      L(16, "recording-random-seeds-shots-and-backend-versions", "Recording Random Seeds, Shots & Backend Versions", { contentDir: "ch04/16-recording-random-seeds-shots-and-backend-versions", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792362786/ltv-quantum/advanced-quantum-software-engineering-ch04-16-recording-random-seeds-shots-and-backend-versions.mp4", durationLabel: "2:52" }),
+      L(17, "reproducibility-lab", "Reproducibility Lab", { contentDir: "ch04/17-reproducibility-lab", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792362933/ltv-quantum/advanced-quantum-software-engineering-ch04-17-reproducibility-lab.mp4", durationLabel: "3:01" }),
     ],
   },
   {
     n: 5,
     title: "Performance & Resource Estimation in Practice",
     lessons: [
-      L(18, "profiling-a-quantum-classical-hybrid-program", "Profiling a Quantum-Classical Hybrid Program", { contentDir: "ch05/18-profiling-a-quantum-classical-hybrid-program" }),
-      L(19, "estimating-circuit-resource-requirements-before-running", "Estimating Circuit Resource Requirements Before Running", { contentDir: "ch05/19-estimating-circuit-resource-requirements-before-running" }),
-      L(20, "performance-lab", "Performance Lab", { contentDir: "ch05/20-performance-lab" }),
+      L(18, "profiling-a-quantum-classical-hybrid-program", "Profiling a Quantum-Classical Hybrid Program", { contentDir: "ch05/18-profiling-a-quantum-classical-hybrid-program", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363071/ltv-quantum/advanced-quantum-software-engineering-ch05-18-profiling-a-quantum-classical-hybrid-program.mp4", durationLabel: "2:52" }),
+      L(19, "estimating-circuit-resource-requirements-before-running", "Estimating Circuit Resource Requirements Before Running", { contentDir: "ch05/19-estimating-circuit-resource-requirements-before-running", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363216/ltv-quantum/advanced-quantum-software-engineering-ch05-19-estimating-circuit-resource-requirements-before-running.mp4", durationLabel: "3:05" }),
+      L(20, "performance-lab", "Performance Lab", { contentDir: "ch05/20-performance-lab", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363343/ltv-quantum/advanced-quantum-software-engineering-ch05-20-performance-lab.mp4", durationLabel: "2:50" }),
     ],
   },
   {
     n: 6,
     title: "Capstone: Building a Quantum Software Library",
     lessons: [
-      L(21, "capstone-kickoff-library-scope-and-requirements", "Capstone Kickoff: Library Scope & Requirements", { contentDir: "ch06/21-capstone-kickoff-library-scope-and-requirements" }),
-      L(22, "capstone-build-the-core-library-and-tests", "Capstone: Build the Core Library & Tests", { contentDir: "ch06/22-capstone-build-the-core-library-and-tests" }),
-      L(23, "capstone-build-documentation-and-examples", "Capstone: Build Documentation & Examples", { contentDir: "ch06/23-capstone-build-documentation-and-examples" }),
-      L(24, "capstone-wrap-up-and-code-review", "Capstone: Wrap-Up & Code Review", { contentDir: "ch06/24-capstone-wrap-up-and-code-review" }),
+      L(21, "capstone-kickoff-library-scope-and-requirements", "Capstone Kickoff: Library Scope & Requirements", { contentDir: "ch06/21-capstone-kickoff-library-scope-and-requirements", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363464/ltv-quantum/advanced-quantum-software-engineering-ch06-21-capstone-kickoff-library-scope-and-requirements.mp4", durationLabel: "2:57" }),
+      L(22, "capstone-build-the-core-library-and-tests", "Capstone: Build the Core Library & Tests", { contentDir: "ch06/22-capstone-build-the-core-library-and-tests", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363576/ltv-quantum/advanced-quantum-software-engineering-ch06-22-capstone-build-the-core-library-and-tests.mp4", durationLabel: "2:26" }),
+      L(23, "capstone-build-documentation-and-examples", "Capstone: Build Documentation & Examples", { contentDir: "ch06/23-capstone-build-documentation-and-examples", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363694/ltv-quantum/advanced-quantum-software-engineering-ch06-23-capstone-build-documentation-and-examples.mp4", durationLabel: "2:40" }),
+      L(24, "capstone-wrap-up-and-code-review", "Capstone: Wrap-Up & Code Review", { contentDir: "ch06/24-capstone-wrap-up-and-code-review", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792363824/ltv-quantum/advanced-quantum-software-engineering-ch06-24-capstone-wrap-up-and-code-review.mp4", durationLabel: "2:59" }),
     ],
   },
 ];
