@@ -14,6 +14,9 @@ The optimizer is the piece of classical code that makes a variational loop (Less
 
 A classical loss function evaluation is cheap (microseconds to milliseconds, free beyond compute you already own) and exact (no measurement noise). A quantum cost-function evaluation is slow (seconds, due to queueing — covered in Chapter 3), expensive (real money per shot, covered in Chapter 4), and **noisy** — each evaluation is a statistical estimate from a finite number of shots, not an exact value. Any optimizer choice has to account for all three differences, which rules out or deprioritizes several standard choices (e.g., optimizers that assume exact, cheap function evaluations and need many of them, like a dense grid search).
 
+![A real circuit being optimized, from IBM Quantum](/courses/hybrid-quantum-classical-computing/ch02/07-classical-optimizers-driving-quantum-circuits/ibm-bell-circuit.svg)
+*Every optimizer iteration rebuilds a circuit shaped like this with new parameters and resubmits it.*
+
 ## Gradient-based: parameter-shift rule
 
 Covered in Lesson 2: estimating the gradient with respect to each parameter via the parameter-shift rule costs 2 circuit evaluations per parameter per iteration. For a circuit with `p` parameters, one gradient estimate costs `2p` evaluations, plus 1 more for the cost value itself: `2p + 1` per iteration. This gives an exact (up to shot noise) gradient direction, which usually means fewer iterations to converge — valuable when evaluations are this expensive, provided `p` is small enough that `2p + 1` per iteration doesn't dominate the budget.
@@ -40,6 +43,9 @@ SPSA cost            =   200 x $0.30 +   200 x 1,000 x $0.0009 =    $60 +   $180
 ```
 
 SPSA costs roughly 20x less for the same iteration budget here — but if SPSA needs, say, 3x more iterations than parameter-shift to reach the same accuracy because its gradient estimates are noisier, the real comparison is `$240 x 3 = $720` against parameter-shift's `$4,920`, still a clear win for SPSA at this parameter count. This crossover point — where gradient-free methods win on total cost despite needing more iterations — is exactly why SPSA (or other gradient-free methods like COBYLA) dominates in practice for circuits with more than a handful of parameters.
+
+![Amazon Braket Hybrid Jobs execution config](/courses/hybrid-quantum-classical-computing/ch02/07-classical-optimizers-driving-quantum-circuits/aws-hybrid-job-step4.webp)
+*Where the quantum and classical compute for this exact optimizer-driven loop actually get configured.*
 
 ## Configuring stopping conditions as a cost control, not just a convergence detail
 

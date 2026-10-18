@@ -25,7 +25,7 @@ export const HYBRID_QUANTUM_CLASSICAL_COMPUTING_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Hybrid Computing Architecture Patterns",
     lessons: [
-      L(1, "why-almost-every-real-quantum-application-is-hybrid", "Why Almost Every Real Quantum Application Is Hybrid", { contentDir: "ch01/01-why-almost-every-real-quantum-application-is-hybrid" }),
+      L(1, "why-almost-every-real-quantum-application-is-hybrid", "Why Almost Every Real Quantum Application Is Hybrid", { contentDir: "ch01/01-why-almost-every-real-quantum-application-is-hybrid", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792357083/ltv-quantum/hybrid-quantum-classical-computing-ch01-01-why-almost-every-real-quantum-application-is-hybrid.mp4", durationLabel: "02:53" }),
       L(2, "the-variational-hybrid-loop-pattern", "The Variational Hybrid Loop Pattern", { contentDir: "ch01/02-the-variational-hybrid-loop-pattern" }),
       L(3, "quantum-as-a-coprocessor-vs-quantum-as-the-whole-program", "Quantum as a Coprocessor vs. Quantum as the Whole Program", { contentDir: "ch01/03-quantum-as-a-coprocessor-vs-quantum-as-the-whole-program" }),
       L(4, "architecture-patterns-problem-solving-lab", "Architecture Patterns Problem-Solving Lab", { contentDir: "ch01/04-architecture-patterns-problem-solving-lab" }),

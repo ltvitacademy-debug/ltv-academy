@@ -14,6 +14,9 @@ The orchestration layer from Lesson 20 runs the happy path correctly. This lesso
 
 When an iteration's program-set submission returns `FAILED`, the orchestration code checks the failure reason against Lesson 12's decision table: a device-offline or queue-timeout failure triggers exponential backoff (Lesson 13's formula: `min(cap, base x 2^attempt)`) and resubmission to the next-available device; a circuit-validation failure is logged as a code bug and does not retry; if backoff exhausts a 3-attempt budget, the iteration falls back to a flagged classical-simulator estimate for that one iteration rather than silently treating it as zero or dropping it from the optimizer's view (Lesson 13's fallback ordering).
 
+![Amazon Braket quantum task detail](/courses/hybrid-quantum-classical-computing/ch05/21-project-add-error-handling-and-cost-tracking/aws-quantum-task-detail.webp)
+*Exactly the fields a ledger entry needs — status, shots, cost — for one real submission.*
+
 ## Building the running cost ledger
 
 Every submission — successful or failed — appends a ledger entry: `{iteration, attempt, device, shots, cost, status, latency_ms}`. The cumulative cost is the running sum of every entry's `cost` field, updated after each submission completes, not computed once at the end of the run. Using this project's numbers (13 evaluations/iteration, 1,000 shots/eval, Rigetti Ankaa-3 pricing):
@@ -28,9 +31,15 @@ If iteration 23 fails once (billed) before succeeding on retry, the ledger shows
 
 Lesson 19's brief budgeted this project's full 80-iteration run at $960.00 (80 x $12.00 under all-success conditions). The circuit-breaker checks cumulative ledger cost against a ceiling set with headroom for expected retries — say, $1,200 (25% headroom) — after every submission, independent of the iteration counter. If cumulative cost crosses $1,200 before iteration 80 completes, the loop halts immediately and raises an alert, rather than continuing to spend on an optimization run that's already run far more expensively than planned, which is exactly the Lesson 5 Mistake 3 fix applied with this project's real ceiling.
 
+![Amazon Braket Spending limits](/courses/hybrid-quantum-classical-computing/ch05/21-project-add-error-handling-and-cost-tracking/aws-spending-limits.webp)
+*A real per-QPU cap — the same mechanism this project's $1,200 ceiling is built on.*
+
 ## What the log needs to answer after the fact
 
 A completed (or halted) run's log should let a reviewer answer, without re-running anything: total cost, total wall-clock time, number of failed/retried iterations and their individual cost, whether any fallback was used and for which iteration, and the final converged cost-function value with its standard error. This is the same operational-log requirement from Lesson 14's orchestration lab, now applied concretely to this project rather than described abstractly.
+
+![Real Azure Quantum job state diagram](/courses/hybrid-quantum-classical-computing/ch05/21-project-add-error-handling-and-cost-tracking/azure-job-state-diagram.png)
+*The states fault injection targets — forcing exactly these transitions on command.*
 
 ## Testing error handling with injected failures
 

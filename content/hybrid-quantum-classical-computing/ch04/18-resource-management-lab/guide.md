@@ -21,6 +21,9 @@ Staging (25%):                   $1,250.00
 Prod (60%):                      $3,000.00
 ```
 
+![Amazon Braket Service Dashboard](/courses/hybrid-quantum-classical-computing/ch04/18-resource-management-lab/aws-dashboard.webp)
+*The real console this entire allocation is tracked and spent against, month over month.*
+
 ## How many dev tasks does $750 actually buy?
 
 Assume dev work occasionally needs real-hardware confirmation runs on IonQ Aria ($0.30/task + $0.03/shot) at 1,000 shots/task:
@@ -49,6 +52,12 @@ Per-month cost (22 days):      22 x $4,635.00 = $101,970.00
 ## Fitting the workload to the budget: what actually has to change
 
 Given the 34x overshoot, the levers available (and their individual effects, computed the same way as the rest of this chapter): reducing shots from 2,000 to 500 per evaluation cuts the per-shot cost component by 4x (since cost scales linearly with shots, not with the square-root precision relationship from Lesson 17 — the cost reduction is proportional, the precision loss is not); reducing run frequency from daily to weekly cuts the monthly total by roughly 22/4.4 ≈ 5x; and reducing the iteration count via a tighter convergence tolerance (Lesson 2) might realistically cut iterations from 150 to 60 (as in Lesson 2's convergence example), a 2.5x reduction. Combining shots-reduction (4x) and weekly-instead-of-daily (5x) alone already brings the estimate down by 20x — close to, but probably still short of, fitting the original $3,000 target, meaning the realistic next step is re-scoping the re-calibration frequency or precision requirement with the actual stakeholder, backed by this arithmetic, rather than silently overspending or silently degrading quality to force a fit.
+
+![Amazon Braket Create spending limit form](/courses/hybrid-quantum-classical-computing/ch04/18-resource-management-lab/aws-create-spending-limit.webp)
+*Where a budget decision like this one actually becomes an enforced ceiling, not just a spreadsheet.*
+
+![Amazon Braket Spending limits, live](/courses/hybrid-quantum-classical-computing/ch04/18-resource-management-lab/aws-spending-limits.webp)
+*A real per-device cap — the same control this chapter has returned to in every lesson.*
 
 ## Writing a budget justification a stakeholder can evaluate
 

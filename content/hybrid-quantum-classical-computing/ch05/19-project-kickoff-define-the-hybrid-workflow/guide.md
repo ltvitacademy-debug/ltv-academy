@@ -16,6 +16,9 @@ This chapter is one continuous capstone project, built across four lessons: defi
 
 Applying the four-question method: **(1) loop or one-shot?** A classical optimizer drives an ansatz circuit iteratively (variational loop, Lesson 2) — this is Pattern A. **(2) What's the QPU's job?** Evaluating a Hamiltonian expectation value each iteration — one of the three things QPUs are actually good at (Lesson 1). **(3) How many evaluations?** A 6-parameter ansatz, parameter-shift gradients, targeting 80 iterations: `(6x2+1) x 80 = 13 x 80 = 1,040` circuit evaluations — a project-planning number we'll carry into Lesson 20's orchestration design. **(4) Does the scale exist today?** Yes — a 6-parameter ansatz for a small molecular system fits comfortably within current NISQ device qubit counts.
 
+![Amazon Braket Devices list, including Rigetti](/courses/hybrid-quantum-classical-computing/ch05/19-project-kickoff-define-the-hybrid-workflow/aws-devices-list.webp)
+*Rigetti Ankaa-3, live — the real backend this entire capstone is scoped and priced against.*
+
 ## Sizing the budget before writing code
 
 At 1,000 shots/evaluation on Rigetti Ankaa-3 ($0.30/task + $0.0009/shot), batched into one program-set submission per iteration (80 submissions total, each covering 13 evaluations):
@@ -27,6 +30,9 @@ total for 80 iterations = 80 x $12.00 = $960.00
 ```
 
 This single daily run costs $960 — comfortably inside a reasonable monthly compute budget if run occasionally, but worth flagging now (not after Lesson 21's cost tracking is built) if the real plan is to run this *every single day*: `$960 x 22 business days ≈ $21,120/month`, which is the kind of number that changes a go/no-go decision before a line of orchestration code is written.
+
+![Amazon Braket Algorithm library](/courses/hybrid-quantum-classical-computing/ch05/19-project-kickoff-define-the-hybrid-workflow/aws-algorithm-library.webp)
+*The real catalog this capstone's four-question scoping check was run against, same method as Lesson 4.*
 
 ## Setting success criteria that don't require quantum advantage
 

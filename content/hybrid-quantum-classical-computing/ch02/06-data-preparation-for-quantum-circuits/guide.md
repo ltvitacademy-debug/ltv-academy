@@ -14,6 +14,17 @@ Before any classical data reaches a quantum circuit, it has to be reshaped into 
 
 A quantum state vector has a hard mathematical constraint a plain array doesn't: its amplitudes, viewed as a vector, must have a squared magnitude summing to 1 (it must be a valid probability distribution over measurement outcomes). A classical feature vector like `[3, 1, 4, 1, 5, 9, 2, 6]` has no such constraint — its entries can be any real numbers. Before it can be loaded into a circuit as amplitudes, classical code has to transform it into a form that satisfies the circuit's actual physical constraints. This transformation is 100% classical computation; nothing about it happens on the QPU.
 
+## What the circuit side of this looks like, for real
+
+![A real encoding circuit from IBM Quantum](/courses/hybrid-quantum-classical-computing/ch02/06-data-preparation-for-quantum-circuits/ibm-bell-circuit.svg)
+*A real circuit a normalized or scaled feature vector gets loaded into, gate by gate.*
+
+![The same circuit, transpiled for a real backend](/courses/hybrid-quantum-classical-computing/ch02/06-data-preparation-for-quantum-circuits/ibm-transpiled-circuit.svg)
+*The same circuit after optimization for a real backend — this is what actually ships to the QPU.*
+
+![Amazon Braket notebook options](/courses/hybrid-quantum-classical-computing/ch02/06-data-preparation-for-quantum-circuits/aws-notebook-comparison.webp)
+*Where this normalization code actually gets written and tested, before any circuit submission.*
+
 ## Amplitude encoding: packing data into qubit amplitudes
 
 Amplitude encoding stores `n` classical values across the `log2(n)` qubits needed to index them, with each value becoming one amplitude of the quantum state. For 8 features, you need `log2(8) = 3` qubits. The classical preprocessing step is to **normalize** the vector so the sum of squared entries equals exactly 1:

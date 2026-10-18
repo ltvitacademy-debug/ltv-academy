@@ -34,6 +34,12 @@ For a Z-basis measurement, the convention is `|0⟩ → eigenvalue +1`, `|1⟩ �
 
 This single number — 0.2240 — is what feeds into the cost function in the variational loop (Lesson 2) or into the final business result. Get the eigenvalue mapping backwards (treating `|0⟩` as -1 and `|1⟩` as +1) and every downstream number has its sign flipped, silently, with no error thrown anywhere in the pipeline.
 
+![Real expectation values from IBM Quantum](/courses/hybrid-quantum-classical-computing/ch02/08-post-processing-and-result-aggregation/ibm-expectation-values-plot.svg)
+*Real output of exactly this kind of counts-to-value conversion, across six real observables.*
+
+![Real noise decay from IBM Quantum](/courses/hybrid-quantum-classical-computing/ch02/08-post-processing-and-result-aggregation/ibm-ghz-noise-decay.svg)
+*A value with no standard error attached invites treating this kind of real noise as a meaningful signal.*
+
 ## Always attach a standard error to the number
 
 The same 1,000-shot measurement has an approximate standard error of `1/sqrt(1000) ≈ 0.0316`. Reporting `<Z> = 0.2240` with no uncertainty attached invites exactly the Mistake-4 error from Lesson 5: treating two expectation values that differ by less than the standard error as meaningfully different. The correct way to report this result, every time, is `<Z> = 0.224 ± 0.032` (one standard error), so that anyone consuming the number downstream — a dashboard, an optimizer, a human reviewer — can immediately judge whether an observed difference is signal or noise.
@@ -47,6 +53,9 @@ combined <Z> = sum(counts_i[0] - counts_i[1] for each circuit i) / sum(shots_i f
 ```
 
 not a simple average of each circuit's individual `<Z>_i`, which would silently over-weight low-shot (and therefore noisier) circuits equally with high-shot ones.
+
+![Amazon Braket quantum task detail](/courses/hybrid-quantum-classical-computing/ch02/08-post-processing-and-result-aggregation/aws-quantum-task-detail.webp)
+*Status, shots, and the real location raw results land — before any post-processing runs.*
 
 ## Three post-processing bugs that are easy to ship
 

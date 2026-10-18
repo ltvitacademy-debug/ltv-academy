@@ -10,6 +10,17 @@ Most hybrid quantum-classical projects don't fail because the quantum circuit wa
 - How to review a hybrid architecture proposal for these mistakes before implementation starts
 - Why most of these mistakes are classical software engineering mistakes, not quantum ones
 
+## These mistakes, visible in a real console
+
+![Amazon Braket Spending limits](/courses/hybrid-quantum-classical-computing/ch01/05-common-hybrid-architecture-mistakes/aws-spending-limits.webp)
+*Mistake 3's fix, built in: a real per-QPU dollar cap you can set before a loop ever runs away from you.*
+
+![Amazon Braket quantum task detail](/courses/hybrid-quantum-classical-computing/ch01/05-common-hybrid-architecture-mistakes/aws-quantum-task-detail.webp)
+*Mistake 2 lives here: status, shots, and results for one real task — exactly what a retry decision reads.*
+
+![Real noise decay from IBM Quantum](/courses/hybrid-quantum-classical-computing/ch01/05-common-hybrid-architecture-mistakes/ibm-ghz-noise-decay.svg)
+*Mistake 4, made visible: real measured decay from noise — a difference too small to be signal.*
+
 ## Mistake 1: developing directly against real hardware instead of a simulator
 
 **Why it's tempting**: "I want to see it actually run on a real QPU from day one." **Why it's expensive**: as shown in Lesson 2, a single 150-iteration VQE run against real IonQ hardware costs roughly $77,265 — and a typical development cycle involves running a half-finished, buggy version of that loop dozens of times while you fix the cost function, the optimizer config, and the convergence logic. **The fix**: develop and debug the entire classical loop against a classical simulator (free or near-free, no queue wait) until it's verified correct on toy problems, and reserve real hardware for a small number of final validation runs.

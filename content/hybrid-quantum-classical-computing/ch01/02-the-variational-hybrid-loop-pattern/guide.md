@@ -12,6 +12,9 @@ Almost every near-term quantum algorithm you'll deploy — VQE for chemistry, QA
 
 ## The loop, step by step
 
+![A real parameterized circuit from IBM Quantum](/courses/hybrid-quantum-classical-computing/ch01/02-the-variational-hybrid-loop-pattern/ibm-bell-circuit.svg)
+*The circuit gets rebuilt with new parameters θ every iteration — only this one step touches a QPU.*
+
 ```
  1. Classical: initialize parameters θ (e.g., random or from a prior run)
  2. Classical: build circuit(θ) and submit to the quantum backend
@@ -25,6 +28,9 @@ Almost every near-term quantum algorithm you'll deploy — VQE for chemistry, QA
 ```
 
 Steps 1, 2, 4, 5, 6, 7 are classical. Only step 3 touches the QPU. This is the concrete version of the previous lesson's claim: the "quantum part" of a variational algorithm is one line in a loop that is otherwise ordinary classical control flow and numerical optimization.
+
+![Real expectation-value output from IBM Quantum](/courses/hybrid-quantum-classical-computing/ch01/02-the-variational-hybrid-loop-pattern/ibm-expectation-values-plot.svg)
+*Real output of step 4's cost computation — the number the optimizer actually receives back.*
 
 ## What the classical optimizer is actually doing
 
@@ -49,6 +55,9 @@ cost = 2,550 x $0.30 + 2,550,000 x $0.03 = $765 + $76,500 = $77,265
 ```
 
 That number is the whole reason classical simulators exist in this workflow: nobody runs 2,550 evaluations against real hardware to develop and debug a VQE loop. You run the identical loop against a local or cloud-hosted **classical simulator** (free or near-free, no queue) until the optimizer, cost function, and convergence logic are all verified correct — and only then point the same code at real hardware, usually for a much smaller number of final, confirmatory evaluations.
+
+![Amazon Braket Hybrid Jobs wizard](/courses/hybrid-quantum-classical-computing/ch01/02-the-variational-hybrid-loop-pattern/aws-hybrid-job-wizard.webp)
+*Braket's own Hybrid Jobs feature runs exactly this loop — classical optimizer plus circuit — as one managed job.*
 
 ## Convergence criteria save money, not just time
 

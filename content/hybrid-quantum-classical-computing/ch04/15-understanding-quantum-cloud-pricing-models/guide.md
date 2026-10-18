@@ -31,6 +31,12 @@ OQC Lucy:        200 x $0.30 + 200,000 x $0.00035  = $60.00 +     $70.00 =   $13
 
 A 25-46x cost difference for the identical workload, purely from device choice — before any discussion of which device's qubit count, connectivity, or error rate actually suits the problem.
 
+![Amazon Braket Create spending limit form](/courses/hybrid-quantum-classical-computing/ch04/15-understanding-quantum-cloud-pricing-models/aws-create-spending-limit.webp)
+*The actual form behind every pricing decision in this lesson — a real per-device dollar ceiling.*
+
+![Amazon Braket Spending limits, live](/courses/hybrid-quantum-classical-computing/ch04/15-understanding-quantum-cloud-pricing-models/aws-spending-limits.webp)
+*Real per-QPU caps as they appear once set — the control panel these pricing decisions feed into.*
+
 ## IBM Quantum's different pricing dimension
 
 IBM Quantum's Pay-As-You-Go plan bills by runtime second (roughly $1.60/billable second), not by task or shot count directly. Estimating a job's cost on IBM therefore requires estimating its wall-clock runtime, not its shot count:
@@ -42,6 +48,9 @@ IBM Premium-plan-equivalent rate ($48/min = $0.80/sec) = 240 x $0.80 = $192.00
 ```
 
 This is why Lesson 10's point about pricing dimension matters concretely: you cannot compare Braket's $240 Ankaa-3 quote against IBM's cost by just looking at shot counts — IBM's number depends on how long the job actually takes to run, which depends on circuit depth and queueing behavior IBM counts toward billable time, not on shots directly.
+
+![Microsoft's own Azure Quantum resource estimator diagram](/courses/hybrid-quantum-classical-computing/ch04/15-understanding-quantum-cloud-pricing-models/azure-resource-estimator-overview.png)
+*A different provider, a different pricing dimension — this is Azure's own real estimation model.*
 
 ## Program sets: a verified real discount for batched workloads
 

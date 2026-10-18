@@ -28,6 +28,9 @@ TOTAL                              38,361 ms   100.00%
 
 A latency budget built from this data has exactly one lever worth pulling first: queue wait. Shaving the 12ms classical prep step down to 6ms saves 0.016% of total latency — not worth a single engineering hour. Reducing queue wait by switching to a less-congested device, or by reducing the number of times you have to queue (batching), is where all the real leverage is.
 
+![Amazon Braket Devices list, live status](/courses/hybrid-quantum-classical-computing/ch04/16-latency-budgets-for-hybrid-workflows/aws-devices-list.webp)
+*Queue depth is a real, checkable property of a real device — the lever that actually moves latency.*
+
 ## Setting a realistic end-to-end deadline
 
 For a 150-iteration run with no batching, using the per-iteration total above:
@@ -48,6 +51,12 @@ Batched 150-iteration total:   150 x  42,750 ms ≈  1.78 hours
 ```
 
 The latency budget conversation with a stakeholder is completely different depending on which of these numbers you're defending — which is exactly why the orchestration design decision (batch or don't) has to be made before the latency budget is quoted, not after.
+
+![Real Azure Quantum job lifecycle diagram](/courses/hybrid-quantum-classical-computing/ch04/16-latency-budgets-for-hybrid-workflows/azure-job-flow-diagram.png)
+*The stages a latency budget is built from — submit, queue, run, retrieve — drawn by the provider itself.*
+
+![Amazon Braket quantum task detail](/courses/hybrid-quantum-classical-computing/ch04/16-latency-budgets-for-hybrid-workflows/aws-quantum-task-detail.webp)
+*Where the real timestamps behind a latency budget actually live, for one real task.*
 
 ## Communicating a latency budget honestly
 

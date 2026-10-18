@@ -10,6 +10,17 @@ Two architectures get called "quantum applications," and conflating them leads t
 - What changes in your engineering plan (team skills, cost model, testing strategy) between the two
 - A worked comparison of both patterns applied to the same business problem
 
+## What each pattern looks like in a real console
+
+![Amazon Braket Devices list](/courses/hybrid-quantum-classical-computing/ch01/03-quantum-as-a-coprocessor-vs-quantum-as-the-whole-program/aws-devices-list.webp)
+*Pattern A's hardware: a QPU called repeatedly as a coprocessor, the same way a GPU is called from an ML job.*
+
+![Amazon Braket Algorithm library](/courses/hybrid-quantum-classical-computing/ch01/03-quantum-as-a-coprocessor-vs-quantum-as-the-whole-program/aws-algorithm-library.webp)
+*A real catalog of quantum algorithms — most of what ships in production here is Pattern A, not Pattern B.*
+
+![Real 100-qubit GHZ-state result from IBM Quantum](/courses/hybrid-quantum-classical-computing/ch01/03-quantum-as-a-coprocessor-vs-quantum-as-the-whole-program/ibm-ghz-noise-decay.svg)
+*Real measured noise decay on today's hardware — exactly why Pattern B's larger circuits aren't yet practical.*
+
 ## Pattern A: quantum as a coprocessor
 
 This is the pattern from Lessons 1 and 2. A classical application owns the control flow, data, and business logic end to end. It calls out to a QPU for one bounded sub-task — evaluating a cost function, sampling from a distribution, estimating a quantity that's hard to compute classically — gets a number or a set of samples back, and continues. The QPU is architecturally identical to a GPU in a classical ML pipeline: a specialized accelerator invoked for specific calls, never the thing that "runs the program."

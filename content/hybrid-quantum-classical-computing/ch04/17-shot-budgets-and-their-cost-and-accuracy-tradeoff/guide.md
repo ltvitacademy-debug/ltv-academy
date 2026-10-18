@@ -25,6 +25,9 @@ shots    relative standard error
 
 Going from 1,000 to 4,000 shots (4x the shots) cuts standard error from 0.0316 to 0.0158 — exactly half. **To halve your measurement error, you need 4x the shots. To get a 10x improvement in precision, you need 100x the shots.** This square-root relationship is the single most important number in this lesson, because it means precision gets expensive fast, and that cost is entirely avoidable if your use case doesn't actually need that much precision.
 
+![Real expectation values from IBM Quantum](/courses/hybrid-quantum-classical-computing/ch04/17-shot-budgets-and-their-cost-and-accuracy-tradeoff/ibm-expectation-values-plot.svg)
+*A real measured value — exactly the kind of number this standard-error math is computed for.*
+
 ## Pricing out a precision target
 
 Using Rigetti Ankaa-3 pricing ($0.30/task + $0.0009/shot) across 200 tasks:
@@ -41,6 +44,9 @@ Notice the cost increase (3.25x) isn't exactly 4x, because the flat per-task fee
 ## Setting a shot budget from your actual precision requirement, not a round number
 
 "We'll use 10,000 shots because that sounds thorough" is not a shot-budget decision — it's a guess with no connection to what the application actually needs. A real shot-budget decision starts from the use case: if a downstream decision only changes when an expectation value crosses a threshold by more than, say, 0.05, there's no reason to pay for a standard error of 0.01 (which would need roughly `(0.0316/0.01)^2 x 1,000 ≈ 10,000` shots) when a standard error of 0.02 (needing only about `(0.0316/0.02)^2 x 1,000 ≈ 2,500` shots) is already well within the precision the decision requires, at a quarter of the shot cost.
+
+![Real noise decay from IBM Quantum](/courses/hybrid-quantum-classical-computing/ch04/17-shot-budgets-and-their-cost-and-accuracy-tradeoff/ibm-ghz-noise-decay.svg)
+*Real measured noise at real shot counts — the signal this chapter's math exists to keep readable.*
 
 ## Why "extra shots for safety" is a cost decision in disguise
 

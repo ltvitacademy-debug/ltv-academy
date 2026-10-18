@@ -22,6 +22,9 @@ The capstone is built. This final lesson is the architecture review every produc
 
 A project that can show a concrete, specific answer for all five rows — not just "we were careful" — is what a real architecture review is checking for.
 
+![Amazon Braket real task run history](/courses/hybrid-quantum-classical-computing/ch05/22-project-wrap-up-and-architecture-review/aws-quantum-tasks-list.webp)
+*A real run history — the shape a finished ledger should let a reviewer read without re-running anything.*
+
 ## Reading the finished run's operational story
 
 A completed run's ledger (Lesson 21) should tell a coherent story on its own: say it shows 80 successful iterations, 4 iterations with one retried failure each (device-offline, resolved on retry to a different device), total cost $1,008.00 (80 x $12.00 + 4 x $12.00 wasted-retry cost), total wall-clock time around 58 minutes (80 batched iterations at roughly 42-45 seconds each, per Lesson 11's batched-iteration timing model), and a final converged Hamiltonian expectation value reported with its standard error. Every one of those numbers should be traceable to a specific ledger entry or log line — if any of them can only be explained by "that sounds about right," the logging isn't complete enough yet.
@@ -33,6 +36,9 @@ Looking back at Lesson 19's original scoping: the brief flagged that running thi
 ## How this generalizes beyond VQE
 
 Swap the ansatz and the cost function (a QAOA cut-value for a combinatorial problem, a loss function for a variational classifier) and every other piece of this architecture — the state machine, the batching strategy, the retry/fallback decision table, the cost ledger and circuit-breaker, the simulator-first testing discipline — carries over unchanged. That transferability is the actual deliverable of this course: not a working VQE demo, but a reusable classical orchestration pattern that works for any Pattern A hybrid workload.
+
+![Amazon Braket Spending limits](/courses/hybrid-quantum-classical-computing/ch05/22-project-wrap-up-and-architecture-review/aws-spending-limits.webp)
+*The same per-QPU cap this capstone built its circuit breaker on, reviewed one final time.*
 
 ## Signing off like an engineer, not a rubber stamp
 

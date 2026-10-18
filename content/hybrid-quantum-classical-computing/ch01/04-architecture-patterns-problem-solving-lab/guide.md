@@ -17,13 +17,22 @@ You've learned the hybrid loop pattern and the coprocessor-vs-whole-program dist
 3. **How many circuit evaluations would the proposed approach need**, at a rough parameter/iteration count? (Lesson 2's arithmetic)
 4. **Does the required scale (qubits, circuit depth, error rate) exist on hardware available today?** If not, say so explicitly rather than quietly scoping around it.
 
+![Amazon Braket Algorithm library](/courses/hybrid-quantum-classical-computing/ch01/04-architecture-patterns-problem-solving-lab/aws-algorithm-library.webp)
+*A real algorithm catalog — the kind of evidence a Pattern A/B classification should be checked against.*
+
 ## Ticket 1: "Classify loan applications as high/low risk using a quantum model"
 
 Working through the four questions: a quantum classifier here would be a **variational quantum classifier** — parameters trained via a classical optimizer evaluating a cost function (classification loss) by executing the circuit on each data point, exactly the loop from Lesson 2. That's **Pattern A**. The QPU's job is "evaluate a cost function" (Lesson 1, item 2). For a modest 6-parameter circuit trained over 50 iterations on a batch of 200 samples per iteration: `50 iterations x 200 samples x (6 params x 2 + 1 evals) = 50 x 200 x 13 = 130,000` circuit evaluations — immediately a red flag for cost, which is why in practice you'd batch samples, subsample, or train on a classical simulator and only validate a final small batch on hardware. Required scale (a handful of qubits) is available today. **Verdict: buildable as Pattern A, but the naive per-sample training loop needs a redesign before it's affordable — flag this back to the proposer with the 130,000-evaluation number attached.**
 
+![Amazon Braket Devices list](/courses/hybrid-quantum-classical-computing/ch01/04-architecture-patterns-problem-solving-lab/aws-devices-list.webp)
+*Real qubit counts on real devices — no listed device here reaches the scale Ticket 2 would need.*
+
 ## Ticket 2: "Search an unsorted database of 10 million records for a match, using Grover's algorithm, in production next quarter"
 
 Four questions: no classical optimizer loop is implied — this is a single search algorithm, one circuit, one measurement. That's **Pattern B**. Required scale: Grover's algorithm needs roughly `log2(10,000,000) ≈ 24` qubits encoding the search space plus substantial additional qubits and circuit depth for the oracle and diffusion operators repeated `~sqrt(10,000,000) ≈ 3,162` times with low enough error that the signal survives that many repetitions — this exceeds what current NISQ (noisy intermediate-scale quantum) hardware can execute reliably. **Verdict: not buildable on current hardware in the proposed timeframe; the correct response is to say so explicitly, citing the qubit count and circuit-depth requirement, not to quietly attempt a scaled-down demo and call it done.**
+
+![Amazon Braket real task run history](/courses/hybrid-quantum-classical-computing/ch01/04-architecture-patterns-problem-solving-lab/aws-quantum-tasks-list.webp)
+*Real task history — where a two-phase plan, simulator first then a budgeted hardware run, actually lives.*
 
 ## Ticket 3: "Estimate the ground-state energy of a 12-atom molecule for a drug discovery pipeline"
 

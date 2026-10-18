@@ -18,6 +18,12 @@ A quantum cloud job can fail in more ways than a typical REST API call, and seve
 4. **Circuit validation failure**: the submitted circuit violates a device's constraints (too many qubits, an unsupported gate, exceeding max circuit depth) and is rejected before ever queueing — this one is a classical bug (a validation step that should have run before submission) rather than a hardware issue.
 5. **Transient API/network failure**: the submission or polling call itself fails due to an ordinary network blip or provider API rate limit, unrelated to the quantum job's actual state.
 
+![Amazon Braket, a device OFFLINE](/courses/hybrid-quantum-classical-computing/ch03/12-error-handling-for-remote-quantum-jobs/aws-devices-retired.webp)
+*Failure mode 2 in a real console — the exact state your orchestration has to detect and react to.*
+
+![Amazon Braket quantum task detail](/courses/hybrid-quantum-classical-computing/ch03/12-error-handling-for-remote-quantum-jobs/aws-quantum-task-detail.webp)
+*Status, shots, and results — the fields a retry decision actually reads before deciding anything.*
+
 ## Why some failures still cost money
 
 Several cloud providers bill based on the task being submitted and queued, not strictly on a successful completion — a cancelled or partially-completed job can still incur the flat per-task fee, and in some documented cases a partial run still bills for the shots actually executed before the failure. A job that fails after reaching the device (failure modes 2 and 3 above) is the expensive case to get wrong: unlike failure modes 4 and 5, which fail before any real compute happens, these failures can still generate real spend for a result you can't use.
@@ -42,6 +48,9 @@ An orchestration layer with no error handling doesn't just fail the job — in a
 | Transient API/network failure | Yes | Classic transient-error retry case, same as any REST API client |
 
 This table is why error handling can't be one generic `try/except: retry` block — the correct response genuinely differs by failure mode, and treating a validation failure (a code bug) the same as a queue timeout (a transient condition) either wastes retries on an unfixable error or gives up too early on a recoverable one.
+
+![Real Azure Quantum job state diagram](/courses/hybrid-quantum-classical-computing/ch03/12-error-handling-for-remote-quantum-jobs/azure-job-state-diagram.png)
+*Waiting, executing, succeeded, failed, cancelled — Microsoft's own diagram of the states you handle.*
 
 ## Isolating one failed evaluation from the whole optimization loop
 

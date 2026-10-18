@@ -28,6 +28,12 @@ raw feature vector [3,1,4,1,5,9,2,6]
 
 Notice both the top and bottom of this diagram are classical code you own completely, and the middle is the one line that calls a remote API. This is the same shape as the architecture diagram from Lesson 1, now filled in with the specific classical operations from this chapter.
 
+![A real circuit, the pipeline's one network-touching step](/courses/hybrid-quantum-classical-computing/ch02/09-pre-post-processing-lab/ibm-bell-circuit.svg)
+*Only this part of the pipeline calls a remote API — everything above and below it is pure classical code.*
+
+![Real aggregated output from IBM Quantum](/courses/hybrid-quantum-classical-computing/ch02/09-pre-post-processing-lab/ibm-expectation-values-plot.svg)
+*Real post-processed output — the shape the aggregation half of this pipeline is actually tested against.*
+
 ## Building it so each half is independently testable
 
 A pipeline written as one long function (`run_pipeline(raw_data)` that normalizes, submits, waits, and aggregates in one block) is hard to test, because the only way to exercise the normalization logic is to also run a real circuit. Split it into three units with clear boundaries:
@@ -45,6 +51,9 @@ aggregate(counts, shots) -> (expectation_value, stderr)  # pure function, no I/O
 **Normalization bug test**: feed `normalize` the vector `[2,2,2,2]` and assert the output is `[0.5, 0.5, 0.5, 0.5]` (since `sqrt(4x4)=4`, each entry becomes `2/4=0.5`) and that `sum(x**2 for x in output) == 1.0`. A bug that normalizes by the sum instead of the sum-of-squares, or forgets the square root, fails this test immediately — before ever touching a circuit.
 
 **Sign-convention bug test**: feed `aggregate` the synthetic counts `{"0": 1000, "1": 0}` (shots=1000) and assert the result is exactly `+1.0` (since every shot measured `|0⟩`), then feed `{"0": 0, "1": 1000}` and assert exactly `-1.0`. A sign-convention bug (Lesson 8's Mistake) flips one or both of these, and the test catches it without needing any ambiguous real-world data where the "right" answer isn't already known.
+
+![Amazon Braket notebook options](/courses/hybrid-quantum-classical-computing/ch02/09-pre-post-processing-lab/aws-notebook-comparison.webp)
+*Where this normalize/aggregate pipeline actually gets written and unit-tested, with zero QPU cost.*
 
 ## Why this test strategy matters more here than in typical software
 

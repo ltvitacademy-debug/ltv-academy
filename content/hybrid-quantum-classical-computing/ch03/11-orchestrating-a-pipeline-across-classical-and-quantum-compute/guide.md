@@ -30,6 +30,9 @@ TOTAL                          38,361 ms  (~38.36 sec)
 
 The queue wait alone is **99.1% of total iteration time**. This single number should drive almost every orchestration design decision you make: optimizing the 40ms QPU execution time or the 21ms of pure classical work is not where the engineering effort belongs — reducing the number of times you have to queue, and what you do with your classical compute while waiting, is.
 
+![Amazon Braket Hybrid Jobs wizard](/courses/hybrid-quantum-classical-computing/ch03/11-orchestrating-a-pipeline-across-classical-and-quantum-compute/aws-hybrid-job-wizard.webp)
+*A real five-step wizard for exactly the batched, state-tracked submission this lesson describes.*
+
 ## The batching tradeoff, made concrete
 
 Lesson 2's 150-iteration VQE loop with 8 parameters needs 17 circuit evaluations per iteration under the parameter-shift rule. Submitting those 17 evaluations as 17 separate queued jobs versus batching them into one queued program-set submission changes total wall-clock time dramatically:
@@ -42,6 +45,9 @@ Speedup from batching: ~16.8x per iteration
 ```
 
 Batching doesn't reduce the number of circuit evaluations (still 17) — it reduces the number of times you wait in a *separate* queue, since all 17 circuits share one queue wait instead of each paying their own. Over a full 150-iteration run, this is the difference between roughly 30 hours and roughly 1.8 hours of wall-clock time, with identical total QPU compute.
+
+![Real Azure Quantum job lifecycle diagram](/courses/hybrid-quantum-classical-computing/ch03/11-orchestrating-a-pipeline-across-classical-and-quantum-compute/azure-job-flow-diagram.png)
+*Microsoft's own diagram of the same submit -> queue -> run -> retrieve flow, provider-agnostic.*
 
 ## Structuring orchestration as a state machine, not a blocking call
 

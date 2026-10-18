@@ -23,6 +23,17 @@ Every major provider's API follows the same basic lifecycle from the caller's si
 
 This asynchronous submit-then-poll shape exists because a QPU job can sit in a queue for seconds to hours depending on device demand — there is no "call and block" model for real hardware the way there is for a local simulator. Your classical orchestration code (Lesson 11) has to be written around this asynchronous lifecycle from the start, not bolted on afterward.
 
+## The three providers, in their own real consoles
+
+![Amazon Braket Devices list](/courses/hybrid-quantum-classical-computing/ch03/10-cloud-quantum-provider-apis-overview/aws-devices-list.webp)
+*Real device statuses you check before submitting — a free call that can save an expensive one.*
+
+![Azure portal job list](/courses/hybrid-quantum-classical-computing/ch03/10-cloud-quantum-provider-apis-overview/azure-portal-job-list.png)
+*A real Azure portal job list — ID, target, status, submission time, and cost estimate per job.*
+
+![A real transpiled circuit from IBM Quantum](/courses/hybrid-quantum-classical-computing/ch03/10-cloud-quantum-provider-apis-overview/ibm-transpiled-circuit.svg)
+*IBM bills by wall-clock runtime, not shots — a circuit shaped like this determines that runtime.*
+
 ## Where the three major providers genuinely differ
 
 | Dimension | AWS Braket | IBM Quantum | Azure Quantum |

@@ -10,6 +10,17 @@ There is no such thing as a quantum program that runs start-to-finish on a QPU a
 - How to read a hybrid system diagram and identify which half of it is doing the real engineering work
 - Why this distinction changes how you budget engineering time, cost, and latency
 
+## What this looks like in a real console
+
+![Amazon Braket Service Dashboard](/courses/hybrid-quantum-classical-computing/ch01/01-why-almost-every-real-quantum-application-is-hybrid/aws-dashboard.webp)
+*Notebooks, hybrid jobs, announcements — most of a real quantum cloud console is classical tooling wrapped around a thin quantum slice.*
+
+![Amazon Braket Devices list](/courses/hybrid-quantum-classical-computing/ch01/01-why-almost-every-real-quantum-application-is-hybrid/aws-devices-list.webp)
+*The QPUs themselves show up as a short list of remote devices — IonQ, IQM, QuEra, Rigetti — that you call into.*
+
+![A real two-qubit Bell-state circuit from IBM Quantum](/courses/hybrid-quantum-classical-computing/ch01/01-why-almost-every-real-quantum-application-is-hybrid/ibm-bell-circuit.svg)
+*The entire scope of what a QPU executes: a fixed gate sequence, run some number of shots, measured once.*
+
 ## A QPU cannot load data, branch on a condition, or print a result
 
 A classical CPU can read a file, run an `if` statement based on what it reads, and write a result to disk. A QPU, as exposed by every current cloud quantum provider (IBM Quantum, AWS Braket, Azure Quantum), can do none of that on its own. It accepts a fixed circuit — a sequence of gates — executes it some number of times ("shots"), and returns measurement counts. It cannot inspect those counts and decide to run a different circuit; a classical program has to make that decision and submit the next circuit itself.

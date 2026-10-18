@@ -14,6 +14,9 @@ This lab assembles Lessons 10-13 into one orchestration design for a realistic s
 
 A 150-iteration VQE loop, 8 parameters, 17 circuit evaluations per iteration (Lesson 2), running on AWS Braket against Rigetti Ankaa-3 ($0.30/task + $0.0009/shot), 1,000 shots per evaluation, using program-set batching (Lesson 11) so all 17 evaluations per iteration share one queued submission.
 
+![Amazon Braket Devices list, including Rigetti Ankaa-3](/courses/hybrid-quantum-classical-computing/ch03/14-orchestration-lab/aws-devices-list.webp)
+*The real device this scenario runs against — check its status before submitting, every time.*
+
 ## Tracing one iteration through the orchestration decision points
 
 ```
@@ -47,6 +50,12 @@ Without the retry's wasted spend logged as its own line item, a post-run cost re
 ## Was the fallback the right call? Checking in hindsight
 
 Suppose 2 of those 10 failed iterations exhausted their retry budget and fell back to a classical simulator result instead (fallback #2, flagged as lower-fidelity). In hindsight, you can check whether this was the right call by comparing the flagged simulator-estimated cost value for that iteration against the real hardware value from the following iteration's re-evaluation at the same parameters (if available) — if they agree within a few standard errors (Lesson 8), the fallback didn't meaningfully harm the optimization; if they disagree substantially, that's a signal the simulator fallback may need tighter conditions (e.g., only use it for iterations past a certain convergence point, where precision matters less).
+
+![Amazon Braket quantum task detail](/courses/hybrid-quantum-classical-computing/ch03/14-orchestration-lab/aws-quantum-task-detail.webp)
+*Device, status, cost, latency — the real fields an operational log needs for every single iteration.*
+
+![Amazon Braket Spending limits](/courses/hybrid-quantum-classical-computing/ch03/14-orchestration-lab/aws-spending-limits.webp)
+*A real per-QPU spending cap — the circuit breaker this scenario's total cost gets checked against.*
 
 ## What the operational log needs to capture
 

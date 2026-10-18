@@ -31,6 +31,9 @@ total worst-case wait across 6 attempts: 31,500 ms (~31.5 sec)
 
 "Full jitter" (a common, recommended variant) doesn't retry at exactly these delays — it picks a *random* delay uniformly between 0 and the computed cap for that attempt. This keeps the same overall backoff growth while ensuring that even many clients hitting the same failure at the same moment don't all retry in lockstep, which is the entire point of adding jitter in the first place.
 
+![Amazon Braket real task run history](/courses/hybrid-quantum-classical-computing/ch03/13-retry-and-fallback-strategies-for-queued-hardware/aws-quantum-tasks-list.webp)
+*A real task list — exactly where retried attempts and their outcomes actually show up, over time.*
+
 ## Deciding when to stop retrying and fall back
 
 A retry loop needs an explicit stopping rule, not an implicit "eventually give up." Two common rules, usually combined: a **max-attempt count** (e.g., 6 attempts, as above) and a **cumulative-time budget** (e.g., stop retrying once total elapsed time exceeds the iteration's latency budget from Chapter 4 — there's no point retrying a job whose result would arrive too late to matter). Once either limit is hit, the orchestration layer needs a concrete fallback, not just an error thrown back to the caller.
@@ -38,6 +41,12 @@ A retry loop needs an explicit stopping rule, not an implicit "eventually give u
 ## What a reasonable fallback actually looks like
 
 For a hybrid quantum job, three fallback options cover most real cases, in order of preference: **(1) retry on a different, available device** (handles the device-offline case from Lesson 12 directly, often at only a small cost/latency penalty); **(2) fall back to a classical simulator for this one evaluation**, clearly flagged as a lower-fidelity result (useful mid-development, or for a non-critical evaluation where an approximate answer is acceptable); **(3) fail the iteration explicitly and let the calling optimizer decide how to handle a missing data point** (e.g., skip this iteration's update, rather than silently substituting a wrong number — directly connecting to Lesson 12's warning against silent corruption).
+
+![Amazon Braket Devices list](/courses/hybrid-quantum-classical-computing/ch03/13-retry-and-fallback-strategies-for-queued-hardware/aws-devices-list.webp)
+*Fallback option 1: retry on a different, available device — the first and usually cheapest choice.*
+
+![Real Azure Quantum job state diagram](/courses/hybrid-quantum-classical-computing/ch03/13-retry-and-fallback-strategies-for-queued-hardware/azure-job-state-diagram.png)
+*A failed or cancelled state is exactly where the retry-vs-fallback decision actually gets made.*
 
 ## Logging retries and fallbacks as first-class cost/reliability events
 
