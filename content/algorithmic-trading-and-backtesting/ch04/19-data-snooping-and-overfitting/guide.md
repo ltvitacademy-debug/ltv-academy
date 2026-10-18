@@ -8,6 +8,8 @@ This is arguably the single most important lesson in the course for separating a
 - How overfitting happens: fitting a strategy's parameters so closely to historical noise that it stops generalizing
 - Why in-sample Sharpe ratios systematically overstate true, future performance
 - Train/test splits and walk-forward analysis as the standard defenses
+- Purged and embargoed cross-validation: the fix for a subtler leakage walk-forward alone doesn't catch
+- A full hands-on exercise: diagnosing and repairing a strategy with a real, deliberately planted leakage bug
 - Why this is the central lesson of Chapter 4, and the honest limits it implies
 
 ## Data snooping: the danger of testing many ideas on the same data
@@ -53,6 +55,114 @@ The term for data the parameters were chosen on is **in-sample**; data never tou
 - **Limit the search space, and penalize complexity.** Fewer parameters, simpler rules, and strong priors based on real market intuition (not blind search) are less prone to overfitting than a model with many free parameters tuned by brute-force search. If a strategy only works for very specific, narrow parameter values and degrades sharply for nearby ones, that instability itself is a warning sign of overfitting rather than a real, robust effect.
 - **Track how many things you tried.** If you tested 500 variations before settling on one, your effective statistical significance is far weaker than a single pre-specified test — be honest with yourself (and anyone you report results to) about that number.
 
+## Purged and embargoed cross-validation: the leak walk-forward alone misses
+
+Walk-forward analysis fixes the obvious leak (testing on data from before the parameters were ever selected). There's a subtler one it doesn't automatically fix: when a **label spans multiple future bars** — a feature engineered from a 5-day forward return, say — a training observation right before a test fold can have a label window that reaches *into* the test period, leaking test-period information into training even though the fold boundary itself looks clean. **Purging** removes any training observation whose label window overlaps the test set; an **embargo** additionally excludes a buffer of observations immediately *after* the test set, since serial correlation can let information leak backward across that boundary too.
+
+```python
+def purged_train_indices(n, test_start, test_end, label_horizon, embargo):
+    """
+    n:             total number of time-ordered observations
+    test_start,
+    test_end:      the test fold's index range [test_start, test_end)
+    label_horizon: how many future bars each label looks ahead
+                   (e.g., 5 for a 5-day forward return label)
+    embargo:       extra bars excluded immediately after the test set
+    """
+    train_indices = []
+    for i in range(n):
+        if test_start <= i < test_end:
+            continue   # it's in the test fold itself
+
+        # PURGE: a training point's label covers [i, i + label_horizon).
+        # If that window overlaps the test fold, it leaks test-period
+        # information into training.
+        label_end = i + label_horizon
+        overlaps_test = (i < test_end) and (label_end > test_start)
+        if overlaps_test:
+            continue
+
+        # EMBARGO: exclude a buffer right after the test fold too
+        if test_end <= i < test_end + embargo:
+            continue
+
+        train_indices.append(i)
+    return train_indices
+
+naive_train = [i for i in range(30) if not (15 <= i < 20)]
+purged_train = purged_train_indices(n=30, test_start=15, test_end=20, label_horizon=5, embargo=3)
+
+print(f"Naive train (excludes only the test fold): {len(naive_train)} points")
+print(f"Purged + embargoed train:                  {len(purged_train)} points")
+print(f"Points removed beyond the naive exclusion:  {len(naive_train) - len(purged_train)}")
+```
+
+```
+Naive train (excludes only the test fold): 25 points
+Purged + embargoed train:                  18 points
+Points removed beyond the naive exclusion:  7
+```
+
+Of the 7 additionally-removed points: 4 (indices 11-14) are purged because their 5-bar label windows reach into the test fold (15-19), and 3 (indices 20-22) are embargoed as a post-test buffer. A naive walk-forward split would have silently trained on all 7 of these, each one carrying some test-period information into the training set — a smaller, subtler version of the exact look-ahead problem Lesson 18 covers, specifically caused by label windows rather than feature windows.
+
+## Hands-on: repair a strategy with a real planted leakage bug
+
+Here's a moving-average-style strategy, backtested on a pure random-walk price series — meaning, by construction, there is **no real predictable edge in this data at all**. Any strategy that shows a strong positive Sharpe ratio on it is necessarily finding an artifact, not a real signal:
+
+```python
+import numpy as np
+
+rng = np.random.default_rng(419)
+n = 2000
+returns = rng.normal(0, 0.01, n)          # pure noise, zero real signal
+prices = 100 * np.cumprod(1 + returns)
+daily_returns = np.diff(prices) / prices[:-1]
+
+# --- The strategy as originally written ---
+def leaky_strategy(daily_returns):
+    signal = daily_returns                 # <-- the bug is right here
+    positions = np.where(signal > 0, 1, -1)
+    strat_returns = positions * daily_returns
+    return strat_returns
+
+def sharpe(returns):
+    return (returns.mean() / returns.std()) * np.sqrt(252)
+
+leaky_returns = leaky_strategy(daily_returns)
+print(f"Leaky strategy Sharpe: {sharpe(leaky_returns):.3f}")
+```
+
+```
+Leaky strategy Sharpe: 20.485
+```
+
+**Stop and diagnose this yourself before reading on.** A Sharpe ratio of 20 is not a good result to celebrate — per this lesson's own standard, it's close to the single most reliable signal that something is wrong. Real, durable strategies essentially never sustain a Sharpe anywhere near this; a number this extreme should trigger immediate suspicion, not excitement.
+
+<details>
+<summary>Diagnosis and fix</summary>
+
+The bug: `signal = daily_returns` uses **today's own realized return** to decide **today's position** — `positions[i]` is computed from `daily_returns[i]`, the exact same value the strategy's return for that day (`positions[i] * daily_returns[i]`) depends on. This is the same-bar leakage: the strategy effectively already knows which direction the market moved today before placing today's trade. It's not predicting anything — it's looking at the answer first.
+
+```python
+def fixed_strategy(daily_returns):
+    signal = np.roll(daily_returns, 1)      # yesterday's return, not today's
+    signal[0] = 0                             # no prior data for the first bar
+    positions = np.where(signal > 0, 1, -1)
+    strat_returns = positions * daily_returns
+    return strat_returns[1:]                   # drop the first (undefined-signal) bar
+
+fixed_returns = fixed_strategy(daily_returns)
+print(f"Fixed strategy Sharpe: {sharpe(fixed_returns):.3f}")
+```
+
+```
+Fixed strategy Sharpe: 0.409
+```
+
+Once the signal only uses yesterday's return — information genuinely available before the trade — the Sharpe collapses from 20.485 to 0.409, which is exactly what should happen on a pure random walk with no real signal: a small, noise-level number consistent with no real edge, not a spectacular one.
+
+</details>
+
 ## Key terms
 
 | Term | Meaning |
@@ -61,6 +171,8 @@ The term for data the parameters were chosen on is **in-sample**; data never tou
 | Overfitting | Tuning a model's parameters so closely to a specific historical sample that it fits that sample's noise, not a general pattern |
 | In-sample / out-of-sample | Data used (in-sample) vs. never used (out-of-sample) during strategy design and parameter selection |
 | Walk-forward analysis | Repeatedly re-fitting on a rolling past window and testing on the following period, rolling forward through time |
+| Purging | Removing training observations whose label window overlaps the test fold, in time-series cross-validation |
+| Embargo | An additional buffer of excluded observations immediately after a test fold, guarding against backward leakage from serial correlation |
 
 ## Recap
 
