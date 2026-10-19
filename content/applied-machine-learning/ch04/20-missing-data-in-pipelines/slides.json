@@ -2,77 +2,53 @@
   {
     "type": "title",
     "eyebrow": "Applied Machine Learning · Chapter 4",
-    "titlePlain": "Missing Data ",
-    "titleEmphasis": "in Pipelines",
+    "titlePlain": "Missing Data in ",
+    "titleEmphasis": "Pipelines",
     "titleSuffix": "",
     "subtitle": "Lesson 20 · Imbalanced & Messy Data"
   },
   {
-    "type": "steps",
+    "type": "code",
     "eyebrow": "Look before you fill",
-    "titlePlain": "Missing can be ",
-    "titleEmphasis": "a signal",
-    "titleSuffix": "",
+    "code": "monthly_charge missing: 17.9%\n\nchurn rate | monthly_charge missing\nFalse   0.254\nTrue    0.571",
+    "caption": "Missing rows churn more than twice as often. The gap carries signal."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The rule",
+    "titlePlain": "Impute ",
+    "titleEmphasis": "inside",
+    "titleSuffix": " the pipeline",
     "steps": [
-      {
-        "label": "MEASURE",
-        "sub": "18% of monthly charges missing"
-      },
-      {
-        "label": "SPLIT BY GAP",
-        "sub": "57% churn vs 25% when present"
-      },
-      {
-        "label": "DON'T DROP",
-        "sub": "423 of 1,500 rows would go"
-      },
-      {
-        "label": "FILL INSIDE",
-        "sub": "learn fill values per fold"
-      }
+      {"label": "SAME RULE AS SCALING", "sub": "learn fill values from training only"},
+      {"label": "STRUCTURE", "sub": "SimpleImputer inside ColumnTransformer"},
+      {"label": "EACH FOLD", "sub": "learns its own median from its own rows"},
+      {"label": "AVOID", "sub": "imputing the whole dataset up front"}
     ]
   },
   {
     "type": "code",
-    "eyebrow": "Impute inside the ColumnTransformer",
-    "code": "num_pipe = Pipeline([\n  (\"imp\", SimpleImputer(\n      strategy=\"median\")),\n  (\"sc\", StandardScaler())])\ncat_pipe = Pipeline([\n  (\"imp\", SimpleImputer(\n      strategy=\"most_frequent\")),\n  (\"oh\", OneHotEncoder())])",
-    "caption": "Abridged: handle_unknown is trimmed from OneHotEncoder."
-  },
-  {
-    "type": "code",
-    "eyebrow": "Compare with the same 5-fold CV",
-    "code": "make(SimpleImputer(strategy=\"median\"))\nmake(SimpleImputer(strategy=\"median\",\n                   add_indicator=True))\nmake(KNNImputer(n_neighbors=5))\n\n# median              0.760 +/- 0.027\n# median + indicator  0.798 +/- 0.019\n# KNN imputer         0.760 +/- 0.025",
-    "caption": "5-fold ROC AUC on 1,500 illustrative customers."
+    "eyebrow": "Compare strategies · 5-fold ROC AUC",
+    "code": "median               0.760 +/- 0.027\nmedian + indicator   0.798 +/- 0.019\nKNN imputer          0.760 +/- 0.025",
+    "caption": "add_indicator=True recovers the missingness signal itself."
   },
   {
     "type": "screenshot",
-    "file": "imputation-compare.png",
+    "file": "imputation-comparison.png",
     "eyebrow": "Output of the code above",
-    "caption": "Mean 5-fold AUC with standard deviation; illustrative churn data."
+    "caption": "5-fold ROC AUC by imputation strategy, with spread; illustrative data."
   },
   {
     "type": "steps",
-    "eyebrow": "Other options",
-    "titlePlain": "Choose ",
-    "titleEmphasis": "deliberately",
+    "eyebrow": "Two more options",
+    "titlePlain": "Dropping rows & ",
+    "titleEmphasis": "native support",
     "titleSuffix": "",
     "steps": [
-      {
-        "label": "DROP ROWS",
-        "sub": "loses data; scores not comparable"
-      },
-      {
-        "label": "ADD INDICATORS",
-        "sub": "add_indicator=True keeps the signal"
-      },
-      {
-        "label": "NATIVE NaN",
-        "sub": "HistGradientBoosting accepts gaps"
-      },
-      {
-        "label": "COMPARE FAIRLY",
-        "sub": "same CV, same rows"
-      }
+      {"label": "DROP ROWS", "sub": "0.796, but on fewer, easier rows"},
+      {"label": "NOT COMPARABLE", "sub": "different test set, discards future gaps"},
+      {"label": "NATIVE NaN", "sub": "HistGradientBoostingClassifier: 0.761"},
+      {"label": "SOME TREES", "sub": "learn a split direction for missing values"}
     ]
   },
   {
@@ -81,6 +57,6 @@
     "titlePlain": "Churn Prediction ",
     "titleEmphasis": "Walkthrough",
     "titleSuffix": "",
-    "subtitle": "A full project, from raw table to a defensible model."
+    "subtitle": "The first of three applied projects."
   }
 ]

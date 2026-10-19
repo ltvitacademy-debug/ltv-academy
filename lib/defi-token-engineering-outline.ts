@@ -75,17 +75,42 @@ export const DEFI_TOKEN_ENGINEERING_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792423953/ltv-defi-token-engineering/ch02-07-impermanent-loss.mp4",
         durationLabel: "2 min 0 s",
       }),
-      L(8, "building-a-simple-amm-contract", "Building a Simple AMM Contract", { contentDir: "ch02/08-building-a-simple-amm-contract" }),
-      L(9, "concentrated-liquidity-concepts", "Concentrated Liquidity Concepts", { contentDir: "ch02/09-concentrated-liquidity-concepts" }),
+      L(8, "building-a-simple-amm-contract", "Building a Simple AMM Contract", {
+        contentDir: "ch02/08-building-a-simple-amm-contract",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792425533/ltv-defi-token-engineering/ch02-08-building-a-simple-amm-contract.mp4",
+        durationLabel: "1 min 41 s",
+      }),
+      L(9, "concentrated-liquidity-concepts", "Concentrated Liquidity Concepts", {
+        contentDir: "ch02/09-concentrated-liquidity-concepts",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792426527/ltv-defi-token-engineering/ch02-09-concentrated-liquidity-concepts.mp4",
+        durationLabel: "2 min 13 s",
+      }),
     ],
   },
   {
     n: 3,
     title: "Lending & Borrowing Protocols",
     lessons: [
-      L(10, "overcollateralized-lending-mechanics", "Overcollateralized Lending Mechanics", { contentDir: "ch03/10-overcollateralized-lending-mechanics" }),
-      L(11, "interest-rate-models", "Interest Rate Models", { contentDir: "ch03/11-interest-rate-models" }),
-      L(12, "liquidations", "Liquidations", { contentDir: "ch03/12-liquidations" }),
+      L(10, "overcollateralized-lending-mechanics", "Overcollateralized Lending Mechanics", {
+        contentDir: "ch03/10-overcollateralized-lending-mechanics",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792427392/ltv-defi-token-engineering/ch03-10-overcollateralized-lending-mechanics.mp4",
+        durationLabel: "2 min 6 s",
+      }),
+      L(11, "interest-rate-models", "Interest Rate Models", {
+        contentDir: "ch03/11-interest-rate-models",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792428264/ltv-defi-token-engineering/ch03-11-interest-rate-models.mp4",
+        durationLabel: "2 min 12 s",
+      }),
+      L(12, "liquidations", "Liquidations", {
+        contentDir: "ch03/12-liquidations",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792429051/ltv-defi-token-engineering/ch03-12-liquidations.mp4",
+        durationLabel: "2 min 18 s",
+      }),
       L(13, "flash-loans", "Flash Loans", { contentDir: "ch03/13-flash-loans" }),
       L(14, "building-a-simple-lending-pool", "Building a Simple Lending Pool", { contentDir: "ch03/14-building-a-simple-lending-pool" }),
     ],

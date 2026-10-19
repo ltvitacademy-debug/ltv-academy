@@ -5,54 +5,54 @@
     "titlePlain": "Refactoring Notebooks Into ",
     "titleEmphasis": "Scripts",
     "titleSuffix": "",
-    "subtitle": "Code buried in cell 47 can't be tested, scheduled, or shared."
+    "subtitle": "Move the reusable parts out; keep the notebook for exploring and presenting."
   },
   {
     "type": "steps",
-    "eyebrow": "What moves out, what stays",
-    "titlePlain": "If You'd Rerun ",
-    "titleEmphasis": "It",
+    "eyebrow": "The refactoring path",
+    "titlePlain": "What Moves Out, ",
+    "titleEmphasis": "What Stays",
     "titleSuffix": "",
     "steps": [
-      { "label": "GET IT WORKING", "sub": "Restart & Run All first" },
-      { "label": "CELLS -> FUNCTIONS", "sub": "Repeated or important ones" },
-      { "label": "FUNCTIONS -> A MODULE", "sub": "A plain .py file" },
-      { "label": "A SCRIPT WIRES IT", "sub": "Keep charts in the notebook" }
+      { "label": "RESTART & RUN ALL", "sub": "Get the notebook working top to bottom" },
+      { "label": "CELLS INTO FUNCTIONS", "sub": "Anything you'd rerun or test" },
+      { "label": "FUNCTIONS INTO A MODULE", "sub": "Then a script that wires them together" }
     ]
   },
   {
     "type": "code",
     "eyebrow": "A simple project layout",
-    "code": "orders_project/\n    data/orders_raw.csv\n    orders_pipeline/\n        __init__.py\n        cleaning.py\n    run_pipeline.py\n    analysis.ipynb",
-    "caption": "The empty __init__.py marks orders_pipeline as an importable package."
+    "code": "orders_project/\n    data/\n        orders_raw.csv\n    orders_pipeline/\n        __init__.py\n        cleaning.py\n    run_pipeline.py\n    analysis.ipynb",
+    "caption": "The empty __init__.py is what marks orders_pipeline as an importable package.",
+    "fontSize": 36
   },
   {
     "type": "code",
-    "eyebrow": "Step 1 — the module",
-    "code": "# orders_pipeline/cleaning.py\ndef standardize_region(df):\n    out = df.copy()\n    out[\"region\"] = out[\"region\"].str.strip().str.title()\n    return out\n\ndef clean_orders(raw):\n    \"\"\"Full pipeline: dedupe, standardize, add revenue.\"\"\"\n    return (raw.drop_duplicates(subset=\"order_id\")\n               .pipe(standardize_region).pipe(add_revenue))",
-    "caption": "Each small function does one job and returns a new DataFrame. .pipe() chains them in order."
+    "eyebrow": "orders_pipeline/cleaning.py",
+    "code": "def standardize_region(df):\n    out = df.copy()\n    out[\"region\"] = out[\"region\"].str.strip().str.title()\n    return out\n\ndef add_revenue(df):\n    out = df.copy()\n    out[\"revenue\"] = out[\"quantity\"] * out[\"unit_price\"]\n    return out\n\ndef clean_orders(raw):\n    return raw.drop_duplicates(subset=\"order_id\").pipe(standardize_region).pipe(add_revenue)",
+    "caption": "Each small function does one job and returns a new DataFrame; .pipe() chains them."
   },
   {
     "type": "code",
-    "eyebrow": "Step 2 — the script",
-    "code": "# run_pipeline.py\nimport argparse\nfrom orders_pipeline.cleaning import clean_orders\n\ndef main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--input\", type=Path, required=True)\n    parser.add_argument(\"--output\", type=Path, required=True)\n    args = parser.parse_args()\n    ...\n\nif __name__ == \"__main__\":\n    main()",
-    "caption": "argparse replaces hard-coded paths; __main__ means main() only runs when this file runs directly."
+    "eyebrow": "run_pipeline.py",
+    "code": "parser = argparse.ArgumentParser(description=\"Clean the orders file.\")\nparser.add_argument(\"--input\", type=Path, required=True)\nparser.add_argument(\"--output\", type=Path, required=True)\nargs = parser.parse_args()\n\nclean = clean_orders(pd.read_csv(args.input))\nclean.to_csv(args.output, index=False)\n\nif __name__ == \"__main__\":\n    main()",
+    "caption": "argparse avoids hard-coded paths; the __main__ guard means importing this never runs it."
   },
   {
     "type": "code",
-    "eyebrow": "Running it",
-    "code": "python run_pipeline.py --input data/orders_raw.csv --output data/orders_clean.csv\n\n# Read 5 rows, wrote 4 rows to orders_clean.csv\n# (one duplicate order removed)",
-    "caption": "pathlib.Path keeps file paths working across Windows, macOS, and Linux."
+    "eyebrow": "Running it from the project folder",
+    "code": "$ python run_pipeline.py \\\n    --input data/orders_raw.csv \\\n    --output data/orders_clean.csv\n\nRead 5 rows, wrote 4 rows to orders_clean.csv",
+    "caption": "One duplicate order removed; output has cleaned regions and a revenue column."
   },
   {
     "type": "code",
-    "eyebrow": "Step 3 — use it from the notebook",
-    "code": "from orders_pipeline.cleaning import clean_orders\nclean = clean_orders(pd.read_csv(\"data/orders_raw.csv\"))\n\n%load_ext autoreload\n%autoreload 2   # reloads the module as you edit it",
-    "caption": "One cell replaces dozens — the notebook now holds only exploration and commentary."
+    "eyebrow": "One cell replaces dozens, back in the notebook",
+    "code": "from orders_pipeline.cleaning import clean_orders\nimport pandas as pd\n\nclean = clean_orders(pd.read_csv(\"data/orders_raw.csv\"))\n\n%load_ext autoreload\n%autoreload 2",
+    "caption": "autoreload 2 reloads your module edits into the notebook automatically — no restart needed."
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 33",
+    "eyebrow": "Up next · Chapter 7, Lesson 33",
     "titlePlain": "Testing Data ",
     "titleEmphasis": "Code",
     "titleSuffix": "",

@@ -91,9 +91,9 @@ export const PYTHON_FOR_DATA_SCIENCE_CHAPTERS: ChapterMeta[] = [
     n: 7,
     title: "Writing Reliable Data Code",
     lessons: [
-      L(31, "clean-code-for-notebooks", "Clean Code for Notebooks", { contentDir: "ch07/31-clean-code-for-notebooks" }),
-      L(32, "refactoring-notebooks-into-scripts", "Refactoring Notebooks Into Scripts", { contentDir: "ch07/32-refactoring-notebooks-into-scripts" }),
-      L(33, "testing-data-code", "Testing Data Code", { contentDir: "ch07/33-testing-data-code" }),
+      L(31, "clean-code-for-notebooks", "Clean Code for Notebooks", { contentDir: "ch07/31-clean-code-for-notebooks", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792425132/ltv-python-for-data-science/clean-code-for-notebooks.mp4", durationLabel: "3 min 38 s" }),
+      L(32, "refactoring-notebooks-into-scripts", "Refactoring Notebooks Into Scripts", { contentDir: "ch07/32-refactoring-notebooks-into-scripts", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792427446/ltv-python-for-data-science/refactoring-notebooks-into-scripts.mp4", durationLabel: "3 min 24 s" }),
+      L(33, "testing-data-code", "Testing Data Code", { contentDir: "ch07/33-testing-data-code", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792428828/ltv-python-for-data-science/testing-data-code.mp4", durationLabel: "3 min 49 s" }),
       L(34, "reproducibility", "Reproducibility", { contentDir: "ch07/34-reproducibility" }),
     ],
   },

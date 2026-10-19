@@ -270,9 +270,13 @@ export const SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS: ChapterMeta[] = [
       }),
       L(45, "third-party-tools-overview", "Third-Party Tools, Overview", {
         contentDir: "ch09/45-third-party-tools-overview",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792427998/ltv-sql-server-performance-tuning/third-party-tools-overview.mp4",
+        durationLabel: "2 min 50 s",
       }),
       L(46, "diy-monitoring-scripts", "DIY Monitoring Scripts", {
         contentDir: "ch09/46-diy-monitoring-scripts",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792428882/ltv-sql-server-performance-tuning/diy-monitoring-scripts.mp4",
+        durationLabel: "2 min 31 s",
       }),
     ],
   },

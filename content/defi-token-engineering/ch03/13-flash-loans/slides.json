@@ -9,27 +9,33 @@
   },
   {
     "type": "code",
+    "eyebrow": "Why zero collateral is safe",
+    "code": "Entire borrow -> use -> repay sequence = ONE transaction\n\nA transaction either FULLY succeeds or FULLY reverts.\nThere is no partial state.\n\nIf repay(amount + fee) fails before the tx ends:\n  -> the ENTIRE transaction is undone, including the loan itself",
+    "caption": "Default is mechanically impossible -- it just means the tx never completed."
+  },
+  {
+    "type": "code",
     "eyebrow": "The callback pattern",
-    "code": "// pool calls this on the borrower's own contract, mid-tx:\nfunction executeOperation(uint amount, uint fee) external returns (bool) {\n  // ... do whatever the loan was for ...\n  token.transfer(pool, amount + fee);\n  return true;\n}\n// pool checks its balance the instant this returns -- or reverts EVERYTHING",
-    "caption": "A transaction either fully succeeds or fully reverts."
+    "code": "// SIMPLIFIED TEACHING EXAMPLE\nfunction executeOperation(\n    address asset, uint256 amount, uint256 fee, bytes calldata params\n) external returns (bool) {\n    // 1. Do whatever this loan was for\n\n    // 2. Repay BEFORE this function returns\n    IERC20(asset).transfer(msg.sender, amount + fee);\n    return true;\n}",
+    "caption": "The lending pool checks its own balance right after this call returns."
   },
   {
     "type": "steps",
     "eyebrow": "Three legitimate uses",
-    "titlePlain": "What They're ",
+    "titlePlain": "What Flash Loans Are ",
     "titleEmphasis": "Actually For",
     "titleSuffix": "",
     "steps": [
-      {"label": "Arbitrage", "sub": "Buy low, sell high, repay, keep diff"},
-      {"label": "Self-Liquidation", "sub": "Avoid someone else's bonus"},
-      {"label": "Collateral Swap", "sub": "No bridging capital needed"}
+      {"label": "Arbitrage", "sub": "Buy low on one AMM, sell high on another"},
+      {"label": "Self-liquidation", "sub": "Repay your own debt, skip the bonus"},
+      {"label": "Collateral swap", "sub": "Move positions without bridge capital"}
     ]
   },
   {
     "type": "code",
-    "eyebrow": "Why exploits use them too",
-    "code": "// A flash loan doesn't create new vulnerabilities --\n// it removes the capital constraint on exploiting one\n// that already exists (e.g. a price-oracle bug).",
-    "caption": "Millions of dollars of capital, for one transaction and a fee."
+    "eyebrow": "Why exploits use them",
+    "code": "A flash loan does NOT create new attack vectors.\nIt removes the CAPITAL CONSTRAINT on an existing one.\n\nAttacker finds an oracle-manipulation bug:\n  no longer needs millions of their own capital\n  -> flash loan supplies it for one tx, for a small fee",
+    "caption": "Several of DeFi's largest exploits used flash loans exactly this way."
   },
   {
     "type": "outro",
@@ -37,6 +43,6 @@
     "titlePlain": "Building a Simple ",
     "titleEmphasis": "Lending Pool",
     "titleSuffix": "",
-    "subtitle": "Where the health-factor check actually lives in code."
+    "subtitle": "Putting Lessons 10-13's mechanics into real code."
   }
 ]

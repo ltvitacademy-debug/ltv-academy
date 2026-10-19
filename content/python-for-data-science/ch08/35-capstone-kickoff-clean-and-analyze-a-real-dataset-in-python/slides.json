@@ -2,73 +2,59 @@
   {
     "type": "title",
     "eyebrow": "Python for Data Science · Chapter 8, Lesson 35",
-    "titlePlain": "Capstone Kickoff: Clean and Analyze a Real ",
-    "titleEmphasis": "Dataset",
+    "titlePlain": "Capstone Kickoff: Clean and Analyze a ",
+    "titleEmphasis": "Real Dataset",
     "titleSuffix": "",
     "subtitle": "Every piece of this course, on one project, start to finish."
   },
   {
     "type": "steps",
-    "eyebrow": "Step 1 — frame the problem",
-    "titlePlain": "From Vague Ask to a Defined ",
-    "titleEmphasis": "Metric",
+    "eyebrow": "Sharpening a vague request",
+    "titlePlain": "Two ",
+    "titleEmphasis": "Questions",
     "titleSuffix": "",
     "steps": [
-      { "label": "WHERE & WHEN?", "sub": "Regions, categories, months" },
-      { "label": "DO DISCOUNTS WORK?", "sub": "More items? More returns?" },
-      { "label": "DEFINE THE METRIC FIRST", "sub": "qty x price x (1-discount)" }
+      { "label": "WHERE & WHEN?", "sub": "Which region, category, month drives revenue" },
+      { "label": "DO DISCOUNTS WORK?", "sub": "More items per order? More returns?" },
+      { "label": "DEFINE THE METRIC FIRST", "sub": "qty x price x (1 - discount), complete orders only" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "Step 2 — set up the project",
-    "code": "capstone/\n    make_data.py\n    data/raw/orders_raw.csv\n    data/clean/\n    cleaning.py\n    tests/\n    analysis.ipynb\n    README.md",
-    "caption": "Raw data in data/raw is never edited. Cleaned output goes to data/clean."
+    "eyebrow": "make_data.py — the illustrative \"truth\"",
+    "code": "rng = np.random.default_rng(42)\nn = 1500\n\nweights = np.where(np.arange(366) >= 274, 1.6, 1.0)  # busier Q4\ndays = rng.choice(366, size=n, p=weights / weights.sum())\ndiscount = rng.choice([0,5,10,20,30], size=n, p=[.45,.15,.20,.12,.08])\np_return = 0.06 + 0.004 * discount   # returns rise with discount",
+    "caption": "Seeded, with a busier Q4 and returns that rise with discount — planted so there's something to find."
   },
   {
     "type": "code",
-    "eyebrow": "Step 3 — generate an illustrative, deliberately messy file",
-    "code": "rng = np.random.default_rng(42)\nn = 1500\n# mixed date formats, inconsistent text, missing values,\n# absurd outliers, duplicate rows -- planted on purpose",
-    "caption": "A seeded generator and pathlib — real company data can't be shared, so this stands in for it."
+    "eyebrow": "...then deliberately made messy",
+    "code": "# 30% of dates -> US format; some regions UPPERCASED or \" padded \"\n# some prices get a \"$\"; status sometimes \"Complete\"\ndf.loc[rng.random(n) < 0.03, \"quantity\"] = np.nan\nbad = rng.choice(n, size=6, replace=False)\ndf.loc[bad, \"quantity\"] = [500, 250, 999, -2, -1, 0]\ndf = pd.concat([df, df.sample(n=30, random_state=42)], ignore_index=True)",
+    "caption": "Mixed date formats, inconsistent text, missing values, outliers, 30 duplicate rows — on purpose."
   },
   {
     "type": "code",
-    "eyebrow": "Step 4 — audit before you clean (change nothing yet)",
-    "code": "raw = pd.read_csv(\"data/raw/orders_raw.csv\")\nprint(raw.shape)              # (1530, 9)\nprint(raw.duplicated().sum()) # 30\nraw[\"region\"].value_counts(dropna=False)",
-    "caption": "Interrogate the file first — this step changes nothing."
+    "eyebrow": "Audit before you touch anything",
+    "code": "raw = pd.read_csv(\"data/raw/orders_raw.csv\")\nprint(raw.shape)              # (1530, 9)\nprint(raw.isna().sum())       # region 26, quantity 54, discount_pct 78\nprint(raw.duplicated().sum()) # 30\nraw[\"quantity\"].nlargest(3)   # 999, 500, 250",
+    "caption": "Wrong types (dates, $-prices as text), inconsistent casing, outliers — found before any cleaning."
   },
   {
     "type": "steps",
-    "eyebrow": "What the audit found",
-    "titlePlain": "Five Real ",
-    "titleEmphasis": "Problems",
+    "eyebrow": "Every finding becomes a decision",
+    "titlePlain": "The Cleaning ",
+    "titleEmphasis": "Plan",
     "titleSuffix": "",
     "steps": [
-      { "label": "30 DUPLICATE ROWS", "sub": "Fully identical" },
-      { "label": "MISSING VALUES", "sub": "region, quantity, discount" },
-      { "label": "WRONG TYPES", "sub": "$ prices, two date formats" },
-      { "label": "OUTLIERS", "sub": "qty of 999, 500, -1, -2" }
-    ]
-  },
-  {
-    "type": "steps",
-    "eyebrow": "Step 5 — the cleaning plan, written before any code",
-    "titlePlain": "Every Finding, a ",
-    "titleEmphasis": "Decision",
-    "titleSuffix": "",
-    "steps": [
-      { "label": "DROP DUPLICATES", "sub": "Exact row matches" },
-      { "label": "STANDARDIZE TEXT", "sub": "region, status; flag unknowns" },
-      { "label": "FIX TYPES & DATES", "sub": "Both formats, $ signs" },
-      { "label": "BOUND QUANTITY", "sub": "Keep 1-20; drop missing" }
+      { "label": "DROP EXACT DUPLICATES", "sub": "Standardize region & status text" },
+      { "label": "PARSE PRICES & BOTH DATE FORMATS", "sub": "Keep quantities 1-20; drop missing" },
+      { "label": "MISSING DISCOUNT -> 0, FLAGGED", "sub": "Add revenue and month columns" }
     ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 36",
-    "titlePlain": "Capstone: Build ",
-    "titleEmphasis": "It",
+    "eyebrow": "Up next · Chapter 8, Lesson 36",
+    "titlePlain": "Capstone: ",
+    "titleEmphasis": "Build It",
     "titleSuffix": "",
-    "subtitle": "Executing the cleaning plan and running the analysis."
+    "subtitle": "Turning this plan into tested code and real answers."
   }
 ]

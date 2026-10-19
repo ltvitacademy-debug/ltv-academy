@@ -9,34 +9,40 @@
   },
   {
     "type": "code",
-    "eyebrow": "Before / after — same input",
-    "code": "TrailWorks Co-op, CustomerID 48213\n\nBefore:  ~28,000 ms  ·  118,000 reads\n         Key Lookup x18,400\n\nAfter:   ~85 ms  ·  350 reads\n         Key Lookup: gone",
-    "caption": "Not \"feels faster.\" The named operator is gone."
-  },
-  {
-    "type": "code",
-    "eyebrow": "Confirming with wait stats",
-    "code": "10 AM-2 PM window, re-checked:\n\nPAGEIOLATCH_SH for this query\n  before: dominant wait\n  after:  ~0\n\nPlan + metrics + waits all agree.",
-    "caption": "Three independent confirmations, not one number."
+    "eyebrow": "Re-running the exact same test",
+    "code": "SET STATISTICS IO, TIME ON;\nEXEC dbo.usp_CustomerOrderHistory\n  @CustomerID = 48213;\n\n-- Before: ~28,000 ms, ~118,000\n--   reads, Key Lookup x 18,400\n-- After:   ~85 ms, ~350 reads,\n--   NO Key Lookup in the plan",
+    "caption": "Over a 300x drop in both duration and logical reads."
   },
   {
     "type": "steps",
-    "eyebrow": "Checking for collateral damage",
-    "titlePlain": "Did writes get ",
-    "titleEmphasis": "worse",
-    "titleSuffix": "?",
+    "eyebrow": "Confirming at the wait-stat level",
+    "titlePlain": "The waits moved ",
+    "titleEmphasis": "too",
+    "titleSuffix": "",
     "steps": [
-      { "label": "Old index dropped", "sub": "same nonclustered index count as before" },
-      { "label": "Index usage stats", "sub": "checked for INSERT regression" },
-      { "label": "Result", "sub": "reads win, writes unaffected" }
+      { "label": "PAGEIOLATCH_SH", "sub": "dropped to essentially nothing" },
+      { "label": "Same 10 AM–2 PM window", "sub": "re-checked, not assumed" },
+      { "label": "Plan + metrics + waits", "sub": "all three agree" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Checking the write side",
+    "titlePlain": "Did it cost anything on ",
+    "titleEmphasis": "INSERT",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Same index count", "sub": "narrow index dropped, wide one added" },
+      { "label": "sys.dm_db_index_usage_stats", "sub": "write counts compared" },
+      { "label": "Query Store checked", "sub": "no newly-regressed INSERT plans" }
     ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 51",
-    "titlePlain": "Capstone: Document Your ",
-    "titleEmphasis": "Findings",
+    "eyebrow": "What \"verified\" means here",
+    "titlePlain": "Four confirmations, not ",
+    "titleEmphasis": "one",
     "titleSuffix": "",
-    "subtitle": "Writing it up for the team."
+    "subtitle": "Up next, Lesson 51: writing it down."
   }
 ]

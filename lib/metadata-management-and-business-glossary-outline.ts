@@ -47,11 +47,11 @@ export const GOV_METADATA_MANAGEMENT_AND_BUSINESS_GLOSSARY_CHAPTERS: ChapterMeta
     n: 3,
     title: "Data Dictionaries",
     lessons: [
-      L(11, "data-dictionary-concepts", "Data Dictionary Concepts", { contentDir: "ch03/11-data-dictionary-concepts" }),
-      L(12, "documenting-tables-and-columns", "Documenting Tables and Columns", { contentDir: "ch03/12-documenting-tables-and-columns" }),
-      L(13, "data-dictionary-standards", "Data Dictionary Standards", { contentDir: "ch03/13-data-dictionary-standards" }),
-      L(14, "building-a-data-dictionary", "Building a Data Dictionary", { contentDir: "ch03/14-building-a-data-dictionary" }),
-      L(15, "keeping-dictionaries-current", "Keeping Dictionaries Current", { contentDir: "ch03/15-keeping-dictionaries-current" }),
+      L(11, "data-dictionary-concepts", "Data Dictionary Concepts", { contentDir: "ch03/11-data-dictionary-concepts", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792426011/ltv-metadata-management-and-business-glossary/data-dictionary-concepts.mp4", durationLabel: "1 min 24 s" }),
+      L(12, "documenting-tables-and-columns", "Documenting Tables and Columns", { contentDir: "ch03/12-documenting-tables-and-columns", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792426694/ltv-metadata-management-and-business-glossary/documenting-tables-and-columns.mp4", durationLabel: "1 min 27 s" }),
+      L(13, "data-dictionary-standards", "Data Dictionary Standards", { contentDir: "ch03/13-data-dictionary-standards", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792427328/ltv-metadata-management-and-business-glossary/data-dictionary-standards.mp4", durationLabel: "1 min 29 s" }),
+      L(14, "building-a-data-dictionary", "Building a Data Dictionary", { contentDir: "ch03/14-building-a-data-dictionary", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792427907/ltv-metadata-management-and-business-glossary/building-a-data-dictionary.mp4", durationLabel: "1 min 25 s" }),
+      L(15, "keeping-dictionaries-current", "Keeping Dictionaries Current", { contentDir: "ch03/15-keeping-dictionaries-current", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792428605/ltv-metadata-management-and-business-glossary/keeping-dictionaries-current.mp4", durationLabel: "1 min 38 s" }),
     ],
   },
   {

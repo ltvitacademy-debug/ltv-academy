@@ -9,34 +9,34 @@
   },
   {
     "type": "code",
-    "eyebrow": "Step 1 · Measure (Query Store baseline)",
-    "code": "usp_CustomerOrderHistory\n\nConsumer account:\n  ~15 ms  ·  640 logical reads\n\nTrailWorks Co-op (wholesale):\n  ~28,000 ms  ·  118,000 logical reads\n\n190x more expensive. Same procedure.",
-    "caption": "Not \"slow.\" 190x, for one class of customer."
+    "eyebrow": "Step 1 — Measure: the Query Store baseline",
+    "code": "SELECT rs.avg_duration / 1000.0,\n  rs.avg_logical_io_reads,\n  rs.count_executions\nFROM sys.query_store_query AS q\nJOIN sys.query_store_runtime_stats AS rs\n  ON rs.plan_id = q.query_id\nWHERE q.object_id =\n  OBJECT_ID('dbo.usp_CustomerOrderHistory');",
+    "caption": "Consumer: ~15 ms / 640 reads. Wholesale: ~28 sec / 118,000 reads."
   },
   {
     "type": "code",
-    "eyebrow": "Step 2 · Identify (the actual plan)",
-    "code": "Index Seek (IX_Orders_CustomerID)\n  -> Nested Loops\n     -> Key Lookup (Clustered Index)\n        executed 18,400 times\n        90%+ of plan cost\n\nNon-covering index: seeks fast,\nlooks up every other column, per row.",
-    "caption": "18,400 Key Lookups is the whole story."
+    "eyebrow": "Step 2 — Identify: the actual plan",
+    "code": "Index Seek (IX_Orders_CustomerID)\n  -> Nested Loops\n    -> Key Lookup (clustered index)\n       executed 18,400 times\n       > 90% of plan cost\n\n-- fetches cols the seek index\n-- doesn't carry (OrderDate, etc.)",
+    "caption": "One Key Lookup per row. 18,400 rows for TrailWorks Co-op."
   },
   {
     "type": "steps",
-    "eyebrow": "Step 3 · Confirm",
-    "titlePlain": "The plan and the ",
-    "titleEmphasis": "waits",
-    "titleSuffix": " agree",
+    "eyebrow": "Step 3 — Confirm: wait statistics",
+    "titlePlain": "The waits agree with the ",
+    "titleEmphasis": "plan",
+    "titleSuffix": "",
     "steps": [
-      { "label": "Plan says", "sub": "thousands of scattered Key Lookups" },
-      { "label": "Waits say", "sub": "PAGEIOLATCH_SH dominates 10 AM-2 PM" },
-      { "label": "Bottleneck", "sub": "non-covering index, cost scales with order count" }
+      { "label": "PAGEIOLATCH_SH dominant", "sub": "10 AM–2 PM window, this query" },
+      { "label": "Shared latches on data pages", "sub": "reading from disk into the buffer pool" },
+      { "label": "Matches the Key Lookup story", "sub": "18,400 scattered page reads, per execution" }
     ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 49",
-    "titlePlain": "Capstone: ",
-    "titleEmphasis": "Tune",
+    "eyebrow": "The named bottleneck",
+    "titlePlain": "A non-covering index, at ",
+    "titleEmphasis": "scale",
     "titleSuffix": "",
-    "subtitle": "Applying the fix."
+    "subtitle": "Up next, Lesson 49: the one deliberate fix."
   }
 ]

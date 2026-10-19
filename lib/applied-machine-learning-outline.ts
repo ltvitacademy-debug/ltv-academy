@@ -60,18 +60,18 @@ export const APPLIED_MACHINE_LEARNING_CHAPTERS: ChapterMeta[] = [
     title: "Imbalanced & Messy Data",
     lessons: [
       L(17, "understanding-class-imbalance", "Understanding Class Imbalance", { contentDir: "ch04/17-understanding-class-imbalance", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792423855/ltv-applied-machine-learning/understanding-class-imbalance.mp4", durationLabel: "2 min 16 s" }),
-      L(18, "resampling-smote-and-undersampling", "Resampling: SMOTE & Undersampling", { contentDir: "ch04/18-resampling-smote-and-undersampling" }),
-      L(19, "class-weights-and-cost-sensitive-learning", "Class Weights & Cost-Sensitive Learning", { contentDir: "ch04/19-class-weights-and-cost-sensitive-learning" }),
-      L(20, "missing-data-in-pipelines", "Missing Data in Pipelines", { contentDir: "ch04/20-missing-data-in-pipelines" }),
+      L(18, "resampling-smote-and-undersampling", "Resampling: SMOTE & Undersampling", { contentDir: "ch04/18-resampling-smote-and-undersampling", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792425469/ltv-applied-machine-learning/resampling-smote-and-undersampling.mp4", durationLabel: "2 min 16 s" }),
+      L(19, "class-weights-and-cost-sensitive-learning", "Class Weights & Cost-Sensitive Learning", { contentDir: "ch04/19-class-weights-and-cost-sensitive-learning", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792426502/ltv-applied-machine-learning/class-weights-and-cost-sensitive-learning.mp4", durationLabel: "2 min 24 s" }),
+      L(20, "missing-data-in-pipelines", "Missing Data in Pipelines", { contentDir: "ch04/20-missing-data-in-pipelines", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792427411/ltv-applied-machine-learning/missing-data-in-pipelines.mp4", durationLabel: "2 min 25 s" }),
     ],
   },
   {
     n: 5,
     title: "Applied Projects",
     lessons: [
-      L(21, "churn-prediction-walkthrough", "Churn Prediction Walkthrough", { contentDir: "ch05/21-churn-prediction-walkthrough" }),
-      L(22, "price-prediction-walkthrough", "Price Prediction Walkthrough", { contentDir: "ch05/22-price-prediction-walkthrough" }),
-      L(23, "fraud-detection-walkthrough", "Fraud Detection Walkthrough", { contentDir: "ch05/23-fraud-detection-walkthrough" }),
+      L(21, "churn-prediction-walkthrough", "Churn Prediction Walkthrough", { contentDir: "ch05/21-churn-prediction-walkthrough", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792426771/ltv-applied-machine-learning/churn-prediction-walkthrough.mp4", durationLabel: "2 min 20 s" }),
+      L(22, "price-prediction-walkthrough", "Price Prediction Walkthrough", { contentDir: "ch05/22-price-prediction-walkthrough", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792427700/ltv-applied-machine-learning/price-prediction-walkthrough.mp4", durationLabel: "2 min 14 s" }),
+      L(23, "fraud-detection-walkthrough", "Fraud Detection Walkthrough", { contentDir: "ch05/23-fraud-detection-walkthrough", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792428443/ltv-applied-machine-learning/fraud-detection-walkthrough.mp4", durationLabel: "2 min 23 s" }),
       L(24, "documenting-a-modeling-project", "Documenting a Modeling Project", { contentDir: "ch05/24-documenting-a-modeling-project" }),
     ],
   },
@@ -79,7 +79,7 @@ export const APPLIED_MACHINE_LEARNING_CHAPTERS: ChapterMeta[] = [
     n: 6,
     title: "Capstone",
     lessons: [
-      L(25, "capstone-kickoff-build-and-defend-a-prediction-model", "Capstone Kickoff: Build and Defend a Prediction Model", { contentDir: "ch06/25-capstone-kickoff-build-and-defend-a-prediction-model" }),
+      L(25, "capstone-kickoff-build-and-defend-a-prediction-model", "Capstone Kickoff: Build and Defend a Prediction Model", { contentDir: "ch06/25-capstone-kickoff-build-and-defend-a-prediction-model", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792428657/ltv-applied-machine-learning/capstone-kickoff-build-and-defend-a-prediction-model.mp4", durationLabel: "2 min 8 s" }),
       L(26, "capstone-build-it", "Capstone: Build It", { contentDir: "ch06/26-capstone-build-it" }),
       L(27, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch06/27-capstone-wrap-up-and-portfolio-presentation" }),
     ],

@@ -9,28 +9,34 @@
   },
   {
     "type": "code",
-    "eyebrow": "The whole pattern, in T-SQL",
-    "code": "CREATE TABLE dba.PerfLog (\n  LogID INT IDENTITY PRIMARY KEY,\n  CapturedAt DATETIME2 DEFAULT SYSDATETIME(),\n  MetricName NVARCHAR(128),\n  MetricValue BIGINT\n);\n\n-- Agent job, every 15 min:\nEXEC dba.CapturePerfSnapshot;\n\n-- Retention job, nightly:\nDELETE FROM dba.PerfLog\n  WHERE CapturedAt < DATEADD(DAY,-60,SYSDATETIME());",
-    "caption": "Free, and you understand every line of it."
+    "eyebrow": "The free alternative: a table + a procedure",
+    "code": "CREATE TABLE dba.PerfLog (\n  LogID INT IDENTITY PRIMARY KEY,\n  CapturedAt DATETIME2 NOT NULL\n    DEFAULT SYSDATETIME(),\n  MetricName NVARCHAR(128),\n  MetricValue BIGINT\n);",
+    "caption": "Plus a procedure: one row per DMV counter, inserted every run."
   },
   {
     "type": "steps",
-    "eyebrow": "Your own toolkit, running unattended",
-    "titlePlain": "Log, retain, ",
-    "titleEmphasis": "review",
+    "eyebrow": "Wiring it up",
+    "titlePlain": "A job, every ",
+    "titleEmphasis": "15 minutes",
     "titleSuffix": "",
     "steps": [
-      { "label": "Log", "sub": "Agent job calls a procedure every 15 minutes" },
-      { "label": "Retain", "sub": "nightly job deletes rows past 60 days" },
-      { "label": "Review", "sub": "query the table — weekly, or via a baseline alert" }
+      { "label": "Agent job step", "sub": "EXEC dba.CapturePerfSnapshot;" },
+      { "label": "Recurring schedule", "sub": "every 15 minutes, unattended" },
+      { "label": "Feeds the baseline", "sub": "raw material for Lesson 44's alerts" }
     ]
   },
   {
+    "type": "code",
+    "eyebrow": "Retention matters just as much",
+    "code": "-- A second job step, on its\n-- own schedule:\nDELETE FROM dba.PerfLog\nWHERE CapturedAt <\n  DATEADD(DAY, -60, SYSDATETIME());\n\n-- 60 days: enough history to\n-- compare Mondays to Mondays,\n-- short enough to stay bounded.",
+    "caption": "Capture without cleanup just grows a new performance problem."
+  },
+  {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 47",
+    "eyebrow": "Up next · Chapter 10",
     "titlePlain": "Capstone Kickoff: A Slow ",
     "titleEmphasis": "Production Database",
     "titleSuffix": "",
-    "subtitle": "Everything in this course, applied to one real problem."
+    "subtitle": "Applying every chapter to one real scenario."
   }
 ]

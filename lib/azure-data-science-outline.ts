@@ -60,17 +60,17 @@ export const AZURE_DATA_SCIENCE_CHAPTERS: ChapterMeta[] = [
       L(15, "the-model-registry", "The Model Registry", { contentDir: "ch04/15-the-model-registry", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792424309/ltv-azure-data-science/the-model-registry.mp4", durationLabel: "2 min 20 s" }),
       L(16, "real-time-endpoints", "Real-Time Endpoints", { contentDir: "ch04/16-real-time-endpoints", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792424447/ltv-azure-data-science/real-time-endpoints.mp4", durationLabel: "2 min 19 s" }),
       L(17, "batch-endpoints", "Batch Endpoints", { contentDir: "ch04/17-batch-endpoints", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792424568/ltv-azure-data-science/batch-endpoints.mp4", durationLabel: "2 min 5 s" }),
-      L(18, "monitoring-models-and-data-drift", "Monitoring Models & Data Drift", { contentDir: "ch04/18-monitoring-models-and-data-drift" }),
-      L(19, "responsible-ai-tooling", "Responsible AI Tooling", { contentDir: "ch04/19-responsible-ai-tooling" }),
+      L(18, "monitoring-models-and-data-drift", "Monitoring Models & Data Drift", { contentDir: "ch04/18-monitoring-models-and-data-drift", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792424685/ltv-azure-data-science/monitoring-models-and-data-drift.mp4", durationLabel: "2 min 0 s" }),
+      L(19, "responsible-ai-tooling", "Responsible AI Tooling", { contentDir: "ch04/19-responsible-ai-tooling", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792425184/ltv-azure-data-science/responsible-ai-tooling.mp4", durationLabel: "2 min 7 s" }),
     ],
   },
   {
     n: 5,
     title: "Capstone",
     lessons: [
-      L(20, "capstone-kickoff-train-deploy-and-monitor-a-model-on-azure", "Capstone Kickoff: Train, Deploy and Monitor a Model on Azure", { contentDir: "ch05/20-capstone-kickoff-train-deploy-and-monitor-a-model-on-azure" }),
+      L(20, "capstone-kickoff-train-deploy-and-monitor-a-model-on-azure", "Capstone Kickoff: Train, Deploy and Monitor a Model on Azure", { contentDir: "ch05/20-capstone-kickoff-train-deploy-and-monitor-a-model-on-azure", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792425235/ltv-azure-data-science/capstone-kickoff-train-deploy-and-monitor-a-model-on-azure.mp4", durationLabel: "1 min 7 s" }),
       L(21, "capstone-build-it", "Capstone: Build It", { contentDir: "ch05/21-capstone-build-it" }),
-      L(22, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch05/22-capstone-wrap-up-and-portfolio-presentation" }),
+      L(22, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch05/22-capstone-wrap-up-and-portfolio-presentation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792426594/ltv-azure-data-science/capstone-wrap-up-and-portfolio-presentation.mp4", durationLabel: "2 min 6 s" }),
     ],
   },
 ];

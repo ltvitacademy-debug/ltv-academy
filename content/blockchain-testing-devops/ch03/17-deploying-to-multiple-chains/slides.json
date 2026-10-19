@@ -1,7 +1,7 @@
 [
   {
     "type": "title",
-    "eyebrow": "Deployment Strategy · Chapter Three",
+    "eyebrow": "Blockchain Testing, DevOps & Deployment · Chapter Three",
     "titlePlain": "Deploying to Multiple ",
     "titleEmphasis": "Chains",
     "titleSuffix": "",
@@ -9,33 +9,28 @@
   },
   {
     "type": "code",
-    "eyebrow": "CREATE2: a deterministic address",
-    "code": "bytes32 salt = keccak256(\"vault-v1-deployment\");\naddress predicted = vm.computeCreate2Address(\n    salt, keccak256(type(Vault).creationCode)\n);\n\nVault vault = new Vault{salt: salt}(owner, feeRecipient);\nassert(address(vault) == predicted);",
-    "caption": "Same deployer + salt + bytecode = same address, on every chain."
+    "eyebrow": "CREATE2: the same address, everywhere",
+    "code": "// plain CREATE: address depends on deployer + nonce\n//   -- diverges across chains as nonces drift\n\n// CREATE2: address depends on deployer + salt + init code\naddress = keccak256(0xff, deployer, salt, keccak256(initCode))\n// same inputs -> same address, on every chain",
+    "caption": "Same deployer, same salt, same bytecode -- same address everywhere."
   },
   {
     "type": "code",
-    "eyebrow": "One job, run per chain, in parallel",
-    "code": "strategy:\n  matrix:\n    network: [sepolia, base-sepolia, arbitrum-sepolia]\nsteps:\n  - run: |\n      forge script script/Deploy.s.sol \\\n        --broadcast --rpc-url ${{ matrix.network }} --verify",
-    "caption": "One failed chain doesn't block or corrupt the others' deployments."
+    "eyebrow": "A matrix job",
+    "code": "strategy:\n  matrix:\n    chain: [mainnet, arbitrum, optimism, base]\nsteps:\n  - run: forge script Deploy.s.sol --rpc-url ${{ matrix.chain }}_RPC",
+    "caption": "Each chain runs as its own isolated job, in parallel."
   },
   {
-    "type": "steps",
-    "eyebrow": "Repeated discipline, not one-time",
-    "titlePlain": "Per Chain, Not ",
-    "titleEmphasis": "Once",
-    "steps": [
-      { "label": "Deploy", "sub": "CREATE2 for a consistent address" },
-      { "label": "Verify", "sub": "Each chain's own explorer" },
-      { "label": "Confirm", "sub": "Each chain's own Safe threshold" }
-    ]
+    "type": "code",
+    "eyebrow": "Per-chain multisig",
+    "code": "// One Safe PER CHAIN -- not one approval for all of them\n// 5 chains = 5 separate propose-and-confirm flows",
+    "caption": "Multisig discipline doesn't collapse across chains."
   },
   {
     "type": "outro",
-    "eyebrow": "Chapters 1–3 complete",
-    "titlePlain": "Testing, CI/CD, and ",
-    "titleEmphasis": "Deployment",
+    "eyebrow": "Up next · Chapter Four, Lesson 18",
+    "titlePlain": "Hosting a Frontend for a ",
+    "titleEmphasis": "dApp",
     "titleSuffix": "",
-    "subtitle": "One coherent discipline, from first test to mainnet."
+    "subtitle": "One coherent deployment discipline, now off-chain too."
   }
 ]

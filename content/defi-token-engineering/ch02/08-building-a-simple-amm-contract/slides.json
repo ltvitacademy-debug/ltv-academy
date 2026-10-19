@@ -9,27 +9,33 @@
   },
   {
     "type": "code",
-    "eyebrow": "addLiquidity",
-    "code": "function addLiquidity(uint amountA, uint amountB) external {\n  if (totalSupply == 0) {\n    liquidity = sqrt(amountA * amountB); // bootstrap the ratio\n  } else {\n    liquidity = min(\n      amountA * totalSupply / reserveA,\n      amountB * totalSupply / reserveB\n    );\n  }\n  _mint(msg.sender, liquidity);\n}",
-    "caption": "Proportional to the smaller of the two reserve ratios."
+    "eyebrow": "Depositing liquidity",
+    "code": "function addLiquidity(uint256 amountA, uint256 amountB) external {\n    if (totalLPTokens == 0) {\n        totalLPTokens = amountA; // bootstrap deposit\n    } else {\n        uint256 mintA = (amountA * totalLPTokens) / reserveA;\n        uint256 mintB = (amountB * totalLPTokens) / reserveB;\n        totalLPTokens += mintA < mintB ? mintA : mintB;\n    }\n    reserveA += amountA;\n    reserveB += amountB;\n}",
+    "caption": "The first deposit sets the ratio; every deposit after mints the smaller proportion."
   },
   {
     "type": "code",
-    "eyebrow": "swapAForB",
-    "code": "function swapAForB(uint amountIn) external returns (uint amountOut) {\n  uint amountInWithFee = amountIn * 997 / 1000; // 0.3% fee\n  uint k = reserveA * reserveB;\n  uint newReserveB = k / (reserveA + amountInWithFee);\n  amountOut = reserveB - newReserveB;\n}",
-    "caption": "The constant-product formula from Lesson 5, line for line."
+    "eyebrow": "Swapping with the fee",
+    "code": "function swapAForB(uint256 amountAIn) external returns (uint256 amountBOut) {\n    uint256 amountAfterFee = amountAIn * (10000 - FEE_BPS) / 10000;\n    uint256 newReserveA = reserveA + amountAfterFee;\n    uint256 k = reserveA * reserveB;       // Lesson 5's invariant\n    uint256 newReserveB = k / newReserveA;\n    amountBOut = reserveB - newReserveB;\n}",
+    "caption": "The 0.3% fee is removed BEFORE the constant-product formula runs."
   },
   {
     "type": "steps",
-    "eyebrow": "Deliberately missing",
-    "titlePlain": "Teaching Example, ",
-    "titleEmphasis": "Not Production",
+    "eyebrow": "Math → code",
+    "titlePlain": "Three Lines, Three ",
+    "titleEmphasis": "Lessons",
     "titleSuffix": "",
     "steps": [
-      {"label": "No Reentrancy Guard", "sub": "Load-bearing in real deployments"},
-      {"label": "No Slippage Protection", "sub": "A real swap needs a minOut"},
-      {"label": "Trivially Manipulable", "sub": "Spot price, within one tx"}
+      {"label": "k = reserveA × reserveB", "sub": "Lesson 5's invariant, verbatim"},
+      {"label": "Fee before the formula", "sub": "0.3% removed before k runs"},
+      {"label": "Proportional minting", "sub": "Lesson 6's LP math in Solidity"}
     ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "What's deliberately missing",
+    "code": "[ ] Reentrancy guard        -- external call before reserves update\n[ ] Slippage protection      -- no amountOutMin / deadline\n[ ] Real ERC-20 transfers    -- never moves actual tokens\n[ ] LP token as ERC-20       -- lpBalance isn't tradeable\n[ ] Oracle manipulation risk -- spot price is trivially gameable",
+    "caption": "Every gap here is load-bearing in a real deployment -- this is a teaching contract only."
   },
   {
     "type": "outro",
@@ -37,6 +43,6 @@
     "titlePlain": "Concentrated Liquidity ",
     "titleEmphasis": "Concepts",
     "titleSuffix": "",
-    "subtitle": "Choosing exactly which price range your capital works in."
+    "subtitle": "Why spreading capital evenly across every price isn't always efficient."
   }
 ]

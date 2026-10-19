@@ -9,34 +9,34 @@
   },
   {
     "type": "code",
-    "eyebrow": "The health factor check",
-    "code": "function borrow(uint amount) external {\n  debt[msg.sender] += amount;\n  uint hf = (collateral[msg.sender] * LIQ_THRESHOLD) / debt[msg.sender];\n  require(hf >= 1e18, \"would be undercollateralized\");\n  token.transfer(msg.sender, amount);\n}",
-    "caption": "Checks the health factor as if the new debt already existed."
+    "eyebrow": "Health factor, as code",
+    "code": "function healthFactor(address user) public view returns (uint256) {\n    if (debt[user] == 0) return type(uint256).max;\n    uint256 collateralValue = collateral[user] * getPrice();\n    return (collateralValue * LIQ_THRESHOLD_BPS) / 10000 / debt[user];\n}\n\n// getPrice() is HARDCODED here -- a real pool reads a\n// decentralized oracle, never a single AMM spot price",
+    "caption": "Lesson 10's formula, in integer arithmetic instead of a worked example."
   },
   {
     "type": "code",
-    "eyebrow": "Liquidation in code",
-    "code": "function liquidate(address user, uint repayAmount) external {\n  require(healthFactor(user) < 1e18, \"not liquidatable\");\n  uint seized = repayAmount * 105 / 100; // 5% bonus\n  collateral[user] -= seized;\n  debt[user] -= repayAmount;\n}",
-    "caption": "The same 5% bonus calculated by hand two lessons ago."
+    "eyebrow": "The borrow function",
+    "code": "function borrow(uint256 amount) external {\n    debt[msg.sender] += amount;\n    require(\n        healthFactor(msg.sender) >= 1,\n        \"would be undercollateralized\"\n    );\n}",
+    "caption": "Checks health factor AFTER adding the new debt -- tests the resulting state."
   },
   {
-    "type": "steps",
-    "eyebrow": "Deliberately missing",
-    "titlePlain": "Teaching Example, ",
-    "titleEmphasis": "Not Production",
-    "titleSuffix": "",
-    "steps": [
-      {"label": "Hardcoded Price", "sub": "A real pool reads an oracle"},
-      {"label": "No Interest Accrual", "sub": "Debt never actually grows"},
-      {"label": "One Asset Only", "sub": "No per-asset collateral/debt"}
-    ]
+    "type": "code",
+    "eyebrow": "The liquidate function",
+    "code": "function liquidate(address user, uint256 repayAmount) external {\n    require(healthFactor(user) < 1, \"position is healthy\");\n    uint256 seize = (repayAmount * (10000 + LIQ_BONUS_BPS)) / 10000;\n    debt[user] -= repayAmount;\n    collateral[user] -= seize;\n    collateral[msg.sender] += seize;\n}",
+    "caption": "Lesson 12's 5% liquidation bonus, enforced directly on-chain."
+  },
+  {
+    "type": "code",
+    "eyebrow": "What's deliberately missing",
+    "code": "[ ] Real price oracle    -- getPrice() is hardcoded\n[ ] Interest accrual     -- debt never grows (Lesson 11's rate unused)\n[ ] Multi-asset support  -- one asset covers everything\n[ ] Reentrancy guard     -- same risk as Lesson 8\n[ ] Real ERC-20 transfers -- never moves actual tokens",
+    "caption": "Every gap here is load-bearing in a real deployment."
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Chapter Four, Lesson 15",
+    "eyebrow": "Up next · Lesson 15",
     "titlePlain": "Staking ",
     "titleEmphasis": "Mechanics",
     "titleSuffix": "",
-    "subtitle": "What the rest of this course builds on top of."
+    "subtitle": "How locking a token for a reward is structured on-chain."
   }
 ]

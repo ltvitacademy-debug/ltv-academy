@@ -2,52 +2,54 @@
   {
     "type": "title",
     "eyebrow": "Applied Machine Learning · Chapter 4",
-    "titlePlain": "Resampling: ",
-    "titleEmphasis": "SMOTE",
-    "titleSuffix": " & Undersampling",
+    "titlePlain": "Resampling: SMOTE & ",
+    "titleEmphasis": "Undersampling",
+    "titleSuffix": "",
     "subtitle": "Lesson 18 · Imbalanced & Messy Data"
   },
   {
+    "type": "code",
+    "eyebrow": "What each method does",
+    "code": "train Counter({0: 3553, 1: 197})\n\nSMOTE          {0: 3553, 1: 3553}\nUndersample    {0: 197,  1: 197}",
+    "caption": "SMOTE invents new minority points; undersampling drops majority rows."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The leakage trap",
+    "code": "# WRONG: resample, THEN cross-validate\nrecall 0.983  precision 0.995\navg_precision  0.999\n\n# RIGHT: resample inside each fold\nrecall 0.888  precision 0.913\navg_precision  0.927",
+    "caption": "Resampling before the split leaks near-duplicate rows into validation."
+  },
+  {
     "type": "steps",
-    "eyebrow": "Three ways to rebalance",
-    "titlePlain": "Drop, copy, or ",
-    "titleEmphasis": "synthesize",
+    "eyebrow": "Fix it with imblearn.pipeline",
+    "titlePlain": "Resample only ",
+    "titleEmphasis": "inside fit",
     "titleSuffix": "",
     "steps": [
-      {"label": "UNDERSAMPLE", "sub": "drop majority rows at random"},
-      {"label": "OVERSAMPLE", "sub": "copy minority rows at random"},
-      {"label": "SMOTE", "sub": "new points between neighbors"}
+      {"label": "THE TOOL", "sub": "imblearn.Pipeline, not sklearn's"},
+      {"label": "DURING FIT", "sub": "sampler runs on training folds"},
+      {"label": "DURING PREDICT", "sub": "sampler step is skipped"},
+      {"label": "RULE", "sub": "never resample the test set"}
     ]
   },
   {
-    "type": "code",
-    "eyebrow": "imbalanced-learn · fit_resample",
-    "code": "# train: {0: 3553, 1: 197}\n\nSMOTE(random_state=42)\n# -> {0: 3553, 1: 3553}\n\nRandomUnderSampler(random_state=42)\n# -> {0: 197, 1: 197}",
-    "caption": "Illustrative 5,000-row data, 5% positive."
-  },
-  {
-    "type": "code",
-    "eyebrow": "Resample inside the pipeline",
-    "code": "from imblearn.pipeline import Pipeline\n\npipe = Pipeline([\n  (\"smote\", SMOTE(random_state=42)),\n  (\"model\", forest()),\n])\ncross_validate(pipe, X_tr, y_tr,\n               cv=cv, scoring=scoring)",
-    "caption": "SMOTE runs only on each training fold."
-  },
-  {
-    "type": "code",
-    "eyebrow": "Random forest · 5-fold CV means",
-    "code": "#              recall  avg precision\n# WRONG        0.983   0.999\n# RIGHT        0.888   0.927\n# no resample  0.756   0.930\n\n# WRONG = SMOTE first, then CV",
-    "caption": "Resampling before CV leaks near-copies into validation."
-  },
-  {
-    "type": "code",
-    "eyebrow": "Held-out test set · never resampled",
-    "code": "#             recall  precision\n# none         0.697   1.000\n# undersample  0.848   0.683\n# oversample   0.697   0.979\n# smote        0.803   0.930\n# smote 0.5    0.758   0.926",
-    "caption": "Average precision barely moves: 0.86 to 0.89."
-  },
-  {
     "type": "screenshot",
-    "file": "resampling-compare.png",
+    "file": "resampling-comparison.png",
     "eyebrow": "Output of the code above",
-    "caption": "Test recall and precision per strategy; illustrative data."
+    "caption": "Test-set recall vs. precision, 5 strategies; illustrative data."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Practical cautions",
+    "titlePlain": "Three things to ",
+    "titleEmphasis": "watch",
+    "titleSuffix": "",
+    "steps": [
+      {"label": "ENCODE FIRST", "sub": "SMOTE needs numeric features"},
+      {"label": "SCALE FIRST", "sub": "SMOTE measures distance"},
+      {"label": "MIXED DATA", "sub": "use SMOTENC instead"},
+      {"label": "RISK", "sub": "can blur the class boundary"}
+    ]
   },
   {
     "type": "outro",
@@ -55,6 +57,6 @@
     "titlePlain": "Class Weights & ",
     "titleEmphasis": "Cost-Sensitive Learning",
     "titleSuffix": "",
-    "subtitle": "A gentler fix that leaves the data alone."
+    "subtitle": "A lighter alternative to resampling."
   }
 ]
