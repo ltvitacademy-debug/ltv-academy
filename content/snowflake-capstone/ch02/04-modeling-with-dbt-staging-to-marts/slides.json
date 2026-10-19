@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Snowflake Data Engineering Capstone · Ch.2, L.4",
+    "titlePlain": "Modeling With dbt: ",
+    "titleEmphasis": "Staging to Marts",
+    "titleSuffix": "",
+    "subtitle": "Turning raw billing and usage data into trusted marts"
+  },
+  {
+    "type": "screenshot",
+    "file": "dbt-cloud-ide.png",
+    "eyebrow": "The real dbt Cloud IDE",
+    "caption": "Driftwood's driftwood_analytics project follows this same staging / intermediate / marts layering, browsable in the dbt IDE."
+  },
+  {
+    "type": "screenshot",
+    "file": "first-model-dbt-cli.png",
+    "eyebrow": "dbt build, in dependency order",
+    "caption": "A real dbt run output -- every model built in order, the same sequence Driftwood's own staging-to-marts chain follows."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Staging: clean and rename, nothing clever",
+    "code": "-- stg_billing_events.sql\nselect subscriber_id, event_type,\n  try_to_decimal(amount_usd,10,2) as amount_usd\nfrom {{ source('driftwood_raw','billing_events') }}\n\n-- stg_usage_events.sql\nselect user_id as subscriber_id,  -- renamed here, once\n  watch_duration_seconds\nfrom {{ source('driftwood_raw','usage_events') }}",
+    "caption": "The user_id -> subscriber_id rename happens once, in staging -- never in marts or Power BI."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Intermediate: where the join happens",
+    "code": "-- int_subscriber_activity.sql\nselect b.subscriber_id, b.event_type, b.amount_usd,\n  sum(u.watch_duration_seconds) as watch_seconds\nfrom {{ ref('stg_billing_events') }} b\nleft join {{ ref('stg_usage_events') }} u\n  on b.subscriber_id = u.subscriber_id",
+    "caption": "ref(), not a hardcoded table name -- this is what builds dbt's dependency graph automatically."
+  },
+  {
+    "type": "screenshot",
+    "file": "lineage-graph.png",
+    "eyebrow": "Every ref() becomes a real lineage graph",
+    "caption": "dbt's own lineage graph, generated automatically from ref() calls -- the exact dependency chain Driftwood's layering produces."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Marts: what Power BI actually queries",
+    "code": "-- fct_subscriptions.sql (fact: one row per event)\nselect subscriber_id, event_type, amount_usd\nfrom {{ ref('int_subscriber_activity') }}\n\n-- dim_subscribers.sql (dimension: one row per subscriber)\nselect subscriber_id, min(event_timestamp) as first_seen_at\nfrom {{ ref('int_subscriber_activity') }} group by 1",
+    "caption": "Fact and dimension -- the same split the dbt and Power BI courses both already taught."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Testing and Documenting the ",
+    "titleEmphasis": "dbt Project",
+    "titleSuffix": "",
+    "subtitle": "Catching a mistake before it reaches the dashboard"
+  }
+]

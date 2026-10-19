@@ -1,0 +1,60 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Snowflake Data Engineering Capstone · Ch.3, L.11",
+    "titlePlain": "Provisioning Snowflake With ",
+    "titleEmphasis": "Terraform",
+    "titleSuffix": "",
+    "subtitle": "Same mechanics, a new provider"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The provider block",
+    "code": "terraform {\n  required_providers {\n    snowflake = {\n      source  = \"Snowflake-Labs/snowflake\"\n      version = \"~> 1.0\"\n    }\n  }\n}\nprovider \"snowflake\" {\n  # auth from env vars in CI -- never hardcoded\n}",
+    "caption": "Same secrets discipline as Lesson 10's CI/CD workflow."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The database and warehouses, as code",
+    "code": "resource \"snowflake_database\" \"driftwood_analytics\" {\n  name = \"DRIFTWOOD_ANALYTICS\"\n  data_retention_time_in_days = 1\n}\nresource \"snowflake_warehouse\" \"driftwood_etl_wh\" {\n  name = \"DRIFTWOOD_ETL_WH\"\n  warehouse_size = \"SMALL\"\n  auto_suspend = 60\n}",
+    "caption": "Time Travel retention provisioned from day one -- ties into Lesson 13."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why the two warehouses differ",
+    "titlePlain": "Different ",
+    "titleEmphasis": "workloads",
+    "titleSuffix": ", different settings",
+    "steps": [
+      { "label": "ETL_WH", "sub": "auto_suspend = 60s, tight burst" },
+      { "label": "BI_WH", "sub": "auto_suspend = 300s, stays warm" },
+      { "label": "Why", "sub": "Genuinely different usage patterns" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Roles and grants, as code",
+    "code": "resource \"snowflake_role\" \"driftwood_analyst\" {\n  name = \"DRIFTWOOD_ANALYST\"\n}\nresource \"snowflake_grant_privileges_to_role\" \"analyst_select_marts\" {\n  role_name  = snowflake_role.driftwood_analyst.name\n  privileges = [\"SELECT\"]\n  on_schema_object {\n    all { object_type_plural = \"TABLES\", in_schema = \"...MARTS\" }\n  }\n}",
+    "caption": "The same marts-only boundary from Lesson 9's RBAC work -- now version-controlled."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The line Terraform never crosses",
+    "titlePlain": "Infrastructure, ",
+    "titleEmphasis": "never",
+    "titleSuffix": " the data",
+    "steps": [
+      { "label": "Terraform manages", "sub": "DBs, warehouses, roles, grants" },
+      { "label": "Terraform never runs", "sub": "dbt models or data loads" },
+      { "label": "CI/CD tie-in", "sub": "plan on PR, apply on merge" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Monitoring Pipeline Health and ",
+    "titleEmphasis": "Warehouse Cost",
+    "titleSuffix": "",
+    "subtitle": "Catching a problem before it's a surprise bill"
+  }
+]
