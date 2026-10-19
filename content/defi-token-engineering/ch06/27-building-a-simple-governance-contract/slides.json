@@ -3,53 +3,47 @@
     "type": "title",
     "eyebrow": "DeFi & Token Engineering · Chapter Six",
     "titlePlain": "Building a Simple ",
-    "titleEmphasis": "Governance",
-    "titleSuffix": " Contract",
+    "titleEmphasis": "Governance Contract",
+    "titleSuffix": "",
     "subtitle": "Lesson 27 · DAOs & Governance"
   },
   {
     "type": "code",
     "eyebrow": "The Proposal struct",
-    "code": "struct Proposal {\n    address target;\n    bytes data;\n    uint256 snapshotBlock;\n    uint256 voteEnd;\n    uint256 forVotes;\n    uint256 againstVotes;\n    bool executed;\n}",
-    "caption": "Simplified teaching example -- snapshotBlock is the snapshot mechanic from Lesson 25, as a field."
+    "code": "struct Proposal {\n  address target;\n  bytes calldata_;\n  uint256 snapshotBlock;\n  uint256 voteEnd;\n  uint256 forVotes;\n  uint256 againstVotes;\n}",
+    "caption": "snapshotBlock is the snapshot mechanic from Lesson 25, in data."
   },
   {
     "type": "code",
-    "eyebrow": "propose() -- creating a proposal",
-    "code": "function propose(address target, bytes calldata data)\n    external returns (uint256 id)\n{\n    id = proposalCount++;\n    proposals[id] = Proposal(\n        target, data, block.number,\n        block.timestamp + VOTING_PERIOD,\n        0, 0, false\n    );\n}",
-    "caption": "snapshotBlock is fixed at block.number here, and never changed again."
+    "eyebrow": "propose() and castVote()",
+    "code": "function propose(address target, bytes calldata data) external {\n  proposals[nextId] = Proposal(target, data, block.number,\n    block.timestamp + VOTING_PERIOD, 0, 0);\n}\n\nfunction castVote(uint id, bool support) external {\n  uint weight = token.getPastVotes(msg.sender, proposals[id].snapshotBlock);\n  support ? proposals[id].forVotes += weight : proposals[id].againstVotes += weight;\n}",
+    "caption": "Weight read at the snapshot block -- late tokens don't count."
   },
   {
     "type": "code",
-    "eyebrow": "castVote() -- casting a vote",
-    "code": "function castVote(uint256 id, bool support) external {\n    Proposal storage p = proposals[id];\n    require(block.timestamp <= p.voteEnd, \"closed\");\n    require(!hasVoted[id][msg.sender], \"voted\");\n    uint256 weight = token.getPastVotes(msg.sender, p.snapshotBlock);\n    require(weight > 0, \"no power\");\n    hasVoted[id][msg.sender] = true;\n    if (support) p.forVotes += weight;\n    else p.againstVotes += weight;\n}",
-    "caption": "Weight is read at p.snapshotBlock, not the current block -- the Lesson 25 snapshot, enforced."
-  },
-  {
-    "type": "code",
-    "eyebrow": "execute() -- quorum, majority, execution",
-    "code": "function execute(uint256 id) external {\n    Proposal storage p = proposals[id];\n    require(block.timestamp > p.voteEnd && !p.executed, \"not ready\");\n    uint256 total = p.forVotes + p.againstVotes;\n    require(total >= QUORUM, \"no quorum\");\n    require(p.forVotes > p.againstVotes, \"defeated\");\n    p.executed = true;\n    (bool ok, ) = p.target.call(p.data);\n    require(ok, \"failed\");\n}",
-    "caption": "Lesson 24's quorum and majority checks, as require statements. No timelock delay here."
+    "eyebrow": "execute()",
+    "code": "function execute(uint id) external {\n  Proposal storage p = proposals[id];\n  require(block.timestamp > p.voteEnd, \"still voting\");\n  require(p.forVotes + p.againstVotes >= quorum, \"no quorum\");\n  require(p.forVotes > p.againstVotes, \"not passed\");\n  target.call(p.calldata_);\n}",
+    "caption": "Quorum and majority as require statements -- no delay here."
   },
   {
     "type": "steps",
-    "eyebrow": "What production adds on top",
-    "titlePlain": "This is a ",
-    "titleEmphasis": "skeleton",
+    "eyebrow": "What production adds",
+    "titlePlain": "Missing ",
+    "titleEmphasis": "Safeguards",
     "titleSuffix": "",
     "steps": [
-      { "label": "Delegation", "sub": "handled by a real ERC20Votes token" },
-      { "label": "Timelock", "sub": "TimelockController queues execute() behind a delay" },
-      { "label": "Proposal threshold", "sub": "minimum balance required to call propose()" },
-      { "label": "Audit", "sub": "never deploy an unaudited governance contract" }
+      {"label": "ERC20Votes Token", "sub": "Real delegation"},
+      {"label": "TimelockController", "sub": "Mandatory delay"},
+      {"label": "Proposal Threshold", "sub": "Prevents spam"},
+      {"label": "Security Audit", "sub": "Not optional"}
     ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Chapter Seven · Lesson 28",
-    "titlePlain": "ERC-721 & ",
-    "titleEmphasis": "ERC-1155",
-    "titleSuffix": " Review",
-    "subtitle": "NFTs beyond collectibles -- starting with the standards themselves."
+    "eyebrow": "Up next · Chapter Seven, Lesson 28",
+    "titlePlain": "ERC-721 & ERC-1155 ",
+    "titleEmphasis": "Review",
+    "titleSuffix": "",
+    "subtitle": "NFTs beyond collectibles."
   }
 ]

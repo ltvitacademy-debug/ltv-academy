@@ -3,33 +3,32 @@
     "type": "title",
     "eyebrow": "DeFi & Token Engineering · Chapter Two",
     "titlePlain": "Building a Simple ",
-    "titleEmphasis": "AMM",
-    "titleSuffix": " Contract",
+    "titleEmphasis": "AMM Contract",
+    "titleSuffix": "",
     "subtitle": "Lesson 8 · Automated Market Makers"
   },
   {
     "type": "code",
-    "eyebrow": "Solidity — addLiquidity (simplified teaching example)",
-    "code": "function addLiquidity(uint256 amtA, uint256 amtB) external {\n  if (totalLPTokens == 0) {\n    totalLPTokens = amtA;  // bootstrap: first deposit sets the ratio\n  } else {\n    uint256 mintA = (amtA * totalLPTokens) / reserveA;\n    uint256 mintB = (amtB * totalLPTokens) / reserveB;\n    totalLPTokens += mintA < mintB ? mintA : mintB;\n  }\n  reserveA += amtA; reserveB += amtB;\n  lpBalance[msg.sender] += totalLPTokens;\n}",
-    "caption": "LP token minting is proportional to the smaller of the two deposit ratios."
+    "eyebrow": "addLiquidity",
+    "code": "function addLiquidity(uint amountA, uint amountB) external {\n  if (totalSupply == 0) {\n    liquidity = sqrt(amountA * amountB); // bootstrap the ratio\n  } else {\n    liquidity = min(\n      amountA * totalSupply / reserveA,\n      amountB * totalSupply / reserveB\n    );\n  }\n  _mint(msg.sender, liquidity);\n}",
+    "caption": "Proportional to the smaller of the two reserve ratios."
   },
   {
     "type": "code",
-    "eyebrow": "Solidity — swapAForB (simplified teaching example)",
-    "code": "function swapAForB(uint256 amtIn) external returns (uint256 out) {\n  uint256 afterFee = amtIn * (10000 - 30) / 10000;  // 0.30% fee\n  uint256 k = reserveA * reserveB;       // x*y=k invariant\n  uint256 newResB = k / (reserveA + afterFee);\n  out = reserveB - newResB;\n\n  reserveA += amtIn;\n  reserveB -= out;\n}",
-    "caption": "k = reserveA * reserveB is exactly Lesson 5's x*y=k, applied to a trade."
+    "eyebrow": "swapAForB",
+    "code": "function swapAForB(uint amountIn) external returns (uint amountOut) {\n  uint amountInWithFee = amountIn * 997 / 1000; // 0.3% fee\n  uint k = reserveA * reserveB;\n  uint newReserveB = k / (reserveA + amountInWithFee);\n  amountOut = reserveB - newReserveB;\n}",
+    "caption": "The constant-product formula from Lesson 5, line for line."
   },
   {
     "type": "steps",
-    "eyebrow": "What's deliberately missing",
-    "titlePlain": "Simple to write, not safe to ",
-    "titleEmphasis": "deploy",
+    "eyebrow": "Deliberately missing",
+    "titlePlain": "Teaching Example, ",
+    "titleEmphasis": "Not Production",
     "titleSuffix": "",
     "steps": [
-      { "label": "Reentrancy guard", "sub": "an external call before state updates can drain a pool" },
-      { "label": "Slippage protection", "sub": "no minimum-output check — any price executes" },
-      { "label": "Real ERC-20 transfers", "sub": "this never actually moves tokens, only numbers" },
-      { "label": "Oracle manipulation", "sub": "spot price is manipulable within one transaction" }
+      {"label": "No Reentrancy Guard", "sub": "Load-bearing in real deployments"},
+      {"label": "No Slippage Protection", "sub": "A real swap needs a minOut"},
+      {"label": "Trivially Manipulable", "sub": "Spot price, within one tx"}
     ]
   },
   {

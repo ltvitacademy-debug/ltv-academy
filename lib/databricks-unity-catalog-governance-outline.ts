@@ -25,11 +25,11 @@ export const GOV_DATABRICKS_UNITY_CATALOG_GOVERNANCE_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Unity Catalog Foundations",
     lessons: [
-      L(1, "what-unity-catalog-is", "What Unity Catalog Is", { contentDir: "ch01/01-what-unity-catalog-is" }),
-      L(2, "metastores", "Metastores", { contentDir: "ch01/02-metastores" }),
-      L(3, "catalogs-and-schemas", "Catalogs and Schemas", { contentDir: "ch01/03-catalogs-and-schemas" }),
-      L(4, "tables-volumes-and-models", "Tables, Volumes and Models", { contentDir: "ch01/04-tables-volumes-and-models" }),
-      L(5, "managed-vs-external-storage-governance", "Managed vs. External Storage Governance", { contentDir: "ch01/05-managed-vs-external-storage-governance" }),
+      L(1, "what-unity-catalog-is", "What Unity Catalog Is", { contentDir: "ch01/01-what-unity-catalog-is", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792424176/ltv-databricks-unity-catalog-governance/what-unity-catalog-is.mp4", durationLabel: "2:06" }),
+      L(2, "metastores", "Metastores", { contentDir: "ch01/02-metastores", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792424291/ltv-databricks-unity-catalog-governance/metastores.mp4", durationLabel: "1:50" }),
+      L(3, "catalogs-and-schemas", "Catalogs and Schemas", { contentDir: "ch01/03-catalogs-and-schemas", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792424387/ltv-databricks-unity-catalog-governance/catalogs-and-schemas.mp4", durationLabel: "1:44" }),
+      L(4, "tables-volumes-and-models", "Tables, Volumes and Models", { contentDir: "ch01/04-tables-volumes-and-models", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792424489/ltv-databricks-unity-catalog-governance/tables-volumes-and-models.mp4", durationLabel: "1:49" }),
+      L(5, "managed-vs-external-storage-governance", "Managed vs. External Storage Governance", { contentDir: "ch01/05-managed-vs-external-storage-governance", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792424591/ltv-databricks-unity-catalog-governance/managed-vs-external-storage-governance.mp4", durationLabel: "1:46" }),
     ],
   },
   {

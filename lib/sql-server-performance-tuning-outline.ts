@@ -170,32 +170,88 @@ export const SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS: ChapterMeta[] = [
     n: 6,
     title: "TempDB & Memory Tuning",
     lessons: [
-      L(29, "tempdb-contention", "TempDB Contention", { contentDir: "ch06/29-tempdb-contention" }),
-      L(30, "memory-grants", "Memory Grants", { contentDir: "ch06/30-memory-grants" }),
-      L(31, "buffer-pool-tuning", "Buffer Pool Tuning", { contentDir: "ch06/31-buffer-pool-tuning" }),
-      L(32, "resource-governor-for-performance", "Resource Governor for Performance", { contentDir: "ch06/32-resource-governor-for-performance" }),
+      L(29, "tempdb-contention", "TempDB Contention", {
+        contentDir: "ch06/29-tempdb-contention",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792420723/ltv-sql-server-performance-tuning/tempdb-contention.mp4",
+        durationLabel: "1 min 36 s",
+      }),
+      L(30, "memory-grants", "Memory Grants", {
+        contentDir: "ch06/30-memory-grants",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792420961/ltv-sql-server-performance-tuning/memory-grants.mp4",
+        durationLabel: "1 min 38 s",
+      }),
+      L(31, "buffer-pool-tuning", "Buffer Pool Tuning", {
+        contentDir: "ch06/31-buffer-pool-tuning",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792421134/ltv-sql-server-performance-tuning/buffer-pool-tuning.mp4",
+        durationLabel: "1 min 2 s",
+      }),
+      L(32, "resource-governor-for-performance", "Resource Governor for Performance", {
+        contentDir: "ch06/32-resource-governor-for-performance",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792421433/ltv-sql-server-performance-tuning/resource-governor-for-performance.mp4",
+        durationLabel: "1 min 30 s",
+      }),
     ],
   },
   {
     n: 7,
     title: "Query Store & Automatic Tuning",
     lessons: [
-      L(33, "query-store-deep-dive", "Query Store, Deep Dive", { contentDir: "ch07/33-query-store-deep-dive" }),
-      L(34, "forcing-plans", "Forcing Plans", { contentDir: "ch07/34-forcing-plans" }),
-      L(35, "automatic-plan-correction", "Automatic Plan Correction", { contentDir: "ch07/35-automatic-plan-correction" }),
-      L(36, "regressed-query-workflows", "Regressed Query Workflows", { contentDir: "ch07/36-regressed-query-workflows" }),
-      L(37, "query-store-in-production", "Query Store in Production", { contentDir: "ch07/37-query-store-in-production" }),
+      L(33, "query-store-deep-dive", "Query Store, Deep Dive", {
+        contentDir: "ch07/33-query-store-deep-dive",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792421778/ltv-sql-server-performance-tuning/query-store-deep-dive.mp4",
+        durationLabel: "1 min 32 s",
+      }),
+      L(34, "forcing-plans", "Forcing Plans", {
+        contentDir: "ch07/34-forcing-plans",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792421999/ltv-sql-server-performance-tuning/forcing-plans.mp4",
+        durationLabel: "1 min 40 s",
+      }),
+      L(35, "automatic-plan-correction", "Automatic Plan Correction", {
+        contentDir: "ch07/35-automatic-plan-correction",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792422199/ltv-sql-server-performance-tuning/automatic-plan-correction.mp4",
+        durationLabel: "1 min 23 s",
+      }),
+      L(36, "regressed-query-workflows", "Regressed Query Workflows", {
+        contentDir: "ch07/36-regressed-query-workflows",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792422401/ltv-sql-server-performance-tuning/regressed-query-workflows.mp4",
+        durationLabel: "1 min 23 s",
+      }),
+      L(37, "query-store-in-production", "Query Store in Production", {
+        contentDir: "ch07/37-query-store-in-production",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792422587/ltv-sql-server-performance-tuning/query-store-in-production.mp4",
+        durationLabel: "1 min 18 s",
+      }),
     ],
   },
   {
     n: 8,
     title: "Parallelism & Configuration Tuning",
     lessons: [
-      L(38, "maxdop-and-cost-threshold", "MAXDOP & Cost Threshold for Parallelism", { contentDir: "ch08/38-maxdop-and-cost-threshold" }),
-      L(39, "parallelism-troubleshooting", "Parallelism Troubleshooting", { contentDir: "ch08/39-parallelism-troubleshooting" }),
-      L(40, "server-level-configuration-tuning", "Server-Level Configuration Tuning", { contentDir: "ch08/40-server-level-configuration-tuning" }),
-      L(41, "instance-level-settings-for-performance", "Instance-Level Settings for Performance", { contentDir: "ch08/41-instance-level-settings-for-performance" }),
-      L(42, "hardware-considerations", "Hardware Considerations", { contentDir: "ch08/42-hardware-considerations" }),
+      L(38, "maxdop-and-cost-threshold", "MAXDOP & Cost Threshold for Parallelism", {
+        contentDir: "ch08/38-maxdop-and-cost-threshold",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792422816/ltv-sql-server-performance-tuning/maxdop-and-cost-threshold.mp4",
+        durationLabel: "1 min 39 s",
+      }),
+      L(39, "parallelism-troubleshooting", "Parallelism Troubleshooting", {
+        contentDir: "ch08/39-parallelism-troubleshooting",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792423035/ltv-sql-server-performance-tuning/parallelism-troubleshooting.mp4",
+        durationLabel: "1 min 35 s",
+      }),
+      L(40, "server-level-configuration-tuning", "Server-Level Configuration Tuning", {
+        contentDir: "ch08/40-server-level-configuration-tuning",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792423214/ltv-sql-server-performance-tuning/server-level-configuration-tuning.mp4",
+        durationLabel: "1 min 8 s",
+      }),
+      L(41, "instance-level-settings-for-performance", "Instance-Level Settings for Performance", {
+        contentDir: "ch08/41-instance-level-settings-for-performance",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792423459/ltv-sql-server-performance-tuning/instance-level-settings-for-performance.mp4",
+        durationLabel: "1 min 40 s",
+      }),
+      L(42, "hardware-considerations", "Hardware Considerations", {
+        contentDir: "ch08/42-hardware-considerations",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792423660/ltv-sql-server-performance-tuning/hardware-considerations.mp4",
+        durationLabel: "1 min 27 s",
+      }),
     ],
   },
   {
@@ -204,9 +260,13 @@ export const SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(43, "building-a-monitoring-baseline", "Building a Monitoring Baseline", {
         contentDir: "ch09/43-building-a-monitoring-baseline",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792423908/ltv-sql-server-performance-tuning/building-a-monitoring-baseline.mp4",
+        durationLabel: "1 min 5 s",
       }),
       L(44, "alerting-on-performance-degradation", "Alerting on Performance Degradation", {
         contentDir: "ch09/44-alerting-on-performance-degradation",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792424089/ltv-sql-server-performance-tuning/alerting-on-performance-degradation.mp4",
+        durationLabel: "1 min 11 s",
       }),
       L(45, "third-party-tools-overview", "Third-Party Tools, Overview", {
         contentDir: "ch09/45-third-party-tools-overview",

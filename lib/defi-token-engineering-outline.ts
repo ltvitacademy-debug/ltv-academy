@@ -27,19 +27,54 @@ export const DEFI_TOKEN_ENGINEERING_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "DeFi Building Blocks",
     lessons: [
-      L(1, "what-makes-defi-different", "What Makes DeFi Different", { contentDir: "ch01/01-what-makes-defi-different" }),
-      L(2, "the-major-categories-of-defi-protocols", "The Major Categories of DeFi Protocols", { contentDir: "ch01/02-the-major-categories-of-defi-protocols" }),
-      L(3, "composability-and-money-legos", "Composability & Money Legos", { contentDir: "ch01/03-composability-and-money-legos" }),
-      L(4, "reading-a-protocols-docs-and-contracts", "Reading a Protocol's Docs & Contracts", { contentDir: "ch01/04-reading-a-protocols-docs-and-contracts" }),
+      L(1, "what-makes-defi-different", "What Makes DeFi Different", {
+        contentDir: "ch01/01-what-makes-defi-different",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792422452/ltv-defi-token-engineering/ch01-01-what-makes-defi-different.mp4",
+        durationLabel: "1 min 37 s",
+      }),
+      L(2, "the-major-categories-of-defi-protocols", "The Major Categories of DeFi Protocols", {
+        contentDir: "ch01/02-the-major-categories-of-defi-protocols",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792422704/ltv-defi-token-engineering/ch01-02-the-major-categories-of-defi-protocols.mp4",
+        durationLabel: "1 min 47 s",
+      }),
+      L(3, "composability-and-money-legos", "Composability & Money Legos", {
+        contentDir: "ch01/03-composability-and-money-legos",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792422944/ltv-defi-token-engineering/ch01-03-composability-and-money-legos.mp4",
+        durationLabel: "1 min 40 s",
+      }),
+      L(4, "reading-a-protocols-docs-and-contracts", "Reading a Protocol's Docs & Contracts", {
+        contentDir: "ch01/04-reading-a-protocols-docs-and-contracts",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792423160/ltv-defi-token-engineering/ch01-04-reading-a-protocols-docs-and-contracts.mp4",
+        durationLabel: "1 min 31 s",
+      }),
     ],
   },
   {
     n: 2,
     title: "Automated Market Makers",
     lessons: [
-      L(5, "how-a-constant-product-amm-works", "How a Constant-Product AMM Works", { contentDir: "ch02/05-how-a-constant-product-amm-works" }),
-      L(6, "liquidity-pools-and-lp-tokens", "Liquidity Pools & LP Tokens", { contentDir: "ch02/06-liquidity-pools-and-lp-tokens" }),
-      L(7, "impermanent-loss", "Impermanent Loss", { contentDir: "ch02/07-impermanent-loss" }),
+      L(5, "how-a-constant-product-amm-works", "How a Constant-Product AMM Works", {
+        contentDir: "ch02/05-how-a-constant-product-amm-works",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792423431/ltv-defi-token-engineering/ch02-05-how-a-constant-product-amm-works.mp4",
+        durationLabel: "1 min 50 s",
+      }),
+      L(6, "liquidity-pools-and-lp-tokens", "Liquidity Pools & LP Tokens", {
+        contentDir: "ch02/06-liquidity-pools-and-lp-tokens",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792423649/ltv-defi-token-engineering/ch02-06-liquidity-pools-and-lp-tokens.mp4",
+        durationLabel: "1 min 44 s",
+      }),
+      L(7, "impermanent-loss", "Impermanent Loss", {
+        contentDir: "ch02/07-impermanent-loss",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792423953/ltv-defi-token-engineering/ch02-07-impermanent-loss.mp4",
+        durationLabel: "2 min 0 s",
+      }),
       L(8, "building-a-simple-amm-contract", "Building a Simple AMM Contract", { contentDir: "ch02/08-building-a-simple-amm-contract" }),
       L(9, "concentrated-liquidity-concepts", "Concentrated Liquidity Concepts", { contentDir: "ch02/09-concentrated-liquidity-concepts" }),
     ],
