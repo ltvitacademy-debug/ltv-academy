@@ -1,67 +1,59 @@
 [
   {
     "type": "title",
-    "eyebrow": "Statistics & Probability for Data Science · Chapter 6",
+    "eyebrow": "Statistics & Probability for Data Science · Chapter 6, Lesson 30",
     "titlePlain": "Analyzing A/B Test ",
     "titleEmphasis": "Results",
     "titleSuffix": "",
-    "subtitle": "Lesson 30 · Correlation, Causation & Experiments"
+    "subtitle": "This is where the design you did in Lesson 29 pays off."
   },
   {
     "type": "code",
-    "eyebrow": "Step 1 · Sanity check the split",
-    "code": "counts = df[\"group\"].value_counts()\nprint(counts.to_dict())\n# {'control': 4000, 'treatment': 4000}\n\nprint(stats.chisquare(counts).pvalue)\n# 1.0   (no sample ratio mismatch)",
-    "caption": "Illustrative data. A tiny p-value here means a pipeline bug."
+    "eyebrow": "Step 1: sanity-check the split (SRM)",
+    "code": "counts = df[\"group\"].value_counts()\nprint(counts.to_dict())   # {'control': 4000, 'treatment': 4000}\nprint(stats.chisquare(counts).pvalue)   # 1.0",
+    "caption": "Sample ratio mismatch: the split differs from plan by more than chance -- usually a bug."
   },
   {
     "type": "code",
-    "eyebrow": "Step 2 · Test the primary metric",
-    "code": "# control 431/4000 = 0.10775\n# treatment 490/4000 = 0.12250\nse = np.sqrt(pp*(1-pp)\n             * (1/m[0] + 1/m[1]))\nz = (p2 - p1) / se\nprint(round(z, 3))       # 2.067\n# two-sided p-value = 0.0388",
-    "caption": "Chi-square on the 2x2 table gives the same p."
+    "eyebrow": "What a real SRM red flag looks like",
+    "code": "# a planned 50/50 that actually came out 4,000 vs. 3,600:\n# chi-square p-value ~ 0.000004 -- fix the pipeline FIRST",
+    "caption": "Teams use a very strict threshold here since it runs on every single experiment."
   },
   {
     "type": "code",
-    "eyebrow": "Step 3 · Effect size and interval",
-    "code": "se_u = np.sqrt(p1*(1-p1)/m[0]\n               + p2*(1-p2)/m[1])\nd = p2 - p1\nprint(round(d, 4))          # 0.0148\nlo = d - 1.96*se_u\nhi = d + 1.96*se_u\nprint(round(lo, 4))    # 0.0008\nprint(round(hi, 4))    # 0.0287",
-    "caption": "About +1.5 points, 95% CI 0.08 to 2.87 points."
+    "eyebrow": "Step 2: test the primary metric",
+    "code": "# control: 10.8%  treatment: 12.3%\nz = (p2 - p1) / se\nprint(round(z,3), round(2*(1-stats.norm.cdf(abs(z))),4))\n# 2.067  0.0388 -- below 0.05\n\n# chi2_contingency gives the SAME answer: z^2 = chi-square (4.27)",
+    "caption": "The pooled two-proportion z-test and chi-square test of independence always agree."
   },
   {
     "type": "code",
-    "eyebrow": "Step 4 · Secondary metric",
-    "code": "print(round(ctl.mean(), 2))   # 6.59\nprint(round(trt.mean(), 2))   # 7.11\n\nt = stats.ttest_ind(trt, ctl,\n                    equal_var=False)\nprint(round(t.pvalue, 4))     # 0.3275",
-    "caption": "Revenue per user: not distinguishable from noise."
+    "eyebrow": "Step 3: the effect size AND its uncertainty",
+    "code": "d = p2 - p1\nprint(round(d,4), round(d-1.96*se_u,4), round(d+1.96*se_u,4))\n# 0.0148  0.0008  0.0287",
+    "caption": "A ~1.5-point lift (14% relative), 95% CI 0.08 to 2.87 points -- could be tiny or nearly double."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 4: check a secondary metric (revenue)",
+    "code": "print(round(ctl.mean(),2), round(trt.mean(),2))   # 6.59  7.11\nprint(stats.ttest_ind(trt, ctl, equal_var=False))  # p = 0.3275",
+    "caption": "Revenue looks higher, but p=0.33 can't rule out noise -- this test wasn't designed for revenue."
   },
   {
     "type": "steps",
-    "eyebrow": "Step 5 · Decide",
-    "titlePlain": "Significant is not the same as ",
-    "titleEmphasis": "important",
+    "eyebrow": "Step 5: decide",
+    "titlePlain": "Statistical vs. ",
+    "titleEmphasis": "Practical",
     "titleSuffix": "",
     "steps": [
-      {
-        "label": "Estimate + interval",
-        "sub": "+1.5 pts, CI 0.08 to 2.87"
-      },
-      {
-        "label": "Guardrails",
-        "sub": "Did anything else get worse?"
-      },
-      {
-        "label": "Business value vs cost",
-        "sub": "Is the lift worth shipping?"
-      },
-      {
-        "label": "Recommendation",
-        "sub": "Ship, iterate, or stop"
-      }
+      { "label": "STATISTICAL: is there probably a real difference?", "sub": "Yes -- p < 0.05" },
+      { "label": "PRACTICAL: is it big enough to matter?", "sub": "What's a 0.08-2.87pt lift worth vs. the cost to ship?" }
     ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 31",
+    "eyebrow": "Up next · Chapter 6, Lesson 31",
     "titlePlain": "Common Statistical ",
     "titleEmphasis": "Pitfalls",
     "titleSuffix": "",
-    "subtitle": "The mistakes that fool even careful analysts."
+    "subtitle": "Report the estimate, the interval, and a recommendation -- never just \"p < 0.05\"."
   }
 ]

@@ -1,73 +1,66 @@
 [
   {
     "type": "title",
-    "eyebrow": "Statistics & Probability for Data Science · Chapter 7",
-    "titlePlain": "Capstone: Build ",
-    "titleEmphasis": "It",
+    "eyebrow": "Statistics & Probability for Data Science · Chapter 7, Lesson 33",
+    "titlePlain": "Capstone: ",
+    "titleEmphasis": "Build It",
     "titleSuffix": "",
-    "subtitle": "Lesson 33 · Capstone"
+    "subtitle": "Following the plan, in order, on the real seeded data."
   },
   {
     "type": "code",
-    "eyebrow": "Step 1 · Check the design",
-    "code": "# Balance-check p-values\n#   group split (chi-square)  1.0\n#   age (Welch t-test)        0.31\n#   prior sessions (Welch t)  0.636\n#   region (chi-square)       0.028\n\n# Churn diff, treatment - control:\n#   East -0.014   North -0.025\n#   South -0.031  West -0.046",
-    "caption": "Region p = 0.028 is chance; effect is consistent in every region."
+    "eyebrow": "Step 1: check the design",
+    "code": "stats.chisquare(df.group.value_counts()).pvalue   # 1.0 -- no SRM\nstats.ttest_ind(trt.age.dropna(), ctl.age.dropna(), equal_var=False).pvalue  # 0.31\nstats.ttest_ind(trt.prior_sessions, ctl.prior_sessions, equal_var=False).pvalue  # 0.636\nstats.chi2_contingency(pd.crosstab(df.group, df.region))[1]   # 0.028 !?",
+    "caption": "Age, sessions balanced. Region at 0.028 -- expected noise when running several checks at 0.05."
   },
   {
     "type": "code",
-    "eyebrow": "Step 2 · Primary metric",
-    "code": "g = df.groupby(\"group\")[\"churned\"]\nprint(g.mean().round(4))\n# control      0.2236\n# treatment    0.1956\n\nz = (p2 - p1) / se\nprint(round(z, 3))     # -2.432\n# two-sided p = 0.015",
-    "caption": "Churn falls from 22.4% to 19.6%."
+    "eyebrow": "A sensitivity check, not a red flag",
+    "code": "t = df.pivot_table(index=\"region\", columns=\"group\", values=\"churned\", aggfunc=\"mean\")\nprint((t.treatment - t.control).round(3))\n# East -0.014  North -0.025  South -0.031  West -0.046",
+    "caption": "Treatment churns less in ALL four regions -- region isn't driving the result. Move on."
   },
   {
     "type": "code",
-    "eyebrow": "Step 3 · Effect size",
-    "code": "d = p2 - p1\nlo = d - 1.96*se_u\nhi = d + 1.96*se_u\nprint(round(d, 4))       # -0.028\nprint(round(lo, 4))      # -0.0506\nprint(round(hi, 4))      # -0.0054\nprint(round(d / p1, 3))  # -0.125",
-    "caption": "-2.8 points (95% CI -5.06 to -0.54)."
+    "eyebrow": "Step 2: test the primary metric",
+    "code": "g.mean().round(4)   # control 0.2236, treatment 0.1956\nz = (p2 - p1) / se\nprint(round(z,3), round(2*(1-stats.norm.cdf(abs(z))),4))\n# -2.432  0.015",
+    "caption": "Churn: 22.36% control vs. 19.56% treatment."
   },
   {
     "type": "code",
-    "eyebrow": "Step 4 · Secondary metric",
-    "code": "print(ctl.spend.mean().round(2))\n# 46.9\nprint(trt.spend.mean().round(2))\n# 46.74\nt = stats.ttest_ind(trt.spend,\n        ctl.spend, equal_var=False)\nprint(round(t.pvalue, 3))   # 0.88\n# bootstrap 95% CI for the difference:\n# [-2.16  1.99]",
-    "caption": "No evidence of a spend effect."
+    "eyebrow": "Step 3: effect size and interval",
+    "code": "d = p2 - p1\nlo, hi = d - 1.96*se_u, d + 1.96*se_u\nprint(round(d,4), round(lo,4), round(hi,4))\n# -0.028  -0.0506  -0.0054",
+    "caption": "A 2.8-point drop (12.5% relative). CI excludes zero but is wide -- the true drop could be small."
   },
   {
     "type": "code",
-    "eyebrow": "Step 5 · Regression",
-    "code": "r = stats.linregress(\n    df.prior_sessions, df.spend)\nprint(round(r.slope, 2))      # 3.6\nprint(round(r.intercept, 2))  # 25.13\nprint(round(r.rvalue**2, 3))  # 0.053",
-    "caption": "+$3.60 per prior session; association, not cause."
+    "eyebrow": "Step 4: the secondary metric (spend)",
+    "code": "ctl.spend.mean(), trt.spend.mean()   # 46.9  46.74 -- essentially identical\nstats.ttest_ind(trt.spend, ctl.spend, equal_var=False).pvalue   # 0.88\n\n# bootstrap 95% CI on the difference: [-2.16, 1.99]",
+    "caption": "No evidence of a spend effect -- and large effects can be ruled out."
   },
   {
-    "type": "steps",
-    "eyebrow": "Apply the plan",
-    "titlePlain": "What the data ",
-    "titleEmphasis": "supports",
-    "titleSuffix": "",
-    "steps": [
-      {
-        "label": "Churn: -2.8 pts",
-        "sub": "p = 0.015, passes the 0.025 bar"
-      },
-      {
-        "label": "Spend: no effect seen",
-        "sub": "p = 0.88, CI about -$2 to +$2"
-      },
-      {
-        "label": "Power check",
-        "sub": "Detectable drop: 24% to 20.7%"
-      },
-      {
-        "label": "Be honest",
-        "sub": "Observed lift is noisy; wide CI"
-      }
-    ]
+    "type": "code",
+    "eyebrow": "Step 5: a regression on prior activity",
+    "code": "r = stats.linregress(df.prior_sessions, df.spend)\nprint(round(r.slope,2), round(r.rvalue**2,3))\n# 3.6  0.053",
+    "caption": "Sessions explain only ~5% of spend variation -- association, not proof pushing visits raises spend."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 6: apply the plan's Bonferroni rule",
+    "code": "# threshold = 0.05 / 2 outcomes = 0.025\n# churn: p=0.015 -> PASSES\n# spend: p=0.88  -> does NOT",
+    "caption": "The rule was decided in Lesson 32, before any outcome was seen."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Was the experiment big enough?",
+    "code": "brentq(lambda p: n_needed(.24, p) - 2500, 0.15, 0.2399)\n# 0.207 -- detectable drop at 80% power: 24% -> 20.7%",
+    "caption": "Our observed 2.8pt drop is smaller than the ~3.3pt detectable minimum -- the estimate IS noisy."
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 34",
-    "titlePlain": "Capstone: Wrap-Up & Portfolio ",
-    "titleEmphasis": "Presentation",
+    "eyebrow": "Up next · Chapter 7, Lesson 34",
+    "titlePlain": "Capstone: Wrap-Up & ",
+    "titleEmphasis": "Portfolio",
     "titleSuffix": "",
-    "subtitle": "Turn the analysis into a story a stakeholder can act on."
+    "subtitle": "Churn fell ~2.8pts, survives Bonferroni; spend shows no detectable change."
   }
 ]

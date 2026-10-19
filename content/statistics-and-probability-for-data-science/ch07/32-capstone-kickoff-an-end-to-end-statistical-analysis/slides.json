@@ -1,101 +1,76 @@
 [
   {
     "type": "title",
-    "eyebrow": "Statistics & Probability for Data Science · Chapter 7",
+    "eyebrow": "Statistics & Probability for Data Science · Chapter 7, Lesson 32",
     "titlePlain": "Capstone Kickoff: An End-to-End ",
+    "titleEmphasis": "Statistical Analysis",
+    "titleSuffix": "",
+    "subtitle": "One complete analysis, question to recommendation, using the whole course."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The project brief",
+    "titlePlain": "Does Onboarding Reduce ",
+    "titleEmphasis": "Churn?",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "5,000 NEW CUSTOMERS, RANDOMIZED", "sub": "Control: 1 welcome email. Treatment: 3-email series" },
+      { "label": "90 DAYS LATER: CHURNED? HOW MUCH SPENT?", "sub": "Does the series reduce churn, and change spend?" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The pre-analysis plan -- committed before looking",
+    "titlePlain": "Decide It ",
+    "titleEmphasis": "First",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "PRIMARY: 90-day churn rate", "sub": "Secondary: 90-day spend (skewed)" },
+      { "label": "TWO OUTCOMES -> BONFERRONI", "sub": "Need p < 0.025 to claim a win" },
+      { "label": "CHECK RANDOMIZATION FIRST", "sub": "Report effect size + 95% CI, never a bare p" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Generating the dataset",
+    "code": "rng = np.random.default_rng(2024)\np_churn = np.where(treat==1, 0.20, 0.24)   # true rates: 20% vs 24%\ndf[\"churned\"] = rng.binomial(1, p_churn)\nbase = rng.lognormal(3.6, 0.7, n) * np.sqrt((df.prior_sessions+1)/7)\ndf[\"spend\"] = (base * (1 + 0.03*treat)).round(2)",
+    "caption": "Spend right-skewed, grows with prior activity. ~2% of ages deliberately missing."
+  },
+  {
+    "type": "code",
+    "eyebrow": "First look",
+    "code": "print(df.shape)                      # (5000, 7)\nprint(df.isna().sum().to_dict())     # age: 100 missing (2%)\nprint(df.group.value_counts().to_dict())  # 2500 / 2500\nprint(round(df.spend.skew(),2))      # 2.61\nprint(df.spend.median(), df.spend.mean())  # 36.22  46.82",
+    "caption": "Overall churn ~21%. Mean well above median -- spend is strongly right-skewed."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three lessons from this alone",
+    "titlePlain": "Plan the ",
     "titleEmphasis": "Analysis",
     "titleSuffix": "",
-    "subtitle": "Lesson 32 · Capstone"
-  },
-  {
-    "type": "steps",
-    "eyebrow": "The project brief (illustrative)",
-    "titlePlain": "Does onboarding reduce ",
-    "titleEmphasis": "churn",
-    "titleSuffix": "",
     "steps": [
-      {
-        "label": "Experiment",
-        "sub": "5,000 new customers, randomized 50/50"
-      },
-      {
-        "label": "Treatment",
-        "sub": "Three-email onboarding series"
-      },
-      {
-        "label": "Primary metric",
-        "sub": "90-day churn (yes/no)"
-      },
-      {
-        "label": "Secondary metric",
-        "sub": "90-day spend per customer"
-      }
+      { "label": "DON'T IMPUTE AGE", "sub": "Only used for a balance check -- just drop missing there" },
+      { "label": "PAIR THE t-TEST WITH A BOOTSTRAP", "sub": "Spend is too skewed to trust the mean alone" }
     ]
   },
   {
     "type": "steps",
-    "eyebrow": "Pre-analysis plan",
-    "titlePlain": "Decide before you ",
-    "titleEmphasis": "look",
+    "eyebrow": "The roadmap: five stages",
+    "titlePlain": "Describe, Check, Test, Model, ",
+    "titleEmphasis": "Communicate",
     "titleSuffix": "",
     "steps": [
-      {
-        "label": "Check the design first",
-        "sub": "Split and covariate balance"
-      },
-      {
-        "label": "Alpha 0.05, two outcomes",
-        "sub": "Bonferroni: need p < 0.025"
-      },
-      {
-        "label": "Report effect sizes",
-        "sub": "With 95% confidence intervals"
-      }
-    ]
-  },
-  {
-    "type": "code",
-    "eyebrow": "Generate the data (seeded)",
-    "code": "rng = np.random.default_rng(2024)\nn = 5000\ndf = pd.DataFrame({\n    \"customer_id\": ..., \"group\": ...,\n    \"region\": ..., \"age\": ...,\n    \"prior_sessions\": ...})\ndf[\"churned\"] = rng.binomial(1, p)\ndf[\"spend\"] = (base * lift).round(2)",
-    "caption": "Illustrative data. Full code is in the written guide."
-  },
-  {
-    "type": "code",
-    "eyebrow": "A first look",
-    "code": "print(df.shape)           # (5000, 7)\nprint(df.age.isna().sum())   # 100\ncounts = df.group.value_counts()\nprint(counts.to_dict())\n# {'treatment': 2500, 'control': 2500}\nprint(round(df.spend.skew(), 2))\n# 2.61\nprint(df.spend.median().round(2))\n# 36.22 (mean 46.82)",
-    "caption": "Balanced groups; spend is right-skewed."
-  },
-  {
-    "type": "steps",
-    "eyebrow": "The roadmap",
-    "titlePlain": "Five stages, one ",
-    "titleEmphasis": "story",
-    "titleSuffix": "",
-    "steps": [
-      {
-        "label": "1 Describe and clean",
-        "sub": "Missing values, skew"
-      },
-      {
-        "label": "2 Check the design",
-        "sub": "Sample ratio, balance"
-      },
-      {
-        "label": "3 Test and estimate",
-        "sub": "z-test, t-test, bootstrap"
-      },
-      {
-        "label": "4-5 Model, then tell it",
-        "sub": "Regression, limits, summary"
-      }
+      { "label": "1-2: DESCRIBE & CLEAN, CHECK DESIGN", "sub": "Shapes, missing values, sample ratio, balance" },
+      { "label": "3-4: TEST & ESTIMATE, MODEL & CAVEAT", "sub": "z-test, CI, bootstrap, regression, power" },
+      { "label": "5: COMMUNICATE", "sub": "A one-page summary a stakeholder can act on" }
     ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 33",
-    "titlePlain": "Capstone: Build ",
-    "titleEmphasis": "It",
+    "eyebrow": "Up next · Chapter 7, Lesson 33",
+    "titlePlain": "Capstone: ",
+    "titleEmphasis": "Build It",
     "titleSuffix": "",
-    "subtitle": "Run the full analysis, step by step."
+    "subtitle": "A reproducible script, a results table, a written summary -- your portfolio piece."
   }
 ]

@@ -1,82 +1,82 @@
 [
   {
     "type": "title",
-    "eyebrow": "Statistics & Probability for Data Science · Chapter 6",
+    "eyebrow": "Statistics & Probability for Data Science · Chapter 6, Lesson 29",
     "titlePlain": "A/B Test ",
     "titleEmphasis": "Design",
     "titleSuffix": "",
-    "subtitle": "Lesson 29 · Correlation, Causation & Experiments"
+    "subtitle": "Random assignment is what earns the word \"cause.\""
   },
   {
     "type": "steps",
-    "eyebrow": "Decide before you launch",
-    "titlePlain": "The design ",
-    "titleEmphasis": "checklist",
+    "eyebrow": "The design checklist, part 1",
+    "titlePlain": "Decide This ",
+    "titleEmphasis": "First",
     "titleSuffix": "",
     "steps": [
-      {
-        "label": "One primary metric",
-        "sub": "Pick it before seeing data"
-      },
-      {
-        "label": "Randomization unit",
-        "sub": "Usually the user"
-      },
-      {
-        "label": "Alpha, power, MDE",
-        "sub": "0.05, 0.80, smallest lift you care about"
-      },
-      {
-        "label": "Fixed sample size",
-        "sub": "Decide when to stop up front"
-      }
+      { "label": "ONE HYPOTHESIS, ONE PRIMARY METRIC", "sub": "Picked before you look at any data" },
+      { "label": "UNIT OF RANDOMIZATION", "sub": "Usually the user, never the page view" }
     ]
   },
   {
-    "type": "code",
-    "eyebrow": "Sample size per group",
-    "code": "p1, p2 = 0.10, 0.12\nza = stats.norm.ppf(0.975)  # 1.96\nzb = stats.norm.ppf(0.80)   # 0.842\npb = (p1 + p2) / 2\na = za*np.sqrt(2*pb*(1-pb))\nb = zb*np.sqrt(p1*(1-p1)+p2*(1-p2))\nn = (a + b)**2 / (p2 - p1)**2\nprint(int(np.ceil(n)))   # 3841",
-    "caption": "10% baseline to 12%: 3,841 users per group."
-  },
-  {
     "type": "steps",
-    "eyebrow": "Small effects are expensive",
-    "titlePlain": "Users needed ",
-    "titleEmphasis": "per group",
+    "eyebrow": "The design checklist, part 2",
+    "titlePlain": "Fixed in ",
+    "titleEmphasis": "Advance",
     "titleSuffix": "",
     "steps": [
-      {
-        "label": "10% to 11%",
-        "sub": "14,751 users"
-      },
-      {
-        "label": "10% to 12%",
-        "sub": "3,841 users"
-      },
-      {
-        "label": "10% to 15%",
-        "sub": "686 users"
-      }
+      { "label": "ALPHA, POWER, AND MDE", "sub": "Typical: alpha 0.05, power 0.80" },
+      { "label": "SAMPLE SIZE & DURATION", "sub": "Decide when to stop BEFORE you start" }
     ]
   },
   {
     "type": "code",
     "eyebrow": "Random assignment",
-    "code": "rng = np.random.default_rng(1)\nlabels = np.repeat(\n    [\"control\", \"treatment\"], 10)\ngroup = rng.permutation(labels)\nprint((group == \"control\").sum())\n# 10",
-    "caption": "Balanced by construction; illustrative 20 users."
+    "code": "group = rng.permutation(np.repeat([\"control\", \"treatment\"], 10))\nprint((group == \"control\").sum())   # 10 -- balanced, by construction",
+    "caption": "In production: hash the user ID so a returning user always sees the same variant."
   },
   {
     "type": "code",
-    "eyebrow": "Check the design by simulation",
-    "code": "# pval() = two-proportion z-test\nhits = [pval(rng.binomial(N, p1),\n             rng.binomial(N, p2),\n             N) < .05\n        for _ in range(2000)]\nprint(np.mean(hits))   # 0.805\n# A/A test (p1 vs p1): ~5% significant",
-    "caption": "True rates 10% vs 12%, N = 3,841 per group."
+    "eyebrow": "Sample size: 10% baseline, detect a lift to 12%",
+    "code": "za, zb = stats.norm.ppf(0.975), stats.norm.ppf(0.80)\npb = (p1 + p2) / 2\nn = (za*np.sqrt(2*pb*(1-pb)) + zb*np.sqrt(p1*(1-p1)+p2*(1-p2)))**2 / (p2-p1)**2\nprint(int(np.ceil(n)))   # 3841 per group",
+    "caption": "~7,700 total -- ~6 days at 1,500/day, though run 1-2 full weeks to cover weekday/weekend mix."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Small effects are expensive",
+    "code": "# baseline 10%, detecting a lift to:\n# 11%  -> 14,751 per group\n# 12%  ->  3,841 per group\n# 15%  ->    686 per group",
+    "caption": "Halving the effect roughly quadruples the sample -- MDE is a business decision too."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Checking the design: does it hit 80% power?",
+    "code": "hits = [pval(rng.binomial(N,p1), rng.binomial(N,p2), N) < .05 for _ in range(2000)]\nprint(np.mean(hits))\n# 0.805 -- matches the power we designed for",
+    "caption": "2,000 simulated experiments at the true 10% vs. 12% rates."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The A/A test: checking the false-positive rate",
+    "code": "# same simulation, BOTH groups at 10%\n# ~5% of runs still called \"significant\"",
+    "caption": "Exactly the alpha=0.05 you accepted. A real A/A test on live traffic catches broken tracking too."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Guardrails",
+    "titlePlain": "Don't Break Your Own ",
+    "titleEmphasis": "Design",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "NEVER STOP EARLY", "sub": "Peeking inflates false positives (Lesson 31)" },
+      { "label": "TRACK GUARDRAIL METRICS", "sub": "Load time, refund rate -- catch hidden damage" },
+      { "label": "DON'T CHANGE THE DESIGN MID-TEST", "sub": "" }
+    ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 30",
+    "eyebrow": "Up next · Chapter 6, Lesson 30",
     "titlePlain": "Analyzing A/B Test ",
     "titleEmphasis": "Results",
     "titleSuffix": "",
-    "subtitle": "Turning experiment data into a decision."
+    "subtitle": "The sample size formula tells you what the causal claim costs."
   }
 ]

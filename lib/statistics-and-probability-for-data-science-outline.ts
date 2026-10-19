@@ -25,9 +25,9 @@ export const STATISTICS_AND_PROBABILITY_FOR_DATA_SCIENCE_CHAPTERS: ChapterMeta[]
     n: 1,
     title: "Descriptive Statistics",
     lessons: [
-      L(1, "what-statistics-is-for", "What Statistics Is For", { contentDir: "ch01/01-what-statistics-is-for" }),
-      L(2, "types-of-data-and-measurement-scales", "Types of Data & Measurement Scales", { contentDir: "ch01/02-types-of-data-and-measurement-scales" }),
-      L(3, "measures-of-center", "Measures of Center", { contentDir: "ch01/03-measures-of-center" }),
+      L(1, "what-statistics-is-for", "What Statistics Is For", { contentDir: "ch01/01-what-statistics-is-for", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792433630/ltv-statistics-and-probability-for-data-science/what-statistics-is-for.mp4", durationLabel: "3 min 8 s" }),
+      L(2, "types-of-data-and-measurement-scales", "Types of Data & Measurement Scales", { contentDir: "ch01/02-types-of-data-and-measurement-scales", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792433994/ltv-statistics-and-probability-for-data-science/types-of-data-and-measurement-scales.mp4", durationLabel: "3 min 22 s" }),
+      L(3, "measures-of-center", "Measures of Center", { contentDir: "ch01/03-measures-of-center", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434347/ltv-statistics-and-probability-for-data-science/measures-of-center.mp4", durationLabel: "3 min 26 s" }),
       L(4, "measures-of-spread", "Measures of Spread", { contentDir: "ch01/04-measures-of-spread" }),
       L(5, "distributions-and-shape", "Distributions & Shape", { contentDir: "ch01/05-distributions-and-shape" }),
       L(6, "visualizing-distributions", "Visualizing Distributions", { contentDir: "ch01/06-visualizing-distributions" }),

@@ -37,10 +37,10 @@ export const GOV_METADATA_MANAGEMENT_AND_BUSINESS_GLOSSARY_CHAPTERS: ChapterMeta
     title: "Business Glossary",
     lessons: [
       L(6, "business-glossary-concepts", "Business Glossary Concepts", { contentDir: "ch02/06-business-glossary-concepts", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792433585/ltv-metadata-management-and-business-glossary/business-glossary-concepts.mp4", durationLabel: "1 min 36 s" }),
-      L(7, "writing-good-definitions", "Writing Good Definitions", { contentDir: "ch02/07-writing-good-definitions" }),
-      L(8, "glossary-governance-and-approval", "Glossary Governance and Approval", { contentDir: "ch02/08-glossary-governance-and-approval" }),
-      L(9, "glossary-terms-and-hierarchies", "Glossary Terms and Hierarchies", { contentDir: "ch02/09-glossary-terms-and-hierarchies" }),
-      L(10, "building-a-business-glossary", "Building a Business Glossary", { contentDir: "ch02/10-building-a-business-glossary" }),
+      L(7, "writing-good-definitions", "Writing Good Definitions", { contentDir: "ch02/07-writing-good-definitions", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792433773/ltv-metadata-management-and-business-glossary/writing-good-definitions.mp4", durationLabel: "1 min 31 s" }),
+      L(8, "glossary-governance-and-approval", "Glossary Governance and Approval", { contentDir: "ch02/08-glossary-governance-and-approval", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792433960/ltv-metadata-management-and-business-glossary/glossary-governance-and-approval.mp4", durationLabel: "1 min 30 s" }),
+      L(9, "glossary-terms-and-hierarchies", "Glossary Terms and Hierarchies", { contentDir: "ch02/09-glossary-terms-and-hierarchies", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434251/ltv-metadata-management-and-business-glossary/glossary-terms-and-hierarchies.mp4", durationLabel: "1 min 32 s" }),
+      L(10, "building-a-business-glossary", "Building a Business Glossary", { contentDir: "ch02/10-building-a-business-glossary", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434414/ltv-metadata-management-and-business-glossary/building-a-business-glossary.mp4", durationLabel: "1 min 28 s" }),
     ],
   },
   {

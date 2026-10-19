@@ -1,62 +1,82 @@
 [
   {
     "type": "title",
-    "eyebrow": "Statistics & Probability for Data Science · Chapter 5",
+    "eyebrow": "Statistics & Probability for Data Science · Chapter 5, Lesson 23",
     "titlePlain": "t-",
     "titleEmphasis": "Tests",
     "titleSuffix": "",
-    "subtitle": "Lesson 23 · Hypothesis Testing"
+    "subtitle": "The everyday tool for comparing averages -- three flavors, one idea."
   },
   {
     "type": "steps",
-    "eyebrow": "Signal divided by noise",
-    "titlePlain": "Three questions, three ",
-    "titleEmphasis": "t-tests",
+    "eyebrow": "A signal-to-noise ratio",
+    "titlePlain": "What t ",
+    "titleEmphasis": "Measures",
     "titleSuffix": "",
     "steps": [
-      {"label": "One-sample", "sub": "One mean vs. a fixed value"},
-      {"label": "Two-sample (Welch)", "sub": "Two independent groups"},
-      {"label": "Paired", "sub": "Matched before/after measurements"},
-      {"label": "t = difference / SE", "sub": "Large |t| means a clear signal"}
+      { "label": "t = DIFFERENCE / STANDARD ERROR", "sub": "Big |t| = big difference relative to noise" },
+      { "label": "HEAVIER TAILS THAN NORMAL", "sub": "Accounts for estimating spread from a small sample" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "One-sample: 3-day delivery promise",
-    "code": "days = rng.normal(3.4, 1, 25).round(1)\nt, p = stats.ttest_1samp(days, 3.0)\nprint(round(days.mean(), 2),\n      round(t, 3), round(p, 4))\n# 3.38 2.055 0.0509",
-    "caption": "Illustrative data. Just above 0.05 is not 'no difference'."
+    "eyebrow": "1. One-sample: vs. a fixed value",
+    "code": "days = rng.normal(3.4, 1.0, 25).round(1)   # promised: 3.0-day delivery\nt, p = stats.ttest_1samp(days, 3.0)\nprint(round(days.mean(),2), round(t,3), round(p,4))\n# 3.38  2.055  0.0509",
+    "caption": "Just above 0.05 -- doesn't mean \"matches the promise,\" means this sample didn't quite clear it."
   },
   {
     "type": "code",
-    "eyebrow": "Two-sample: desktop vs. mobile orders",
-    "code": "mob = rng.normal(48, 14, 60).round(2)\ndesk = rng.normal(55, 20, 45).round(2)\nt, p = stats.ttest_ind(\n    desk, mob, equal_var=False)\nprint(round(desk.mean()\n            - mob.mean(), 2))  # 7.91\nprint(round(t, 3), round(p, 4))\n# 2.3 0.0246",
-    "caption": "equal_var=False runs Welch's t-test."
+    "eyebrow": "2. Two-sample: independent groups (Welch's)",
+    "code": "t, p = stats.ttest_ind(desktop, mobile, equal_var=False)\nprint(desktop.mean() - mobile.mean())   # 7.91\nprint(round(t,3), round(p,4))           # 2.3  0.0246\n\n# equal_var=True (Student's) on the SAME data: t=2.461, p=0.0155",
+    "caption": "Welch's doesn't assume equal variances -- a safer default when groups clearly differ in spread."
   },
   {
     "type": "code",
-    "eyebrow": "Paired: same 20 customers, before/after",
-    "code": "bef = rng.normal(80, 25, 20).round(2)\naft = bef + rng.normal(6, 12, 20)\nt, p = stats.ttest_rel(aft, bef)\nprint(round(p, 4))    # 0.0011\nr = stats.ttest_ind(aft, bef,\n                    equal_var=False)\nprint(round(r.pvalue, 4))   # 0.2509",
-    "caption": "Wrongly treating pairs as independent hides the effect."
+    "eyebrow": "How big is the gap? Cohen's d",
+    "code": "# mean difference in pooled standard deviations\nd = 0.49   # medium effect\n# rough labels: 0.2 small, 0.5 medium, 0.8 large",
+    "caption": "A p-value alone never tells you this -- always pair it with an effect size."
+  },
+  {
+    "type": "code",
+    "eyebrow": "3. Paired: the same customers, before/after",
+    "code": "before = rng.normal(80, 25, 20).round(2)\nafter = before + rng.normal(6, 12, 20)\nt, p = stats.ttest_rel(after, before)\nprint(round(p, 4))   # 0.0011 -- a clear effect",
+    "caption": "Analyzes the per-customer DIFFERENCE directly, removing customer-to-customer variation."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Analyzing it wrong: as two independent groups",
+    "code": "r = stats.ttest_ind(after, before, equal_var=False)\nprint(round(r.pvalue, 4))   # 0.2509 -- misses the SAME real effect",
+    "caption": "Customer-to-customer spending differences drown the change -- pairing isn't a technicality."
   },
   {
     "type": "steps",
-    "eyebrow": "Before you trust the result",
-    "titlePlain": "Check the ",
-    "titleEmphasis": "assumptions",
+    "eyebrow": "One-sided or two-sided?",
+    "titlePlain": "When in Doubt, ",
+    "titleEmphasis": "Two-Sided",
     "titleSuffix": "",
     "steps": [
-      {"label": "Independence", "sub": "Except a deliberate paired design"},
-      {"label": "Normal or big enough", "sub": "CLT helps; inspect tiny skewed data"},
-      {"label": "Sound sampling", "sub": "No test fixes a biased sample"},
-      {"label": "Direction chosen first", "sub": "One-sided only if planned upfront"}
+      { "label": "DEFAULT: TWO-SIDED", "sub": "Mean could be higher OR lower" },
+      { "label": "ONE-SIDED NEEDS A PRE-COMMITTED DIRECTION", "sub": "alternative=\"greater\"/\"less\" -- decided before data" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Assumptions to check",
+    "titlePlain": "Three ",
+    "titleEmphasis": "Conditions",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "INDEPENDENCE", "sub": "Except in a deliberate paired design" },
+      { "label": "ROUGHLY NORMAL OR DECENT n", "sub": "Else: permutation or rank-based test" },
+      { "label": "RANDOM SAMPLING/ASSIGNMENT", "sub": "The test can't fix a biased sample" }
     ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 24",
+    "eyebrow": "Up next · Chapter 5, Lesson 24",
     "titlePlain": "Chi-Square ",
     "titleEmphasis": "Tests",
     "titleSuffix": "",
-    "subtitle": "Testing whether categories are related."
+    "subtitle": "When the outcome is a category, not a number."
   }
 ]

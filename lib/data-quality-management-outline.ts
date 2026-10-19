@@ -37,9 +37,9 @@ export const GOV_DATA_QUALITY_MANAGEMENT_CHAPTERS: ChapterMeta[] = [
     title: "Profiling",
     lessons: [
       L(6, "data-profiling-concepts", "Data Profiling Concepts", { contentDir: "ch02/06-data-profiling-concepts", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792433418/ltv-data-quality-management/data-profiling-concepts.mp4", durationLabel: "1 min 54 s" }),
-      L(7, "profiling-with-sql", "Profiling With SQL", { contentDir: "ch02/07-profiling-with-sql" }),
-      L(8, "column-and-value-profiling", "Column and Value Profiling", { contentDir: "ch02/08-column-and-value-profiling" }),
-      L(9, "relationship-and-pattern-profiling", "Relationship and Pattern Profiling", { contentDir: "ch02/09-relationship-and-pattern-profiling" }),
+      L(7, "profiling-with-sql", "Profiling With SQL", { contentDir: "ch02/07-profiling-with-sql", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792433625/ltv-data-quality-management/profiling-with-sql.mp4", durationLabel: "1 min 53 s" }),
+      L(8, "column-and-value-profiling", "Column and Value Profiling", { contentDir: "ch02/08-column-and-value-profiling", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792433839/ltv-data-quality-management/column-and-value-profiling.mp4", durationLabel: "2 min 15 s" }),
+      L(9, "relationship-and-pattern-profiling", "Relationship and Pattern Profiling", { contentDir: "ch02/09-relationship-and-pattern-profiling", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434057/ltv-data-quality-management/relationship-and-pattern-profiling.mp4", durationLabel: "2 min 16 s" }),
       L(10, "interpreting-profiling-results", "Interpreting Profiling Results", { contentDir: "ch02/10-interpreting-profiling-results" }),
     ],
   },

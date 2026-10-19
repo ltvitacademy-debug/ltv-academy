@@ -1,66 +1,71 @@
 [
   {
     "type": "title",
-    "eyebrow": "Statistics & Probability for Data Science · Chapter 4",
+    "eyebrow": "Statistics & Probability for Data Science · Chapter 4, Lesson 18",
     "titlePlain": "Confidence ",
     "titleEmphasis": "Intervals",
     "titleSuffix": "",
-    "subtitle": "Lesson 18 · Sampling & Estimation"
+    "subtitle": "\"39.6 minutes\" hides how uncertain it is. A range tells the truth."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The recipe: estimate +/- critical value x SE",
+    "code": "sample = rng.choice(pop, size=40, replace=False)\nxbar, se = sample.mean(), stats.sem(sample)   # 39.62, 0.863\n\ntcrit = stats.t.ppf(0.975, df=39)   # 2.023",
+    "caption": "0.975 comes from splitting the remaining 5% into two 2.5% tails."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The interval, two ways",
+    "code": "print(xbar - tcrit*se, xbar + tcrit*se)   # 37.87  41.37\nprint(stats.t.interval(0.95, 39, loc=xbar, scale=se))   # same thing",
+    "caption": "The true mean, 40.01, sits right inside this 95% interval."
   },
   {
     "type": "steps",
-    "eyebrow": "The recipe",
-    "titlePlain": "Estimate, give or ",
-    "titleEmphasis": "take",
-    "titleSuffix": "",
+    "eyebrow": "The most misunderstood idea in statistics",
+    "titlePlain": "\"95% Confident\" Does ",
+    "titleEmphasis": "NOT",
+    "titleSuffix": " Mean...",
     "steps": [
-      { "label": "Estimate", "sub": "The sample mean" },
-      { "label": "Critical value", "sub": "t with n - 1 degrees of freedom" },
-      { "label": "Standard error", "sub": "s / sqrt(n)" }
+      { "label": "NOT: 95% chance truth is in THIS interval", "sub": "The true mean is fixed -- in or out" },
+      { "label": "IT MEANS: the PROCEDURE succeeds 95% of the time", "sub": "Across many repeated samples" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "A 95% CI for mean delivery time",
-    "code": "xbar = sample.mean()    # 39.62\nse = stats.sem(sample)  # 0.863\ntcrit = stats.t.ppf(0.975, 39)\n# 2.023\nxbar - tcrit*se, xbar + tcrit*se\n# 37.87  41.37",
-    "caption": "Illustrative simulated deliveries (n = 40)."
+    "eyebrow": "Checking the procedure directly",
+    "code": "hits = 0\nfor _ in range(2000):\n    smp = rng.choice(pop, size=40, replace=False)\n    l, h = stats.t.interval(0.95, 39, loc=smp.mean(), scale=stats.sem(smp))\n    hits += (l <= pop.mean() <= h)\nprint(hits / 2000)   # 0.9475",
+    "caption": "2,000 separate intervals -- 94.75% of them actually caught the true mean."
   },
   {
     "type": "code",
-    "eyebrow": "What 95% actually means",
-    "code": "hits = 0\nfor _ in range(2000):\n    smp = rng.choice(pop, 40,\n                     replace=False)\n    l, h = stats.t.interval(0.95, 39,\n        loc=smp.mean(),\n        scale=stats.sem(smp))\n    hits += (l <= pop.mean() <= h)\n# hits / 2000 = 0.9475",
-    "caption": "About 95% of intervals catch the truth. Each one either does or doesn't."
+    "eyebrow": "Width grows with confidence level",
+    "code": "# conf   width\n# 0.90   2.91\n# 0.95   3.49\n# 0.99   4.68  -- ~1/3 more width than 95% for just 4 more points of confidence",
+    "caption": "Nothing is free: more confidence means a wider, less precise interval."
   },
   {
-    "type": "steps",
-    "eyebrow": "Width is a trade-off",
-    "titlePlain": "Certainty costs ",
-    "titleEmphasis": "precision",
-    "titleSuffix": "",
-    "steps": [
-      { "label": "90% CI", "sub": "38.16 to 41.07, width 2.91" },
-      { "label": "95% CI", "sub": "37.87 to 41.37, width 3.49" },
-      { "label": "99% CI", "sub": "37.28 to 41.96, width 4.68" }
-    ]
+    "type": "code",
+    "eyebrow": "Width shrinks with sample size",
+    "code": "# n     width\n# 10    6.85\n# 40    3.21\n# 160   1.51\n# 640   0.77",
+    "caption": "Each 4x increase in n roughly halves the width -- the same square-root rule as always."
   },
   {
-    "type": "steps",
-    "eyebrow": "Where intervals mislead",
-    "titlePlain": "Read them with ",
-    "titleEmphasis": "care",
-    "titleSuffix": "",
-    "steps": [
-      { "label": "Not a probability", "sub": "The truth is fixed, the method varies" },
-      { "label": "Skew with small n", "sub": "Coverage fell to about 86%" },
-      { "label": "Bias", "sub": "CIs cover random error only" }
-    ]
+    "type": "code",
+    "eyebrow": "A proportion: 120 of 400 returns",
+    "code": "p = 120 / 400\nse_p = np.sqrt(p * (1-p) / 400)\nz = stats.norm.ppf(0.975)\nprint(p - z*se_p, p + z*se_p)   # 0.2551  0.3449",
+    "caption": "Works poorly when n is small or p is near 0/1 -- check the Wilson interval for those cases."
+  },
+  {
+    "type": "code",
+    "eyebrow": "When the recipe wobbles: skew + small n",
+    "code": "# very skewed log-normal pop, samples of only 15:\nfor _ in range(2000):\n    smp = rng.choice(pop2, size=15, replace=False)\n    l, h = stats.t.interval(0.95, 14, loc=smp.mean(), scale=stats.sem(smp))\n    hits += (l <= pop2.mean() <= h)\n# only 0.8575 -- the \"95%\" interval caught the mean just 86% of the time",
+    "caption": "Fix: a larger sample, or the bootstrap (next lesson). A biased sample stays wrong regardless."
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 19",
+    "eyebrow": "Up next · Chapter 4, Lesson 19",
     "titlePlain": "",
     "titleEmphasis": "Bootstrapping",
     "titleSuffix": "",
-    "subtitle": "Intervals from resampling, with fewer assumptions."
+    "subtitle": "A CI only covers random error -- a biased sample gives a confidently wrong interval."
   }
 ]

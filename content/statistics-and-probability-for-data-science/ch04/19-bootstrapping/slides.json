@@ -1,61 +1,72 @@
 [
   {
     "type": "title",
-    "eyebrow": "Statistics & Probability for Data Science · Chapter 4",
+    "eyebrow": "Statistics & Probability for Data Science · Chapter 4, Lesson 19",
     "titlePlain": "",
     "titleEmphasis": "Bootstrapping",
     "titleSuffix": "",
-    "subtitle": "Lesson 19 · Sampling & Estimation"
+    "subtitle": "No formula for your statistic? Resample your own data instead."
   },
   {
     "type": "steps",
-    "eyebrow": "Pull yourself up by your bootstraps",
-    "titlePlain": "The bootstrap ",
-    "titleEmphasis": "idea",
+    "eyebrow": "The idea",
+    "titlePlain": "Resample, ",
+    "titleEmphasis": "With Replacement",
     "titleSuffix": "",
     "steps": [
-      { "label": "Resample", "sub": "Draw n values from your sample" },
-      { "label": "With replacement", "sub": "Some repeat, some drop out" },
-      { "label": "Recompute", "sub": "Your statistic, thousands of times" },
-      { "label": "Read the spread", "sub": "Percentiles give the interval" }
+      { "label": "DRAW n FROM YOUR OWN n", "sub": "Some values repeat, some are left out" },
+      { "label": "COMPUTE THE STATISTIC", "sub": "Repeat thousands of times" },
+      { "label": "SPREAD = UNCERTAINTY", "sub": "Approximates the true sampling distribution" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "Bootstrap the mean",
-    "code": "boot_means = np.array([\n  rng.choice(orders, len(orders),\n             replace=True).mean()\n  for _ in range(10_000)])\nboot_means.std(ddof=1)   # 4.42\nstats.sem(orders)        # 4.50\nnp.percentile(boot_means, [2.5, 97.5])\n# [27.5  44.76]",
-    "caption": "Illustrative: 40 skewed order values."
+    "eyebrow": "Bootstrapping a mean: 10,000 resamples",
+    "code": "orders = rng.lognormal(3.5, 0.8, size=40).round(2)   # mean 35.32, median 25.4\nboot_means = np.array([rng.choice(orders, 40, replace=True).mean() for _ in range(B)])\nprint(round(boot_means.std(ddof=1), 2), round(stats.sem(orders), 2))\n# 4.42  4.50  -- bootstrap SE matches the formula closely",
+    "caption": "The bootstrap's standard error, computed with zero formulas -- just resampling."
   },
   {
     "type": "code",
-    "eyebrow": "Bootstrap a median (no formula)",
-    "code": "idx = rng.integers(0, 40,\n                   size=(10_000, 40))\nmeds = np.median(orders[idx], axis=1)\nnp.percentile(meds, [2.5, 97.5])\n# [19.98  42.59]   median was 25.4",
-    "caption": "Vectorized: all resamples in one array."
+    "eyebrow": "The percentile interval vs. the t-interval",
+    "code": "lo, hi = np.percentile(boot_means, [2.5, 97.5])\nprint(lo, hi)   # 27.5  44.76\n\n# t-interval on the same data: 26.22 to 44.42 (forced symmetric)",
+    "caption": "The bootstrap interval shifts right, reflecting the real skew -- the t-interval can't do that."
   },
   {
     "type": "code",
-    "eyebrow": "scipy.stats.bootstrap",
-    "code": "res = stats.bootstrap(\n    (orders,), np.median,\n    n_resamples=9999,\n    method=\"percentile\",\n    random_state=1)\nres.confidence_interval\n# low 19.98, high 42.59",
-    "caption": "Default method is BCa; check current docs for argument names."
+    "eyebrow": "Bootstrapping a median -- no formula exists",
+    "code": "idx = rng.integers(0, len(orders), size=(B, len(orders)))\nboot_medians = np.median(orders[idx], axis=1)   # vectorized -- fast\nlo, hi = np.percentile(boot_medians, [2.5, 97.5])\nprint(lo, hi)   # 19.98  42.59",
+    "caption": "Wide, honestly: 40 observations say little about the middle of a skewed distribution."
+  },
+  {
+    "type": "code",
+    "eyebrow": "scipy.stats.bootstrap does it for you",
+    "code": "res = stats.bootstrap((orders,), np.median, n_resamples=9999,\n                      method=\"percentile\", random_state=1)\nres.confidence_interval   # low 19.98, high 42.59\n\nres2 = stats.bootstrap((orders,), np.mean, n_resamples=9999)\n# default method \"BCa\" corrects for bias/skew",
+    "caption": "BCa's mean interval (28.76-47.59) shifts further right than the plain percentile version."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Where it shines: comparing two groups",
+    "code": "ia = rng.integers(0, 60, size=(B, 60)); ib = rng.integers(0, 60, size=(B, 60))\ndiffs = b[ib].mean(axis=1) - a[ia].mean(axis=1)\nprint(b.mean()-a.mean(), np.percentile(diffs, [2.5, 97.5]))\n# 1.93  [-12.12, 15.78]",
+    "caption": "Interval comfortably includes zero -- the data can't distinguish these groups. A preview of Ch. 5."
   },
   {
     "type": "steps",
     "eyebrow": "Not magic",
-    "titlePlain": "Where the bootstrap ",
-    "titleEmphasis": "fails",
+    "titlePlain": "Limits of the ",
+    "titleEmphasis": "Bootstrap",
     "titleSuffix": "",
     "steps": [
-      { "label": "Biased sample", "sub": "It only resamples what you have" },
-      { "label": "Extremes like the max", "sub": "Poor imitation of reality" },
-      { "label": "Dependent data", "sub": "Resample blocks, not rows" }
+      { "label": "CAN'T FIX A BIASED SAMPLE", "sub": "It only resamples what you already have" },
+      { "label": "FAILS FOR EXTREMES (MAX)", "sub": "Underestimates with very small samples" },
+      { "label": "DEPENDENT DATA? RESAMPLE BLOCKS", "sub": "Not individual rows" }
     ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 20",
-    "titlePlain": "The Logic of ",
-    "titleEmphasis": "Hypothesis Testing",
+    "eyebrow": "Chapter 4 complete · Up next: Chapter 5",
+    "titlePlain": "The Logic of Hypothesis ",
+    "titleEmphasis": "Testing",
     "titleSuffix": "",
-    "subtitle": "From estimating to deciding: is the effect real?"
+    "subtitle": "Resample, recompute, read the interval off the percentiles."
   }
 ]

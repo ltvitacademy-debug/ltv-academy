@@ -1,61 +1,59 @@
 [
   {
     "type": "title",
-    "eyebrow": "Statistics & Probability for Data Science · Chapter 4",
+    "eyebrow": "Statistics & Probability for Data Science · Chapter 4, Lesson 15",
     "titlePlain": "Populations, Samples & ",
     "titleEmphasis": "Sampling Bias",
     "titleSuffix": "",
-    "subtitle": "Lesson 15 · Sampling & Estimation"
+    "subtitle": "A badly collected sample can be wrong in a way no amount of data fixes."
   },
   {
     "type": "steps",
-    "eyebrow": "The vocabulary",
-    "titlePlain": "Parameter versus ",
-    "titleEmphasis": "statistic",
+    "eyebrow": "Vocabulary",
+    "titlePlain": "Parameter vs. ",
+    "titleEmphasis": "Statistic",
     "titleSuffix": "",
     "steps": [
-      { "label": "Population", "sub": "Everyone you care about" },
-      { "label": "Sample", "sub": "The part you actually observe" },
-      { "label": "Parameter", "sub": "Fixed, usually unknown truth" },
-      { "label": "Statistic", "sub": "Sample estimate; changes each time" }
+      { "label": "POPULATION -> PARAMETER", "sub": "Fixed, usually unknown (e.g. true mean spend)" },
+      { "label": "SAMPLE -> STATISTIC", "sub": "Changes from sample to sample -- estimates the parameter" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "Random samples wander",
-    "code": "pop[\"annual_spend\"].mean()\n# 170.22   the true parameter\n\nmeans = [pop[\"annual_spend\"]\n   .sample(200, random_state=s).mean()\n   for s in range(5)]\n# [169.4, 180.3, 160.6, 162.9, 159.2]",
-    "caption": "Illustrative simulated customers. Random error, no lean."
+    "eyebrow": "A population we can (for once) see completely",
+    "code": "pop = pd.DataFrame({\n    \"region\": rng.choice([\"North\",\"South\",\"West\"], size=N, p=[.5,.3,.2]),\n    \"orders_per_year\": rng.poisson(4, N) + 1,\n})\npop[\"annual_spend\"] = (pop[\"orders_per_year\"] * rng.lognormal(3.4, 0.5, N)).round(2)\nprint(round(pop[\"annual_spend\"].mean(), 2))   # 170.22 -- the TRUE parameter",
+    "caption": "In real work you'd never see this full table -- simulation lets us check our answers."
   },
   {
     "type": "code",
-    "eyebrow": "Bias: only heavy buyers respond",
-    "code": "heavy = pop[pop[\"orders_per_year\"]\n            >= 6]\nbs = heavy.sample(n=2000,\n                  random_state=1)\nbs[\"annual_spend\"].mean()\n# 241.55   truth is 170.22",
-    "caption": "2,000 respondents, still far off. More data won't fix bias."
-  },
-  {
-    "type": "steps",
-    "eyebrow": "How bias sneaks in",
-    "titlePlain": "Ask who is ",
-    "titleEmphasis": "missing",
-    "titleSuffix": "",
-    "steps": [
-      { "label": "Selection bias", "sub": "Only some people can be reached" },
-      { "label": "Voluntary response", "sub": "Opt-in respondents are unusual" },
-      { "label": "Survivorship bias", "sub": "Only the ones who stayed" }
-    ]
+    "eyebrow": "Five random samples, five different answers",
+    "code": "means = [pop[\"annual_spend\"].sample(200, random_state=s).mean() for s in range(5)]\nprint([round(m, 1) for m in means])\n# [169.4, 180.3, 160.6, 162.9, 159.2]",
+    "caption": "None of these is wrong -- sampling variability. Random error has no systematic lean."
   },
   {
     "type": "code",
-    "eyebrow": "Stratified sampling",
-    "code": "strat = pop.groupby(\"region\",\n   group_keys=False).apply(\n   lambda g: g.sample(frac=0.002,\n                      random_state=3))\n# North 100, South 60, West 40\nstrat[\"annual_spend\"].mean()\n# 174.39",
-    "caption": "Each region appears in proportion to its size."
+    "eyebrow": "Sampling bias: a systematic tilt, not luck",
+    "code": "heavy = pop[pop[\"orders_per_year\"] >= 6]   # only heavy users respond\nbs = heavy.sample(n=2000, random_state=1)\nprint(round(bs[\"annual_spend\"].mean(), 2))   # 241.55 -- true value: 170.22",
+    "caption": "2,000 respondents, still badly wrong. 20,000 would just be MORE precisely wrong."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Voluntary response: another flavor of bias",
+    "code": "w = pop[\"annual_spend\"] / pop[\"annual_spend\"].sum()\nvr = pop.sample(n=2000, weights=w, random_state=2)\nprint(round(vr[\"annual_spend\"].mean(), 2))   # 250.05 -- ~47% too high",
+    "caption": "Also watch for survivorship bias (only customers who stayed) and undercoverage."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A better design: stratified sampling",
+    "code": "strat = pop.groupby(\"region\", group_keys=False).apply(lambda g: g.sample(frac=0.002))\nprint(strat[\"region\"].value_counts().to_dict())\n# {'North': 100, 'South': 60, 'West': 40} -- matches population proportions\nprint(round(strat[\"annual_spend\"].mean(), 2))   # 174.39 -- much closer to 170.22",
+    "caption": "Guarantees proportional representation -- helps most when groups differ on what you measure."
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 16",
-    "titlePlain": "The Central ",
-    "titleEmphasis": "Limit Theorem",
+    "eyebrow": "Up next · Chapter 4, Lesson 16",
+    "titlePlain": "The Central Limit ",
+    "titleEmphasis": "Theorem",
     "titleSuffix": "",
-    "subtitle": "Why sample averages behave so predictably."
+    "subtitle": "Fix bias with design, not volume. Always ask: who is missing, and why?"
   }
 ]

@@ -1,68 +1,84 @@
 [
   {
     "type": "title",
-    "eyebrow": "Statistics & Probability for Data Science · Chapter 6",
+    "eyebrow": "Statistics & Probability for Data Science · Chapter 6, Lesson 27",
     "titlePlain": "Correlation vs. ",
     "titleEmphasis": "Causation",
     "titleSuffix": "",
-    "subtitle": "Lesson 27 · Correlation, Causation & Experiments"
+    "subtitle": "Sometimes one thing causes the other. Often it doesn't."
   },
   {
     "type": "steps",
-    "eyebrow": "The correlation coefficient, r",
-    "titlePlain": "A straight-line summary, ",
-    "titleEmphasis": "nothing more",
+    "eyebrow": "What r measures",
+    "titlePlain": "Strength and ",
+    "titleEmphasis": "Direction Only",
     "titleSuffix": "",
     "steps": [
-      {"label": "-1 to +1", "sub": "Direction and strength of a line"},
-      {"label": "Zero", "sub": "No linear pattern, not no link"},
-      {"label": "Pearson vs. Spearman", "sub": "Values vs. ranks"},
-      {"label": "Not a direction", "sub": "Says nothing about what drives what"}
+      { "label": "-1 TO +1", "sub": "Straight-line association, nothing more" },
+      { "label": "SAYS NOTHING ABOUT WHICH DRIVES WHICH", "sub": "Or whether either does" },
+      { "label": "SPEARMAN FOR CURVED / OUTLIER-PRONE DATA", "sub": "Works on ranks instead of raw values" }
     ]
   },
   {
-    "type": "code",
-    "eyebrow": "A strong correlation, zero causal effect",
-    "code": "season = rng.uniform(0, 1, 365)\nads = (1000 + 3000 * season\n       + rng.normal(0, 400, 365))\nsales = (20000 + 30000 * season\n         + rng.normal(0, 4000, 365))\nr, p = stats.pearsonr(ads, sales)\nprint(round(r, 3))   # 0.819",
-    "caption": "Illustrative: season drives both; ads do nothing."
+    "type": "screenshot",
+    "file": "confound-scatter.png",
+    "eyebrow": "Ad spend vs. sales, colored by the hidden confounder",
+    "caption": "Real output: the strong-looking trend is really season driving BOTH variables at once."
   },
   {
     "type": "code",
-    "eyebrow": "Adjust for the measured confounder",
-    "code": "def resid(y, x):\n    b, a = np.polyfit(x, y, 1)\n    return y - (b * x + a)\n\nra = resid(ads, season)\nrs = resid(sales, season)\nr = np.corrcoef(ra, rs)[0, 1]\nprint(round(r, 3))   # 0.009",
-    "caption": "Correlation of the residuals collapses to about zero."
+    "eyebrow": "A correlation with NO causal link",
+    "code": "ads = 1000 + 3000*season + noise     # season drives spend\nsales = 20000 + 30000*season + noise  # season drives sales too\nr, p = stats.pearsonr(ads, sales)\nprint(round(r, 3))   # 0.819 -- looks like ads strongly predict sales",
+    "caption": "Ads have ZERO real effect on sales in this simulation -- season confounds both."
   },
   {
     "type": "code",
-    "eyebrow": "Randomize spend: the link disappears",
-    "code": "u = rng.uniform(0, 1, 365)\nads_r = 1000 + 3000 * u\nr = np.corrcoef(ads_r, sales)[0, 1]\nprint(round(r, 3))   # 0.026",
-    "caption": "Random assignment can't track season or anything else."
+    "eyebrow": "Adjusting for a measured confounder",
+    "code": "def resid(y, x):\n    b, a = np.polyfit(x, y, 1)\n    return y - (b*x + a)\n\nra, rs = resid(ads, season), resid(sales, season)\nprint(round(np.corrcoef(ra, rs)[0,1], 3))   # 0.009",
+    "caption": "Correlate what's left after removing season's effect -- collapses to essentially zero."
   },
   {
     "type": "code",
-    "eyebrow": "Correlation can miss a real relationship",
-    "code": "x = rng.uniform(-3, 3, 200)\ny = x ** 2 + rng.normal(0, 0.5, 200)\nr = np.corrcoef(x, y)[0, 1]\nprint(round(r, 3))   # -0.165",
-    "caption": "y is almost determined by x, yet r is near zero."
+    "eyebrow": "Randomization breaks confounding entirely",
+    "code": "u = rng.uniform(0, 1, 365)\nads_r = 1000 + 3000 * u   # spend assigned by LOTTERY, not season\nprint(round(np.corrcoef(ads_r, sales)[0,1], 3))   # 0.026",
+    "caption": "Random assignment cancels EVERY confounder, measured or not -- why A/B tests are the gold standard."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Correlation can also MISS real relationships",
+    "code": "x = rng.uniform(-3, 3, 200)\ny = x ** 2 + noise   # y is almost ENTIRELY determined by x\nprint(round(np.corrcoef(x, y)[0,1], 3))   # -0.165 -- looks weak!",
+    "caption": "r only sees straight lines. A perfect U-shape can look like nothing. Always plot the data."
   },
   {
     "type": "steps",
-    "eyebrow": "Four explanations for any correlation",
-    "titlePlain": "Ask what else could ",
-    "titleEmphasis": "explain",
-    "titleSuffix": " it",
+    "eyebrow": "Any correlation has four possible explanations",
+    "titlePlain": "Four ",
+    "titleEmphasis": "Explanations",
+    "titleSuffix": "",
     "steps": [
-      {"label": "X causes Y", "sub": "Ads really lift sales"},
-      {"label": "Y causes X", "sub": "Reverse causation"},
-      {"label": "A third variable", "sub": "A confounder drives both"},
-      {"label": "Coincidence", "sub": "Especially after many searches"}
+      { "label": "1. X CAUSES Y", "sub": "e.g. ad spend really lifts sales" },
+      { "label": "2. Y CAUSES X", "sub": "Reverse causation -- easy to miss" },
+      { "label": "3. A THIRD VARIABLE CAUSES BOTH", "sub": "Confounding, as with the season" },
+      { "label": "4. COINCIDENCE", "sub": "Especially when you searched many pairs" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "How we actually get to causation",
+    "titlePlain": "Randomize, or ",
+    "titleEmphasis": "Hedge Carefully",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "RANDOMIZED EXPERIMENTS ARE STRONGEST", "sub": "Can't randomize? Adjust, compare, build a mechanism" },
+      { "label": "\"ASSOCIATED WITH\" IS HONEST", "sub": "\"Causes\" needs evidence beyond correlation" }
     ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 28",
+    "eyebrow": "Up next · Chapter 6, Lesson 28",
     "titlePlain": "Simple Linear ",
     "titleEmphasis": "Regression",
     "titleSuffix": "",
-    "subtitle": "Describing and predicting how one variable relates to another."
+    "subtitle": "\"Associated with\" is honest. \"Causes\" needs evidence beyond correlation."
   }
 ]

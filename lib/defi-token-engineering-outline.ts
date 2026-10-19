@@ -171,17 +171,42 @@ export const DEFI_TOKEN_ENGINEERING_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792433311/ltv-defi-token-engineering/ch05-20-utility-vs-governance-tokens.mp4",
         durationLabel: "1 min 58 s",
       }),
-      L(21, "vesting-schedules-and-cliffs", "Vesting Schedules & Cliffs", { contentDir: "ch05/21-vesting-schedules-and-cliffs" }),
-      L(22, "designing-sustainable-incentives", "Designing Sustainable Incentives", { contentDir: "ch05/22-designing-sustainable-incentives" }),
-      L(23, "modeling-token-supply-and-demand", "Modeling Token Supply & Demand", { contentDir: "ch05/23-modeling-token-supply-and-demand" }),
+      L(21, "vesting-schedules-and-cliffs", "Vesting Schedules & Cliffs", {
+        contentDir: "ch05/21-vesting-schedules-and-cliffs",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792433629/ltv-defi-token-engineering/ch05-21-vesting-schedules-and-cliffs.mp4",
+        durationLabel: "1 min 57 s",
+      }),
+      L(22, "designing-sustainable-incentives", "Designing Sustainable Incentives", {
+        contentDir: "ch05/22-designing-sustainable-incentives",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792433852/ltv-defi-token-engineering/ch05-22-designing-sustainable-incentives.mp4",
+        durationLabel: "2 min 1 s",
+      }),
+      L(23, "modeling-token-supply-and-demand", "Modeling Token Supply & Demand", {
+        contentDir: "ch05/23-modeling-token-supply-and-demand",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434071/ltv-defi-token-engineering/ch05-23-modeling-token-supply-and-demand.mp4",
+        durationLabel: "2 min 9 s",
+      }),
     ],
   },
   {
     n: 6,
     title: "DAOs & Governance",
     lessons: [
-      L(24, "on-chain-governance-mechanics", "On-Chain Governance Mechanics", { contentDir: "ch06/24-on-chain-governance-mechanics" }),
-      L(25, "governance-token-voting-and-delegation", "Governance Token Voting & Delegation", { contentDir: "ch06/25-governance-token-voting-and-delegation" }),
+      L(24, "on-chain-governance-mechanics", "On-Chain Governance Mechanics", {
+        contentDir: "ch06/24-on-chain-governance-mechanics",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434338/ltv-defi-token-engineering/ch06-24-on-chain-governance-mechanics.mp4",
+        durationLabel: "1 min 32 s",
+      }),
+      L(25, "governance-token-voting-and-delegation", "Governance Token Voting & Delegation", {
+        contentDir: "ch06/25-governance-token-voting-and-delegation",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434505/ltv-defi-token-engineering/ch06-25-governance-token-voting-and-delegation.mp4",
+        durationLabel: "1 min 39 s",
+      }),
       L(26, "timelocks-and-multisig-treasuries", "Timelocks & Multisig Treasuries", { contentDir: "ch06/26-timelocks-and-multisig-treasuries" }),
       L(27, "building-a-simple-governance-contract", "Building a Simple Governance Contract", { contentDir: "ch06/27-building-a-simple-governance-contract" }),
     ],
