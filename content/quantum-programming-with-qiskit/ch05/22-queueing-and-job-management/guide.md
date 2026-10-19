@@ -48,6 +48,12 @@ This matters practically: if a job is going to sit in a multi-hour queue, there'
 
 Wait times on shared, lower-priority access tiers can range anywhere from a few minutes to many hours, depending on how popular the specific backend is and your account's priority tier at the time. There is no fixed number that stays true — it depends on real-time demand across everyone using that backend. Don't plan around a specific wait-time estimate from a tutorial or a course; check the current queue status directly on the IBM Quantum Platform dashboard, and expect it to vary noticeably between backends and over the course of a day.
 
+![A real diagram of batch execution mode from IBM's own Qiskit documentation](/courses/quantum-programming-with-qiskit/ch05/22-queueing-and-job-management/batch-execution-mode.png)
+*How a batch works: classical preprocessing for each job runs in parallel, then all jobs go to the QPU, which stays locked for the whole batch.*
+
+![A real diagram of session execution mode from IBM's own Qiskit documentation](/courses/quantum-programming-with-qiskit/ch05/22-queueing-and-job-management/session-execution-mode.png)
+*A session reserves the QPU across a window of jobs, with an interactive TTL between them — a different tradeoff than a batch.*
+
 ## Job-management hygiene: batch your circuits
 
 Each job submission effectively gets its own place in the shared queue. If you have ten circuits you want to run, submitting them as ten separate jobs means waiting through ten separate queue positions. Runtime primitives accept a list of circuits in a single `run()` call:

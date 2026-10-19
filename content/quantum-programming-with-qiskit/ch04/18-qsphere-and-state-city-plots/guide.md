@@ -25,6 +25,9 @@ The Q-sphere places every computational basis state (`00`, `01`, `10`, `11` for 
 
 `plot_state_city` takes a different approach to the same underlying data: it draws a 3D bar chart with one pair of bars per basis state, one bar for the real component of that basis state's amplitude and one for the imaginary component. Where the Bloch sphere collapses a state down to a single arrow, state-city shows you the raw amplitude structure across every basis state at once — which is exactly the information you need to see relative phase relationships that a Bloch sphere, even per-qubit, cannot represent for an entangled system.
 
+![A real plot_state_qsphere rendering from Qiskit's own documentation](/courses/quantum-programming-with-qiskit/ch04/18-qsphere-and-state-city-plots/qsphere-example.png)
+*plot_state_qsphere's actual output: every computational basis state at a fixed position, blobs only where probability is nonzero.*
+
 ## The real Bell-state Q-sphere
 
 Take the familiar Bell state from `qc.h(0); qc.cx(0,1)`. Its amplitudes are 0.7071068 on `00`, 0.7071068 on `11`, and exactly 0 on `01` and `10`. Feed this statevector into `plot_state_qsphere` and here is exactly what renders:

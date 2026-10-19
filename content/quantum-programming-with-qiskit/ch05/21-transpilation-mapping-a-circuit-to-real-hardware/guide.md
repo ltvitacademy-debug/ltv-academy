@@ -31,6 +31,12 @@ This call does two things at once: it rewrites every gate in `qc` into the backe
 
 For real hardware, where every extra gate is another chance for error to accumulate, higher optimization levels usually matter more than they do in simulation — a shorter, shallower circuit after transpilation tends to produce cleaner results on noisy real devices.
 
+![A real pre-transpilation circuit from IBM's own Qiskit documentation](/courses/quantum-programming-with-qiskit/ch05/21-transpilation-mapping-a-circuit-to-real-hardware/pre-transpiled.png)
+*Before: a two-qubit circuit with a Hadamard gate and two CNOT gates, written the way you'd naturally write it.*
+
+![The same circuit after transpilation, from IBM's own Qiskit documentation](/courses/quantum-programming-with-qiskit/ch05/21-transpilation-mapping-a-circuit-to-real-hardware/transpiled.png)
+*After: RZ, X, SX, and ECR gates — the backend's actual native basis set.*
+
 ## Routing: why SWAP gates appear
 
 If a two-qubit gate in your circuit acts on two logical qubits that land on non-adjacent physical qubits (per the backend's coupling map), the transpiler can't just skip or fake that connection. Instead it inserts SWAP gates to physically move the relevant qubit states next to each other before applying the real two-qubit interaction. Each SWAP is itself built from multiple native two-qubit gates, so routing can add a meaningful number of extra gates beyond what you wrote — this is one of the two reasons (along with basis-gate rewriting) that a transpiled circuit is almost always bigger than the one you authored.

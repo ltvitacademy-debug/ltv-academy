@@ -47,6 +47,9 @@ plot_state_qsphere(state)
 
 This renders exactly two blobs, at `00` and `11`, equal in size (each corresponding to 0.5 probability) and equal in color (no relative phase between them), with nothing at `01` or `10`. Unlike the Bloch sphere attempt, this picture directly shows the real structure of the entangled state: which basis states participate, with what relative weight, and with what relative phase.
 
+![A real plot_state_qsphere rendering from Qiskit's own documentation](/courses/quantum-programming-with-qiskit/ch04/19-visualization-lab-communicating-results/qsphere-example.png)
+*The Q-sphere is where this lab's entanglement actually becomes visible — the picture the Bloch sphere attempt in Step 2 cannot produce.*
+
 ## Choosing the right visualization for the audience
 
 Here's the actual judgment call this lab is testing. For a **non-technical stakeholder** — someone who wants to know "did the quantum computer do the thing we expected?" — the histogram is almost always the right choice. It maps directly onto a question they already understand ("we ran it 1024 times, and about half the time we got one answer, about half the time we got another, and the other two possible answers never happened"), with no need to explain phase, superposition, or Hilbert space first.

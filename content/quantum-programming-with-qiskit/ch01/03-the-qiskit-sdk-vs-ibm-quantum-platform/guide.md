@@ -18,6 +18,9 @@ It's easy to conflate "Qiskit" and "IBM's quantum computers" into one thing, but
 
 The two are connected (the SDK is the client you use to talk to the Platform) but they are not the same thing, and you can use one without ever touching the other.
 
+![The IBM Quantum Platform header, with an account switcher and a region switcher](/courses/quantum-programming-with-qiskit/ch01/03-the-qiskit-sdk-vs-ibm-quantum-platform/ibm-quantum-platform-header.png)
+*This account/region switcher only exists once you're inside the cloud Platform — the local SDK has no equivalent, because it doesn't track an account at all.*
+
 ## Why you can learn Qiskit entirely offline
 
 Every circuit-building and debugging skill covered through Chapter 4 of this course — constructing circuits, understanding gates, running them through `AerSimulator`, interpreting measurement counts — requires nothing from the Platform. `AerSimulator` is a classical simulation running on your CPU. It reproduces exactly how a circuit's logic plays out (subject to the shot noise you'll study in Chapter 3), with no network call, no account, and no risk of burning through a usage quota while you experiment and make mistakes. This is by design: the whole point of local simulation is that it's the cheap, fast, unlimited place to get a circuit right before it ever needs to go near real hardware.

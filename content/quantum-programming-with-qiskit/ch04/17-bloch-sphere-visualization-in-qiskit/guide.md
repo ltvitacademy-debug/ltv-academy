@@ -28,6 +28,9 @@ plot_bloch_multivector(state)
 
 For a multi-qubit circuit where the qubits are not entangled with each other, `plot_bloch_multivector` draws one small sphere per qubit, each showing that qubit's own individual state. If the qubits are entangled, this per-qubit picture breaks down — that's exactly the limitation the next lesson's Q-sphere exists to solve.
 
+![A real plot_bloch_multivector rendering from Qiskit's own documentation](/courses/quantum-programming-with-qiskit/ch04/17-bloch-sphere-visualization-in-qiskit/bloch-multivector-example.png)
+*plot_bloch_multivector's actual output: each qubit's state as its own 3D arrow on its own sphere.*
+
 ## The real mapping: amplitudes to a 3D arrow
 
 Any single-qubit pure state can be written α|0⟩ + β|1⟩. That pair of complex numbers maps to a point (x, y, z) on the unit sphere via:

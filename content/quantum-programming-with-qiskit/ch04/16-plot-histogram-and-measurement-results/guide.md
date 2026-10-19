@@ -39,6 +39,9 @@ Take the Bell-state circuit `qc.h(0); qc.cx(0,1)` followed by measurement. The e
 
 Feed that dictionary into `plot_histogram(counts)` and here is exactly what you'd see: two bars, one labeled `00` and one labeled `11`, both reaching to roughly the middle of the chart's height (503 and 521 out of 1024 — close to the 50% line, as expected from the 0.5/0.5 theoretical split). The two bars are close to each other in height but not pixel-identical, which is the normal shot-noise wobble around a true 50/50 split. Critically, there is no bar at all for `01` or `10` — not a bar at zero height, but a complete absence from the chart, because `plot_histogram` only draws bars for keys present in the dictionary with a nonzero count. If you need `01` and `10` to visibly appear at zero (for example, to make a "these outcomes genuinely never happened" point explicit rather than implicit), you'd need to pass a counts dictionary that includes those keys with value 0 and confirm your Qiskit version renders zero-count keys — behavior that's worth checking against your installed version rather than assuming.
 
+![A real plot_histogram rendering from Qiskit's own documentation](/courses/quantum-programming-with-qiskit/ch04/16-plot-histogram-and-measurement-results/plot-histogram-example.png)
+*plot_histogram's actual output: one bar per bitstring key present in the dictionary.*
+
 ## Comparing runs side by side
 
 A single histogram answers "what did this run produce?" The more common real question is "did run B look different from run A?" — comparing a noisy hardware run against an ideal simulation, or comparing two parameter settings. `plot_histogram` supports this directly by accepting a list of counts dictionaries:

@@ -57,6 +57,9 @@ print(qiskit_ibm_runtime.__version__)
 
 If any of these raise an `ImportError`, double check you installed into the environment you're actually running Python from — a common mistake is activating one environment but running a Jupyter kernel tied to another.
 
+![The IBM Quantum Platform header, with an account switcher and a region switcher](/courses/quantum-programming-with-qiskit/ch01/02-installing-qiskit-and-ibm-quantum-setup/ibm-quantum-platform-header.png)
+*The Platform's own header — the account switcher matters once you have more than one, and the region switcher controls where a job runs and where its data is kept.*
+
 ## Creating an IBM Quantum Platform account
 
 To eventually run circuits on real hardware (covered in depth in Chapter 5), you need a free IBM Quantum Platform account:
