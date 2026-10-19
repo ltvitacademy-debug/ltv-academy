@@ -25,9 +25,9 @@ export const GOV_AI_AND_MACHINE_LEARNING_GOVERNANCE_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "AI Governance Foundations",
     lessons: [
-      L(1, "what-ai-governance-is", "What AI Governance Is", { contentDir: "ch01/01-what-ai-governance-is" }),
-      L(2, "why-ai-needs-governance", "Why AI Needs Governance", { contentDir: "ch01/02-why-ai-needs-governance" }),
-      L(3, "ai-risks-bias-privacy-security-and-hallucination", "AI Risks: Bias, Privacy, Security and Hallucination", { contentDir: "ch01/03-ai-risks-bias-privacy-security-and-hallucination" }),
+      L(1, "what-ai-governance-is", "What AI Governance Is", { contentDir: "ch01/01-what-ai-governance-is", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416150/ltv-ai-and-machine-learning-governance/what-ai-governance-is.mp4", durationLabel: "1 min 57 s" }),
+      L(2, "why-ai-needs-governance", "Why AI Needs Governance", { contentDir: "ch01/02-why-ai-needs-governance", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416460/ltv-ai-and-machine-learning-governance/why-ai-needs-governance.mp4", durationLabel: "1 min 53 s" }),
+      L(3, "ai-risks-bias-privacy-security-and-hallucination", "AI Risks: Bias, Privacy, Security and Hallucination", { contentDir: "ch01/03-ai-risks-bias-privacy-security-and-hallucination", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416799/ltv-ai-and-machine-learning-governance/ai-risks-bias-privacy-security-and-hallucination.mp4", durationLabel: "1 min 59 s" }),
       L(4, "ai-governance-roles", "AI Governance Roles", { contentDir: "ch01/04-ai-governance-roles" }),
       L(5, "ai-and-existing-data-governance", "AI and Existing Data Governance", { contentDir: "ch01/05-ai-and-existing-data-governance" }),
     ],
