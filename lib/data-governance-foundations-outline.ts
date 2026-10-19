@@ -74,11 +74,11 @@ export const GOV_DATA_GOVERNANCE_FOUNDATIONS_CHAPTERS: ChapterMeta[] = [
     title: "Getting Started",
     lessons: [
       L(25, "assessing-governance-readiness", "Assessing Governance Readiness", { contentDir: "ch05/25-assessing-governance-readiness", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792428666/ltv-data-governance-foundations/assessing-governance-readiness.mp4", durationLabel: "2 min 6 s" }),
-      L(26, "building-the-business-case", "Building the Business Case", { contentDir: "ch05/26-building-the-business-case" }),
-      L(27, "starting-small-a-governance-pilot", "Starting Small: A Governance Pilot", { contentDir: "ch05/27-starting-small-a-governance-pilot" }),
-      L(28, "governance-roadmaps", "Governance Roadmaps", { contentDir: "ch05/28-governance-roadmaps" }),
-      L(29, "communicating-governance-to-the-business", "Communicating Governance to the Business", { contentDir: "ch05/29-communicating-governance-to-the-business" }),
-      L(30, "foundations-case-study", "Foundations Case Study", { contentDir: "ch05/30-foundations-case-study" }),
+      L(26, "building-the-business-case", "Building the Business Case", { contentDir: "ch05/26-building-the-business-case", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792429211/ltv-data-governance-foundations/building-the-business-case.mp4", durationLabel: "1 min 44 s" }),
+      L(27, "starting-small-a-governance-pilot", "Starting Small: A Governance Pilot", { contentDir: "ch05/27-starting-small-a-governance-pilot", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792429813/ltv-data-governance-foundations/starting-small-a-governance-pilot.mp4", durationLabel: "1 min 52 s" }),
+      L(28, "governance-roadmaps", "Governance Roadmaps", { contentDir: "ch05/28-governance-roadmaps", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792430241/ltv-data-governance-foundations/governance-roadmaps.mp4", durationLabel: "1 min 35 s" }),
+      L(29, "communicating-governance-to-the-business", "Communicating Governance to the Business", { contentDir: "ch05/29-communicating-governance-to-the-business", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792430778/ltv-data-governance-foundations/communicating-governance-to-the-business.mp4", durationLabel: "1 min 49 s" }),
+      L(30, "foundations-case-study", "Foundations Case Study", { contentDir: "ch05/30-foundations-case-study", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792431453/ltv-data-governance-foundations/foundations-case-study.mp4", durationLabel: "0 min 33 s" }),
     ],
   },
 ];

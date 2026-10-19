@@ -111,26 +111,66 @@ export const DEFI_TOKEN_ENGINEERING_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792429051/ltv-defi-token-engineering/ch03-12-liquidations.mp4",
         durationLabel: "2 min 18 s",
       }),
-      L(13, "flash-loans", "Flash Loans", { contentDir: "ch03/13-flash-loans" }),
-      L(14, "building-a-simple-lending-pool", "Building a Simple Lending Pool", { contentDir: "ch03/14-building-a-simple-lending-pool" }),
+      L(13, "flash-loans", "Flash Loans", {
+        contentDir: "ch03/13-flash-loans",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792429790/ltv-defi-token-engineering/ch03-13-flash-loans.mp4",
+        durationLabel: "2 min 0 s",
+      }),
+      L(14, "building-a-simple-lending-pool", "Building a Simple Lending Pool", {
+        contentDir: "ch03/14-building-a-simple-lending-pool",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792430374/ltv-defi-token-engineering/ch03-14-building-a-simple-lending-pool.mp4",
+        durationLabel: "1 min 50 s",
+      }),
     ],
   },
   {
     n: 4,
     title: "Staking & Yield",
     lessons: [
-      L(15, "staking-mechanics", "Staking Mechanics", { contentDir: "ch04/15-staking-mechanics" }),
-      L(16, "yield-farming-and-incentive-design", "Yield Farming & Incentive Design", { contentDir: "ch04/16-yield-farming-and-incentive-design" }),
-      L(17, "vaults-and-auto-compounding", "Vaults & Auto-Compounding", { contentDir: "ch04/17-vaults-and-auto-compounding" }),
-      L(18, "reward-emission-schedules", "Reward Emission Schedules", { contentDir: "ch04/18-reward-emission-schedules" }),
+      L(15, "staking-mechanics", "Staking Mechanics", {
+        contentDir: "ch04/15-staking-mechanics",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792431044/ltv-defi-token-engineering/ch04-15-staking-mechanics.mp4",
+        durationLabel: "2 min 12 s",
+      }),
+      L(16, "yield-farming-and-incentive-design", "Yield Farming & Incentive Design", {
+        contentDir: "ch04/16-yield-farming-and-incentive-design",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792431565/ltv-defi-token-engineering/ch04-16-yield-farming-and-incentive-design.mp4",
+        durationLabel: "2 min 8 s",
+      }),
+      L(17, "vaults-and-auto-compounding", "Vaults & Auto-Compounding", {
+        contentDir: "ch04/17-vaults-and-auto-compounding",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792432158/ltv-defi-token-engineering/ch04-17-vaults-and-auto-compounding.mp4",
+        durationLabel: "2 min 11 s",
+      }),
+      L(18, "reward-emission-schedules", "Reward Emission Schedules", {
+        contentDir: "ch04/18-reward-emission-schedules",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792432572/ltv-defi-token-engineering/ch04-18-reward-emission-schedules.mp4",
+        durationLabel: "1 min 56 s",
+      }),
     ],
   },
   {
     n: 5,
     title: "Tokenomics Design",
     lessons: [
-      L(19, "token-supply-models", "Token Supply Models", { contentDir: "ch05/19-token-supply-models" }),
-      L(20, "utility-vs-governance-tokens", "Utility vs. Governance Tokens", { contentDir: "ch05/20-utility-vs-governance-tokens" }),
+      L(19, "token-supply-models", "Token Supply Models", {
+        contentDir: "ch05/19-token-supply-models",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792432987/ltv-defi-token-engineering/ch05-19-token-supply-models.mp4",
+        durationLabel: "2 min 7 s",
+      }),
+      L(20, "utility-vs-governance-tokens", "Utility vs. Governance Tokens", {
+        contentDir: "ch05/20-utility-vs-governance-tokens",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792433311/ltv-defi-token-engineering/ch05-20-utility-vs-governance-tokens.mp4",
+        durationLabel: "1 min 58 s",
+      }),
       L(21, "vesting-schedules-and-cliffs", "Vesting Schedules & Cliffs", { contentDir: "ch05/21-vesting-schedules-and-cliffs" }),
       L(22, "designing-sustainable-incentives", "Designing Sustainable Incentives", { contentDir: "ch05/22-designing-sustainable-incentives" }),
       L(23, "modeling-token-supply-and-demand", "Modeling Token Supply & Demand", { contentDir: "ch05/23-modeling-token-supply-and-demand" }),

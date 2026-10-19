@@ -286,21 +286,33 @@ export const SQL_SERVER_PERFORMANCE_TUNING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(47, "capstone-kickoff", "Capstone Kickoff: A Slow Production Database", {
         contentDir: "ch10/47-capstone-kickoff",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792429741/ltv-sql-server-performance-tuning/capstone-kickoff.mp4",
+        durationLabel: "2 min 36 s",
       }),
       L(48, "capstone-diagnose", "Capstone: Diagnose", {
         contentDir: "ch10/48-capstone-diagnose",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792430629/ltv-sql-server-performance-tuning/capstone-diagnose.mp4",
+        durationLabel: "3 min 8 s",
       }),
       L(49, "capstone-tune", "Capstone: Tune", {
         contentDir: "ch10/49-capstone-tune",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792431299/ltv-sql-server-performance-tuning/capstone-tune.mp4",
+        durationLabel: "2 min 52 s",
       }),
       L(50, "capstone-validate", "Capstone: Validate the Fix", {
         contentDir: "ch10/50-capstone-validate",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792431995/ltv-sql-server-performance-tuning/capstone-validate.mp4",
+        durationLabel: "2 min 48 s",
       }),
       L(51, "capstone-document-findings", "Capstone: Document Your Findings", {
         contentDir: "ch10/51-capstone-document-findings",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792432609/ltv-sql-server-performance-tuning/capstone-document-findings.mp4",
+        durationLabel: "3 min 14 s",
       }),
       L(52, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", {
         contentDir: "ch10/52-capstone-wrap-up",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792433112/ltv-sql-server-performance-tuning/capstone-wrap-up.mp4",
+        durationLabel: "2 min 53 s",
       }),
     ],
   },

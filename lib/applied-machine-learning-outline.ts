@@ -72,7 +72,7 @@ export const APPLIED_MACHINE_LEARNING_CHAPTERS: ChapterMeta[] = [
       L(21, "churn-prediction-walkthrough", "Churn Prediction Walkthrough", { contentDir: "ch05/21-churn-prediction-walkthrough", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792426771/ltv-applied-machine-learning/churn-prediction-walkthrough.mp4", durationLabel: "2 min 20 s" }),
       L(22, "price-prediction-walkthrough", "Price Prediction Walkthrough", { contentDir: "ch05/22-price-prediction-walkthrough", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792427700/ltv-applied-machine-learning/price-prediction-walkthrough.mp4", durationLabel: "2 min 14 s" }),
       L(23, "fraud-detection-walkthrough", "Fraud Detection Walkthrough", { contentDir: "ch05/23-fraud-detection-walkthrough", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792428443/ltv-applied-machine-learning/fraud-detection-walkthrough.mp4", durationLabel: "2 min 23 s" }),
-      L(24, "documenting-a-modeling-project", "Documenting a Modeling Project", { contentDir: "ch05/24-documenting-a-modeling-project" }),
+      L(24, "documenting-a-modeling-project", "Documenting a Modeling Project", { contentDir: "ch05/24-documenting-a-modeling-project", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792429468/ltv-applied-machine-learning/documenting-a-modeling-project.mp4", durationLabel: "2 min 28 s" }),
     ],
   },
   {
@@ -80,8 +80,8 @@ export const APPLIED_MACHINE_LEARNING_CHAPTERS: ChapterMeta[] = [
     title: "Capstone",
     lessons: [
       L(25, "capstone-kickoff-build-and-defend-a-prediction-model", "Capstone Kickoff: Build and Defend a Prediction Model", { contentDir: "ch06/25-capstone-kickoff-build-and-defend-a-prediction-model", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792428657/ltv-applied-machine-learning/capstone-kickoff-build-and-defend-a-prediction-model.mp4", durationLabel: "2 min 8 s" }),
-      L(26, "capstone-build-it", "Capstone: Build It", { contentDir: "ch06/26-capstone-build-it" }),
-      L(27, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch06/27-capstone-wrap-up-and-portfolio-presentation" }),
+      L(26, "capstone-build-it", "Capstone: Build It", { contentDir: "ch06/26-capstone-build-it", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792429561/ltv-applied-machine-learning/capstone-build-it.mp4", durationLabel: "2 min 24 s" }),
+      L(27, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch06/27-capstone-wrap-up-and-portfolio-presentation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792430287/ltv-applied-machine-learning/capstone-wrap-up-and-portfolio-presentation.mp4", durationLabel: "2 min 11 s" }),
     ],
   },
 ];

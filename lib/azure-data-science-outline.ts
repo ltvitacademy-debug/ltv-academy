@@ -69,7 +69,7 @@ export const AZURE_DATA_SCIENCE_CHAPTERS: ChapterMeta[] = [
     title: "Capstone",
     lessons: [
       L(20, "capstone-kickoff-train-deploy-and-monitor-a-model-on-azure", "Capstone Kickoff: Train, Deploy and Monitor a Model on Azure", { contentDir: "ch05/20-capstone-kickoff-train-deploy-and-monitor-a-model-on-azure", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792425235/ltv-azure-data-science/capstone-kickoff-train-deploy-and-monitor-a-model-on-azure.mp4", durationLabel: "1 min 7 s" }),
-      L(21, "capstone-build-it", "Capstone: Build It", { contentDir: "ch05/21-capstone-build-it" }),
+      L(21, "capstone-build-it", "Capstone: Build It", { contentDir: "ch05/21-capstone-build-it", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792433438/ltv-azure-data-science/capstone-build-it.mp4", durationLabel: "2 min 10 s" }),
       L(22, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch05/22-capstone-wrap-up-and-portfolio-presentation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792426594/ltv-azure-data-science/capstone-wrap-up-and-portfolio-presentation.mp4", durationLabel: "2 min 6 s" }),
     ],
   },
