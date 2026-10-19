@@ -76,17 +76,17 @@ export const BLOCKCHAIN_TESTING_DEVOPS_CHAPTERS: ChapterMeta[] = [
       L(22, "monitoring-contract-and-protocol-health", "Monitoring Contract & Protocol Health", { contentDir: "ch05/22-monitoring-contract-and-protocol-health", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434093/ltv-blockchain-testing-devops/monitoring-contract-and-protocol-health.mp4", durationLabel: "1 min 44 s" }),
       L(23, "alerting-on-anomalous-on-chain-activity", "Alerting on Anomalous On-Chain Activity", { contentDir: "ch05/23-alerting-on-anomalous-on-chain-activity", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434264/ltv-blockchain-testing-devops/alerting-on-anomalous-on-chain-activity.mp4", durationLabel: "1 min 36 s" }),
       L(24, "incident-response-and-pause-mechanisms", "Incident Response & Pause Mechanisms", { contentDir: "ch05/24-incident-response-and-pause-mechanisms", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434442/ltv-blockchain-testing-devops/incident-response-and-pause-mechanisms.mp4", durationLabel: "1 min 50 s" }),
-      L(25, "post-incident-communication-and-postmortems", "Post-Incident Communication & Postmortems", { contentDir: "ch05/25-post-incident-communication-and-postmortems" }),
+      L(25, "post-incident-communication-and-postmortems", "Post-Incident Communication & Postmortems", { contentDir: "ch05/25-post-incident-communication-and-postmortems", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434616/ltv-blockchain-testing-devops/post-incident-communication-and-postmortems.mp4", durationLabel: "1 min 47 s" }),
     ],
   },
   {
     n: 6,
     title: "Mainnet Launch",
     lessons: [
-      L(26, "the-pre-launch-checklist", "The Pre-Launch Checklist", { contentDir: "ch06/26-the-pre-launch-checklist" }),
-      L(27, "audit-timing-and-bug-bounties", "Audit Timing & Bug Bounties", { contentDir: "ch06/27-audit-timing-and-bug-bounties" }),
-      L(28, "phased-rollouts-and-value-caps", "Phased Rollouts & Value Caps", { contentDir: "ch06/28-phased-rollouts-and-value-caps" }),
-      L(29, "launch-day-runbook", "Launch-Day Runbook", { contentDir: "ch06/29-launch-day-runbook" }),
+      L(26, "the-pre-launch-checklist", "The Pre-Launch Checklist", { contentDir: "ch06/26-the-pre-launch-checklist", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434769/ltv-blockchain-testing-devops/the-pre-launch-checklist.mp4", durationLabel: "1 min 54 s" }),
+      L(27, "audit-timing-and-bug-bounties", "Audit Timing & Bug Bounties", { contentDir: "ch06/27-audit-timing-and-bug-bounties", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434913/ltv-blockchain-testing-devops/audit-timing-and-bug-bounties.mp4", durationLabel: "1 min 40 s" }),
+      L(28, "phased-rollouts-and-value-caps", "Phased Rollouts & Value Caps", { contentDir: "ch06/28-phased-rollouts-and-value-caps", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792435036/ltv-blockchain-testing-devops/phased-rollouts-and-value-caps.mp4", durationLabel: "1 min 44 s" }),
+      L(29, "launch-day-runbook", "Launch-Day Runbook", { contentDir: "ch06/29-launch-day-runbook", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792435215/ltv-blockchain-testing-devops/launch-day-runbook.mp4", durationLabel: "2 min 7 s" }),
     ],
   },
 ];

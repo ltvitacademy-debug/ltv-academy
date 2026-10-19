@@ -207,17 +207,42 @@ export const DEFI_TOKEN_ENGINEERING_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434505/ltv-defi-token-engineering/ch06-25-governance-token-voting-and-delegation.mp4",
         durationLabel: "1 min 39 s",
       }),
-      L(26, "timelocks-and-multisig-treasuries", "Timelocks & Multisig Treasuries", { contentDir: "ch06/26-timelocks-and-multisig-treasuries" }),
-      L(27, "building-a-simple-governance-contract", "Building a Simple Governance Contract", { contentDir: "ch06/27-building-a-simple-governance-contract" }),
+      L(26, "timelocks-and-multisig-treasuries", "Timelocks & Multisig Treasuries", {
+        contentDir: "ch06/26-timelocks-and-multisig-treasuries",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434671/ltv-defi-token-engineering/ch06-26-timelocks-and-multisig-treasuries.mp4",
+        durationLabel: "1 min 46 s",
+      }),
+      L(27, "building-a-simple-governance-contract", "Building a Simple Governance Contract", {
+        contentDir: "ch06/27-building-a-simple-governance-contract",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434827/ltv-defi-token-engineering/ch06-27-building-a-simple-governance-contract.mp4",
+        durationLabel: "1 min 48 s",
+      }),
     ],
   },
   {
     n: 7,
     title: "NFTs Beyond Collectibles",
     lessons: [
-      L(28, "erc-721-and-erc-1155-review", "ERC-721 & ERC-1155 Review", { contentDir: "ch07/28-erc-721-and-erc-1155-review" }),
-      L(29, "nfts-as-financial-and-utility-primitives", "NFTs as Financial & Utility Primitives", { contentDir: "ch07/29-nfts-as-financial-and-utility-primitives" }),
-      L(30, "royalties-and-marketplace-mechanics", "Royalties & Marketplace Mechanics", { contentDir: "ch07/30-royalties-and-marketplace-mechanics" }),
+      L(28, "erc-721-and-erc-1155-review", "ERC-721 & ERC-1155 Review", {
+        contentDir: "ch07/28-erc-721-and-erc-1155-review",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792434976/ltv-defi-token-engineering/ch07-28-erc-721-and-erc-1155-review.mp4",
+        durationLabel: "1 min 43 s",
+      }),
+      L(29, "nfts-as-financial-and-utility-primitives", "NFTs as Financial & Utility Primitives", {
+        contentDir: "ch07/29-nfts-as-financial-and-utility-primitives",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792435111/ltv-defi-token-engineering/ch07-29-nfts-as-financial-and-utility-primitives.mp4",
+        durationLabel: "1 min 41 s",
+      }),
+      L(30, "royalties-and-marketplace-mechanics", "Royalties & Marketplace Mechanics", {
+        contentDir: "ch07/30-royalties-and-marketplace-mechanics",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792435255/ltv-defi-token-engineering/ch07-30-royalties-and-marketplace-mechanics.mp4",
+        durationLabel: "1 min 45 s",
+      }),
     ],
   },
 ];
