@@ -90,19 +90,19 @@ export const INFRASTRUCTURE_AS_CODE_WITH_TERRAFORM_CHAPTERS: ChapterMeta[] = [
     title: "Terraform in Teams",
     lessons: [
       L(29, "workspaces-and-environments", "Workspaces & Environments", { contentDir: "ch07/29-workspaces-and-environments", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792453988/ltv-infrastructure-as-code-with-terraform/workspaces-and-environments.mp4", durationLabel: "1 min 29 s" }),
-      L(30, "terraform-in-ci-cd", "Terraform in CI/CD", { contentDir: "ch07/30-terraform-in-ci-cd" }),
-      L(31, "policy-as-code", "Policy as Code", { contentDir: "ch07/31-policy-as-code" }),
-      L(32, "drift-detection", "Drift Detection", { contentDir: "ch07/32-drift-detection" }),
-      L(33, "secrets-handling", "Secrets Handling", { contentDir: "ch07/33-secrets-handling" }),
+      L(30, "terraform-in-ci-cd", "Terraform in CI/CD", { contentDir: "ch07/30-terraform-in-ci-cd", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792454026/ltv-infrastructure-as-code-with-terraform/terraform-in-ci-cd.mp4", durationLabel: "1 min 20 s" }),
+      L(31, "policy-as-code", "Policy as Code", { contentDir: "ch07/31-policy-as-code", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792454060/ltv-infrastructure-as-code-with-terraform/policy-as-code.mp4", durationLabel: "1 min 17 s" }),
+      L(32, "drift-detection", "Drift Detection", { contentDir: "ch07/32-drift-detection", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792454096/ltv-infrastructure-as-code-with-terraform/drift-detection.mp4", durationLabel: "1 min 23 s" }),
+      L(33, "secrets-handling", "Secrets Handling", { contentDir: "ch07/33-secrets-handling", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792454130/ltv-infrastructure-as-code-with-terraform/secrets-handling.mp4", durationLabel: "1 min 15 s" }),
     ],
   },
   {
     n: 8,
     title: "Capstone",
     lessons: [
-      L(34, "capstone-kickoff-provision-a-production-style-environment", "Capstone Kickoff: Provision a Production-Style Environment", { contentDir: "ch08/34-capstone-kickoff-provision-a-production-style-environment" }),
-      L(35, "capstone-build-it", "Capstone: Build It", { contentDir: "ch08/35-capstone-build-it" }),
-      L(36, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch08/36-capstone-wrap-up-and-portfolio-presentation" }),
+      L(34, "capstone-kickoff-provision-a-production-style-environment", "Capstone Kickoff: Provision a Production-Style Environment", { contentDir: "ch08/34-capstone-kickoff-provision-a-production-style-environment", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792454165/ltv-infrastructure-as-code-with-terraform/capstone-kickoff-provision-a-production-style-environment.mp4", durationLabel: "1 min 16 s" }),
+      L(35, "capstone-build-it", "Capstone: Build It", { contentDir: "ch08/35-capstone-build-it", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792454202/ltv-infrastructure-as-code-with-terraform/capstone-build-it.mp4", durationLabel: "1 min 19 s" }),
+      L(36, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch08/36-capstone-wrap-up-and-portfolio-presentation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792454244/ltv-infrastructure-as-code-with-terraform/capstone-wrap-up-and-portfolio-presentation.mp4", durationLabel: "1 min 28 s" }),
     ],
   },
 ];
