@@ -379,12 +379,18 @@ export const AWS_DATA_ENGINEERING_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(56, "iceberg-and-s3-tables", "Table Formats for a Data Lake: Apache Iceberg via S3 Tables", {
         contentDir: "ch12/56-iceberg-and-s3-tables",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792382549/ltv-aws-data-engineering/iceberg-and-s3-tables.mp4",
+        durationLabel: "2 min 39 s",
       }),
       L(57, "lake-formation-fine-grained-permissions", "AWS Lake Formation: Fine-Grained Permissions for the Lake", {
         contentDir: "ch12/57-lake-formation-fine-grained-permissions",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792382665/ltv-aws-data-engineering/lake-formation-fine-grained-permissions.mp4",
+        durationLabel: "2 min 30 s",
       }),
       L(58, "glue-data-quality-dqdl", "AWS Glue Data Quality: Defining and Enforcing Data Quality Rules", {
         contentDir: "ch12/58-glue-data-quality-dqdl",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792382785/ltv-aws-data-engineering/glue-data-quality-dqdl.mp4",
+        durationLabel: "2 min 51 s",
       }),
     ],
   },

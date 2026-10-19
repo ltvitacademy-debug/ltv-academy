@@ -218,12 +218,18 @@ export const SNOWFLAKE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(77, "snowpark-dataframes-and-lazy-evaluation", "Snowpark for Python: DataFrames That Run Inside Snowflake", {
         contentDir: "ch18/77-snowpark-dataframes-and-lazy-evaluation",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792382165/ltv-snowflake/snowpark-dataframes-and-lazy-evaluation.mp4",
+        durationLabel: "2 min 18 s",
       }),
       L(78, "snowpark-udfs-and-stored-procedures", "Snowpark UDFs, Stored Procedures, and Where the Code Actually Runs", {
         contentDir: "ch18/78-snowpark-udfs-and-stored-procedures",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792382268/ltv-snowflake/snowpark-udfs-and-stored-procedures.mp4",
+        durationLabel: "1 min 59 s",
       }),
       L(79, "native-apps-framework", "The Snowflake Native App Framework: Packaging Logic, Not Just Data", {
         contentDir: "ch18/79-native-apps-framework",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792382403/ltv-snowflake/native-apps-framework.mp4",
+        durationLabel: "2 min 4 s",
       }),
     ],
   },
