@@ -202,19 +202,54 @@ export const JS_TS_BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "TypeScript for Blockchain Development",
     lessons: [
-      L(26, "typing-blockchain-data-structures", "Typing Blockchain Data Structures", { contentDir: "ch05/26-typing-blockchain-data-structures" }),
-      L(27, "ethers-and-viem-types", "Working With ethers.js/viem Types", { contentDir: "ch05/27-ethers-and-viem-types" }),
-      L(28, "type-safe-contract-interactions", "Type-Safe Contract Interactions", { contentDir: "ch05/28-type-safe-contract-interactions" }),
-      L(29, "ts-project-configuration", "TS Project Configuration", { contentDir: "ch05/29-ts-project-configuration" }),
-      L(30, "common-ts-patterns-in-web3-repos", "Common TS Patterns in Web3 Repos", { contentDir: "ch05/30-common-ts-patterns-in-web3-repos" }),
+      L(26, "typing-blockchain-data-structures", "Typing Blockchain Data Structures", {
+        contentDir: "ch05/26-typing-blockchain-data-structures",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792417514/ltv-js-ts-blockchain/ch05-26-typing-blockchain-data-structures.mp4",
+        durationLabel: "2 min 20 s",
+      }),
+      L(27, "ethers-and-viem-types", "Working With ethers.js/viem Types", {
+        contentDir: "ch05/27-ethers-and-viem-types",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792417990/ltv-js-ts-blockchain/ch05-27-ethers-and-viem-types.mp4",
+        durationLabel: "2 min 22 s",
+      }),
+      L(28, "type-safe-contract-interactions", "Type-Safe Contract Interactions", {
+        contentDir: "ch05/28-type-safe-contract-interactions",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792418333/ltv-js-ts-blockchain/ch05-28-type-safe-contract-interactions.mp4",
+        durationLabel: "2 min 9 s",
+      }),
+      L(29, "ts-project-configuration", "TS Project Configuration", {
+        contentDir: "ch05/29-ts-project-configuration",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792418795/ltv-js-ts-blockchain/ch05-29-ts-project-configuration.mp4",
+        durationLabel: "2 min 24 s",
+      }),
+      L(30, "common-ts-patterns-in-web3-repos", "Common TS Patterns in Web3 Repos", {
+        contentDir: "ch05/30-common-ts-patterns-in-web3-repos",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792419165/ltv-js-ts-blockchain/ch05-30-common-ts-patterns-in-web3-repos.mp4",
+        durationLabel: "2 min 19 s",
+      }),
     ],
   },
   {
     n: 6,
     title: "Node.js Basics",
     lessons: [
-      L(31, "what-is-node-js", "What Is Node.js?", { contentDir: "ch06/31-what-is-node-js" }),
-      L(32, "npm-and-package-management", "npm & Package Management", { contentDir: "ch06/32-npm-and-package-management" }),
+      L(31, "what-is-node-js", "What Is Node.js?", {
+        contentDir: "ch06/31-what-is-node-js",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792419476/ltv-js-ts-blockchain/ch06-31-what-is-node-js.mp4",
+        durationLabel: "1 min 48 s",
+      }),
+      L(32, "npm-and-package-management", "npm & Package Management", {
+        contentDir: "ch06/32-npm-and-package-management",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792419793/ltv-js-ts-blockchain/ch06-32-npm-and-package-management.mp4",
+        durationLabel: "1 min 50 s",
+      }),
       L(33, "building-a-simple-node-script", "Building a Simple Node Script", { contentDir: "ch06/33-building-a-simple-node-script" }),
       L(34, "environment-variables-and-config", "Environment Variables & Config", { contentDir: "ch06/34-environment-variables-and-config" }),
       L(35, "file-system-basics", "File System Basics", { contentDir: "ch06/35-file-system-basics" }),

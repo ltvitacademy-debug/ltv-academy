@@ -49,28 +49,28 @@ export const AI_AND_GENERATIVE_AI_FUNDAMENTALS_FOR_DATA_SCIENTISTS_CHAPTERS: Cha
     lessons: [
       L(11, "what-embeddings-are", "What Embeddings Are", { contentDir: "ch03/11-what-embeddings-are", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416635/ltv-ai-and-generative-ai-fundamentals-for-data-scientists/what-embeddings-are.mp4", durationLabel: "1 min 53 s" }),
       L(12, "creating-and-comparing-embeddings", "Creating & Comparing Embeddings", { contentDir: "ch03/12-creating-and-comparing-embeddings", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416970/ltv-ai-and-generative-ai-fundamentals-for-data-scientists/creating-and-comparing-embeddings.mp4", durationLabel: "2 min 3 s" }),
-      L(13, "vector-databases", "Vector Databases", { contentDir: "ch03/13-vector-databases" }),
-      L(14, "semantic-search", "Semantic Search", { contentDir: "ch03/14-semantic-search" }),
+      L(13, "vector-databases", "Vector Databases", { contentDir: "ch03/13-vector-databases", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792417233/ltv-ai-and-generative-ai-fundamentals-for-data-scientists/vector-databases.mp4", durationLabel: "1 min 49 s" }),
+      L(14, "semantic-search", "Semantic Search", { contentDir: "ch03/14-semantic-search", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792417515/ltv-ai-and-generative-ai-fundamentals-for-data-scientists/semantic-search.mp4", durationLabel: "1 min 48 s" }),
     ],
   },
   {
     n: 4,
     title: "RAG & AI APIs",
     lessons: [
-      L(15, "retrieval-augmented-generation-overview", "Retrieval-Augmented Generation Overview", { contentDir: "ch04/15-retrieval-augmented-generation-overview" }),
-      L(16, "building-a-simple-rag-pipeline", "Building a Simple RAG Pipeline", { contentDir: "ch04/16-building-a-simple-rag-pipeline" }),
-      L(17, "using-llm-apis-from-python", "Using LLM APIs From Python", { contentDir: "ch04/17-using-llm-apis-from-python" }),
-      L(18, "structured-extraction-with-llms", "Structured Extraction With LLMs", { contentDir: "ch04/18-structured-extraction-with-llms" }),
-      L(19, "cost-latency-and-privacy-tradeoffs", "Cost, Latency & Privacy Tradeoffs", { contentDir: "ch04/19-cost-latency-and-privacy-tradeoffs" }),
+      L(15, "retrieval-augmented-generation-overview", "Retrieval-Augmented Generation Overview", { contentDir: "ch04/15-retrieval-augmented-generation-overview", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792417861/ltv-ai-and-generative-ai-fundamentals-for-data-scientists/retrieval-augmented-generation-overview.mp4", durationLabel: "1 min 52 s" }),
+      L(16, "building-a-simple-rag-pipeline", "Building a Simple RAG Pipeline", { contentDir: "ch04/16-building-a-simple-rag-pipeline", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792418135/ltv-ai-and-generative-ai-fundamentals-for-data-scientists/building-a-simple-rag-pipeline.mp4", durationLabel: "1 min 57 s" }),
+      L(17, "using-llm-apis-from-python", "Using LLM APIs From Python", { contentDir: "ch04/17-using-llm-apis-from-python", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792418423/ltv-ai-and-generative-ai-fundamentals-for-data-scientists/using-llm-apis-from-python.mp4", durationLabel: "1 min 59 s" }),
+      L(18, "structured-extraction-with-llms", "Structured Extraction With LLMs", { contentDir: "ch04/18-structured-extraction-with-llms", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792418794/ltv-ai-and-generative-ai-fundamentals-for-data-scientists/structured-extraction-with-llms.mp4", durationLabel: "1 min 56 s" }),
+      L(19, "cost-latency-and-privacy-tradeoffs", "Cost, Latency & Privacy Tradeoffs", { contentDir: "ch04/19-cost-latency-and-privacy-tradeoffs", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792419065/ltv-ai-and-generative-ai-fundamentals-for-data-scientists/cost-latency-and-privacy-tradeoffs.mp4", durationLabel: "1 min 56 s" }),
     ],
   },
   {
     n: 5,
     title: "Capstone",
     lessons: [
-      L(20, "capstone-kickoff-build-an-ai-powered-data-tool", "Capstone Kickoff: Build an AI-Powered Data Tool", { contentDir: "ch05/20-capstone-kickoff-build-an-ai-powered-data-tool" }),
-      L(21, "capstone-build-it", "Capstone: Build It", { contentDir: "ch05/21-capstone-build-it" }),
-      L(22, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch05/22-capstone-wrap-up-and-portfolio-presentation" }),
+      L(20, "capstone-kickoff-build-an-ai-powered-data-tool", "Capstone Kickoff: Build an AI-Powered Data Tool", { contentDir: "ch05/20-capstone-kickoff-build-an-ai-powered-data-tool", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792419364/ltv-ai-and-generative-ai-fundamentals-for-data-scientists/capstone-kickoff-build-an-ai-powered-data-tool.mp4", durationLabel: "2 min 4 s" }),
+      L(21, "capstone-build-it", "Capstone: Build It", { contentDir: "ch05/21-capstone-build-it", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792419658/ltv-ai-and-generative-ai-fundamentals-for-data-scientists/capstone-build-it.mp4", durationLabel: "1 min 57 s" }),
+      L(22, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch05/22-capstone-wrap-up-and-portfolio-presentation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792420023/ltv-ai-and-generative-ai-fundamentals-for-data-scientists/capstone-wrap-up-and-portfolio-presentation.mp4", durationLabel: "2 min 8 s" }),
     ],
   },
 ];

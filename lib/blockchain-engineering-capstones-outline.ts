@@ -138,7 +138,31 @@ export const BLOCKCHAIN_ENGINEERING_CAPSTONES_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Career Preparation",
     lessons: [
-      L(18, "building-your-blockchain-developer-resume", "Building Your Blockchain Developer Resume", { contentDir: "ch05/18-building-your-blockchain-developer-resume" }),
-      L(19, "portfolio-and-github-presentation-strategy", "Portfolio & GitHub Presentation Strategy", { contentDir: "ch05/19-portfolio-and-github-presentation-strategy" }),
-      L(20, "common-blockchain-interview-questions", "Common Blockchain Interview Questions", { contentDir: "ch05/20-common-blockchain-interview-questions" }),
-      L(21, "whiteboard-and-security-review-exercises", "Whiteboard & Security Review Exercises", { contentDir: "ch05/
+      L(18, "building-your-blockchain-developer-resume", "Building Your Blockchain Developer Resume", {
+        contentDir: "ch05/18-building-your-blockchain-developer-resume",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792417509/ltv-blockchain-engineering-capstones/building-your-blockchain-developer-resume.mp4",
+        durationLabel: "1 min 16 s",
+      }),
+      L(19, "portfolio-and-github-presentation-strategy", "Portfolio & GitHub Presentation Strategy", {
+        contentDir: "ch05/19-portfolio-and-github-presentation-strategy",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792417825/ltv-blockchain-engineering-capstones/portfolio-and-github-presentation-strategy.mp4",
+        durationLabel: "1 min 20 s",
+      }),
+      L(20, "common-blockchain-interview-questions", "Common Blockchain Interview Questions", {
+        contentDir: "ch05/20-common-blockchain-interview-questions",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792418094/ltv-blockchain-engineering-capstones/common-blockchain-interview-questions.mp4",
+        durationLabel: "1 min 32 s",
+      }),
+      L(21, "whiteboard-and-security-review-exercises", "Whiteboard & Security Review Exercises", {
+        contentDir: "ch05/21-whiteboard-and-security-review-exercises",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792418378/ltv-blockchain-engineering-capstones/whiteboard-and-security-review-exercises.mp4",
+        durationLabel: "1 min 29 s",
+      }),
+      L(22, "salary-negotiation-and-next-steps", "Salary Negotiation & Next Steps", {
+        contentDir: "ch05/22-salary-negotiation-and-next-steps",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792418773/ltv-blockchain-engineering-capstones/salary-negotiation-and-next-steps.mp4",
+        durationLabel: "1 min 42 s",
+      }),
+    ],
+  },
+];

@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Blockchain Development · Chapter Ten · Security Auditing",
+    "titlePlain": "Oracle Manipulation: The ",
+    "titleEmphasis": "Mango Markets",
+    "titleSuffix": " Exploit",
+    "subtitle": "Lesson 5 of 6 · A written case study"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The vulnerability — a thin market IS the oracle",
+    "code": "// Vulnerable: reads a single oracle's current price\n// with no check on how much liquidity backs it, or\n// how recently/sharply it moved.\nfunction getPositionValue(address trader)\n    public view returns (uint256)\n{\n    uint256 price = priceOracle.getPrice(MNGO_USDC_PAIR);\n    return positions[trader].size * price;\n}",
+    "caption": "The question every protocol must answer: how hard is it to move this oracle's source?"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "October 11, 2022 — over about 30 minutes",
+    "titlePlain": "No flash loan ",
+    "titleEmphasis": "needed",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Open long + short", "sub": "two accounts, matching perpetual positions" },
+      { "label": "Pump thin exchanges", "sub": "MNGO oracle price rises 13x in ~30 min" },
+      { "label": "Borrow on paper value", "sub": "over $110M drained from the treasury" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The fix — bound value by real liquidity",
+    "code": "// Safer: check a spot price against a slower\n// reference before trusting a large, sudden move.\nfunction getPositionValueSafer(address trader)\n    public view returns (uint256)\n{\n    uint256 spot = priceOracle.getPrice(MNGO_USDC_PAIR);\n    uint256 ref = twapOracle.consult(MNGO_USDC_PAIR, 1 hours);\n    uint256 dev = spot > ref\n        ? ((spot - ref) * 100) / ref\n        : ((ref - spot) * 100) / ref;\n    require(dev <= MAX_ALLOWED_DEVIATION_PERCENT);\n    return positions[trader].size * spot;\n}",
+    "caption": "\"The protocol worked as designed\" was the attacker's actual public defense."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 6",
+    "titlePlain": "Access Control Failures: ",
+    "titleEmphasis": "Parity",
+    "titleSuffix": " Multisig",
+    "subtitle": "A bug that froze funds without stealing any."
+  }
+]

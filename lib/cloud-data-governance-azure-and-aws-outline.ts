@@ -69,11 +69,11 @@ export const GOV_CLOUD_DATA_GOVERNANCE_AZURE_AND_AWS_CHAPTERS: ChapterMeta[] = [
     n: 5,
     title: "Multi-Cloud Governance",
     lessons: [
-      L(21, "multi-cloud-governance-challenges", "Multi-Cloud Governance Challenges", { contentDir: "ch05/21-multi-cloud-governance-challenges" }),
-      L(22, "cross-cloud-cataloging-and-lineage", "Cross-Cloud Cataloging and Lineage", { contentDir: "ch05/22-cross-cloud-cataloging-and-lineage" }),
-      L(23, "multi-cloud-governance-case-study", "Multi-Cloud Governance Case Study", { contentDir: "ch05/23-multi-cloud-governance-case-study" }),
-      L(24, "cloud-governance-practice-lab", "Cloud Governance Practice Lab", { contentDir: "ch05/24-cloud-governance-practice-lab" }),
-      L(25, "cloud-governance-review-checklist", "Cloud Governance Review Checklist", { contentDir: "ch05/25-cloud-governance-review-checklist" }),
+      L(21, "multi-cloud-governance-challenges", "Multi-Cloud Governance Challenges", { contentDir: "ch05/21-multi-cloud-governance-challenges", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792417166/ltv-cloud-data-governance-azure-and-aws/multi-cloud-governance-challenges.mp4", durationLabel: "2 min 17 s" }),
+      L(22, "cross-cloud-cataloging-and-lineage", "Cross-Cloud Cataloging and Lineage", { contentDir: "ch05/22-cross-cloud-cataloging-and-lineage", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792417485/ltv-cloud-data-governance-azure-and-aws/cross-cloud-cataloging-and-lineage.mp4", durationLabel: "2 min 11 s" }),
+      L(23, "multi-cloud-governance-case-study", "Multi-Cloud Governance Case Study", { contentDir: "ch05/23-multi-cloud-governance-case-study", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792417868/ltv-cloud-data-governance-azure-and-aws/multi-cloud-governance-case-study.mp4", durationLabel: "2 min 18 s" }),
+      L(24, "cloud-governance-practice-lab", "Cloud Governance Practice Lab", { contentDir: "ch05/24-cloud-governance-practice-lab", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792418150/ltv-cloud-data-governance-azure-and-aws/cloud-governance-practice-lab.mp4", durationLabel: "1 min 55 s" }),
+      L(25, "cloud-governance-review-checklist", "Cloud Governance Review Checklist", { contentDir: "ch05/25-cloud-governance-review-checklist", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792418439/ltv-cloud-data-governance-azure-and-aws/cloud-governance-review-checklist.mp4", durationLabel: "1 min 57 s" }),
     ],
   },
 ];

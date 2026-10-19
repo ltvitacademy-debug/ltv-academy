@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Blockchain Development · Chapter Ten · Security Auditing",
+    "titlePlain": "Access Control Failures: The ",
+    "titleEmphasis": "Parity",
+    "titleSuffix": " Multisig Freeze",
+    "subtitle": "Lesson 6 of 6 · A written case study"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The vulnerability — a sensitive function, no caller check",
+    "code": "// Vulnerable: anyone can call this and become the owner.\n// No onlyOwner modifier, no initialization guard.\nfunction initWallet(\n    address[] calldata owners,\n    uint256 required\n) external {\n    for (uint i = 0; i < owners.length; i++) {\n        isOwner[owners[i]] = true;\n    }\n    required_signatures = required;\n}",
+    "caption": "Parity's wallets shared one library contract via delegatecall to save gas."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "July–November 2017",
+    "titlePlain": "No theft — ",
+    "titleEmphasis": "frozen funds",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "initWallet called directly", "sub": "an outside user claims library ownership" },
+      { "label": "kill() called by that owner", "sub": "selfdestruct wipes the library's code" },
+      { "label": "Every dependent wallet breaks", "sub": "513,774 ETH frozen across 587 wallets" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The fix — an initialization guard",
+    "code": "bool private initialized;\n\nmodifier onlyOnce() {\n    require(!initialized, \"Already initialized\");\n    initialized = true;\n    _;\n}\n\nfunction initWallet(\n    address[] calldata owners,\n    uint256 required\n) external onlyOnce {\n    for (uint i = 0; i < owners.length; i++) {\n        isOwner[owners[i]] = true;\n    }\n    required_signatures = required;\n}",
+    "caption": "\"Only meant to be called once by the deployer\" is a comment, not a control."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Chapter 10 · Security Auditing · Complete",
+    "titlePlain": "No theft is ",
+    "titleEmphasis": "not",
+    "titleSuffix": " the same as no damage",
+    "subtitle": "Availability is a security property too."
+  }
+]

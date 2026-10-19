@@ -402,9 +402,15 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
       // three courses in this career path.
       L(55, "flash-loan-attacks-harvest-finance", "Flash Loan Attacks: The Harvest Finance Exploit", {
         contentDir: "ch10/04-flash-loan-attacks-harvest-finance",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792419191/ltv-blockchain/ch10-04-flash-loan-attacks-harvest-finance.mp4",
+        durationLabel: "2 min 1 s",
       }),
       L(56, "oracle-manipulation-mango-markets", "Oracle Manipulation: The Mango Markets Exploit", {
         contentDir: "ch10/05-oracle-manipulation-mango-markets",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792419536/ltv-blockchain/ch10-05-oracle-manipulation-mango-markets.mp4",
+        durationLabel: "2 min 9 s",
       }),
       L(57, "access-control-parity-multisig", "Access Control Failures: The Parity Multisig Freeze", {
         contentDir: "ch10/06-access-control-parity-multisig",

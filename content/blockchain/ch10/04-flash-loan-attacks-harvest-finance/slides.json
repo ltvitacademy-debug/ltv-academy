@@ -1,0 +1,43 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Blockchain Development · Chapter Ten · Security Auditing",
+    "titlePlain": "Flash Loan Attacks: The ",
+    "titleEmphasis": "Harvest Finance",
+    "titleSuffix": " Exploit",
+    "subtitle": "Lesson 4 of 6 · A written case study"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The vulnerability — a price an attacker can move",
+    "code": "// Vulnerable: derives a price directly from a pool's\n// current reserves, which a flash loan can distort\n// for the length of one transaction.\nfunction getVaultSharePrice() public view returns (uint256) {\n    uint256 reserveA = curvePool.balances(0);\n    uint256 reserveB = curvePool.balances(1);\n    return (reserveA * 1e18) / reserveB;\n}",
+    "caption": "A flash loan removes capital as a constraint — borrow millions for ~15 seconds."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "October 26, 2020 — one atomic transaction",
+    "titlePlain": "The six-step ",
+    "titleEmphasis": "cycle",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Borrow + dump", "sub": "flash loan skews the Curve pool's price" },
+      { "label": "Deposit", "sub": "vault prices the deposit at the skewed rate" },
+      { "label": "Trade back + withdraw", "sub": "pool reverts, vault overpays the attacker" },
+      { "label": "Repay", "sub": "keep the difference — $33.8M drained" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The fix — make the price source expensive to move",
+    "code": "// A time-weighted average price, built from many\n// blocks of history instead of one block's reserves.\nfunction getVaultSharePriceTWAP() public view returns (uint256) {\n    return oracle.consult(address(curvePool), TWAP_WINDOW);\n}\n\n// Or an independent feed, sourced off the pool entirely.\nfunction getVaultSharePriceChainlink() public view returns (uint256) {\n    (, int256 price, , , ) = priceFeed.latestRoundData();\n    return uint256(price);\n}",
+    "caption": "Nothing was a reentrancy bug — every call completed and returned normally."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 5",
+    "titlePlain": "Oracle Manipulation: ",
+    "titleEmphasis": "Mango Markets",
+    "titleSuffix": "",
+    "subtitle": "When the manipulated market is the oracle itself."
+  }
+]
