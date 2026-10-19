@@ -70,16 +70,16 @@ export const DATA_VISUALIZATION_AND_EDA_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(20, "telling-the-story-of-a-dataset", "Telling the Story of a Dataset", { contentDir: "ch05/20-telling-the-story-of-a-dataset", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792435281/ltv-data-visualization-and-eda/telling-the-story-of-a-dataset.mp4", durationLabel: "1 min 54 s" }),
       L(21, "writing-up-an-analysis", "Writing Up an Analysis", { contentDir: "ch05/21-writing-up-an-analysis", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792435283/ltv-data-visualization-and-eda/writing-up-an-analysis.mp4", durationLabel: "1 min 50 s" }),
-      L(22, "presenting-to-non-technical-audiences", "Presenting to Non-Technical Audiences", { contentDir: "ch05/22-presenting-to-non-technical-audiences" }),
+      L(22, "presenting-to-non-technical-audiences", "Presenting to Non-Technical Audiences", { contentDir: "ch05/22-presenting-to-non-technical-audiences", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792435399/ltv-data-visualization-and-eda/presenting-to-non-technical-audiences.mp4", durationLabel: "2 min 2 s" }),
     ],
   },
   {
     n: 6,
     title: "Capstone",
     lessons: [
-      L(23, "capstone-kickoff-explore-and-present-a-real-dataset", "Capstone Kickoff: Explore and Present a Real Dataset", { contentDir: "ch06/23-capstone-kickoff-explore-and-present-a-real-dataset" }),
-      L(24, "capstone-build-it", "Capstone: Build It", { contentDir: "ch06/24-capstone-build-it" }),
-      L(25, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch06/25-capstone-wrap-up-and-portfolio-presentation" }),
+      L(23, "capstone-kickoff-explore-and-present-a-real-dataset", "Capstone Kickoff: Explore and Present a Real Dataset", { contentDir: "ch06/23-capstone-kickoff-explore-and-present-a-real-dataset", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792435499/ltv-data-visualization-and-eda/capstone-kickoff-explore-and-present-a-real-dataset.mp4", durationLabel: "1 min 51 s" }),
+      L(24, "capstone-build-it", "Capstone: Build It", { contentDir: "ch06/24-capstone-build-it", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792435618/ltv-data-visualization-and-eda/capstone-build-it.mp4", durationLabel: "2 min 4 s" }),
+      L(25, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch06/25-capstone-wrap-up-and-portfolio-presentation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792435744/ltv-data-visualization-and-eda/capstone-wrap-up-and-portfolio-presentation.mp4", durationLabel: "2 min 10 s" }),
     ],
   },
 ];

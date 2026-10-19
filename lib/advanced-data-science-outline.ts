@@ -83,7 +83,7 @@ export const ADVANCED_DATA_SCIENCE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(27, "capstone-kickoff-forecast-and-explain-a-business-outcome", "Capstone Kickoff: Forecast and Explain a Business Outcome", { contentDir: "ch06/27-capstone-kickoff-forecast-and-explain-a-business-outcome", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416260/ltv-advanced-data-science/capstone-kickoff-forecast-and-explain-a-business-outcome.mp4", durationLabel: "2 min 7 s" }),
       L(28, "capstone-build-it", "Capstone: Build It", { contentDir: "ch06/28-capstone-build-it", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416700/ltv-advanced-data-science/capstone-build-it.mp4", durationLabel: "2 min 10 s" }),
-      L(29, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch06/29-capstone-wrap-up-and-portfolio-presentation" }),
+      L(29, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch06/29-capstone-wrap-up-and-portfolio-presentation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792417135/ltv-advanced-data-science/capstone-wrap-up-and-portfolio-presentation.mp4", durationLabel: "2 min 15 s" }),
     ],
   },
 ];
