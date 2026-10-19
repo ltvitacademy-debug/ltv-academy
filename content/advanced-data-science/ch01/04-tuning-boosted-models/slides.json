@@ -1,88 +1,63 @@
 [
   {
+    "slide": "s1",
     "type": "title",
     "eyebrow": "Advanced Data Science · Chapter 1",
-    "titlePlain": "Tuning ",
-    "titleEmphasis": "Boosted Models",
-    "titleSuffix": "",
-    "subtitle": "Lesson 4 · Boosting"
+    "titlePlain": "Tuning Boosted ",
+    "titleEmphasis": "Models",
+    "subtitle": "Tune in order -- and know when a gain is just noise"
   },
   {
+    "slide": "s2",
     "type": "steps",
-    "eyebrow": "A sensible tuning order",
-    "titlePlain": "Tune in ",
-    "titleEmphasis": "order",
-    "titleSuffix": "",
+    "eyebrow": "The Tuning Order",
+    "titlePlain": "Spend effort where it ",
+    "titleEmphasis": "matters",
     "steps": [
-      {
-        "label": "1. RATE AND TREES",
-        "sub": "early stopping picks the count"
-      },
-      {
-        "label": "2. TREE SHAPE",
-        "sub": "max_depth, min_child_weight"
-      },
-      {
-        "label": "3. RANDOMNESS",
-        "sub": "subsample, colsample_bytree"
-      },
-      {
-        "label": "4. REGULARIZATION",
-        "sub": "reg_lambda, reg_alpha, gamma"
-      }
+      { "label": "1. Rate & tree count", "sub": "Fix a moderate rate, let early stopping choose" },
+      { "label": "2. Tree shape", "sub": "max_depth, min_child_weight" },
+      { "label": "3. Sampling & regularization", "sub": "subsample, colsample, reg_lambda/alpha" }
     ]
   },
   {
+    "slide": "s3",
     "type": "code",
-    "eyebrow": "Step 1: choose the tree count",
-    "code": "params = dict(\n    objective=\"binary:logistic\",\n    eval_metric=\"auc\", eta=0.1,\n    max_depth=3, subsample=0.8,\n    colsample_bytree=0.8)\ncv = xgb.cv(params, dtrain, nfold=5,\n    num_boost_round=500, seed=0,\n    early_stopping_rounds=30)\nn_trees = len(cv)   # 58",
-    "caption": "Illustrative churn data, 75% training split."
+    "eyebrow": "Step 1: Choose Tree Count",
+    "code": "cv = xgb.cv(params, dtrain, num_boost_round=500,\n            nfold=5, early_stopping_rounds=30, seed=0)\nn_trees = len(cv)  # 58\n\n# default settings      test AUC 0.788\n# after step 1 (58 trees) test AUC 0.827",
+    "caption": "5-fold CV with early stopping picked 58 trees at a lower learning rate"
   },
   {
+    "slide": "s4",
     "type": "code",
-    "eyebrow": "Step 2: random search",
-    "code": "# model: XGBClassifier, 58 trees\nspace = {\"max_depth\": randint(2, 8),\n \"min_child_weight\": randint(1, 20),\n \"subsample\": uniform(0.6, 0.4),\n \"colsample_bytree\": uniform(0.5, 0.5),\n \"reg_lambda\": uniform(0.5, 9.5)}\nsearch = RandomizedSearchCV(\n model, space, n_iter=25, cv=3,\n scoring=\"roc_auc\")",
-    "caption": "25 sampled settings, 3-fold CV on training data only."
+    "eyebrow": "Step 2: Random Search",
+    "code": "space = {\"max_depth\": randint(2, 8),\n         \"min_child_weight\": randint(1, 20),\n         \"subsample\": uniform(0.6, 0.4),\n         \"colsample_bytree\": uniform(0.5, 0.5),\n         \"reg_lambda\": uniform(0.5, 9.5)}\nsearch = RandomizedSearchCV(xgb.XGBClassifier(...),\n                             space, n_iter=25, cv=3)\n\n# best: depth 4, min_child_weight 11, reg_lambda ~9.8",
+    "caption": "25 random trials, cross-validated AUC 0.8344 on the best trial"
   },
   {
+    "slide": "s5",
     "type": "code",
-    "eyebrow": "Test AUC, illustrative churn data",
-    "code": "# default settings         0.788\n# after step 1 (58 trees)  0.827\n# after random search      0.826\n\nsearch.best_score_   # 0.8344 (CV)",
-    "caption": "Most of the gain came from step 1, not the search."
+    "eyebrow": "The Honest Result",
+    "code": "default settings          test AUC 0.788\nafter step 1 (58 trees)   test AUC 0.827\nafter random search       test AUC 0.826\n\n# 25 trials spanned 0.826-0.834 mean CV AUC\n# fold-to-fold std ~ 0.009",
+    "caption": "The random search did not beat the step 1 model on the test set"
   },
   {
-    "type": "screenshot",
-    "file": "tuning-trials.png",
-    "eyebrow": "Output of the code above",
-    "caption": "25 search trials by mean CV AUC, with fold-to-fold std as error bars."
-  },
-  {
+    "slide": "s6",
     "type": "steps",
-    "eyebrow": "Good habits",
-    "titlePlain": "Judge gains against ",
+    "eyebrow": "Good Habits",
+    "titlePlain": "Judge gains against the ",
     "titleEmphasis": "noise",
-    "titleSuffix": "",
     "steps": [
-      {
-        "label": "TRAINING DATA ONLY",
-        "sub": "touch the test set once"
-      },
-      {
-        "label": "COMPARE TO FOLD NOISE",
-        "sub": "smaller gaps count as ties"
-      },
-      {
-        "label": "PREFER SIMPLE",
-        "sub": "when scores tie, go smaller"
-      }
+      { "label": "Tune on training data only", "sub": "Touch the test set once, at the end" },
+      { "label": "Compare against fold noise", "sub": "Smaller than std dev = treat as tied" },
+      { "label": "Prefer simpler settings", "sub": "When scores tie, pick the simpler model" }
     ]
   },
   {
+    "slide": "s7",
     "type": "outro",
-    "eyebrow": "Up next · Lesson 5",
+    "eyebrow": "Next Lesson",
     "titlePlain": "Boosting vs. ",
     "titleEmphasis": "Random Forests",
-    "titleSuffix": "",
     "subtitle": "When does boosting actually win?"
   }
 ]

@@ -1,56 +1,53 @@
 [
   {
     "type": "title",
-    "eyebrow": "Python for Data Science · Chapter 4",
+    "eyebrow": "Python for Data Science · Chapter 4, Lesson 17",
     "titlePlain": "GroupBy & ",
     "titleEmphasis": "Aggregation",
     "titleSuffix": "",
-    "subtitle": "Lesson 17 · pandas in Depth"
-  },
-  {
-    "type": "steps",
-    "eyebrow": "How groupby works",
-    "titlePlain": "Split, apply, ",
-    "titleEmphasis": "combine",
-    "titleSuffix": "",
-    "steps": [
-      {
-        "label": "Split",
-        "sub": "Rows into groups by a column"
-      },
-      {
-        "label": "Apply",
-        "sub": "A function to each group"
-      },
-      {
-        "label": "Combine",
-        "sub": "Results into one table"
-      }
-    ]
+    "subtitle": "SQL's GROUP BY — turning events into answers."
   },
   {
     "type": "code",
-    "eyebrow": "The basic pattern",
-    "code": "g = orders.groupby(\"status\")\ng[\"amount\"].sum()\n\n# cancelled     60.00\n# pending        0.00\n# returned      45.00\n# shipped      795.73",
-    "caption": "Illustrative data. Swap sum for mean, min, max."
+    "eyebrow": "Split, apply, combine",
+    "code": "orders.groupby(\"status\")[\"amount\"].sum()\n# cancelled   60.00\n# returned    45.00\n# shipped    795.73",
+    "caption": "Split rows by status, apply sum to amount, combine into one table. Swap sum for mean, min, max, median, std."
   },
   {
     "type": "code",
-    "eyebrow": "size vs count, with a missing value",
-    "code": "g = orders.groupby(\"status\")\n\ng[\"amount\"].sum()   # pending: 0.00\ng[\"amount\"].mean()  # pending: NaN\ng.size()            # pending: 1\ng[\"amount\"].count() # pending: 0",
-    "caption": "size counts rows; count counts non-missing."
+    "eyebrow": "Missing values: size() vs. count()",
+    "code": "orders.groupby(\"status\")[\"amount\"].sum()    # pending: 0.00\norders.groupby(\"status\")[\"amount\"].mean()   # pending: NaN\norders.groupby(\"status\").size()             # pending: 1\norders.groupby(\"status\")[\"amount\"].count()  # pending: 0",
+    "caption": "size() counts rows; count() counts non-missing values. sum() of an all-missing group looks like real data — 0.00."
   },
   {
     "type": "code",
-    "eyebrow": "Named aggregation",
-    "code": "orders.groupby(\"customer_id\").agg(\n    n_orders=(\"order_id\", \"count\"),\n    total=(\"amount\", \"sum\"),\n    avg=(\"amount\", \"mean\"),\n    last_order=(\"order_date\", \"max\"))",
-    "caption": "One row per customer, readable column names."
+    "eyebrow": "Named aggregation with agg",
+    "code": "summary = orders.groupby(\"customer_id\").agg(\n    n_orders=(\"order_id\", \"count\"),\n    total=(\"amount\", \"sum\"),\n    avg=(\"amount\", \"mean\"),\n    last_order=(\"order_date\", \"max\"),\n)",
+    "caption": "new_name=(column, function) — one readable table: order count, spend, average, last order date."
   },
   {
     "type": "code",
-    "eyebrow": "transform keeps every row",
-    "code": "orders[\"cust_total\"] = (\n    orders.groupby(\"customer_id\")\n    [\"amount\"].transform(\"sum\"))\n\norders[\"share\"] = (\n    orders[\"amount\"]\n    / orders[\"cust_total\"])",
-    "caption": "Like SUM() OVER (PARTITION BY customer_id)."
+    "eyebrow": "Grouping by several columns",
+    "code": "orders.groupby([\"customer_id\", \"status\"])[\"amount\"].sum()\n# two-level index -> .reset_index() flattens it\n\norders.groupby(\"status\", as_index=False)[\"amount\"].sum()",
+    "caption": "as_index=False keeps the group columns as regular columns from the start."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Grouping by a computed value",
+    "code": "orders.groupby(orders[\"order_date\"].dt.month)[\"amount\"].sum()\n# month 1: 255.49 / month 2: 385.25 / month 3: 259.99",
+    "caption": "Group by any expression, not just an existing column — here, the month extracted from a date."
+  },
+  {
+    "type": "code",
+    "eyebrow": "transform: keeps the original row count",
+    "code": "orders[\"cust_total\"] = orders.groupby(\"customer_id\")[\"amount\"].transform(\"sum\")\norders[\"share\"] = orders[\"amount\"] / orders[\"cust_total\"]\n# order 1: ~0.73 of customer 101's total",
+    "caption": "The pandas equivalent of SUM(amount) OVER (PARTITION BY customer_id) — a group number on every row."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Ranking groups",
+    "code": "orders.groupby(\"customer_id\")[\"amount\"].sum()\\\n      .sort_values(ascending=False).head(3)\n# customer 103 leads with 509.99",
+    "caption": "Chain a sort onto a groupby result to find the top groups."
   },
   {
     "type": "outro",
@@ -58,6 +55,6 @@
     "titlePlain": "Merging, Joining & ",
     "titleEmphasis": "Concatenating",
     "titleSuffix": "",
-    "subtitle": "Combine tables the pandas way."
+    "subtitle": "Combining tables — the pandas version of SQL joins."
   }
 ]

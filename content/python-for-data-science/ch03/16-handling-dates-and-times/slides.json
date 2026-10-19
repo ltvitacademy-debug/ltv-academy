@@ -1,42 +1,60 @@
 [
   {
     "type": "title",
-    "eyebrow": "Python for Data Science · Chapter 3",
+    "eyebrow": "Python for Data Science · Chapter 3, Lesson 16",
     "titlePlain": "Handling Dates & ",
     "titleEmphasis": "Times",
     "titleSuffix": "",
-    "subtitle": "Lesson 16 · pandas Fundamentals"
+    "subtitle": "Parsing, extracting parts, date math, and summarizing by period."
   },
   {
     "type": "code",
     "eyebrow": "Parse text into real dates",
-    "code": "pd.to_datetime(\"03/04/2024\")\n# 2024-03-04  (month first)\n\npd.to_datetime(\"04-03-24\",\n               format=\"%d-%m-%y\")\n# 2024-03-04\n\npd.to_datetime(s, errors=\"coerce\")",
-    "caption": "State the format; coerce bad values to NaT."
+    "code": "orders[\"order_date\"] = pd.to_datetime(orders[\"order_date\"])\norders[\"order_date\"].dtype   # datetime64[ns]",
+    "caption": "Now the column holds true timestamps rather than strings — that unlocks everything else."
   },
   {
     "type": "code",
-    "eyebrow": "Extract parts with .dt",
-    "code": "d = orders[\"order_date\"]\n\nd.dt.year         # 2024\nd.dt.month        # 1, 1, 1, 2, ...\nd.dt.day_name()   # Friday, Sunday...\nd.dt.dayofweek    # Monday = 0",
-    "caption": "Raw material for features like is_weekend."
+    "eyebrow": "Ambiguous formats — state the format explicitly",
+    "code": "pd.to_datetime(\"03/04/2024\")                   # 2024-03-04 (month first)\npd.to_datetime(\"03/04/2024\", dayfirst=True)    # 2024-04-03\npd.to_datetime(\"04-03-24\", format=\"%d-%m-%y\")  # 2024-03-04",
+    "caption": "Specifying format= is safest in production — it removes guessing about what 03/04/2024 means."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Surviving bad values with errors=\"coerce\"",
+    "code": "s = pd.Series([\"2024-01-05\", \"not a date\"])\npd.to_datetime(s, errors=\"coerce\")\n# 0   2024-01-05\n# 1          NaT",
+    "caption": "NaT (\"not a time\") instead of a crash — then count the NaTs to see how much failed to parse."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Extracting parts with .dt",
+    "code": "d = orders[\"order_date\"]\nd.dt.year          # 2024\nd.dt.month         # 1, 1, 1, 2, 2, 2, 3, 3\nd.dt.day_name()    # Friday, Sunday, Monday, ...\nd.dt.dayofweek     # Monday = 0",
+    "caption": "Build features like \"is weekend\" or \"month of purchase\" straight from these."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Filtering by date",
+    "code": "orders[orders[\"order_date\"] >= \"2024-02-01\"]\norders[orders[\"order_date\"].between(\"2024-01-10\", \"2024-02-15\")]",
+    "caption": "Compare a datetime column to a date string directly — pandas converts it for you. between() includes both ends."
   },
   {
     "type": "code",
     "eyebrow": "Date math",
-    "code": "snap = pd.Timestamp(\"2024-03-31\")\n\norders[\"days_ago\"] = (\n    snap - orders[\"order_date\"]\n).dt.days\n\n# order 1 -> 86 days",
-    "caption": "The basis of recency measures."
+    "code": "snapshot = pd.Timestamp(\"2024-03-31\")\norders[\"days_ago\"] = (snapshot - orders[\"order_date\"]).dt.days\n\n# order_date + pd.Timedelta(days=30)  -> a due date",
+    "caption": "Subtracting two dates gives a Timedelta; .dt.days turns it into a number — the basis of recency measures."
   },
   {
     "type": "code",
-    "eyebrow": "Summarize by period",
-    "code": "orders.set_index(\"order_date\")[\n    \"amount\"].resample(\"M\").sum()\n\n# 2024-01-31    255.49\n# 2024-02-29    385.25\n# 2024-03-31    259.99",
-    "caption": "Illustrative monthly totals."
+    "eyebrow": "Summarizing by period",
+    "code": "orders.set_index(\"order_date\")[\"amount\"].resample(\"M\").sum()\n# 2024-01-31  255.49\n# 2024-02-29  385.25\n\norders[\"order_date\"].dt.to_period(\"M\").value_counts().sort_index()",
+    "caption": "resample groups by calendar period like GROUP BY on a truncated date — \"M\" means month-end."
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 17",
+    "eyebrow": "Up next · Chapter 4, Lesson 17",
     "titlePlain": "GroupBy & ",
     "titleEmphasis": "Aggregation",
     "titleSuffix": "",
-    "subtitle": "Summarize by any category, not just by date."
+    "subtitle": "Powerful grouped summaries — pandas' GROUP BY."
   }
 ]

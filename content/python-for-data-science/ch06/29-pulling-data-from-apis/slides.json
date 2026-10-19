@@ -1,48 +1,54 @@
 [
   {
     "type": "title",
-    "eyebrow": "Python for Data Science · Chapter 6",
-    "titlePlain": "Pulling Data ",
-    "titleEmphasis": "From APIs",
+    "eyebrow": "Python for Data Science · Chapter 6, Lesson 29",
+    "titlePlain": "Pulling Data From ",
+    "titleEmphasis": "APIs",
     "titleSuffix": "",
-    "subtitle": "Lesson 29 · Files, Databases & APIs"
+    "subtitle": "A web address that returns data instead of a page — always fresh, no manual downloads."
   },
   {
     "type": "code",
-    "eyebrow": "A request and its response",
-    "code": "import requests\n\nurl = (\"https://jsonplaceholder\"\n       \".typicode.com/users\")\nresp = requests.get(url, timeout=10)\nresp.status_code    # 200\ndata = resp.json()  # list of 10 dicts",
-    "caption": "JSONPlaceholder: a free practice API, no key."
+    "eyebrow": "Your first request",
+    "code": "import requests\n\nurl = \"https://jsonplaceholder.typicode.com/users\"\nresp = requests.get(url, timeout=10)\n\nresp.status_code    # 200\ndata = resp.json()  # a list of 10 dictionaries",
+    "caption": "timeout stops your code from waiting forever. 200 is success, 404 not found, 401/403 not authorized."
   },
   {
     "type": "code",
-    "eyebrow": "JSON to DataFrame",
-    "code": "df = pd.json_normalize(data)\ndf[[\"id\", \"name\", \"address.city\"]]\n\n# 1  Leanne Graham     Gwenborough\n# 2  Ervin Howell      Wisokyburgh\n# 3  Clementine Bauch  McKenziehaven",
-    "caption": "Made-up practice data. Nested keys become columns."
+    "eyebrow": "From JSON to DataFrame",
+    "code": "df = pd.json_normalize(data)\ndf[[\"id\", \"name\", \"address.city\"]].head(3)\n#   id            name   address.city\n# 0  1   Leanne Graham     Gwenborough",
+    "caption": "Nested dicts like address.geo flatten into dotted column names — json_normalize from Lesson 27 again."
   },
   {
     "type": "code",
-    "eyebrow": "Params and pagination",
-    "code": "frames = []\nfor page in (1, 2, 3):\n    p = {\"_page\": page, \"_limit\": 10}\n    r = requests.get(url, params=p,\n                     timeout=10)\n    r.raise_for_status()\n    frames.append(pd.DataFrame(r.json()))\nposts = pd.concat(frames,\n                  ignore_index=True)",
-    "caption": "3 pages of 10 gave a 30-row DataFrame."
+    "eyebrow": "Query parameters",
+    "code": "r = requests.get(\"https://jsonplaceholder.typicode.com/posts\",\n                  params={\"userId\": 1}, timeout=10)\nr.url   # ...?userId=1",
+    "caption": "Pass filters as a dictionary rather than gluing them onto the URL string yourself."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Pagination — fetch pages, then concat",
+    "code": "frames = []\nfor page in (1, 2, 3):\n    r = requests.get(url, params={\"_page\": page, \"_limit\": 10}, timeout=10)\n    r.raise_for_status()\n    frames.append(pd.DataFrame(r.json()))\nposts = pd.concat(frames, ignore_index=True)   # (30, 4)",
+    "caption": "raise_for_status() raises loudly on any 4xx/5xx — far better than silently building a DataFrame from an error."
   },
   {
     "type": "steps",
-    "eyebrow": "API good manners",
-    "titlePlain": "Be a good ",
-    "titleEmphasis": "citizen",
+    "eyebrow": "Being a good API citizen",
+    "titlePlain": "Habits That Keep You Out of ",
+    "titleEmphasis": "Trouble",
     "titleSuffix": "",
     "steps": [
-      {"label": "Check the status", "sub": "raise_for_status() and a timeout"},
-      {"label": "Respect rate limits", "sub": "Pause between calls; 429 means slow down"},
-      {"label": "Read the terms", "sub": "Some data has usage rules"},
-      {"label": "Cache responses", "sub": "Save to disk; don't ask twice"}
+      { "label": "TIMEOUTS + STATUS CHECKS", "sub": "On every single call" },
+      { "label": "RESPECT RATE LIMITS", "sub": "429 means slow down" },
+      { "label": "CACHE RESPONSES", "sub": "Don't re-hit the API" },
+      { "label": "READ THE TERMS OF USE", "sub": "Licensing, attribution" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "Keys · illustrative, not run",
-    "code": "import os\n\ntoken = os.environ[\"API_TOKEN\"]\nheaders = {\n    \"Authorization\": f\"Bearer {token}\"}\nr = requests.get(url, headers=headers,\n                 timeout=10)",
-    "caption": "Never hard-code a key in a notebook."
+    "eyebrow": "API keys — keep them out of your code",
+    "code": "import os\ntoken = os.environ[\"API_TOKEN\"]\nheaders = {\"Authorization\": f\"Bearer {token}\"}\nr = requests.get(url, headers=headers, timeout=10)",
+    "caption": "Never paste a key into a notebook or commit it — read it from an environment variable."
   },
   {
     "type": "outro",
@@ -50,6 +56,6 @@
     "titlePlain": "Web Scraping ",
     "titleEmphasis": "Basics",
     "titleSuffix": "",
-    "subtitle": "Extracting data from web pages, responsibly."
+    "subtitle": "When there's no API at all — just a web page."
   }
 ]

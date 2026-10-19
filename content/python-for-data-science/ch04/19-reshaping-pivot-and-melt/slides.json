@@ -1,42 +1,60 @@
 [
   {
     "type": "title",
-    "eyebrow": "Python for Data Science · Chapter 4",
+    "eyebrow": "Python for Data Science · Chapter 4, Lesson 19",
     "titlePlain": "Reshaping: Pivot & ",
     "titleEmphasis": "Melt",
     "titleSuffix": "",
-    "subtitle": "Lesson 19 · pandas in Depth"
+    "subtitle": "Long format for machines, wide format for humans — moving between the two."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Setup — merge and a month column",
+    "code": "m = orders.merge(customers, on=\"customer_id\")\nm[\"month\"] = m[\"order_date\"].dt.month",
+    "caption": "Long format: one row per observation — one city, one month, one amount."
+  },
+  {
+    "type": "code",
+    "eyebrow": "pivot_table: summarize into a grid",
+    "code": "m.pivot_table(index=\"city\", columns=\"status\",\n              values=\"amount\", aggfunc=\"sum\")\n# Austin: returned 45.0, shipped 630.49\n# Denver, pending: 0.0 (not NaN — amount is missing, sum treats it as 0)",
+    "caption": "Like an Excel PivotTable in code — cities down the side, statuses across the top, sums in the cells."
+  },
+  {
+    "type": "code",
+    "eyebrow": "margins, fill_value, and a sanity check",
+    "code": "m.pivot_table(index=\"city\", columns=\"month\",\n              values=\"amount\", aggfunc=\"sum\", margins=True)\n# bottom row: 255.49, 385.25, 259.99 — matches resample() from Lesson 16",
+    "caption": "fill_value=0 replaces NaN cells; margins=True adds an All row/column — a good cross-check against other totals."
+  },
+  {
+    "type": "code",
+    "eyebrow": "crosstab: quick counts",
+    "code": "pd.crosstab(m[\"city\"], m[\"status\"])\n# Austin: 1 returned, 3 shipped\n# Boston: 1 cancelled, 2 shipped",
+    "caption": "Shorter than pivot_table when all you want is counts of combinations."
+  },
+  {
+    "type": "code",
+    "eyebrow": "pivot: reshape without aggregating",
+    "code": "monthly = m.groupby([\"city\", \"month\"], as_index=False)[\"amount\"].sum()\nwide = monthly.pivot(index=\"city\", columns=\"month\", values=\"amount\")\n\nm.pivot(index=\"city\", columns=\"status\", values=\"amount\")\n# ValueError: duplicate entries, cannot reshape",
+    "caption": "pivot needs each index/column combination to appear once — pivot_table resolves duplicates; pivot can't."
+  },
+  {
+    "type": "code",
+    "eyebrow": "melt: from wide back to long",
+    "code": "wide = pd.DataFrame({\"customer_id\": [101, 102],\n                      \"q1\": [165.5, 149.99], \"q2\": [0, 60]})\nwide.melt(id_vars=\"customer_id\",\n          var_name=\"quarter\", value_name=\"sales\")",
+    "caption": "id_vars stays put; every other column stacks into two new ones — quarter and sales."
   },
   {
     "type": "steps",
-    "eyebrow": "Long vs wide: the toolkit",
-    "titlePlain": "Four ways to ",
-    "titleEmphasis": "reshape",
+    "eyebrow": "Pick the right tool",
+    "titlePlain": "Four Reshaping ",
+    "titleEmphasis": "Moves",
     "titleSuffix": "",
     "steps": [
-      {"label": "pivot_table", "sub": "Summarize into a wide grid"},
-      {"label": "pivot", "sub": "Reshape, no aggregation"},
-      {"label": "melt", "sub": "Wide back to long"},
-      {"label": "crosstab", "sub": "Quick counts of combinations"}
+      { "label": "PIVOT_TABLE", "sub": "Summarize into a grid" },
+      { "label": "PIVOT", "sub": "Pure reshape, no duplicates" },
+      { "label": "CROSSTAB", "sub": "Quick combination counts" },
+      { "label": "MELT", "sub": "Wide back to long" }
     ]
-  },
-  {
-    "type": "code",
-    "eyebrow": "pivot_table: an Excel PivotTable",
-    "code": "m.pivot_table(index=\"city\",\n              columns=\"status\",\n              values=\"amount\",\n              aggfunc=\"sum\")\n\n# Austin  shipped  630.49\n# Boston  shipped  165.24",
-    "caption": "Add margins=True for an All row and column."
-  },
-  {
-    "type": "code",
-    "eyebrow": "pivot needs unique combinations",
-    "code": "m.pivot(index=\"city\",\n        columns=\"status\",\n        values=\"amount\")\n\n# ValueError: Index contains\n# duplicate entries,\n# cannot reshape",
-    "caption": "Austin has 3 shipped orders. Use pivot_table."
-  },
-  {
-    "type": "code",
-    "eyebrow": "melt: wide back to long",
-    "code": "wide.melt(id_vars=\"customer_id\",\n          var_name=\"quarter\",\n          value_name=\"sales\")\n\n# 101  q1  165.50\n# 102  q1  149.99\n# 101  q2    0.00",
-    "caption": "One row per customer per quarter."
   },
   {
     "type": "outro",
@@ -44,6 +62,6 @@
     "titlePlain": "Window & Rolling ",
     "titleEmphasis": "Operations",
     "titleSuffix": "",
-    "subtitle": "Moving averages, running totals and lags."
+    "subtitle": "Moving averages and trailing calculations."
   }
 ]

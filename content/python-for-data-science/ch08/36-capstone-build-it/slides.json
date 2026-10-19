@@ -1,55 +1,72 @@
 [
   {
     "type": "title",
-    "eyebrow": "Python for Data Science · Chapter 8",
-    "titlePlain": "Capstone: ",
-    "titleEmphasis": "Build It",
+    "eyebrow": "Python for Data Science · Chapter 8, Lesson 36",
+    "titlePlain": "Capstone: Build ",
+    "titleEmphasis": "It",
     "titleSuffix": "",
-    "subtitle": "Lesson 36 · Capstone"
+    "subtitle": "Turning the cleaning plan into tested code and real answers."
   },
   {
     "type": "code",
-    "eyebrow": "One function per cleaning decision",
-    "code": "def clean_orders(raw):\n    return (\n        raw.pipe(drop_duplicate_rows)\n        .pipe(standardize_text)\n        .pipe(parse_types)\n        .pipe(filter_quantity)\n        .pipe(handle_discount)\n        .pipe(add_revenue)\n    )",
-    "caption": "Rows: 1,530 raw, 1,500 after dedupe, 1,442 after the quantity rule."
+    "eyebrow": "Step 1 — each plan item becomes a function",
+    "code": "def drop_duplicate_rows(df): return df.drop_duplicates()\n\ndef filter_quantity(df):\n    return df[df[\"quantity\"].between(1, MAX_QUANTITY)].copy()\n\ndef clean_orders(raw):\n    return (raw.pipe(drop_duplicate_rows).pipe(standardize_text)\n               .pipe(parse_types).pipe(filter_quantity)\n               .pipe(handle_discount).pipe(add_revenue))",
+    "caption": "clean_orders chains every small function in order with .pipe()."
   },
   {
     "type": "code",
-    "eyebrow": "Two date formats, one column",
-    "code": "iso = pd.to_datetime(\n    df[\"order_date\"],\n    format=\"%Y-%m-%d\", errors=\"coerce\")\nus = pd.to_datetime(\n    df[\"order_date\"],\n    format=\"%m/%d/%Y\", errors=\"coerce\")\ndf[\"order_date\"] = iso.fillna(us)",
-    "caption": "Parse with each format, then fill the gaps from the other."
+    "eyebrow": "The two-date-format trick",
+    "code": "iso = pd.to_datetime(out[\"order_date\"], format=\"%Y-%m-%d\", errors=\"coerce\")\nus = pd.to_datetime(out[\"order_date\"], format=\"%m/%d/%Y\", errors=\"coerce\")\nout[\"order_date\"] = iso.fillna(us)",
+    "caption": "Parse with each format, failures become NaT, then fillna combines the two results — every date matches one format."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 — test it",
+    "code": "def test_filter_quantity_drops_missing_zero_negative_and_huge():\n    df = pd.DataFrame({\"quantity\": [1.0, 5.0, 0.0, -2.0, 999.0, None]})\n    assert filter_quantity(df)[\"quantity\"].tolist() == [1.0, 5.0]",
+    "caption": "Three tests in all — date/price parsing, the quantity filter, and real-file checks. All passed."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 3 — run it and track the funnel",
+    "code": "raw = pd.read_csv(\"data/raw/orders_raw.csv\")\nclean = clean_orders(raw)\nprint(len(raw), len(raw.drop_duplicates()), len(clean))\n# 1530 -> 1500 -> 1442",
+    "caption": "Always report how many rows cleaning removed — losing ~4% to the quantity rule deserves a sentence."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 4 — where and when does revenue come from?",
+    "code": "sales = clean[clean[\"status\"] == \"complete\"]   # 1,267 orders\nsales[\"revenue\"].sum()                           # ~$183,979\nsales.groupby(\"region\")[\"revenue\"].sum().sort_values(ascending=False)\nmonthly = sales.groupby(\"month\")[\"revenue\"].sum()",
+    "caption": "North leads regions (~$50,958); Electronics leads categories despite fewer orders, at a $346 average."
   },
   {
     "type": "steps",
-    "eyebrow": "Question 1: where and when?",
-    "titlePlain": "Revenue is concentrated, and ",
-    "titleEmphasis": "seasonal",
+    "eyebrow": "What the numbers showed",
+    "titlePlain": "Revenue Is ",
+    "titleEmphasis": "Concentrated",
     "titleSuffix": "",
     "steps": [
-      { "label": "About $184K total", "sub": "1,267 completed orders" },
-      { "label": "North leads regions", "sub": "About $51K of the total" },
-      { "label": "Electronics leads", "sub": "$346 average order" },
-      { "label": "Q4 is 34.6% of revenue", "sub": "Only 25% of the calendar" }
+      { "label": "NORTH LEADS", "sub": "~$50,958 of $183,979 total" },
+      { "label": "ELECTRONICS LEADS", "sub": "$346 avg order, fewest orders" },
+      { "label": "Q4 SURGES", "sub": "34.6% of revenue, 25% of the year" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "Question 2: do discounts work?",
-    "code": "discount  orders  avg qty  return rate\n0%          665    3.03     7.2%\n1-10%       465    2.95    10.5%\n11-20%      159    3.08     9.4%\n21-30%      103    2.80    12.6%\n\n# flat quantity, higher returns\n# an association, not proof",
-    "caption": "Illustrative data. The top band has only 103 orders."
+    "eyebrow": "Step 5 — do discounts work?",
+    "code": "orders[\"discount_band\"] = pd.cut(orders[\"discount_pct\"],\n    bins=[-1, 0, 10, 20, 30], labels=[\"0%\",\"1-10%\",\"11-20%\",\"21-30%\"])\norders.groupby(\"discount_band\").agg(\n    avg_quantity=(\"quantity\",\"mean\"),\n    return_rate=(\"status\", lambda s: (s==\"returned\").mean()))\n# avg qty flat ~3.0 / return rate climbs 7.2% -> 12.6%",
+    "caption": "Discounts didn't raise items per order; returns ran higher in discounted bands — a lead, not proof (103 orders in the top band)."
   },
   {
-    "type": "screenshot",
-    "file": "monthly_revenue.png",
-    "eyebrow": "Monthly revenue",
-    "caption": "Output of the code in the guide (illustrative data)."
+    "type": "code",
+    "eyebrow": "Step 6 — the chart",
+    "code": "fig, ax = plt.subplots(figsize=(8, 4))\nmonthly.plot(kind=\"bar\", ax=ax, color=\"#8E1C1C\")\nax.set_title(\"Monthly revenue, completed orders\")\nfig.savefig(\"reports/monthly_revenue.png\", dpi=150)",
+    "caption": "Code you can rerun — the saved chart makes the Q4 surge obvious at a glance."
   },
   {
     "type": "outro",
     "eyebrow": "Up next · Lesson 37",
-    "titlePlain": "Capstone: ",
-    "titleEmphasis": "Wrap-Up & Portfolio Presentation",
+    "titlePlain": "Capstone: Wrap-Up & Portfolio ",
+    "titleEmphasis": "Presentation",
     "titleSuffix": "",
-    "subtitle": "Turn the analysis into a story and a portfolio piece."
+    "subtitle": "Turning these findings into a presentation piece."
   }
 ]

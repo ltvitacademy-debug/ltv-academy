@@ -1,60 +1,60 @@
 [
   {
     "type": "title",
-    "eyebrow": "Python for Data Science · Chapter 5",
+    "eyebrow": "Python for Data Science · Chapter 5, Lesson 22",
     "titlePlain": "Missing Data: Diagnosis & ",
     "titleEmphasis": "Handling",
     "titleSuffix": "",
-    "subtitle": "Lesson 22 · Data Cleaning"
+    "subtitle": "Measure it, understand it, then decide what to do — in that order."
   },
   {
     "type": "code",
-    "eyebrow": "Measure before you fix",
-    "code": "df.isna().sum()      # count per column\ndf.isna().mean()     # share missing\ndf[df[\"age\"].isna()] # the actual rows\n\n-- T-SQL: WHERE age IS NULL",
-    "caption": "isna() is the pandas version of IS NULL."
-  },
-  {
-    "type": "steps",
-    "eyebrow": "Ask why it is missing",
-    "titlePlain": "Three kinds of ",
-    "titleEmphasis": "gaps",
-    "titleSuffix": "",
-    "steps": [
-      {"label": "Missing by chance", "sub": "Random gaps; dropping is usually safe"},
-      {"label": "Missing by pattern", "sub": "Depends on another column"},
-      {"label": "Missing means something", "sub": "Blank end date means still active"}
-    ]
+    "eyebrow": "The practice data",
+    "code": "customers = pd.DataFrame({\n    \"customer_id\": [101, 102, 103, 104, 105, 106, 107, 108],\n    \"city\": [\"Atlanta\", \"Austin\", None, \"Atlanta\", \"Denver\", \"Austin\", None, \"Denver\"],\n    \"age\": [34, np.nan, 29, 41, np.nan, 52, 38, 45],\n    \"monthly_spend\": [220.0, 180.5, np.nan, 310.0, 95.0, np.nan, 150.0, 275.0],\n})",
+    "caption": "T-SQL's NULL shows up here as NaN (or None in text columns)."
   },
   {
     "type": "code",
-    "eyebrow": "Option 1 · Drop",
-    "code": "df.dropna(subset=[\"monthly_spend\"])\n# 8 rows -> 6 rows\n\ndf.dropna()\n# 8 rows -> 3 rows",
-    "caption": "Illustrative: 8 customers, 2 gaps in each of 3 columns."
+    "eyebrow": "Step 1 — measure the gaps",
+    "code": "customers.isna().sum()\n# city 2, age 2, monthly_spend 2\n\ncustomers.isna().mean().round(2)\n# all three: 0.25",
+    "caption": "True counts as 1 — sum() counts gaps, mean() gives the share missing."
   },
   {
     "type": "code",
-    "eyebrow": "Option 2 · Fill",
-    "code": "df[\"age_missing\"] = df[\"age\"].isna()\ndf[\"age\"] = df[\"age\"].fillna(\n    df[\"age\"].median())\ndf[\"city\"] = (df[\"city\"]\n    .fillna(\"Unknown\"))",
-    "caption": "Flag first, then fill, so the original gaps stay visible."
+    "eyebrow": "See the actual rows",
+    "code": "customers[customers[\"age\"].isna()]\n#   customer_id    city  age  monthly_spend\n# 1         102  Austin  NaN          180.5\n# 4         105  Denver  NaN           95.0",
+    "caption": "The same idea as WHERE age IS NULL in SQL."
   },
   {
-    "type": "steps",
-    "eyebrow": "A working rule of thumb",
-    "titlePlain": "Diagnose, then ",
-    "titleEmphasis": "decide",
-    "titleSuffix": "",
-    "steps": [
-      {"label": "Diagnose", "sub": "Count, share, and look at the rows"},
-      {"label": "Drop", "sub": "Few rows, random loss"},
-      {"label": "Fill", "sub": "Need every row; record the method"}
-    ]
+    "type": "code",
+    "eyebrow": "Step 2 — ask why: missing by pattern?",
+    "code": "customers.groupby(customers[\"age\"].isna())[\"monthly_spend\"].mean()\n# age missing = False: 238.75\n# age missing = True:  137.75",
+    "caption": "Customers with no recorded age spend far less on average — that's a pattern, not chance."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 3 — drop, carefully",
+    "code": "customers.dropna(subset=[\"monthly_spend\"]).shape   # (6, 4)\ncustomers.dropna().shape                           # (3, 4) — over half gone!",
+    "caption": "Always name the columns with subset, and check how many rows you actually lost."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 4 — fill, and leave a trail",
+    "code": "c[\"age_missing\"] = c[\"age\"].isna()              # flag first\nc[\"age\"] = c[\"age\"].fillna(c[\"age\"].median())   # 39.5\nc[\"city\"] = c[\"city\"].fillna(\"Unknown\")",
+    "caption": "Median suits numbers with outliers; \"Unknown\" keeps a text gap explicit instead of invisible."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A smarter, group-aware fill — and its gotcha",
+    "code": "c2[\"monthly_spend\"] = c2[\"monthly_spend\"].fillna(\n    c2.groupby(\"city\")[\"monthly_spend\"].transform(\"median\")\n)\n# row with no city -> belongs to no group -> still NaN",
+    "caption": "Fills only work when the grouping column itself is present — fill the group key first if needed."
   },
   {
     "type": "outro",
     "eyebrow": "Up next · Lesson 23",
-    "titlePlain": "Duplicates & ",
-    "titleEmphasis": "Inconsistent Records",
+    "titlePlain": "Duplicates & Inconsistent ",
+    "titleEmphasis": "Records",
     "titleSuffix": "",
-    "subtitle": "Finding repeated rows and standardizing messy values."
+    "subtitle": "The other half of data cleaning."
   }
 ]

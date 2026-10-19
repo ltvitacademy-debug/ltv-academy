@@ -1,55 +1,60 @@
 [
   {
     "type": "title",
-    "eyebrow": "Python for Data Science · Chapter 6",
-    "titlePlain": "Querying SQL Databases ",
-    "titleEmphasis": "From Python",
+    "eyebrow": "Python for Data Science · Chapter 6, Lesson 28",
+    "titlePlain": "Querying SQL Databases From ",
+    "titleEmphasis": "Python",
     "titleSuffix": "",
-    "subtitle": "Lesson 28 · Files, Databases & APIs"
+    "subtitle": "No CSV export, no stale copy — query the database directly into a DataFrame."
   },
   {
     "type": "code",
-    "eyebrow": "Connection + query = DataFrame",
-    "code": "import sqlite3\nconn = sqlite3.connect(\":memory:\")\norders.to_sql(\"orders\", conn,\n              index=False)\n\ndf = pd.read_sql_query(\n    \"SELECT * FROM orders\", conn)",
-    "caption": "SQLite ships with Python, so no server is needed."
+    "eyebrow": "The practice database — SQLite, built into Python",
+    "code": "import sqlite3\nconn = sqlite3.connect(\":memory:\")\ncustomers.to_sql(\"customers\", conn, index=False)\norders.to_sql(\"orders\", conn, index=False)\n\ndf = pd.read_sql_query(\"SELECT * FROM orders\", conn)",
+    "caption": "read_sql_query takes a SQL string and a connection, returns a DataFrame with sensible types."
   },
   {
     "type": "code",
-    "eyebrow": "SQL Server · illustrative, not run",
-    "code": "from sqlalchemy import create_engine\n\nengine = create_engine(\n  \"mssql+pyodbc://USER:PWD@myhost/\"\n  \"AdventureWorks2012?driver=\"\n  \"ODBC+Driver+17+for+SQL+Server\")\n\npd.read_sql_query(sql, engine)",
-    "caption": "Check your driver version; keep PWD in env vars."
+    "eyebrow": "Connecting to SQL Server",
+    "code": "from sqlalchemy import create_engine\nengine = create_engine(\n    \"mssql+pyodbc://USER:PWD@myhost/AdventureWorks2012\"\n    \"?driver=ODBC+Driver+17+for+SQL+Server\")\ndf = pd.read_sql_query(\"SELECT TOP 10 * FROM Sales.SalesOrderHeader\", engine)",
+    "caption": "Never type a real password into a shared notebook — read it from an environment variable."
   },
   {
     "type": "code",
-    "eyebrow": "The T-SQL you already know",
-    "code": "q = \"\"\"\nSELECT c.city, COUNT(*) AS n_orders,\n       SUM(o.amount) AS revenue\nFROM orders o\nJOIN customers c\n  ON c.customer_id = o.customer_id\nGROUP BY c.city\nORDER BY revenue DESC\"\"\"\npd.read_sql_query(q, conn)",
-    "caption": "Illustrative result: Atlanta 3 orders, 490.0 revenue."
+    "eyebrow": "Any SQL you can write",
+    "code": "q = \"\"\"\nSELECT c.city, COUNT(*) AS n_orders, SUM(o.amount) AS revenue\nFROM orders AS o JOIN customers AS c ON c.customer_id = o.customer_id\nGROUP BY c.city ORDER BY revenue DESC\n\"\"\"\npd.read_sql_query(q, conn)",
+    "caption": "The database does the heavy lifting; Python just receives the result — nothing here is new SQL."
   },
   {
     "type": "code",
-    "eyebrow": "Parameters, never string pasting",
-    "code": "pd.read_sql_query(\n    \"SELECT * FROM orders\"\n    \" WHERE status = ?\",\n    conn, params=(bad,))\n\n# bad = \"shipped' OR '1'='1\"\n# f-string  -> 6 rows (all!)\n# params    -> 0 rows",
-    "caption": "Parameters stop SQL injection."
+    "eyebrow": "Parameters: never paste values into SQL",
+    "code": "pd.read_sql_query(\n    \"SELECT * FROM orders WHERE status = ? AND amount > ?\",\n    conn, params=(\"shipped\", 50))\n\n# f-string with a malicious value: 6 rows (whole table!)\n# parameterized: 0 rows (safe)",
+    "caption": "Pasting values into SQL lets input rewrite your query — SQL injection. Parameters avoid it entirely."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Writing results back",
+    "code": "summary = pd.read_sql_query(q, conn)\nsummary.to_sql(\"city_summary\", conn, index=False, if_exists=\"replace\")",
+    "caption": "if_exists: \"fail\" (default), \"replace\", or \"append\" — choose deliberately, replace drops the table first."
   },
   {
     "type": "steps",
     "eyebrow": "SQL or pandas?",
-    "titlePlain": "Push down, then ",
-    "titleEmphasis": "pull once",
+    "titlePlain": "Push Work to Where It's ",
+    "titleEmphasis": "Cheap",
     "titleSuffix": "",
     "steps": [
-      {"label": "Filter in SQL", "sub": "The database is built for it"},
-      {"label": "Explore in pandas", "sub": "Pull only the rows you need"},
-      {"label": "Mind the dialect", "sub": "T-SQL TOP vs SQLite LIMIT"},
-      {"label": "Write back", "sub": "to_sql(..., if_exists=\"replace\")"}
+      { "label": "FILTER & AGGREGATE IN SQL", "sub": "Optimized; fewer rows sent" },
+      { "label": "EXPLORE IN PANDAS", "sub": "Modeling, plotting, reshaping" },
+      { "label": "MIND THE DIALECT", "sub": "TOP 10 vs. LIMIT 10" }
     ]
   },
   {
     "type": "outro",
     "eyebrow": "Up next · Lesson 29",
-    "titlePlain": "Pulling Data ",
-    "titleEmphasis": "From APIs",
+    "titlePlain": "Pulling Data From ",
+    "titleEmphasis": "APIs",
     "titleSuffix": "",
-    "subtitle": "Requests, JSON, and turning responses into DataFrames."
+    "subtitle": "When the data lives behind an endpoint, not a database."
   }
 ]

@@ -1,40 +1,52 @@
 [
   {
     "type": "title",
-    "eyebrow": "Python for Data Science · Chapter 7",
-    "titlePlain": "Testing ",
-    "titleEmphasis": "Data Code",
+    "eyebrow": "Python for Data Science · Chapter 7, Lesson 33",
+    "titlePlain": "Testing Data ",
+    "titleEmphasis": "Code",
     "titleSuffix": "",
-    "subtitle": "Lesson 33 · Writing Reliable Data Code"
+    "subtitle": "A small function that checks one behavior and fails loudly when it's wrong."
   },
   {
     "type": "code",
-    "eyebrow": "A test: arrange, act, assert",
-    "code": "def test_add_revenue():\n    df = pd.DataFrame({\n        \"quantity\": [2, 3],\n        \"unit_price\": [5.0, 4.0]})\n    result = add_revenue(df)\n    assert (result[\"revenue\"].tolist()\n            == [10.0, 12.0])",
-    "caption": "Tiny hand-made input, one behavior, a clear name."
+    "eyebrow": "Anatomy of a test: arrange, act, assert",
+    "code": "def test_add_revenue_multiplies_quantity_and_price():\n    df = pd.DataFrame({\"quantity\": [2, 3], \"unit_price\": [5.0, 4.0]})\n    result = add_revenue(df)\n    assert result[\"revenue\"].tolist() == [10.0, 12.0]\n\ndef test_add_revenue_does_not_change_input():\n    add_revenue(df)\n    assert \"revenue\" not in df.columns",
+    "caption": "The name says what's expected — when a test fails, the name tells you what broke."
   },
   {
     "type": "code",
-    "eyebrow": "How a test catches a bug",
-    "code": "# someone \"refactors\" and slips:\nout[\"revenue\"] = (\n    out[\"quantity\"]\n    + out[\"unit_price\"]\n)\n\n# result: [7.0, 7.0]\n# expected: [10.0, 12.0]  -> FAIL",
-    "caption": "A plus sign where a times sign belonged. Caught instantly."
+    "eyebrow": "Running tests with pytest",
+    "code": "# tests/test_cleaning.py\n\npip install pytest\npytest   # from the project folder",
+    "caption": "pytest discovers every function named test_* and reports which passed and which failed."
   },
   {
     "type": "code",
-    "eyebrow": "Comparing DataFrames and checking data",
-    "code": "from pandas.testing import (\n    assert_frame_equal)\n\nassert_frame_equal(result, expected)\n\n# data checks on the real file\nassert clean[\"order_id\"].is_unique\nassert (clean[\"revenue\"] >= 0).all()",
-    "caption": "Tests protect the code; data checks protect against bad data."
+    "eyebrow": "How a test catches a real bug",
+    "code": "# a \"refactor\" accidentally types + instead of *\nout[\"revenue\"] = out[\"quantity\"] + out[\"unit_price\"]\n\n# [7.0, 7.0] instead of [10.0, 12.0] -- assertion fails immediately",
+    "caption": "Without the test, the wrong revenue flows silently into every chart downstream."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Comparing whole DataFrames",
+    "code": "from pandas.testing import assert_frame_equal\n\ndef test_clean_orders_full_output():\n    raw = pd.DataFrame({\"order_id\": [1], \"region\": [\" east\"], ...})\n    expected = pd.DataFrame({\"order_id\": [1], \"region\": [\"East\"], ..., \"revenue\": [10.0]})\n    assert_frame_equal(clean_orders(raw), expected)",
+    "caption": "Compares columns, order, values, and dtypes — raises an error describing exactly what differs."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Testing code vs. checking data",
+    "code": "# a TEST uses small, made-up input you control\n\n# a DATA CHECK examines the real data each time:\nclean = clean_orders(pd.read_csv(\"data/orders_raw.csv\"))\nassert clean[\"order_id\"].is_unique\nassert (clean[\"revenue\"] >= 0).all()",
+    "caption": "In production, a failing data check stops the pipeline before bad numbers spread."
   },
   {
     "type": "steps",
-    "eyebrow": "What to test first",
-    "titlePlain": "Spend effort where it ",
-    "titleEmphasis": "counts",
+    "eyebrow": "You can't test everything — prioritize",
+    "titlePlain": "What to Test ",
+    "titleEmphasis": "First",
     "titleSuffix": "",
     "steps": [
-      { "label": "Business rules", "sub": "Revenue, discounts, status logic" },
-      { "label": "Edge cases", "sub": "Empty, missing, duplicate rows" },
-      { "label": "Fixed bugs", "sub": "So they never come back" }
+      { "label": "BUSINESS RULES", "sub": "Revenue, discounts, status" },
+      { "label": "EDGE CASES", "sub": "Empty, missing, duplicates" },
+      { "label": "BUGS YOU FIXED", "sub": "So they never return" }
     ]
   },
   {
@@ -43,6 +55,6 @@
     "titlePlain": "",
     "titleEmphasis": "Reproducibility",
     "titleSuffix": "",
-    "subtitle": "Make your results come out the same every time."
+    "subtitle": "Making sure results come out the same every time."
   }
 ]

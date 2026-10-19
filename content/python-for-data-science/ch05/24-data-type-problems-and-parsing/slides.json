@@ -1,55 +1,48 @@
 [
   {
     "type": "title",
-    "eyebrow": "Python for Data Science · Chapter 5",
+    "eyebrow": "Python for Data Science · Chapter 5, Lesson 24",
     "titlePlain": "Data Type Problems & ",
     "titleEmphasis": "Parsing",
     "titleSuffix": "",
-    "subtitle": "Lesson 24 · Data Cleaning"
+    "subtitle": "One stray n/a or $ sign, and a whole numeric column turns into text."
   },
   {
     "type": "code",
-    "eyebrow": "Check the types first",
-    "code": "raw.dtypes\n# order_id      object\n# amount        object\n# order_date    object\n# shipped       object\n# tier          object",
-    "caption": "Illustrative: every column arrived as text."
+    "eyebrow": "The practice data — everything arrived as text",
+    "code": "raw = pd.DataFrame({\n    \"order_id\": [\"5001\", \"5002\", \"5003\", \"5004\"],\n    \"amount\": [\"$1,200.50\", \"$75.00\", \"n/a\", \"$310.25\"],\n    \"order_date\": [\"2024-03-05\", \"2024-03-07\", \"2024-03-09\", \"not recorded\"],\n    \"shipped\": [\"Yes\", \"No\", \"yes\", \"N\"],\n})\nraw.dtypes   # every column: object",
+    "caption": "object is pandas' catch-all for text — run dtypes or info() first on any new dataset."
   },
   {
     "type": "code",
-    "eyebrow": "Text to numbers",
-    "code": "df[\"amount\"].astype(float)\n# ValueError: could not convert\n# string to float: '$1,200.50'\n\ndf[\"amount\"] = pd.to_numeric(\n    df[\"amount\"].str.replace(\n        r\"[$,]\", \"\", regex=True),\n    errors=\"coerce\")",
-    "caption": "errors=\"coerce\" turns 'n/a' into NaN."
+    "eyebrow": "Text to numbers — the direct approach fails loudly",
+    "code": "df[\"amount\"].astype(float)\n# ValueError: could not convert string to float: '$1,200.50'\n\ndf[\"amount\"] = pd.to_numeric(\n    df[\"amount\"].str.replace(r\"[$,]\", \"\", regex=True), errors=\"coerce\")\n# 1200.50, 75.00, NaN, 310.25",
+    "caption": "Strip the symbols first, then to_numeric with errors=\"coerce\" turns n/a into an ordinary NaN."
   },
   {
     "type": "code",
     "eyebrow": "Text to dates",
-    "code": "df[\"order_date\"] = pd.to_datetime(\n    df[\"order_date\"], errors=\"coerce\")\n\n# 2024-03-05\n# 2024-03-07\n# 2024-03-09\n# NaT   <- 'not recorded'",
-    "caption": "NaT is the date version of NaN."
+    "code": "df[\"order_date\"] = pd.to_datetime(df[\"order_date\"], errors=\"coerce\")\n# 2024-03-05, 2024-03-07, 2024-03-09, NaT",
+    "caption": "NaT (\"not a time\") is the date equivalent of NaN — once real datetime64, you can filter by range or subtract."
   },
   {
     "type": "code",
     "eyebrow": "The ambiguous-date trap",
-    "code": "s = pd.Series([\"03/05/2024\"])\n\npd.to_datetime(s, format=\"%m/%d/%Y\")\n# 2024-03-05\n\npd.to_datetime(s, format=\"%d/%m/%Y\")\n# 2024-05-03",
-    "caption": "Same text, two dates. Always state the format."
+    "code": "s = pd.Series([\"03/05/2024\"])\npd.to_datetime(s, format=\"%m/%d/%Y\")   # 2024-03-05\npd.to_datetime(s, format=\"%d/%m/%Y\")   # 2024-05-03\n# both succeed -- only one is right!",
+    "caption": "pandas won't warn you. Pass format= explicitly whenever you know the source's convention."
   },
   {
-    "type": "steps",
+    "type": "code",
     "eyebrow": "The small conversions",
-    "titlePlain": "Pick the right ",
-    "titleEmphasis": "type",
-    "titleSuffix": "",
-    "steps": [
-      {"label": "Yes / No to bool", "sub": ".map({\"y\": True, \"n\": False})"},
-      {"label": "Text ids to int", "sub": ".astype(int)"},
-      {"label": "Few labels to category", "sub": ".astype(\"category\")"},
-      {"label": "Re-check", "sub": "df.dtypes after every change"}
-    ]
+    "code": "df[\"order_id\"] = df[\"order_id\"].astype(int)\ndf[\"shipped\"] = (df[\"shipped\"].str.lower().str[0]\n                 .map({\"y\": True, \"n\": False}))\ndf[\"tier\"] = df[\"tier\"].astype(\"category\")",
+    "caption": "Normalize text before mapping to booleans; astype(int) needs no NaN; category suits a fixed small set of labels."
   },
   {
     "type": "outro",
     "eyebrow": "Up next · Lesson 25",
-    "titlePlain": "Finding ",
+    "titlePlain": "",
     "titleEmphasis": "Outliers",
     "titleSuffix": "",
-    "subtitle": "Spotting extreme values and deciding what to do with them."
+    "subtitle": "Values that are technically valid but don't belong."
   }
 ]

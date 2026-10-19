@@ -1,49 +1,54 @@
 [
   {
     "type": "title",
-    "eyebrow": "Python for Data Science · Chapter 4",
+    "eyebrow": "Python for Data Science · Chapter 4, Lesson 20",
     "titlePlain": "Window & Rolling ",
     "titleEmphasis": "Operations",
     "titleSuffix": "",
-    "subtitle": "Lesson 20 · pandas in Depth"
-  },
-  {
-    "type": "steps",
-    "eyebrow": "Window functions, the pandas way",
-    "titlePlain": "Rows that look at their ",
-    "titleEmphasis": "neighbors",
-    "titleSuffix": "",
-    "steps": [
-      {"label": "rolling(n)", "sub": "Moving average, sum, max"},
-      {"label": "cumsum / expanding", "sub": "Running totals and averages"},
-      {"label": "shift / diff", "sub": "Compare to the previous row"},
-      {"label": "groupby + any", "sub": "Restart per customer"}
-    ]
+    "subtitle": "Questions that need a row to look at its neighbors."
   },
   {
     "type": "code",
-    "eyebrow": "A 3-day moving average",
-    "code": "daily[\"ma3\"] = (\n    daily[\"sales\"].rolling(3).mean())\n\n# 120        NaN\n# 135        NaN\n# 110   121.666667\n# 160   135.000000",
-    "caption": "Illustrative daily sales. Sort by date first."
+    "eyebrow": "A small time series — sort first!",
+    "code": "daily = pd.DataFrame({\n    \"date\": pd.date_range(\"2024-03-01\", periods=7),\n    \"sales\": [120, 135, 110, 160, 150, 90, 175],\n})",
+    "caption": "Every operation in this lesson depends on row order — sort by date before you start."
   },
   {
     "type": "code",
-    "eyebrow": "Running total and previous row",
-    "code": "s = daily[\"sales\"]\n\ns.cumsum()      # 120, 255, 365, ...\ns.shift(1)      # NaN, 120, 135, ...\ns.diff()        # NaN, 15, -25, ...\ns.pct_change()  # NaN, 0.125, ...",
-    "caption": "shift(1) is SQL's LAG."
+    "eyebrow": "rolling: moving windows",
+    "code": "daily[\"ma3\"] = daily[\"sales\"].rolling(3).mean()\n\n# row 0,1: NaN (no full window yet)\n# row 2: (120+135+110)/3 = 121.67",
+    "caption": "rolling(3) builds a window of the current row plus the two before it, then you aggregate it."
   },
   {
     "type": "code",
-    "eyebrow": "Per customer: groupby + window",
-    "code": "g = o.groupby(\"customer_id\")\n\ng[\"amount\"].cumsum()\ng[\"amount\"].shift(1)\ng.cumcount() + 1\ng[\"order_date\"].diff().dt.days",
-    "caption": "Customer 102: 62 days between orders."
+    "eyebrow": "Rolling options worth knowing",
+    "code": "daily[\"sales\"].rolling(3, min_periods=1).mean()  # partial start\ndaily[\"sales\"].rolling(3, center=True).mean()    # window around the row\ndaily[\"sales\"].rolling(\"3D\").mean()               # time-span window",
+    "caption": "center=True smooths a chart nicely but leaks future info if used as a model feature."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Running totals: cumsum and expanding",
+    "code": "daily[\"running\"] = daily[\"sales\"].cumsum()\n# 120, 255, 365, 525, 675, 765, 940\n\ndaily[\"sales\"].expanding().mean()  # running average",
+    "caption": "cummax, cummin, cumprod work the same way. expanding's window grows by one row each step."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Looking backward: shift, diff, pct_change",
+    "code": "daily[\"prev\"] = daily[\"sales\"].shift(1)     # pandas LAG()\ndaily[\"change\"] = daily[\"sales\"].diff()\ndaily[\"pct\"] = daily[\"sales\"].pct_change()\n# day 2: +12.5% / day 6: -40%",
+    "caption": "shift(-1) looks forward, like LEAD(). The first row is always NaN — there's no previous value."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Per customer: groupby + window operations",
+    "code": "o = orders.sort_values([\"customer_id\", \"order_date\"]).copy()\ng = o.groupby(\"customer_id\")\no[\"cust_running\"] = g[\"amount\"].cumsum()\no[\"prev_amount\"] = g[\"amount\"].shift(1)\no[\"order_no\"] = g.cumcount() + 1\no[\"days_since_prev\"] = g[\"order_date\"].diff().dt.days",
+    "caption": "The calculation restarts for each group — order_no is pandas' ROW_NUMBER() OVER (PARTITION BY ...)."
   },
   {
     "type": "outro",
     "eyebrow": "Up next · Lesson 21",
-    "titlePlain": "Working With ",
-    "titleEmphasis": "Text Data",
+    "titlePlain": "Working With Text ",
+    "titleEmphasis": "Data",
     "titleSuffix": "",
-    "subtitle": "The .str accessor for messy strings."
+    "subtitle": "Cleaning and extracting from string columns."
   }
 ]

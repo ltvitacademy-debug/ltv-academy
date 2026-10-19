@@ -1,67 +1,61 @@
 [
   {
+    "slide": "s1",
     "type": "title",
     "eyebrow": "Advanced Data Science · Chapter 2",
     "titlePlain": "Exponential Smoothing & ",
     "titleEmphasis": "ARIMA",
-    "titleSuffix": "",
-    "subtitle": "Lesson 9 · Time-Series Forecasting"
+    "subtitle": "The classic statistical families that try to beat a baseline"
   },
   {
+    "slide": "s2",
     "type": "steps",
-    "eyebrow": "Exponential smoothing builds up",
-    "titlePlain": "Level, then trend, then ",
-    "titleEmphasis": "season",
-    "titleSuffix": "",
+    "eyebrow": "Exponential Smoothing",
+    "titlePlain": "Built up, step by ",
+    "titleEmphasis": "step",
     "steps": [
-      { "label": "Simple (SES)", "sub": "Tracks a level; recent counts more" },
-      { "label": "Holt", "sub": "Adds a trend" },
-      { "label": "Holt-Winters", "sub": "Adds a repeating season" }
+      { "label": "SES", "sub": "Tracks a level -- alpha came out 1.0 here" },
+      { "label": "Holt", "sub": "Adds a trend -- MAE 16.63, same as drift" },
+      { "label": "Holt-Winters", "sub": "Adds weekly season -- MAE drops to 6.86" }
     ]
   },
   {
+    "slide": "s3",
     "type": "code",
-    "eyebrow": "statsmodels Holt-Winters",
-    "code": "hw = ExponentialSmoothing(\n    train, trend=\"add\", seasonal=\"add\",\n    seasonal_periods=7,\n    initialization_method=\"estimated\"\n).fit()\n\nSES  MAE 17.75   (alpha = 1.0)\nHolt MAE 16.63\nHolt-Winters MAE 6.86",
-    "caption": "Illustrative seeded data; seasonal naive scored 16.13."
+    "eyebrow": "Smoothing Results",
+    "code": "alpha: 1.0\nSES  MAE 17.75   (collapses into naive)\nHolt MAE 16.63   (matches the drift baseline)\nHolt-Winters MAE 6.86   (seasonal_periods=7)",
+    "caption": "Without seasonality stated explicitly, these models can lose to a plain baseline"
   },
   {
-    "type": "steps",
+    "slide": "s4",
+    "type": "code",
     "eyebrow": "ARIMA(p, d, q)",
-    "titlePlain": "Three parts, one ",
-    "titleEmphasis": "model",
-    "titleSuffix": "",
-    "steps": [
-      { "label": "AR(p)", "sub": "Regress on the last p values" },
-      { "label": "I(d)", "sub": "Difference d times to remove trend" },
-      { "label": "MA(q)", "sub": "Regress on the last q errors" },
-      { "label": "Seasonal (P,D,Q,m)", "sub": "The same idea, every m steps" }
-    ]
+    "code": "(1, 1, 1) (0, 0, 0, 0)  AIC 5986.4  MAE 22.7\n(1, 1, 1) (0, 1, 1, 7)  AIC 4979.1  MAE 10.91\n(2, 1, 2) (0, 1, 1, 7)  AIC 4938.4  MAE 6.72",
+    "caption": "AR = own past values, I = differencing, MA = past errors -- seasonal_order adds the same for the season"
   },
   {
+    "slide": "s5",
     "type": "code",
-    "eyebrow": "Pick the order with AIC",
-    "code": "ARIMA(train, order=(2, 1, 2),\n      seasonal_order=(0, 1, 1, 7)).fit()\n\norder              AIC     MAE\n(1,1,1)            5986.4  22.70\n(1,1,1)+(0,1,1,7)  4979.1  10.91\n(2,1,2)+(0,1,1,7)  4938.4   6.72",
-    "caption": "Lower AIC (on training data) is better."
+    "eyebrow": "Choosing The Order By AIC",
+    "code": "for order, seas in [...]:\n    res = ARIMA(train, order=order, seasonal_order=seas).fit()\n    print(order, seas, \"AIC\", res.aic, \"MAE\", mae(test, res.forecast(h)))\n\n# lowest AIC (4938.4) also had the lowest test MAE here",
+    "caption": "Choose by AIC on training data -- picking by test error would quietly leak the test set"
   },
   {
-    "type": "code",
-    "eyebrow": "Forecast intervals",
-    "code": "pred = best.get_forecast(h)\nsarima_fc = pred.predicted_mean\nci = pred.conf_int(alpha=0.05)\n\n# 96% of test days fell inside\n# the 95% interval (this window)",
-    "caption": "The interval widens as the horizon grows."
-  },
-  {
+    "slide": "s6",
     "type": "screenshot",
     "file": "smoothing_arima.png",
-    "eyebrow": "Both models follow the weekly wave",
-    "caption": "Output of the plotting code in the guide (illustrative data)."
+    "eyebrow": "Forecasts vs. Actual, Last 28 Days",
+    "caption": "Output of the code above -- SARIMA's 95% interval covered 96% of the actual values",
+    "annotations": [
+      { "shape": "box", "x": 0.72, "y": 0.1, "w": 0.26, "h": 0.4, "label": "95% interval", "labelPos": "top" }
+    ]
   },
   {
+    "slide": "s7",
     "type": "outro",
-    "eyebrow": "Up next · Lesson 10",
+    "eyebrow": "Next Lesson",
     "titlePlain": "",
     "titleEmphasis": "Prophet",
-    "titleSuffix": "",
-    "subtitle": "A forecasting library built for trends, seasons, and holidays."
+    "subtitle": "A forecasting library built to make this workflow easier"
   }
 ]

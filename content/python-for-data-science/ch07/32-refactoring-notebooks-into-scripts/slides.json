@@ -1,49 +1,61 @@
 [
   {
     "type": "title",
-    "eyebrow": "Python for Data Science · Chapter 7",
+    "eyebrow": "Python for Data Science · Chapter 7, Lesson 32",
     "titlePlain": "Refactoring Notebooks Into ",
     "titleEmphasis": "Scripts",
     "titleSuffix": "",
-    "subtitle": "Lesson 32 · Writing Reliable Data Code"
+    "subtitle": "Code buried in cell 47 can't be tested, scheduled, or shared."
   },
   {
     "type": "steps",
-    "eyebrow": "The refactoring path",
-    "titlePlain": "From cells to a ",
-    "titleEmphasis": "pipeline",
+    "eyebrow": "What moves out, what stays",
+    "titlePlain": "If You'd Rerun ",
+    "titleEmphasis": "It",
     "titleSuffix": "",
     "steps": [
-      { "label": "Run top to bottom", "sub": "Restart & Run All first" },
-      { "label": "Extract functions", "sub": "Anything you'd rerun or test" },
-      { "label": "Move to a .py module", "sub": "Import it back into the notebook" },
-      { "label": "Add a script", "sub": "main(), arguments, repeatable" }
+      { "label": "GET IT WORKING", "sub": "Restart & Run All first" },
+      { "label": "CELLS -> FUNCTIONS", "sub": "Repeated or important ones" },
+      { "label": "FUNCTIONS -> A MODULE", "sub": "A plain .py file" },
+      { "label": "A SCRIPT WIRES IT", "sub": "Keep charts in the notebook" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "The module: orders_pipeline/cleaning.py",
-    "code": "def add_revenue(df):\n    out = df.copy()\n    out[\"revenue\"] = (\n        out[\"quantity\"]\n        * out[\"unit_price\"]\n    )\n    return out",
-    "caption": "One small function, one job, returns a new DataFrame."
+    "eyebrow": "A simple project layout",
+    "code": "orders_project/\n    data/orders_raw.csv\n    orders_pipeline/\n        __init__.py\n        cleaning.py\n    run_pipeline.py\n    analysis.ipynb",
+    "caption": "The empty __init__.py marks orders_pipeline as an importable package."
   },
   {
     "type": "code",
-    "eyebrow": "The script: run_pipeline.py",
-    "code": "def main():\n    args = parser.parse_args()\n    raw = pd.read_csv(args.input)\n    clean = clean_orders(raw)\n    clean.to_csv(args.output,\n                 index=False)\n\nif __name__ == \"__main__\":\n    main()",
-    "caption": "Paths come from arguments; the guard runs main() only when executed directly."
+    "eyebrow": "Step 1 — the module",
+    "code": "# orders_pipeline/cleaning.py\ndef standardize_region(df):\n    out = df.copy()\n    out[\"region\"] = out[\"region\"].str.strip().str.title()\n    return out\n\ndef clean_orders(raw):\n    \"\"\"Full pipeline: dedupe, standardize, add revenue.\"\"\"\n    return (raw.drop_duplicates(subset=\"order_id\")\n               .pipe(standardize_region).pipe(add_revenue))",
+    "caption": "Each small function does one job and returns a new DataFrame. .pipe() chains them in order."
   },
   {
     "type": "code",
-    "eyebrow": "Run it from the project folder",
-    "code": "python run_pipeline.py \\\n  --input data/orders_raw.csv \\\n  --output data/orders_clean.csv\n\nRead 5 rows, wrote 4 rows\nto orders_clean.csv",
-    "caption": "Five rows in, one duplicate dropped, four rows out (printed on one line)."
+    "eyebrow": "Step 2 — the script",
+    "code": "# run_pipeline.py\nimport argparse\nfrom orders_pipeline.cleaning import clean_orders\n\ndef main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--input\", type=Path, required=True)\n    parser.add_argument(\"--output\", type=Path, required=True)\n    args = parser.parse_args()\n    ...\n\nif __name__ == \"__main__\":\n    main()",
+    "caption": "argparse replaces hard-coded paths; __main__ means main() only runs when this file runs directly."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Running it",
+    "code": "python run_pipeline.py --input data/orders_raw.csv --output data/orders_clean.csv\n\n# Read 5 rows, wrote 4 rows to orders_clean.csv\n# (one duplicate order removed)",
+    "caption": "pathlib.Path keeps file paths working across Windows, macOS, and Linux."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 3 — use it from the notebook",
+    "code": "from orders_pipeline.cleaning import clean_orders\nclean = clean_orders(pd.read_csv(\"data/orders_raw.csv\"))\n\n%load_ext autoreload\n%autoreload 2   # reloads the module as you edit it",
+    "caption": "One cell replaces dozens — the notebook now holds only exploration and commentary."
   },
   {
     "type": "outro",
     "eyebrow": "Up next · Lesson 33",
-    "titlePlain": "Testing ",
-    "titleEmphasis": "Data Code",
+    "titlePlain": "Testing Data ",
+    "titleEmphasis": "Code",
     "titleSuffix": "",
-    "subtitle": "Automated checks for your cleaning functions."
+    "subtitle": "Protecting this module with automated tests."
   }
 ]

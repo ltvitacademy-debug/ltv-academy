@@ -1,61 +1,73 @@
 [
   {
     "type": "title",
-    "eyebrow": "Python for Data Science · Chapter 2",
+    "eyebrow": "Python for Data Science · Chapter 2, Lesson 10",
     "titlePlain": "Random Numbers & ",
     "titleEmphasis": "Simulation",
     "titleSuffix": "",
-    "subtitle": "Lesson 10 · NumPy"
+    "subtitle": "Answering \"what would happen if...\" by running the experiment thousands of times."
   },
   {
     "type": "code",
     "eyebrow": "The generator and the seed",
-    "code": "rng = np.random.default_rng(42)\nrng.random(3)\n# [0.77395605 0.43887844 0.85859792]\n\nrng = np.random.default_rng(42)\nrng.random(3)\n# same three numbers again",
-    "caption": "Same seed, same numbers: reproducible."
+    "code": "rng = np.random.default_rng(42)\nprint(rng.random(3))\n# [0.77395605 0.43887844 0.85859792]\n\n# Same seed -> identical sequence every time",
+    "caption": "42 is the seed — it makes your analysis reproducible for a teammate, or for you next month."
   },
   {
     "type": "code",
     "eyebrow": "Common distributions",
-    "code": "rng.integers(1, 7, size=10)\n# dice rolls: 1 to 6, 7 excluded\nrng.normal(loc=100, scale=15,\n           size=5)\n# bell curve: mean 100, std 15\nrng.uniform(10, 20, size=3)",
-    "caption": "Pass size=(2, 3) for a 2D array."
+    "code": "rng.integers(1, 7, size=10)              # dice, 1-6\nrng.normal(loc=100, scale=15, size=5)    # bell curve\nrng.uniform(10, 20, size=3)              # evenly 10-20\nrng.exponential(scale=50, size=3)        # skewed data",
+    "caption": "integers(1, 7) excludes the upper end, just like range(). loc/scale are the mean/std of normal()."
   },
   {
     "type": "code",
     "eyebrow": "Sampling and shuffling",
-    "code": "a = np.array([\"A\", \"B\", \"C\", \"D\", \"E\"])\nrng.choice(a, size=3, replace=False)\nrng.choice([\"heads\", \"tails\"],\n           size=5, p=[0.7, 0.3])\nrng.permutation(5)   # shuffled copy\nrng.shuffle(arr)     # in place",
-    "caption": "The basis of random train/test splits."
+    "code": "a = np.array([\"A\", \"B\", \"C\", \"D\", \"E\"])\nrng.choice(a, size=3, replace=False)\nrng.choice([\"heads\", \"tails\"], size=5, p=[0.7, 0.3])\nrng.permutation(5)   # shuffled copy of 0..4",
+    "caption": "choice samples with replacement by default; replace=False avoids repeats; p weights the odds."
   },
   {
     "type": "code",
-    "eyebrow": "Simulate two dice",
-    "code": "rng = np.random.default_rng(0)\nrolls = rng.integers(\n    1, 7, size=(100000, 2)).sum(axis=1)\n(rolls == 7).mean()\n# 0.16775   exact answer: 6/36 = 0.1667",
-    "caption": "The mean of a boolean array is a fraction."
+    "eyebrow": "Estimating a probability by simulation",
+    "code": "rolls = rng.integers(1, 7, size=(100000, 2)).sum(axis=1)\nprint((rolls == 7).mean())   # 0.16775\n# exact answer: 6/36 = 0.1667",
+    "caption": "Roll two dice 100,000 times, sum each row, then average the boolean rolls==7."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The same trick for a business question",
+    "code": "churned = rng.random(1000) < 0.15\nprint(churned.sum())\n# seed 1 -> 143 customers churned out of 1,000",
+    "caption": "A different seed gives a slightly different count — that's the natural variation to expect."
   },
   {
     "type": "steps",
-    "eyebrow": "The simulation recipe",
-    "titlePlain": "Four steps, ",
-    "titleEmphasis": "every time",
+    "eyebrow": "A simulation recipe",
+    "titlePlain": "Four Steps, Every ",
+    "titleEmphasis": "Time",
     "titleSuffix": "",
     "steps": [
-      { "label": "Define", "sub": "Describe the random process" },
-      { "label": "Repeat", "sub": "Run it thousands of times in arrays" },
-      { "label": "Summarize", "sub": "Take a mean, a count, percentiles" },
-      { "label": "Check", "sub": "Compare with a known answer" }
+      { "label": "DEFINE THE PROCESS", "sub": "What is actually random?" },
+      { "label": "REPEAT IT MANY TIMES", "sub": "Using arrays, not loops" },
+      { "label": "SUMMARIZE RESULTS", "sub": "Mean of a boolean, etc." },
+      { "label": "CHECK A KNOWN CASE", "sub": "Does it match the math?" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "Bootstrap: resample your data",
-    "code": "rng = np.random.default_rng(5)\nx = np.array([12, 15, 11, 18,\n              14, 22, 9, 16])\nbm = rng.choice(x, size=(5000, 8),\n                replace=True).mean(axis=1)\nnp.percentile(bm, [2.5, 97.5])\n# [12.    17.375]",
-    "caption": "Illustrative: a rough 95% interval for the mean."
+    "eyebrow": "Why averages of samples behave predictably",
+    "code": "orders = rng.exponential(scale=50, size=100000)\nmeans = rng.choice(orders, size=(2000, 50)).mean(axis=1)\nprint(means.std())                 # ~7.07\nprint(orders.std() / np.sqrt(50))  # ~7.02",
+    "caption": "Sample means cluster tightly, and their spread matches theory — the seed of the central limit theorem."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The bootstrap: resampling to gauge uncertainty",
+    "code": "x = np.array([12, 15, 11, 18, 14, 22, 9, 16])\nbm = rng.choice(x, size=(5000, len(x)), replace=True).mean(axis=1)\nprint(x.mean())                        # 14.625\nprint(np.percentile(bm, [2.5, 97.5]))  # [12. 17.375]",
+    "caption": "The 2.5th-97.5th percentile range of resampled means is a rough 95% interval for the true mean."
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 11",
+    "eyebrow": "Up next · Chapter 3, Lesson 11",
     "titlePlain": "Series & ",
     "titleEmphasis": "DataFrames",
     "titleSuffix": "",
-    "subtitle": "Chapter 3 begins: labeled tables in pandas."
+    "subtitle": "From raw arrays to labeled tables — pandas begins."
   }
 ]

@@ -1,82 +1,73 @@
 [
   {
     "type": "title",
-    "eyebrow": "Python for Data Science · Chapter 6",
+    "eyebrow": "Python for Data Science · Chapter 6, Lesson 30",
     "titlePlain": "Web Scraping ",
     "titleEmphasis": "Basics",
     "titleSuffix": "",
-    "subtitle": "Lesson 30 · Files, Databases & APIs"
+    "subtitle": "A useful last resort — not something the site has promised to support."
   },
   {
     "type": "steps",
-    "eyebrow": "Before you write any code",
-    "titlePlain": "Scrape ",
-    "titleEmphasis": "responsibly",
+    "eyebrow": "Before you scrape anything",
+    "titlePlain": "Four Questions, ",
+    "titleEmphasis": "First",
     "titleSuffix": "",
     "steps": [
-      {
-        "label": "Is there an API?",
-        "sub": "An official feed beats scraping"
-      },
-      {
-        "label": "Read robots.txt",
-        "sub": "What may automated tools fetch?"
-      },
-      {
-        "label": "Read the terms of use",
-        "sub": "Some sites forbid scraping outright"
-      },
-      {
-        "label": "Be gentle",
-        "sub": "Identify yourself; pause between calls"
-      }
+      { "label": "IS THERE AN API?", "sub": "Use it — more stable, permitted" },
+      { "label": "WHAT DOES ROBOTS.TXT SAY?", "sub": "A widely followed convention" },
+      { "label": "TERMS OF USE?", "sub": "Many sites prohibit scraping" },
+      { "label": "SCRAPE GENTLY", "sub": "User-Agent, pauses, stop if asked" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "Check robots.txt, then fetch",
-    "code": "rp = RobotFileParser()\nrp.set_url(base + \"robots.txt\")\nrp.read()\nrp.can_fetch(\"*\", base)   # True\n\nhdr = {\"User-Agent\": \"class-demo\"}\nresp = requests.get(base, headers=hdr,\n                    timeout=10)",
-    "caption": "Practice site: books.toscrape.com (a scraping sandbox)."
+    "eyebrow": "Checking robots.txt, then identifying yourself",
+    "code": "from urllib.robotparser import RobotFileParser\nrp = RobotFileParser()\nrp.set_url(base + \"robots.txt\")\nrp.read()\nrp.can_fetch(\"*\", base)   # True\n\nheaders = {\"User-Agent\": \"LTV-Academy-class-demo (learning exercise)\"}\nresp = requests.get(base, headers=headers, timeout=10)",
+    "caption": "Practicing on Books to Scrape — a sandbox built for people learning this. Never assume a real site is."
   },
   {
     "type": "code",
-    "eyebrow": "Parse the HTML",
-    "code": "soup = BeautifulSoup(\n    resp.text, \"html.parser\")\ncards = soup.select(\n    \"article.product_pod\")\nlen(cards)                # 20\n\nc = cards[0]\nc.h3.a[\"title\"]  # A Light in the Attic",
-    "caption": "select() takes a CSS selector."
+    "eyebrow": "Parsing HTML with Beautiful Soup",
+    "code": "soup = BeautifulSoup(resp.text, \"html.parser\")\ncards = soup.select(\"article.product_pod\")   # 20 matches\n\nc = cards[0]\nc.h3.a[\"title\"]                            # 'A Light in the Attic'\nc.select_one(\"p.price_color\").get_text()  # '£51.77'",
+    "caption": "select() returns every match, select_one() the first. [\"attr\"] reads an attribute; get_text() the visible text."
   },
   {
     "type": "code",
     "eyebrow": "Rows to a DataFrame",
-    "code": "rows = []\nfor card in cards:\n    rows.append({\n        \"title\": card.h3.a[\"title\"],\n        \"price\": card.select_one(\n            \"p.price_color\"\n        ).get_text(strip=True),\n    })\ndf = pd.DataFrame(rows)",
-    "caption": "Then clean: strip the £ sign, to_numeric()."
+    "code": "rows = []\nfor card in cards:\n    rows.append({\n        \"title\": card.h3.a[\"title\"],\n        \"price\": card.select_one(\"p.price_color\").get_text(strip=True),\n    })\ndf = pd.DataFrame(rows)",
+    "caption": "Every column comes back as text — the same Chapter 5 cleaning skills apply next."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Cleaning, and looping over pages gently",
+    "code": "df[\"price\"] = pd.to_numeric(df[\"price\"].str.replace(r\"[^0-9.]\", \"\", regex=True))\n\nimport time\nfor n in (1, 2, 3):\n    r = requests.get(f\"{base}catalogue/page-{n}.html\", headers=headers, timeout=10)\n    r.raise_for_status()\n    time.sleep(1)   # be gentle",
+    "caption": "60 books total across 3 pages here — pause between requests with time.sleep."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Plain HTML tables: pd.read_html",
+    "code": "import io\ntables = pd.read_html(io.StringIO(resp.text))",
+    "caption": "Parses a plain HTML <table> directly into a list of DataFrames — needs a parser like lxml installed."
   },
   {
     "type": "steps",
     "eyebrow": "Why scrapers break",
     "titlePlain": "Expect ",
-    "titleEmphasis": "fragility",
+    "titleEmphasis": "Fragility",
     "titleSuffix": "",
     "steps": [
-      {
-        "label": "Layout changes",
-        "sub": "Your selectors stop matching"
-      },
-      {
-        "label": "JavaScript content",
-        "sub": "requests sees only the empty shell"
-      },
-      {
-        "label": "Blocked or asked to stop",
-        "sub": "Slow down, or stop"
-      }
+      { "label": "LAYOUT CHANGES", "sub": "Selectors silently stop matching" },
+      { "label": "JAVASCRIPT CONTENT", "sub": "requests sees only initial HTML" },
+      { "label": "BLOCKS & RATE LIMITS", "sub": "Back off, or stop" }
     ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 31",
-    "titlePlain": "Clean Code ",
-    "titleEmphasis": "for Notebooks",
+    "eyebrow": "Up next · Chapter 7, Lesson 31",
+    "titlePlain": "Clean Code for ",
+    "titleEmphasis": "Notebooks",
     "titleSuffix": "",
-    "subtitle": "Chapter 7 begins: writing reliable data code."
+    "subtitle": "Chapter 7 begins — writing reliable data code."
   }
 ]

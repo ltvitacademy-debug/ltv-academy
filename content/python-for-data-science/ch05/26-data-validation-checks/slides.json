@@ -1,61 +1,60 @@
 [
   {
     "type": "title",
-    "eyebrow": "Python for Data Science · Chapter 5",
-    "titlePlain": "Data ",
-    "titleEmphasis": "Validation Checks",
+    "eyebrow": "Python for Data Science · Chapter 5, Lesson 26",
+    "titlePlain": "Data Validation ",
+    "titleEmphasis": "Checks",
     "titleSuffix": "",
-    "subtitle": "Lesson 26 · Data Cleaning"
-  },
-  {
-    "type": "steps",
-    "eyebrow": "Constraints you write yourself",
-    "titlePlain": "Five families of ",
-    "titleEmphasis": "checks",
-    "titleSuffix": "",
-    "steps": [
-      {"label": "Unique", "sub": "Keys never repeat"},
-      {"label": "Complete", "sub": "Required columns have no gaps"},
-      {"label": "In range", "sub": "Amounts and dates are plausible"},
-      {"label": "Allowed / related", "sub": "Known statuses; ids exist elsewhere"}
-    ]
+    "subtitle": "Turning silent data problems into loud, specific failures."
   },
   {
     "type": "code",
-    "eyebrow": "One-line checks",
-    "code": "df[\"order_id\"].is_unique\ndf[\"amount\"].between(0, 10000)\ndf[\"status\"].isin(\n    [\"pending\", \"shipped\", \"delivered\"])\ndf[\"customer_id\"].isin(\n    customers[\"customer_id\"])\n\ndf[~df[\"amount\"].between(0, 10000)]",
-    "caption": "Negate and filter to see the offending rows."
+    "eyebrow": "The practice data — five deliberate problems",
+    "code": "orders = pd.DataFrame({\n    \"order_id\": [5001, 5002, 5003, 5003, 5005],\n    \"customer_id\": [101, 102, 999, 999, 105],\n    \"amount\": [120.0, -15.0, 60.0, 60.0, 80.0],\n    \"status\": [\"shipped\", \"shipped\", \"pending\", \"pending\", \"delivered\"],\n})\ncustomers = pd.DataFrame({\"customer_id\": [101, 102, 103, 104, 105]})",
+    "caption": "pandas enforces none of SQL's PRIMARY KEY, NOT NULL, CHECK, or FOREIGN KEY — you write the checks yourself."
   },
   {
     "type": "code",
-    "eyebrow": "Bundle the rules",
-    "code": "def validate(df, customers):\n    checks = {\n        \"order_id is unique\":\n            df[\"order_id\"].is_unique,\n        \"no missing amount\":\n            df[\"amount\"].notna().all(),\n        # ...more rules\n    }\n    return pd.Series(checks)",
-    "caption": "One named True/False result per rule."
+    "eyebrow": "Five families of checks, one line each",
+    "code": "orders[\"order_id\"].is_unique                               # False\norders[\"amount\"].notna().all()                              # True\norders[\"amount\"].between(0, 10000).all()                    # False\norders[\"status\"].isin([\"pending\",\"shipped\",\"delivered\"]).all()  # True\norders[\"customer_id\"].isin(customers[\"customer_id\"]).all()  # False",
+    "caption": "unique, complete, in-range, allowed values, related — the pandas equivalents of SQL's constraints."
+  },
+  {
+    "type": "code",
+    "eyebrow": "See the offending rows, not just False",
+    "code": "orders[~orders[\"amount\"].between(0, 10000)]\n# order 5002: amount -15.0\n\norders[orders[\"order_id\"].duplicated(keep=False)]\n# both rows of order 5003",
+    "caption": "Negate the check and use it as a filter — this is the output you hand to whoever owns the source system."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Bundle every rule into one function",
+    "code": "def validate(df, customers):\n    checks = {\n        \"order_id is unique\": df[\"order_id\"].is_unique,\n        \"no missing amount\": df[\"amount\"].notna().all(),\n        \"amount between 0 and 10000\": df[\"amount\"].between(0, 10000).all(),\n        \"customer_id exists\": df[\"customer_id\"].isin(customers[\"customer_id\"]).all(),\n    }\n    return pd.Series(checks, name=\"passed\")",
+    "caption": "A named True/False Series — one place that holds every rule and evolves with the data."
   },
   {
     "type": "code",
     "eyebrow": "Fail loudly",
-    "code": "report = validate(orders, customers)\nfailed = report[~report].index.tolist()\nassert not failed, (\n    f\"Validation failed: {failed}\")\n\n# AssertionError: Validation failed:\n# ['order_id is unique', ...]",
-    "caption": "Illustrative: 4 of 6 rules failed on the sample."
+    "code": "report = validate(orders, customers)\nfailed = report[~report].index.tolist()\nassert not failed, f\"Validation failed: {failed}\"\n# AssertionError: Validation failed: ['order_id is unique', ...]",
+    "caption": "assert stops the notebook or script right there — bad data never flows into a model or a dashboard."
   },
   {
     "type": "steps",
     "eyebrow": "Good habits",
-    "titlePlain": "Make bad data ",
-    "titleEmphasis": "visible",
+    "titlePlain": "Validate Like You ",
+    "titleEmphasis": "Mean It",
     "titleSuffix": "",
     "steps": [
-      {"label": "Fail fast", "sub": "Check where data enters the notebook"},
-      {"label": "Show the rows", "sub": "Not just a count of failures"},
-      {"label": "One home for rules", "sub": "Grow them with the data"}
+      { "label": "FAIL FAST", "sub": "After load, after each change" },
+      { "label": "SHOW THE ROWS", "sub": "Not just a failure count" },
+      { "label": "ONE PLACE FOR RULES", "sub": "Evolves with the data" }
     ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 27",
-    "titlePlain": "Reading & Writing ",
-    "titleEmphasis": "CSV, Excel & JSON",
+    "eyebrow": "Up next · Chapter 6, Lesson 27",
+    "titlePlain": "Reading & Writing CSV, Excel & ",
+    "titleEmphasis": "JSON",
     "titleSuffix": "",
-    "subtitle": "Moving data between files and pandas."
+    "subtitle": "Chapter 6 begins — files, databases, and APIs."
   }
 ]
