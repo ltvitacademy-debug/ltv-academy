@@ -73,7 +73,7 @@ export const GOV_MASTER_AND_REFERENCE_DATA_MANAGEMENT_CHAPTERS: ChapterMeta[] = 
       L(22, "master-data-quality", "Master Data Quality", { contentDir: "ch05/22-master-data-quality", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416204/ltv-master-and-reference-data-management/master-data-quality.mp4", durationLabel: "1:29" }),
       L(23, "master-data-integration-patterns", "Master Data Integration Patterns", { contentDir: "ch05/23-master-data-integration-patterns", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416396/ltv-master-and-reference-data-management/master-data-integration-patterns.mp4", durationLabel: "1:32" }),
       L(24, "mdm-tools-overview", "MDM Tools Overview", { contentDir: "ch05/24-mdm-tools-overview", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416685/ltv-master-and-reference-data-management/mdm-tools-overview.mp4", durationLabel: "1:39" }),
-      L(25, "mdm-case-study", "MDM Case Study", { contentDir: "ch05/25-mdm-case-study" }),
+      L(25, "mdm-case-study", "MDM Case Study", { contentDir: "ch05/25-mdm-case-study", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416979/ltv-master-and-reference-data-management/mdm-case-study.mp4", durationLabel: "1:50" }),
     ],
   },
 ];

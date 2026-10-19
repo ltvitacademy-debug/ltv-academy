@@ -28,49 +28,174 @@ export const JS_TS_BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Programming Fundamentals Through JavaScript",
     lessons: [
-      L(1, "why-javascript-for-web3", "Why JavaScript for Web3?", { contentDir: "ch01/01-why-javascript-for-web3" }),
-      L(2, "setting-up-your-dev-environment", "Setting Up Your Dev Environment", { contentDir: "ch01/02-setting-up-your-dev-environment" }),
-      L(3, "variables-and-data-types", "Variables & Data Types", { contentDir: "ch01/03-variables-and-data-types" }),
-      L(4, "control-flow", "Control Flow", { contentDir: "ch01/04-control-flow" }),
-      L(5, "functions", "Functions", { contentDir: "ch01/05-functions" }),
-      L(6, "arrays-and-objects", "Arrays & Objects", { contentDir: "ch01/06-arrays-and-objects" }),
-      L(7, "console-and-debugging", "Working With the Console & Debugging", { contentDir: "ch01/07-console-and-debugging" }),
+      L(1, "why-javascript-for-web3", "Why JavaScript for Web3?", {
+        contentDir: "ch01/01-why-javascript-for-web3",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792408280/ltv-js-ts-blockchain/ch01-01-why-javascript-for-web3.mp4",
+        durationLabel: "2 min 27 s",
+      }),
+      L(2, "setting-up-your-dev-environment", "Setting Up Your Dev Environment", {
+        contentDir: "ch01/02-setting-up-your-dev-environment",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792408970/ltv-js-ts-blockchain/ch01-02-setting-up-your-dev-environment.mp4",
+        durationLabel: "2 min 7 s",
+      }),
+      L(3, "variables-and-data-types", "Variables & Data Types", {
+        contentDir: "ch01/03-variables-and-data-types",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792409504/ltv-js-ts-blockchain/ch01-03-variables-and-data-types.mp4",
+        durationLabel: "2 min 12 s",
+      }),
+      L(4, "control-flow", "Control Flow", {
+        contentDir: "ch01/04-control-flow",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792410000/ltv-js-ts-blockchain/ch01-04-control-flow.mp4",
+        durationLabel: "1 min 59 s",
+      }),
+      L(5, "functions", "Functions", {
+        contentDir: "ch01/05-functions",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792410343/ltv-js-ts-blockchain/ch01-05-functions.mp4",
+        durationLabel: "2 min 21 s",
+      }),
+      L(6, "arrays-and-objects", "Arrays & Objects", {
+        contentDir: "ch01/06-arrays-and-objects",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792410661/ltv-js-ts-blockchain/ch01-06-arrays-and-objects.mp4",
+        durationLabel: "2 min 20 s",
+      }),
+      L(7, "console-and-debugging", "Working With the Console & Debugging", {
+        contentDir: "ch01/07-console-and-debugging",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792410939/ltv-js-ts-blockchain/ch01-07-console-and-debugging.mp4",
+        durationLabel: "2 min 3 s",
+      }),
     ],
   },
   {
     n: 2,
     title: "Modern JavaScript",
     lessons: [
-      L(8, "es6-plus-syntax", "ES6+ Syntax", { contentDir: "ch02/08-es6-plus-syntax" }),
-      L(9, "arrow-functions-and-destructuring", "Arrow Functions & Destructuring", { contentDir: "ch02/09-arrow-functions-and-destructuring" }),
-      L(10, "template-literals", "Template Literals", { contentDir: "ch02/10-template-literals" }),
-      L(11, "modules-import-export", "Modules: import & export", { contentDir: "ch02/11-modules-import-export" }),
-      L(12, "array-methods", "Array Methods: map, filter & reduce", { contentDir: "ch02/12-array-methods" }),
-      L(13, "spread-and-rest-operators", "Spread & Rest Operators", { contentDir: "ch02/13-spread-and-rest-operators" }),
+      L(8, "es6-plus-syntax", "ES6+ Syntax", {
+        contentDir: "ch02/08-es6-plus-syntax",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792411242/ltv-js-ts-blockchain/ch02-08-es6-plus-syntax.mp4",
+        durationLabel: "2 min 7 s",
+      }),
+      L(9, "arrow-functions-and-destructuring", "Arrow Functions & Destructuring", {
+        contentDir: "ch02/09-arrow-functions-and-destructuring",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792411555/ltv-js-ts-blockchain/ch02-09-arrow-functions-and-destructuring.mp4",
+        durationLabel: "2 min 13 s",
+      }),
+      L(10, "template-literals", "Template Literals", {
+        contentDir: "ch02/10-template-literals",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792411875/ltv-js-ts-blockchain/ch02-10-template-literals.mp4",
+        durationLabel: "2 min 17 s",
+      }),
+      L(11, "modules-import-export", "Modules: import & export", {
+        contentDir: "ch02/11-modules-import-export",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792412153/ltv-js-ts-blockchain/ch02-11-modules-import-export.mp4",
+        durationLabel: "2 min 1 s",
+      }),
+      L(12, "array-methods", "Array Methods: map, filter & reduce", {
+        contentDir: "ch02/12-array-methods",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792412464/ltv-js-ts-blockchain/ch02-12-array-methods.mp4",
+        durationLabel: "2 min 7 s",
+      }),
+      L(13, "spread-and-rest-operators", "Spread & Rest Operators", {
+        contentDir: "ch02/13-spread-and-rest-operators",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792412749/ltv-js-ts-blockchain/ch02-13-spread-and-rest-operators.mp4",
+        durationLabel: "2 min 7 s",
+      }),
     ],
   },
   {
     n: 3,
     title: "Asynchronous JavaScript",
     lessons: [
-      L(14, "the-event-loop", "The Event Loop", { contentDir: "ch03/14-the-event-loop" }),
-      L(15, "callbacks", "Callbacks", { contentDir: "ch03/15-callbacks" }),
-      L(16, "promises", "Promises", { contentDir: "ch03/16-promises" }),
-      L(17, "async-await", "async/await", { contentDir: "ch03/17-async-await" }),
-      L(18, "error-handling-in-async-code", "Error Handling in Async Code", { contentDir: "ch03/18-error-handling-in-async-code" }),
-      L(19, "fetching-data-from-an-api", "Fetching Data From an API", { contentDir: "ch03/19-fetching-data-from-an-api" }),
+      L(14, "the-event-loop", "The Event Loop", {
+        contentDir: "ch03/14-the-event-loop",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792413049/ltv-js-ts-blockchain/ch03-14-the-event-loop.mp4",
+        durationLabel: "2 min 15 s",
+      }),
+      L(15, "callbacks", "Callbacks", {
+        contentDir: "ch03/15-callbacks",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792413324/ltv-js-ts-blockchain/ch03-15-callbacks.mp4",
+        durationLabel: "2 min 5 s",
+      }),
+      L(16, "promises", "Promises", {
+        contentDir: "ch03/16-promises",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792413636/ltv-js-ts-blockchain/ch03-16-promises.mp4",
+        durationLabel: "2 min 25 s",
+      }),
+      L(17, "async-await", "async/await", {
+        contentDir: "ch03/17-async-await",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792413929/ltv-js-ts-blockchain/ch03-17-async-await.mp4",
+        durationLabel: "2 min 19 s",
+      }),
+      L(18, "error-handling-in-async-code", "Error Handling in Async Code", {
+        contentDir: "ch03/18-error-handling-in-async-code",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792414269/ltv-js-ts-blockchain/ch03-18-error-handling-in-async-code.mp4",
+        durationLabel: "2 min 36 s",
+      }),
+      L(19, "fetching-data-from-an-api", "Fetching Data From an API", {
+        contentDir: "ch03/19-fetching-data-from-an-api",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792414586/ltv-js-ts-blockchain/ch03-19-fetching-data-from-an-api.mp4",
+        durationLabel: "2 min 31 s",
+      }),
     ],
   },
   {
     n: 4,
     title: "TypeScript Fundamentals",
     lessons: [
-      L(20, "why-typescript", "Why TypeScript?", { contentDir: "ch04/20-why-typescript" }),
-      L(21, "basic-types", "Basic Types", { contentDir: "ch04/21-basic-types" }),
-      L(22, "interfaces-and-type-aliases", "Interfaces & Type Aliases", { contentDir: "ch04/22-interfaces-and-type-aliases" }),
-      L(23, "functions-with-types", "Functions With Types", { contentDir: "ch04/23-functions-with-types" }),
-      L(24, "generics-basics", "Generics, Basics", { contentDir: "ch04/24-generics-basics" }),
-      L(25, "type-narrowing", "Type Narrowing", { contentDir: "ch04/25-type-narrowing" }),
+      L(20, "why-typescript", "Why TypeScript?", {
+        contentDir: "ch04/20-why-typescript",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792414910/ltv-js-ts-blockchain/ch04-20-why-typescript.mp4",
+        durationLabel: "2 min 26 s",
+      }),
+      L(21, "basic-types", "Basic Types", {
+        contentDir: "ch04/21-basic-types",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792415296/ltv-js-ts-blockchain/ch04-21-basic-types.mp4",
+        durationLabel: "2 min 33 s",
+      }),
+      L(22, "interfaces-and-type-aliases", "Interfaces & Type Aliases", {
+        contentDir: "ch04/22-interfaces-and-type-aliases",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792415776/ltv-js-ts-blockchain/ch04-22-interfaces-and-type-aliases.mp4",
+        durationLabel: "2 min 19 s",
+      }),
+      L(23, "functions-with-types", "Functions With Types", {
+        contentDir: "ch04/23-functions-with-types",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416178/ltv-js-ts-blockchain/ch04-23-functions-with-types.mp4",
+        durationLabel: "2 min 16 s",
+      }),
+      L(24, "generics-basics", "Generics, Basics", {
+        contentDir: "ch04/24-generics-basics",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416647/ltv-js-ts-blockchain/ch04-24-generics-basics.mp4",
+        durationLabel: "2 min 38 s",
+      }),
+      L(25, "type-narrowing", "Type Narrowing", {
+        contentDir: "ch04/25-type-narrowing",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792417129/ltv-js-ts-blockchain/ch04-25-type-narrowing.mp4",
+        durationLabel: "2 min 30 s",
+      }),
     ],
   },
   {

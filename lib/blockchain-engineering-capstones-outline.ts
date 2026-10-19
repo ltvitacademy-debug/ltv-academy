@@ -29,41 +29,109 @@ export const BLOCKCHAIN_ENGINEERING_CAPSTONES_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Capstone Overview",
     lessons: [
-      L(1, "program-overview-and-portfolio-strategy", "Program Overview & Portfolio Strategy", { contentDir: "ch01/01-program-overview-and-portfolio-strategy" }),
-      L(2, "choosing-your-project-emphasis", "Choosing Your Project Emphasis", { contentDir: "ch01/02-choosing-your-project-emphasis" }),
+      L(1, "program-overview-and-portfolio-strategy", "Program Overview & Portfolio Strategy", {
+        contentDir: "ch01/01-program-overview-and-portfolio-strategy",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792413037/ltv-blockchain-engineering-capstones/program-overview-and-portfolio-strategy.mp4",
+        durationLabel: "1 min 30 s",
+      }),
+      L(2, "choosing-your-project-emphasis", "Choosing Your Project Emphasis", {
+        contentDir: "ch01/02-choosing-your-project-emphasis",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792413219/ltv-blockchain-engineering-capstones/choosing-your-project-emphasis.mp4",
+        durationLabel: "1 min 8 s",
+      }),
     ],
   },
   {
     n: 2,
     title: "Project 1 — A Full DeFi Protocol",
     lessons: [
-      L(3, "project-1-kickoff", "Project 1 Kickoff", { contentDir: "ch02/03-project-1-kickoff" }),
-      L(4, "project-1-designing-the-pool-contracts", "Designing the Pool Contracts", { contentDir: "ch02/04-project-1-designing-the-pool-contracts" }),
-      L(5, "project-1-building-the-frontend", "Building the Frontend", { contentDir: "ch02/05-project-1-building-the-frontend" }),
-      L(6, "project-1-testing-and-security-review", "Testing & Security Review", { contentDir: "ch02/06-project-1-testing-and-security-review" }),
-      L(7, "project-1-testnet-deployment-and-wrap-up", "Testnet Deployment & Wrap-Up", { contentDir: "ch02/07-project-1-testnet-deployment-and-wrap-up" }),
+      L(3, "project-1-kickoff", "Project 1 Kickoff", {
+        contentDir: "ch02/03-project-1-kickoff",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792413408/ltv-blockchain-engineering-capstones/project-1-kickoff.mp4",
+        durationLabel: "1 min 33 s",
+      }),
+      L(4, "project-1-designing-the-pool-contracts", "Designing the Pool Contracts", {
+        contentDir: "ch02/04-project-1-designing-the-pool-contracts",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792413669/ltv-blockchain-engineering-capstones/project-1-designing-the-pool-contracts.mp4",
+        durationLabel: "1 min 53 s",
+      }),
+      L(5, "project-1-building-the-frontend", "Building the Frontend", {
+        contentDir: "ch02/05-project-1-building-the-frontend",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792413887/ltv-blockchain-engineering-capstones/project-1-building-the-frontend.mp4",
+        durationLabel: "1 min 27 s",
+      }),
+      L(6, "project-1-testing-and-security-review", "Testing & Security Review", {
+        contentDir: "ch02/06-project-1-testing-and-security-review",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792414144/ltv-blockchain-engineering-capstones/project-1-testing-and-security-review.mp4",
+        durationLabel: "1 min 55 s",
+      }),
+      L(7, "project-1-testnet-deployment-and-wrap-up", "Testnet Deployment & Wrap-Up", {
+        contentDir: "ch02/07-project-1-testnet-deployment-and-wrap-up",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792414366/ltv-blockchain-engineering-capstones/project-1-testnet-deployment-and-wrap-up.mp4",
+        durationLabel: "1 min 31 s",
+      }),
     ],
   },
   {
     n: 3,
     title: "Project 2 — An NFT Marketplace",
     lessons: [
-      L(8, "project-2-kickoff", "Project 2 Kickoff", { contentDir: "ch03/08-project-2-kickoff" }),
-      L(9, "project-2-marketplace-contract-design", "Marketplace Contract Design", { contentDir: "ch03/09-project-2-marketplace-contract-design" }),
-      L(10, "project-2-indexing-listings-and-sales", "Indexing Listings & Sales", { contentDir: "ch03/10-project-2-indexing-listings-and-sales" }),
-      L(11, "project-2-frontend-and-wallet-integration", "Frontend & Wallet Integration", { contentDir: "ch03/11-project-2-frontend-and-wallet-integration" }),
-      L(12, "project-2-wrap-up-and-presentation", "Wrap-Up & Presentation", { contentDir: "ch03/12-project-2-wrap-up-and-presentation" }),
+      L(8, "project-2-kickoff", "Project 2 Kickoff", {
+        contentDir: "ch03/08-project-2-kickoff",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792414611/ltv-blockchain-engineering-capstones/project-2-kickoff.mp4",
+        durationLabel: "1 min 44 s",
+      }),
+      L(9, "project-2-marketplace-contract-design", "Marketplace Contract Design", {
+        contentDir: "ch03/09-project-2-marketplace-contract-design",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792414883/ltv-blockchain-engineering-capstones/project-2-marketplace-contract-design.mp4",
+        durationLabel: "1 min 55 s",
+      }),
+      L(10, "project-2-indexing-listings-and-sales", "Indexing Listings & Sales", {
+        contentDir: "ch03/10-project-2-indexing-listings-and-sales",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792415124/ltv-blockchain-engineering-capstones/project-2-indexing-listings-and-sales.mp4",
+        durationLabel: "1 min 54 s",
+      }),
+      L(11, "project-2-frontend-and-wallet-integration", "Frontend & Wallet Integration", {
+        contentDir: "ch03/11-project-2-frontend-and-wallet-integration",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792415442/ltv-blockchain-engineering-capstones/project-2-frontend-and-wallet-integration.mp4",
+        durationLabel: "1 min 37 s",
+      }),
+      L(12, "project-2-wrap-up-and-presentation", "Wrap-Up & Presentation", {
+        contentDir: "ch03/12-project-2-wrap-up-and-presentation",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792415733/ltv-blockchain-engineering-capstones/project-2-wrap-up-and-presentation.mp4",
+        durationLabel: "1 min 22 s",
+      }),
     ],
   },
   {
     n: 4,
     title: "Project 3 — A DAO Governance System",
     lessons: [
-      L(13, "project-3-kickoff", "Project 3 Kickoff", { contentDir: "ch04/13-project-3-kickoff" }),
-      L(14, "project-3-governance-token-and-voting", "Governance Token & Voting", { contentDir: "ch04/14-project-3-governance-token-and-voting" }),
-      L(15, "project-3-treasury-and-timelock", "Treasury & Timelock", { contentDir: "ch04/15-project-3-treasury-and-timelock" }),
-      L(16, "project-3-proposal-ui-and-deployment", "Proposal UI & Deployment", { contentDir: "ch04/16-project-3-proposal-ui-and-deployment" }),
-      L(17, "project-3-wrap-up-and-presentation", "Wrap-Up & Presentation", { contentDir: "ch04/17-project-3-wrap-up-and-presentation" }),
+      L(13, "project-3-kickoff", "Project 3 Kickoff", {
+        contentDir: "ch04/13-project-3-kickoff",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416036/ltv-blockchain-engineering-capstones/project-3-kickoff.mp4",
+        durationLabel: "1 min 46 s",
+      }),
+      L(14, "project-3-governance-token-and-voting", "Governance Token & Voting", {
+        contentDir: "ch04/14-project-3-governance-token-and-voting",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416316/ltv-blockchain-engineering-capstones/project-3-governance-token-and-voting.mp4",
+        durationLabel: "1 min 29 s",
+      }),
+      L(15, "project-3-treasury-and-timelock", "Treasury & Timelock", {
+        contentDir: "ch04/15-project-3-treasury-and-timelock",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792416609/ltv-blockchain-engineering-capstones/project-3-treasury-and-timelock.mp4",
+        durationLabel: "1 min 27 s",
+      }),
+      L(16, "project-3-proposal-ui-and-deployment", "Proposal UI & Deployment", {
+        contentDir: "ch04/16-project-3-proposal-ui-and-deployment",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792417011/ltv-blockchain-engineering-capstones/project-3-proposal-ui-and-deployment.mp4",
+        durationLabel: "1 min 59 s",
+      }),
+      L(17, "project-3-wrap-up-and-presentation", "Wrap-Up & Presentation", {
+        contentDir: "ch04/17-project-3-wrap-up-and-presentation",
+        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792417267/ltv-blockchain-engineering-capstones/project-3-wrap-up-and-presentation.mp4",
+        durationLabel: "1 min 29 s",
+      }),
     ],
   },
   {
@@ -73,8 +141,4 @@ export const BLOCKCHAIN_ENGINEERING_CAPSTONES_CHAPTERS: ChapterMeta[] = [
       L(18, "building-your-blockchain-developer-resume", "Building Your Blockchain Developer Resume", { contentDir: "ch05/18-building-your-blockchain-developer-resume" }),
       L(19, "portfolio-and-github-presentation-strategy", "Portfolio & GitHub Presentation Strategy", { contentDir: "ch05/19-portfolio-and-github-presentation-strategy" }),
       L(20, "common-blockchain-interview-questions", "Common Blockchain Interview Questions", { contentDir: "ch05/20-common-blockchain-interview-questions" }),
-      L(21, "whiteboard-and-security-review-exercises", "Whiteboard & Security Review Exercises", { contentDir: "ch05/21-whiteboard-and-security-review-exercises" }),
-      L(22, "salary-negotiation-and-next-steps", "Salary Negotiation & Next Steps", { contentDir: "ch05/22-salary-negotiation-and-next-steps" }),
-    ],
-  },
-];
+      L(21, "whiteboard-and-security-review-exercises", "Whiteboard & Security Review Exercises", { contentDir: "ch05/
