@@ -94,16 +94,16 @@ export const PYTHON_FOR_DATA_SCIENCE_CHAPTERS: ChapterMeta[] = [
       L(31, "clean-code-for-notebooks", "Clean Code for Notebooks", { contentDir: "ch07/31-clean-code-for-notebooks", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792425132/ltv-python-for-data-science/clean-code-for-notebooks.mp4", durationLabel: "3 min 38 s" }),
       L(32, "refactoring-notebooks-into-scripts", "Refactoring Notebooks Into Scripts", { contentDir: "ch07/32-refactoring-notebooks-into-scripts", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792427446/ltv-python-for-data-science/refactoring-notebooks-into-scripts.mp4", durationLabel: "3 min 24 s" }),
       L(33, "testing-data-code", "Testing Data Code", { contentDir: "ch07/33-testing-data-code", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792428828/ltv-python-for-data-science/testing-data-code.mp4", durationLabel: "3 min 49 s" }),
-      L(34, "reproducibility", "Reproducibility", { contentDir: "ch07/34-reproducibility" }),
+      L(34, "reproducibility", "Reproducibility", { contentDir: "ch07/34-reproducibility", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792430012/ltv-python-for-data-science/reproducibility.mp4", durationLabel: "3 min 31 s" }),
     ],
   },
   {
     n: 8,
     title: "Capstone",
     lessons: [
-      L(35, "capstone-kickoff-clean-and-analyze-a-real-dataset-in-python", "Capstone Kickoff: Clean and Analyze a Real Dataset in Python", { contentDir: "ch08/35-capstone-kickoff-clean-and-analyze-a-real-dataset-in-python" }),
-      L(36, "capstone-build-it", "Capstone: Build It", { contentDir: "ch08/36-capstone-build-it" }),
-      L(37, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch08/37-capstone-wrap-up-and-portfolio-presentation" }),
+      L(35, "capstone-kickoff-clean-and-analyze-a-real-dataset-in-python", "Capstone Kickoff: Clean and Analyze a Real Dataset in Python", { contentDir: "ch08/35-capstone-kickoff-clean-and-analyze-a-real-dataset-in-python", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792431141/ltv-python-for-data-science/capstone-kickoff-clean-and-analyze-a-real-dataset-in-python.mp4", durationLabel: "3 min 27 s" }),
+      L(36, "capstone-build-it", "Capstone: Build It", { contentDir: "ch08/36-capstone-build-it", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792432084/ltv-python-for-data-science/capstone-build-it.mp4", durationLabel: "3 min 54 s" }),
+      L(37, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch08/37-capstone-wrap-up-and-portfolio-presentation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792432953/ltv-python-for-data-science/capstone-wrap-up-and-portfolio-presentation.mp4", durationLabel: "4 min 3 s" }),
     ],
   },
 ];

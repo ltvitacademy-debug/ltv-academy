@@ -1,61 +1,80 @@
 [
   {
     "type": "title",
-    "eyebrow": "Machine Learning Fundamentals · Chapter 2",
+    "eyebrow": "Machine Learning Fundamentals · Chapter 2, Lesson 8",
     "titlePlain": "Data ",
     "titleEmphasis": "Leakage",
     "titleSuffix": "",
-    "subtitle": "Lesson 8 · Data Preparation & Feature Engineering"
+    "subtitle": "It doesn't crash anything. It just collapses later, in production."
   },
   {
     "type": "steps",
-    "eyebrow": "Information that should not be there",
-    "titlePlain": "Four ways to ",
-    "titleEmphasis": "leak",
+    "eyebrow": "Kind 1: target leakage",
+    "titlePlain": "A Feature That ",
+    "titleEmphasis": "Knows the Future",
     "titleSuffix": "",
     "steps": [
-      { "label": "Target leakage", "sub": "Feature is a result of the outcome" },
-      { "label": "Contamination", "sub": "Test rows shape preprocessing" },
-      { "label": "Temporal", "sub": "Training on the future" },
-      { "label": "Duplicates", "sub": "Same row in train and test" }
+      { "label": "refund_issued -> CHURN", "sub": "Refunds happen AFTER a cancellation" },
+      { "label": "AT PREDICTION TIME: NO REFUND YET", "sub": "The feature carries an answer you can't actually have" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "Target leakage · illustrative churn data",
-    "code": "# refund only happens AFTER cancelling\ndf[\"refund_issued\"] = (\n    (df[\"churned\"] == 1) &\n    (rng.random(n) < 0.9)\n).astype(int)\n\ncols = honest_cols + [\"refund_issued\"]",
-    "caption": "The column carries the answer. Live customers have no refund yet."
+    "eyebrow": "Measuring the damage",
+    "code": "# honest features (tenure, tickets, spend):  test accuracy 0.722\n# + refund_issued:                            test accuracy 0.963\n# majority-class baseline: 0.582",
+    "caption": "On a proper held-out test set -- the split alone can't catch this, the leak is IN the features."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The test for target leakage",
+    "titlePlain": "Ask This, Every ",
+    "titleEmphasis": "Feature",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "\"WILL I KNOW THIS AT PREDICTION TIME?\"", "sub": "If recorded AFTER the event -- drop it" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Kind 2: train-test contamination",
+    "titlePlain": "Preprocessing ",
+    "titleEmphasis": "Leaks Too",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "FEATURE SELECTION, SCALING, IMPUTING", "sub": "Anything that LEARNS from data" },
+      { "label": "MUST BE FIT ON TRAINING ROWS ONLY", "sub": "Then applied to validation/test" }
+    ]
   },
   {
     "type": "code",
-    "eyebrow": "Test accuracy",
-    "code": "honest features      0.722\nwith refund_issued   0.963\nmajority baseline    0.582",
-    "caption": "Ask: will I know this value at prediction time?"
-  },
-  {
-    "type": "code",
-    "eyebrow": "Contamination · labels are pure noise",
-    "code": "# WRONG: select on all rows, then split\nXs = SelectKBest(f_classif, k=20)\\\n     .fit_transform(X, yy)\n\n# RIGHT: split first, select on train\nsel = SelectKBest(f_classif, k=20)\nsel.fit(a, c)",
-    "caption": "Order of operations is everything."
-  },
-  {
-    "type": "code",
-    "eyebrow": "Mean test accuracy over 30 runs",
-    "code": "select before split   0.787\nselect after split    0.51\n\n# chance level is 0.50",
-    "caption": "Coin-flip labels scored 79% when the order was wrong."
+    "eyebrow": "A striking demo: labels are PURE random noise",
+    "code": "# select 20 'best' of 1,000 noise features, 30 runs, random labels:\n# select BEFORE split (leaky): mean test accuracy 0.787\n# select AFTER split (honest): mean test accuracy 0.51  (= chance)",
+    "caption": "78.7% accuracy on literal coin flips -- test labels leaked into which columns were kept."
   },
   {
     "type": "screenshot",
-    "file": "leakage-comparison.png",
-    "eyebrow": "Both leaks, side by side",
-    "caption": "Output of the code above (illustrative and random data)."
+    "file": "leakage-charts.png",
+    "eyebrow": "Both experiments, side by side",
+    "caption": "Real output: target leakage (left) and train-test contamination (right)."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Other forms to watch for",
+    "titlePlain": "Time, Duplicates, ",
+    "titleEmphasis": "Identifiers",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "TEMPORAL LEAKAGE", "sub": "Random splits on time series train on the future" },
+      { "label": "DUPLICATE ROWS IN BOTH SETS", "sub": "Lets the model memorize, not learn" },
+      { "label": "LEAKY IDs", "sub": "An ID or timestamp that just happens to correlate" }
+    ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 9",
-    "titlePlain": "Encoding ",
-    "titleEmphasis": "Categorical",
-    "titleSuffix": " Variables",
-    "subtitle": "Turning labels into numbers a model can use."
+    "eyebrow": "Up next · Chapter 2, Lesson 9",
+    "titlePlain": "Encoding Categorical ",
+    "titleEmphasis": "Variables",
+    "titleSuffix": "",
+    "subtitle": "A score too good to be true usually is -- assume leakage until proven otherwise."
   }
 ]

@@ -1,54 +1,75 @@
 [
   {
     "type": "title",
-    "eyebrow": "Machine Learning Fundamentals · Chapter 2",
-    "titlePlain": "Encoding ",
-    "titleEmphasis": "Categorical",
-    "titleSuffix": " Variables",
-    "subtitle": "Lesson 9 · Data Preparation & Feature Engineering"
+    "eyebrow": "Machine Learning Fundamentals · Chapter 2, Lesson 9",
+    "titlePlain": "Encoding Categorical ",
+    "titleEmphasis": "Variables",
+    "titleSuffix": "",
+    "subtitle": "The wrong encoding quietly tells the model something false."
   },
   {
     "type": "steps",
-    "eyebrow": "Does the category have a natural order?",
-    "titlePlain": "Pick the encoding to fit the ",
-    "titleEmphasis": "column",
+    "eyebrow": "Nominal vs. ordinal",
+    "titlePlain": "Does Order ",
+    "titleEmphasis": "Exist?",
     "titleSuffix": "",
     "steps": [
-      { "label": "Nominal", "sub": "City, colour: use one-hot" },
-      { "label": "Ordinal", "sub": "basic < standard < premium" },
-      { "label": "High cardinality", "sub": "Group rare, or frequency-encode" }
+      { "label": "NOMINAL: NO ORDER", "sub": "City, color, payment method" },
+      { "label": "ORDINAL: REAL ORDER", "sub": "Plan level, education, survey rating" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "One-hot encoding · illustrative customers",
-    "code": "ohe = OneHotEncoder(\n    sparse=False,\n    handle_unknown=\"ignore\")\nX_city = ohe.fit_transform(\n    df[[\"city\"]])\nohe.get_feature_names_out([\"city\"])",
-    "caption": "scikit-learn 1.1 syntax; fit on training data only."
+    "eyebrow": "One-hot encoding for nominal columns",
+    "code": "ohe = OneHotEncoder(sparse=False, handle_unknown=\"ignore\")\ncity_oh = ohe.fit_transform(df[[\"city\"]])\nprint(ohe.get_feature_names_out([\"city\"]))\n# ['city_Atlanta' 'city_Boston' 'city_Chicago']\nohe.transform(pd.DataFrame({\"city\": [\"Denver\"]}))   # [[0. 0. 0.]] -- unseen!",
+    "caption": "handle_unknown=\"ignore\" turns an unseen category into all zeros instead of an error."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "This is a LEARNED transformation",
+    "titlePlain": "Fit on Train ",
+    "titleEmphasis": "Only",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "THE ENCODER REMEMBERS ITS CATEGORIES", "sub": "Same rule as Lesson 8" },
+      { "label": "pd.get_dummies() DOESN'T REMEMBER", "sub": "Risky for train/test consistency -- prefer sklearn" }
+    ]
   },
   {
     "type": "code",
-    "eyebrow": "What the encoder produced",
-    "code": "['city_Atlanta', 'city_Boston',\n 'city_Chicago']\nAtlanta row   -> [1. 0. 0.]\nChicago row   -> [0. 0. 1.]\nunseen Denver -> [0. 0. 0.]",
-    "caption": "An unseen city becomes zeros instead of an error."
+    "eyebrow": "Ordinal encoding: state the order explicitly",
+    "code": "ordn = OrdinalEncoder(categories=[[\"basic\", \"standard\", \"premium\"]])\ndf[\"plan_level\"] = ordn.fit_transform(df[[\"plan\"]])\n# [['basic', 0.0], ['standard', 1.0], ['premium', 2.0]]",
+    "caption": "Without an explicit order, it defaults to alphabetical -- \"premium\" before \"basic\"!"
   },
   {
     "type": "code",
-    "eyebrow": "Number a nominal column and it breaks",
-    "code": "codes = OrdinalEncoder().fit_transform(\n    df[[\"city\"]])      # 0, 1, 2\n\nR^2, city numbered 0,1,2 : 0.04\nR^2, one-hot city        : 0.815",
-    "caption": "A straight line through 0, 1, 2 cannot put Boston on top."
+    "eyebrow": "The classic mistake: numbering a nominal column",
+    "code": "codes = OrdinalEncoder().fit_transform(df[[\"city\"]])  # Atlanta=0, Boston=1, Chicago=2\nm_ord = LinearRegression().fit(codes, y)\nm_oh = LinearRegression().fit(city_oh, y)\nprint(round(m_ord.score(codes, y), 3))   # 0.04  -- a fake ordering\nprint(round(m_oh.score(city_oh, y), 3))  # 0.815 -- one-hot",
+    "caption": "Same data, same target -- R² jumps 20x just from choosing the right encoding."
   },
   {
     "type": "screenshot",
-    "file": "encoding-comparison.png",
-    "eyebrow": "Average spend each model predicts",
-    "caption": "Output of the code above (illustrative data)."
+    "file": "encoding-mistake.png",
+    "eyebrow": "Boston can't be the highest if it's \"in the middle\"",
+    "caption": "Real output: a fake 0-1-2 ordering forces a straight line through the three cities."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Trees are less sensitive -- and what about huge columns?",
+    "titlePlain": "Beyond ",
+    "titleEmphasis": "One-Hot",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "TREES SPLIT ON THRESHOLDS", "sub": "Less misled, but linear/distance models aren't so lucky" },
+      { "label": "THOUSANDS OF CATEGORIES?", "sub": "Group rare ones, frequency encode, or target encode carefully" }
+    ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 10",
+    "eyebrow": "Up next · Chapter 2, Lesson 10",
     "titlePlain": "Scaling & ",
     "titleEmphasis": "Normalization",
     "titleSuffix": "",
-    "subtitle": "Putting features on a comparable footing."
+    "subtitle": "One-hot is the safe default for nominal data."
   }
 ]

@@ -1,61 +1,76 @@
 [
   {
     "type": "title",
-    "eyebrow": "Machine Learning Fundamentals · Chapter 2",
+    "eyebrow": "Machine Learning Fundamentals · Chapter 2, Lesson 7",
     "titlePlain": "Train, Validation & ",
     "titleEmphasis": "Test Splits",
     "titleSuffix": "",
-    "subtitle": "Lesson 7 · Data Preparation & Feature Engineering"
+    "subtitle": "Decide, before fitting anything, which rows are for learning vs. judging."
   },
   {
     "type": "steps",
-    "eyebrow": "Decide before you fit anything",
-    "titlePlain": "Three sets, three ",
-    "titleEmphasis": "jobs",
+    "eyebrow": "Three sets, three jobs",
+    "titlePlain": "Learn, Choose, ",
+    "titleEmphasis": "Confirm",
     "titleSuffix": "",
     "steps": [
-      { "label": "Train (60%)", "sub": "The model learns from these" },
-      { "label": "Validation (20%)", "sub": "Compare models, choose settings" },
-      { "label": "Test (20%)", "sub": "One final, honest check" }
+      { "label": "TRAINING SET", "sub": "fit() sees only these rows" },
+      { "label": "VALIDATION SET", "sub": "Compare models, choose settings -- look as often as you like" },
+      { "label": "TEST SET", "sub": "One-time, untouched check -- an honest score" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "A stratified three-way split",
-    "code": "X_temp, X_test, y_temp, y_test = \\\n  train_test_split(X, y, stratify=y,\n  test_size=0.20, random_state=42)\nX_train, X_val, y_train, y_val = \\\n  train_test_split(X_temp, y_temp,\n  test_size=0.25, stratify=y_temp,\n  random_state=42)",
-    "caption": "0.25 of the remaining 80% is 20% of the total."
+    "eyebrow": "A demo: 500 customers, imbalanced churn",
+    "code": "df[\"churned\"] = (rng.random(n) < 0.08).astype(int)\nprint(\"overall churn rate:\", round(y.mean(), 3))\n# 0.09 -- only ~45 churners in 500 rows",
+    "caption": "An imbalanced target -- exactly where splitting needs care."
   },
   {
     "type": "code",
-    "eyebrow": "Why stratify · illustrative churn data",
-    "code": "test churn rate (true rate: 0.09)\nplain       0.13   13 churners\nstratified  0.09    9 churners\n\ntrain / val / test = 300 / 100 / 100",
-    "caption": "Plain splits get lucky or unlucky. Stratified ones don't."
+    "eyebrow": "A plain split can get unlucky",
+    "code": "_, _, _, y_te = train_test_split(X, y, test_size=0.2)\n_, _, _, y_te_s = train_test_split(X, y, test_size=0.2, stratify=y)\nprint(round(y_te.mean(),3))     # 0.13 -- plain: drifted from 0.09!\nprint(round(y_te_s.mean(),3))   # 0.09 -- stratified: exact match",
+    "caption": "stratify=y forces every split to keep the same class proportions."
   },
   {
     "type": "screenshot",
-    "file": "stratify-spread.png",
-    "eyebrow": "300 random splits, two ways",
-    "caption": "Output of the code above (illustrative data)."
+    "file": "stratify-histogram.png",
+    "eyebrow": "300 seeds: how much is luck?",
+    "caption": "Real output: plain split std = 0.0253 (wanders). Stratified std = 0.0 (pinned to the truth)."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A three-way split: call it twice",
+    "code": "X_temp, X_test, y_temp, y_test = train_test_split(X, y, test_size=0.20, stratify=y)\nX_train, X_val, y_train, y_val = train_test_split(X_temp, y_temp, test_size=0.25, stratify=y_temp)\nprint(len(X_train), len(X_val), len(X_test))   # 300 100 100",
+    "caption": "0.25 of the remaining 80% = 20% of the total -- a clean 60/20/20."
   },
   {
     "type": "steps",
-    "eyebrow": "Random is not always right",
-    "titlePlain": "Pick the split that fits the ",
-    "titleEmphasis": "data",
+    "eyebrow": "When random is wrong: time-ordered data",
+    "titlePlain": "Test Must Come ",
+    "titleEmphasis": "After",
     "titleSuffix": "",
     "steps": [
-      { "label": "Random", "sub": "Rows are interchangeable" },
-      { "label": "Stratified", "sub": "Imbalanced target: keep the mix" },
-      { "label": "Time-based", "sub": "Train on past, test on future" },
-      { "label": "Grouped", "sub": "Keep each customer on one side" }
+      { "label": "PREDICTING THE FUTURE?", "sub": "Random mixing lets the model peek at it" },
+      { "label": "SORT BY DATE, THEN CUT", "sub": "Train on past, test on future" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "When random is wrong: grouped data",
+    "titlePlain": "Keep Each Group ",
+    "titleEmphasis": "Together",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "ONE CUSTOMER, MANY ROWS?", "sub": "All their rows -> the SAME set (GroupShuffleSplit)" },
+      { "label": "ALWAYS SET random_state", "sub": "So a score change is YOUR change, not a new shuffle" }
     ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 8",
+    "eyebrow": "Up next · Chapter 2, Lesson 8",
     "titlePlain": "Data ",
     "titleEmphasis": "Leakage",
     "titleSuffix": "",
-    "subtitle": "The quiet mistake that makes models look better than they are."
+    "subtitle": "The quiet mistake that breaks the wall between these sets."
   }
 ]

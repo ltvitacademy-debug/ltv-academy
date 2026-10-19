@@ -1,57 +1,76 @@
 [
   {
     "type": "title",
-    "eyebrow": "Machine Learning Fundamentals · Chapter 2",
+    "eyebrow": "Machine Learning Fundamentals · Chapter 2, Lesson 12",
     "titlePlain": "Feature ",
     "titleEmphasis": "Selection",
     "titleSuffix": "",
-    "subtitle": "Lesson 12 · Data Preparation & Feature Engineering"
+    "subtitle": "Keep the features that earn their place. Drop the rest."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why drop features at all?",
+    "titlePlain": "Four ",
+    "titleEmphasis": "Reasons",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "OVERFITTING & SPEED", "sub": "Fewer ways to memorize noise; faster, cheaper" },
+      { "label": "INTERPRETABILITY & ROBUSTNESS", "sub": "8 inputs beats 800; fewer pipelines to break" }
+    ]
   },
   {
     "type": "steps",
     "eyebrow": "Three families of methods",
-    "titlePlain": "Keep what ",
-    "titleEmphasis": "earns its place",
+    "titlePlain": "Filter, Wrapper, ",
+    "titleEmphasis": "Embedded",
     "titleSuffix": "",
     "steps": [
-      {
-        "label": "FILTER",
-        "sub": "score each feature alone"
-      },
-      {
-        "label": "WRAPPER",
-        "sub": "try subsets, keep the best"
-      },
-      {
-        "label": "EMBEDDED",
-        "sub": "select while training"
-      }
+      { "label": "FILTER: score each feature alone", "sub": "Fast, model-agnostic" },
+      { "label": "WRAPPER: train on different subsets", "sub": "Slower, considers features together (RFE)" },
+      { "label": "EMBEDDED: selection DURING training", "sub": "Lasso, tree feature importance" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "Filter · scikit-learn diabetes data",
-    "code": "kb = SelectKBest(f_regression, k=4)\nkb.fit(X, y)\nmask = kb.get_support()\nprint(list(X.columns[mask]))\n\n# ['bmi', 'bp', 's4', 's5']\n# scores: bmi 230.7, s5 207.3,\n#         sex 0.8",
-    "caption": "Each feature is scored on its own against the target."
+    "eyebrow": "A filter example: diabetes dataset, 10 features",
+    "code": "kb = SelectKBest(f_regression, k=4).fit(X, y)\nprint(dict(zip(X.columns, kb.scores_.round(1))))\n# bmi 230.7, s5 207.3 (highest) ... sex 0.8 (barely registers)",
+    "caption": "f_regression ranks each feature on its own relationship to the target."
   },
   {
     "type": "code",
-    "eyebrow": "Wrapper · recursive elimination",
-    "code": "rfe = RFE(LinearRegression(),\n          n_features_to_select=4)\nrfe.fit(X, y)\nkeep = X.columns[rfe.support_]\nprint(list(keep))\n\n# ['bmi', 's1', 's2', 's5']",
-    "caption": "A different set than the filter: features are judged together."
+    "eyebrow": "Filter vs. wrapper: different answers",
+    "code": "# filter (top 4):  ['bmi', 'bp', 's4', 's5']\nrfe = RFE(LinearRegression(), n_features_to_select=4).fit(X, y)\nprint(list(X.columns[rfe.support_]))\n# wrapper (RFE):    ['bmi', 's1', 's2', 's5']",
+    "caption": "s1 and s2 are correlated -- the wrapper judges them jointly; the filter scores each alone."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Disagreement is normal",
+    "titlePlain": "Different Questions, ",
+    "titleEmphasis": "Different Answers",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "FILTERS ASK: USEFUL ALONE?", "sub": "One feature at a time, independently" },
+      { "label": "WRAPPERS ASK: USEFUL TOGETHER?", "sub": "Correlated features judged jointly" }
+    ]
   },
   {
     "type": "code",
-    "eyebrow": "Select inside the pipeline",
-    "code": "pipe = make_pipeline(\n    SelectKBest(f_regression, k=4),\n    LinearRegression())\ncross_val_score(pipe, X, y, cv=5,\n    scoring=\"r2\").mean()\n\n# 4 features: 0.460\n# all 10:     0.482",
-    "caption": "Refit on each training fold, so nothing leaks."
+    "eyebrow": "Avoiding leakage: put the selector in a pipeline",
+    "code": "pipe = make_pipeline(SelectKBest(f_regression, k=4), LinearRegression())\ncross_val_score(pipe, X, y, cv=5, scoring=\"r2\").mean()",
+    "caption": "Refit on the training portion of EVERY fold -- selecting on the whole dataset first would leak."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Was it worth it?",
+    "code": "# 4 selected features: mean R² = 0.46\n# all 10 features:     mean R² = 0.482",
+    "caption": "Four features recover most of the performance -- a useful trade, but not a guarantee."
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 13",
+    "eyebrow": "Chapter 2 complete · Up next: Chapter 3, Lesson 13",
     "titlePlain": "Linear ",
     "titleEmphasis": "Regression",
     "titleSuffix": "",
-    "subtitle": "Fitting a line to predict a number."
+    "subtitle": "Always fit selectors on training data only -- judge by validated performance."
   }
 ]

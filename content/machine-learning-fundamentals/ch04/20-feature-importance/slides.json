@@ -1,78 +1,65 @@
 [
   {
     "type": "title",
-    "eyebrow": "Machine Learning Fundamentals · Chapter 4",
+    "eyebrow": "Machine Learning Fundamentals · Chapter 4, Lesson 20",
     "titlePlain": "Feature ",
     "titleEmphasis": "Importance",
     "titleSuffix": "",
-    "subtitle": "Lesson 20 · Trees & Ensembles"
+    "subtitle": "A hundred trees can't be read like a checklist. What is the model paying attention to?"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Method 1: impurity-based (free from training)",
+    "code": "imp = pd.Series(rf.feature_importances_, index=X.columns)\nprint(imp.sort_values(ascending=False).head(5).round(3))\n# worst radius          0.133\n# worst perimeter       0.132\n# worst concave points  0.128\n# worst area            0.108",
+    "caption": "5 of 30 features carry about 60% of the total importance."
   },
   {
     "type": "steps",
-    "eyebrow": "Two main methods",
-    "titlePlain": "What is the model ",
-    "titleEmphasis": "relying on?",
+    "eyebrow": "Method 2: permutation importance",
+    "titlePlain": "Shuffle It and See What ",
+    "titleEmphasis": "Breaks",
     "titleSuffix": "",
     "steps": [
-      {
-        "label": "IMPURITY-BASED",
-        "sub": "free; totals split gains"
-      },
-      {
-        "label": "PERMUTE",
-        "sub": "shuffle a column, watch the score"
-      },
-      {
-        "label": "HELD-OUT DATA",
-        "sub": "permutation reflects generalization"
-      }
+      { "label": "SHUFFLE ONE COLUMN IN THE TEST SET", "sub": "Breaking its link to the target" },
+      { "label": "MEASURE THE ACCURACY DROP", "sub": "Works with ANY model, on held-out data" }
     ]
   },
   {
     "type": "code",
-    "eyebrow": "Impurity-based · sklearn breast cancer",
-    "code": "imp = pd.Series(\n    rf.feature_importances_,\n    index=X.columns)\n\n# worst radius          0.133\n# worst perimeter       0.132\n# worst concave points  0.128\n# worst area            0.108",
-    "caption": "Importances sum to 1; top 5 of 30 carry about 60%."
+    "eyebrow": "The ranking shifts",
+    "code": "perm = permutation_importance(rf, X_te, y_te, n_repeats=10)\n# worst radius     0.021\n# worst area       0.019\n# worst texture    0.016  <- wasn't even in the impurity top 5!\n# worst perimeter  0.012",
+    "caption": "Small drops -- shuffling even the best feature costs only ~2 points of accuracy."
   },
   {
     "type": "code",
-    "eyebrow": "Permutation · test set, 10 shuffles",
-    "code": "perm = permutation_importance(\n    rf, X_te, y_te,\n    n_repeats=10, random_state=0)\n\n# worst radius   0.021\n# worst area     0.019\n# worst texture  0.016\n# worst perimeter 0.012",
-    "caption": "Average accuracy drop when the column is shuffled."
+    "eyebrow": "Why: near-duplicate features",
+    "code": "X[\"worst radius\"].corr(X[\"worst perimeter\"])   # 0.994 !!\n# all three (radius, perimeter, area) describe the SAME nucleus size",
+    "caption": "Shuffle one, the model leans on its siblings -- the score barely drops."
   },
   {
     "type": "screenshot",
     "file": "importance-comparison.png",
-    "eyebrow": "Output of the code above",
-    "caption": "The two methods rank features differently; correlated features share credit."
+    "eyebrow": "Both methods, side by side",
+    "caption": "Real output: the two rankings disagree -- especially among correlated features."
   },
   {
     "type": "steps",
-    "eyebrow": "Pitfalls",
-    "titlePlain": "Read it ",
-    "titleEmphasis": "carefully",
+    "eyebrow": "Pitfalls to remember",
+    "titlePlain": "Five ",
+    "titleEmphasis": "Cautions",
     "titleSuffix": "",
     "steps": [
-      {
-        "label": "CORRELATION",
-        "sub": "similar features share credit"
-      },
-      {
-        "label": "NOT CAUSAL",
-        "sub": "how much, never which way"
-      },
-      {
-        "label": "LEAKAGE?",
-        "sub": "a surprise winner is a red flag"
-      }
+      { "label": "CORRELATED FEATURES SHARE CREDIT", "sub": "Treat clusters as groups" },
+      { "label": "IMPORTANCE != CAUSATION OR DIRECTION", "sub": "A lever you can pull is a different claim" },
+      { "label": "A DOMINANT FEATURE = CHECK FOR LEAKAGE", "sub": "Compute on held-out data when you can" }
     ]
   },
   {
     "type": "outro",
-    "eyebrow": "Up next · Lesson 21",
-    "titlePlain": "k-Nearest Neighbors & ",
-    "titleEmphasis": "Naive Bayes Overview",
+    "eyebrow": "Chapter 4 complete · Up next: Chapter 4, Lesson 21",
+    "titlePlain": "k-NN & ",
+    "titleEmphasis": "Naive Bayes",
     "titleSuffix": "",
-    "subtitle": "Two classic algorithms, and when to reach for each."
+    "subtitle": "\"The model relies on radius\" is fair. \"Radius causes malignancy\" is not."
   }
 ]
