@@ -67,18 +67,18 @@ export const MLOPS_FOR_DATA_SCIENTISTS_CHAPTERS: ChapterMeta[] = [
     title: "Monitoring & Retraining",
     lessons: [
       L(18, "data-drift-and-concept-drift", "Data Drift & Concept Drift", { contentDir: "ch05/18-data-drift-and-concept-drift", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792437952/ltv-mlops-for-data-scientists/data-drift-and-concept-drift.mp4", durationLabel: "2 min 7 s" }),
-      L(19, "performance-monitoring-and-alerting", "Performance Monitoring & Alerting", { contentDir: "ch05/19-performance-monitoring-and-alerting" }),
-      L(20, "automated-retraining-triggers", "Automated Retraining Triggers", { contentDir: "ch05/20-automated-retraining-triggers" }),
-      L(21, "governance-and-model-documentation", "Governance & Model Documentation", { contentDir: "ch05/21-governance-and-model-documentation" }),
+      L(19, "performance-monitoring-and-alerting", "Performance Monitoring & Alerting", { contentDir: "ch05/19-performance-monitoring-and-alerting", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792438049/ltv-mlops-for-data-scientists/performance-monitoring-and-alerting.mp4", durationLabel: "2 min 8 s" }),
+      L(20, "automated-retraining-triggers", "Automated Retraining Triggers", { contentDir: "ch05/20-automated-retraining-triggers", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792438160/ltv-mlops-for-data-scientists/automated-retraining-triggers.mp4", durationLabel: "2 min 18 s" }),
+      L(21, "governance-and-model-documentation", "Governance & Model Documentation", { contentDir: "ch05/21-governance-and-model-documentation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792438257/ltv-mlops-for-data-scientists/governance-and-model-documentation.mp4", durationLabel: "2 min 3 s" }),
     ],
   },
   {
     n: 6,
     title: "Capstone",
     lessons: [
-      L(22, "capstone-kickoff-automate-a-models-full-lifecycle", "Capstone Kickoff: Automate a Model's Full Lifecycle", { contentDir: "ch06/22-capstone-kickoff-automate-a-models-full-lifecycle" }),
-      L(23, "capstone-build-it", "Capstone: Build It", { contentDir: "ch06/23-capstone-build-it" }),
-      L(24, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch06/24-capstone-wrap-up-and-portfolio-presentation" }),
+      L(22, "capstone-kickoff-automate-a-models-full-lifecycle", "Capstone Kickoff: Automate a Model's Full Lifecycle", { contentDir: "ch06/22-capstone-kickoff-automate-a-models-full-lifecycle", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792438358/ltv-mlops-for-data-scientists/capstone-kickoff-automate-a-models-full-lifecycle.mp4", durationLabel: "2 min 2 s" }),
+      L(23, "capstone-build-it", "Capstone: Build It", { contentDir: "ch06/23-capstone-build-it", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792438453/ltv-mlops-for-data-scientists/capstone-build-it.mp4", durationLabel: "2 min 5 s" }),
+      L(24, "capstone-wrap-up-and-portfolio-presentation", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch06/24-capstone-wrap-up-and-portfolio-presentation", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792438550/ltv-mlops-for-data-scientists/capstone-wrap-up-and-portfolio-presentation.mp4", durationLabel: "2 min 4 s" }),
     ],
   },
 ];
