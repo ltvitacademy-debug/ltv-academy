@@ -50,12 +50,12 @@ export const AI_AGENTS_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Model Context Protocol (MCP)",
     lessons: [
-      L(12, "what-mcp-is-and-why-it-exists", "What MCP Is & Why It Exists", { contentDir: "ch03/12-what-mcp-is-and-why-it-exists" }),
-      L(13, "mcp-architecture-hosts-clients-servers", "MCP Architecture: Hosts, Clients & Servers", { contentDir: "ch03/13-mcp-architecture-hosts-clients-servers" }),
-      L(14, "resources-tools-and-prompts-in-mcp", "Resources, Tools & Prompts in MCP", { contentDir: "ch03/14-resources-tools-and-prompts-in-mcp" }),
-      L(15, "building-a-simple-mcp-server", "Building a Simple MCP Server", { contentDir: "ch03/15-building-a-simple-mcp-server" }),
-      L(16, "connecting-an-agent-to-an-mcp-server", "Connecting an Agent to an MCP Server", { contentDir: "ch03/16-connecting-an-agent-to-an-mcp-server" }),
-      L(17, "mcp-vs-custom-tool-integrations", "MCP vs. Custom Tool Integrations", { contentDir: "ch03/17-mcp-vs-custom-tool-integrations" }),
+      L(12, "what-mcp-is-and-why-it-exists", "What MCP Is & Why It Exists", { contentDir: "ch03/12-what-mcp-is-and-why-it-exists", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792505016/ltv-ai-agents/what-mcp-is-and-why-it-exists.mp4", durationLabel: "1 min 39 s" }),
+      L(13, "mcp-architecture-hosts-clients-servers", "MCP Architecture: Hosts, Clients & Servers", { contentDir: "ch03/13-mcp-architecture-hosts-clients-servers", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792505082/ltv-ai-agents/mcp-architecture-hosts-clients-servers.mp4", durationLabel: "1 min 45 s" }),
+      L(14, "resources-tools-and-prompts-in-mcp", "Resources, Tools & Prompts in MCP", { contentDir: "ch03/14-resources-tools-and-prompts-in-mcp", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792505142/ltv-ai-agents/resources-tools-and-prompts-in-mcp.mp4", durationLabel: "1 min 51 s" }),
+      L(15, "building-a-simple-mcp-server", "Building a Simple MCP Server", { contentDir: "ch03/15-building-a-simple-mcp-server", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792505245/ltv-ai-agents/building-a-simple-mcp-server.mp4", durationLabel: "1 min 41 s" }),
+      L(16, "connecting-an-agent-to-an-mcp-server", "Connecting an Agent to an MCP Server", { contentDir: "ch03/16-connecting-an-agent-to-an-mcp-server", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792505533/ltv-ai-agents/connecting-an-agent-to-an-mcp-server.mp4", durationLabel: "1 min 48 s" }),
+      L(17, "mcp-vs-custom-tool-integrations", "MCP vs. Custom Tool Integrations", { contentDir: "ch03/17-mcp-vs-custom-tool-integrations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792506109/ltv-ai-agents/mcp-vs-custom-tool-integrations.mp4", durationLabel: "1 min 47 s" }),
     ],
   },
   {
