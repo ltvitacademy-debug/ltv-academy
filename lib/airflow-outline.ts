@@ -91,7 +91,7 @@ export const AIRFLOW_CHAPTERS: ChapterMeta[] = [
     title: "Capstone",
     lessons: [
       L(29, "capstone-project", "Capstone: An Orchestrated ELT Pipeline", { contentDir: "ch07/29-capstone-project", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121865/ltv-airflow/capstone-project.mp4", durationLabel: "1 min 58 s" }),
-      L(30, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch07/30-capstone-wrap-up", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121924/ltv-airflow/capstone-wrap-up.mp4", durationLabel: "1 min 60 s" }),
+      L(30, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch07/30-capstone-wrap-up", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792121924/ltv-airflow/capstone-wrap-up.mp4", durationLabel: "2 min 0 s" }),
     ],
   },
 ];
