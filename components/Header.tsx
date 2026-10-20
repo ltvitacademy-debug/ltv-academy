@@ -19,8 +19,12 @@ export default function Header() {
   const isEmbed = useEmbedMode();
   const pathname = usePathname();
   const isFocusedLanding = pathname?.startsWith("/vsl");
+  // Individual career path / destination pages (and their resume sub-pages)
+  // repeat this header under their own "All career paths" back-link, which
+  // reads as a duplicate banner. Only the /careers listing itself keeps it.
+  const isCareerSubpage = pathname?.startsWith("/careers/");
 
-  if (isEmbed || isFocusedLanding) return null;
+  if (isEmbed || isFocusedLanding || isCareerSubpage) return null;
 
   return (
     <header className="sticky top-0 z-50 bg-crimson-deep border-b border-gold">
