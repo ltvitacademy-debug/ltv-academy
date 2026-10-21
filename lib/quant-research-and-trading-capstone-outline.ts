@@ -25,36 +25,36 @@ export const QUANT_RESEARCH_AND_TRADING_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "Capstone Overview",
     lessons: [
-      L(1, "the-capstone-brief-and-raw-data", "The Capstone Brief & Raw Data", { contentDir: "ch01/01-the-capstone-brief-and-raw-data" }),
-      L(2, "formulating-a-research-question", "Formulating a Research Question", { contentDir: "ch01/02-formulating-a-research-question" }),
-      L(3, "project-plan-and-success-criteria", "Project Plan & Success Criteria", { contentDir: "ch01/03-project-plan-and-success-criteria" }),
+      L(1, "the-capstone-brief-and-raw-data", "The Capstone Brief & Raw Data", { contentDir: "ch01/01-the-capstone-brief-and-raw-data", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792526185/ltv-quant-research-and-trading-capstone/the-capstone-brief-and-raw-data.mp4", durationLabel: "2 min 12 s" }),
+      L(2, "formulating-a-research-question", "Formulating a Research Question", { contentDir: "ch01/02-formulating-a-research-question", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792526975/ltv-quant-research-and-trading-capstone/formulating-a-research-question.mp4", durationLabel: "2 min 5 s" }),
+      L(3, "project-plan-and-success-criteria", "Project Plan & Success Criteria", { contentDir: "ch01/03-project-plan-and-success-criteria", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792527810/ltv-quant-research-and-trading-capstone/project-plan-and-success-criteria.mp4", durationLabel: "2 min 12 s" }),
     ],
   },
   {
     n: 2,
     title: "Phase 1: Data & Statistical Analysis",
     lessons: [
-      L(4, "cleaning-and-exploring-market-data", "Cleaning & Exploring Market Data", { contentDir: "ch02/04-cleaning-and-exploring-market-data" }),
-      L(5, "statistical-analysis-of-the-hypothesis", "Statistical Analysis of the Hypothesis", { contentDir: "ch02/05-statistical-analysis-of-the-hypothesis" }),
-      L(6, "checkpoint-review", "Checkpoint Review", { contentDir: "ch02/06-checkpoint-review" }),
+      L(4, "cleaning-and-exploring-market-data", "Cleaning & Exploring Market Data", { contentDir: "ch02/04-cleaning-and-exploring-market-data", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792528616/ltv-quant-research-and-trading-capstone/cleaning-and-exploring-market-data.mp4", durationLabel: "2 min 13 s" }),
+      L(5, "statistical-analysis-of-the-hypothesis", "Statistical Analysis of the Hypothesis", { contentDir: "ch02/05-statistical-analysis-of-the-hypothesis", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792529599/ltv-quant-research-and-trading-capstone/statistical-analysis-of-the-hypothesis.mp4", durationLabel: "2 min 39 s" }),
+      L(6, "checkpoint-review", "Checkpoint Review", { contentDir: "ch02/06-checkpoint-review", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792530423/ltv-quant-research-and-trading-capstone/checkpoint-review.mp4", durationLabel: "2 min 19 s" }),
     ],
   },
   {
     n: 3,
     title: "Phase 2: Features, Model & Signal",
     lessons: [
-      L(7, "feature-engineering", "Feature Engineering", { contentDir: "ch03/07-feature-engineering" }),
-      L(8, "building-and-validating-the-model", "Building & Validating the Model", { contentDir: "ch03/08-building-and-validating-the-model" }),
-      L(9, "turning-the-model-into-a-trading-signal", "Turning the Model Into a Trading Signal", { contentDir: "ch03/09-turning-the-model-into-a-trading-signal" }),
+      L(7, "feature-engineering", "Feature Engineering", { contentDir: "ch03/07-feature-engineering", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792531231/ltv-quant-research-and-trading-capstone/feature-engineering.mp4", durationLabel: "2 min 29 s" }),
+      L(8, "building-and-validating-the-model", "Building & Validating the Model", { contentDir: "ch03/08-building-and-validating-the-model", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792532177/ltv-quant-research-and-trading-capstone/building-and-validating-the-model.mp4", durationLabel: "2 min 35 s" }),
+      L(9, "turning-the-model-into-a-trading-signal", "Turning the Model Into a Trading Signal", { contentDir: "ch03/09-turning-the-model-into-a-trading-signal", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792532671/ltv-quant-research-and-trading-capstone/turning-the-model-into-a-trading-signal.mp4", durationLabel: "1 min 42 s" }),
     ],
   },
   {
     n: 4,
     title: "Phase 3: Backtest & Risk",
     lessons: [
-      L(10, "building-the-backtest", "Building the Backtest", { contentDir: "ch04/10-building-the-backtest" }),
-      L(11, "costs-slippage-and-realism", "Costs, Slippage & Realism", { contentDir: "ch04/11-costs-slippage-and-realism" }),
-      L(12, "risk-analysis-and-stress-tests", "Risk Analysis & Stress Tests", { contentDir: "ch04/12-risk-analysis-and-stress-tests" }),
+      L(10, "building-the-backtest", "Building the Backtest", { contentDir: "ch04/10-building-the-backtest", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792533118/ltv-quant-research-and-trading-capstone/building-the-backtest.mp4", durationLabel: "2 min 0 s" }),
+      L(11, "costs-slippage-and-realism", "Costs, Slippage & Realism", { contentDir: "ch04/11-costs-slippage-and-realism", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792533541/ltv-quant-research-and-trading-capstone/costs-slippage-and-realism.mp4", durationLabel: "2 min 23 s" }),
+      L(12, "risk-analysis-and-stress-tests", "Risk Analysis & Stress Tests", { contentDir: "ch04/12-risk-analysis-and-stress-tests", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792533798/ltv-quant-research-and-trading-capstone/risk-analysis-and-stress-tests.mp4", durationLabel: "2 min 33 s" }),
     ],
   },
   {
