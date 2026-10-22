@@ -4459,6 +4459,86 @@
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
       "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "awsde-exp-079",
+      "questionCode": "LTV-AWSDE-EXP-079",
+      "title": "System Design: A Cost-Isolated Multi-Tenant Data Platform on AWS",
+      "prompt": "A B2B SaaS company wants to give each of 200+ enterprise customers their own analytics workspace on top of a shared AWS data platform: strict logical data isolation per tenant, self-serve SQL/BI access, predictable per-tenant cost attribution, and the ability to onboard a new tenant in under a day. Design the ingestion, storage, compute, and governance layers.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "AWS",
+        "Lake Formation",
+        "System Design",
+        "Architecture"
+      ],
+      "modelAnswer": "Use logical isolation via AWS Lake Formation tag-based access control over a shared, tenant-partitioned S3/Glue Catalog data lake, instead of per-tenant AWS accounts — onboarding becomes a permission grant, not infrastructure provisioning. Serve self-serve SQL/BI via Athena or Redshift Serverless with per-tenant workgroup scan/concurrency limits to control noisy neighbors, and attribute cost via tags feeding Cost and Usage Reports. Audit grants via CloudTrail, and design an escape hatch to dedicated infrastructure for tenants that eventually require true physical isolation.",
+      "professionalAnswer": "I'd push back gently on 'isolated workspace' meaning separate infrastructure per tenant, because at 200+ tenants that's an onboarding and ops nightmare that directly conflicts with the under-a-day requirement. Instead I'd design one shared lake with tenant_id as a first-class partition and access-control dimension via Lake Formation tags, so bringing on a new customer is a grant, not a deployment. I'd be explicit about the real risk — a bad grant leaking data across tenants — and show the audit trail (CloudTrail data events) that catches that, plus the workgroup limits that stop one tenant's heavy query from degrading everyone else's experience on shared compute.",
+      "commonMistakes": [
+        "Defaults to per-tenant AWS accounts/clusters without addressing the day-long onboarding requirement",
+        "Registers a separate Glue Catalog schema per tenant, causing catalog sprawl",
+        "Forgets per-tenant cost attribution and only discusses storage cost",
+        "No mention of auditing Lake Formation grants or noisy-neighbor controls"
+      ],
+      "keyPoints": [
+        "Chooses logical isolation (Lake Formation tags) over per-tenant infrastructure",
+        "Registers catalog schema once per source type, not per tenant",
+        "Uses workgroup-level limits to control noisy neighbors on shared compute",
+        "Attributes cost via tags feeding Cost and Usage Reports",
+        "Audits access grants via CloudTrail data events",
+        "Designs an escape hatch to dedicated infrastructure for tenants needing true isolation"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Chooses logical over physical isolation and justifies it against onboarding SLA",
+          "weight": 25
+        },
+        {
+          "criterion": "Designs catalog/ingestion to avoid per-tenant sprawl",
+          "weight": 20
+        },
+        {
+          "criterion": "Addresses noisy-neighbor control and per-tenant cost attribution",
+          "weight": 25
+        },
+        {
+          "criterion": "Identifies the real failure risk (grant leakage) and its mitigation",
+          "weight": 30
+        }
+      ],
+      "deepDive": [
+        {
+          "heading": "Clarify requirements and constraints",
+          "content": "The onboard-in-a-day requirement rules out a design where each tenant gets a dedicated AWS account, cluster, or infrastructure stack — that's days of provisioning, not hours. So the real decision is logical isolation (shared infrastructure, strict access-control boundaries) over physical isolation (separate accounts/clusters per tenant). Cost attribution needs to be per-tenant query/compute cost, not just storage, since storage cost is rarely the dominant line item for a self-serve BI workload."
+        },
+        {
+          "heading": "Ingestion and storage",
+          "content": "Tenant data lands in S3 under tenant-partitioned prefixes (s3://raw/tenant_id=.../date=...), written as Parquet. The Glue Data Catalog registers schema once per source type, not once per tenant — a schema-per-tenant catalog would sprawl to hundreds of near-duplicate table definitions and break any \"onboard in a day\" goal. Incremental CDC from each tenant's source systems lands through Glue or DMS into the same tenant-partitioned Bronze layer."
+        },
+        {
+          "heading": "Isolation and governance",
+          "content": "AWS Lake Formation enforces row-level and tag-based access control so a query against the shared Athena/Redshift Spectrum/EMR tables is automatically scoped to the tenant_id the caller's session is permitted to see, rather than maintaining hand-written IAM policies per tenant. Tagging a table or row with an LF-tag for tenant_id, and granting a tenant's role access to that tag, makes \"onboard a new tenant\" a permissions operation — a tag grant — rather than an infrastructure-provisioning project, which is what actually gets onboarding under a day."
+        },
+        {
+          "heading": "Compute and serving",
+          "content": "Self-serve SQL/BI access runs through Athena workgroups or Redshift Serverless, with per-tenant (or per-tenant-tier) workgroup-level data-scan and concurrency limits, so one tenant running a heavy ad hoc query can't degrade latency for everyone else on shared compute. Cost allocation tags on the workgroup/Glue job run feed AWS Cost and Usage Reports and Storage Lens, giving per-tenant cost attribution without needing physically separate compute per tenant."
+        },
+        {
+          "heading": "Failure modes and tradeoffs",
+          "content": "The sharpest risk in this design is a misconfigured Lake Formation grant leaking one tenant's rows into another tenant's query results — that's not a performance bug, it's a trust-destroying incident, so grants need periodic least-privilege review plus CloudTrail data-event auditing of who actually queried what, not a set-and-forget permission model. Shared infrastructure also means noisy-neighbor risk is real even with workgroup limits; the tradeoff being made deliberately is faster onboarding and lower idle cost against softer isolation guarantees than per-tenant infrastructure would give."
+        },
+        {
+          "heading": "Evolution path",
+          "content": "When one tenant outgrows the shared model — a data-residency requirement, a compliance scope that demands physical isolation — the design should let that tenant graduate to a dedicated Redshift cluster or AWS account without re-architecting ingestion, because ingestion already partitions everything by tenant_id. The platform's growth path is: start shared and logical, carve out physical isolation only for the tenants that actually need it."
+        }
+      ],
+      "estimatedMinutes": 14,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-22T00:00:00.000Z",
+      "updatedAt": "2026-10-22T00:00:00.000Z"
     }
   ]
 }

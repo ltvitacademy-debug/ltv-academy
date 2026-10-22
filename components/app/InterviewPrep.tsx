@@ -491,7 +491,18 @@ export default function InterviewPrep({
           </p>
         </div>
 
-        <div className="mt-4 border-2 border-ink/15 bg-parchment p-6 sm:p-8">
+        <div
+          className={
+            current.deepDive
+              ? "mt-4 border-2 border-gold bg-gold/[0.07] p-6 shadow-[0_8px_26px_-14px_rgba(196,149,46,0.6)] sm:p-8"
+              : "mt-4 border-2 border-ink/15 bg-parchment p-6 sm:p-8"
+          }
+        >
+          {current.deepDive && (
+            <p className="mb-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">
+              <span aria-hidden="true">★</span> Flagship system-design question
+            </p>
+          )}
           <div className="flex items-start justify-between gap-4">
             <p className="text-xs uppercase tracking-[0.18em] text-stone">
               {current.questionCode} · {current.skills.join(", ")}
@@ -543,33 +554,43 @@ export default function InterviewPrep({
                 <p className="text-ink">{answer}</p>
               </Field>
 
-              <Field label="Correct technical answer" accent>
-                <p className="text-ink">{current.modelAnswer}</p>
-              </Field>
+              {current.deepDive ? (
+                current.deepDive.map((section, i) => (
+                  <Field key={i} label={section.heading} tone="gold">
+                    <p className="whitespace-pre-line text-ink">{section.content}</p>
+                  </Field>
+                ))
+              ) : (
+                <>
+                  <Field label="Correct technical answer" accent>
+                    <p className="text-ink">{current.modelAnswer}</p>
+                  </Field>
 
-              <Field label="Professional interview answer" accent>
-                <p className="text-ink">{current.professionalAnswer}</p>
-              </Field>
+                  <Field label="Professional interview answer" accent>
+                    <p className="text-ink">{current.professionalAnswer}</p>
+                  </Field>
 
-              {current.example && (
-                <Field label="Practical example">
-                  {current.responseFormat !== "text" ? (
-                    <pre className="overflow-x-auto border border-ink/15 bg-white/70 p-4 text-sm">
-                      <code>{current.example}</code>
-                    </pre>
-                  ) : (
-                    <p className="text-ink">{current.example}</p>
+                  {current.example && (
+                    <Field label="Practical example">
+                      {current.responseFormat !== "text" ? (
+                        <pre className="overflow-x-auto border border-ink/15 bg-white/70 p-4 text-sm">
+                          <code>{current.example}</code>
+                        </pre>
+                      ) : (
+                        <p className="text-ink">{current.example}</p>
+                      )}
+                    </Field>
                   )}
-                </Field>
-              )}
 
-              <Field label="Common mistakes">
-                <ul className="list-disc space-y-1 pl-5 text-ink">
-                  {current.commonMistakes.map((m, i) => (
-                    <li key={i}>{m}</li>
-                  ))}
-                </ul>
-              </Field>
+                  <Field label="Common mistakes">
+                    <ul className="list-disc space-y-1 pl-5 text-ink">
+                      {current.commonMistakes.map((m, i) => (
+                        <li key={i}>{m}</li>
+                      ))}
+                    </ul>
+                  </Field>
+                </>
+              )}
 
               <Field label="Key points checklist">
                 <ul className="list-disc space-y-1 pl-5 text-ink">
@@ -671,17 +692,19 @@ function ExpandOption({
 function Field({
   label,
   accent,
+  tone,
   children,
 }: {
   label: string;
   accent?: boolean;
+  tone?: "gold";
   children: React.ReactNode;
 }) {
   return (
     <div>
       <p
         className={`text-xs font-semibold uppercase tracking-[0.18em] ${
-          accent ? "text-crimson-deep" : "text-stone"
+          tone === "gold" ? "text-gold" : accent ? "text-crimson-deep" : "text-stone"
         }`}
       >
         {label}

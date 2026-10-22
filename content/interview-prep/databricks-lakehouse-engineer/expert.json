@@ -4757,6 +4757,87 @@
         "lessonSlug": "genie-code-and-zeroops",
         "label": "Review: Genie Code & Genie ZeroOps"
       }
+    },
+    {
+      "id": "dble-exp-083",
+      "questionCode": "LTV-DBLE-EXP-083",
+      "title": "System Design: A Unified Batch and Streaming Lakehouse on Databricks",
+      "prompt": "A logistics company has fleet telemetry streaming continuously (GPS and sensor events) and nightly batch loads from partner ERPs, and wants one platform — not a separate streaming stack and a separate batch warehouse — that gives near-real-time fleet dashboards and governed, auditable historical reporting, with clear data-quality enforcement so bad sensor data never reaches the Gold layer silently. Design it on Databricks.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "Databricks",
+        "Delta Lake",
+        "Unity Catalog",
+        "System Design"
+      ],
+      "modelAnswer": "Land both the continuous telemetry stream and the nightly ERP batch through the same Lakeflow Declarative Pipelines definitions into one Delta Lake medallion under one Unity Catalog, rather than running separate streaming and batch stacks. Enforce data quality with Silver-layer pipeline expectations that route violations to an explicit, auditable quarantine table instead of dropping them silently. Use Unity Catalog for one ACL and lineage model across both ingestion modes, serve near-real-time fleet metrics via a continuous Silver-to-Gold stream alongside nightly batch-driven Gold tables in the same catalog, and treat upstream schema drift and writer contention as explicit, deliberate pipeline decisions rather than defaults.",
+      "professionalAnswer": "I'd push back on the instinct to build 'a streaming system plus a batch warehouse' because that's exactly the two-stack problem the business asked us to avoid. I'd show how Lakeflow Declarative Pipelines let us express the same Bronze ingestion logic once and just trigger it differently for the stream versus the nightly ERP load, under one Unity Catalog so governance isn't duplicated either. The part I'd spend the most time on is data quality, since that's the explicit ask: I'd show pipeline expectations routing bad GPS readings into a quarantine table we can actually query, not a filter that just makes bad data invisible on a dashboard while it's still sitting in Gold somewhere else.",
+      "commonMistakes": [
+        "Designs two separate systems (streaming stack, batch warehouse) instead of one unified medallion",
+        "Treats data-quality enforcement as a dashboard-level filter instead of a pipeline-level expectation with quarantine",
+        "Forgets Unity Catalog governance applies across both ingestion modes, proposing separate ACL models",
+        "No explicit decision on schema-evolution behavior (fail vs. quarantine-and-continue) for the streaming source",
+        "Ignores writer contention between a continuous stream and a long-running batch job on the same table"
+      ],
+      "keyPoints": [
+        "Unifies streaming and batch ingestion under one Lakeflow Declarative Pipelines/Delta medallion",
+        "Enforces data quality via pipeline expectations routing violations to an auditable quarantine table",
+        "Uses Unity Catalog for one ACL and lineage model across both ingestion modes",
+        "Serves near-real-time Gold via continuous Silver-to-Gold streaming alongside nightly batch Gold tables",
+        "Makes schema-evolution behavior an explicit per-table decision, not a default",
+        "Separates stream-owned and batch-owned tables where writer contention is frequent"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Designs one unified medallion/pipeline approach instead of two separate stacks",
+          "weight": 25
+        },
+        {
+          "criterion": "Builds data-quality enforcement as an auditable pipeline construct, not a dashboard filter",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly applies Unity Catalog governance across both ingestion modes",
+          "weight": 20
+        },
+        {
+          "criterion": "Identifies real failure modes (schema drift, writer contention) with concrete mitigations",
+          "weight": 30
+        }
+      ],
+      "deepDive": [
+        {
+          "heading": "Clarify requirements and constraints",
+          "content": "\"One platform\" means both the continuous telemetry stream and the nightly ERP batch loads land in the same Delta Lake medallion architecture under one Unity Catalog, rather than a streaming system and a batch warehouse stitched together after the fact by a nightly export job. \"Never reaches Gold silently\" means data-quality enforcement has to be a first-class pipeline construct — built into the pipeline definition — not a filter bolted onto a dashboard after bad data already landed."
+        },
+        {
+          "heading": "Ingestion",
+          "content": "Streaming telemetry is consumed via Structured Streaming from Kafka or Event Hubs into Bronze Delta tables, with Auto Loader handling any file-based sources that also need to land in Bronze. Nightly ERP batch loads are written through the same Lakeflow Declarative Pipelines definitions (the current name for what was previously DLT) as the streaming source — so Bronze ingestion logic for a given table is expressed once per pipeline, and whether it's triggered continuously or nightly is a trigger-configuration choice, not two different codebases."
+        },
+        {
+          "heading": "Medallion architecture and data quality",
+          "content": "Bronze stays raw and append-only. Silver applies Lakeflow Declarative Pipelines expectations — declared constraints — to the incoming data; records that violate a rule (GPS coordinates out of a valid range, for example) get routed to an explicit quarantine table rather than silently dropped, which is what actually makes the pipeline auditable: anyone can query exactly what was rejected and why. Gold aggregates — fleet-utilization metrics, ERP-reconciled shipment tables — are built only from quality-passed Silver data, never directly from Bronze."
+        },
+        {
+          "heading": "Governance",
+          "content": "Unity Catalog gives one catalog/schema/table ACL model across both the streaming Bronze tables and the batch ERP tables, so access control isn't reinvented per ingestion mode. Column-level lineage lets an auditor trace a Gold metric back to the exact Bronze batch or stream offset it was derived from. Row- and column-level security — dynamic views or Unity Catalog row filters — separates which business units can see which fleet or partner data without maintaining separate physical tables per business unit."
+        },
+        {
+          "heading": "Serving and near-real-time delivery",
+          "content": "Gold Delta tables are queried directly by SQL Warehouses and dashboards. To meet the near-real-time fleet-dashboard requirement, a Silver-to-Gold streaming pipeline keeps the telemetry-derived Gold tables incrementally and continuously updated, while the ERP-driven Gold tables update on their own nightly trigger — both live in the same catalog, under the same governance model, just running on different pipeline cadences appropriate to their source."
+        },
+        {
+          "heading": "Failure modes and tradeoffs",
+          "content": "A schema change in the upstream Kafka telemetry schema can break the streaming Bronze write; Auto Loader and Lakeflow pipeline schema-evolution settings need an explicit, deliberate choice per table — fail the pipeline, or quarantine-and-continue — rather than relying on whatever the global default happens to do. Mixing a continuous streaming writer and a long-running nightly batch job against tables in the same Unity Catalog schema creates real contention risk; Delta's optimistic concurrency control absorbs some of this, but where contention is frequent the better fix is splitting Gold into clearly stream-owned versus batch-owned tables rather than having two writers fight over one table."
+        }
+      ],
+      "estimatedMinutes": 15,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-22T00:00:00.000Z",
+      "updatedAt": "2026-10-22T00:00:00.000Z"
     }
   ]
 }

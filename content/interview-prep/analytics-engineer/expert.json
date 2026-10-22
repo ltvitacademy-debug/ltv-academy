@@ -4453,6 +4453,87 @@
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
       "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "aeng-exp-079",
+      "questionCode": "LTV-AENG-EXP-079",
+      "title": "System Design: A Governed Metrics Platform on dbt for a Growing Analytics Org",
+      "prompt": "A company's reporting today is 40+ divergent spreadsheets and dashboards, each with its own definition of \"active customer\" and \"revenue.\" You're asked to design the dbt plus warehouse plus BI platform that gives the whole company one governed set of metrics, with tests and CI so a broken model can't silently ship bad numbers, and a model layer that scales as more analysts contribute without becoming unmaintainable spaghetti.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "dbt",
+        "Semantic Layer",
+        "System Design",
+        "Architecture"
+      ],
+      "modelAnswer": "Build a layered staging → intermediate → marts dbt architecture where business logic like 'active customer' is defined exactly once in the intermediate layer, then expose governed metrics through the dbt Semantic Layer / MetricFlow so every BI tool queries the same definition instead of re-implementing its own SQL. Gate merges with CI running slim (state:modified) builds plus business-invariant tests, and use model contracts plus ownership tags so the platform doesn't collapse into spaghetti as more analysts contribute. Keep governance light enough that proposing a new metric is easy, while contracts and tests make silently redefining an existing one hard.",
+      "professionalAnswer": "I'd tell leadership directly that the 40-spreadsheet problem is a definitions problem, not a dashboarding problem, so the design centers on a semantic layer, not just 'more dbt models.' I'd show the staging/intermediate/marts layering as the thing that stops analysts from re-deriving their own version of 'active customer' in a mart, and the dbt Semantic Layer as the thing that stops every BI tool from re-implementing that logic independently. On process, I'd push for lightweight review on new metrics but hard gates — contracts and tests — on changing existing ones, because if governance feels like a committee, people just go back to spreadsheets, and that's the exact failure we're trying to fix.",
+      "commonMistakes": [
+        "Proposes more dbt models without a governed semantic layer, leaving BI tools free to re-implement metric logic",
+        "Skips the staging/intermediate/marts layering and lets business logic leak into marts directly",
+        "No CI strategy beyond 'run dbt test', ignoring slim builds and business-invariant tests",
+        "Makes governance so heavy that it would realistically push analysts back to spreadsheets",
+        "Lets marts grow unbounded across domains instead of routing cross-domain questions through the semantic layer"
+      ],
+      "keyPoints": [
+        "Identifies semantic drift, not tooling, as the actual root problem",
+        "Enforces staging → intermediate → marts layering so business logic is defined once",
+        "Uses the dbt Semantic Layer / MetricFlow so every BI tool reads the same metric definition",
+        "Gates CI with slim builds plus business-invariant tests, not just generic tests",
+        "Uses model contracts and ownership tags to scale safely with more contributors",
+        "Keeps new-metric proposals lightweight while making existing-metric changes hard to do silently"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Correctly diagnoses semantic drift as the root problem, not a tooling gap",
+          "weight": 20
+        },
+        {
+          "criterion": "Designs a layered model architecture that enforces single-definition business logic",
+          "weight": 25
+        },
+        {
+          "criterion": "Proposes a real semantic-layer mechanism BI tools actually query",
+          "weight": 25
+        },
+        {
+          "criterion": "Designs CI/testing and scaling practices appropriate to a growing contributor base",
+          "weight": 30
+        }
+      ],
+      "deepDive": [
+        {
+          "heading": "Clarify the real problem",
+          "content": "The core problem is semantic drift — 40 different definitions of \"active customer\" — not a missing tool. Building more dbt models without a governed semantic layer just moves the spreadsheet problem into the warehouse. The design's central deliverable has to be one place where \"active customer\" and \"revenue\" are defined exactly once, and every BI tool is required to read that definition rather than re-implementing its own SQL."
+        },
+        {
+          "heading": "Layered model architecture",
+          "content": "Staging models stay 1:1 with source tables, doing only renaming and type-casting — no business logic. Intermediate models hold the actual business logic: joins, deduplication, and the one true definition of \"active customer.\" Marts are wide, consumption-ready tables per domain (finance, marketing) built from intermediate models. Folder structure and model naming/tagging conventions enforce this layering so a new analyst physically cannot bypass the intermediate logic and quietly re-derive their own definition directly in a mart."
+        },
+        {
+          "heading": "Semantic layer and metrics",
+          "content": "Core metrics — active customers, revenue, churn — are defined once as dbt Semantic Layer / MetricFlow metrics built on top of the marts. Looker, Tableau, and Power BI all query that same governed metric definition through one semantic layer API instead of each BI tool re-implementing its own SQL for \"active customer.\" This is the piece that actually ends the 40-spreadsheet divergence problem; centralizing tables alone does not, because a BI tool can still write its own aggregation logic against those tables."
+        },
+        {
+          "heading": "Testing and CI/CD",
+          "content": "Generic dbt tests (unique, not_null, relationships) run as a baseline on every staging model. Singular tests encode real business invariants — revenue should never be negative, active-customer count shouldn't drop more than 20% day-over-day without triggering an alert rather than silently publishing. CI runs these tests plus a slim build using state:modified against each pull request, so a model change only rebuilds and re-tests what it actually touched instead of the full DAG — keeping CI fast enough that engineers don't get tempted to bypass it under deadline pressure."
+        },
+        {
+          "heading": "Scaling with more contributors",
+          "content": "Ownership is enforced through YAML meta/group tags per domain. dbt model contracts on mart-level models mean a staging-layer column-type change can't silently break a downstream mart's contract without CI catching it first. Incremental materialization plus clustering/partitioning on large fact models keeps build time from exploding as more marts get added by more teams."
+        },
+        {
+          "heading": "Failure modes and tradeoffs",
+          "content": "A governance process that's too heavy — every metric change needs committee sign-off — just pushes analysts back to spreadsheets, defeating the entire point of the platform. The design should make proposing a new metric easy (a PR and a review) while making it hard to silently redefine an existing one (contracts and tests catch that). The other real risk is scope creep in the marts themselves: letting marts grow to serve every possible cross-team question turns them into a second kitchen-sink spreadsheet problem — cross-domain questions should go through the semantic layer, not a mart stretched past its domain."
+        }
+      ],
+      "estimatedMinutes": 14,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-22T00:00:00.000Z",
+      "updatedAt": "2026-10-22T00:00:00.000Z"
     }
   ]
 }

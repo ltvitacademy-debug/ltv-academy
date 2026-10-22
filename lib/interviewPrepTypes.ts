@@ -20,6 +20,15 @@ export type InterviewResponseFormat = "text" | "sql" | "code";
 
 export type InterviewQuestionStatus = "draft" | "published" | "archived";
 
+// A flagship question's walkthrough is shaped by the scenario itself (an
+// ingestion-heavy design has different sections than a governance-heavy one),
+// so this is an ordered list of whatever sections actually apply — not a
+// fixed schema every deep-dive must fill in.
+export type InterviewDeepDiveSection = {
+  heading: string;
+  content: string;
+};
+
 export type InterviewQuestion = {
   id: string; // e.g. "msbi-adv-014" — unique within the path
   questionCode: string; // human-readable reference, e.g. "LTV-MSBI-0014"
@@ -38,6 +47,14 @@ export type InterviewQuestion = {
   commonMistakes: string[]; // misunderstandings/details candidates often miss
   keyPoints: string[]; // concepts a strong answer should cover (self-assessment checklist)
   evaluationCriteria: { criterion: string; weight: number }[]; // weighted self-assessment rubric, weights sum to 100
+
+  // A small number of flagship questions per path (full-system-design case
+  // studies) replace the standard modelAnswer/professionalAnswer/example
+  // breakdown with this structured, multi-section walkthrough instead, and
+  // render with distinct (gold) styling to signal that this one question is
+  // deliberately bigger than the rest of the bank. keyPoints is still used
+  // as the closing self-assessment checklist even when this is set.
+  deepDive?: InterviewDeepDiveSection[];
 
   estimatedMinutes: number;
   lessonLink?: { courseSlug: string; lessonSlug: string; label: string }; // "review this lesson"

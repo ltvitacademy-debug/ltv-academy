@@ -4509,6 +4509,87 @@
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
       "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "snde-exp-079",
+      "questionCode": "LTV-SNDE-EXP-079",
+      "title": "System Design: A Governed Near-Real-Time CDC Platform on Snowflake",
+      "prompt": "An e-commerce company replicates its production Postgres OLTP tables into Snowflake for analytics. Leadership now wants near-real-time (under 5 minutes) visibility into order and inventory changes for ops dashboards, strict role-based governance across finance, ops, and marketing, and real cost control, since the current batch warehouse bill is already a top-5 line item. Design the ingestion, transformation, governance, and cost layers.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "Snowflake",
+        "CDC",
+        "System Design",
+        "Architecture"
+      ],
+      "modelAnswer": "Use Snowpipe Streaming for sub-minute CDC ingestion into a VARIANT-based raw table that tolerates upstream schema drift, then Dynamic Tables (or Streams + Tasks) to declaratively materialize deduplicated current-state tables on a 1-minute target lag, which is what actually delivers the sub-5-minute SLA. Govern access through a functional-role hierarchy plus tag-based masking so one Gold table serves finance and marketing differently without copies. Control cost with per-workload virtual warehouses and resource monitors, and handle failure with explicit refresh-lag monitoring and a dead-letter table for malformed CDC events.",
+      "professionalAnswer": "I'd start by naming the actual latency bottleneck: classic Snowpipe plus a nightly transform won't hit 5 minutes no matter how we tune it, so the design hinges on Snowpipe Streaming for ingestion and Dynamic Tables for the incremental transform — that combination is what gets us there, not caching or a bigger warehouse. On governance I'd use role hierarchy and tag-based masking so finance and marketing read the same table safely instead of us maintaining two copies that can drift apart. On cost, since the warehouse bill is already a visible problem, I'd split workloads onto separate warehouses with resource monitors so leadership can actually see which workload is driving spend, rather than one shared warehouse hiding the answer.",
+      "commonMistakes": [
+        "Proposes classic Snowpipe/COPY batch ingestion for a sub-5-minute CDC requirement",
+        "Hand-writes MERGE/Task orchestration instead of considering Dynamic Tables for the lag SLA",
+        "Grants privileges directly to users instead of a functional role hierarchy",
+        "No resource monitors or per-workload warehouse split, leaving cost attribution opaque",
+        "No explicit error/dead-letter handling for malformed CDC events"
+      ],
+      "keyPoints": [
+        "Uses Snowpipe Streaming, not classic Snowpipe, for sub-minute CDC ingestion",
+        "Uses Dynamic Tables or Streams+Tasks to meet the lag SLA declaratively",
+        "Models access via functional role hierarchy plus tag-based masking, not per-user grants",
+        "Splits warehouses per workload with resource monitors for cost attribution",
+        "Monitors Dynamic Table refresh lag against the SLA",
+        "Defines an explicit dead-letter path for malformed CDC events"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Chooses ingestion/transform mechanisms that actually meet the latency SLA",
+          "weight": 30
+        },
+        {
+          "criterion": "Designs governance that serves multiple departments without data copies",
+          "weight": 25
+        },
+        {
+          "criterion": "Designs concrete, attributable cost controls, not generic advice",
+          "weight": 25
+        },
+        {
+          "criterion": "Identifies real failure modes (refresh lag, malformed events) with mitigations",
+          "weight": 20
+        }
+      ],
+      "deepDive": [
+        {
+          "heading": "Clarify requirements and constraints",
+          "content": "\"Near-real-time\" here means minutes, not seconds, but it still rules out the current nightly batch pattern. It also rules out classic Snowpipe (file-staging COPY) as the primary ingestion path for CDC, since that architecture adds latency from file-landing and queuing. Cost control means right-sizing compute per workload, not fixing the bill by adding more caching on top of one shared oversized warehouse."
+        },
+        {
+          "heading": "Ingestion",
+          "content": "CDC events (via Debezium or a similar log-based capture off Postgres, through Kafka) land through Snowpipe Streaming directly into a raw landing table — sub-minute latency because rows are streamed into Snowflake without the file-staging step classic Snowpipe requires. The landing table stays append-only with a flexible VARIANT payload column, so upstream Postgres schema drift doesn't break ingestion the moment a column is added or renamed."
+        },
+        {
+          "heading": "Transformation",
+          "content": "Dynamic Tables (or, where more procedural control is needed, Streams plus Tasks) materialize the raw CDC log into deduplicated, current-state tables on a defined target lag — for example a 1-minute refresh — instead of hand-written MERGE statements orchestrated by cron-like Tasks. This declarative incremental layer is the actual mechanism that delivers the under-5-minute end-to-end SLA; without it, ingestion alone being fast doesn't matter if transformation still runs on an hourly batch."
+        },
+        {
+          "heading": "Governance",
+          "content": "Access is modeled through a role hierarchy — functional roles like OPS_ANALYST and FINANCE_ANALYST, mapped up through access roles, which hold the actual object grants — rather than granting privileges straight to users, so the access model survives personnel turnover. Tag-based dynamic data masking policies let the same Gold order/customer table serve finance with full PII visible and marketing with PII masked, without maintaining separate copies of the table. ACCESS_HISTORY and other Account Usage views give an audit trail of who actually queried what."
+        },
+        {
+          "heading": "Cost control",
+          "content": "Separate virtual warehouses are assigned per workload — one small warehouse running the Dynamic Tables refresh, a second serving the ops dashboard's query pattern, a third for ad hoc analyst exploration — so each can auto-suspend independently and one workload's spend doesn't mask or interfere with another's. Resource monitors set hard and soft credit thresholds per warehouse so a runaway query triggers an alert or a suspend before it becomes a bill surprise. Clustering keys on the raw/CDC table (by tenant or time) keep scan cost under control as data volume grows."
+        },
+        {
+          "heading": "Failure modes and tradeoffs",
+          "content": "Dynamic Tables' automatic refresh can lag behind its target during a traffic spike, so DYNAMIC_TABLE_REFRESH_HISTORY needs active alerting on lag exceeding the SLA — the declarative pipeline is not self-healing just because it's declarative. Snowpipe Streaming errors from a malformed or schema-mismatched event need to land in an explicit error/dead-letter table for reprocessing rather than being silently dropped; a CDC pipeline without a defined dead-letter path will eventually lose data quietly during exactly the kind of schema-drift event this design is meant to tolerate."
+        }
+      ],
+      "estimatedMinutes": 14,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-22T00:00:00.000Z",
+      "updatedAt": "2026-10-22T00:00:00.000Z"
     }
   ]
 }

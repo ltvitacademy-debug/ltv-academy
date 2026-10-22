@@ -4551,6 +4551,86 @@
       "version": 1,
       "createdAt": "2026-10-09T00:00:00.000Z",
       "updatedAt": "2026-10-09T00:00:00.000Z"
+    },
+    {
+      "id": "afde-exp-079",
+      "questionCode": "LTV-AFDE-EXP-079",
+      "title": "System Design: A Real-Time Retail Lakehouse on Microsoft Fabric",
+      "prompt": "You're the lead data engineer for a 400-store retail chain migrating off a legacy on-prem warehouse to Microsoft Fabric. Leadership wants same-day inventory visibility (POS and warehouse scans arriving continuously), nightly batch loads from ERP/finance, and a single governed semantic model that both Power BI dashboards and ad hoc SQL analysts can query — without duplicating cost by copying data into multiple engines. Walk through the system design end-to-end: ingestion, storage/layering, serving, and governance/ops.",
+      "category": "architecture",
+      "difficulty": "expert",
+      "responseFormat": "text",
+      "skills": [
+        "Microsoft Fabric",
+        "OneLake",
+        "System Design",
+        "Architecture"
+      ],
+      "modelAnswer": "Unify storage in OneLake rather than copying per engine: Eventstream plus Delta mirroring for near-real-time POS/inventory, Data Factory pipelines for nightly ERP batch, both landing in a Bronze/Silver/Gold medallion stored once. Serve Gold through a Direct Lake Power BI semantic model and the Fabric Warehouse SQL endpoint against the same physical tables. Govern with OneLake's single security model plus Purview lineage, and control cost via F-SKU capacity sizing rather than duplicate reporting infrastructure.",
+      "professionalAnswer": "I'd frame this to leadership as one lake, many doors: Fabric's whole value is that we store the data once in OneLake and let Spark, the Warehouse, KQL, and Power BI all read it directly, so the design decision that matters most is refusing to let any team spin up their own copy 'just to be safe.' I'd show the medallion layering, point at Direct Lake as the thing that gets us near-real-time dashboards without an Import refresh schedule, and be upfront about the one real risk: a single shared copy means a bad Gold write hits every consumer at once, so we lean on Delta's versioning for recovery instead of hotfixing in place.",
+      "commonMistakes": [
+        "Proposes a separate streaming database and a separate batch warehouse instead of one OneLake medallion",
+        "Treats Direct Lake as always-on without mentioning the DirectQuery fallback condition",
+        "Skips discussing governance/security as if it's a per-tool afterthought rather than OneLake's single model",
+        "No disaster-recovery story for a bad Gold write beyond 'fix it manually'"
+      ],
+      "keyPoints": [
+        "Stores data once in OneLake rather than copying per engine",
+        "Uses Eventstream + Delta mirroring for near-real-time vs. Data Factory for nightly batch",
+        "Builds a Bronze/Silver/Gold medallion with SCD2 in Silver",
+        "Serves via a Direct Lake semantic model as the single governed layer",
+        "Applies Purview + workspace roles for governance once, not per engine",
+        "Monitors Direct Lake fallback and uses Delta time-travel for recovery"
+      ],
+      "evaluationCriteria": [
+        {
+          "criterion": "Designs ingestion for both near-real-time and batch sources correctly",
+          "weight": 20
+        },
+        {
+          "criterion": "Explains medallion layering and avoids multi-engine data duplication",
+          "weight": 25
+        },
+        {
+          "criterion": "Correctly describes Direct Lake serving and its fallback behavior",
+          "weight": 25
+        },
+        {
+          "criterion": "Addresses governance, cost control, and recovery from a bad write",
+          "weight": 30
+        }
+      ],
+      "deepDive": [
+        {
+          "heading": "Clarify requirements and constraints",
+          "content": "Two real latency tiers exist here, not one: near-real-time POS/inventory events versus nightly ERP/finance batch. \"Same-day visibility\" means minutes, not seconds, which rules out needing a full streaming-everywhere design. The hard constraint that should drive every later decision is cost: Fabric's value proposition is OneLake as a single logical copy of data that every engine reads directly, so the design must actively avoid copying the same data into Warehouse, Spark, and Power BI separately just because each tool \"wants its own.\""
+        },
+        {
+          "heading": "Ingestion layer",
+          "content": "POS and warehouse-scan events flow through Eventstream into an Eventhouse (KQL) for sub-minute operational queries, with a mirrored Delta sink landing the same stream into OneLake Bronze so the historical/analytical side never has to re-derive it. Nightly ERP and finance extracts move through Data Factory pipelines (Copy activity / dataflows) into Bronze. Where the source data already sits in ADLS, a OneLake shortcut references it in place instead of copying it — shortcuts, not duplicate ingestion jobs, are the first lever for the cost goal."
+        },
+        {
+          "heading": "Medallion architecture in OneLake",
+          "content": "Bronze is raw, append-only, schema-on-read. Silver conforms and deduplicates: SCD2 on product/store dimensions, Delta MERGE upserts applied against the incoming CDC/batch stream. Gold is the business-ready star schema and pre-aggregated marts. All three layers are stored exactly once, as Delta Parquet in OneLake — Spark, the Warehouse SQL engine, KQL, and Power BI all read the same physical files, which is the actual mechanism that prevents the multi-engine copy problem leadership is worried about."
+        },
+        {
+          "heading": "Serving: Direct Lake and the semantic model",
+          "content": "One Power BI semantic model, built in Direct Lake mode directly over the Gold Delta tables, reads OneLake's Parquet files and Delta transaction log without an Import or DirectQuery copy, giving near-real-time refresh at a fraction of the cost of a scheduled Import model. That same semantic model's measures are the single governed definition of every KPI. Ad hoc SQL analysts hit the identical Gold tables through the Fabric Warehouse SQL endpoint rather than getting their own extract — one physical copy, two access patterns."
+        },
+        {
+          "heading": "Governance, security, and cost",
+          "content": "OneLake's single security model means workspace roles and table-level security defined once apply across every engine, instead of re-implementing ACLs per tool. Microsoft Purview integration gives lineage and sensitivity-label coverage from Bronze through Gold. On cost: capacity (F-SKU) is sized and can be paused or scaled down off-hours, and workload-level throttling keeps a heavy Spark or Eventstream job from starving Power BI's Direct Lake refreshes during business hours — the lever is capacity governance, not standing up a second, duplicate reporting layer."
+        },
+        {
+          "heading": "Failure modes and tradeoffs",
+          "content": "Direct Lake silently falls back to DirectQuery when a table is too large or poorly framed (too many row groups, missing V-Order), so Direct Lake fallback telemetry needs active monitoring or the \"near-real-time, low-cost\" promise quietly degrades without anyone noticing. A schema drift from the ERP source could poison a Silver MERGE, so bad batches are quarantined by file rather than allowed to merge through. The real tradeoff of a single-copy OneLake design is concentrated blast radius: a bad Gold write affects every downstream engine simultaneously, so recovery relies on Delta time-travel/versioned rollback rather than ad hoc per-engine hotfixes."
+        }
+      ],
+      "estimatedMinutes": 14,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-10-22T00:00:00.000Z",
+      "updatedAt": "2026-10-22T00:00:00.000Z"
     }
   ]
 }
