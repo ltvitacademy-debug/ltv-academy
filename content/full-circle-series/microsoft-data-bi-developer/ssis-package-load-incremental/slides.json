@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Building the SSIS Package: ",
+    "titleEmphasis": "Load",
+    "titleSuffix": " and Incremental Logic",
+    "subtitle": "Video 13 of 23 · Riverside Outfitters"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Type 2: expire, don't overwrite",
+    "code": "-- Expire the old version\nUPDATE dw.dim_product\nSET is_current = 0, expiration_date = DATEADD(DAY,-1,@LoadDate)\nWHERE sku = @Sku AND is_current = 1;\n\n-- Insert the new version\nINSERT INTO dw.dim_product (sku, unit_price, is_current, effective_date)\nVALUES (@Sku, @UnitPrice, 1, @LoadDate);",
+    "caption": "A new surrogate key per version -- historical sales keep the old price."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Idempotent by design",
+    "code": "DECLARE @LoadDateKey INT =\n  (SELECT date_key FROM dw.dim_date WHERE full_date = @LoadDate);\n\nDELETE FROM dw.fact_sales WHERE date_key = @LoadDateKey;\n\nINSERT INTO dw.fact_sales (date_key, store_key, product_key, ...)\nSELECT ... FROM stg.stg_sales_ready_to_load WHERE load_id = @LoadId;",
+    "caption": "A delete scoped to one date makes re-running tonight's load safe."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What makes this load correct",
+    "titlePlain": "Three rules, ",
+    "titleEmphasis": "not optional",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Expire, don't overwrite", "sub": "price changes get a new product_key, never an in-place update" },
+      { "label": "Delete-then-insert", "sub": "scoped to the single date_key being loaded, nothing else touched" },
+      { "label": "Reconcile before success", "sub": "staged-ready count must match loaded count exactly" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "One job, three steps",
+    "code": "SQL Server Agent job: Riverside Nightly ETL\n  Step 1: 01_Extract    -> on success, continue\n  Step 2: 02_Transform  -> on success, continue\n  Step 3: 03_Load       -> on success, log complete\nSchedule: daily at 1:15am\nOn any failure: jump to Send Mail Task",
+    "caption": "Extract, Transform, Load -- chained, scheduled, alerting on failure."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 14",
+    "titlePlain": "Building the SSRS ",
+    "titleEmphasis": "Store Manager",
+    "titleSuffix": " Report",
+    "subtitle": "The first thing a Riverside employee actually opens each morning."
+  }
+]

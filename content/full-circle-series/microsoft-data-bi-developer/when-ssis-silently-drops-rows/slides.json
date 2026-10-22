@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Troubleshooting & Validation · Full-Circle Implementation Series",
+    "titlePlain": "When SSIS Silently ",
+    "titleEmphasis": "Drops Rows",
+    "titleSuffix": "",
+    "subtitle": "Video 17 of 23 · Riverside Outfitters"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Don't trust \"Success\" -- reconcile a count",
+    "code": "SELECT COUNT(*) FROM stg.stg_pos_transactions\nWHERE store_id_raw = 'ST11' AND load_id = @SuspectLoadId;\n\nSELECT COUNT(*) FROM dw.fact_sales f\nJOIN dw.dim_store s ON s.store_key = f.store_key\nWHERE s.store_id = 'ST11' AND f.load_id = @SuspectLoadId;\n-- the two counts don't match -- ~6% missing",
+    "caption": "stg.etl_run_log shows no failure anywhere for this run."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "How a success became a silent loss",
+    "titlePlain": "Three links, ",
+    "titleEmphasis": "one broke quietly",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Lookup redirected correctly", "sub": "no-match rows routed to a review table, exactly as designed" },
+      { "label": "...but the review table was broken", "sub": "a schema mismatch made every write to it fail" },
+      { "label": "...silently", "sub": "FailParentOnError was left at its default of False" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The fix: make the error path fail loudly too",
+    "code": "ALTER TABLE stg.dim_product_unmatched\nADD error_description NVARCHAR(1000) NULL;\n\n-- On the OLE DB Destination writing to that table:\nFailParentOnError = True",
+    "caption": "A safeguard that can fail silently isn't a safeguard."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A permanent accounting check",
+    "code": "SELECT\n  (ready_to_load + product_unmatched + store_unmatched) AS accounted_for,\n  total_staged\nFROM ...\n-- these two numbers must always match, every single night",
+    "caption": "Every staged row accounted for -- loaded, or in a review table."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 18",
+    "titlePlain": "Reconciling Power BI Against the ",
+    "titleEmphasis": "Source",
+    "titleSuffix": "",
+    "subtitle": "Proving every number, not just fixing one bug."
+  }
+]
