@@ -1,0 +1,202 @@
+{
+  "pathSlug": "microsoft-data-bi-developer",
+  "projectTitle": "Riverside Outfitters: A Sales & Inventory Reporting Platform, Start to Finish",
+  "projectTagline": "A 23-video, start-to-finish build of one real BI platform — SQL Server, SSIS, SSRS, and Power BI, for one fictional retailer, from the first stakeholder meeting to the final handoff.",
+  "businessContext": "**Riverside Outfitters** is a fictional 14-store outdoor-gear retailer with one central warehouse. Every store's point-of-sale system exports a nightly CSV of transactions, but nobody has ever connected those files into one place. Every Monday, a regional manager manually opens 14 spreadsheets and retypes totals into a master spreadsheet so leadership can see how the week went — a process that takes most of a day and regularly contains typos.\n\nYou've been brought in to replace that manual process with a real reporting platform: a SQL Server database, an automated SSIS load, an SSRS report for store managers, and a Power BI dashboard for the VP of Operations. This series follows that build from the first requirements conversation through to the day it ships.",
+  "architectureSummary": "By the end of this series, Riverside Outfitters has: a SQL Server staging database that lands the raw nightly export; a star-schema warehouse (`dim_date`, `dim_store`, `dim_product`, `fact_sales`) built on top of it; an SSIS package that runs every night to extract, clean, and load new transactions; an SSRS paginated report each store manager opens every morning; and a Power BI dashboard the VP of Operations uses to spot trends across all 14 stores at once. Nothing here is more advanced than the tools taught earlier in this path — the point of this series is showing how those same tools fit together on one real job, not introducing new ones.",
+  "lessons": [
+    {
+      "n": 1,
+      "slug": "meeting-riverside-what-they-actually-need",
+      "title": "Meeting Riverside Outfitters: What They Actually Need",
+      "phase": "business-requirements",
+      "summary": "The discovery meeting: turning \"we need better reporting\" into a specific, testable requirements brief before writing a single line of SQL.",
+      "status": "published",
+      "whatAreWeBuilding": "Over the next 23 videos, you'll build one complete reporting platform for a fictional mid-size outdoor-gear retailer, **Riverside Outfitters** — 14 stores, one central warehouse, a point-of-sale system that exports a CSV every night, and no real reporting beyond a spreadsheet someone rebuilds by hand every Monday.\n\nBy the end you'll have a SQL Server staging and warehouse database, an SSIS package that loads it automatically every night, an SSRS report store managers actually open every morning, and a Power BI dashboard the VP of Operations checks before her first meeting. This video starts where every real BI project starts — not with a table, but with a meeting.",
+      "explainSimple": "Imagine a store chain with 14 locations. Right now, someone has to open 14 different spreadsheets every Monday and copy numbers into one big spreadsheet by hand, just to see how much was sold last week. That takes most of a day and sometimes has mistakes in it.\n\nYour job is to build a computer system that does this automatically every single night, so by the time anyone opens their laptop in the morning, the numbers are already there, correct, and in one place. But before you build anything, you have to go ask the people who run the stores exactly what they need to see — because \"build me a report\" doesn't actually tell you what the report should show.",
+      "explainProfessional": "This is the discovery phase of a BI implementation, and rushing or skipping it is the single most common reason BI projects miss the mark. A stakeholder saying \"we need better reporting\" is a symptom report, not a requirement — your job in this lesson is to convert it into testable acceptance criteria: specific metrics, a specific grain (daily? by store? by SKU?), specific audiences, and precise definitions of terms that sound obvious but aren't — what exactly counts as a \"sale\"? Gross, net of returns, net of employee discount?\n\nYou'll leave this lesson with a one-page requirements brief that every later technical decision — the warehouse's grain, the SSIS refresh cadence, which fields land in the SSRS report versus the Power BI model — traces back to directly. That traceability is what separates a BI developer from someone who just knows the tools.",
+      "writtenInstructions": "## Step 1 — Before the meeting, write down what you don't know\n\nDon't walk into a requirements meeting with a blank page. Walk in with a list of the specific ambiguities a vague ask like \"we need better reporting\" is hiding:\n\n- What decision will this report actually be used to make?\n- Who looks at it, and how often — once a week, or every morning?\n- What's the grain — one row per store per day? Per store per SKU per day?\n- What counts as a \"sale\"? Gross revenue? Net of returns? Net of employee discounts?\n- Does this need to be real-time, or is \"ready by the time the store opens\" good enough?\n\n## Step 2 — Run the meeting like an interview, not a listening session\n\nRiverside's VP of Operations opens with: *\"Our regional manager spends every Monday rebuilding a spreadsheet by hand. We just need that automated, and honestly, better than what she makes today.\"*\n\nThat sentence contains a real requirement and a trap. The trap: if you automate exactly what the manual spreadsheet already does, you've automated a workaround, not solved the actual problem. Ask the follow-up questions directly:\n\n```\nQ: What does the manual spreadsheet actually show today?\nA: Total sales per store, per day, for the last 7 days, compared to the same week last year.\n\nQ: Who looks at it besides you?\nA: Each store manager gets their own store's numbers emailed to them. I look at all 14 together.\n\nQ: What's the one thing that spreadsheet can't tell you today that you wish it could?\nA: Which products are actually selling versus which ones are just sitting in inventory. Right now that's a separate, even messier spreadsheet.\n\nQ: When does this need to be ready?\nA: Before stores open at 9am. Right now the Monday number isn't even ready until Tuesday afternoon.\n\nQ: What counts as a sale — before or after returns? Does an employee discount count?\nA: ...Honestly, I don't know. Let me ask finance.\n```\n\nThat last answer is the most important one in the whole meeting. You just found a real ambiguity that would have silently produced a wrong number three steps down the pipeline — catching it here, in a conversation, is free. Catching it after the warehouse is built costs a schema change.\n\n## Step 3 — Write the one-page requirements brief\n\nTurn the conversation into a short, concrete document. This is the artifact that makes the next six lessons (architecture and planning) possible — every design decision should be traceable back to a line in this brief.\n\n```\nRIVERSIDE OUTFITTERS — REPORTING PLATFORM, V1 REQUIREMENTS BRIEF\n\nPrimary audience:        Store managers (14) + VP of Operations (1)\nPrimary decision:        \"How did my store do, and where do I have an inventory problem?\"\nGrain:                   One row per store, per product, per day\nSales definition:        Gross revenue, net of returns, net of employee discount\n                         (confirmed with Finance — pending written sign-off)\nFreshness requirement:   Previous day's full data, ready before 9am store opening\nV1 scope:                Sales totals by store/product/day, basic inventory-on-hand\nExplicitly OUT of v1:    Staffing data, payroll, marketing spend attribution\nDelivery:                SSRS report per store manager (their store only)\n                         Power BI dashboard for VP (all 14 stores)\n```\n\n## Step 4 — Get it confirmed in writing before moving on\n\nSend this brief back to the VP of Operations and ask for an explicit yes, not a read receipt. \"Does this match what you need, and is anything missing?\" Getting this one sentence of confirmation now is what gives you the standing to say, three lessons from now, \"that's a v2 request\" when scope inevitably tries to creep.",
+      "workplaceExplanation": {
+        "technicalLead": "I had the discovery call with Riverside's VP of Ops. Grain is daily, by store and by SKU. Sales is gross, net of returns, net of employee discount — confirmed with their finance team, written sign-off pending. Freshness requirement is data ready before 9am store opening, so we're on a nightly batch, not real-time. V1 is sales and inventory-on-hand only; staffing and marketing attribution are explicitly out of scope. I've got the one-pager and I'll have the dimensional model drafted by Thursday.",
+        "projectManager": "I met with Riverside yesterday. They confirmed what they need first: a report that tells each store manager how their store did yesterday, broken out by product, available before the store opens at 9am. Scope for v1 is sales and inventory only — staffing and marketing spend are a phase-2 conversation, and I've got that in writing. I'll share the one-page requirements doc before we lock the build timeline.",
+        "executive": "We talked to the client. Right now they're losing most of a day every week rebuilding this by hand, and making decisions on numbers that are sometimes two days stale. We know exactly what the first version needs to do, we've agreed in writing on what can wait until a later phase, and we're ready to start building this week."
+      }
+    },
+    {
+      "n": 2,
+      "slug": "turning-a-vague-ask-into-a-deliverable",
+      "title": "Turning a Vague Ask Into a Concrete Deliverable",
+      "phase": "business-requirements",
+      "summary": "Converting the discovery brief into acceptance criteria the whole team can build against.",
+      "status": "outline"
+    },
+    {
+      "n": 3,
+      "slug": "scoping-v1-whats-in-whats-deferred",
+      "title": "Scoping V1: What's In, What's Deferred",
+      "phase": "business-requirements",
+      "summary": "Drawing a hard line around phase 1 so the project doesn't quietly grow past its timeline.",
+      "status": "outline"
+    },
+    {
+      "n": 4,
+      "slug": "choosing-the-stack",
+      "title": "Choosing the Stack: SQL Server, SSIS, SSRS, and Power BI Together",
+      "phase": "architecture-planning",
+      "summary": "Why this specific combination of tools, and what each one is — and isn't — responsible for.",
+      "status": "outline"
+    },
+    {
+      "n": 5,
+      "slug": "designing-the-star-schema-first",
+      "title": "Designing the Star Schema Before Writing a Single Table",
+      "phase": "architecture-planning",
+      "summary": "Whiteboarding dim_date, dim_store, dim_product, and fact_sales before opening SSMS.",
+      "status": "outline"
+    },
+    {
+      "n": 6,
+      "slug": "planning-the-etl-flow-and-refresh-schedule",
+      "title": "Planning the ETL Flow and Refresh Schedule",
+      "phase": "architecture-planning",
+      "summary": "Mapping the nightly batch window against the 9am freshness requirement from the brief.",
+      "status": "outline"
+    },
+    {
+      "n": 7,
+      "slug": "planning-for-failure",
+      "title": "Planning for Failure: What Happens When a Load Breaks",
+      "phase": "architecture-planning",
+      "summary": "Deciding up front how a failed or partial nightly load gets caught and handled, before it happens live.",
+      "status": "outline"
+    },
+    {
+      "n": 8,
+      "slug": "building-the-staging-database",
+      "title": "Building the Staging Database and Raw Tables",
+      "phase": "implementation",
+      "summary": "Standing up the landing zone for the nightly CSV export, exactly as it arrives.",
+      "status": "outline"
+    },
+    {
+      "n": 9,
+      "slug": "building-the-dimension-tables",
+      "title": "Building the Dimension Tables",
+      "phase": "implementation",
+      "summary": "Turning the whiteboard design for dim_date, dim_store, and dim_product into real SQL Server tables.",
+      "status": "outline"
+    },
+    {
+      "n": 10,
+      "slug": "building-the-fact-table-and-relationships",
+      "title": "Building the Fact Table and Its Relationships",
+      "phase": "implementation",
+      "summary": "Wiring fact_sales to its dimensions and choosing the right grain and keys.",
+      "status": "outline"
+    },
+    {
+      "n": 11,
+      "slug": "ssis-package-extract",
+      "title": "Building the SSIS Package: Extract",
+      "phase": "implementation",
+      "summary": "Pulling the nightly CSV into staging with the right error handling for a malformed file.",
+      "status": "outline"
+    },
+    {
+      "n": 12,
+      "slug": "ssis-package-transform",
+      "title": "Building the SSIS Package: Transform",
+      "phase": "implementation",
+      "summary": "Cleaning and conforming raw POS data to match the warehouse's dimensions.",
+      "status": "outline"
+    },
+    {
+      "n": 13,
+      "slug": "ssis-package-load-incremental",
+      "title": "Building the SSIS Package: Load and Incremental Logic",
+      "phase": "implementation",
+      "summary": "Loading only new transactions each night instead of reprocessing the whole history.",
+      "status": "outline"
+    },
+    {
+      "n": 14,
+      "slug": "building-the-ssrs-store-manager-report",
+      "title": "Building the SSRS Paginated Report for Store Managers",
+      "phase": "implementation",
+      "summary": "A single-store, print-friendly daily report, parameterized so each manager only sees their own numbers.",
+      "status": "outline"
+    },
+    {
+      "n": 15,
+      "slug": "building-the-power-bi-semantic-model",
+      "title": "Building the Power BI Semantic Model on the Warehouse",
+      "phase": "implementation",
+      "summary": "Modeling relationships and core DAX measures directly on top of the new star schema.",
+      "status": "outline"
+    },
+    {
+      "n": 16,
+      "slug": "building-the-power-bi-executive-dashboard",
+      "title": "Building the Power BI Executive Dashboard",
+      "phase": "implementation",
+      "summary": "A 14-store rollup view built for the VP of Operations' morning routine.",
+      "status": "outline"
+    },
+    {
+      "n": 17,
+      "slug": "when-ssis-silently-drops-rows",
+      "title": "When the SSIS Load Silently Drops Rows",
+      "phase": "troubleshooting-validation",
+      "summary": "Diagnosing a load that reports success but is quietly missing data.",
+      "status": "outline"
+    },
+    {
+      "n": 18,
+      "slug": "reconciling-power-bi-against-source",
+      "title": "Reconciling Power BI Totals Against the Source System",
+      "phase": "troubleshooting-validation",
+      "summary": "Proving the dashboard's numbers actually match the POS exports before anyone trusts them.",
+      "status": "outline"
+    },
+    {
+      "n": 19,
+      "slug": "why-the-dashboard-was-slow",
+      "title": "Why the Dashboard Was Slow, and How We Fixed It",
+      "phase": "troubleshooting-validation",
+      "summary": "Finding and fixing a real performance problem in the data model, not just the visuals.",
+      "status": "outline"
+    },
+    {
+      "n": 20,
+      "slug": "reading-the-first-real-numbers",
+      "title": "Reading the First Real Numbers: What the Dashboard Told the Business",
+      "phase": "business-interpretation",
+      "summary": "Interpreting the first live week of data, not just verifying it's technically correct.",
+      "status": "outline"
+    },
+    {
+      "n": 21,
+      "slug": "when-the-data-surfaces-an-uncomfortable-truth",
+      "title": "When the Data Surfaces an Uncomfortable Truth",
+      "phase": "business-interpretation",
+      "summary": "Handling a finding the stakeholder didn't expect and may not want to hear.",
+      "status": "outline"
+    },
+    {
+      "n": 22,
+      "slug": "presenting-the-finished-platform",
+      "title": "Presenting the Finished Platform to Stakeholders",
+      "phase": "professional-communication",
+      "summary": "Walking Riverside's leadership team through what was built and why, in their language.",
+      "status": "outline"
+    },
+    {
+      "n": 23,
+      "slug": "writing-the-handoff-documentation",
+      "title": "Writing the Handoff Documentation",
+      "phase": "professional-communication",
+      "summary": "Leaving behind documentation someone else could actually maintain this with.",
+      "status": "outline"
+    }
+  ]
+}

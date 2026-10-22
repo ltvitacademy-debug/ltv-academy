@@ -5,6 +5,7 @@ import { hasInterviewBank } from "@/lib/interviewPrep";
 import { hasCommunicationExercises } from "@/lib/communicationTrainer";
 import { hasLearningPlanner, getLearningPlannerWeeks } from "@/lib/learningPlanner";
 import { getSampleResumeLevels } from "@/lib/sampleResumes";
+import { loadFullCircleSeries } from "@/lib/fullCircleSeries";
 import PathDetailRedesign from "@/components/careers/PathDetailRedesign";
 
 export function generateStaticParams() {
@@ -34,6 +35,8 @@ export default async function CareerPathPage({
   const path = getCareerPath(slug);
   if (!path) notFound();
 
+  const fullCircle = loadFullCircleSeries(path.slug);
+
   return (
     <PathDetailRedesign
       path={path}
@@ -42,6 +45,16 @@ export default async function CareerPathPage({
       hasLearningPlanner={hasLearningPlanner(path.slug)}
       learningPlannerWeeks={getLearningPlannerWeeks(path.slug)}
       sampleResumeLevels={getSampleResumeLevels(path.slug)}
+      fullCircleSeries={
+        fullCircle
+          ? {
+              projectTitle: fullCircle.projectTitle,
+              projectTagline: fullCircle.projectTagline,
+              totalVideos: fullCircle.lessons.length,
+              publishedVideos: fullCircle.lessons.filter((l) => l.status === "published").length,
+            }
+          : null
+      }
     />
   );
 }

@@ -54,6 +54,7 @@ export default function PathDetailRedesign({
   hasLearningPlanner,
   learningPlannerWeeks,
   sampleResumeLevels,
+  fullCircleSeries,
 }: {
   path: CareerPath;
   hasInterviewPrep?: boolean;
@@ -61,6 +62,7 @@ export default function PathDetailRedesign({
   hasLearningPlanner?: boolean;
   learningPlannerWeeks?: number | null;
   sampleResumeLevels?: { key: string; label: string }[];
+  fullCircleSeries?: { projectTitle: string; projectTagline: string; totalVideos: number; publishedVideos: number } | null;
 }) {
   const allCourseSlugs = path.stages.flatMap((s) => s.courseSlugs ?? []);
   const tiers = parseSalaryTiers(path.salaryRange);
@@ -871,6 +873,30 @@ export default function PathDetailRedesign({
             </div>
           </div>
         </div>
+      )}
+
+      {fullCircleSeries && (
+        <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+          <div className="rounded-[2px] border-2 border-crimson bg-gradient-to-br from-gold/20 via-gold/10 to-transparent p-6 sm:p-9">
+            <p className="eyebrow mb-3">Full-Circle Implementation Series</p>
+            <h2 className="display text-2xl sm:text-3xl">{fullCircleSeries.projectTitle}</h2>
+            <p className="mt-4 max-w-3xl text-ink">{fullCircleSeries.projectTagline}</p>
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <span className="inline-flex items-center gap-2 border border-ink/15 bg-white/50 px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-stone shadow-sm">
+                {fullCircleSeries.totalVideos} videos planned
+              </span>
+              <span className="inline-flex items-center gap-2 border border-gold bg-white/60 px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-crimson-deep shadow-sm">
+                {fullCircleSeries.publishedVideos} live now
+              </span>
+              <Link
+                href={`/app/full-circle/${path.slug}`}
+                className="inline-block rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment shadow-[0_4px_14px_-4px_rgba(142,28,28,0.6)] transition-colors hover:bg-crimson-deep"
+              >
+                Build the project →
+              </Link>
+            </div>
+          </div>
+        </section>
       )}
     </main>
   );
