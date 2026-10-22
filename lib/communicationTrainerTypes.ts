@@ -50,6 +50,18 @@ export type LanguageUpgrade = {
   whyStronger: string;
 };
 
+// A flagship exercise's walkthrough is shaped by the scenario itself (a
+// streaming-heavy design has different sections than a governance-heavy
+// one), so this is an ordered list of whatever sections actually apply —
+// not a fixed schema every deep-dive must fill in. When an exercise sets
+// this, it replaces the fixed SCOPE breakdown / "what makes this sound
+// senior" steps with this walkthrough instead, and renders with distinct
+// (gold) styling to signal it's deliberately bigger than a normal exercise.
+export type CommDeepDiveSection = {
+  heading: string;
+  content: string;
+};
+
 // The five fixed qualities every exercise explains, each tied to how THIS
 // exercise's own professional response actually demonstrates it — not a
 // generic list repeated unchanged across exercises.
@@ -77,8 +89,13 @@ export type CommunicationExercise = {
   beginnerResponse: string; // technically plausible, but thin and unstructured
   whyBeginnerIsWeak: string; // specifically what's missing — terminology, method, reasoning, validation
   professionalResponse: string; // the full senior-level explanation
-  scopeBreakdown: ScopeBreakdownItem[]; // 5 items, S/C/O/P/E, mapped to the professional response above
-  whatMakesThisSoundSenior: SeniorQuality[]; // 5 items, fixed qualities explained against this response
+  scopeBreakdown?: ScopeBreakdownItem[]; // 5 items, S/C/O/P/E — omitted when deepDive is set instead
+  whatMakesThisSoundSenior?: SeniorQuality[]; // 5 items, fixed qualities — omitted when deepDive is set instead
+  // A small number of flagship exercises per path (full-system-design case
+  // studies, walked through as a senior would actually explain them out
+  // loud) replace scopeBreakdown/whatMakesThisSoundSenior with this
+  // structured, multi-section walkthrough instead.
+  deepDive?: CommDeepDiveSection[];
   vocabulary: VocabularyTerm[]; // 5-8 terms, a mix of prerequisite and enrichment
   languageUpgrades: LanguageUpgrade[]; // 3+ already-worked weak -> professional pairs, to study
   sayItLikeASenior: SayItLikeASeniorPrompt[]; // 3+ blind-attempt-first prompts

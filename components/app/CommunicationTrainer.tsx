@@ -11,13 +11,31 @@ import type { CommunicationExercise } from "@/lib/communicationTrainerTypes";
 // rehearsal. "What makes this sound senior?" and "Say it like a senior" are
 // additions layered into that sequence (after SCOPE, and after vocabulary,
 // respectively) — not substitutes for any of the 9 steps.
-const STEP_LABELS = [
+//
+// A flagship exercise (exercise.deepDive set) swaps the fixed "SCOPE
+// breakdown" + "What makes this sound senior?" pair for one flexible
+// "System-design walkthrough" step, since a full system-design case study
+// doesn't fit the same 5-letter/5-quality mold every other exercise does.
+const STANDARD_STEP_LABELS = [
   "The scenario",
   "A beginner answer",
   "Why it's weak",
   "The professional answer",
   "SCOPE breakdown",
   "What makes this sound senior?",
+  "Vocabulary & professional phrasing",
+  "Say it like a senior",
+  "Construct your own response",
+  "Compare against the model",
+  "Verbal rehearsal",
+] as const;
+
+const FLAGSHIP_STEP_LABELS = [
+  "The scenario",
+  "A beginner answer",
+  "Why it's weak",
+  "The professional answer",
+  "System-design walkthrough",
   "Vocabulary & professional phrasing",
   "Say it like a senior",
   "Construct your own response",
@@ -87,8 +105,11 @@ function SayItLikeASenior({ prompts }: { prompts: CommunicationExercise["sayItLi
 }
 
 export default function CommunicationTrainer({ exercise }: { exercise: CommunicationExercise }) {
+  const isFlagship = Boolean(exercise.deepDive && exercise.deepDive.length > 0);
+  const STEP_LABELS = isFlagship ? FLAGSHIP_STEP_LABELS : STANDARD_STEP_LABELS;
   const [step, setStep] = useState(0);
   const last = STEP_LABELS.length - 1;
+  const label = STEP_LABELS[step];
 
   // Lifted to the parent so the "construct" step and "compare" step share
   // the same answer text.
@@ -97,25 +118,38 @@ export default function CommunicationTrainer({ exercise }: { exercise: Communica
 
   return (
     <div>
+      {isFlagship && (
+        <p className="mb-2 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">
+          <span aria-hidden="true">★</span> Flagship system-design exercise
+        </p>
+      )}
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <p className="text-xs uppercase tracking-[0.18em] text-stone">
-          Step {step + 1} of {STEP_LABELS.length} · {STEP_LABELS[step]}
+          Step {step + 1} of {STEP_LABELS.length} · {label}
         </p>
       </div>
       <div className="mt-2 flex gap-1">
-        {STEP_LABELS.map((label, i) => (
+        {STEP_LABELS.map((l, i) => (
           <button
-            key={label}
+            key={l}
             type="button"
             onClick={() => setStep(i)}
-            aria-label={`Go to step ${i + 1}: ${label}`}
-            className={`h-1.5 flex-1 rounded-full transition-colors ${i <= step ? "bg-crimson" : "bg-ink/10"}`}
+            aria-label={`Go to step ${i + 1}: ${l}`}
+            className={`h-1.5 flex-1 rounded-full transition-colors ${
+              i <= step ? (isFlagship ? "bg-gold" : "bg-crimson") : "bg-ink/10"
+            }`}
           />
         ))}
       </div>
 
-      <div className="mt-6 border-2 border-ink/15 bg-parchment p-6 sm:p-8">
-        {step === 0 && (
+      <div
+        className={
+          isFlagship
+            ? "mt-6 border-2 border-gold bg-gold/[0.07] p-6 shadow-[0_8px_26px_-14px_rgba(196,149,46,0.6)] sm:p-8"
+            : "mt-6 border-2 border-ink/15 bg-parchment p-6 sm:p-8"
+        }
+      >
+        {label === "The scenario" && (
           <div>
             <p className="text-xs uppercase tracking-[0.18em] text-stone">{exercise.skillTag}</p>
             <p className="display mt-2 text-2xl">{exercise.situation}</p>
@@ -127,21 +161,21 @@ export default function CommunicationTrainer({ exercise }: { exercise: Communica
           </div>
         )}
 
-        {step === 1 && (
+        {label === "A beginner answer" && (
           <div>
             <p className="eyebrow mb-2">A real, not-wrong, beginner answer</p>
             <p className="text-ink">{exercise.beginnerResponse}</p>
           </div>
         )}
 
-        {step === 2 && (
+        {label === "Why it's weak" && (
           <div>
             <p className="eyebrow mb-2">Why it's weak</p>
             <p className="text-ink">{exercise.whyBeginnerIsWeak}</p>
           </div>
         )}
 
-        {step === 3 && (
+        {label === "The professional answer" && (
           <div>
             <p className="eyebrow mb-2">The professional answer</p>
             <div className="rounded-[2px] border-2 border-crimson bg-gold-pale p-4">
@@ -150,7 +184,7 @@ export default function CommunicationTrainer({ exercise }: { exercise: Communica
           </div>
         )}
 
-        {step === 4 && (
+        {label === "SCOPE breakdown" && exercise.scopeBreakdown && (
           <div>
             <p className="eyebrow mb-4">Breaking the answer down with SCOPE</p>
             <div className="space-y-5">
@@ -170,7 +204,7 @@ export default function CommunicationTrainer({ exercise }: { exercise: Communica
           </div>
         )}
 
-        {step === 5 && (
+        {label === "What makes this sound senior?" && exercise.whatMakesThisSoundSenior && (
           <div>
             <p className="eyebrow mb-4">What makes this sound senior?</p>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -185,7 +219,25 @@ export default function CommunicationTrainer({ exercise }: { exercise: Communica
           </div>
         )}
 
-        {step === 6 && (
+        {label === "System-design walkthrough" && exercise.deepDive && (
+          <div>
+            <p className="eyebrow mb-1">How a senior would actually walk through this out loud</p>
+            <p className="mb-4 text-sm text-stone">
+              Not a fixed checklist — the sections that actually apply to this scenario, in the order
+              you&apos;d naturally explain them to a panel.
+            </p>
+            <div className="space-y-5">
+              {exercise.deepDive.map((s, i) => (
+                <div key={i} className="rounded-[2px] border border-gold/40 bg-white/50 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">{s.heading}</p>
+                  <p className="mt-2 whitespace-pre-line text-sm text-ink">{s.content}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {label === "Vocabulary & professional phrasing" && (
           <div>
             <p className="eyebrow mb-1">Vocabulary & professional phrasing</p>
             <p className="mb-4 text-sm text-stone">
@@ -238,20 +290,20 @@ export default function CommunicationTrainer({ exercise }: { exercise: Communica
           </div>
         )}
 
-        {step === 7 && (
+        {label === "Say it like a senior" && (
           <div>
             <p className="eyebrow mb-4">Say it like a senior</p>
             <SayItLikeASenior prompts={exercise.sayItLikeASenior} />
           </div>
         )}
 
-        {step === 8 && (
+        {label === "Construct your own response" && (
           <div>
             <p className="eyebrow mb-2">Construct your own response</p>
             <p className="mb-4 text-stone">
-              Using the SCOPE framework and the vocabulary you just studied, write your own full
-              answer to the original scenario — in your own words, not a recitation of the model
-              answer.
+              {isFlagship
+                ? "Using the walkthrough and the vocabulary you just studied, write your own full answer to the original scenario — in your own words, not a recitation of the model answer."
+                : "Using the SCOPE framework and the vocabulary you just studied, write your own full answer to the original scenario — in your own words, not a recitation of the model answer."}
             </p>
             <div className="rounded-[2px] border-2 border-ink/15 bg-white/50 p-5">
               <p className="text-xs uppercase tracking-[0.18em] text-stone">{exercise.skillTag}</p>
@@ -267,7 +319,7 @@ export default function CommunicationTrainer({ exercise }: { exercise: Communica
           </div>
         )}
 
-        {step === 9 && (
+        {label === "Compare against the model" && (
           <div className="space-y-6">
             <p className="eyebrow mb-2">Compare against the professional model</p>
             <div>
@@ -306,7 +358,7 @@ export default function CommunicationTrainer({ exercise }: { exercise: Communica
           </div>
         )}
 
-        {step === 10 && (
+        {label === "Verbal rehearsal" && (
           <div>
             <p className="eyebrow mb-2">Verbal rehearsal</p>
             <div className="rounded-[2px] border-l-4 border-gold bg-gold-pale/40 p-5">

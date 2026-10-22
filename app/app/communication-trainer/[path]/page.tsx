@@ -66,19 +66,31 @@ export default async function CommunicationTrainerIndexPage({
                 </span>
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {group.map((e) => (
-                  <Link
-                    key={e.id}
-                    href={`/app/communication-trainer/${careerPath.slug}/${e.id}`}
-                    className="group rounded-[2px] border border-ink/15 bg-white/40 p-4 hover:border-crimson"
-                  >
-                    <p className="text-xs uppercase tracking-[0.14em] text-stone">{e.skillTag}</p>
-                    <h3 className="display mt-1 text-base group-hover:text-crimson">{e.title}</h3>
-                    <span className="mt-1.5 inline-block text-xs font-semibold text-crimson-deep group-hover:underline">
-                      Start →
-                    </span>
-                  </Link>
-                ))}
+                {group.map((e) => {
+                  const isFlagship = Boolean(e.deepDive && e.deepDive.length > 0);
+                  return (
+                    <Link
+                      key={e.id}
+                      href={`/app/communication-trainer/${careerPath.slug}/${e.id}`}
+                      className={
+                        isFlagship
+                          ? "group rounded-[2px] border-2 border-gold bg-gold/[0.07] p-4 hover:bg-gold/[0.12]"
+                          : "group rounded-[2px] border border-ink/15 bg-white/40 p-4 hover:border-crimson"
+                      }
+                    >
+                      {isFlagship && (
+                        <p className="mb-1 inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-crimson-deep">
+                          <span aria-hidden="true">★</span> Flagship
+                        </p>
+                      )}
+                      <p className="text-xs uppercase tracking-[0.14em] text-stone">{e.skillTag}</p>
+                      <h3 className="display mt-1 text-base group-hover:text-crimson">{e.title}</h3>
+                      <span className="mt-1.5 inline-block text-xs font-semibold text-crimson-deep group-hover:underline">
+                        Start →
+                      </span>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           );

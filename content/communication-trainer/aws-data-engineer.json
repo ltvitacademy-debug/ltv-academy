@@ -4337,6 +4337,115 @@
         "Did you propose testing against a larger batch before calling the fix genuinely resolved?"
       ],
       "verbalRehearsalPrompt": "Explain your validation out loud as if a teammate assumes the job passing once means it's definitely fixed. Then repeat it from memory, making sure you name all three possible root causes before concluding anything."
+    },
+    {
+      "id": "awsde-comm-26",
+      "title": "Walking a Panel Through a Multi-Tenant Data Platform on AWS",
+      "competency": "architecture",
+      "skillTag": "System Design · Whiteboard Communication",
+      "situation": "In a system-design round, the interviewer says: \"We're a B2B SaaS company with 200+ enterprise customers. Walk me through how you'd give each one their own analytics workspace on shared AWS infrastructure — and explain it the way you'd explain it to our head of sales, who's going to ask why a new customer can't just get their own setup on day one.\"",
+      "beginnerResponse": "We could give each tenant their own AWS account, that way their data is totally separate and secure. Or we could use S3 with folders per tenant. We'd probably use Athena to query it. For onboarding we'd just set up their account and connect everything.",
+      "whyBeginnerIsWeak": "Offers two options ('their own account' or 'folders') without picking one or explaining the actual tradeoff, which reads as not having thought it through rather than weighing real alternatives. It completely ignores the stated requirement — onboarding in under a day — and 'we'd just set up their account' for 200+ tenants is the opposite of fast. There's no mention of how cost gets attributed per tenant, which is exactly what the head of sales is going to ask about when a customer wants to know what they're paying for.",
+      "professionalResponse": "I'd lead with the decision that actually resolves the sales objection: we use one shared platform with strict logical isolation — not separate AWS accounts per tenant — because a dedicated account is a provisioning project, and a permission grant is an afternoon. I'd tell the head of sales directly: a new customer goes live same-day because onboarding is a configuration change, not an infrastructure build, and that's a selling point, not a compromise.",
+      "deepDive": [
+        {
+          "heading": "Name the decision before the mechanics",
+          "content": "I'd say upfront: this is logical isolation on shared infrastructure, not a separate AWS account per tenant, and I'd explain why immediately — at 200+ tenants, an account-per-tenant model means onboarding is an infrastructure project every single time, which directly conflicts with the under-a-day requirement the business actually asked for."
+        },
+        {
+          "heading": "How the data is actually separated",
+          "content": "Every tenant's data lands in S3 under a tenant_id partition, and access is enforced through AWS Lake Formation's tag-based permissions — a query against the shared tables is automatically scoped to the tenant_id the caller's role is allowed to see. I'd make the business translation explicit here: bringing on a new tenant becomes granting a tag, not building a new environment, which is the actual mechanism behind the same-day promise."
+        },
+        {
+          "heading": "Why one customer's heavy usage won't slow another down",
+          "content": "I'd expect the pushback 'but won't one customer's big query slow everyone else down,' so I'd get ahead of it: Athena workgroups or Redshift Serverless get per-tenant concurrency and scan limits, so a noisy customer is contained to their own workgroup rather than degrading the shared platform."
+        },
+        {
+          "heading": "Answering the cost-attribution question directly",
+          "content": "Since sales will get asked 'what exactly are we paying for,' I'd explain that cost allocation tags on each tenant's workgroup feed AWS Cost and Usage Reports, so we can hand a customer a real per-tenant cost breakdown — a capability that's actually easier on shared infrastructure with tagging than on isolated per-tenant accounts."
+        },
+        {
+          "heading": "The honest limit, stated before anyone finds it",
+          "content": "I'd close with the one real tradeoff: shared infrastructure means a misconfigured permission grant is the actual risk, not performance — so grants get reviewed and CloudTrail logs who queried what. And for the rare tenant with a hard compliance requirement for physical isolation, I'd say the design lets that one tenant graduate to dedicated infrastructure without us re-architecting ingestion for everyone else."
+        }
+      ],
+      "vocabulary": [
+        {
+          "term": "Lake Formation tag-based access control",
+          "kind": "enrichment",
+          "definition": "An AWS Lake Formation feature that scopes query access using tags (like a tenant_id tag) instead of maintaining a separate IAM policy per table or user.",
+          "whyItMatters": "It's the actual mechanism that turns 'onboard a tenant' into a permission grant instead of an infrastructure build — the core of the same-day answer.",
+          "example": "\"A new tenant's role gets granted the matching Lake Formation tag — that's the whole onboarding step.\""
+        },
+        {
+          "term": "Logical isolation (vs. physical isolation)",
+          "kind": "enrichment",
+          "definition": "Separating tenants through access-control boundaries on shared infrastructure, rather than giving each tenant their own dedicated account or cluster.",
+          "whyItMatters": "Naming this distinction explicitly shows you considered the tradeoff on purpose, not that you skipped the harder option.",
+          "example": "\"We chose logical isolation over physical isolation specifically to meet the onboarding SLA.\""
+        },
+        {
+          "term": "Workgroup (Athena / Redshift Serverless)",
+          "kind": "enrichment",
+          "definition": "A configuration boundary that can enforce per-user or per-tenant limits on query concurrency and data scanned, within shared compute.",
+          "whyItMatters": "Answers the inevitable noisy-neighbor question without requiring dedicated compute per tenant.",
+          "example": "\"Each tenant tier gets its own workgroup with a data-scan cap, so one heavy query can't degrade everyone else.\""
+        },
+        {
+          "term": "Cost allocation tags",
+          "kind": "enrichment",
+          "definition": "AWS resource tags that let billing and usage reports be broken down by a dimension like tenant_id, even on shared infrastructure.",
+          "whyItMatters": "Directly answers the sales question of 'how do we know what each customer actually costs us.'",
+          "example": "\"We tag every workgroup by tenant_id so Cost and Usage Reports give us real per-tenant attribution.\""
+        },
+        {
+          "term": "CloudTrail data events",
+          "kind": "enrichment",
+          "definition": "AWS CloudTrail logging specifically for data-plane operations (like S3 object reads), as opposed to just account-level management actions.",
+          "whyItMatters": "Is the honest answer to 'how do you know a permission mistake didn't leak data' — an auditable trail, not just trust.",
+          "example": "\"We audit Lake Formation grants against CloudTrail data events to catch an over-broad grant before it's a problem.\""
+        }
+      ],
+      "languageUpgrades": [
+        {
+          "weak": "We'd give each tenant their own AWS account.",
+          "professional": "We use logical isolation on shared infrastructure, via Lake Formation tags, instead of a dedicated account per tenant — that's what makes same-day onboarding possible at this scale.",
+          "whyStronger": "States a clear decision with its justification, instead of leaving two unresolved options on the table."
+        },
+        {
+          "weak": "We'd just set up their account and connect everything.",
+          "professional": "Onboarding a new tenant is granting a Lake Formation tag to their role — a configuration change, not an infrastructure build.",
+          "whyStronger": "Directly answers the stated requirement (under a day) instead of ignoring it."
+        },
+        {
+          "weak": "We'd probably use Athena to query it.",
+          "professional": "Self-serve SQL runs through Athena workgroups with per-tenant scan limits, so usage is both fast and cost-attributable.",
+          "whyStronger": "Ties the tool choice to two real requirements (self-serve access and cost attribution) instead of naming it in isolation."
+        }
+      ],
+      "sayItLikeASenior": [
+        {
+          "beginnerStatement": "Their data would be separate so it's secure.",
+          "suggestedProfessionalVersion": "Access is enforced per-tenant through Lake Formation's tag-based permissions, so a query is automatically scoped to only the tenant_id that caller is allowed to see."
+        },
+        {
+          "beginnerStatement": "We'd watch out for one customer using too much.",
+          "suggestedProfessionalVersion": "Each tenant's workgroup carries its own concurrency and data-scan limits, so a heavy query is contained to that tenant's workgroup rather than affecting others."
+        },
+        {
+          "beginnerStatement": "If a customer needs more security we could isolate them more.",
+          "suggestedProfessionalVersion": "For a tenant with a hard compliance requirement, the design lets us graduate just that tenant to a dedicated account, without re-architecting ingestion for everyone else."
+        }
+      ],
+      "selfAssessmentRubric": [
+        "Picked one isolation approach and explained why, instead of listing options unresolved",
+        "Directly addressed the under-a-day onboarding requirement with a concrete mechanism",
+        "Explained how cost gets attributed per tenant",
+        "Addressed the noisy-neighbor question before being asked",
+        "Named the real risk (grant misconfiguration) and how it's audited",
+        "Described an escape hatch for a tenant that eventually needs true physical isolation"
+      ],
+      "verbalRehearsalPrompt": "Rehearse this as if the head of sales will immediately ask 'why can't they just have their own setup' the moment you stop talking — practice answering that specific objection in one sentence before you even finish your opening, not as an afterthought three minutes in."
     }
   ]
 }
