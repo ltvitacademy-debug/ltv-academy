@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Writing the T-SQL Query That Defines ",
+    "titleEmphasis": "Active Customer",
+    "titleSuffix": "",
+    "subtitle": "Video 7 of 22 · Northfield Retail"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Declare the as-of date",
+    "code": "DECLARE @AsOfDate DATE = '2026-09-30';\n-- swap for GETDATE() in production",
+    "caption": "One variable makes the whole query re-runnable against history."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Two CTEs do the work",
+    "code": "WITH LastPurchase AS (\n  SELECT CustomerID, MAX(OrderDate) AS LastOrderDate\n  FROM Sales.Orders\n  WHERE OrderTotal > 0        -- excludes returns/refunds\n  GROUP BY CustomerID\n),\nPriorYearPurchaseCount AS (\n  SELECT CustomerID, COUNT(*) AS PurchaseCount12Mo\n  FROM Sales.Orders\n  WHERE OrderTotal > 0\n    AND OrderDate >= DATEADD(MONTH, -12, @AsOfDate)\n    AND OrderDate <  @AsOfDate\n  GROUP BY CustomerID\n)",
+    "caption": "Last purchase date, and the trailing-12-month count."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Join back and classify",
+    "code": "SELECT c.CustomerID, c.Region, c.Segment,\n  CASE\n    WHEN lp.LastOrderDate IS NULL THEN 'Never Purchased'\n    WHEN DATEDIFF(DAY,lp.LastOrderDate,@AsOfDate)<=90\n      THEN 'Active'\n    WHEN DATEDIFF(DAY,lp.LastOrderDate,@AsOfDate)>90\n      AND ISNULL(py.PurchaseCount12Mo,0)>=2\n      THEN 'Churned'\n    ELSE 'Not Yet Retained'\n  END AS CustomerStatus\nFROM Sales.Customers c\nLEFT JOIN LastPurchase lp ON lp.CustomerID = c.CustomerID\nLEFT JOIN PriorYearPurchaseCount py ON py.CustomerID = c.CustomerID\nWHERE c.Segment <> 'Wholesale';",
+    "caption": "One row per customer — LEFT JOINs so zero-order customers still appear."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Before trusting it",
+    "titlePlain": "Sanity-check the ",
+    "titleEmphasis": "distribution",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Group by status", "sub": "count Active, Churned, Not Yet Retained" },
+      { "label": "Expect", "sub": "a large active majority, roughly 1,580 churned" },
+      { "label": "If it's 0% or 100%", "sub": "stop — the date math or filter has a bug" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 8",
+    "titlePlain": "Pulling the Data Into Power BI and ",
+    "titleEmphasis": "Shaping",
+    "titleSuffix": " It",
+    "subtitle": "From a flat query result to a real data model."
+  }
+]

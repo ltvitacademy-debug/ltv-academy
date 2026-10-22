@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Building the DAX Measures for ",
+    "titleEmphasis": "Churn Rate",
+    "titleSuffix": "",
+    "subtitle": "Video 9 of 22 · Northfield Retail"
+  },
+  {
+    "type": "code",
+    "eyebrow": "A reusable as-of date",
+    "code": "As Of Date = MAX ( 'Date'[Date] )\n\nActive Customers =\nVAR AsOf = [As Of Date]\nRETURN\nCALCULATE (\n    DISTINCTCOUNT ( Sales_Orders[CustomerID] ),\n    Sales_Orders[OrderTotal] > 0,\n    DATESBETWEEN ( 'Date'[Date], AsOf - 90, AsOf )\n)",
+    "caption": "A measure, not a hardcoded date — it recalculates on refresh."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Churned Customers — row by row",
+    "code": "Churned Customers =\nVAR AsOf = [As Of Date]\nRETURN\nCOUNTROWS ( FILTER (\n  VALUES ( Sales_Customers[CustomerID] ),\n  VAR LastOrder = CALCULATE ( MAX(Sales_Orders[OrderDate]),\n                               Sales_Orders[OrderTotal]>0 )\n  VAR DaysSince = DATEDIFF ( LastOrder, AsOf, DAY )\n  VAR Prior12mo = CALCULATE ( COUNTROWS(Sales_Orders),\n                    Sales_Orders[OrderTotal]>0,\n                    DATESBETWEEN('Date'[Date],AsOf-365,AsOf) )\n  RETURN NOT ISBLANK(LastOrder) && DaysSince>90 && Prior12mo>=2\n) )",
+    "caption": "DAX has no CASE-over-CTE — this rebuilds it as per-customer row logic."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Churn Rate",
+    "code": "Churn Rate =\nVAR EligibleBase = [Active Customers] + [Churned Customers]\nRETURN DIVIDE ( [Churned Customers], EligibleBase )",
+    "caption": "The denominator excludes never-purchased and not-yet-retained customers."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Validate before trusting it",
+    "titlePlain": "Match the ",
+    "titleEmphasis": "SQL baseline",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Slicer", "sub": "set to the SQL query's exact as-of date & scope" },
+      { "label": "Expect", "sub": "Churned Customers close to the lesson 7 result" },
+      { "label": "If it doesn't match", "sub": "check relationships before blaming the DAX" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 10",
+    "titlePlain": "Building the Executive ",
+    "titleEmphasis": "Summary",
+    "titleSuffix": " Page",
+    "subtitle": "One page, built for a five-second read."
+  }
+]
