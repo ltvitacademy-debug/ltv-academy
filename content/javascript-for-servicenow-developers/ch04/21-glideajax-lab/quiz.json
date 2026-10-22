@@ -1,0 +1,60 @@
+{
+  "lesson": "glideajax-lab",
+  "questions": [
+    {
+      "q": "In this lab, why does `ChangeFreezeChecker` need to extend `AbstractAjaxProcessor` and have Client callable checked?",
+      "options": [
+        "So the client script's GlideAjax call is allowed to reach `isDateInFreezeWindow` at all",
+        "Those settings are only needed for Business Rules, not Script Includes",
+        "To make the Script Include run faster",
+        "So `g_form.addInfoMessage` works correctly"
+      ],
+      "answer": 0,
+      "explain": "Both are required before GlideAjax can call any method on a Script Include - without them, the client-side call would simply fail to reach the server method."
+    },
+    {
+      "q": "Look at this Script Include method:\n```javascript\nisDateInFreezeWindow: function() {\n  var plannedStart = this.getParameter('sysparm_start');\n  var plannedEnd = this.getParameter('sysparm_end');\n  if (!plannedStart || !plannedEnd) {\n    return 'false';\n  }\n  return this._overlapsFreeze(plannedStart, plannedEnd) ? 'true' : 'false';\n}\n```\nWhy can the client call `isDateInFreezeWindow` but never call `_overlapsFreeze` directly?",
+      "options": [
+        "`_overlapsFreeze` doesn't exist until `isDateInFreezeWindow` runs",
+        "`isDateInFreezeWindow` has a plain public name; `_overlapsFreeze` has a leading underscore, which makes it unreachable from the client regardless of the Script Include's Client callable setting",
+        "Both methods are actually callable from the client",
+        "GlideAjax can only call methods that return a boolean, not a string"
+      ],
+      "answer": 1,
+      "explain": "The underscore-prefix convention from Lesson 19 applies here: only non-underscore method names are valid sysparm_name targets."
+    },
+    {
+      "q": "In the client script's `onChange` function, why does it check `if (!startDate || !endDate) { return; }` before making the GlideAjax call?",
+      "options": [
+        "To avoid sending an incomplete date range to the server for a check that can't yet be meaningful",
+        "Because GlideAjax calls fail automatically if any parameter is empty",
+        "Because g_form.getValue() throws an error on an empty field",
+        "This check has no real purpose and could be removed"
+      ],
+      "answer": 0,
+      "explain": "There's no point running the freeze check server-side until both dates are actually set - this guard avoids a wasted round trip."
+    },
+    {
+      "q": "Where does the lab's `g_form.addInfoMessage()` call live, and why does that placement matter?",
+      "options": [
+        "Immediately after `ga.getXMLAnswer(...)` is called, so it runs right away",
+        "Inside the `getXMLAnswer` callback function, because that's the only point where the server's real answer is guaranteed to be available",
+        "Inside the Script Include, since only server-side code can call g_form",
+        "It doesn't matter where it's placed, as long as it's somewhere in the function"
+      ],
+      "answer": 1,
+      "explain": "As Lesson 20 covered, anything that depends on the GlideAjax answer must run inside the callback - placing it elsewhere would read an answer that isn't ready yet."
+    },
+    {
+      "q": "The lab notes that if the freeze dates ever need to come from a real configuration table instead of two hardcoded strings, only `ChangeFreezeChecker` needs to change. Why is that true?",
+      "options": [
+        "Because the client script never sees date logic directly - it only sends two date parameters and reads back a plain 'true'/'false' answer",
+        "Because the client script also hardcodes the same freeze dates as a backup",
+        "It isn't true - both files would need to change",
+        "Because GlideDateTime automatically syncs with the client script's variables"
+      ],
+      "answer": 0,
+      "explain": "The client script's contract with the server is just two date parameters in, a true/false string out - all freeze-window logic is isolated inside the Script Include."
+    }
+  ]
+}

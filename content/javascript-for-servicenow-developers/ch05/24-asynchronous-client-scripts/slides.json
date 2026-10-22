@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "JavaScript for ServiceNow Developers · Chapter Five",
+    "titlePlain": "Asynchronous ",
+    "titleEmphasis": "Client Scripts",
+    "titleSuffix": "",
+    "subtitle": "Lesson 24 · Client-Side JavaScript on the Platform"
+  },
+  {
+    "type": "code",
+    "eyebrow": "BROKEN - don't use this",
+    "code": "function onSubmit() {\n    var ga = new GlideAjax('ChangeFreezeWindowUtils');\n    ga.addParam('sysparm_name', 'isDateInFreezeWindow');\n\n    var isBlocked = false;\n    ga.getXMLAnswer(function(answer) {\n        isBlocked = (answer === 'true'); // runs LATER\n    });\n\n    return !isBlocked; // BUG: always false here\n}",
+    "caption": "The callback hasn't run yet when return executes - isBlocked never updates in time."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The real pattern - block first",
+    "code": "function onSubmit() {\n    if (g_form.getValue('freeze_check_passed') === 'true') {\n        return true;\n    }\n\n    var ga = new GlideAjax('ChangeFreezeWindowUtils');\n    ga.addParam('sysparm_name', 'isDateInFreezeWindow');\n    ga.getXMLAnswer(function(answer) { /* ... */ });\n\n    return false; // always block THIS attempt",
+    "caption": "Block the first attempt, then let the callback finish the job."
+  },
+  {
+    "type": "code",
+    "eyebrow": "...then submit programmatically in the callback",
+    "code": "ga.getXMLAnswer(function(answer) {\n    if (answer === 'true') {\n        g_form.addErrorMessage('Date falls inside a freeze window.');\n    } else {\n        g_form.setValue('freeze_check_passed', 'true');\n        g_form.submit();\n    }\n});",
+    "caption": "g_form.submit() re-runs onSubmit - this time the passed flag lets it through."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why not just wait?",
+    "titlePlain": "getXMLWait() is ",
+    "titleEmphasis": "discouraged",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Synchronous", "sub": "genuinely waits for the server before continuing" },
+      { "label": "Freezes the UI", "sub": "the whole browser tab becomes unresponsive while it waits" },
+      { "label": "Deprecated", "sub": "the callback pattern is slower to write but never blocks the browser" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 25",
+    "titlePlain": "Client-Side ",
+    "titleEmphasis": "Lab",
+    "titleSuffix": "",
+    "subtitle": "Wiring the freeze-window check into a real onChange and onSubmit."
+  }
+]

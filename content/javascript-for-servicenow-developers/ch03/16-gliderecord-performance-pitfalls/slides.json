@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "JavaScript for ServiceNow Developers · Chapter Three",
+    "titlePlain": "GlideRecord Performance ",
+    "titleEmphasis": "Pitfalls",
+    "titleSuffix": "",
+    "subtitle": "Lesson 16 · GlideRecord"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Pitfall 1 — querying inside a loop",
+    "code": "// BAD: one query per company (\"N+1\")\nvar accounts = new GlideRecord('core_company');\naccounts.query();\nwhile (accounts.next()) {\n    var inc = new GlideRecord('incident');\n    inc.addQuery('company', accounts.getUniqueValue());\n    inc.query(); // runs 500 times\n}",
+    "caption": "500 companies = 501 total queries. This scales terribly."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The one-query fix",
+    "code": "var counts = {};\nvar incidents = new GlideRecord('incident');\nincidents.addQuery('active', true);\nincidents.query();\nwhile (incidents.next()) {\n    var id = incidents.getValue('company');\n    counts[id] = (counts[id] || 0) + 1;\n}",
+    "caption": "One query total. Grouping happens in memory instead."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Pitfall 2 — getRowCount() for yes/no",
+    "code": "// WASTEFUL: full query runs just to check \"any matches?\"\ngr.query();\nif (gr.getRowCount() > 0) { ... }\n\n// BETTER: database can stop at the first match\ngr.setLimit(1);\ngr.query();\nif (gr.next()) { ... }",
+    "caption": "getRowCount() never avoids running the full query."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Pitfall 4 — looping to count",
+    "code": "// FAST: GlideAggregate never pulls full row data\nvar ga = new GlideAggregate('incident');\nga.addQuery('priority', 1);\nga.addAggregate('COUNT');\nga.query();\nif (ga.next()) {\n    var count = ga.getAggregate('COUNT');\n}",
+    "caption": "COUNT, SUM, AVG, MIN, MAX — without ever fetching full rows."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 17",
+    "titlePlain": "GlideRecord ",
+    "titleEmphasis": "Lab",
+    "titleSuffix": "",
+    "subtitle": "A worked scenario combining everything from this chapter."
+  }
+]

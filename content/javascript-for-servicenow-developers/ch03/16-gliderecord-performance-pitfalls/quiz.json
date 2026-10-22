@@ -1,0 +1,60 @@
+{
+  "lesson": "gliderecord-performance-pitfalls",
+  "questions": [
+    {
+      "q": "This code runs over 500 companies. How many total queries does it execute?\n\nvar accounts = new GlideRecord('core_company');\naccounts.query();\nwhile (accounts.next()) {\n    var inc = new GlideRecord('incident');\n    inc.addQuery('company', accounts.getUniqueValue());\n    inc.query();\n}",
+      "options": [
+        "501 — one to get companies, plus one more per company inside the loop",
+        "1 — GlideRecord automatically batches nested queries",
+        "2 — one for companies and one shared query for all incidents",
+        "500 — the outer query doesn't count"
+      ],
+      "answer": 0,
+      "explain": "This is the N+1 pattern: one query for N rows, plus N more queries, one per row inside the loop — 1 + 500 = 501."
+    },
+    {
+      "q": "Why is using `.getRowCount()` just to check \"are there any matches\" wasteful?",
+      "options": [
+        "getRowCount() still requires the full query to run and find every matching row, even though only a yes/no answer was needed",
+        "getRowCount() always returns zero unless .next() is called first",
+        "getRowCount() is deprecated and throws an error",
+        "getRowCount() only works on the incident table"
+      ],
+      "answer": 0,
+      "explain": "getRowCount() reports the count only after running the full query. Checking .next() once (optionally with setLimit(1)) lets the database stop early instead."
+    },
+    {
+      "q": "What does `.setLimit(10)` do when added before `.query()`?",
+      "options": [
+        "Caps the number of rows returned to 10, letting the database stop early instead of fetching everything",
+        "Deletes all but 10 matching records",
+        "Limits the query to run only once every 10 seconds",
+        "Has no effect unless orderBy() is also used"
+      ],
+      "answer": 0,
+      "explain": "setLimit(n) caps the returned row count, which is useful when only a sample (like the 10 most recent records) is actually needed."
+    },
+    {
+      "q": "Why is GlideAggregate faster than a GlideRecord loop for computing a COUNT?",
+      "options": [
+        "GlideAggregate never retrieves full row data at all — it computes the aggregate directly",
+        "GlideAggregate doesn't support addQuery filters, so it always scans the whole table once",
+        "GlideAggregate is identical to GlideRecord but renamed",
+        "GlideAggregate caches results permanently after the first call"
+      ],
+      "answer": 0,
+      "explain": "GlideAggregate is built specifically for COUNT/SUM/AVG/MIN/MAX and never pulls full row data, unlike looping a GlideRecord just to tally rows."
+    },
+    {
+      "q": "What is the one-query fix for the N+1 company/incident example in this lesson?",
+      "options": [
+        "Query incidents once with no per-company loop, then group counts in memory using the company field on each row",
+        "Add .setLimit(1) to the inner query so it runs faster each time",
+        "Replace the inner GlideRecord with a second outer GlideRecord",
+        "There is no way to avoid querying per company"
+      ],
+      "answer": 0,
+      "explain": "Querying incident once and grouping counts in memory by the company field value avoids the per-company query entirely — still just one query total."
+    }
+  ]
+}

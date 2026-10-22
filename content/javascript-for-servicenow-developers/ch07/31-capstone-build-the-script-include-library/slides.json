@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "JavaScript for ServiceNow Developers · Chapter Seven",
+    "titlePlain": "Capstone: Build the Script Include ",
+    "titleEmphasis": "Library",
+    "titleSuffix": "",
+    "subtitle": "Lesson 31 · Capstone: a Reusable Script Include Library"
+  },
+  {
+    "type": "code",
+    "eyebrow": "isUserInGroup -- the real logic",
+    "code": "var TaskUtils = Class.create();\nTaskUtils.prototype = Object.extendsObject(AbstractAjaxProcessor, {\n\n  isUserInGroup: function(userId, groupName) {\n    if (!userId || !groupName) return false;\n\n    var groupGr = new GlideRecord('sys_user_group');\n    groupGr.addQuery('name', groupName);\n    groupGr.query();\n    if (!groupGr.next()) return false;\n\n    var memberGr = new GlideRecord('sys_user_grmember');\n    memberGr.addQuery('user', userId);\n    memberGr.addQuery('group', groupGr.getUniqueValue());\n    memberGr.setLimit(1);\n    memberGr.query();\n    return memberGr.next();\n  },",
+    "caption": "setLimit(1) stops the membership query at the first match."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The client-callable wrapper",
+    "code": "  ajaxIsUserInGroup: function() {\n    var userId = this.getParameter('sysparm_user_id');\n    var groupName = this.getParameter('sysparm_group_name');\n    return this.isUserInGroup(userId, groupName).toString();\n  },",
+    "caption": "Only this wrapper needs the Client callable checkbox checked."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Calling it from a Client Script",
+    "code": "var ga = new GlideAjax('TaskUtils');\nga.addParam('sysparm_name', 'ajaxIsUserInGroup');\nga.addParam('sysparm_user_id', newValue);\nga.addParam('sysparm_group_name', 'Network');\nga.getXMLAnswer(function(answer) {\n  if (answer === 'true') {\n    g_form.showFieldMsg('assigned_to', 'On the Network team', 'info');\n  }\n});",
+    "caption": "The browser always gets back a string -- compare with === 'true'."
+  },
+  {
+    "type": "code",
+    "eyebrow": "formatDueDate and getReferenceDisplayValue",
+    "code": "  formatDueDate: function(glideDateTime) {\n    if (!glideDateTime || glideDateTime.getNumericValue() === 0) {\n      return '(no due date)';\n    }\n    var now = new GlideDateTime();\n    var display = glideDateTime.getDisplayValue();\n    return glideDateTime.before(now) ? display + ' (overdue)' : display;\n  },\n\n  getReferenceDisplayValue: function(gr, fieldName) {\n    if (!gr || !fieldName || !gr.isValidField(fieldName)) return '';\n    return gr.getDisplayValue(fieldName) || '';\n  },\n\n  type: 'TaskUtils'\n});",
+    "caption": "Both methods are server-side only -- no GlideAjax wrapper needed."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What this one class now does",
+    "titlePlain": "Three methods, ",
+    "titleEmphasis": "one class",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "isUserInGroup", "sub": "server calls direct; client calls through ajaxIsUserInGroup" },
+      { "label": "formatDueDate", "sub": "GlideDateTime.before() handles the overdue comparison" },
+      { "label": "getReferenceDisplayValue", "sub": "isValidField guards against a bad field name" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 32",
+    "titlePlain": "Capstone Wrap-Up & ",
+    "titleEmphasis": "Code Review",
+    "titleSuffix": "",
+    "subtitle": "Reviewing the finished class before anyone else relies on it."
+  }
+]

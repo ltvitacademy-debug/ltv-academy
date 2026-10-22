@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "JavaScript for ServiceNow Developers · Chapter Four",
+    "titlePlain": "GlideAjax ",
+    "titleEmphasis": "Lab",
+    "titleSuffix": "",
+    "subtitle": "Lesson 21 · GlideAjax & Client-Server Communication"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The scenario",
+    "titlePlain": "Catch a change ",
+    "titleEmphasis": "freeze",
+    "titleSuffix": " conflict live",
+    "steps": [
+      { "label": "User edits dates", "sub": "planned start/end on a Change Request" },
+      { "label": "Server checks the freeze", "sub": "real date comparison, not client-side guesswork" },
+      { "label": "Warning appears", "sub": "before the user even submits the form" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The Script Include",
+    "code": "var ChangeFreezeChecker = Class.create();\nChangeFreezeChecker.prototype = Object.extendsObject(\n  AbstractAjaxProcessor, {\n\n  isDateInFreezeWindow: function() {\n    var start = this.getParameter('sysparm_start');\n    var end = this.getParameter('sysparm_end');\n    if (!start || !end) { return 'false'; }\n    return this._overlapsFreeze(start, end) ? 'true' : 'false';\n  },\n\n  type: 'ChangeFreezeChecker'\n});",
+    "caption": "Public method in; private _overlapsFreeze helper does the real date math."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The private date-comparison helper",
+    "code": "_overlapsFreeze: function(startStr, endStr) {\n  var gdStart = new GlideDateTime(startStr);\n  var gdEnd = new GlideDateTime(endStr);\n  var freezeStart = new GlideDateTime(this.FREEZE_START);\n  var freezeEnd = new GlideDateTime(this.FREEZE_END);\n\n  return !(gdEnd.before(freezeStart) || gdStart.after(freezeEnd));\n}",
+    "caption": "Never reachable from the client - the leading underscore guarantees it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The client script",
+    "code": "var ga = new GlideAjax('ChangeFreezeChecker');\nga.addParam('sysparm_name', 'isDateInFreezeWindow');\nga.addParam('sysparm_start', startDate);\nga.addParam('sysparm_end', endDate);\n\nga.getXMLAnswer(function(answer) {\n  if (answer === 'true') {\n    g_form.addInfoMessage(\n      'Heads up: this range overlaps an active change freeze.'\n    );\n  }\n});",
+    "caption": "The message only fires inside the callback - exactly as Lesson 20 taught."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 22",
+    "titlePlain": "The GlideForm API ",
+    "titleEmphasis": "(g_form)",
+    "titleSuffix": "",
+    "subtitle": "Chapter 5: client-side JavaScript on the platform."
+  }
+]
