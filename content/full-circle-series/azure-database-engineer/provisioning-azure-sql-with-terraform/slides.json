@@ -1,0 +1,55 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Provisioning Azure SQL ",
+    "titleEmphasis": "With Terraform",
+    "titleSuffix": "",
+    "subtitle": "Video 8 of 20 · Thornridge Insurance"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Four resources, one apply",
+    "titlePlain": "Every setting traces back to a ",
+    "titleEmphasis": "decision",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "Resource group",
+        "sub": "rg-thornridge-sql-prod"
+      },
+      {
+        "label": "Logical server",
+        "sub": "thornridge-sql-server, Azure AD admin only -- no SQL login"
+      },
+      {
+        "label": "PolicyClaimsDB",
+        "sub": "General Purpose, zone-redundant"
+      },
+      {
+        "label": "Firewall rules",
+        "sub": "locked to the SHIR host and the corporate IP range only"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The server -- Azure AD-only, per the security plan",
+    "code": "resource \"azurerm_mssql_server\" \"primary\" {\n  name                = \"thornridge-sql-server\"\n  resource_group_name = azurerm_resource_group.thornridge_sql_prod.name\n  location            = \"eastus2\"\n  version             = \"12.0\"\n\n  azuread_administrator {\n    login_username = \"sql-dba-admins\"\n    object_id      = var.aad_dba_group_object_id\n  }\n\n  minimum_tls_version = \"1.2\"\n}",
+    "caption": "No administrator_login / password pair -- Azure AD is the model, not an exception."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The database -- zone-redundant, per the HA/DR plan",
+    "code": "resource \"azurerm_mssql_database\" \"policyclaims\" {\n  name           = \"PolicyClaimsDB\"\n  server_id      = azurerm_mssql_server.primary.id\n  sku_name       = \"GP_Gen5_4\"\n  zone_redundant = true\n  max_size_gb    = 250\n}\n\n# terraform init && terraform plan -out=tfplan\n# review, then: terraform apply tfplan",
+    "caption": "Plan before apply -- the last chance to catch a typo before it's live on real data."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 9",
+    "titlePlain": "Migrating the Database ",
+    "titleEmphasis": "With Data Factory",
+    "titleSuffix": "",
+    "subtitle": "The infrastructure exists. Now the real data moves in."
+  }
+]
