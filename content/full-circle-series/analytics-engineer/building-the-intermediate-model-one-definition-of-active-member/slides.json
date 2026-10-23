@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "The Intermediate Model: One Definition of ",
+    "titleEmphasis": "Active Member",
+    "titleSuffix": "",
+    "subtitle": "Video 10 of 20 · Brightleaf Fitness"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The two edge cases that caused the disagreement",
+    "titlePlain": "Handle them ",
+    "titleEmphasis": "once",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Expand status periods across a day spine", "sub": "a mid-month pause shows up on the exact day it happened" },
+      { "label": "Collapse multi-location overlap", "sub": "one row per member per day, never two" },
+      { "label": "ACTIVE wins any same-day tie", "sub": "a written, auditable business rule -- not a guess" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "int_active_members.sql -- expand to daily grain",
+    "code": "with date_spine as (\n    {{ dbt_utils.date_spine(\n        datepart=\"day\",\n        start_date=\"cast('2023-01-01' as date)\",\n        end_date=\"dateadd(day, 1, current_date())\"\n    ) }}\n)\n\nselect mp.member_id, mp.status, ds.date_day as activity_date\nfrom membership_periods mp\njoin date_spine ds\n    on ds.date_day >= mp.status_start_date\n   and ds.date_day <  mp.status_end_date_inclusive",
+    "caption": "One row per member per day -- a pause now lands on its real date."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Collapsing multi-location overlap",
+    "code": "row_number() over (\n    partition by member_id, activity_date\n    order by\n        case when status = 'ACTIVE' then 0 else 1 end,\n        membership_id desc\n) as rn\n\n-- keep only rn = 1: exactly one row per member per day",
+    "caption": "A member at two locations the same day is still counted once."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 11",
+    "titlePlain": "Writing dbt Tests That Actually ",
+    "titleEmphasis": "Catch Problems",
+    "titleSuffix": "",
+    "subtitle": "A custom test for the exact rule this model just enforced."
+  }
+]
